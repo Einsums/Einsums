@@ -5,8 +5,9 @@
 
 include(FetchContent)
 
-fetchcontent_declare(argparse
-        GIT_REPOSITORY https://github.com/Einsums/argparse.git
-        FIND_PACKAGE_ARGS 3
+fetchcontent_declare(
+  argparse
+  GIT_REPOSITORY https://github.com/Einsums/argparse.git
+  FIND_PACKAGE_ARGS 3
 )
 fetchcontent_makeavailable(argparse)

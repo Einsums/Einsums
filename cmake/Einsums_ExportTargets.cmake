@@ -9,7 +9,7 @@ function(einsums_export_targets)
     if(_found EQUAL -1)
       set(EINSUMS_EXPORT_TARGETS
           ${EINSUMS_EXPORT_TARGETS} ${target}
-              CACHE INTERNAL "" FORCE
+          CACHE INTERNAL "" FORCE
       )
     endif()
   endforeach()
@@ -21,7 +21,7 @@ function(einsums_export_internal_targets)
     if(_found EQUAL -1)
       set(EINSUMS_EXPORT_INTERNAL_TARGETS
           ${EINSUMS_EXPORT_INTERNAL_TARGETS} ${target}
-              CACHE INTERNAL "" FORCE
+          CACHE INTERNAL "" FORCE
       )
     endif()
   endforeach()

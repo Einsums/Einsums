@@ -26,7 +26,7 @@ if(EINSUMS_WITH_TESTS)
 
   if(EINSUMS_WITH_TESTS_HEADERS)
     einsums_add_header_tests(
-            Modules.BLASVendor
+      Modules.BLASVendor
       HEADERS ${BLASVendorHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       DEPENDENCIES einsums_BLASVendor

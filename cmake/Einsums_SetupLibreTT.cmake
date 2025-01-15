@@ -1,12 +1,12 @@
 include(FetchContent)
 
-FetchContent_Declare(
+fetchcontent_declare(
   librett
   GIT_REPOSITORY https://github.com/victor-anisimov/Librett.git
   FIND_PACKAGE_ARGS
 )
 
-FetchContent_MakeAvailable(librett)
+fetchcontent_makeavailable(librett)
 
 if(NOT TARGET librett::librett)
   message(FATAL_ERROR "Did not find librett!")

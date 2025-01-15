@@ -28,142 +28,142 @@
 set(PN TargetLAPACK)
 
 # 1st precedence - libraries passed in through -DLAPACK_LIBRARIES
-if (LAPACK_LIBRARIES)
-    if (NOT ${PN}_FIND_QUIETLY)
-        message(STATUS "LAPACK detection suppressed.")
-    endif ()
+if(LAPACK_LIBRARIES)
+  if(NOT ${PN}_FIND_QUIETLY)
+    message(STATUS "LAPACK detection suppressed.")
+  endif()
 
-    set(_VENDOR "All")
-    foreach (_l IN LISTS LAPACK_LIBRARIES)
-        get_filename_component(_lname ${_l} NAME)
-        if (${_lname} MATCHES "mkl")
-            set(_VENDOR "MKL")
-            break()
-        elseif (${_lname} MATCHES "openblas")
-            set(_VENDOR "OpenBLAS")
-            break()
-        endif ()
-    endforeach ()
+  set(_VENDOR "All")
+  foreach(_l IN LISTS LAPACK_LIBRARIES)
+    get_filename_component(_lname ${_l} NAME)
+    if(${_lname} MATCHES "mkl")
+      set(_VENDOR "MKL")
+      break()
+    elseif(${_lname} MATCHES "openblas")
+      set(_VENDOR "OpenBLAS")
+      break()
+    endif()
+  endforeach()
 
-    add_library(tgt::lapack INTERFACE IMPORTED)
-    set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES ${LAPACK_LIBRARIES})
-    set_property(TARGET tgt::lapack PROPERTY VENDOR ${_VENDOR})
-    set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64) # TODO assumption!
+  add_library(tgt::lapack INTERFACE IMPORTED)
+  set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES ${LAPACK_LIBRARIES})
+  set_property(TARGET tgt::lapack PROPERTY VENDOR ${_VENDOR})
+  set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64) # TODO assumption!
 else()
-    # 2nd precedence - target already prepared and findable in TargetLAPACKConfig.cmake
-    if (NOT "${CMAKE_DISABLE_FIND_PACKAGE_${PN}}")
-        find_package(TargetLAPACK QUIET CONFIG)
-    endif ()
-    if (TARGET tgt::lapack)
-        if (NOT ${PN}_FIND_QUIETLY)
-            message(STATUS "TargetLAPACKConfig detected.")
-        endif ()
-    else ()
-        # 3rd precedence - usual variables from FindLAPACK.cmake
-        if (NOT MSVC)
-            find_package(MKL CONFIG)
-        endif ()
-        if (TARGET MKL::MKL)
+  # 2nd precedence - target already prepared and findable in TargetLAPACKConfig.cmake
+  if(NOT "${CMAKE_DISABLE_FIND_PACKAGE_${PN}}")
+    find_package(TargetLAPACK QUIET CONFIG)
+  endif()
+  if(TARGET tgt::lapack)
+    if(NOT ${PN}_FIND_QUIETLY)
+      message(STATUS "TargetLAPACKConfig detected.")
+    endif()
+  else()
+    # 3rd precedence - usual variables from FindLAPACK.cmake
+    if(NOT MSVC)
+      find_package(MKL CONFIG)
+    endif()
+    if(TARGET MKL::MKL)
+      add_library(tgt::lapack INTERFACE IMPORTED)
+      set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES MKL::MKL)
+      set_property(TARGET tgt::lapack PROPERTY VENDOR "MKL")
+      set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE ${MKL_INTERFACE})
+
+    else()
+      set(BLA_VENDOR OpenBLAS)
+      set(BLA_SIZEOF_INTEGER 4)
+      find_package(BLAS MODULE)
+      find_package(LAPACK MODULE)
+
+      if((TARGET BLAS::BLAS) AND (TARGET LAPACK::LAPACK))
+        add_library(tgt::lapack INTERFACE IMPORTED)
+        set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS)
+        set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
+        set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64)
+
+      else()
+        set(BLA_VENDOR OpenBLAS)
+        set(BLA_SIZEOF_INTEGER 8)
+        find_package(BLAS MODULE)
+        find_package(LAPACK MODULE)
+
+        if((TARGET BLAS::BLAS) AND (TARGET LAPACK::LAPACK))
+          add_library(tgt::lapack INTERFACE IMPORTED)
+          set_property(
+            TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS
+          )
+          set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
+          set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE ilp64)
+
+        else()
+          set(BLA_VENDOR Generic)
+          set(BLA_SIZEOF_INTEGER ANY)
+          find_package(BLAS MODULE)
+          find_package(LAPACK MODULE)
+
+          if((TARGET BLAS::BLAS) AND (TARGET LAPACK::LAPACK))
             add_library(tgt::lapack INTERFACE IMPORTED)
-            set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES MKL::MKL)
-            set_property(TARGET tgt::lapack PROPERTY VENDOR "MKL")
-            set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE ${MKL_INTERFACE})
+            set_property(
+              TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS
+            )
+            set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
+            set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64) # TODO assumption!
 
-        else ()
-            set(BLA_VENDOR OpenBLAS)
-            set(BLA_SIZEOF_INTEGER 4)
-            find_package(BLAS MODULE)
-            find_package(LAPACK MODULE)
+          else()
+            set(BLA_VENDOR All)
+            find_package(BLAS REQUIRED MODULE)
+            find_package(LAPACK REQUIRED MODULE)
 
-            if ((TARGET BLAS::BLAS) AND (TARGET LAPACK::LAPACK))
-                add_library(tgt::lapack INTERFACE IMPORTED)
-                set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS)
-                set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
-                set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64)
+            add_library(tgt::lapack INTERFACE IMPORTED)
+            set_property(
+              TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS
+            )
+            set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
+            set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64) # TODO assumption!
+          endif()
+        endif()
+      endif()
 
-            else ()
-                set(BLA_VENDOR OpenBLAS)
-                set(BLA_SIZEOF_INTEGER 8)
-                find_package(BLAS MODULE)
-                find_package(LAPACK MODULE)
+    endif()
+    if(NOT ${PN}_FIND_QUIETLY)
+      message(STATUS "LAPACK detected.")
+    endif()
 
-                if ((TARGET BLAS::BLAS) AND (TARGET LAPACK::LAPACK))
-                    add_library(tgt::lapack INTERFACE IMPORTED)
-                    set_property(
-                            TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS
-                    )
-                    set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
-                    set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE ilp64)
-
-                else ()
-                    set(BLA_VENDOR Generic)
-                    set(BLA_SIZEOF_INTEGER ANY)
-                    find_package(BLAS MODULE)
-                    find_package(LAPACK MODULE)
-
-                    if ((TARGET BLAS::BLAS) AND (TARGET LAPACK::LAPACK))
-                        add_library(tgt::lapack INTERFACE IMPORTED)
-                        set_property(
-                                TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS
-                        )
-                        set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
-                        set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64) # TODO assumption!
-
-                    else ()
-                        set(BLA_VENDOR All)
-                        find_package(BLAS REQUIRED MODULE)
-                        find_package(LAPACK REQUIRED MODULE)
-
-                        add_library(tgt::lapack INTERFACE IMPORTED)
-                        set_property(
-                                TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS
-                        )
-                        set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
-                        set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64) # TODO assumption!
-                    endif ()
-                endif ()
-            endif ()
-
-        endif ()
-        if (NOT ${PN}_FIND_QUIETLY)
-            message(STATUS "LAPACK detected.")
-        endif ()
-
-        unset(BLA_VENDOR)
-        unset(BLA_SIZEOF_INTEGER)
-        unset(LAPACK_FOUND)
-        unset(LAPACK_LIBRARIES)
-    endif ()
+    unset(BLA_VENDOR)
+    unset(BLA_SIZEOF_INTEGER)
+    unset(LAPACK_FOUND)
+    unset(LAPACK_LIBRARIES)
+  endif()
 endif()
 
 get_property(
-        _ill
-        TARGET tgt::lapack
-        PROPERTY INTERFACE_LINK_LIBRARIES
+  _ill
+  TARGET tgt::lapack
+  PROPERTY INTERFACE_LINK_LIBRARIES
 )
 get_property(
-        _ven
-        TARGET tgt::lapack
-        PROPERTY VENDOR
+  _ven
+  TARGET tgt::lapack
+  PROPERTY VENDOR
 )
 get_property(
-        _int
-        TARGET tgt::lapack
-        PROPERTY INT_INTERFACE
+  _int
+  TARGET tgt::lapack
+  PROPERTY INT_INTERFACE
 )
 set(${PN}_MESSAGE "Found LAPACK ${_ven}w/${_int}: ${_ill}")
-if ((TARGET tgt::blas) AND (TARGET tgt::lapk))
-    get_property(
-            _illb
-            TARGET tgt::blas
-            PROPERTY INTERFACE_LINK_LIBRARIES
-    )
-    get_property(
-            _illl
-            TARGET tgt::lapk
-            PROPERTY INTERFACE_LINK_LIBRARIES
-    )
-    set(${PN}_MESSAGE "Found LAPACK ${_ven}w/${_int}: ${_illl};${_illb}")
+if((TARGET tgt::blas) AND (TARGET tgt::lapk))
+  get_property(
+    _illb
+    TARGET tgt::blas
+    PROPERTY INTERFACE_LINK_LIBRARIES
+  )
+  get_property(
+    _illl
+    TARGET tgt::lapk
+    PROPERTY INTERFACE_LINK_LIBRARIES
+  )
+  set(${PN}_MESSAGE "Found LAPACK ${_ven}w/${_int}: ${_illl};${_illb}")
 endif()
 
 include(FindPackageHandleStandardArgs)

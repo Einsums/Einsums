@@ -4,10 +4,10 @@
 #----------------------------------------------------------------------------------------------
 
 if(EINSUMS_WITH_EXAMPLES)
-    einsums_add_pseudo_target(Examples.Modules.Tensor)
-    einsums_add_pseudo_dependencies(Examples.Modules Examples.Modules.Tensor)
+  einsums_add_pseudo_target(Examples.Modules.Tensor)
+  einsums_add_pseudo_dependencies(Examples.Modules Examples.Modules.Tensor)
   if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
-      einsums_add_pseudo_target(Tests.Examples.Modules.Tensor)
-      einsums_add_pseudo_dependencies(Tests.Examples.Modules Tests.Examples.Modules.Tensor)
+    einsums_add_pseudo_target(Tests.Examples.Modules.Tensor)
+    einsums_add_pseudo_dependencies(Tests.Examples.Modules Tests.Examples.Modules.Tensor)
   endif()
 endif()

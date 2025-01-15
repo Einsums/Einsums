@@ -13,57 +13,57 @@ find_package(TargetHDF5 REQUIRED)
 
 include(FetchContent)
 fetchcontent_declare(
-        h5cpp
-        URL https://github.com/Einsums/h5cpp/archive/v1.10.4-6+4.tar.gz
-        URL_HASH SHA256=f9acf8d35ac1584d0c0f36471abc3faaa3e181d2713950b1af21e4f4bc0f9991
+  h5cpp
+  URL https://github.com/Einsums/h5cpp/archive/v1.10.4-6+4.tar.gz
+  URL_HASH SHA256=f9acf8d35ac1584d0c0f36471abc3faaa3e181d2713950b1af21e4f4bc0f9991
 )
 
 fetchcontent_getproperties(h5cpp)
-if (NOT h5cpp_POPULATED)
-    fetchcontent_populate(h5cpp)
+if(NOT h5cpp_POPULATED)
+  fetchcontent_populate(h5cpp)
 endif()
 set(h5cpp_ROOT ${h5cpp_SOURCE_DIR})
 
 add_library(Einsums_h5cpp INTERFACE)
 add_library("Einsums::h5cpp" ALIAS Einsums_h5cpp)
 
-if (EINSUMS_H5CPP_USE_OMP_ALIGNED_ALLOC)
-    target_compile_definitions(Einsums_h5cpp INTERFACE $<BUILD_INTERFACE:H5CPP_USE_OMP_ALIGNED_ALLOC>)
+if(EINSUMS_H5CPP_USE_OMP_ALIGNED_ALLOC)
+  target_compile_definitions(Einsums_h5cpp INTERFACE $<BUILD_INTERFACE:H5CPP_USE_OMP_ALIGNED_ALLOC>)
 endif()
 set_target_properties(Einsums_h5cpp PROPERTIES EXPORT_NAME h5cpp)
 target_include_directories(
-        Einsums_h5cpp
-        # SYSTEM suppresses "error: non-constant-expression cannot be narrowed" for some compilers
-        SYSTEM
-        INTERFACE $<BUILD_INTERFACE:${h5cpp_SOURCE_DIR}>
-        # TODO return to this when build headers adjusted
-        # $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
+  Einsums_h5cpp
+  # SYSTEM suppresses "error: non-constant-expression cannot be narrowed" for some compilers
+  SYSTEM
+  INTERFACE $<BUILD_INTERFACE:${h5cpp_SOURCE_DIR}>
+            # TODO return to this when build headers adjusted
+            # $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
 target_link_libraries(Einsums_h5cpp INTERFACE tgt::hdf5 ZLIB::ZLIB)
 
 install(
-        TARGETS Einsums_h5cpp
-        EXPORT EinsumsH5cppTarget
-        COMPONENT core
+  TARGETS Einsums_h5cpp
+  EXPORT EinsumsH5cppTarget
+  COMPONENT core
 )
 
 install(
-        DIRECTORY ${h5cpp_SOURCE_DIR}/h5cpp
-        COMPONENT core
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+  DIRECTORY ${h5cpp_SOURCE_DIR}/h5cpp
+  COMPONENT core
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
 )
 
 export(
-        TARGETS Einsums_h5cpp
-        NAMESPACE Einsums::
-        FILE "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/EinsumsH5cppTarget.cmake"
+  TARGETS Einsums_h5cpp
+  NAMESPACE Einsums::
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/EinsumsH5cppTarget.cmake"
 )
 
 install(
-        EXPORT EinsumsH5cppTarget
-        NAMESPACE Einsums::
-        FILE EinsumsH5cppTarget.cmake
-        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}
-        COMPONENT cmake
+  EXPORT EinsumsH5cppTarget
+  NAMESPACE Einsums::
+  FILE EinsumsH5cppTarget.cmake
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}
+  COMPONENT cmake
 )

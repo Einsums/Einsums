@@ -4,34 +4,34 @@
 #----------------------------------------------------------------------------------------------
 
 set(linear_algebra_tests
-        dot
-        geev
-        gemm
-        GEMMTensorView
-        gesv
-        gesvd
-        gemv
-        gesdd
-        getrf_getri
-        invert
-        heev
-        lassq
-        norm
-        pow
-        syev
-        Scale
+    dot
+    geev
+    gemm
+    GEMMTensorView
+    gesv
+    gesvd
+    gemv
+    gesdd
+    getrf_getri
+    invert
+    heev
+    lassq
+    norm
+    pow
+    syev
+    Scale
 )
 
 foreach(test ${linear_algebra_tests})
-    set(sources ${test}.cpp)
+  set(sources ${test}.cpp)
 
-    source_group("Source Files" FILES ${sources})
+  source_group("Source Files" FILES ${sources})
 
-    einsums_add_executable(
-            ${test}_test INTERNAL_FLAGS
-            SOURCES ${sources} ${${test}_FLAGS}
-            FOLDER ${folder_name}
-    )
+  einsums_add_executable(
+    ${test}_test INTERNAL_FLAGS
+    SOURCES ${sources} ${${test}_FLAGS}
+    FOLDER ${folder_name}
+  )
 
-    einsums_add_unit_test("Modules.LinearAlgebra" ${test})
-endforeach ()
+  einsums_add_unit_test("Modules.LinearAlgebra" ${test})
+endforeach()

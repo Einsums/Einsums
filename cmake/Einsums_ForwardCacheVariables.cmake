@@ -14,7 +14,7 @@ list(FILTER cache_vars EXCLUDE REGEX "Category$")
 
 # Generate einsums_cache_variables.cmake in the BUILD directory
 set(_cache_var_file
-        ${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/EinsumsCacheVariables.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/EinsumsCacheVariables.cmake
 )
 set(_cache_var_file_template "${EINSUMS_SOURCE_DIR}/cmake/templates/EinsumsCacheVariables.cmake.in")
 set(_cache_variables)
@@ -28,5 +28,5 @@ configure_file(${_cache_var_file_template} ${_cache_var_file})
 install(
   FILES ${_cache_var_file}
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}
-        COMPONENT cmake
+  COMPONENT cmake
 )

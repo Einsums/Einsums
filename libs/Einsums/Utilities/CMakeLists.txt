@@ -11,10 +11,10 @@ set(UtilitiesSources Random.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
-        Einsums Utilities
-        SOURCES ${UtilitiesSources}
-        HEADERS ${UtilitiesHeaders}
-        DEPENDENCIES
-        MODULE_DEPENDENCIES Einsums_Config
-        CMAKE_SUBDIRS examples tests
+  Einsums Utilities
+  SOURCES ${UtilitiesSources}
+  HEADERS ${UtilitiesHeaders}
+  DEPENDENCIES
+  MODULE_DEPENDENCIES Einsums_Config
+  CMAKE_SUBDIRS examples tests
 )

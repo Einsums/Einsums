@@ -4,14 +4,14 @@
 #----------------------------------------------------------------------------------------------
 
 if(EINSUMS_WITH_EXAMPLES)
-    einsums_add_pseudo_target(Examples.Modules.${EINSUMS_PYTHON_LIB_NAME}.Errors)
+  einsums_add_pseudo_target(Examples.Modules.${EINSUMS_PYTHON_LIB_NAME}.Errors)
   einsums_add_pseudo_dependencies(
-          Examples.Modules Examples.Modules.${EINSUMS_PYTHON_LIB_NAME}.Errors
+    Examples.Modules Examples.Modules.${EINSUMS_PYTHON_LIB_NAME}.Errors
   )
   if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
-      einsums_add_pseudo_target(Tests.Examples.Modules.${EINSUMS_PYTHON_LIB_NAME}.Errors)
+    einsums_add_pseudo_target(Tests.Examples.Modules.${EINSUMS_PYTHON_LIB_NAME}.Errors)
     einsums_add_pseudo_dependencies(
-            Tests.Examples.Modules Tests.Examples.Modules.${EINSUMS_PYTHON_LIB_NAME}.Errors
+      Tests.Examples.Modules Tests.Examples.Modules.${EINSUMS_PYTHON_LIB_NAME}.Errors
     )
   endif()
 endif()

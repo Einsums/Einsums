@@ -19,8 +19,8 @@ function(einsums_add_test category name)
 
   if(NOT ${name}_THREADS)
     set(${name}_THREADS 1)
-  elseif (EINSUMS_WITH_TESTS_MAX_THREADS GREATER 0 AND ${name}_THREADS GREATER
-          EINSUMS_WITH_TESTS_MAX_THREADS
+  elseif(EINSUMS_WITH_TESTS_MAX_THREADS GREATER 0 AND ${name}_THREADS GREATER
+                                                      EINSUMS_WITH_TESTS_MAX_THREADS
   )
     set(${name}_THREADS ${CALIBIRI_WITH_TESTS_MAX_THREADS})
   endif()
@@ -59,9 +59,9 @@ function(einsums_add_test category name)
     set(valgrind_cmd ${VALGRIND_EXECUTABLE} ${EINSUMS_WITH_TESTS_VALGRIND_OPTIONS})
   endif()
 
-  if (${name}_FAILURE_EXPECTED)
+  if(${name}_FAILURE_EXPECTED)
     set(precommand ${CMAKE_COMMAND} -E env)
-  endif ()
+  endif()
 
   set(_full_name "${category}.${name}")
   add_test(NAME "${category}.${name}" COMMAND ${precommand} ${valgrind_cmd} ${cmd} ${args})
@@ -78,9 +78,9 @@ function(einsums_add_test category name)
     set_tests_properties("${_full_name}" PROPERTIES WILL_FAIL TRUE)
   endif()
 
-  if (TARGET ${${name}_EXECUTABLE}_test)
+  if(TARGET ${${name}_EXECUTABLE}_test)
     set_target_properties(${${name}_EXECUTABLE}_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY "")
-  endif ()
+  endif()
 
   # Only real tests, i.e. executables ending in _test, link to einsums_testing
   if(TARGET ${${name}_EXECUTABLE}_test AND ${name}_TESTING)
@@ -98,7 +98,7 @@ function(einsums_add_test_target_dependencies category name)
   set(one_value_args PSEUDO_DEPS_NAME)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
   # default target_extension is _test but for examples.* target, it may vary
-  if (NOT ("${category}" MATCHES "Tests.Examples*"))
+  if(NOT ("${category}" MATCHES "Tests.Examples*"))
     set(_ext "_test")
   endif()
   # Add a custom target for this example
@@ -135,14 +135,18 @@ endfunction(einsums_add_unit_test)
 function(einsums_add_regression_test subcategory name)
   # ARGN needed in case we add a test with the same executable
   einsums_add_test_and_deps_test("Regressions" "${subcategory}" ${name} ${ARGN} TESTING)
-  set_tests_properties("Tests.Regressions.${subcategory}.${name}" PROPERTIES LABELS "REGRESSION_ONLY")
+  set_tests_properties(
+    "Tests.Regressions.${subcategory}.${name}" PROPERTIES LABELS "REGRESSION_ONLY"
+  )
 endfunction(einsums_add_regression_test)
 
 function(einsums_add_performance_test subcategory name)
   einsums_add_test_and_deps_test(
-          "Performance" "${subcategory}" ${name} ${ARGN} RUN_SERIAL PERFORMANCE_TESTING
+    "Performance" "${subcategory}" ${name} ${ARGN} RUN_SERIAL PERFORMANCE_TESTING
   )
-  set_tests_properties("Tests.Performance.${subcategory}.${name}" PROPERTIES LABELS "PERFORMANCE_ONLY")
+  set_tests_properties(
+    "Tests.Performance.${subcategory}.${name}" PROPERTIES LABELS "PERFORMANCE_ONLY"
+  )
 endfunction(einsums_add_performance_test)
 
 function(einsums_add_example_test subcategory name)

@@ -4,53 +4,53 @@
 #----------------------------------------------------------------------------------------------
 
 set(TensorAlgebraTests
-        Dot
-        Einsum1
-        Einsum2
-        Einsum3
-        Einsum4
-        Einsum5
-        Einsum6
-        Einsum7
-        Element
-        Hadamard
-        Indices
-        KhatriRao
-        MixedPrecision
-        OuterProduct
-        Sort
-        Transpose
-        UniquePointer
+    Dot
+    Einsum1
+    Einsum2
+    Einsum3
+    Einsum4
+    Einsum5
+    Einsum6
+    Einsum7
+    Element
+    Hadamard
+    Indices
+    KhatriRao
+    MixedPrecision
+    OuterProduct
+    Sort
+    Transpose
+    UniquePointer
 )
 
-foreach (test ${TensorAlgebraTests})
+foreach(test ${TensorAlgebraTests})
   set(sources ${test}.cpp)
 
   source_group("Source Files" FILES ${sources})
 
   einsums_add_executable(
-          ${test}_test INTERNAL_FLAGS
-          SOURCES ${sources} ${${test}_FLAGS}
-          FOLDER ${folder_name}
+    ${test}_test INTERNAL_FLAGS
+    SOURCES ${sources} ${${test}_FLAGS}
+    FOLDER ${folder_name}
   )
 
   einsums_add_unit_test("Modules.TensorAlgebra" ${test})
-endforeach ()
+endforeach()
 
 if(EINSUMS_WITH_GPU_SUPPORT)
   set(TensorAlgebraTests2 Dot)
 
-  foreach (test ${TensorAlgebraTests2})
+  foreach(test ${TensorAlgebraTests2})
     set(sources ${test}.hip)
 
     source_group("Source Files" FILES ${sources})
 
     einsums_add_executable(
-            ${test}_gpu_test INTERNAL_FLAGS
-            SOURCES ${sources} ${${test}_FLAGS}
-            FOLDER ${folder_name}
+      ${test}_gpu_test INTERNAL_FLAGS
+      SOURCES ${sources} ${${test}_FLAGS}
+      FOLDER ${folder_name}
     )
 
     einsums_add_unit_test("Modules.TensorAlgebra" ${test}_gpu)
-  endforeach ()
+  endforeach()
 endif()

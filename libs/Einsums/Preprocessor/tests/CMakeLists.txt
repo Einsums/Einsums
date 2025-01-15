@@ -15,7 +15,7 @@ if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_REGRESSIONS)
     einsums_add_pseudo_target(Tests.Regressions.Modules.Preprocessor)
     einsums_add_pseudo_dependencies(
-            Tests.Regressions.Modules Tests.Regressions.Modules.Preprocessor
+      Tests.Regressions.Modules Tests.Regressions.Modules.Preprocessor
     )
     add_subdirectory(regressions)
   endif()
@@ -23,14 +23,14 @@ if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_BENCHMARKS)
     einsums_add_pseudo_target(Tests.Performance.Modules.Preprocessor)
     einsums_add_pseudo_dependencies(
-            Tests.Performance.Modules Tests.Performance.Modules.Preprocessor
+      Tests.Performance.Modules Tests.Performance.Modules.Preprocessor
     )
     add_subdirectory(performance)
   endif()
 
   if(EINSUMS_WITH_TESTS_HEADERS)
     einsums_add_header_tests(
-            Modules.Preprocessor
+      Modules.Preprocessor
       HEADERS ${PreprocessorHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       DEPENDENCIES einsums_Preprocessor

@@ -5,16 +5,16 @@
 
 set(TensorUtilitiesTests Identity)
 
-foreach (test ${TensorUtilitiesTests})
-    set(sources ${test}.cpp)
+foreach(test ${TensorUtilitiesTests})
+  set(sources ${test}.cpp)
 
-    source_group("Source Files" FILES ${sources})
+  source_group("Source Files" FILES ${sources})
 
-    einsums_add_executable(
-            ${test}_test INTERNAL_FLAGS
-            SOURCES ${sources} ${${test}_FLAGS}
-            FOLDER ${folder_name}
-    )
+  einsums_add_executable(
+    ${test}_test INTERNAL_FLAGS
+    SOURCES ${sources} ${${test}_FLAGS}
+    FOLDER ${folder_name}
+  )
 
-    einsums_add_unit_test("Modules.TensorUtilities" ${test})
-endforeach ()
+  einsums_add_unit_test("Modules.TensorUtilities" ${test})
+endforeach()

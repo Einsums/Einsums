@@ -16,7 +16,7 @@ function(einsums_add_config_test variable)
       LIBRARIES
       ARGS
       DEFINITIONS
-          REQUIRED
+      REQUIRED
   )
   cmake_parse_arguments(${variable} "${options}" "${one_value_args}" "${mutlti_value_args}" ${ARGN})
 
@@ -24,7 +24,7 @@ function(einsums_add_config_test variable)
     if(DEFINED ${variable})
       unset(${variable} CACHE)
       einsums_info(
-              "Unsetting ${variable} because of EINSUMS_WITH_CXX_STANDARD (${EINSUMS_WITH_CXX_STANDARD})"
+        "Unsetting ${variable} because of EINSUMS_WITH_CXX_STANDARD (${EINSUMS_WITH_CXX_STANDARD})"
       )
     endif()
     return()
@@ -34,13 +34,13 @@ function(einsums_add_config_test variable)
   # Check CMake feature tests if the user didn't override the value of this variable:
   if(NOT DEFINED ${variable} AND NOT ${variable}_GPU)
     if(${variable}_CMAKECXXFEATURE)
-        # We don't have to run out own feature test if there is a corresponding cmake feature test and
-        # cmake reports that the feature is available.
+      # We don't have to run out own feature test if there is a corresponding cmake feature test and
+      # cmake reports that the feature is available.
       list(FIND CMAKE_CXX_COMPILE_FEATURES ${${variable}_CMAKECXXFEATURE} _pos)
       if(NOT ${__pos} EQUAL -1)
         set(${variable}
             TRUE
-                CACHE INTERNAL ""
+            CACHE INTERNAL ""
         )
         set(_run_msg "Success (cmake feature test)")
       endif()
@@ -59,13 +59,13 @@ function(einsums_add_config_test variable)
       endif()
     else()
       if(${variable}_GPU)
-          set(test_source
-                  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/config_tests/${variable_lc}.cu"
-          )
+        set(test_source
+            "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/config_tests/${variable_lc}.cu"
+        )
       else()
-          set(test_source
-                  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/config_tests/${variable_lc}.cpp"
-          )
+        set(test_source
+            "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/config_tests/${variable_lc}.cpp"
+        )
       endif()
       file(WRITE "${test_source}" "${${variable}_SOURCE}\n")
     endif()
@@ -80,15 +80,15 @@ function(einsums_add_config_test variable)
       set(CONFIG_TEST_COMPILE_DEFINITIONS "${CONFIG_TEST_COMPILE_DEFINITIONS} -D${def}")
     endforeach()
     get_property(
-            EINSUMS_TARGET_COMPILE_OPTIONS_PUBLIC_VAR GLOBAL
-            PROPERTY EINSUMS_TARGET_COMPILE_OPTIONS_PUBLIC
+      EINSUMS_TARGET_COMPILE_OPTIONS_PUBLIC_VAR GLOBAL
+      PROPERTY EINSUMS_TARGET_COMPILE_OPTIONS_PUBLIC
     )
     get_property(
-            EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE_VAR GLOBAL
-            PROPERTY EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE
+      EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE_VAR GLOBAL
+      PROPERTY EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE
     )
     set(EINSUMS_TARGET_COMPILE_OPTIONS_VAR ${EINSUMS_TARGET_COMPILE_OPTIONS_PUBLIC_VAR}
-            ${EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE_VAR}
+                                           ${EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE_VAR}
     )
     foreach(_flag ${EINSUMS_TARGET_COMPILE_OPTIONS_VAR})
       if(NOT "${_flag}" MATCHES "^\\$.*")
@@ -188,7 +188,7 @@ function(einsums_add_config_test variable)
 
   set(${variable}
       ${${variable}_RESULT}
-          CACHE INTERNAL ""
+      CACHE INTERNAL ""
   )
   einsums_info(${_msg})
 
@@ -206,29 +206,29 @@ endfunction()
 function(einsums_cpuid target variable)
   einsums_add_config_test(
     ${variable}
-          SOURCE cmake/tests/cpuid.cpp
-          COMPILE_DEFINITIONS "${boost_include_dir}" "${include_dir}"
-          FILE EXECUTE
-          ARGS "${target}" ${ARGN}
+    SOURCE cmake/tests/cpuid.cpp
+    COMPILE_DEFINITIONS "${boost_include_dir}" "${include_dir}"
+    FILE EXECUTE
+    ARGS "${target}" ${ARGN}
   )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_unistd_h)
-    einsums_add_config_test(
-            EINSUMS_WITH_UNISTD_H
-            SOURCE cmake/tests/unistd_h.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_UNISTD_H
+    SOURCE cmake/tests/unistd_h.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_libfun_std_experimental_optional)
-    einsums_add_config_test(
-            EINSUMS_WITH_LIBFUN_EXPERIMENTAL_OPTIONAL
-            SOURCE cmake/tests/libfun_std_experimental_optional.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_LIBFUN_EXPERIMENTAL_OPTIONAL
+    SOURCE cmake/tests/libfun_std_experimental_optional.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 # ##################################################################################################
@@ -247,25 +247,25 @@ function(einsums_check_for_cxx11_std_atomic)
 
   einsums_add_config_test(
     EINSUMS_WITH_CXX11_ATOMIC
-          SOURCE cmake/tests/cxx11_std_atomic.cpp
-          LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
-          FILE ${ARGN} ${check_not_required}
+    SOURCE cmake/tests/cxx11_std_atomic.cpp
+    LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
+    FILE ${ARGN} ${check_not_required}
   )
 
   if(NOT MSVC)
-      # Sometimes linking against libatomic is required, if the platform doesn't support lock-free
-      # atomics. We already know that MSVC works
+    # Sometimes linking against libatomic is required, if the platform doesn't support lock-free
+    # atomics. We already know that MSVC works
     if(NOT EINSUMS_WITH_CXX11_ATOMIC)
       set(EINSUMS_CXX11_STD_ATOMIC_LIBRARIES
           atomic
-              CACHE STRING "std::atomics need separate library" FORCE
+          CACHE STRING "std::atomics need separate library" FORCE
       )
       unset(EINSUMS_WITH_CXX11_ATOMIC CACHE)
       einsums_add_config_test(
         EINSUMS_WITH_CXX11_ATOMIC
-              SOURCE cmake/tests/cxx11_std_atomic.cpp
-              LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
-              FILE ${ARGN} EXTRA_MSG "with -latomic"
+        SOURCE cmake/tests/cxx11_std_atomic.cpp
+        LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
+        FILE ${ARGN} EXTRA_MSG "with -latomic"
       )
       if(NOT EINSUMS_WITH_CXX11_ATOMIC)
         unset(EINSUMS_CXX11_STD_ATOMIC_LIBRARIES CACHE)
@@ -277,8 +277,8 @@ endfunction()
 
 # Separately check for 128 bit atomics
 function(einsums_check_for_cxx11_std_atomic_128bit)
-    # First see if we can build atomics with no -latomics. We make sure to override REQUIRED, if set,
-    # with NOT_REQUIRED so that we can use the fallback test further down.
+  # First see if we can build atomics with no -latomics. We make sure to override REQUIRED, if set,
+  # with NOT_REQUIRED so that we can use the fallback test further down.
   set(check_not_required)
   if(NOT MSVC)
     set(check_not_required NOT_REQUIRED)
@@ -286,25 +286,25 @@ function(einsums_check_for_cxx11_std_atomic_128bit)
 
   einsums_add_config_test(
     EINSUMS_WITH_CXX11_ATOMIC_128BIT
-          SOURCE cmake/tests/cxx11_std_atomic_128bit.cpp
-          LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
-          FILE ${ARGN} NOT_REQUIRED
+    SOURCE cmake/tests/cxx11_std_atomic_128bit.cpp
+    LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
+    FILE ${ARGN} NOT_REQUIRED
   )
 
   if(NOT MSVC)
-      # Sometimes linking against libatomic is required, if the platform doesn't support lock-free
-      # atomics. We already know that MSVC works
+    # Sometimes linking against libatomic is required, if the platform doesn't support lock-free
+    # atomics. We already know that MSVC works
     if(NOT EINSUMS_WITH_CXX11_ATOMIC_128BIT)
       set(EINSUMS_CXX11_STD_ATOMIC_LIBRARIES
           atomic
-              CACHE STRING "std::atomics need separate library" FORCE
+          CACHE STRING "std::atomics need separate library" FORCE
       )
       unset(EINSUMS_WITH_CXX11_ATOMIC_128BIT CACHE)
       einsums_add_config_test(
         EINSUMS_WITH_CXX11_ATOMIC_128BIT
-              SOURCE cmake/tests/cxx11_std_atomic_128bit.cpp
-              LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
-              FILE ${ARGN} EXTRA_MSG "with -latomic"
+        SOURCE cmake/tests/cxx11_std_atomic_128bit.cpp
+        LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
+        FILE ${ARGN} EXTRA_MSG "with -latomic"
       )
       if(NOT EINSUMS_WITH_CXX11_ATOMIC_128BIT)
         # Adding -latomic did not help, so we don't attempt to link to it later
@@ -317,91 +317,91 @@ endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx11_std_shared_ptr_lwg3018)
-    einsums_add_config_test(
-            EINSUMS_WITH_CXX11_SHARED_PTR_LWG3018
-            SOURCE cmake/tests/cxx11_std_shared_ptr_lwg3018.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_CXX11_SHARED_PTR_LWG3018
+    SOURCE cmake/tests/cxx11_std_shared_ptr_lwg3018.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_c11_aligned_alloc)
-    einsums_add_config_test(
-            EINSUMS_WITH_C11_ALIGNED_ALLOC
-            SOURCE cmake/tests/c11_aligned_alloc.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_C11_ALIGNED_ALLOC
+    SOURCE cmake/tests/c11_aligned_alloc.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 function(einsums_check_for_cxx17_std_aligned_alloc)
-    einsums_add_config_test(
-            EINSUMS_WITH_CXX17_STD_ALIGNED_ALLOC
-            SOURCE cmake/tests/cxx17_std_aligned_alloc.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_CXX17_STD_ALIGNED_ALLOC
+    SOURCE cmake/tests/cxx17_std_aligned_alloc.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx11_std_quick_exit)
-    einsums_add_config_test(
-            EINSUMS_WITH_CXX11_STD_QUICK_EXIT
-            SOURCE cmake/tests/cxx11_std_quick_exit.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_CXX11_STD_QUICK_EXIT
+    SOURCE cmake/tests/cxx11_std_quick_exit.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx17_aligned_new)
-    einsums_add_config_test(
-            EINSUMS_WITH_CXX17_ALIGNED_NEW
-            SOURCE cmake/tests/cxx17_aligned_new.cpp
-            FILE ${ARGN}
-            REQUIRED
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_CXX17_ALIGNED_NEW
+    SOURCE cmake/tests/cxx17_aligned_new.cpp
+    FILE ${ARGN}
+    REQUIRED
+  )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx17_std_transform_scan)
-    einsums_add_config_test(
-            EINSUMS_WITH_CXX17_STD_TRANSFORM_SCAN_ALGORITHMS
-            SOURCE cmake/tests/cxx17_std_transform_scan_algorithms.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_CXX17_STD_TRANSFORM_SCAN_ALGORITHMS
+    SOURCE cmake/tests/cxx17_std_transform_scan_algorithms.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx17_std_scan)
-    einsums_add_config_test(
-            EINSUMS_WITH_CXX17_STD_SCAN_ALGORITHMS
-            SOURCE cmake/tests/cxx17_std_scan_algorithms.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_CXX17_STD_SCAN_ALGORITHMS
+    SOURCE cmake/tests/cxx17_std_scan_algorithms.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx17_copy_elision)
-    einsums_add_config_test(
-            EINSUMS_WITH_CXX17_COPY_ELISION
-            SOURCE cmake/tests/cxx17_copy_elision.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_CXX17_COPY_ELISION
+    SOURCE cmake/tests/cxx17_copy_elision.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx17_memory_resource)
-    einsums_add_config_test(
-            EINSUMS_WITH_CXX17_MEMORY_RESOURCE
-            SOURCE cmake/tests/cxx17_memory_resource.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_CXX17_MEMORY_RESOURCE
+    SOURCE cmake/tests/cxx17_memory_resource.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx20_no_unique_address_attribute)
   einsums_add_config_test(
     EINSUMS_WITH_CXX20_NO_UNIQUE_ADDRESS_ATTRIBUTE
-          SOURCE cmake/tests/cxx20_no_unique_address_attribute.cpp
-          FILE ${ARGN} CHECK_CXXSTD 20
+    SOURCE cmake/tests/cxx20_no_unique_address_attribute.cpp
+    FILE ${ARGN} CHECK_CXXSTD 20
   )
 endfunction()
 
@@ -409,27 +409,27 @@ endfunction()
 function(einsums_check_for_cxx20_std_disable_sized_sentinel_for)
   einsums_add_config_test(
     EINSUMS_WITH_CXX20_STD_DISABLE_SIZED_SENTINEL_FOR
-          SOURCE cmake/tests/cxx20_std_disable_sized_sentinel_for.cpp
-          FILE ${ARGN} CHECK_CXXSTD 20
+    SOURCE cmake/tests/cxx20_std_disable_sized_sentinel_for.cpp
+    FILE ${ARGN} CHECK_CXXSTD 20
   )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx20_trivial_virtual_destructor)
-    einsums_add_config_test(
-            EINSUMS_WITH_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR
-            SOURCE cmake/tests/cxx20_trivial_virtual_destructor.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR
+    SOURCE cmake/tests/cxx20_trivial_virtual_destructor.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx23_static_call_operator)
-    einsums_add_config_test(
-            EINSUMS_WITH_CXX23_STATIC_CALL_OPERATOR
-            SOURCE cmake/tests/cxx23_static_call_operator.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_CXX23_STATIC_CALL_OPERATOR
+    SOURCE cmake/tests/cxx23_static_call_operator.cpp
+    FILE ${ARGN}
+  )
 endfunction()
 
 # ##################################################################################################
@@ -448,18 +448,18 @@ function(einsums_check_for_cxx23_static_call_operator_gpu)
     endif()
 
     einsums_add_config_test(
-            EINSUMS_WITH_CXX23_STATIC_CALL_OPERATOR_GPU
-            SOURCE cmake/tests/cxx23_static_call_operator.${static_call_operator_test_extension} GPU
-            FILE ${ARGN}
+      EINSUMS_WITH_CXX23_STATIC_CALL_OPERATOR_GPU
+      SOURCE cmake/tests/cxx23_static_call_operator.${static_call_operator_test_extension} GPU
+      FILE ${ARGN}
     )
   endif()
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx_lambda_capture_decltype)
-    einsums_add_config_test(
-            EINSUMS_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE
-            SOURCE cmake/tests/cxx_lambda_capture_decltype.cpp
-            FILE ${ARGN}
-    )
+  einsums_add_config_test(
+    EINSUMS_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE
+    SOURCE cmake/tests/cxx_lambda_capture_decltype.cpp
+    FILE ${ARGN}
+  )
 endfunction()

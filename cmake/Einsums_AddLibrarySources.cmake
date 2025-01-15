@@ -14,7 +14,7 @@ function(einsums_add_library_sources name globtype)
   if(NOT SOURCES_APPEND)
     set(${name}_SOURCES
         ""
-            CACHE INTERNAL "Sources for lib${name}." FORCE
+        CACHE INTERNAL "Sources for lib${name}." FORCE
     )
   endif()
 
@@ -30,12 +30,12 @@ function(einsums_add_library_sources name globtype)
     endif()
 
     if(add_flag)
-        einsums_debug(
-                "add_library_sources.${name}" "Adding ${absolute_path} to source list for lib${name}"
-        )
+      einsums_debug(
+        "add_library_sources.${name}" "Adding ${absolute_path} to source list for lib${name}"
+      )
       set(${name}_SOURCES
           ${${name}_SOURCES} ${absolute_path}
-              CACHE INTERNAL "Sources for lib${name}." FORCE
+          CACHE INTERNAL "Sources for lib${name}." FORCE
       )
     endif()
   endforeach()
@@ -56,7 +56,7 @@ function(einsums_add_library_sources_noglob name)
   if(NOT SOURCES_APPEND)
     set(${name}_SOURCES
         ""
-            CACHE INTERNAL "Sources for lib${name}." FORCE
+        CACHE INTERNAL "Sources for lib${name}." FORCE
     )
   endif()
 
@@ -72,12 +72,12 @@ function(einsums_add_library_sources_noglob name)
     endif()
 
     if(add_flag)
-        einsums_debug(
-                "add_library_sources.${name}" "Adding ${absolute_path} to source list for lib${name}"
-        )
+      einsums_debug(
+        "add_library_sources.${name}" "Adding ${absolute_path} to source list for lib${name}"
+      )
       set(${name}_SOURCES
           ${${name}_SOURCES} ${absolute_path}
-              CACHE INTERNAL "Sources for lib${name}." FORCE
+          CACHE INTERNAL "Sources for lib${name}." FORCE
       )
     endif()
   endforeach()

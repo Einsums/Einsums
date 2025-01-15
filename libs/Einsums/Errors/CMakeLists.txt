@@ -20,7 +20,7 @@ einsums_add_module(
   Einsums Errors
   SOURCES ${ErrorsSources}
   HEADERS ${ErrorsHeaders}
-        DEPENDENCIES ${ErrorsGPUModules}
+  DEPENDENCIES ${ErrorsGPUModules}
   MODULE_DEPENDENCIES Einsums_Config Einsums_TypeSupport
   CMAKE_SUBDIRS examples tests
 )

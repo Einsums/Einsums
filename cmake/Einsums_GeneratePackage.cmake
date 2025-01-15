@@ -8,20 +8,20 @@ include(Einsums_GeneratePackageUtils)
 
 set(CMAKE_DIR
     "cmake"
-        CACHE STRING "directory (in share), where to put FindEinsums cmake module"
+    CACHE STRING "directory (in share), where to put FindEinsums cmake module"
 )
 
 write_basic_package_version_file(
   "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${EINSUMS_PACKAGE_NAME}/EinsumsConfigVersion.cmake"
   VERSION ${EINSUMS_VERSION}
-        COMPATIBILITY AnyNewerVersion
+  COMPATIBILITY AnyNewerVersion
 )
 
 # Export einsums_internal_targets in the build directory
 export(
   TARGETS ${EINSUMS_EXPORT_INTERNAL_TARGETS}
   NAMESPACE EinsumsInternal::
-        FILE "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${EINSUMS_PACKAGE_NAME}/EinsumsInternalTargets.cmake"
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${EINSUMS_PACKAGE_NAME}/EinsumsInternalTargets.cmake"
 )
 
 # Export einsums_internal_targets in the install directory
@@ -29,14 +29,14 @@ install(
   EXPORT einsums_internal_targets
   NAMESPACE EinsumsInternal::
   FILE einsums_internal_targets.cmake
-        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_DIR}/${EINSUMS_PACKAGE_NAME}
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_DIR}/${EINSUMS_PACKAGE_NAME}
 )
 
 # Export einsums_targets in the build directory
 export(
   TARGETS ${EINSUMS_EXPORT_TARGETS}
   NAMESPACE Einsums::
-        FILE "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${EINSUMS_PACKAGE_NAME}/EinsumsTargets.cmake"
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${EINSUMS_PACKAGE_NAME}/EinsumsTargets.cmake"
 )
 
 # Add aliases with the namespace for use within einsums
@@ -54,33 +54,33 @@ install(
   NAMESPACE Einsums::
   FILE EinsumsTargets.cmake
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_DIR}/${EINSUMS_PACKAGE_NAME}
-        COMPONENT cmake
+  COMPONENT cmake
 )
 
 # Install dir
 configure_file(
-        cmake/templates/EinsumsConfig.cmake.in
-        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/EinsumsConfig.cmake" ESCAPE_QUOTES @ONLY
+  cmake/templates/EinsumsConfig.cmake.in
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/EinsumsConfig.cmake" ESCAPE_QUOTES @ONLY
 )
 # Build dir
 configure_file(
-        cmake/templates/EinsumsConfig.cmake.in
-        "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${EINSUMS_PACKAGE_NAME}/EinsumsConfig.cmake" ESCAPE_QUOTES
-        @ONLY
+  cmake/templates/EinsumsConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${EINSUMS_PACKAGE_NAME}/EinsumsConfig.cmake" ESCAPE_QUOTES
+  @ONLY
 )
 
 # Configure macros for the install dir ...
 set(EINSUMS_CMAKE_MODULE_PATH "\${CMAKE_CURRENT_LIST_DIR}")
 configure_file(
-        cmake/templates/EinsumsMacros.cmake.in
-        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/EinsumsMacros.cmake" ESCAPE_QUOTES @ONLY
+  cmake/templates/EinsumsMacros.cmake.in
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/EinsumsMacros.cmake" ESCAPE_QUOTES @ONLY
 )
 # ... and the build dir
 set(EINSUMS_CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 configure_file(
-        cmake/templates/EinsumsMacros.cmake.in
-        "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${EINSUMS_PACKAGE_NAME}/EinsumsMacros.cmake" ESCAPE_QUOTES
-        @ONLY
+  cmake/templates/EinsumsMacros.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${EINSUMS_PACKAGE_NAME}/EinsumsMacros.cmake" ESCAPE_QUOTES
+  @ONLY
 )
 
 install(
@@ -88,5 +88,5 @@ install(
         "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/EinsumsMacros.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${EINSUMS_PACKAGE_NAME}/EinsumsConfigVersion.cmake"
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_DIR}/${EINSUMS_PACKAGE_NAME}
-        COMPONENT cmake
+  COMPONENT cmake
 )

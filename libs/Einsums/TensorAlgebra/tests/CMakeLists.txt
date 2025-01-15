@@ -15,7 +15,7 @@ if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_REGRESSIONS)
     einsums_add_pseudo_target(Tests.Regressions.Modules.TensorAlgebra)
     einsums_add_pseudo_dependencies(
-            Tests.Regressions.Modules Tests.Regressions.Modules.TensorAlgebra
+      Tests.Regressions.Modules Tests.Regressions.Modules.TensorAlgebra
     )
     add_subdirectory(regressions)
   endif()
@@ -23,14 +23,14 @@ if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_BENCHMARKS)
     einsums_add_pseudo_target(Tests.Performance.Modules.TensorAlgebra)
     einsums_add_pseudo_dependencies(
-            Tests.Performance.Modules Tests.Performance.Modules.TensorAlgebra
+      Tests.Performance.Modules Tests.Performance.Modules.TensorAlgebra
     )
     add_subdirectory(performance)
   endif()
 
   if(EINSUMS_WITH_TESTS_HEADERS)
     einsums_add_header_tests(
-            Modules.TensorAlgebra
+      Modules.TensorAlgebra
       HEADERS ${TensorAlgebraHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       DEPENDENCIES einsums_TensorAlgebra

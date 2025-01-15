@@ -14,7 +14,7 @@ function(einsums_add_executable name)
       HEADER_GLOB
       OUTPUT_SUFFIX
       INSTALL_SUFFIX
-          LANGUAGE
+      LANGUAGE
   )
   set(multi_value_args SOURCES HEADERS AUXILIARY DEPENDENCIES COMPILE_FLAGS LINK_FLAGS)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
@@ -36,10 +36,10 @@ function(einsums_add_executable name)
   einsums_add_library_sources_noglob(${name}_executable SOURCES "${${name}_SOURCES}")
 
   einsums_add_source_group(
-          NAME ${name}
-          CLASS "Source Files"
-          ROOT ${${name}_SOURCE_ROOT}
-          TARGETS ${${name}_executable_SOURCES}
+    NAME ${name}
+    CLASS "Source Files"
+    ROOT ${${name}_SOURCE_ROOT}
+    TARGETS ${${name}_executable_SOURCES}
   )
 
   set(${name}_SOURCES ${${name}_executable_SOURCES})
@@ -48,7 +48,7 @@ function(einsums_add_executable name)
   einsums_print_list("DEBUG" "Add executable ${name}: Sources for ${name}" ${name}_SOURCES)
   einsums_print_list("DEBUG" "Add executable ${name}: Headers for ${name}" ${name}_HEADERS)
   einsums_print_list(
-          "DEBUG" "Add executable ${name}: Dependencies for ${name}" ${name}_DEPENDENCIES
+    "DEBUG" "Add executable ${name}: Dependencies for ${name}" ${name}_DEPENDENCIES
   )
 
   set(_target_flags)
@@ -66,13 +66,13 @@ function(einsums_add_executable name)
       set(_target_flags
           ${_target_flags}
           INSTALL_PDB
-              $<TARGET_PDB_FILE:${name}>
+          $<TARGET_PDB_FILE:${name}>
           DESTINATION
           ${install_destination}
           CONFIGURATIONS
           Debug
           RelWithDebInfo
-              OPTIONAL
+          OPTIONAL
       )
     endif()
   endif()
@@ -104,33 +104,33 @@ function(einsums_add_executable name)
   add_executable(${name} ${${name}_SOURCES} ${${name}_HEADERS} ${${name}_AUXILIARY})
 
   # Create a .dSYM file on macOS
-  if (APPLE AND dsymutil_EXECUTABLE)
+  if(APPLE AND dsymutil_EXECUTABLE)
     add_custom_command(
-            TARGET ${name}
-            POST_BUILD
-            COMMENT "Running dsymutil on: $<TARGET_FILE:${name}>"
-            VERBATIM
-            COMMAND dsymutil $<TARGET_FILE:${name}>
+      TARGET ${name}
+      POST_BUILD
+      COMMENT "Running dsymutil on: $<TARGET_FILE:${name}>"
+      VERBATIM
+      COMMAND dsymutil $<TARGET_FILE:${name}>
     )
-  endif ()
+  endif()
 
   if(${name}_OUTPUT_SUFFIX)
     if(MSVC)
       set_target_properties(
         ${name}
-              PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE
-              "${EINSUMS_WITH_BINARY_DIR}/Release/bin/${${name}_OUTPUT_SUFFIX}"
-              RUNTIME_OUTPUT_DIRECTORY_DEBUG
-              "${EINSUMS_WITH_BINARY_DIR}/Debug/bin/${${name}_OUTPUT_SUFFIX}"
+        PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE
+                   "${EINSUMS_WITH_BINARY_DIR}/Release/bin/${${name}_OUTPUT_SUFFIX}"
+                   RUNTIME_OUTPUT_DIRECTORY_DEBUG
+                   "${EINSUMS_WITH_BINARY_DIR}/Debug/bin/${${name}_OUTPUT_SUFFIX}"
                    RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL
                    "${EINSUMS_WITH_BINARY_DIR}/MinSizeRel/bin/${${name}_OUTPUT_SUFFIX}"
                    RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO
-              "${EINSUMS_WITH_BINARY_DIR}/RelWithDebInfo/bin/${${name}_OUTPUT_SUFFIX}"
+                   "${EINSUMS_WITH_BINARY_DIR}/RelWithDebInfo/bin/${${name}_OUTPUT_SUFFIX}"
       )
     else()
       set_target_properties(
-              ${name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-              "${EINSUMS_WITH_BINARY_DIR}/bin/${${name}_OUTPUT_SUFFIX}"
+        ${name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+                           "${EINSUMS_WITH_BINARY_DIR}/bin/${${name}_OUTPUT_SUFFIX}"
       )
     endif()
   endif()
@@ -173,6 +173,6 @@ function(einsums_add_executable name)
     FOLDER ${${name}_FOLDER}
     COMPILE_FLAGS ${${name}_COMPILE_FLAGS}
     LINK_FLAGS ${${name}_LINK_FLAGS}
-          DEPENDENCIES ${${name}_DEPENDENCIES} ${_target_flags}
+    DEPENDENCIES ${${name}_DEPENDENCIES} ${_target_flags}
   )
 endfunction()

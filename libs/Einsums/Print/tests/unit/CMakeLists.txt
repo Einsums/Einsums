@@ -5,16 +5,16 @@
 
 set(PrintTests OrdinalTest)
 
-foreach (test ${PrintTests})
-    set(sources ${test}.cpp)
+foreach(test ${PrintTests})
+  set(sources ${test}.cpp)
 
-    source_group("Source Files" FILES ${sources})
+  source_group("Source Files" FILES ${sources})
 
-    einsums_add_executable(
-            ${test}_test INTERNAL_FLAGS
-            SOURCES ${sources} ${${test}_FLAGS}
-            FOLDER ${folder_name}
-    )
+  einsums_add_executable(
+    ${test}_test INTERNAL_FLAGS
+    SOURCES ${sources} ${${test}_FLAGS}
+    FOLDER ${folder_name}
+  )
 
-    einsums_add_unit_test("Modules.Print" ${test})
-endforeach ()
+  einsums_add_unit_test("Modules.Print" ${test})
+endforeach()

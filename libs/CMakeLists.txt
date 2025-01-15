@@ -51,11 +51,11 @@ set(CONFIG_STRINGS_MODULES_ENTRIES)
 
 # List of sub-directories to work through
 set(EINSUMS_LIBS
-        Einsums EinsumsExperimental
-        CACHE INTERNAL "List of Einsums libraries" FORCE
+    Einsums EinsumsExperimental
+    CACHE INTERNAL "List of Einsums libraries" FORCE
 )
 
-foreach (lib ${EINSUMS_LIBS})
+foreach(lib ${EINSUMS_LIBS})
   add_library(${lib} SHARED src/dummy.cpp)
 
   # Add underscores before uppercase letters, except the first one
@@ -68,32 +68,32 @@ foreach (lib ${EINSUMS_LIBS})
 
   target_compile_definitions(${lib} PRIVATE ${MACRO_LIB_NAME}_EXPORTS)
 
-  if (UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
+  if(UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
     target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
-  endif ()
+  endif()
 
-  if (EINSUMS_HAVE_BACKTRACES)
-    # Copy the cpptrace.dll on windows to the same directory as the executable for your_target.
-    # Not required if static linking.
-    if (WIN32)
+  if(EINSUMS_HAVE_BACKTRACES)
+    # Copy the cpptrace.dll on windows to the same directory as the executable for your_target. Not
+    # required if static linking.
+    if(WIN32)
       add_custom_command(
-              TARGET ${lib} POST_BUILD
-              COMMAND ${CMAKE_COMMAND} -E copy_if_different
-              $<TARGET_FILE:cpptrace::cpptrace>
-              $<TARGET_FILE_DIR:${lib}>
+        TARGET ${lib}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:cpptrace::cpptrace>
+                $<TARGET_FILE_DIR:${lib}>
       )
-    endif ()
+    endif()
 
     # Create a .dSYM file on macOS
-    if (APPLE AND dsymutil_EXECUTABLE)
+    if(APPLE AND dsymutil_EXECUTABLE)
       add_custom_command(
-              TARGET ${lib}
-              POST_BUILD
-              COMMENT "Calling dsymutil on $<TARGET_FILE:${lib}>"
-              COMMAND dsymutil $<TARGET_FILE:${lib}>
+        TARGET ${lib}
+        POST_BUILD
+        COMMENT "Calling dsymutil on $<TARGET_FILE:${lib}>"
+        COMMAND dsymutil $<TARGET_FILE:${lib}>
       )
-    endif ()
-  endif ()
+    endif()
+  endif()
 
   set_target_properties(
     ${lib}
@@ -101,14 +101,14 @@ foreach (lib ${EINSUMS_LIBS})
                SOVERSION ${EINSUMS_SOVERSION}
                CLEAN_DIRECT_OUTPUT 1
                OUTPUT_NAME ${lib}
-          FOLDER "Core"
+               FOLDER "Core"
   )
   install(
     TARGETS ${lib}
     EXPORT einsums_targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-          RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${lib}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${lib}
   )
   einsums_export_targets(${lib})
 
@@ -116,8 +116,8 @@ foreach (lib ${EINSUMS_LIBS})
 endforeach()
 
 set(PYTHON_LIBS
-        EinsumsPy
-        CACHE INTERNAL "List of Python libraries for Einsums" FORCE
+    EinsumsPy
+    CACHE INTERNAL "List of Python libraries for Einsums" FORCE
 )
 
 if(APPLE)
@@ -129,34 +129,34 @@ endif()
 if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
   include(Einsums_ExtendWithPython)
 
-  if (EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
+  if(EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
     find_package(
-            Python "${EINSUMS_BUILD_PYTHON}" EXACT
-            COMPONENTS Interpreter Development NumPy
-            REQUIRED
+      Python "${EINSUMS_BUILD_PYTHON}" EXACT
+      COMPONENTS Interpreter Development NumPy
+      REQUIRED
     )
-  else ()
+  else()
     find_package(
-            Python 3.10
-            COMPONENTS Interpreter Development NumPy
-            REQUIRED
+      Python 3.10
+      COMPONENTS Interpreter Development NumPy
+      REQUIRED
     )
-  endif ()
+  endif()
 
   include(Einsums_SetupPybind11)
 
   find_package(pybind11)
 
-  foreach (lib ${PYTHON_LIBS})
+  foreach(lib ${PYTHON_LIBS})
     set(EINSUMS_PYTHON_LIB_NAME ${lib})
     add_library(${lib} SHARED src/dummy.cpp)
     set_target_properties(
       ${lib}
       PROPERTIES VERSION ${EINSUMS_VERSION}
-            SOVERSION ${EINSUMS_SOVERSION}
-            CLEAN_DIRECT_OUTPUT 1
-            OUTPUT_NAME ${lib}
-            FOLDER "Core"
+                 SOVERSION ${EINSUMS_SOVERSION}
+                 CLEAN_DIRECT_OUTPUT 1
+                 OUTPUT_NAME ${lib}
+                 FOLDER "Core"
     )
 
     einsums_extend_with_python(${lib})
@@ -166,7 +166,7 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
       EXPORT einsums_targets
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/einsums
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/einsums
-            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/einsums COMPONENT ${lib}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/einsums COMPONENT ${lib}
     )
     einsums_export_targets(${lib})
 
@@ -179,13 +179,13 @@ foreach(module ${EINSUMS_ENABLED_MODULES})
   string(TOUPPER ${module} uppercase_module)
 
   set(MODULE_ENABLED_MODULE_DEFINES
-          "${MODULE_ENABLED_MODULE_DEFINES}#define EINSUMS_HAVE_MODULE_${uppercase_module}\n"
+      "${MODULE_ENABLED_MODULE_DEFINES}#define EINSUMS_HAVE_MODULE_${uppercase_module}\n"
   )
 endforeach()
 
 configure_file(
-        "${PROJECT_SOURCE_DIR}/cmake/templates/ModulesEnabled.hpp.in"
-        "${PROJECT_BINARY_DIR}/libs/Einsums/Config/include/Einsums/Config/ModulesEnabled.hpp" @ONLY
+  "${PROJECT_SOURCE_DIR}/cmake/templates/ModulesEnabled.hpp.in"
+  "${PROJECT_BINARY_DIR}/libs/Einsums/Config/include/Einsums/Config/ModulesEnabled.hpp" @ONLY
 )
 
 if(EINSUMS_WITH_ITTNOTIFY)

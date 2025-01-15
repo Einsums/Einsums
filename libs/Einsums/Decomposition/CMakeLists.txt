@@ -11,18 +11,18 @@ set(DecompositionSources)
 
 include(Einsums_AddModule)
 einsums_add_module(
-        Einsums Decomposition
-        SOURCES ${DecompositionSources}
-        HEADERS ${DecompositionHeaders}
-        DEPENDENCIES
-        MODULE_DEPENDENCIES
-        Einsums_Config
-        Einsums_LinearAlgebra
-        Einsums_Concepts
-        Einsums_Errors
-        Einsums_Print
-        Einsums_Profile
-        Einsums_Tensor
-        Einsums_TensorUtilities
-        CMAKE_SUBDIRS examples tests
+  Einsums Decomposition
+  SOURCES ${DecompositionSources}
+  HEADERS ${DecompositionHeaders}
+  DEPENDENCIES
+  MODULE_DEPENDENCIES
+    Einsums_Config
+    Einsums_LinearAlgebra
+    Einsums_Concepts
+    Einsums_Errors
+    Einsums_Print
+    Einsums_Profile
+    Einsums_Tensor
+    Einsums_TensorUtilities
+  CMAKE_SUBDIRS examples tests
 )

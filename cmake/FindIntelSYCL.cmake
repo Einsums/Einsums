@@ -30,36 +30,36 @@ get_filename_component(INTEL_SYCL_BINARY_DIR ${CMAKE_CXX_COMPILER} PATH)
 
 # Try to find Intel SYCL version.hpp header
 find_path(
-        INTEL_SYCL_INCLUDE_DIRS
-        NAMES CL/sycl/version.hpp
-        PATHS ${sycl_root_hints} "${INTEL_SYCL_BINARY_DIR}/.."
-        PATH_SUFFIXES include include/sycl "${sycl_headers}"
-        NO_DEFAULT_PATH
+  INTEL_SYCL_INCLUDE_DIRS
+  NAMES CL/sycl/version.hpp
+  PATHS ${sycl_root_hints} "${INTEL_SYCL_BINARY_DIR}/.."
+  PATH_SUFFIXES include include/sycl "${sycl_headers}"
+  NO_DEFAULT_PATH
 )
 
 find_library(
-        INTEL_SYCL_LIBRARIES
-        NAMES "sycl"
-        PATHS ${sycl_root_hints} "${INTEL_SYCL_BINARY_DIR}/.."
-        PATH_SUFFIXES lib
-        NO_DEFAULT_PATH
+  INTEL_SYCL_LIBRARIES
+  NAMES "sycl"
+  PATHS ${sycl_root_hints} "${INTEL_SYCL_BINARY_DIR}/.."
+  PATH_SUFFIXES lib
+  NO_DEFAULT_PATH
 )
 
 find_package_handle_standard_args(
-        IntelSYCL
-        FOUND_VAR IntelSYCL_FOUND
-        REQUIRED_VARS INTEL_SYCL_LIBRARIES INTEL_SYCL_INCLUDE_DIRS INTEL_SYCL_SUPPORTED
+  IntelSYCL
+  FOUND_VAR IntelSYCL_FOUND
+  REQUIRED_VARS INTEL_SYCL_LIBRARIES INTEL_SYCL_INCLUDE_DIRS INTEL_SYCL_SUPPORTED
 )
 
 if(IntelSYCL_FOUND AND NOT TARGET intelsycl)
-    add_library(intelsycl INTERFACE)
-    target_include_directories(intelsycl INTERFACE ${INTEL_SYCL_INCLUDE_DIRS})
-    target_compile_options(intelsycl INTERFACE "-fsycl")
-    target_link_libraries(intelsycl INTERFACE mkl_sycl ${INTEL_SYCL_LIBRARIES})
-    add_library(Intel::SYCL ALIAS intelsycl)
-    # set(imp_libs $<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,SHARED_LIBRARY>:-fsycl>
-    # ${COMPUTE_BACKEND_NAME}) set_target_properties(Intel::SYCL PROPERTIES INTERFACE_COMPILE_OPTIONS
-    # "-fsycl" INTERFACE_LINK_LIBRARIES "${imp_libs}" INTERFACE_INCLUDE_DIRECTORIES
-    # "${INTEL_SYCL_INCLUDE_DIRS}" IMPORTED_LOCATION "${INTEL_SYCL_LIBRARIES}") set(INTEL_SYCL_FLAGS
-    # "-fsycl") mark_as_advanced( INTEL_SYCL_FLAGS INTEL_SYCL_LIBRARIES INTEL_SYCL_INCLUDE_DIRS)
+  add_library(intelsycl INTERFACE)
+  target_include_directories(intelsycl INTERFACE ${INTEL_SYCL_INCLUDE_DIRS})
+  target_compile_options(intelsycl INTERFACE "-fsycl")
+  target_link_libraries(intelsycl INTERFACE mkl_sycl ${INTEL_SYCL_LIBRARIES})
+  add_library(Intel::SYCL ALIAS intelsycl)
+  # set(imp_libs $<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,SHARED_LIBRARY>:-fsycl>
+  # ${COMPUTE_BACKEND_NAME}) set_target_properties(Intel::SYCL PROPERTIES INTERFACE_COMPILE_OPTIONS
+  # "-fsycl" INTERFACE_LINK_LIBRARIES "${imp_libs}" INTERFACE_INCLUDE_DIRECTORIES
+  # "${INTEL_SYCL_INCLUDE_DIRS}" IMPORTED_LOCATION "${INTEL_SYCL_LIBRARIES}") set(INTEL_SYCL_FLAGS
+  # "-fsycl") mark_as_advanced( INTEL_SYCL_FLAGS INTEL_SYCL_LIBRARIES INTEL_SYCL_INCLUDE_DIRS)
 endif()

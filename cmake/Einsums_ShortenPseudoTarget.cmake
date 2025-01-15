@@ -14,13 +14,13 @@ function(einsums_shorten_pseudo_target target shortened_target)
     endforeach()
     set(${shortened_target}
         ${args}
-            PARENT_SCOPE
+        PARENT_SCOPE
     )
     einsums_debug("einsums_shorten_pseudo_target" "shortened pseudo target: ${${shortened_target}}")
   else()
     set(${shortened_target}
         ${target}
-            PARENT_SCOPE
+        PARENT_SCOPE
     )
   endif()
 endfunction()

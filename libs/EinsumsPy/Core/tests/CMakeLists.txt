@@ -26,7 +26,7 @@ if(EINSUMS_WITH_TESTS)
 
   if(EINSUMS_WITH_TESTS_HEADERS)
     einsums_add_header_tests(
-            Modules.${EINSUMS_PYTHON_LIB_NAME}.Core
+      Modules.${EINSUMS_PYTHON_LIB_NAME}.Core
       HEADERS ${CoreHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       DEPENDENCIES ${EINSUMS_PYTHON_LIB_NAME}_Core pybind11::embed

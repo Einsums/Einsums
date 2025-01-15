@@ -26,7 +26,7 @@ target_compile_definitions(
   einsums_private_flags
   INTERFACE $<$<CONFIG:MinSizeRel>:NDEBUG>
   INTERFACE $<$<CONFIG:Release>:NDEBUG>
-        INTERFACE $<$<CONFIG:RelWithDebInfo>:NDEBUG>
+  INTERFACE $<$<CONFIG:RelWithDebInfo>:NDEBUG>
 )
 
 # Remaining flags are set through the macros in cmake/einsums_add_compile_flag.cmake
@@ -38,14 +38,14 @@ install(
   EXPORT einsums_internal_targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT einsums_private_flags
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT einsums_private_flags
 )
 install(
   TARGETS einsums_public_flags
   EXPORT einsums_internal_targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT einsums_public_flags
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT einsums_public_flags
 )
 einsums_export_internal_targets(einsums_private_flags)
 einsums_export_internal_targets(einsums_public_flags)

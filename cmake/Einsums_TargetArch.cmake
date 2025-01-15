@@ -67,17 +67,17 @@ set(archdetect_cpp_code
 
 function(einsums_target_architecture output_var)
   if(APPLE AND CMAKE_OSX_ARCHITECTURES)
-      # On OS X we use CMAKE_OSX_ARCHITECTURES *if* it was set First let's normalize the order of the
-      # values
+    # On OS X we use CMAKE_OSX_ARCHITECTURES *if* it was set First let's normalize the order of the
+    # values
 
-      # Note that it's not possible to compile PowerPC applications if you are using the OS X SDK
-      # version 10.6 or later - you'll need 10.4/10.5 for that, so we disable it by default See this
-      # page for more information:
+    # Note that it's not possible to compile PowerPC applications if you are using the OS X SDK
+    # version 10.6 or later - you'll need 10.4/10.5 for that, so we disable it by default See this
+    # page for more information:
     # http://stackoverflow.com/questions/5333490/how-can-we-restore-ppc-ppc64-as-well-as-full-10-4-10-5-sdk-support-to-xcode-4
 
-      # Architecture defaults to i386 or ppc on OS X 10.5 and earlier, depending on the CPU type
-      # detected at runtime. On OS X 10.6+ the default is x86_64 if the CPU supports it, i386
-      # otherwise.
+    # Architecture defaults to i386 or ppc on OS X 10.5 and earlier, depending on the CPU type
+    # detected at runtime. On OS X 10.6+ the default is x86_64 if the CPU supports it, i386
+    # otherwise.
 
     foreach(osx_arch ${CMAKE_OSX_ARCHITECTURES})
       if("${osx_arch}" STREQUAL "ppc" AND ppc_support)
@@ -127,10 +127,10 @@ function(einsums_target_architecture output_var)
       # correct target architecture even when cross-compiling, since the program itself never needs
       # to be run (only the compiler/preprocessor)
       try_run(
-              run_result_unused compile_result_unused "${PROJECT_BINARY_DIR}"
-              "${PROJECT_BINARY_DIR}/arch.cpp"
+        run_result_unused compile_result_unused "${PROJECT_BINARY_DIR}"
+        "${PROJECT_BINARY_DIR}/arch.cpp"
         COMPILE_OUTPUT_VARIABLE ARCH
-              CMAKE_FLAGS CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+        CMAKE_FLAGS CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
       )
 
       # Parse the architecture name from the compiler output
@@ -147,7 +147,7 @@ function(einsums_target_architecture output_var)
       endif()
       set(EINSUMS_INTERNAL_ARCH_DETECT
           ${ARCH}
-              CACHE INTERNAL ""
+          CACHE INTERNAL ""
       )
     else()
       set(ARCH ${EINSUMS_INTERNAL_ARCH_DETECT})
@@ -156,6 +156,6 @@ function(einsums_target_architecture output_var)
 
   set(${output_var}
       "${ARCH}"
-          PARENT_SCOPE
+      PARENT_SCOPE
   )
 endfunction()

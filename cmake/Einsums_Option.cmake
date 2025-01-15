@@ -13,12 +13,12 @@ macro(einsums_option option type description default)
   set(one_value_args CATEGORY DEPENDS)
   set(multi_value_args STRINGS)
   cmake_parse_arguments(
-          EINSUMS_OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
+    EINSUMS_OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
 
   if("${type}" STREQUAL "BOOL")
     # Use regular CMake options for booleans
-    if (NOT EINSUMS_OPTION_DEPENDS)
+    if(NOT EINSUMS_OPTION_DEPENDS)
       option(${option} "${description}" ${default})
     else()
       cmake_dependent_option(${option} "${description}" ${default} "${EINSUMS_OPTION_DEPENDS}" OFF)
@@ -31,19 +31,19 @@ macro(einsums_option option type description default)
     if(NOT DEFINED ${option})
       set(${option}
           ${default}
-              CACHE ${type} "${description}" FORCE
+          CACHE ${type} "${description}" FORCE
       )
     else()
       get_property(
         _option_is_cache_property
         CACHE "${option}"
         PROPERTY TYPE
-              SET
+        SET
       )
       if(NOT _option_is_cache_property)
         set(${option}
             ${default}
-                CACHE ${type} "${description}" FORCE
+            CACHE ${type} "${description}" FORCE
         )
         if(EINSUMS_OPTION_ADVANCED)
           mark_as_advanced(${option})
@@ -75,6 +75,6 @@ macro(einsums_option option type description default)
   endif()
   set(${option}Category
       ${_category}
-          CACHE INTERNAL ""
+      CACHE INTERNAL ""
   )
 endmacro()

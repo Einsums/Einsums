@@ -5,16 +5,16 @@
 
 set(TensorTests TensorView)
 
-foreach (test ${TensorTests})
-    set(sources ${test}.cpp)
+foreach(test ${TensorTests})
+  set(sources ${test}.cpp)
 
-    source_group("Source Files" FILES ${sources})
+  source_group("Source Files" FILES ${sources})
 
-    einsums_add_executable(
-            ${test}_test INTERNAL_FLAGS
-            SOURCES ${sources} ${${test}_FLAGS}
-            FOLDER ${folder_name}
-    )
+  einsums_add_executable(
+    ${test}_test INTERNAL_FLAGS
+    SOURCES ${sources} ${${test}_FLAGS}
+    FOLDER ${folder_name}
+  )
 
-    einsums_add_unit_test("Modules.Tensor" ${test})
-endforeach ()
+  einsums_add_unit_test("Modules.Tensor" ${test})
+endforeach()

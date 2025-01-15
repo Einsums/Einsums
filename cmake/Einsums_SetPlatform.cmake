@@ -9,14 +9,14 @@ set(EINSUMS_PLATFORMS_UC "NATIVE")
 if(NOT EINSUMS_PLATFORM)
   set(EINSUMS_PLATFORM
       "native"
-          CACHE STRING
-          "Sets special compilation flags for specific platforms. ${EINSUMS_PLATFORM_CHOICES}"
+      CACHE STRING
+            "Sets special compilation flags for specific platforms. ${EINSUMS_PLATFORM_CHOICES}"
   )
 else()
   set(EINSUMS_PLATFORM
       "${EINSUMS_PLATFORM}"
-          CACHE STRING
-          "Sets special compilation flags for specific platforms. ${EINSUMS_PLATFORM_CHOICES}"
+      CACHE STRING
+            "Sets special compilation flags for specific platforms. ${EINSUMS_PLATFORM_CHOICES}"
   )
 endif()
 
@@ -25,9 +25,9 @@ if(NOT EINSUMS_PLATFORM STREQUAL "")
 else()
   set(EINSUMS_PLATFORM
       "native"
-          CACHE STRING
-          "Sets special compilation flags for specific platforms. ${EINSUMS_PLATFORM_CHOICES}"
-          FORCE
+      CACHE STRING
+            "Sets special compilation flags for specific platforms. ${EINSUMS_PLATFORM_CHOICES}"
+            FORCE
   )
   set(EINSUMS_PLATFORM_UC "NATIVE")
 endif()

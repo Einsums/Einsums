@@ -139,9 +139,9 @@ set(DEFAULT_MALLOC "system")
 einsums_option(
   EINSUMS_WITH_MALLOC
   STRING
-        "Define which allocator should be linked in. Options are: system and mimalloc. (default: ${DEFAULT_MALLOC})"
+  "Define which allocator should be linked in. Options are: system and mimalloc. (default: ${DEFAULT_MALLOC})"
   ${DEFAULT_MALLOC}
-        STRINGS "system;mimalloc"
+  STRINGS "system;mimalloc"
 )
 
 # Compiler related build options
@@ -161,28 +161,28 @@ einsums_option(
 )
 
 einsums_option(
-        EINSUMS_WITH_DOCUMENTATION BOOL "Build the Einsums documentation (default OFF)." OFF
-        CATEGORY "Build Targets"
+  EINSUMS_WITH_DOCUMENTATION BOOL "Build the Einsums documentation (default OFF)." OFF
+  CATEGORY "Build Targets"
 )
 
-if (EINSUMS_WITH_DOCUMENTATION)
+if(EINSUMS_WITH_DOCUMENTATION)
   set(valid_output_formats html)
   einsums_option(
-          EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS
-          STRING
-          "List of documentation output formats to generate. Valid options are ${valid_output_formats}. Multiple values can be separated with semicolons. (default html)."
-          "html"
-          CATEGORY "Build Targets"
+    EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS
+    STRING
+    "List of documentation output formats to generate. Valid options are ${valid_output_formats}. Multiple values can be separated with semicolons. (default html)."
+    "html"
+    CATEGORY "Build Targets"
   )
 
-  foreach (output_format ${EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS})
-    if (NOT ${output_format} IN_LIST valid_output_formats)
+  foreach(output_format ${EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS})
+    if(NOT ${output_format} IN_LIST valid_output_formats)
       einsums_error(
-              "${output_format} is not a valid value for EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS. Valid output format are: ${valid_output_formats}."
+        "${output_format} is not a valid value for EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS. Valid output format are: ${valid_output_formats}."
       )
-    endif ()
-  endforeach ()
-endif ()
+    endif()
+  endforeach()
+endif()
 
 einsums_option(
   EINSUMS_WITH_BINARY_DIR
@@ -232,7 +232,7 @@ endif()
 
 # ##################################################################################################
 einsums_option(
-        EINSUMS_WITH_EXAMPLES BOOL "Build examples (default: ON)" ON CATEGORY "Build Targets"
+  EINSUMS_WITH_EXAMPLES BOOL "Build examples (default: ON)" ON CATEGORY "Build Targets"
 )
 einsums_option(EINSUMS_WITH_TESTS BOOL "Build tests (default: ON)" ON CATEGORY "Build Targets")
 einsums_option(
@@ -358,7 +358,7 @@ einsums_option(
 )
 
 einsums_option(
-        EINSUMS_WITH_BACKTRACES BOOL "Attach backtraces to einsums exceptions (default: ON)" ON
+  EINSUMS_WITH_BACKTRACES BOOL "Attach backtraces to einsums exceptions (default: ON)" ON
   CATEGORY "Errors"
   ADVANCED
 )
@@ -371,24 +371,24 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   target_link_libraries(einsums_base_libraries INTERFACE imf svml irng intlc)
 endif()
 
-if (EINSUMS_WITH_BACKTRACES)
+if(EINSUMS_WITH_BACKTRACES)
   einsums_info("Back traces are enabled.")
   einsums_add_config_define(EINSUMS_HAVE_BACKTRACES)
   include(Einsums_SetupCppTrace)
 
   einsums_option(
-          EINSUMS_WITH_THREAD_BACKTRACE_DEPTH STRING
-          "Thread stack back trace depth being captured (default: 20)" "20"
-          CATEGORY "Thread Manager"
-          ADVANCED
+    EINSUMS_WITH_THREAD_BACKTRACE_DEPTH STRING
+    "Thread stack back trace depth being captured (default: 20)" "20"
+    CATEGORY "Thread Manager"
+    ADVANCED
   )
   einsums_add_config_define(
-          EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH ${EINSUMS_WITH_THREAD_BACKTRACE_DEPTH}
+    EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH ${EINSUMS_WITH_THREAD_BACKTRACE_DEPTH}
   )
 
-  if (APPLE)
+  if(APPLE)
     find_program(dsymutil_EXECUTABLE NAMES dsymutil)
-  endif ()
+  endif()
 
 endif()
 
@@ -433,8 +433,8 @@ einsums_option(
 )
 
 einsums_option(
-        EINSUMS_BUILD_PYTHON
-        STRING
+  EINSUMS_BUILD_PYTHON
+  STRING
   "Build the Python module. A version for the Python build may be specified, or the value may be set to 'ON' for your current Python interpreter.
   Disable by specifying 'OFF'. Defaults to 'ON'."
   ON
@@ -500,22 +500,22 @@ else()
 endif(NOT WIN32)
 
 # Add exception handling flags based on the compiler and platform
-if (MSVC)
+if(MSVC)
   # For MSVC, use /EHsc or /EHa depending on the level of SEH required
   add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/EHsc>)
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # For Clang and ClangCL
-  if (WIN32)
+  if(WIN32)
     # ClangCL on Windows
     add_compile_options(-fcxx-exceptions -fseh-exceptions)
-  else ()
+  else()
     # Clang on macOS/Linux
     add_compile_options(-fcxx-exceptions)
-  endif ()
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   # For GCC (Linux/macOS)
   add_compile_options(-fexceptions)
-endif ()
+endif()
 
 # Configure Warnings
 if(EINSUMS_WITH_COMPILER_WARNINGS)
@@ -705,7 +705,7 @@ include(Einsums_SetupSpdlog)
 include(Einsums_SetupAllocator)
 # include(Einsums_SetupCppTrace)
 
-if(EINSUMS_USE_LIBRETT AND EINSUMS_WITH_GPU_SUPPORT) 
+if(EINSUMS_USE_LIBRETT AND EINSUMS_WITH_GPU_SUPPORT)
   include(Einsums_SetupLibreTT)
 endif()
 
@@ -787,9 +787,9 @@ add_subdirectory(einsums)
 # ##################################################################################################
 include(Einsums_Documentation)
 
-if (EINSUMS_WITH_DOCUMENTATION)
+if(EINSUMS_WITH_DOCUMENTATION)
   add_subdirectory(docs)
-endif ()
+endif()
 
 # ##################################################################################################
 # installation instructions

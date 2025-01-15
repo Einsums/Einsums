@@ -13,4 +13,4 @@ fetchcontent_declare(
   FIND_PACKAGE_ARGS 2.13
 )
 
-FetchContent_MakeAvailable(pybind11)
+fetchcontent_makeavailable(pybind11)

@@ -17,7 +17,7 @@ function(einsums_to_string var)
 
   set(${var}
       ${_var}
-          PARENT_SCOPE
+      PARENT_SCOPE
   )
 endfunction()
 
@@ -66,36 +66,36 @@ endfunction()
 function(einsums_config_loglevel level return)
   set(${return}
       FALSE
-          PARENT_SCOPE
+      PARENT_SCOPE
   )
 
-  if ("${EINSUMS_CMAKE_LOGLEVEL}" MATCHES "ERROR|error|Error" AND "${level}" MATCHES
-          "ERROR|error|Error"
+  if("${EINSUMS_CMAKE_LOGLEVEL}" MATCHES "ERROR|error|Error" AND "${level}" MATCHES
+                                                                 "ERROR|error|Error"
   )
     set(${return}
         TRUE
-            PARENT_SCOPE
+        PARENT_SCOPE
     )
-  elseif ("${EINSUMS_CMAKE_LOGLEVEL}" MATCHES "WARN|warn|Warn" AND "${level}" MATCHES
-          "WARN|warn|Warn"
+  elseif("${EINSUMS_CMAKE_LOGLEVEL}" MATCHES "WARN|warn|Warn" AND "${level}" MATCHES
+                                                                  "WARN|warn|Warn"
   )
     set(${return}
         TRUE
-            PARENT_SCOPE
+        PARENT_SCOPE
     )
-  elseif ("${EINSUMS_CMAKE_LOGLEVEL}" MATCHES "DEBUG|debug|Debug" AND "${level}" MATCHES
-          "DEBUG|debug|Debug"
+  elseif("${EINSUMS_CMAKE_LOGLEVEL}" MATCHES "DEBUG|debug|Debug" AND "${level}" MATCHES
+                                                                     "DEBUG|debug|Debug"
   )
     set(${return}
         TRUE
-            PARENT_SCOPE
+        PARENT_SCOPE
     )
-  elseif ("${EINSUMS_CMAKE_LOGLEVEL}" MATCHES "INFO|info|Info" AND "${level}" MATCHES
-          "INFO|info|Info"
+  elseif("${EINSUMS_CMAKE_LOGLEVEL}" MATCHES "INFO|info|Info" AND "${level}" MATCHES
+                                                                  "INFO|info|Info"
   )
     set(${return}
         TRUE
-            PARENT_SCOPE
+        PARENT_SCOPE
     )
   endif()
 endfunction()

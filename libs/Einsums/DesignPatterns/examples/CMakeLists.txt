@@ -9,7 +9,7 @@ if(EINSUMS_WITH_EXAMPLES)
   if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
     einsums_add_pseudo_target(Tests.Examples.Modules.Einsums.DesignPatterns)
     einsums_add_pseudo_dependencies(
-            Tests.Examples.Modules Tests.Examples.Modules.Einsums.DesignPatterns
+      Tests.Examples.Modules Tests.Examples.Modules.Einsums.DesignPatterns
     )
   endif()
 endif()

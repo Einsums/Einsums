@@ -13,7 +13,10 @@ function(add_command NAME)
       set(_args "${_args} ${_arg}")
     endif()
   endforeach()
-  set(script "${script}${NAME}(${_args})\n" PARENT_SCOPE)
+  set(script
+      "${script}${NAME}(${_args})\n"
+      PARENT_SCOPE
+  )
 endfunction()
 
 function(catch_discover_tests_impl)
@@ -50,9 +53,7 @@ function(catch_discover_tests_impl)
 
   # Run test executable to get list of available tests
   if(NOT EXISTS "${_TEST_EXECUTABLE}")
-    message(FATAL_ERROR
-      "Specified test executable '${_TEST_EXECUTABLE}' does not exist"
-    )
+    message(FATAL_ERROR "Specified test executable '${_TEST_EXECUTABLE}' does not exist")
   endif()
 
   if(dl_paths)
@@ -67,16 +68,14 @@ function(catch_discover_tests_impl)
     WORKING_DIRECTORY "${_TEST_WORKING_DIR}"
   )
   if(NOT ${result} EQUAL 0)
-    message(FATAL_ERROR
-      "Error running test executable '${_TEST_EXECUTABLE}':\n"
-      "  Result: ${result}\n"
-      "  Output: ${output}\n"
+    message(FATAL_ERROR "Error running test executable '${_TEST_EXECUTABLE}':\n"
+                        "  Result: ${result}\n" "  Output: ${output}\n"
     )
   endif()
 
-  # Make sure to escape ; (semicolons) in test names first, because
-  # that'd break the foreach loop for "Parse output" later and create
-  # wrongly splitted and thus failing test cases (false positives)
+  # Make sure to escape ; (semicolons) in test names first, because that'd break the foreach loop
+  # for "Parse output" later and create wrongly splitted and thus failing test cases (false
+  # positives)
   string(REPLACE ";" "\;" output "${output}")
   string(REPLACE "\n" ";" output "${output}")
 
@@ -84,9 +83,9 @@ function(catch_discover_tests_impl)
   if(reporter)
     set(reporter_arg "--reporter ${reporter}")
 
-    # Run test executable to check whether reporter is available
-    # note that the use of --list-reporters is not the important part,
-    # we only want to check whether the execution succeeds with ${reporter_arg}
+    # Run test executable to check whether reporter is available note that the use of
+    # --list-reporters is not the important part, we only want to check whether the execution
+    # succeeds with ${reporter_arg}
     execute_process(
       COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" ${spec} ${reporter_arg} --list-reporters
       OUTPUT_VARIABLE reporter_check_output
@@ -94,14 +93,11 @@ function(catch_discover_tests_impl)
       WORKING_DIRECTORY "${TEST_WORKING_DIR}"
     )
     if(${reporter_check_result} EQUAL 255)
-      message(FATAL_ERROR
-        "\"${reporter}\" is not a valid reporter!\n"
-      )
+      message(FATAL_ERROR "\"${reporter}\" is not a valid reporter!\n")
     elseif(NOT ${reporter_check_result} EQUAL 0)
-      message(FATAL_ERROR
-        "Error running test executable '${TEST_EXECUTABLE}':\n"
-        "  Result: ${reporter_check_result}\n"
-        "  Output: ${reporter_check_output}\n"
+      message(
+        FATAL_ERROR "Error running test executable '${TEST_EXECUTABLE}':\n"
+                    "  Result: ${reporter_check_result}\n" "  Output: ${reporter_check_output}\n"
       )
     endif()
   endif()
@@ -117,15 +113,17 @@ function(catch_discover_tests_impl)
   if(dl_paths)
     foreach(path ${dl_paths})
       cmake_path(NATIVE_PATH path native_path)
-      list(APPEND environment_modifications "${dl_paths_variable_name}=path_list_prepend:${native_path}")
+      list(APPEND environment_modifications
+           "${dl_paths_variable_name}=path_list_prepend:${native_path}"
+      )
     endforeach()
   endif()
 
   # Parse output
   foreach(line ${output})
     set(test "${line}")
-    # Escape characters in test case names that would be parsed by Catch2
-    # Note that the \ escaping must happen FIRST! Do not change the order.
+    # Escape characters in test case names that would be parsed by Catch2 Note that the \ escaping
+    # must happen FIRST! Do not change the order.
     set(test_name "${test}")
     foreach(char \\ , [ ])
       string(REPLACE ${char} "\\${char}" test_name "${test_name}")
@@ -137,7 +135,8 @@ function(catch_discover_tests_impl)
     endif()
 
     # ...and add to script
-    add_command(add_test
+    add_command(
+      add_test
       "${prefix}${test}${suffix}"
       ${_TEST_EXECUTOR}
       "${_TEST_EXECUTABLE}"
@@ -146,25 +145,22 @@ function(catch_discover_tests_impl)
       "${reporter_arg}"
       "${output_dir_arg}"
     )
-    add_command(set_tests_properties
-      "${prefix}${test}${suffix}"
-      PROPERTIES
-      WORKING_DIRECTORY "${_TEST_WORKING_DIR}"
-      ${properties}
+    add_command(
+      set_tests_properties "${prefix}${test}${suffix}" PROPERTIES WORKING_DIRECTORY
+      "${_TEST_WORKING_DIR}" ${properties}
     )
 
     if(environment_modifications)
-      add_command(set_tests_properties
-        "${prefix}${test}${suffix}"
-        PROPERTIES
-        ENVIRONMENT_MODIFICATION "${environment_modifications}")
+      add_command(
+        set_tests_properties "${prefix}${test}${suffix}" PROPERTIES ENVIRONMENT_MODIFICATION
+        "${environment_modifications}"
+      )
     endif()
 
     list(APPEND tests "${prefix}${test}${suffix}")
   endforeach()
 
-  # Create a list of all discovered tests, which users may use to e.g. set
-  # properties on the tests
+  # Create a list of all discovered tests, which users may use to e.g. set properties on the tests
   add_command(set ${_TEST_LIST} ${tests})
 
   # Write CTest script
@@ -173,20 +169,35 @@ endfunction()
 
 if(CMAKE_SCRIPT_MODE_FILE)
   catch_discover_tests_impl(
-    TEST_EXECUTABLE ${TEST_EXECUTABLE}
-    TEST_EXECUTOR ${TEST_EXECUTOR}
-    TEST_WORKING_DIR ${TEST_WORKING_DIR}
-    TEST_SPEC ${TEST_SPEC}
-    TEST_EXTRA_ARGS ${TEST_EXTRA_ARGS}
-    TEST_PROPERTIES ${TEST_PROPERTIES}
-    TEST_PREFIX ${TEST_PREFIX}
-    TEST_SUFFIX ${TEST_SUFFIX}
-    TEST_LIST ${TEST_LIST}
-    TEST_REPORTER ${TEST_REPORTER}
-    TEST_OUTPUT_DIR ${TEST_OUTPUT_DIR}
-    TEST_OUTPUT_PREFIX ${TEST_OUTPUT_PREFIX}
-    TEST_OUTPUT_SUFFIX ${TEST_OUTPUT_SUFFIX}
-    TEST_DL_PATHS ${TEST_DL_PATHS}
-    CTEST_FILE ${CTEST_FILE}
+    TEST_EXECUTABLE
+    ${TEST_EXECUTABLE}
+    TEST_EXECUTOR
+    ${TEST_EXECUTOR}
+    TEST_WORKING_DIR
+    ${TEST_WORKING_DIR}
+    TEST_SPEC
+    ${TEST_SPEC}
+    TEST_EXTRA_ARGS
+    ${TEST_EXTRA_ARGS}
+    TEST_PROPERTIES
+    ${TEST_PROPERTIES}
+    TEST_PREFIX
+    ${TEST_PREFIX}
+    TEST_SUFFIX
+    ${TEST_SUFFIX}
+    TEST_LIST
+    ${TEST_LIST}
+    TEST_REPORTER
+    ${TEST_REPORTER}
+    TEST_OUTPUT_DIR
+    ${TEST_OUTPUT_DIR}
+    TEST_OUTPUT_PREFIX
+    ${TEST_OUTPUT_PREFIX}
+    TEST_OUTPUT_SUFFIX
+    ${TEST_OUTPUT_SUFFIX}
+    TEST_DL_PATHS
+    ${TEST_DL_PATHS}
+    CTEST_FILE
+    ${CTEST_FILE}
   )
 endif()

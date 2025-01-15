@@ -6,8 +6,8 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(LinearAlgebraHeaders
-        Einsums/LinearAlgebra.hpp Einsums/LinearAlgebra/Base.hpp Einsums/LinearAlgebra/BlockTensor.hpp
-        Einsums/LinearAlgebra/TiledTensor.hpp Einsums/LinearAlgebra/Unoptimized.hpp
+    Einsums/LinearAlgebra.hpp Einsums/LinearAlgebra/Base.hpp Einsums/LinearAlgebra/BlockTensor.hpp
+    Einsums/LinearAlgebra/TiledTensor.hpp Einsums/LinearAlgebra/Unoptimized.hpp
 )
 
 set(LinearAlgebraSources LinearAlgebra.cpp)
@@ -23,16 +23,16 @@ einsums_add_module(
   Einsums LinearAlgebra
   SOURCES ${LinearAlgebraSources}
   HEADERS ${LinearAlgebraHeaders}
-        DEPENDENCIES ${LinAlgGPUModules}
-        MODULE_DEPENDENCIES
-        Einsums_Assertion
-        Einsums_Config
-        Einsums_BLAS
-        Einsums_Concepts
-        Einsums_Errors
-        Einsums_Print
-        Einsums_Tensor
-        Einsums_TensorUtilities
-        Einsums_TypeSupport
+  DEPENDENCIES ${LinAlgGPUModules}
+  MODULE_DEPENDENCIES
+    Einsums_Assertion
+    Einsums_Config
+    Einsums_BLAS
+    Einsums_Concepts
+    Einsums_Errors
+    Einsums_Print
+    Einsums_Tensor
+    Einsums_TensorUtilities
+    Einsums_TypeSupport
   CMAKE_SUBDIRS examples tests
 )

@@ -6,7 +6,7 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(TensorBaseHeaders Einsums/TensorBase/Common.hpp Einsums/TensorBase/IndexUtilities.hpp
-        Einsums/TensorBase/TensorBase.hpp Einsums/TensorBase/HashFunctions.hpp
+                      Einsums/TensorBase/TensorBase.hpp Einsums/TensorBase/HashFunctions.hpp
 )
 
 set(TensorBaseSources IndexUtilities.cpp)
@@ -17,6 +17,6 @@ einsums_add_module(
   SOURCES ${TensorBaseSources}
   HEADERS ${TensorBaseHeaders}
   DEPENDENCIES
-        MODULE_DEPENDENCIES Einsums_Errors Einsums_StringUtil
+  MODULE_DEPENDENCIES Einsums_Errors Einsums_StringUtil
   CMAKE_SUBDIRS examples tests
 )

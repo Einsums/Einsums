@@ -16,7 +16,8 @@ einsums_add_module(
   HEADERS ${ErrorsHeaders}
   DEPENDENCIES Einsums
   MODULE_DEPENDENCIES
-        CMAKE_SUBDIRS examples tests BASE_LIBNAME EinsumsPy
+  CMAKE_SUBDIRS examples tests
+  BASE_LIBNAME EinsumsPy
 )
 
 include(Einsums_ExtendWithPython)

@@ -15,7 +15,7 @@ if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_REGRESSIONS)
     einsums_add_pseudo_target(Tests.Regressions.Modules.LinearAlgebra)
     einsums_add_pseudo_dependencies(
-            Tests.Regressions.Modules Tests.Regressions.Modules.LinearAlgebra
+      Tests.Regressions.Modules Tests.Regressions.Modules.LinearAlgebra
     )
     add_subdirectory(regressions)
   endif()
@@ -23,14 +23,14 @@ if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_BENCHMARKS)
     einsums_add_pseudo_target(Tests.Performance.Modules.LinearAlgebra)
     einsums_add_pseudo_dependencies(
-            Tests.Performance.Modules Tests.Performance.Modules.LinearAlgebra
+      Tests.Performance.Modules Tests.Performance.Modules.LinearAlgebra
     )
     add_subdirectory(performance)
   endif()
 
   if(EINSUMS_WITH_TESTS_HEADERS)
     einsums_add_header_tests(
-            Modules.LinearAlgebra
+      Modules.LinearAlgebra
       HEADERS ${LinearAlgebraHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       DEPENDENCIES einsums_LinearAlgebra
