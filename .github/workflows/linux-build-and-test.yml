@@ -27,9 +27,11 @@ jobs:
         compiler: [ gcc, intel ]
         blas: [ openblas, mkl ]
         build_type: [ RelWithDebInfo ]
+        variant: [ default ]
         include:
           - compiler: intel
             blas: mkl
+            variant: lp64
             cmake_extra: >
               -DCMAKE_C_COMPILER=icx
               -DCMAKE_CXX_COMPILER=icpx
@@ -38,6 +40,7 @@ jobs:
               -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
           - compiler: intel
             blas: mkl
+            variant: ilp64
             cmake_extra: >
               -DCMAKE_C_COMPILER=icx
               -DCMAKE_CXX_COMPILER=icpx
