@@ -94,6 +94,7 @@ jobs:
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -D CMAKE_BUILD_TYPE=Debug \
             -D EINSUMS_SHOW_WARNING=OFF \
+            -D EINSUMS_WITH_DOCUMENTATION=ON \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
             ${{ matrix.cmake_extra }}
