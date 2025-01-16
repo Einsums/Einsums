@@ -1,11 +1,12 @@
 #  Copyright (c) The Einsums Developers. All rights reserved.
 #  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+import argparse
 import os
 import sys
-import argparse
 
-import build_structure, configure_toplevel
+import build_structure
+import configure_toplevel
 
 
 def build_new(library, module, args):
@@ -35,17 +36,20 @@ def reindex(libraries=None):
 
     for lib in libraries:
         lib_symb = lib
-        if os.path.isfile(os.path.join(os.curdir, lib, ".is_python_lib")) :
+        if os.path.isfile(os.path.join(os.curdir, lib, ".is_python_lib")):
             lib_symb = "${EINSUMS_PYTHON_LIB_NAME}"
-            configure_toplevel.configure_python(os.curdir, lib, python = True, python_name = lib)
+            configure_toplevel.configure_python(
+                os.curdir, lib, python=True, python_name=lib
+            )
 
-        configure_toplevel.configure_cmake(os.curdir, lib, lib_symb = lib_symb)
-        configure_toplevel.configure_module_docs(os.curdir, lib, lib_symb = lib_symb)
+        configure_toplevel.configure_cmake(os.curdir, lib, lib_symb=lib_symb)
+        configure_toplevel.configure_module_docs(os.curdir, lib, lib_symb=lib_symb)
+
 
 def main():
     parser = argparse.ArgumentParser(
         prog="create_module_skeleton",
-        description="Creates a module skeleton for developing in Einsums.",
+        description="Creates a module skeleton for developing in Einsums. All of the template files are treated as Python f strings, so be careful with braces.",
         usage="""
         
 %(prog)s --reindex [LIBRARIES, ...]
@@ -68,12 +72,12 @@ def main():
     parser.add_argument(
         "--reindex",
         help="Reindex the libraries. The libraries may be specified afterwards. This is incompatible with other options.",
-        action="store_true"
+        action="store_true",
     )
     parser.add_argument(
         "--rebuild",
         help="Adds new files that were added to the template but do not exist in the output structure. It also re-indexes.",
-        action="store_true"
+        action="store_true",
     )
 
     known_args, unknown_args = parser.parse_known_intermixed_args()
