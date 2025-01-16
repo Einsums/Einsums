@@ -193,6 +193,8 @@ einsums_option(
   ADVANCED
 )
 
+einsums_option(EINSUMS_WITH_COVERAGE BOOL "Enable code coverage generation" OFF ADVANCED)
+
 # ##################################################################################################
 
 if(WIN32)

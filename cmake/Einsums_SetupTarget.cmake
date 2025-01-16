@@ -6,6 +6,7 @@
 cmake_policy(PUSH)
 
 include(Einsums_GeneratePackageUtils)
+include(Einsums_CodeCoverage)
 
 einsums_set_cmake_policy(CMP0054 NEW)
 einsums_set_cmake_policy(CMP0060 NEW)
@@ -145,6 +146,11 @@ function(einsums_setup_target target)
     ${target} PROPERTIES BUILD_RPATH "${CMAKE_BUILD_RPATH}"
                          INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_LIBDIR}"
   )
+
+  # Code coverage
+  if (EINSUMS_WITH_COVERAGE)
+    append_coverage_compiler_flags_to_target(${target})
+  endif ()
 
   if(target_INSTALL AND NOT target_EXCLUDE_FROM_ALL)
     install(TARGETS ${target} ${install_export} ${target_INSTALL_FLAGS})

@@ -102,7 +102,8 @@ jobs:
             -D CMAKE_BUILD_TYPE=${{ matrix.build_type }} \
             -D EINSUMS_SHOW_WARNING=OFF \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
-            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}"
+            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+            -D EINSUMS_WITH_COVERAGE=ON
 
       - name: Build and Install
         run: |
