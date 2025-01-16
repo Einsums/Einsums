@@ -29,6 +29,10 @@ jobs:
         build_type: [ RelWithDebInfo ]
         variant: [ default ]
         include:
+          - compiler: gcc
+            cmake_extra: >
+              -D EINSUMS_WITH_COVERAGE=ON
+
           - compiler: intel
             blas: mkl
             build_type: RelWithDebInfo
@@ -134,7 +138,6 @@ jobs:
             -D EINSUMS_SHOW_WARNING=OFF \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
-            -D EINSUMS_WITH_COVERAGE=ON \
             ${{ matrix.cmake_extra }}
 
       - name: Build and Install
