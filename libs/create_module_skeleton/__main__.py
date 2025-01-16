@@ -34,8 +34,13 @@ def reindex(libraries=None):
         )
 
     for lib in libraries:
-        configure_toplevel.configure_cmake(os.curdir, lib)
-        configure_toplevel.configure_module_docs(os.curdir, lib)
+        lib_symb = lib
+        if os.path.isfile(os.path.join(os.curdir, lib, ".is_python_lib")) :
+            lib_symb = "${EINSUMS_PYTHON_LIB_NAME}"
+            configure_toplevel.configure_python(os.curdir, lib, python = True, python_name = lib)
+
+        configure_toplevel.configure_cmake(os.curdir, lib, lib_symb = lib_symb)
+        configure_toplevel.configure_module_docs(os.curdir, lib, lib_symb = lib_symb)
 
 def main():
     parser = argparse.ArgumentParser(

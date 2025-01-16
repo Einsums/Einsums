@@ -39,7 +39,7 @@ set(_Einsums_modules
   TensorUtilities
   TypeSupport
   Utilities
-)
+  )
 # cmake-format: on
 
 einsums_info("")
@@ -48,3 +48,4 @@ einsums_info("  Configuring Einsums modules:")
 foreach(module ${_Einsums_modules})
   add_subdirectory(${module})
 endforeach()
+
