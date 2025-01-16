@@ -149,6 +149,7 @@ jobs:
         run: ctest --rerun-failed --output-on-failure
 
       - name: Generate coverage information
+        if: ${{ contains(matrix.compiler, 'gcc') }}
         working-directory: "${{github.workspace}}/build"
         run: |
           export NOTES=$(find . -name "*.gcno")
@@ -159,12 +160,13 @@ jobs:
           lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
 
       - name: Upload C++ coverage to Codecov
-        uses: codecov/codecov-action@v4
+        if: ${{ contains(matrix.compiler, 'gcc') }}
+        uses: codecov/codecov-action@v5
         with:
           directory: "${{github.workspace}}/build"
           working-directory: "${{github.workspace}}"
           disable_search: true
-          file: ${{github.workspace}}/build/coverage.info
+          files: ${{github.workspace}}/build/coverage.info
           flags: cpp
           token: ${{ secrets.CODECOV_TOKEN }}
 
