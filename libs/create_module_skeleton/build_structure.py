@@ -22,6 +22,9 @@ def build_layer(input_dir, output_dir, **kwargs):
             continue
         item_out = kwargs.get(item, item)
 
+        if os.path.splitext(item_out)[1] == ".fstring" :
+            item_out = os.path.splitext(item_out)[0]
+
         if os.path.isdir(os.path.join(input_dir, item)):
             if not os.path.isdir(os.path.join(output_dir, item_out)):
                 os.mkdir(os.path.join(output_dir, item_out))

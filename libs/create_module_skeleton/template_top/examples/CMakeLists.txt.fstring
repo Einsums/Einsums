@@ -18,23 +18,23 @@ endif()
 
 set(example_programs)
 
-foreach(example_program ${example_programs})
-  set(sources ${example_program}.cpp)
+foreach(example_program ${{example_programs}})
+  set(sources ${{example_program}}.cpp)
 
-  source_group("Source Files" FILES ${sources})
+  source_group("Source Files" FILES ${{sources}})
 
   # add example executable
   einsums_add_executable(
-    ${example_program} INTERNAL_FLAGS
-    SOURCES ${sources} ${${example_program}_FLAGS}
+    ${{example_program}} INTERNAL_FLAGS
+    SOURCES ${{sources}} ${{${{example_program}}_FLAGS}}
     FOLDER "Examples/Modules/{lib_symb}/{module_name}"
   )
 
-  einsums_add_example_target_dependencies("Modules.{lib_symb}.{module_name}" ${example_program})
+  einsums_add_example_target_dependencies("Modules.{lib_symb}.{module_name}" ${{example_program}})
 
   if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
     einsums_add_example_test(
-      "Modules.{lib_symb}.{module_name}" ${example_program} ${${example_program}_PARAMETERS}
+      "Modules.{lib_symb}.{module_name}" ${{example_program}} ${{${{example_program}}_PARAMETERS}}
     )
   endif()
 endforeach()

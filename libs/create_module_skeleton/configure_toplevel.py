@@ -33,7 +33,7 @@ def configure_python(output_base, lib_name, **kwargs):
                     continue
                 config_python[toks[0].upper()] = toks[1].upper()
 
-    with open(os.path.join(base, "ExportAll.cpp.in"), "r") as fp:
+    with open(os.path.join(base, "ExportAll.cpp.in.fstring"), "r") as fp:
         export = fp.read()
 
     with open(os.path.join(output_base, lib_name, "ExportAll.cpp.in"), "w+") as fp:
@@ -44,7 +44,7 @@ def configure_python(output_base, lib_name, **kwargs):
         or config_python["CONFIGURE_PREAMBLE"].upper() not in __falsehood
     ):
         preamble = ""
-        with open(os.path.join(base, "python_preamble.txt"), "r") as fp:
+        with open(os.path.join(base, "python_preamble.txt.fstring"), "r") as fp:
             preamble = fp.read()
 
         with open(os.path.join(output_base, lib_name, "preamble.txt"), "w+") as fp:
@@ -59,7 +59,7 @@ def configure_python(output_base, lib_name, **kwargs):
         or config_python["CONFIGURE_CLOSER"].upper() not in __falsehood
     ):
         preamble = ""
-        with open(os.path.join(base, "python_closer.txt"), "r") as fp:
+        with open(os.path.join(base, "python_closer.txt.fstring"), "r") as fp:
             preamble = fp.read()
 
         with open(os.path.join(output_base, lib_name, "closer.txt"), "w+") as fp:
@@ -75,7 +75,7 @@ def configure_cmake(output_base, lib_name, **kwargs):
 
     format = ""
 
-    with open(os.path.join(base, "cmake_template.txt"), "r") as fp:
+    with open(os.path.join(base, "cmake_template.txt.fstring"), "r") as fp:
         format = fp.read()
 
     # Check for preamble.
@@ -121,7 +121,7 @@ def configure_module_docs(output_base, lib_name, **kwargs):
 
     format_str = ""
 
-    with open(os.path.join(base, "modules.rst"), "r") as fp:
+    with open(os.path.join(base, "modules.rst.fstring"), "r") as fp:
         format_str = fp.read()
 
     module_docs = "\n    ".join(
