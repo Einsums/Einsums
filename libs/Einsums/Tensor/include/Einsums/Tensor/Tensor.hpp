@@ -370,12 +370,11 @@ struct Tensor : virtual tensor_base::CoreTensor,
             requires NoneOfType<Dim<Rank>, MultiIndex...>;
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
         }
-    auto subscript(MultiIndex... index) const -> T const & {
+    auto subscript(MultiIndex&&... index) const -> T const & {
         static_assert(sizeof...(MultiIndex) == Rank);
 
-        auto   index_list = std::array{static_cast<size_t>(index)...};
         size_t ordinal =
-            indices_to_sentinel(_strides, index_list);
+            indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
 
         return _data[ordinal];
     }
@@ -424,13 +423,11 @@ struct Tensor : virtual tensor_base::CoreTensor,
             requires NoneOfType<Dim<Rank>, MultiIndex...>;
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
         }
-    auto subscript(MultiIndex... index) -> T & {
+    auto subscript(MultiIndex&&... index) -> T & {
         static_assert(sizeof...(MultiIndex) == Rank);
 
-        auto index_list = std::array{static_cast<size_t>(index)...};
-
         size_t ordinal =
-            indices_to_sentinel(_strides, index_list);
+            indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
         return _data[ordinal];
     }
 
@@ -1305,12 +1302,10 @@ struct TensorView final : virtual tensor_base::CoreTensor,
      * Subscript into the tensor.
      */
     template <typename... MultiIndex>
-    auto subscript(MultiIndex... index) const -> T const & {
+    auto subscript(MultiIndex&&... index) const -> T const & {
         static_assert(sizeof...(MultiIndex) == Rank);
-        auto const index_list = std::array{static_cast<size_t>(index)...};
-
         size_t ordinal =
-            indices_to_sentinel(_strides, index_list);
+            indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
         return _data[ordinal];
     }
 
@@ -1318,12 +1313,11 @@ struct TensorView final : virtual tensor_base::CoreTensor,
      * Subscript into the tensor.
      */
     template <typename... MultiIndex>
-    auto subscript(MultiIndex... index) -> T & {
+    auto subscript(MultiIndex&&... index) -> T & {
         static_assert(sizeof...(MultiIndex) == Rank);
-        auto const index_list = std::array{static_cast<size_t>(index)...};
 
         size_t ordinal =
-            indices_to_sentinel(_strides, index_list);
+            indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
         return _data[ordinal];
     }
 

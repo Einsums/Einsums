@@ -14,10 +14,10 @@
 
 #include <cstdarg>
 #include <cstddef>
+#include <source_location>
 #include <tuple>
 #include <type_traits>
 #include <vector>
-#include <source_location>
 
 namespace einsums {
 
@@ -335,7 +335,7 @@ EINSUMS_HOSTDEV inline size_t indices_to_sentinel(size_t const *unique_strides, 
 
 template <size_t num_unique_inds>
 inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides,
-                                  std::array<size_t, num_unique_inds> const &inds) {
+                                  std::array<size_t, num_unique_inds> const       &inds) {
     size_t out = 0;
 
 #pragma unroll
@@ -359,7 +359,32 @@ inline size_t indices_to_sentinel(std::array<size_t, num_unique_inds> const &uni
     return out;
 }
 
+namespace detail {
+
+template <size_t index, size_t num_unique_inds, typename FirstIndex>
+    requires(std::is_integral_v<FirstIndex>)
+inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, FirstIndex &&first_index) {
+    return std::get<index>(unique_strides) * first_index;
+}
+
+template <size_t index, size_t num_unique_inds, typename FirstIndex, typename... MultiIndex>
+    requires(std::is_integral_v<MultiIndex> && ... && std::is_integral_v<FirstIndex>)
+inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, FirstIndex &&first_index,
+                                  MultiIndex &&...indices) {
+    return std::get<index>(unique_strides) * first_index +
+           indices_to_sentinel<index + 1>(unique_strides, std::forward<MultiIndex>(indices)...);
+}
+} // namespace detail
+
+template <size_t num_unique_inds, typename FirstIndex, typename... MultiIndex>
+    requires(std::is_integral_v<MultiIndex> && ... && std::is_integral_v<FirstIndex>)
+inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, FirstIndex &&first_index,
+                                  MultiIndex &&...indices) {
+    return detail::indices_to_sentinel<0>(unique_sttrides, std::forward<MultiIndex>(indices)...);
+}
+
 template <typename StorageType1, typename StorageType2>
+    requires(!std::is_integral_v<StorageType1> && !std::is_integral_v<StorageType2>)
 inline size_t indices_to_sentinel(StorageType1 const &unique_strides, StorageType2 const &inds) {
     size_t out = 0;
 
