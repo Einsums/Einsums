@@ -23,27 +23,28 @@ template <typename T, size_t Rank, size_t BaseRank>
 struct DeviceFunctionTensorView;
 #endif
 
+namespace tensor_base {
+
 /**
  * @struct FunctionTensor
  *
- * @brief Base class for function tensors.
+ * @brief Optional base class for function tensors. This class provides functionality 
  *
  * A function tensor is one which takes advantage of the use of the operator() to index tensors to provide a way to
  * call a function. An example of this might be the Kronecker delta, which has such simple structure that creating
  * a whole new tensor object for it would be wasteful.
  */
-namespace tensor_base {
-template <typename T, size_t Rank>
-struct FunctionTensor : public virtual Tensor<T, Rank>, virtual FunctionTensorNoExtra, virtual CoreTensor {
+template <typename T, size_t rank>
+struct FunctionTensor : public CoreTensor {
   protected:
-    Dim<Rank>   _dims;
+    Dim<rank>   _dims;
     std::string _name{"(unnamed)"};
     size_t      _size;
 
     /**
      * @brief Checks for negative indices and makes them positive, then performs range checking.
      */
-    virtual void fix_indices(std::array<int, Rank> *inds) const {
+    virtual void fix_indices(std::array<int, rank> *inds) const {
         for (int i = 0; i < Rank; i++) {
             int orig = inds->at(i);
             if (inds->at(i) < 0) {
@@ -62,6 +63,9 @@ struct FunctionTensor : public virtual Tensor<T, Rank>, virtual FunctionTensorNo
     }
 
   public:
+    using ValueType = T;
+    constexpr static size_t Rank = rank;
+
     FunctionTensor()                       = default;
     FunctionTensor(FunctionTensor const &) = default;
 
@@ -206,13 +210,13 @@ struct FunctionTensor : public virtual Tensor<T, Rank>, virtual FunctionTensorNo
         return FunctionTensorView<T, Rank, Rank>{this, std::move(offset), std::move(dims), index_template};
     }
 
-    virtual Dim<Rank> dims() const override { return _dims; }
+    virtual Dim<Rank> dims() const { return _dims; }
 
-    virtual auto dim(int d) const -> size_t override { return _dims[d]; }
+    virtual auto dim(int d) const -> size_t { return _dims[d]; }
 
-    virtual std::string const &name() const override { return _name; }
+    virtual std::string const &name() const { return _name; }
 
-    virtual void set_name(std::string const &str) override { _name = str; }
+    virtual void set_name(std::string const &str) { _name = str; }
 
     operator Tensor<T, Rank>() const {
         Tensor<T, Rank> out(dims());
@@ -234,7 +238,7 @@ struct FunctionTensor : public virtual Tensor<T, Rank>, virtual FunctionTensorNo
 } // namespace tensor_base
 
 template <typename T, size_t Rank>
-struct FuncPointerTensor : public virtual tensor_base::FunctionTensor<T, Rank>, virtual tensor_base::CoreTensor {
+struct FuncPointerTensor : public tensor_base::FunctionTensor<T, Rank>, tensor_base::CoreTensor {
   protected:
     T (*_func_ptr)(std::array<int, Rank> const &);
 
@@ -252,16 +256,15 @@ struct FuncPointerTensor : public virtual tensor_base::FunctionTensor<T, Rank>, 
     size_t dim(int d) const override { return tensor_base::FunctionTensor<T, Rank>::dim(d); }
 };
 
-template <typename T, size_t Rank, size_t UnderlyingRank>
-struct FunctionTensorView : public virtual tensor_base::FunctionTensor<T, Rank>,
-                            virtual tensor_base::TensorView<tensor_base::FunctionTensor<T, UnderlyingRank>> {
+template <typename T, size_t rank, size_t UnderlyingRank>
+struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
   protected:
     tensor_base::FunctionTensor<T, UnderlyingRank> const *_func_tensor;
-    Offset<Rank>                                          _offsets;
+    Offset<rank>                                          _offsets;
     std::array<int, UnderlyingRank>                       _index_template;
     bool                                                  _full_view{true};
 
-    virtual std::array<int, UnderlyingRank> apply_view(std::array<int, Rank> const &inds) const {
+    virtual std::array<int, UnderlyingRank> apply_view(std::array<int, rank> const &inds) const {
         std::array<int, UnderlyingRank> out{_index_template};
         int                             curr_rank = 0;
         for (int i = 0; i < Rank && curr_rank < UnderlyingRank; i++) {
@@ -286,6 +289,9 @@ struct FunctionTensorView : public virtual tensor_base::FunctionTensor<T, Rank>,
     }
 
   public:
+    using ValueType = T;
+    constexpr static size_t Rank = rank;
+
     FunctionTensorView() = default;
     FunctionTensorView(std::string name, tensor_base::FunctionTensor<T, UnderlyingRank> *func_tens, Offset<Rank> const &offsets,
                        Dim<Rank> const &dims, std::array<int, UnderlyingRank> const &index_template)
@@ -321,12 +327,12 @@ struct FunctionTensorView : public virtual tensor_base::FunctionTensor<T, Rank>,
         _full_view      = copy._full_view;
     }
 
-    virtual T call(std::array<int, Rank> const &inds) const override {
+    virtual T call(std::array<int, Rank> const &inds) const {
         auto fixed_inds = apply_view(inds);
         return _func_tensor->call(fixed_inds);
     }
 
-    bool full_view_of_underlying() const override { return _full_view; }
+    bool full_view_of_underlying() const { return _full_view; }
 };
 
 /**
@@ -337,11 +343,43 @@ struct FunctionTensorView : public virtual tensor_base::FunctionTensor<T, Rank>,
  * This function tensor can act as an example of what can be done with the more general function tensors.
  */
 template <typename T>
-struct KroneckerDelta : public virtual tensor_base::FunctionTensor<T, 2>, virtual tensor_base::CoreTensor {
+struct KroneckerDelta {
   public:
-    KroneckerDelta(size_t dim) : tensor_base::FunctionTensor<T, 2>("Kronecker Delta", dim, dim) {}
+    constexpr static size_t Rank = 2;
+    using ValueType = T;
 
-    virtual T call(std::array<int, 2> const &inds) const override { return (inds[0] == inds[1]) ? T{1.0} : T{0.0}; }
+    constexpr KroneckerDelta() : dim_{0} {}
+
+    constexpr KroneckerDelta(size_t dim) : dim_{dim} {}
+
+    constexpr ~KroneckerDelta() = default;
+
+    constexpr T operator()(size_t i, size_t j) const {
+        if(i == j) {
+            return T{1.0};
+        } else {
+            return T{0.0};
+        }
+    }
+
+    constexpr size_t dim(int i) const {
+        return dim_;
+    }
+
+    constexpr Dim<2> dims() const {
+        return Dim{dim_, dim_};
+    }
+
+    constexpr std::string name() const {
+        return "Kronecker delta";
+    }
+
+    constexpr bool full_view_of_underlying() const {
+        return true;
+    }
+
+  private:
+    size_t dim_;
 };
 
 } // namespace einsums

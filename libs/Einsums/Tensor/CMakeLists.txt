@@ -44,6 +44,7 @@ einsums_add_module(
     Einsums_TypeSupport
     Einsums_Profile
     Einsums_Print
+    Einsums_DesignPatterns
     ${TensorGPUModules}
   CMAKE_SUBDIRS examples tests
 )

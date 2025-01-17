@@ -483,7 +483,7 @@ EINSUMS_EXPORT size_t dims_to_strides(std::vector<size_t> const &dims, std::vect
  */
 template <typename arr_type1, typename arr_type2, size_t Dims>
     requires(std::is_integral_v<arr_type1> && std::is_integral_v<arr_type2>)
-size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out) {
+constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out) {
     size_t stride = 1;
 
     for (int i = Dims - 1; i >= 0; i--) {

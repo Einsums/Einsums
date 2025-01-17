@@ -86,14 +86,17 @@ inline T compute_arithmetic(const std::tuple<SubtractionOp, Operand> *input, Mul
  * @tparam Rank The rank of the tensors.
  * @tparam Args The specific set of operations needed to perform the arithmetic operations.
  */
-template <typename T, size_t Rank, typename... Args>
-struct ArithmeticTensor : public virtual tensor_base::Tensor<T, Rank>, virtual tensor_base::CoreTensor {
+template <typename T, size_t rank, typename... Args>
+struct ArithmeticTensor : tensor_base::CoreTensor {
   protected:
     std::tuple<Args...> _tuple;
-    Dim<Rank>           _dims;
+    Dim<rank>           _dims;
     std::string         _name{"(unnamed ArithmeticTensor)"};
 
   public:
+    using ValueType = T;
+    constexpr static size_t Rank = rank;
+
     using tuple_type = std::tuple<Args...>;
 
     ArithmeticTensor(const std::tuple<Args...> &input, Dim<Rank> dims) : _tuple{input}, _dims{dims} { ; }
@@ -105,13 +108,13 @@ struct ArithmeticTensor : public virtual tensor_base::Tensor<T, Rank>, virtual t
 
     const std::tuple<Args...> *get_tuple() const { return &_tuple; }
 
-    Dim<Rank> dims() const override { return _dims; }
+    Dim<Rank> dims() const { return _dims; }
 
-    size_t dim(int d) const override { return _dims[d]; }
+    size_t dim(int d) const { return _dims[d]; }
 
-    const std::string &name() const override { return _name; }
+    const std::string &name() const { return _name; }
 
-    void set_name(const std::string &new_name) override { _name = new_name; }
+    void set_name(const std::string &new_name) { _name = new_name; }
 };
 
 } // namespace einsums

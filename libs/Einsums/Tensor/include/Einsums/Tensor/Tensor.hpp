@@ -47,6 +47,8 @@
 #include <utility>
 #include <vector>
 
+#include "Einsums/DesignPatterns/Lockable.hpp"
+
 #if defined(EINSUMS_COMPUTE_CODE)
 #    include <hip/hip_common.h>
 #    include <hip/hip_runtime.h>
@@ -69,17 +71,17 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options = {});
  * @tparam T data type of the underlying tensor data
  * @tparam Rank the rank of the tensor
  */
-template <typename T, size_t Rank>
-struct Tensor : virtual tensor_base::CoreTensor,
-                virtual tensor_base::BasicTensor<T, Rank>,
-                virtual tensor_base::LockableTensor,
-                virtual tensor_base::AlgebraOptimizedTensor {
+template <typename T, size_t rank>
+struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
     /**
-     * @typedef datatype
+     * @typedef ValueType
      *
      * @brief Holds the data type stored by the tensor.
      */
-    using datatype = T;
+    using ValueType = T;
+
+    constexpr static size_t Rank = rank;
+
 
     /**
      * @typedef Vector
@@ -91,20 +93,20 @@ struct Tensor : virtual tensor_base::CoreTensor,
     /**
      * @brief Construct a new Tensor object. Default constructor.
      */
-    Tensor() = default;
+    constexpr Tensor() = default;
 
     /**
      * @brief Construct a new Tensor object. Default copy constructor
      */
-    Tensor(Tensor const &) = default;
+    constexpr Tensor(Tensor const &) = default;
 
     /**
      * @brief Destroy the Tensor object.
      */
-    ~Tensor() override = default;
+    constexpr ~Tensor() = default;
 
-    Tensor(Tensor &&)                 = default;
-    Tensor &operator=(Tensor &&other) = default;
+    constexpr Tensor(Tensor &&)                 = default;
+    constexpr Tensor &operator=(Tensor &&other) = default;
 
     /**
      * @brief Construct a new Tensor object with the given name and dimensions.
@@ -123,7 +125,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      * @param dims The dimensions of each rank of the tensor.
      */
     template <typename... Dims>
-    Tensor(std::string name, Dims... dims) : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
+    constexpr Tensor(std::string name, Dims... dims) : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
         size_t size = dims_to_strides(_dims, _strides);
@@ -203,7 +205,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      *
      * @param dims The dimensions of the new tensor in Dim form.
      */
-    explicit Tensor(Dim<Rank> dims) : _dims{std::move(dims)} {
+    constexpr explicit Tensor(Dim<Rank> dims) : _dims{std::move(dims)} {
         size_t size = dims_to_strides(_dims, _strides);
 
         // Resize the data structure
@@ -217,7 +219,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      *
      * @param other The tensor view to copy.
      */
-    Tensor(TensorView<T, Rank> const &other) : _name{other._name}, _dims{other._dims} {
+    Tensor(TensorView<T, rank> const &other) : _name{other._name}, _dims{other._dims} {
         size_t size = dims_to_strides(_dims, _strides);
 
         // Resize the data structure
@@ -281,7 +283,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      *
      * @return T* A pointer to the data.
      */
-    T *data() override { return _data.data(); }
+    T *data() { return _data.data(); }
 
     /**
      * @brief Returns a constant pointer to the data.
@@ -291,7 +293,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      *
      * @return const T* An immutable pointer to the data.
      */
-    T const *data() const override { return _data.data(); }
+    T const *data() const { return _data.data(); }
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -437,7 +439,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      */
     template <typename... MultiIndex>
         requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
-    auto operator()(MultiIndex...index) -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
+    auto operator()(MultiIndex... index) -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
         // Construct a TensorView using the indices provided as the starting point for the view.
         // e.g.:
         //    Tensor T{"Big Tensor", 7, 7, 7, 7};
@@ -489,7 +491,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      */
     template <typename... MultiIndex>
         requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
-    auto operator()(MultiIndex...index) const
+    auto operator()(MultiIndex... index) const
         -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> const {
         // Construct a TensorView using the indices provided as the starting point for the view.
         // e.g.:
@@ -538,7 +540,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      */
     template <typename... MultiIndex>
         requires NumOfType<Range, Rank, MultiIndex...>
-    auto operator()(MultiIndex...index) const -> TensorView<T, Rank> {
+    auto operator()(MultiIndex... index) const -> TensorView<T, Rank> {
         Dim<Rank>    dims{};
         Offset<Rank> offset{};
         Stride<Rank> stride = _strides;
@@ -790,7 +792,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
     /**
      * Get the dimension of the tensor along a given axis.
      */
-    size_t dim(int d) const override {
+    size_t dim(int d) const {
         // Add support for negative indices.
         if (d < 0) {
             d += Rank;
@@ -801,7 +803,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
     /**
      * Get all the dimensions of the tensor.
      */
-    Dim<Rank> dims() const override { return _dims; }
+    Dim<Rank> dims() const { return _dims; }
 
     /**
      * Get the internal vector containing the tensor's data.
@@ -814,7 +816,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
     /**
      * Get the stride along a given axis.
      */
-    size_t stride(int d) const override {
+    size_t stride(int d) const {
         if (d < 0) {
             d += Rank;
         }
@@ -824,7 +826,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
     /**
      * Get the strides of this tensor.
      */
-    Stride<Rank> strides() const override { return _strides; }
+    Stride<Rank> strides() const { return _strides; }
 
     /**
      * Flatten out the tensor.
@@ -844,17 +846,17 @@ struct Tensor : virtual tensor_base::CoreTensor,
     /**
      * Indicates that the tensor is contiguous.
      */
-    bool full_view_of_underlying() const noexcept override { return true; }
+    bool full_view_of_underlying() const noexcept { return true; }
 
     /**
      * Get the name of the tensor.
      */
-    std::string const &name() const override { return _name; };
+    std::string const &name() const { return _name; };
 
     /**
      * Set the name of the tensor.
      */
-    void set_name(std::string const &new_name) override { _name = new_name; };
+    void set_name(std::string const &new_name) { _name = new_name; };
 
   private:
     std::string  _name{"(unnamed)"};
@@ -877,10 +879,16 @@ struct Tensor : virtual tensor_base::CoreTensor,
  * @tparam T The data type being stored.
  */
 template <typename T>
-struct Tensor<T, 0> final : virtual tensor_base::CoreTensor,
-                            virtual tensor_base::BasicTensor<T, 0>,
-                            virtual tensor_base::LockableTensor,
-                            virtual tensor_base::AlgebraOptimizedTensor {
+struct Tensor<T, 0> final : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
+
+        /**
+     * @typedef ValueType
+     *
+     * @brief Holds the data type stored by the tensor.
+     */
+    using ValueType = T;
+
+    constexpr static size_t Rank = 0;
 
     /**
      * Default constructor
@@ -900,7 +908,7 @@ struct Tensor<T, 0> final : virtual tensor_base::CoreTensor,
     /**
      * Default destructor
      */
-    ~Tensor() override = default;
+    ~Tensor() = default;
 
     /**
      * Create a new zero-rank tensor with the given name.
@@ -916,12 +924,12 @@ struct Tensor<T, 0> final : virtual tensor_base::CoreTensor,
     /**
      * Get the pointer to the data stored by this tensor.
      */
-    T *data() override { return &_data; }
+    T *data() { return &_data; }
 
     /**
      * @copydoc Tensor<T,0>::data()
      */
-    T const *data() const override { return &_data; }
+    T const *data() const { return &_data; }
 
     /**
      * Copy assignment.
@@ -970,37 +978,37 @@ struct Tensor<T, 0> final : virtual tensor_base::CoreTensor,
     /**
      * Get the name of the tensor.
      */
-    std::string const &name() const override { return _name; }
+    std::string const &name() const { return _name; }
 
     /**
      * Set the name of the tensor.
      */
-    void set_name(std::string const &name) override { _name = name; }
+    void set_name(std::string const &name) { _name = name; }
 
     /**
      * Get the dimension of the tensor. Always returns 1.
      */
-    size_t dim(int) const override { return 1; }
+    size_t dim(int) const { return 1; }
 
     /**
      * Get the dimensions of the tensor. The result is empty.
      */
-    Dim<0> dims() const override { return Dim{}; }
+    Dim<0> dims() const { return Dim{}; }
 
     /**
      * Indicates that the tensor is contiguous.
      */
-    bool full_view_of_underlying() const noexcept override { return true; }
+    bool full_view_of_underlying() const noexcept { return true; }
 
     /**
      * Get the stride of the tensor. Always returns 1.
      */
-    size_t stride(int d) const override { return 0; }
+    size_t stride(int d) const { return 0; }
 
     /**
      * Get the strides of the tensor. The result is empty.
      */
-    Stride<0> strides() const override { return Stride{}; }
+    Stride<0> strides() const { return Stride{}; }
 
   private:
     /**
@@ -1024,12 +1032,19 @@ struct Tensor<T, 0> final : virtual tensor_base::CoreTensor,
  * @tparam T The data type being stored.
  * @tparam Rank The rank of the view.
  */
-template <typename T, size_t Rank>
-struct TensorView final : virtual tensor_base::CoreTensor,
-                          virtual tensor_base::BasicTensor<T, Rank>,
-                          virtual tensor_base::TensorView<Tensor<T, Rank>>,
-                          virtual tensor_base::LockableTensor,
-                          virtual tensor_base::AlgebraOptimizedTensor {
+template <typename T, size_t rank>
+struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
+    /**
+     * @typedef ValueType
+     *
+     * @brief Holds the data type stored by the tensor.
+     */
+    using ValueType = T;
+
+    constexpr static size_t Rank = rank;
+
+    using underlying_type = Tensor<T, Rank>;
+
     TensorView() = delete;
 
     /**
@@ -1040,7 +1055,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     /**
      * Default destructor.
      */
-    ~TensorView() override = default;
+    ~TensorView() = default;
 
     // std::enable_if doesn't work with constructors.  So we explicitly create individual
     // constructors for the types of tensors we support (Tensor and TensorView).  The
@@ -1241,12 +1256,12 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     /**
      * Get a pointer to the data.
      */
-    T *data() override { return _data; }
+    T *data() { return _data; }
 
     /**
      * @copydoc TensorView<T,Rank>::data()
      */
-    T const *data() const override { return static_cast<T const *>(_data); }
+    T const *data() const { return static_cast<T const *>(_data); }
 
     /**
      * Get a pointer to the data at a certain index in the tensor.
@@ -1359,7 +1374,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     /**
      * Get the dimension of the view along a given axis.
      */
-    size_t dim(int d) const override {
+    size_t dim(int d) const {
         if (d < 0)
             d += Rank;
         return _dims[d];
@@ -1368,22 +1383,22 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     /**
      * Get the dimensions of the view.
      */
-    Dim<Rank> dims() const override { return _dims; }
+    Dim<Rank> dims() const { return _dims; }
 
     /**
      * Get the name of the view.
      */
-    std::string const &name() const override { return _name; }
+    std::string const &name() const { return _name; }
 
     /**
      * Set the name of the view.
      */
-    void set_name(std::string const &name) override { _name = name; }
+    void set_name(std::string const &name) { _name = name; }
 
     /**
      * Get the stride of the view along a given axis.
      */
-    size_t stride(int d) const noexcept override {
+    size_t stride(int d) const noexcept {
         if (d < 0)
             d += Rank;
         return _strides[d];
@@ -1392,7 +1407,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     /**
      * Get the strides of the tensor.
      */
-    Stride<Rank> strides() const noexcept override { return _strides; }
+    Stride<Rank> strides() const noexcept { return _strides; }
 
     /**
      * Flatten the view.
@@ -1420,7 +1435,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     /**
      * Check whether the view has all elements of the tensor it is viewing.
      */
-    bool full_view_of_underlying() const noexcept override { return _full_view_of_underlying; }
+    bool full_view_of_underlying() const noexcept { return _full_view_of_underlying; }
 
     /**
      * Get the number of elements in the view.
@@ -1452,7 +1467,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
 
         static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
 
-        set_mutex(other.get_mutex());
+        // set_mutex(other.get_mutex());
 
         Stride<Rank>      default_strides{};
         Offset<OtherRank> default_offsets{};

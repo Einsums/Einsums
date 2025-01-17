@@ -26,249 +26,6 @@ template <typename T, size_t Rank>
 struct DeviceTensor;
 #endif
 
-namespace detail {
-/**************************************
- *               Structs              *
- **************************************/
-
-/**********************
- *    Basic traits.   *
- **********************/
-
-/**
- * @struct IsTensor
- *
- * @brief Tests whether the given type is a tensor or not.
- *
- * Checks to see if the given type is derived from einsums::tensor_base::TensorBase.
- *
- * @tparam D The type to check.
- */
-template <typename D>
-struct IsTensor : public std::is_base_of<tensor_base::TensorBase, D> {};
-
-/**
- * @struct IsTypedTensor
- *
- * @brief Tests whether the given type is a tensor with an underlying type.
- *
- * @tparam D The tensor type to check.
- * @tparam T The type the tensor should store.
- */
-template <typename D, typename T>
-struct IsTypedTensor : std::is_base_of<tensor_base::TypedTensor<T>, D> {};
-
-/**
- * @struct IsRankTensor
- *
- * @brief Tests whether the given type is a tensor with the given rank.
- *
- * @tparam D The tensor type to check.
- * @tparam Rank The rank the tensor should have. If it is -1, then it just checks to see if the tensor has a
- * compile time rank.
- */
-template <typename D, ptrdiff_t Rank>
-struct IsRankTensor : public std::is_base_of<tensor_base::RankTensor<Rank>, D> {};
-
-template <typename D>
-struct IsRankTensor<D, -1> : public std::is_base_of<tensor_base::RankTensorNoRank, D> {};
-
-/**
- * @struct IsScalar
- *
- * @brief Tests to see if a value is a scalar value.
- *
- * Checks to see if a type is either a tensor with rank 0 or a scalar type such as double or complex<float>.
- *
- * @tparam D The type to check.
- */
-template <typename D>
-struct IsScalar : std::bool_constant<IsRankTensor<D, 0>::value || !IsTensor<D>::value> {};
-
-/**
- * @struct IsLockableTensor
- *
- * @brief Tests whether the given tensor type can be locked.
- *
- * @tparam D The tensor type to check.
- */
-template <typename D>
-struct IsLockableTensor : std::is_base_of<tensor_base::LockableTensor, D> {};
-
-/**
- * @struct IsTRTensor
- *
- * @brief Tests whether the given tensor type has a storage type and rank.
- *
- * This checks to see if the tensor derives RankTensorBase and TypedTensorBase.
- * Try not to rely on a tensor deriving TRTensorBase, as this may not always be the case.
- *
- * @tparam D The tensor type to check.
- * @tparam T The storage type stored by the tensor.
- * @tparam Rank The expected rank of the tensor.
- */
-template <typename D, size_t Rank, typename T>
-struct IsTRTensor : std::bool_constant<IsRankTensor<D, Rank>::value && IsTypedTensor<D, T>::value> {};
-
-/**
- * @struct IsTRLTensor
- *
- * @brief Tests whether the given tensor type has a storage type and rank and can be locked.
- *
- * This checks to see if the tensor derives RankTensorBase, TypedTensorBase, and LockableTensorBase.
- * Try not to rely on a tensor deriving TRLTensorBase, as this may not always be the case.
- *
- * @tparam D The tensor type to check.
- * @tparam Rank The expected rank of the tensor.
- * @tparam T The expected storage type stored by the tensor.
- */
-template <typename D, size_t Rank, typename T>
-struct IsTRLTensor : std::bool_constant<IsRankTensor<D, Rank>::value && IsTypedTensor<D, T>::value && IsLockableTensor<D>::value> {};
-
-/**
- * @struct IsIncoreTensor
- *
- * @brief Checks to see if the tensor is available in-core.
- *
- * Checks the tensor against CoreTensorBase.
- *
- * @tparam D The tensor to check.
- */
-template <typename D>
-struct IsIncoreTensor : std::is_base_of<tensor_base::CoreTensor, D> {};
-
-#if defined(EINSUMS_COMPUTE_CODE)
-/**
- * @struct IsDeviceTensor
- *
- * @brief Checks to see if the tensor is available to graphics hardware.
- *
- * Checks the tensor against DeviceTensorBase.
- *
- * @tparam D The tensor to check.
- */
-template <typename D>
-struct IsDeviceTensor : public std::is_base_of<tensor_base::DeviceTensor, D> {};
-#endif
-
-/**
- * @struct IsDiskTensor
- *
- * @brief Checks to see if the tensor is stored on-disk.
- *
- * Checks whether the tensor inherits DiskTensorBase.
- *
- * @tparam D The tensor type to check.
- */
-template <typename D>
-struct IsDiskTensor : std::is_base_of<tensor_base::DiskTensor, D> {};
-
-/**
- * @struct IsTensorView
- *
- * @brief Checks to see if the tensor is a view of another.
- *
- * Checks whether the tensor inherits TensorViewBaseNoExtra.
- *
- * @tparam D The tensor type to check.
- */
-template <typename D>
-struct IsTensorView : std::is_base_of<tensor_base::TensorViewNoExtra, D> {};
-
-/**
- * @struct IsViewOf
- *
- * @brief Checks to see if the tensor is a view of another tensor with the kind of tensor specified.
- *
- * Checks whether the tensor inherits the appropriate TensorViewBase.
- *
- * @tparam D The tensor type to check.
- * @tparam Viewed The type of tensor expected to be viewed.
- */
-template <typename D, typename Viewed>
-struct IsViewOf : std::is_base_of<tensor_base::TensorView<Viewed>, D> {};
-
-/**
- * @struct IsBasicTensor
- *
- * @brief Checks to see if the tensor is a basic tensor.
- *
- * Checks to see if the tensor inherits BasicTensorBaseNoExtra.
- *
- * @tparam D The tensor to check.
- */
-template <typename D>
-struct IsBasicTensor : std::is_base_of<tensor_base::BasicTensorNoExtra, D> {};
-
-/**
- * @struct IsCollectedTensor
- *
- * @brief Checks to see if the tensor is a tensor collection with the given storage type.
- *
- * Checks to see if the tensor inherits CollectedTensorBaseOnlyStored if a type is given, or CollectedTensorBaseNoExtra if type is not
- * given.
- *
- * @tparam D The tensor to check.
- * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
- */
-template <typename D, typename StoredType = void>
-struct IsCollectedTensor
-    : std::bool_constant<std::is_void_v<StoredType> ? std::is_base_of_v<tensor_base::CollectedTensorNoExtra, D>
-                                                    : std::is_base_of_v<tensor_base::CollectedTensorOnlyStored<StoredType>, D>> {};
-
-/**
- * @struct IsTiledTensor
- *
- * @brief Checks to see if the tensor is a tiled tensor with the given storage type.
- *
- * Checks to see if the tensor inherits TiledTensorBaseNoExtra. If a type is given, also check to see if it inherits
- * the appropriate CollectedTensorBaseOnlyStored.
- *
- * @tparam D The tensor to check.
- * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
- */
-template <typename D, typename StoredType = void>
-struct IsTiledTensor
-    : std::bool_constant<std::is_base_of_v<tensor_base::TiledTensorNoExtra, D> &&
-                         (std::is_void_v<StoredType> || std::is_base_of_v<tensor_base::CollectedTensorOnlyStored<StoredType>, D>)> {};
-
-/**
- * @struct IsBlockTensor
- *
- * @brief Checks to see if the tensor is a block tensor with the given storage type.
- *
- * Checks to see if the tensor inherits BlockTensorBaseNoExtra. If a type is given, also check to see if it inherits
- * the appropriate CollectedTensorBaseOnlyStored.
- *
- * @tparam D The tensor to check.
- * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
- */
-template <typename D, typename StoredType = void>
-struct IsBlockTensor
-    : std::bool_constant<std::is_base_of_v<tensor_base::BlockTensorNoExtra, D> &&
-                         (std::is_void_v<StoredType> || std::is_base_of_v<tensor_base::CollectedTensorOnlyStored<StoredType>, D>)> {};
-
-/**
- * @struct IsFunctionTensor
- *
- * @brief Checks to see if the tensor is a function tensor.
- *
- * @tparam D The tensor type to check.
- */
-template <typename D>
-struct IsFunctionTensor : public std::is_base_of<tensor_base::FunctionTensorNoExtra, D> {};
-
-/**
- * @struct IsAlgebraTensor
- *
- * @brief Checks to see if operations with the tensor can be optimized using libraries, indicated by deriving AlgebraOptimizedTensor.
- *
- * @tparam D The tensor to check.
- */
-template <typename D>
-struct IsAlgebraTensor : public std::is_base_of<tensor_base::AlgebraOptimizedTensor, D> {};
-} // namespace detail
-
 /********************************
  *      Inline definitions      *
  ********************************/
@@ -283,7 +40,12 @@ struct IsAlgebraTensor : public std::is_base_of<tensor_base::AlgebraOptimizedTen
  * @tparam D The type to check.
  */
 template <typename D>
-constexpr inline bool IsTensorV = detail::IsTensor<D>::value;
+constexpr inline bool IsTensorV = requires(D tensor) {
+    { tensor.full_view_of_underlying() } -> std::convertible_to<bool>;
+    { tensor.name() } -> std::convertible_to<std::string>;
+    tensor.dim(std::declval<int>());
+    tensor.dims();
+};
 
 /**
  * @property IsTypedTensorV
@@ -294,7 +56,10 @@ constexpr inline bool IsTensorV = detail::IsTensor<D>::value;
  * @tparam T The type the tensor should store.
  */
 template <typename D, typename T>
-constexpr inline bool IsTypedTensorV = detail::IsTypedTensor<D, T>::value;
+constexpr inline bool IsTypedTensorV = requires {
+    typename D::ValueType;
+    requires std::is_same_v<typename D::ValueType, T>;
+};
 
 /**
  * @property IsRankTensorV
@@ -305,7 +70,10 @@ constexpr inline bool IsTypedTensorV = detail::IsTypedTensor<D, T>::value;
  * @tparam Rank The rank the tensor should have. If the rank is -1, it only checks that the tensor has a rank that is known at compile time.
  */
 template <typename D, ptrdiff_t Rank = -1>
-constexpr inline bool IsRankTensorV = detail::IsRankTensor<D, Rank>::value;
+constexpr inline bool IsRankTensorV = requires {
+    D::Rank;
+    requires(Rank == -1) || (Rank == D::Rank);
+};
 
 /**
  * @param IsScalarV
@@ -317,17 +85,31 @@ constexpr inline bool IsRankTensorV = detail::IsRankTensor<D, Rank>::value;
  * @tparam D The type to check.
  */
 template <typename D>
-constexpr inline bool IsScalarV = detail::IsScalar<D>::value;
+constexpr inline bool IsScalarV = IsRankTensorV<D, 0> || !IsTensorV<D>;
 
 /**
- * @property IsLockableTensorV
+ * @property IsBasicLockableV
  *
- * @brief Tests whether the given tensor type can be locked.
+ * @brief Tests whether a given type satisfies C++'s BasicLockable requirement.
+ */
+template <typename D>
+constexpr inline bool IsBasicLockableV = requires(D var) {
+    var.lock();
+    var.unlock();
+};
+
+/**
+ * @property IsLockableV
+ *
+ * @brief Tests whether the given type satisfies C++'s Lockable requirement.
  *
  * @tparam D The tensor type to check.
  */
 template <typename D>
-constexpr inline bool IsLockableTensorV = detail::IsLockableTensor<D>::value;
+constexpr inline bool IsLockableV = requires(D var) {
+    requires IsBasicLockableV<D>;
+    { var.try_lock() } -> std::same_as<bool>;
+};
 
 /**
  * @property IsTRTensorV
@@ -342,7 +124,7 @@ constexpr inline bool IsLockableTensorV = detail::IsLockableTensor<D>::value;
  * @tparam Rank The expected rank of the tensor.
  */
 template <typename D, size_t Rank, typename T>
-constexpr inline bool IsTRTensorV = detail::IsTRTensor<D, Rank, T>::value;
+constexpr inline bool IsTRTensorV = IsTypedTensorV<D, T> && IsRankTensorV<D, Rank>;
 
 /**
  * @property IsTRLTensorV
@@ -357,7 +139,7 @@ constexpr inline bool IsTRTensorV = detail::IsTRTensor<D, Rank, T>::value;
  * @tparam T The expected storage type stored by the tensor.
  */
 template <typename D, size_t Rank, typename T>
-constexpr inline bool IsTRLTensorV = detail::IsTRLTensor<D, Rank, T>::value;
+constexpr inline bool IsTRLTensorV = IsTypedTensorV<D, T> && IsRankTensorV<D, Rank> && IsBasicLockableV<D>;
 
 /**
  * @property IsIncoreTensorV
@@ -369,7 +151,7 @@ constexpr inline bool IsTRLTensorV = detail::IsTRLTensor<D, Rank, T>::value;
  * @tparam D The tensor to check.
  */
 template <typename D>
-constexpr inline bool IsIncoreTensorV = detail::IsIncoreTensor<D>::value;
+constexpr inline bool IsIncoreTensorV = std::is_base_of_v<einsums::tensor_base::CoreTensor, D>;
 
 #if defined(EINSUMS_COMPUTE_CODE)
 /**
@@ -382,7 +164,7 @@ constexpr inline bool IsIncoreTensorV = detail::IsIncoreTensor<D>::value;
  * @tparam D The tensor to check.
  */
 template <typename D>
-constexpr inline bool IsDeviceTensorV = detail::IsDeviceTensor<D>::value;
+constexpr inline bool IsDeviceTensorV = std::is_base_of_v<einsums::tensor_base::DeviceTensor, D>;
 #endif
 
 /**
@@ -395,7 +177,7 @@ constexpr inline bool IsDeviceTensorV = detail::IsDeviceTensor<D>::value;
  * @tparam D The tensor type to check.
  */
 template <typename D>
-constexpr inline bool IsDiskTensorV = detail::IsDiskTensor<D>::value;
+constexpr inline bool IsDiskTensorV = std::is_base_of_v<einsums::tensor_base::DiskTensor, D>;
 
 /**
  * @property IsTensorViewV
@@ -407,7 +189,7 @@ constexpr inline bool IsDiskTensorV = detail::IsDiskTensor<D>::value;
  * @tparam D The tensor type to check.
  */
 template <typename D>
-constexpr inline bool IsTensorViewV = detail::IsTensorView<D>::value;
+constexpr inline bool IsTensorViewV = requires { typename D::underlying_type; };
 
 /**
  * @property IsViewOfV
@@ -420,7 +202,10 @@ constexpr inline bool IsTensorViewV = detail::IsTensorView<D>::value;
  * @tparam Viewed The type of tensor expected to be viewed.
  */
 template <typename D, typename Viewed>
-constexpr inline bool IsViewOfV = detail::IsViewOf<D, Viewed>::value;
+constexpr inline bool IsViewOfV = requires {
+    requires IsTensorViewV<D>;
+    requires std::is_same_v<typename D::underlying_type, Viewed>;
+};
 
 /**
  * @property IsBasicTensorV
@@ -432,7 +217,11 @@ constexpr inline bool IsViewOfV = detail::IsViewOf<D, Viewed>::value;
  * @tparam D The tensor to check.
  */
 template <typename D>
-constexpr inline bool IsBasicTensorV = detail::IsBasicTensor<D>::value;
+constexpr inline bool IsBasicTensorV = requires(D tensor) {
+    tensor.data();
+    tensor.stride(0);
+    tensor.strides();
+};
 
 /**
  * @property IsCollectedTensorV
@@ -445,8 +234,11 @@ constexpr inline bool IsBasicTensorV = detail::IsBasicTensor<D>::value;
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
  */
-template <typename D, typename StoredType = void>
-constexpr inline bool IsCollectedTensorV = detail::IsCollectedTensor<D, StoredType>::value;
+template <typename D, typename stored_type = void>
+constexpr inline bool IsCollectedTensorV = requires {
+    typename D::StoredType;
+    requires std::is_same_v<stored_type, void> || std::is_same_v<stored_type, typename D::StoredType>;
+};
 
 /**
  * @property IsTiledTensorV
@@ -460,7 +252,10 @@ constexpr inline bool IsCollectedTensorV = detail::IsCollectedTensor<D, StoredTy
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
  */
 template <typename D, typename StoredType = void>
-constexpr inline bool IsTiledTensorV = detail::IsTiledTensor<D, StoredType>::value;
+constexpr inline bool IsTiledTensorV = requires {
+    requires std::is_base_of_v<einsums::tensor_base::TiledTensorNoExtra, D>;
+    requires std::is_same_v<StoredType, void> || std::is_same_v<typename D::StoredType, StoredType>;
+};
 
 /**
  * @property IsBlockTensorV
@@ -474,7 +269,29 @@ constexpr inline bool IsTiledTensorV = detail::IsTiledTensor<D, StoredType>::val
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
  */
 template <typename D, typename StoredType = void>
-constexpr inline bool IsBlockTensorV = detail::IsBlockTensor<D, StoredType>::value;
+constexpr inline bool IsBlockTensorV = requires {
+    requires std::is_base_of_v<einsums::tensor_base::BlockTensorNoExtra, D>;
+    requires std::is_same_v<StoredType, void> || std::is_same_v<typename D::StoredType, StoredType>;
+};
+
+namespace detail {
+
+template <size_t index>
+int get_zero() {
+    return 0;
+}
+
+template <typename T, size_t... ints>
+constexpr bool test_application(std::index_sequence<ints...> const &) {
+    return false;
+}
+
+template <typename T, size_t... ints>
+    requires requires(T tensor, std::index_sequence<ints...> seq) { tensor(get_zero<ints>()...); }
+constexpr bool test_application(std::index_sequence<ints...> const &) {
+    return true;
+}
+} // namespace detail
 
 /**
  * @property IsFunctionTensorV
@@ -484,7 +301,10 @@ constexpr inline bool IsBlockTensorV = detail::IsBlockTensor<D, StoredType>::val
  * @tparam D The tensor type to check.
  */
 template <typename D>
-constexpr inline bool IsFunctionTensorV = detail::IsFunctionTensor<D>::value;
+constexpr inline bool IsFunctionTensorV = requires {
+    requires detail::test_application<D>(std::make_index_sequence<D::Rank>());
+    requires IsRankTensorV<D>;
+};
 
 /**
  * @property IsAlgebraTensorV
@@ -494,7 +314,7 @@ constexpr inline bool IsFunctionTensorV = detail::IsFunctionTensor<D>::value;
  * @tparam D The tensor to check.
  */
 template <typename D>
-constexpr inline bool IsAlgebraTensorV = detail::IsAlgebraTensor<D>::value;
+constexpr inline bool IsAlgebraTensorV = std::is_base_of_v<einsums::tensor_base::AlgebraOptimizedTensor, D>;
 
 /**************************************
  *        Combined expressions        *
@@ -851,14 +671,24 @@ template <typename D, ptrdiff_t Rank = -1>
 concept RankTensorConcept = IsRankTensorV<D, Rank>;
 
 /**
- * @concept LockableTensorConcept
+ * @concept BasicLockableConcept
  *
- * @brief Tests whether the given tensor type can be locked.
+ * @brief Tests whether the given type statisfies the C++ BasicLockable requirement.
  *
  * @tparam D The tensor type to check.
  */
 template <typename D>
-concept LockableTensorConcept = IsLockableTensorV<D>;
+concept BasicLockableConcept = IsBasicLockableV<D>;
+
+/**
+ * @concept LockableConcept
+ *
+ * @brief Tests whether the given type satisfies the C++ Lockable requirement.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+concept LockableConcept = IsLockableV<D>;
 
 /**
  * @concept TRTensorConcept

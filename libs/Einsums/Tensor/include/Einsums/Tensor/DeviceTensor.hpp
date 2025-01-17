@@ -263,15 +263,15 @@ class HostDevReference {
  * @tparam T The type of the data managed by the tensor.
  * @tparam Rank The rank of the tensor.
  */
-template <typename T, size_t Rank>
-struct DeviceTensor : public virtual einsums::tensor_base::DeviceTensor,
-                      virtual einsums::tensor_base::BasicTensor<T, Rank>,
-                      virtual einsums::tensor_base::AlgebraOptimizedTensor,
-                      virtual tensor_base::DeviceTypedTensor<T>,
-                      virtual tensor_base::LockableTensor {
+template <typename T, size_t rank>
+struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
+                      einsums::tensor_base::AlgebraOptimizedTensor,
+                      design_pats::Lockable<std::recursive_mutex> {
   public:
-    using dev_datatype  = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
-    using host_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
+    using dev_datatype           = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
+    using host_datatype          = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
+    using ValueType              = T;
+    constexpr static size_t Rank = rank;
 
     /**
      * @brief Construct a new tensor on the GPU.
@@ -465,7 +465,7 @@ struct DeviceTensor : public virtual einsums::tensor_base::DeviceTensor,
      *
      * @return T* A pointer to the data.
      */
-    host_datatype *data() override { return _host_data; }
+    host_datatype *data() { return _host_data; }
 
     /**
      * @brief Returns a pointer to the host-readable data.
@@ -476,7 +476,7 @@ struct DeviceTensor : public virtual einsums::tensor_base::DeviceTensor,
      *
      * @return const T* An immutable pointer to the data.
      */
-    host_datatype const *data() const override { return _host_data; }
+    host_datatype const *data() const { return _host_data; }
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -589,8 +589,8 @@ struct DeviceTensor : public virtual einsums::tensor_base::DeviceTensor,
      */
     template <typename... MultiIndex>
         requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
-    auto
-    operator()(MultiIndex... index) -> DeviceTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>;
+    auto operator()(MultiIndex... index)
+        -> DeviceTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>;
 
     /**
      * @brief Subscripts into the tensor and creates a view.
@@ -656,7 +656,7 @@ struct DeviceTensor : public virtual einsums::tensor_base::DeviceTensor,
     /**
      * @brief Get the dimension for the given rank.
      */
-    size_t dim(int d) const override {
+    size_t dim(int d) const {
         // Add support for negative indices.
         if (d < 0)
             d += Rank;
@@ -666,7 +666,7 @@ struct DeviceTensor : public virtual einsums::tensor_base::DeviceTensor,
     /**
      * @brief Get all the dimensions.
      */
-    Dim<Rank> dims() const override { return _dims; }
+    Dim<Rank> dims() const { return _dims; }
 
     /**
      * @brief Get the dimensions available to the GPU.
@@ -681,17 +681,17 @@ struct DeviceTensor : public virtual einsums::tensor_base::DeviceTensor,
     /**
      * @brief Get the name of the tensor.
      */
-    std::string const &name() const override { return _name; }
+    std::string const &name() const { return _name; }
 
     /**
      * @brief Set the name of the tensor.
      */
-    void set_name(std::string const &name) override { _name = name; }
+    void set_name(std::string const &name) { _name = name; }
 
     /**
      * @brief Get the stride of the given rank.
      */
-    size_t stride(int d) const noexcept override {
+    size_t stride(int d) const noexcept {
         if (d < 0)
             d += Rank;
         return _strides[d];
@@ -700,7 +700,7 @@ struct DeviceTensor : public virtual einsums::tensor_base::DeviceTensor,
     /**
      * @brief Get all the strides.
      */
-    Stride<Rank> strides() const noexcept override { return _strides; }
+    Stride<Rank> strides() const noexcept { return _strides; }
 
     /**
      * @brief Get the strides available to the GPU.
@@ -728,7 +728,7 @@ struct DeviceTensor : public virtual einsums::tensor_base::DeviceTensor,
     /**
      * @brief Whether this object is the full view.
      */
-    bool full_view_of_underlying() const noexcept override { return true; }
+    bool full_view_of_underlying() const noexcept { return true; }
 
     /**
      * Return the mode of the tensor.
@@ -821,14 +821,13 @@ struct DeviceTensor : public virtual einsums::tensor_base::DeviceTensor,
  * Implementation for a zero-rank tensor.
  */
 template <typename T>
-struct DeviceTensor<T, 0> : public virtual tensor_base::DeviceTensor,
-                            virtual tensor_base::BasicTensor<T, 0>,
-                            virtual tensor_base::DeviceTypedTensor<T>,
-                            virtual tensor_base::LockableTensor,
-                            virtual tensor_base::AlgebraOptimizedTensor {
+struct DeviceTensor<T, 0>
+    : public tensor_base::DeviceTensor, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
   public:
-    using dev_datatype  = typename tensor_base::DeviceTypedTensor<T>::dev_datatype;
-    using host_datatype = typename tensor_base::DeviceTypedTensor<T>::host_datatype;
+    using dev_datatype           = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
+    using host_datatype          = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
+    using ValueType              = T;
+    constexpr static size_t Rank = rank;
 
     /**
      * @brief Construct a new tensor on the GPU.
@@ -922,8 +921,8 @@ struct DeviceTensor<T, 0> : public virtual tensor_base::DeviceTensor,
     auto               gpu_data() -> dev_datatype               *{ return _data; }
     [[nodiscard]] auto gpu_data() const -> dev_datatype const * { return _data; }
 
-    auto               data() -> host_datatype               *override { return _host_data; }
-    [[nodiscard]] auto data() const -> host_datatype const * override { return _host_data; }
+    auto               data() -> host_datatype               *{ return _host_data; }
+    [[nodiscard]] auto data() const -> host_datatype const * { return _host_data; }
 
     auto operator=(DeviceTensor<T, 0> const &other) -> DeviceTensor<T, 0> & {
         hip_catch(hipMemcpyAsync((void *)_data, (void const *)other.gpu_data(), sizeof(T), hipMemcpyDeviceToDevice, gpu::get_stream()));
@@ -1020,24 +1019,24 @@ struct DeviceTensor<T, 0> : public virtual tensor_base::DeviceTensor,
         }
     }
 
-    [[nodiscard]] auto name() const -> std::string const & override { return _name; }
-    void               set_name(std::string const &name) override { _name = name; }
+    [[nodiscard]] auto name() const -> std::string const & { return _name; }
+    void               set_name(std::string const &name) { _name = name; }
 
-    [[nodiscard]] auto dim(int) const -> size_t override { return 1; }
+    [[nodiscard]] auto dim(int) const -> size_t { return 1; }
 
-    [[nodiscard]] auto dims() const -> Dim<0> override { return Dim<0>{}; }
+    [[nodiscard]] auto dims() const -> Dim<0> { return Dim<0>{}; }
 
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return true; }
+    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return true; }
 
     /**
      * @brief Get the stride of the given rank.
      */
-    [[nodiscard]] auto stride(int d) const noexcept -> size_t override { return 0; }
+    [[nodiscard]] auto stride(int d) const noexcept -> size_t { return 0; }
 
     /**
      * @brief Get all the strides.
      */
-    auto strides() const noexcept -> Stride<0> override { return Stride<0>{}; }
+    auto strides() const noexcept -> Stride<0> { return Stride<0>{}; }
 
     /**********************************************
      * Interface between device and host tensors. *
@@ -1117,15 +1116,15 @@ struct DeviceTensor<T, 0> : public virtual tensor_base::DeviceTensor,
 };
 
 template <typename T, size_t Rank>
-struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
-                          virtual tensor_base::DeviceTensor,
-                          virtual tensor_base::TensorView<DeviceTensor<T, Rank>>,
-                          virtual tensor_base::DeviceTypedTensor<T>,
-                          virtual tensor_base::LockableTensor,
-                          virtual tensor_base::AlgebraOptimizedTensor {
+struct DeviceTensorView : public tensor_base::DeviceTensor,
+                          design_pats::Lockable<std::recursive_mutex>,
+                          tensor_base::AlgebraOptimizedTensor {
   public:
-    using dev_datatype  = typename tensor_base::DeviceTypedTensor<T>::dev_datatype;
-    using host_datatype = typename tensor_base::DeviceTypedTensor<T>::host_datatype;
+    using dev_datatype           = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
+    using host_datatype          = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
+    using ValueType              = T;
+    constexpr static size_t Rank = rank;
+    using underlying_type        = DeviceTensor<T, Rank>
 
     DeviceTensorView() = delete;
 
@@ -1268,7 +1267,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
      *
      * @return T* A pointer to the data.
      */
-    host_datatype *data() override { return _host_data; }
+    host_datatype *data() { return _host_data; }
 
     /**
      * @brief Returns a pointer to the host-readable data.
@@ -1279,7 +1278,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
      *
      * @return const T* An immutable pointer to the data.
      */
-    host_datatype const *data() const override { return _host_data; }
+    host_datatype const *data() const { return _host_data; }
 
     /**
      * @brief Get a pointer to the GPU data.
@@ -1322,7 +1321,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     /**
      * @brief Get the dimension of the given rank.
      */
-    size_t dim(int d) const override {
+    size_t dim(int d) const {
         if (d < 0)
             d += Rank;
         return _dims[d];
@@ -1331,7 +1330,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     /**
      * @brief Get the dimensions of the view.
      */
-    Dim<Rank> dims() const override { return _dims; }
+    Dim<Rank> dims() const { return _dims; }
 
     /**
      * @brief Get the dimensions of the view made available to the GPU.
@@ -1346,17 +1345,17 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     /**
      * @brief Get the name of the view.
      */
-    std::string const &name() const override { return _name; }
+    std::string const &name() const { return _name; }
 
     /**
      * @brief Set the name of the view.
      */
-    void set_name(std::string const &name) override { _name = name; }
+    void set_name(std::string const &name) { _name = name; }
 
     /**
      * @brief Get the stride of the given rank.
      */
-    size_t stride(int d) const noexcept override {
+    size_t stride(int d) const noexcept {
         if (d < 0)
             d += Rank;
         return _strides[d];
@@ -1365,7 +1364,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     /**
      * @brief Get the strides of the view.
      */
-    Stride<Rank> strides() const noexcept override { return _strides; }
+    Stride<Rank> strides() const noexcept { return _strides; }
 
     /**
      * @brief Get the strides of the view made available to the GPU.
@@ -1385,7 +1384,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     /**
      * @brief Whether the view wraps all the data.
      */
-    bool full_view_of_underlying() const noexcept override { return _full_view_of_underlying; }
+    bool full_view_of_underlying() const noexcept { return _full_view_of_underlying; }
 
     /**
      * @brief Get the size of the view.
@@ -1508,5 +1507,5 @@ namespace einsums {
 TENSOR_EXPORT_RANK(DeviceTensor, 0)
 TENSOR_EXPORT(DeviceTensor)
 TENSOR_EXPORT(DeviceTensorView)
-}
+} // namespace einsums
 #endif

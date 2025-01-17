@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include "Einsums/DesignPatterns/Lockable.hpp"
+
 namespace einsums {
 
 /**
@@ -29,10 +31,11 @@ namespace einsums {
  * @tparam T The data type stored by the tensor.
  * @tparam Rank The rank of the tensor.
  */
-template <typename T, size_t Rank>
-struct DiskTensor final : public virtual tensor_base::DiskTensor,
-                          virtual tensor_base::Tensor<T, Rank>,
-                          virtual tensor_base::LockableTensor {
+template <typename T, size_t rank>
+struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<std::recursive_mutex> {
+
+    using ValueType              = T;
+    constexpr static size_t Rank = rank;
 
     /**
      * Default constructor.
@@ -52,7 +55,7 @@ struct DiskTensor final : public virtual tensor_base::DiskTensor,
     /**
      * Default destructor.
      */
-    ~DiskTensor() override = default;
+    ~DiskTensor() = default;
 
     /**
      * Create a new disk tensor bound to a file.
@@ -186,12 +189,12 @@ struct DiskTensor final : public virtual tensor_base::DiskTensor,
      *
      * @param d The axis to query.
      */
-    size_t dim(int d) const override { return _dims[d]; }
+    size_t dim(int d) const { return _dims[d]; }
 
     /**
      * Get the dimensions.
      */
-    Dim<Rank> dims() const override { return _dims; }
+    Dim<Rank> dims() const { return _dims; }
 
     /**
      * Check whether the data already existed on disk.
@@ -208,24 +211,28 @@ struct DiskTensor final : public virtual tensor_base::DiskTensor,
     /**
      * Get the name of the tensor.
      */
-    std::string const &name() const override { return _name; }
+    std::string const &name() const { return _name; }
 
     /**
      * Set the name of the tensor.
      */
-    void set_name(std::string const &new_name) override { _name = new_name; }
+    void set_name(std::string const &new_name) { _name = new_name; }
 
     /**
      * Get the stride along a given axis.
      */
     size_t stride(int d) const { return _strides[d]; }
 
+    Stride<Rank> strides() const { return _strides; }
+
+    constexpr bool full_view_of_underlying() { return true; }
+
     /// This creates a Disk object with its Rank being equal to the number of All{} parameters
     /// Range is not inclusive. Range{10, 11} === size of 1
     template <typename... MultiIndex>
         requires(count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0)
-    auto
-    operator()(MultiIndex... index) -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank> {
+    auto operator()(MultiIndex... index)
+        -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank> {
         // Get positions of All
         auto all_positions = get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
             arguments::positions_of_type<AllT, MultiIndex...>());
@@ -378,16 +385,16 @@ struct DiskTensor final : public virtual tensor_base::DiskTensor,
  * @tparam ViewRank The rank of the view.
  * @tparam Rank The rank of the DiskTensor being viewed.
  */
-template <typename T, size_t ViewRank, size_t Rank>
-struct DiskView final : virtual tensor_base::DiskTensor,
-                        virtual tensor_base::TensorView<DiskTensor<T, Rank>>,
-                        virtual tensor_base::LockableTensor,
-                        virtual tensor_base::Tensor<T, ViewRank> {
+template <typename T, size_t ViewRank, size_t rank>
+struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recursive_mutex> {
+    using ValueType              = T;
+    constexpr static size_t Rank = ViewRank;
+    using underlying_type = einsums::DiskTensor<T, rank>;
     /**
      * Construct a view of a tensor with the given dimensions, counts, strides, and offsets.
      */
-    DiskView(einsums::DiskTensor<T, Rank> &parent, Dim<ViewRank> const &dims, Count<Rank> const &counts, Offset<Rank> const &offsets,
-             Stride<Rank> const &strides)
+    DiskView(einsums::DiskTensor<T, rank> &parent, Dim<ViewRank> const &dims, Count<rank> const &counts, Offset<rank> const &offsets,
+             Stride<rank> const &strides)
         : _parent(parent), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides), _tensor{_dims} {
         h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
     };
@@ -395,9 +402,9 @@ struct DiskView final : virtual tensor_base::DiskTensor,
     /**
      * Construct a view of a tensor with the given dimensions, counts, strides, and offsets.
      */
-    DiskView(einsums::DiskTensor<T, Rank> const &parent, Dim<ViewRank> const &dims, Count<Rank> const &counts, Offset<Rank> const &offsets,
-             Stride<Rank> const &strides)
-        : _parent(const_cast<einsums::DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides),
+    DiskView(einsums::DiskTensor<T, rank> const &parent, Dim<ViewRank> const &dims, Count<rank> const &counts, Offset<rank> const &offsets,
+             Stride<rank> const &strides)
+        : _parent(const_cast<einsums::DiskTensor<T, rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides),
           _tensor{_dims} {
         // Section const section("DiskView constructor");
         h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
@@ -499,22 +506,22 @@ struct DiskView final : virtual tensor_base::DiskTensor,
     /**
      * Get the dimension along a given axis.
      */
-    size_t dim(int d) const override { return _tensor.dim(d); }
+    size_t dim(int d) const { return _tensor.dim(d); }
 
     /**
      * Get all the dimensions of the view.
      */
-    Dim<ViewRank> dims() const override { return _tensor.dims(); }
+    Dim<ViewRank> dims() const { return _tensor.dims(); }
 
     /**
      * Get the name of the tensor.
      */
-    std::string const &name() const override { return _name; }
+    std::string const &name() const { return _name; }
 
     /**
      * Set the name of the tensor.
      */
-    void set_name(std::string const &new_name) override { _name = new_name; }
+    void set_name(std::string const &new_name) { _name = new_name; }
 
     /**
      * Cast the tensor to Tensor<T,ViewRank>.
@@ -539,14 +546,14 @@ struct DiskView final : virtual tensor_base::DiskTensor,
     /**
      * Gets whether the view is showing the whole tensor.
      */
-    bool full_view_of_underlying() const override {
+    bool full_view_of_underlying() const {
         size_t prod = 1;
         for (int i = 0; i < ViewRank; i++) {
             prod *= _dims[i];
         }
 
         size_t prod2 = 1;
-        for (int i = 0; i < Rank; i++) {
+        for (int i = 0; i < rank; i++) {
             prod2 *= _parent.dim(i);
         }
 
@@ -559,7 +566,7 @@ struct DiskView final : virtual tensor_base::DiskTensor,
      *
      * This is the tensor that the view is viewing.
      */
-    einsums::DiskTensor<T, Rank> &_parent;
+    einsums::DiskTensor<T, rank> &_parent;
 
     /**
      * @var _dims
@@ -573,21 +580,21 @@ struct DiskView final : virtual tensor_base::DiskTensor,
      *
      * @todo No clue
      */
-    Count<Rank> _counts;
+    Count<rank> _counts;
 
     /**
      * @var _offsets
      *
      * Holds where in the parent this view starts.
      */
-    Offset<Rank> _offsets;
+    Offset<rank> _offsets;
 
     /**
      * @var _strides
      *
      * Holds the strides of the parent.
      */
-    Stride<Rank> _strides;
+    Stride<rank> _strides;
 
     /**
      * @var _tensor

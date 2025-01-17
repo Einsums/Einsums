@@ -17,6 +17,8 @@
 
 #include <string>
 
+#include "Einsums/DesignPatterns/Lockable.hpp"
+
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/Tensor/DeviceTensor.hpp>
 #endif
@@ -41,14 +43,11 @@ namespace tensor_base {
  * @tparam T The type of data being stored.
  * @tparam Rank The tensor rank.
  */
-template <typename T, size_t Rank, typename TensorType>
-struct TiledTensor : public virtual CollectedTensor<TensorType>,
-                     virtual tensor_base::Tensor<T, Rank>,
-                     virtual TiledTensorNoExtra,
-                     virtual LockableTensor,
-                     virtual AlgebraOptimizedTensor {
+template <typename T, size_t rank, typename TensorType>
+struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recursive_mutex>, AlgebraOptimizedTensor {
   public:
-    using map_type = typename std::unordered_map<std::array<int, Rank>, TensorType, einsums::hashes::container_hash<std::array<int, Rank>>>;
+    using map_type = typename std::unordered_map<std::array<int, rank>, TensorType, einsums::hashes::container_hash<std::array<int, rank>>>;
+    constexpr static size_t Rank = rank;
 
   protected:
     std::array<std::vector<int>, Rank> _tile_offsets, _tile_sizes;
@@ -70,6 +69,9 @@ struct TiledTensor : public virtual CollectedTensor<TensorType>,
     friend struct TiledTensorBase;
 
   public:
+    using ValueType  = T;
+    using StoredType = TensorType;
+
     /**
      * Create a new empty tiled tensor.
      */
@@ -799,14 +801,14 @@ struct TiledTensor : public virtual CollectedTensor<TensorType>,
     /**
      * Get the name.
      */
-    virtual std::string const &name() const override { return _name; }
+    virtual std::string const &name() const { return _name; }
 
     /**
      * Sets the name.
      *
      * @param val The new name.
      */
-    virtual void set_name(std::string const &val) override { _name = val; }
+    virtual void set_name(std::string const &val) { _name = val; }
 
     /**
      * Gets the size of the tensor.
@@ -828,14 +830,14 @@ struct TiledTensor : public virtual CollectedTensor<TensorType>,
      */
     size_t num_filled() const { return _tiles.size(); }
 
-    virtual bool full_view_of_underlying() const override { return true; }
+    virtual bool full_view_of_underlying() const { return true; }
 
     /**
      * @brief Get the dimensions.
      */
-    virtual size_t dim(int d) const override { return _dims.at(d); }
+    virtual size_t dim(int d) const { return _dims.at(d); }
 
-    virtual Dim<Rank> dims() const override { return _dims; }
+    virtual Dim<Rank> dims() const { return _dims; }
 
     /**
      * Check to see if the given tile has zero size.
@@ -895,7 +897,7 @@ struct TiledTensor : public virtual CollectedTensor<TensorType>,
 } // namespace tensor_base
 
 template <typename T, size_t Rank>
-struct TiledTensor final : public virtual tensor_base::TiledTensor<T, Rank, einsums::Tensor<T, Rank>>, virtual tensor_base::CoreTensor {
+struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Tensor<T, Rank>>, tensor_base::CoreTensor {
   protected:
     void add_tile(std::array<int, Rank> pos) override {
         std::string tile_name = this->_name + " - (";
@@ -954,9 +956,7 @@ struct TiledTensor final : public virtual tensor_base::TiledTensor<T, Rank, eins
 };
 
 template <typename T, size_t Rank>
-struct TiledTensorView final : public virtual tensor_base::TiledTensor<T, Rank, einsums::TensorView<T, Rank>>,
-                               virtual tensor_base::TensorView<TiledTensor<T, Rank>>,
-                               virtual tensor_base::CoreTensor {
+struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums::TensorView<T, Rank>>, tensor_base::CoreTensor {
   private:
     bool _full_view_of_underlying{false};
 
@@ -965,6 +965,8 @@ struct TiledTensorView final : public virtual tensor_base::TiledTensor<T, Rank, 
     }
 
   public:
+    using underlying_type = TiledTensor<T, Rank>;
+
     TiledTensorView() = default;
 
     template <typename... Sizes>
@@ -986,8 +988,7 @@ struct TiledTensorView final : public virtual tensor_base::TiledTensor<T, Rank, 
 
 #ifdef __HIP__
 template <typename T, size_t Rank>
-struct TiledDeviceTensor final : public virtual tensor_base::TiledTensor<T, Rank, einsums::DeviceTensor<T, Rank>>,
-                                 virtual tensor_base::DeviceTensor {
+struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsums::DeviceTensor<T, Rank>>, tensor_base::DeviceTensor {
   private:
     detail::HostToDeviceMode _mode{detail::DEV_ONLY};
 
@@ -1108,9 +1109,7 @@ struct TiledDeviceTensor final : public virtual tensor_base::TiledTensor<T, Rank
 };
 
 template <typename T, size_t Rank>
-struct TiledDeviceTensorView final : public virtual tensor_base::TiledTensor<T, Rank, DeviceTensorView<T, Rank>>,
-                                     virtual tensor_base::DeviceTensor,
-                                     virtual tensor_base::TensorView<TiledDeviceTensor<T, Rank>> {
+struct TiledDeviceTensorView final : public tensor_base::TiledTensor<T, Rank, DeviceTensorView<T, Rank>>, tensor_base::DeviceTensor {
   private:
     bool                     _full_view_of_underlying{false};
     detail::HostToDeviceMode _mode{detail::DEV_ONLY};
@@ -1120,6 +1119,7 @@ struct TiledDeviceTensorView final : public virtual tensor_base::TiledTensor<T, 
     }
 
   public:
+    using underlying_type   = TiledDeviceTensor<T, Rank>;
     TiledDeviceTensorView() = default;
 
     template <typename... Sizes>

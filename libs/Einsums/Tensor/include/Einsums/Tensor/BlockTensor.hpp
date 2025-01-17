@@ -16,6 +16,7 @@
 #include <concepts>
 #include <functional>
 #include <string>
+#include "Einsums/DesignPatterns/Lockable.hpp"
 
 // TODO:
 #ifdef EINSUMS_COMPUTE_CODE
@@ -36,13 +37,15 @@ namespace tensor_base {
  * @tparam Rank The rank of the tensor
  * @tparam TensorType The underlying type for the tensors.
  */
-template <typename T, size_t Rank, typename TensorType>
-struct BlockTensor : public virtual CollectedTensor<TensorType>,
-                     virtual Tensor<T, Rank>,
-                     virtual BlockTensorNoExtra,
-                     virtual LockableTensor,
-                     virtual AlgebraOptimizedTensor {
+template <typename T, size_t rank, typename TensorType>
+struct BlockTensor : public BlockTensorNoExtra,
+                     public design_pats::Lockable<std::recursive_mutex>,
+                     AlgebraOptimizedTensor {
   public:
+    using StoredType = TensorType;
+    constexpr static size_t Rank = rank;
+    using ValueType = T;
+
     /**
      * @name Constructors
      * @{
@@ -223,7 +226,7 @@ struct BlockTensor : public virtual CollectedTensor<TensorType>,
     /**
      * Destroy the BlockTensor object.
      */
-    virtual ~BlockTensor() = default;
+    ~BlockTensor() = default;
     // End constructor group
     /**
      * @}
@@ -852,7 +855,7 @@ struct BlockTensor : public virtual CollectedTensor<TensorType>,
     /**
      * @brief Return the dimensions of this tensor.
      */
-    virtual Dim<Rank> dims() const override {
+    virtual Dim<Rank> dims() const {
         Dim<Rank> out;
         out.fill(_dim);
         return out;
@@ -863,7 +866,7 @@ struct BlockTensor : public virtual CollectedTensor<TensorType>,
      *
      * Because the tensor is square, the argument is ignored.
      */
-    virtual size_t dim(int dim) const override { return _dim; }
+    virtual size_t dim(int dim) const { return _dim; }
 
     /**
      * @brief Return the dimension of this tensor along the first axis.
@@ -896,12 +899,12 @@ struct BlockTensor : public virtual CollectedTensor<TensorType>,
     /**
      * @brief Gets the name of the tensor.
      */
-    [[nodiscard]] std::string const &name() const override { return _name; }
+    [[nodiscard]] std::string const &name() const { return _name; }
 
     /**
      * @brief Sets the name of the tensor.
      */
-    void set_name(std::string const &name) override { _name = name; }
+    void set_name(std::string const &name) { _name = name; }
 
     /**
      * @brief Gets the name of a block.
@@ -933,19 +936,19 @@ struct BlockTensor : public virtual CollectedTensor<TensorType>,
     /**
      * @brief Returns true if all of the elements are viewed by this tensor.
      */
-    [[nodiscard]] bool full_view_of_underlying() const noexcept override { return true; }
+    [[nodiscard]] bool full_view_of_underlying() const noexcept { return true; }
 
-    // virtual void lock() const override { LockableTensor::lock(); }
+    void lock() const { Lockable::lock(); }
 
-    // virtual void unlock() const override { LockableTensor::unlock(); }
+    void unlock() const { Lockable::unlock(); }
 
-    // virtual bool try_lock() const override { return LockableTensor::try_lock(); }
+    bool try_lock() const { return Lockable::try_lock(); }
 
     /**
      * Lock a specific block.
      */
     virtual void lock(int block) const {
-        if constexpr (einsums::IsLockableTensorV<TensorType>) {
+        if constexpr (einsums::IsLockableV<TensorType>) {
             _blocks.at(block).lock();
         }
     }
@@ -954,7 +957,7 @@ struct BlockTensor : public virtual CollectedTensor<TensorType>,
      * Try to lock a specific block.
      */
     virtual bool try_lock(int block) const {
-        if constexpr (einsums::IsLockableTensorV<TensorType>) {
+        if constexpr (einsums::IsLockableV<TensorType>) {
             return _blocks.at(block).try_lock();
         } else {
             return true;
@@ -965,7 +968,7 @@ struct BlockTensor : public virtual CollectedTensor<TensorType>,
      * Unlock a specific block.
      */
     virtual void unlock(int block) const {
-        if constexpr (einsums::IsLockableTensorV<TensorType>) {
+        if constexpr (einsums::IsLockableV<TensorType>) {
             _blocks.at(block).unlock();
         }
     }
@@ -1059,7 +1062,7 @@ struct BlockTensor : public virtual CollectedTensor<TensorType>,
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t Rank>
-struct BlockTensor : public virtual tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, virtual tensor_base::CoreTensor {
+struct BlockTensor : public tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, tensor_base::CoreTensor {
     /**
      * @brief Construct a new BlockTensor object. Default constructor.
      */

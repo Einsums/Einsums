@@ -34,11 +34,12 @@ namespace einsums {
  * @brief Represents a tensor whose properties can be determined at runtime but not compile time.
  */
 template <typename T>
-struct EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>,
-                                      public virtual tensor_base::CoreTensor,
-                                      public virtual tensor_base::RuntimeTensorNoType {
+struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
+                                      tensor_base::RuntimeTensorNoType,
+                                      design_pats::Lockable<std::recursive_mutex> {
   public:
-    using Vector = VectorData<T>;
+    using Vector    = VectorData<T>;
+    using ValueType = T;
 
     RuntimeTensor() = default;
 
@@ -544,7 +545,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>
         }                                                                                                                                  \
         EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
         for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                         \
-            thread_local std::vector<size_t> index(rank());                                                                                             \
+            thread_local std::vector<size_t> index(rank());                                                                                \
             sentinel_to_indices(sentinel, this->_strides, index);                                                                          \
             if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
                 (*this)(index) OP(T)(RemoveComplexT<T>) b(index);                                                                          \
@@ -595,13 +596,13 @@ struct EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>
     // Returns the linear size of the tensor
     virtual auto size() const -> size_t { return _data.size(); }
 
-    virtual bool full_view_of_underlying() const noexcept override { return true; }
+    virtual bool full_view_of_underlying() const noexcept { return true; }
 
     virtual size_t rank() const noexcept { return this->_rank; }
 
-    void set_name(std::string const &new_name) override { this->_name = new_name; }
+    virtual void set_name(std::string const &new_name) { this->_name = new_name; }
 
-    std::string const &name() const noexcept override { return this->_name; }
+    virtual std::string const &name() const noexcept { return this->_name; }
 
   protected:
     Vector              _data;
@@ -622,12 +623,13 @@ struct EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>
  * @brief Represents a view of a tensor whose properties can be determined at runtime but not compile time.
  */
 template <typename T>
-struct EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_base::TensorView<RuntimeTensor<T>>,
-                                          public virtual tensor_base::TypedTensor<T>,
-                                          public virtual tensor_base::CoreTensor,
-                                          public virtual tensor_base::RuntimeTensorNoType,
-                                          public virtual tensor_base::RuntimeTensorViewNoType {
+struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
+                                          public tensor_base::RuntimeTensorNoType,
+                                          public tensor_base::RuntimeTensorViewNoType,
+                                          public design_pats::Lockable<std::recursive_mutex> {
   public:
+    using ValueType = T;
+
     RuntimeTensorView() = default;
 
     RuntimeTensorView(RuntimeTensorView<T> const &copy) = default;
@@ -1370,11 +1372,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_base::TensorView
     // Returns the linear size of the tensor
     virtual auto size() const noexcept -> size_t { return _size; }
 
-    virtual bool full_view_of_underlying() const noexcept override { return true; }
+    virtual bool full_view_of_underlying() const noexcept { return true; }
 
-    virtual std::string const &name() const override { return _name; };
+    virtual std::string const &name() const { return _name; };
 
-    virtual void set_name(std::string const &new_name) override { _name = new_name; };
+    virtual void set_name(std::string const &new_name) { _name = new_name; };
 
     virtual size_t rank() const noexcept { return _rank; }
 

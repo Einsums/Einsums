@@ -23,7 +23,7 @@ namespace detail {}
 
 template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T>
     requires requires {
-        requires std::derived_from<CType<T, CRank>, tensor_base::Tensor<T, CRank>>;
+        requires TensorConcept<CType<T, CRank>>;
         requires !BlockTensorConcept<CType<T, CRank>>;
     }
 auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt) -> void {

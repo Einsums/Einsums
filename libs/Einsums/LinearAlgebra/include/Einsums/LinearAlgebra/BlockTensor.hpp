@@ -207,11 +207,11 @@ template <BlockTensorConcept AType, BlockTensorConcept BType>
     requires SameRank<AType, BType>
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     if (A.num_blocks() != B.num_blocks()) {
-        return dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
+        return dot(typename AType::StoredType(A), typename BType::StoredType(B));
     }
 
     if (A.ranges() != B.ranges()) {
-        return dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
+        return dot(typename AType::StoredType(A), typename BType::StoredType(B));
     }
 
     using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
@@ -233,11 +233,11 @@ template <BlockTensorConcept AType, BlockTensorConcept BType>
     requires SameRank<AType, BType>
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     if (A.num_blocks() != B.num_blocks()) {
-        return true_dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
+        return true_dot(typename AType::StoredType(A), typename BType::StoredType(B));
     }
 
     if (A.ranges() != B.ranges()) {
-        return true_dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
+        return true_dot(typename AType::StoredType(A), typename BType::StoredType(B));
     }
 
     using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
@@ -259,11 +259,11 @@ template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept
     requires SameRank<AType, BType, CType>
 auto dot(AType const &A, BType const &B, CType const &C) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType> {
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C.num_blocks() || B.num_blocks() != C.num_blocks()) {
-        return dot(AType::tensor_type(A), BType::tensor_type(B), CType::tensor_type(C));
+        return dot(AType::StoredType(A), BType::StoredType(B), CType::StoredType(C));
     }
 
     if (A.ranges() != B.ranges() || A.ranges() != C.ranges() || B.ranges() != C.ranges()) {
-        return dot(AType::tensor_type(A), BType::tensor_type(B), CType::tensor_type(C));
+        return dot(AType::StoredType(A), BType::StoredType(B), CType::StoredType(C));
     }
 
     using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType>;
