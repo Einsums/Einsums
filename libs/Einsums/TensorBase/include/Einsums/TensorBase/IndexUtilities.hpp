@@ -362,13 +362,13 @@ inline size_t indices_to_sentinel(std::array<size_t, num_unique_inds> const &uni
 namespace detail {
 
 template <size_t index, size_t num_unique_inds, typename FirstIndex>
-    requires(std::is_integral_v<FirstIndex>)
+    requires(std::is_integral_v<std::decay_t<FirstIndex>>)
 inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, FirstIndex &&first_index) {
     return std::get<index>(unique_strides) * first_index;
 }
 
 template <size_t index, size_t num_unique_inds, typename FirstIndex, typename... MultiIndex>
-    requires(std::is_integral_v<MultiIndex> && ... && std::is_integral_v<FirstIndex>)
+    requires(std::is_integral_v<std::decay_t<MultiIndex>> && ... && std::is_integral_v<std::decay_t<FirstIndex>>)
 inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, FirstIndex &&first_index,
                                   MultiIndex &&...indices) {
     return std::get<index>(unique_strides) * first_index +
@@ -376,10 +376,9 @@ inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> cons
 }
 } // namespace detail
 
-template <size_t num_unique_inds, typename FirstIndex, typename... MultiIndex>
-    requires(std::is_integral_v<MultiIndex> && ... && std::is_integral_v<FirstIndex>)
-inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, FirstIndex &&first_index,
-                                  MultiIndex &&...indices) {
+template <size_t num_unique_inds, typename... MultiIndex>
+    requires(std::is_integral_v<std::decay_t<MultiIndex>> && ...)
+inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, MultiIndex &&...indices) {
     return detail::indices_to_sentinel<0>(unique_strides, std::forward<MultiIndex>(indices)...);
 }
 
