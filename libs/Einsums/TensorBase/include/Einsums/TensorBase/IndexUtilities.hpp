@@ -334,6 +334,19 @@ EINSUMS_HOSTDEV inline size_t indices_to_sentinel(size_t const *unique_strides, 
 }
 
 template <size_t num_unique_inds>
+inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides,
+                                  std::array<size_t, num_unique_inds> const &inds) {
+    size_t out = 0;
+
+#pragma unroll
+    for (size_t i = 0; i < num_unique_inds; i++) {
+        out += inds[i] * unique_strides[i];
+    }
+
+    return out;
+}
+
+template <size_t num_unique_inds>
 inline size_t indices_to_sentinel(std::array<size_t, num_unique_inds> const &unique_strides,
                                   std::array<size_t, num_unique_inds> const &inds) {
     size_t out = 0;
