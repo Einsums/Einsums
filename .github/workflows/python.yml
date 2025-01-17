@@ -150,7 +150,7 @@ jobs:
             -D EINSUMS_BUILD_PYTHON="${{matrix.python_version}}" \
             -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
-            -D EINSUMS_COVERAGE=ON \
+            -D EINSUMS_WITH_COVERAGE=ON \
             ${{ matrix.cmargs }}
 
       - name: Build & Install
