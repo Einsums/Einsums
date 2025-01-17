@@ -374,7 +374,8 @@ struct Tensor : virtual tensor_base::CoreTensor,
         static_assert(sizeof...(MultiIndex) == Rank);
 
         auto   index_list = std::array{static_cast<size_t>(index)...};
-        size_t ordinal    = indices_to_sentinel(_strides, _dims, index_list);
+        size_t ordinal =
+            indices_to_sentinel(static_cast<std::array<size_t, Rank>>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
 
         return _data[ordinal];
     }
@@ -428,7 +429,8 @@ struct Tensor : virtual tensor_base::CoreTensor,
 
         auto index_list = std::array{static_cast<size_t>(index)...};
 
-        size_t ordinal = indices_to_sentinel(_strides, _dims, index_list);
+        size_t ordinal =
+            indices_to_sentinel(static_cast<std::array<size_t, Rank>>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
         return _data[ordinal];
     }
 
@@ -1305,9 +1307,10 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     template <typename... MultiIndex>
     auto subscript(MultiIndex... index) const -> T const & {
         static_assert(sizeof...(MultiIndex) == Rank);
-        const auto index_list = std::array{static_cast<size_t>(index)...};
+        auto const index_list = std::array{static_cast<size_t>(index)...};
 
-        size_t ordinal = indices_to_sentinel(_strides, _dims, index_list);
+        size_t ordinal =
+            indices_to_sentinel(static_cast<std::array<size_t, Rank>>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
         return _data[ordinal];
     }
 
@@ -1317,9 +1320,10 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     template <typename... MultiIndex>
     auto subscript(MultiIndex... index) -> T & {
         static_assert(sizeof...(MultiIndex) == Rank);
-        const auto index_list = std::array{static_cast<size_t>(index)...};
+        auto const index_list = std::array{static_cast<size_t>(index)...};
 
-        size_t ordinal = indices_to_sentinel(_strides, _dims, index_list);
+        size_t ordinal =
+            indices_to_sentinel(static_cast<std::array<size_t, Rank>>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
         return _data[ordinal];
     }
 
