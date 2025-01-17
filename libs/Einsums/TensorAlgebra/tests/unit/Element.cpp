@@ -108,6 +108,12 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         einsum(Indices{i, j}, &C, Indices{i, j}, A, Indices{i, j}, B);
 
+        std::stringstream stream;
+
+        fprintln(stream, C);
+
+        INFO(stream.str());
+
         for (int w = 0; w < _i; w++) {
             for (int x = 0; x < _j; x++) {
                 CHECK_THAT(C(w, x), CheckWithinRel(C0(w, x), 1.0e-5));
