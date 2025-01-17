@@ -380,7 +380,7 @@ template <size_t num_unique_inds, typename FirstIndex, typename... MultiIndex>
     requires(std::is_integral_v<MultiIndex> && ... && std::is_integral_v<FirstIndex>)
 inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, FirstIndex &&first_index,
                                   MultiIndex &&...indices) {
-    return detail::indices_to_sentinel<0>(unique_sttrides, std::forward<MultiIndex>(indices)...);
+    return detail::indices_to_sentinel<0>(unique_strides, std::forward<MultiIndex>(indices)...);
 }
 
 template <typename StorageType1, typename StorageType2>
