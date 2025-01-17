@@ -32,7 +32,7 @@ TEMPLATE_TEST_CASE("Subset TensorView", "[tensor]", float, double, std::complex<
 
         for (size_t i = 0; i < size; i++) {
             for (size_t j = 0; j < size; j++) {
-                REQUIRE(I_original.subscript(d1, i, j) == I_view(i, j));
+                REQUIRE(I_original.subscript(d1, i, j) == I_view.subscript(i, j));
             }
         }
     }
