@@ -375,7 +375,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
 
         auto   index_list = std::array{static_cast<size_t>(index)...};
         size_t ordinal =
-            indices_to_sentinel(static_cast<std::array<size_t, Rank>>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
+            indices_to_sentinel(static_cast<std::array<size_t, Rank>&>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
 
         return _data[ordinal];
     }
@@ -430,7 +430,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
         auto index_list = std::array{static_cast<size_t>(index)...};
 
         size_t ordinal =
-            indices_to_sentinel(static_cast<std::array<size_t, Rank>>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
+            indices_to_sentinel(static_cast<std::array<size_t, Rank>&>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
         return _data[ordinal];
     }
 
@@ -1310,7 +1310,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         auto const index_list = std::array{static_cast<size_t>(index)...};
 
         size_t ordinal =
-            indices_to_sentinel(static_cast<std::array<size_t, Rank>>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
+            indices_to_sentinel(static_cast<std::array<size_t, Rank>&>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
         return _data[ordinal];
     }
 
@@ -1323,7 +1323,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         auto const index_list = std::array{static_cast<size_t>(index)...};
 
         size_t ordinal =
-            indices_to_sentinel(static_cast<std::array<size_t, Rank>>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
+            indices_to_sentinel(static_cast<std::array<size_t, Rank>&>(_strides), static_cast<std::array<size_t, Rank>>(_dims), index_list);
         return _data[ordinal];
     }
 
