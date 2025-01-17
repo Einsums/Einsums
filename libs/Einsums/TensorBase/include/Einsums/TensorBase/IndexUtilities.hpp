@@ -399,9 +399,9 @@ namespace detail {
 template <size_t index, size_t num_unique_inds, typename FirstIndex, typename... MultiIndex>
     requires(std::is_integral_v<std::decay_t<MultiIndex>> && ... && std::is_integral_v<std::decay_t<FirstIndex>>)
 inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_unique_inds> const &unique_strides,
-                                                 std::array<int64_t, num_unique_inds> const &dims, FirstIndex &&first_index,
+                                                 std::array<std::int64_t, num_unique_inds> const &dims, FirstIndex &&first_index,
                                                  MultiIndex &&...indices) {
-    auto const dim        = std::get<index>(dims);
+    std::int64_t dim        = std::get<index>(dims);
     auto       temp_index = first_index;
 
     if constexpr (std::is_signed_v<FirstIndex>) {
@@ -427,7 +427,7 @@ inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_un
 template <size_t num_unique_inds, typename... MultiIndex>
     requires(std::is_integral_v<std::decay_t<MultiIndex>> && ...)
 inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_unique_inds> const &unique_strides,
-                                                 std::array<int64_t, num_unique_inds> const      &dims, MultiIndex &&...indices) {
+                                                 std::array<std::int64_t, num_unique_inds> const      &dims, MultiIndex &&...indices) {
     static_assert(sizeof...(MultiIndex) == num_unique_inds);
     return detail::indices_to_sentinel_negative_check<0>(unique_strides, dims, std::forward<MultiIndex>(indices)...);
 }

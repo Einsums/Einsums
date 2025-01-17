@@ -93,20 +93,20 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * @brief Construct a new Tensor object. Default constructor.
      */
-    constexpr Tensor() = default;
+    Tensor() = default;
 
     /**
      * @brief Construct a new Tensor object. Default copy constructor
      */
-    constexpr Tensor(Tensor const &) = default;
+    Tensor(Tensor const &) = default;
 
     /**
      * @brief Destroy the Tensor object.
      */
-    constexpr ~Tensor() = default;
+    ~Tensor() = default;
 
-    constexpr Tensor(Tensor &&)                 = default;
-    constexpr Tensor &operator=(Tensor &&other) = default;
+    Tensor(Tensor &&)                 = default;
+    Tensor &operator=(Tensor &&other) = default;
 
     /**
      * @brief Construct a new Tensor object with the given name and dimensions.
@@ -125,7 +125,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @param dims The dimensions of each rank of the tensor.
      */
     template <typename... Dims>
-    constexpr Tensor(std::string name, Dims... dims) : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
+    Tensor(std::string name, Dims... dims) : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
         size_t size = dims_to_strides(_dims, _strides);
@@ -205,7 +205,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param dims The dimensions of the new tensor in Dim form.
      */
-    constexpr explicit Tensor(Dim<Rank> dims) : _dims{std::move(dims)} {
+    explicit Tensor(Dim<Rank> dims) : _dims{std::move(dims)} {
         size_t size = dims_to_strides(_dims, _strides);
 
         // Resize the data structure
