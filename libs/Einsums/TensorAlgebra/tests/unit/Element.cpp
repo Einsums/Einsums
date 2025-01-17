@@ -110,7 +110,7 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         for (int w = 0; w < _i; w++) {
             for (int x = 0; x < _j; x++) {
-                REQUIRE_THAT(C(w, x), CheckWithinRel(C0(w, x), 1.0e-5));
+                CHECK_THAT(C(w, x), CheckWithinRel(C0(w, x), 1.0e-5));
                 // REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(C0(w, x), 1.0e-5));
             }
         }
@@ -129,7 +129,7 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         for (int w = 0; w < _i; w++) {
             for (int x = 0; x < _j; x++) {
-                REQUIRE_THAT(C(w, x), CheckWithinRel(testresult(w, x), 1.0e-5));
+                CHECK_THAT(C(w, x), CheckWithinRel(testresult(w, x), 1.0e-5));
                 // REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(testresult(w, x), 1.0e-5));
             }
         }
