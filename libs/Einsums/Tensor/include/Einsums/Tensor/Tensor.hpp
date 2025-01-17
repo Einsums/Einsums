@@ -437,7 +437,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      */
     template <typename... MultiIndex>
         requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
-    auto operator()(MultiIndex &&...index) -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
+    auto operator()(MultiIndex...index) -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
         // Construct a TensorView using the indices provided as the starting point for the view.
         // e.g.:
         //    Tensor T{"Big Tensor", 7, 7, 7, 7};
@@ -489,7 +489,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      */
     template <typename... MultiIndex>
         requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
-    auto operator()(MultiIndex &&...index) const
+    auto operator()(MultiIndex...index) const
         -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> const {
         // Construct a TensorView using the indices provided as the starting point for the view.
         // e.g.:
@@ -538,7 +538,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      */
     template <typename... MultiIndex>
         requires NumOfType<Range, Rank, MultiIndex...>
-    auto operator()(MultiIndex &&...index) const -> TensorView<T, Rank> {
+    auto operator()(MultiIndex...index) const -> TensorView<T, Rank> {
         Dim<Rank>    dims{};
         Offset<Rank> offset{};
         Stride<Rank> stride = _strides;
