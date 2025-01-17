@@ -334,6 +334,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      *
      * @tparam MultiIndex Datatype of the indices. Must be castable to ptrdiff_t.
      * @param index The explicit desired index into the tensor. Elements must be castable to ptrdiff_t.
+     *              Negative indices are taken to be an offset from the end of the axis.
      * @return const T&
      */
     template <typename... MultiIndex>
@@ -344,10 +345,36 @@ struct Tensor : virtual tensor_base::CoreTensor,
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
         }
     auto operator()(MultiIndex... index) const -> T const & {
-        assert(sizeof...(MultiIndex) == _dims.size());
+        static_assert(sizeof...(MultiIndex) == Rank);
 
         auto   index_list = std::array{static_cast<ptrdiff_t>(index)...};
         size_t ordinal    = indices_to_sentinel_negative_check(_strides, _dims, index_list);
+
+        return _data[ordinal];
+    }
+
+    /**
+     * @brief Subscripts into the tensor. Does not do any index checks.
+     *
+     * This version works when all elements are explicit values into the tensor.
+     * It does not work with All or Range tags.
+     *
+     * @tparam MultiIndex Datatype of the indices. Must be castable to size_t.
+     * @param index The explicit desired index into the tensor. Elements must be castable size_t.
+     * @return const T&
+     */
+    template <typename... MultiIndex>
+        requires requires {
+            requires NoneOfType<AllT, MultiIndex...>;
+            requires NoneOfType<Range, MultiIndex...>;
+            requires NoneOfType<Dim<Rank>, MultiIndex...>;
+            requires NoneOfType<Offset<Rank>, MultiIndex...>;
+        }
+    auto subscript(MultiIndex... index) const -> T const & {
+        static_assert(sizeof...(MultiIndex) == Rank);
+
+        auto   index_list = std::array{static_cast<size_t>(index)...};
+        size_t ordinal    = indices_to_sentinel(_strides, _dims, index_list);
 
         return _data[ordinal];
     }
@@ -360,6 +387,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      *
      * @tparam MultiIndex Datatype of the indices. Must be castable to ptrdiff_t.
      * @param index The explicit desired index into the tensor. Elements must be castable to ptrdiff_t.
+     *              Negative indices are taken to be an offset from the end of the axis.
      * @return T&
      */
     template <typename... MultiIndex>
@@ -375,6 +403,32 @@ struct Tensor : virtual tensor_base::CoreTensor,
         auto index_list = std::array{static_cast<ptrdiff_t>(index)...};
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index_list);
+        return _data[ordinal];
+    }
+
+    /**
+     * @brief Subscripts into the tensor. Does not do any index checks.
+     *
+     * This version works when all elements are explicit values into the tensor.
+     * It does not work with All or Range tags.
+     *
+     * @tparam MultiIndex Datatype of the indices. Must be castable to ptrdiff_t.
+     * @param index The explicit desired index into the tensor. Elements must be castable to ptrdiff_t.
+     * @return T&
+     */
+    template <typename... MultiIndex>
+        requires requires {
+            requires NoneOfType<AllT, MultiIndex...>;
+            requires NoneOfType<Range, MultiIndex...>;
+            requires NoneOfType<Dim<Rank>, MultiIndex...>;
+            requires NoneOfType<Offset<Rank>, MultiIndex...>;
+        }
+    auto subscript(MultiIndex... index) -> T & {
+        static_assert(sizeof...(MultiIndex) == Rank);
+
+        auto index_list = std::array{static_cast<size_t>(index)...};
+
+        size_t ordinal = indices_to_sentinel(_strides, _dims, index_list);
         return _data[ordinal];
     }
 
@@ -1242,6 +1296,30 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         auto index_list = std::array{static_cast<ptrdiff_t>(index)...};
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index_list);
+        return _data[ordinal];
+    }
+
+    /**
+     * Subscript into the tensor.
+     */
+    template <typename... MultiIndex>
+    auto subscript(MultiIndex... index) const -> T const & {
+        static_assert(sizeof...(MultiIndex) == Rank);
+        const auto index_list = std::array{static_cast<size_t>(index)...};
+
+        size_t ordinal = indices_to_sentinel(_strides, _dims, index_list);
+        return _data[ordinal];
+    }
+
+    /**
+     * Subscript into the tensor.
+     */
+    template <typename... MultiIndex>
+    auto subscript(MultiIndex... index) -> T & {
+        static_assert(sizeof...(MultiIndex) == Rank);
+        const auto index_list = std::array{static_cast<size_t>(index)...};
+
+        size_t ordinal = indices_to_sentinel(_strides, _dims, index_list);
         return _data[ordinal];
     }
 
