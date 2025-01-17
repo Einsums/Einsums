@@ -361,24 +361,24 @@ inline size_t indices_to_sentinel(std::array<size_t, num_unique_inds> const &uni
 
 namespace detail {
 
-template <size_t index, size_t num_unique_inds, typename FirstIndex>
-    requires(std::is_integral_v<std::decay_t<FirstIndex>>)
-inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, FirstIndex &&first_index) {
-    return std::get<index>(unique_strides) * first_index;
-}
-
 template <size_t index, size_t num_unique_inds, typename FirstIndex, typename... MultiIndex>
     requires(std::is_integral_v<std::decay_t<MultiIndex>> && ... && std::is_integral_v<std::decay_t<FirstIndex>>)
-inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, FirstIndex &&first_index,
-                                  MultiIndex &&...indices) {
-    return std::get<index>(unique_strides) * first_index +
-           indices_to_sentinel<index + 1>(unique_strides, std::forward<MultiIndex>(indices)...);
+constexpr inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, FirstIndex &&first_index,
+                                            MultiIndex &&...indices) noexcept {
+    if constexpr (sizeof...(MultiIndex) != 0) {
+        return std::get<index>(unique_strides) * first_index +
+               indices_to_sentinel<index + 1>(unique_strides, std::forward<MultiIndex>(indices)...);
+    } else {
+        return std::get<index>(unique_strides) * first_index;
+    }
 }
 } // namespace detail
 
 template <size_t num_unique_inds, typename... MultiIndex>
     requires(std::is_integral_v<std::decay_t<MultiIndex>> && ...)
-inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, MultiIndex &&...indices) {
+constexpr inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides,
+                                            MultiIndex &&...indices) noexcept {
+    static_assert(sizeof...(MultiIndex) == num_unique_inds);
     return detail::indices_to_sentinel<0>(unique_strides, std::forward<MultiIndex>(indices)...);
 }
 
@@ -392,6 +392,42 @@ inline size_t indices_to_sentinel(StorageType1 const &unique_strides, StorageTyp
     }
 
     return out;
+}
+
+namespace detail {
+
+template <size_t index, size_t num_unique_inds, typename FirstIndex, typename... MultiIndex>
+    requires(std::is_integral_v<std::decay_t<MultiIndex>> && ... && std::is_integral_v<std::decay_t<FirstIndex>>)
+constexpr inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_unique_inds> const &unique_strides,
+                                                 std::array<int64_t, num_unique_inds> const &dims, FirstIndex &&first_index,
+                                                 MultiIndex &&...indices) {
+    auto const dim        = std::get<index>(dims);
+    auto       temp_index = first_index;
+
+    if (temp_index < 0) {
+        temp_index += dim;
+    }
+
+    if (temp_index < 0 || temp_index >= dim) {
+        EINSUMS_THROW_EXCEPTION(std::out_of_range,
+                                "Index out of range! Index {} in rank {} was either greater than or equal to {} or less than {}",
+                                first_index, index, dim, -(ptrdiff_t)dim);
+    }
+    if constexpr (sizeof...(MultiIndex) != 0) {
+        return std::get<index>(unique_strides) * temp_index +
+               indices_to_sentinel_negative_check<index + 1>(unique_strides, dims, std::forward<MultiIndex>(indices)...);
+    } else {
+        return std::get<index>(unique_strides) * temp_index;
+    }
+}
+} // namespace detail
+
+template <size_t num_unique_inds, typename... MultiIndex>
+    requires(std::is_integral_v<std::decay_t<MultiIndex>> && ...)
+constexpr inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_unique_inds> const &unique_strides,
+                                                 std::array<int64_t, num_unique_inds> const      &dims, MultiIndex &&...indices) {
+    static_assert(sizeof...(MultiIndex) == num_unique_inds);
+    return detail::indices_to_sentinel_negative_check<0>(unique_strides, dims, std::forward<MultiIndex>(indices)...);
 }
 
 /**
