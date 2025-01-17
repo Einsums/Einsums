@@ -149,7 +149,7 @@ function(einsums_setup_target target)
 
   # Code coverage
   if (EINSUMS_WITH_COVERAGE)
-    append_coverage_compiler_flags_to_target(${target})
+    einsums_append_coverage_compiler_flags_to_target(${target})
   endif ()
 
   if(target_INSTALL AND NOT target_EXCLUDE_FROM_ALL)
