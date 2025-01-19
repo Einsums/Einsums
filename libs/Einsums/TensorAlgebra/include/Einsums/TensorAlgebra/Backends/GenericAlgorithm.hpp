@@ -69,7 +69,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
         target_value *= C_prefactor;
         target_value += sum;
     } else if constexpr (sizeof...(LinkDims) != 0) {
-        EINSUMS_OMP_PARALLEL_FOR
+        // EINSUMS_OMP_PARALLEL_FOR
         for (auto it = view.begin(); it < view.end(); it++) {
             // println("target_combination: {}", print_tuple_no_type(target_combination));
             auto C_order = detail::construct_indices_from_unique_combination<CIndices...>(

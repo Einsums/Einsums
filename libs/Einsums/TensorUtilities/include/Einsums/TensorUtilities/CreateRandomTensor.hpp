@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -49,7 +49,7 @@ auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tenso
     std::uniform_real_distribution<double> unif(lower_bound, upper_bound);
 
     if constexpr (std::is_same_v<T, std::complex<float>>) {
-#pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
+// #pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
@@ -60,7 +60,7 @@ auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tenso
             });
         }
     } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-#pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
+// #pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
@@ -71,7 +71,7 @@ auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tenso
             });
         }
     } else {
-#pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
+// #pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();

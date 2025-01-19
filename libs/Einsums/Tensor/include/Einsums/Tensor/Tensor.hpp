@@ -82,7 +82,6 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
 
     constexpr static size_t Rank = rank;
 
-
     /**
      * @typedef Vector
      *
@@ -663,7 +662,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
 
         size_t size = this->size();
 
-        EINSUMS_OMP_PARALLEL_FOR
+        // EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < size; sentinel++) {
             thread_local std::array<size_t, Rank> index;
             sentinel_to_indices(sentinel, index);
@@ -881,7 +880,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
 template <typename T>
 struct Tensor<T, 0> final : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
 
-        /**
+    /**
      * @typedef ValueType
      *
      * @brief Holds the data type stored by the tensor.
@@ -1236,8 +1235,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         auto operator OP(const T &value)->TensorView & {                                                                                   \
             auto target_dims = get_dim_ranges<Rank>(*this);                                                                                \
             auto view        = std::apply(ranges::views::cartesian_product, target_dims);                                                  \
-            EINSUMS_OMP_PARALLEL_FOR for (auto target_combination = view.begin(); target_combination != view.end();                        \
-                                          target_combination++) {                                                                          \
+            /* EINSUMS_OMP_PARALLEL_FOR */                                                                                                 \
+            for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {                         \
                 T        &target = std::apply(*this, *target_combination);                                                                 \
                 target OP value;                                                                                                           \
             }                                                                                                                              \

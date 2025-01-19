@@ -108,11 +108,11 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         einsum(Indices{i, j}, &C, Indices{i, j}, A, Indices{i, j}, B);
 
-        std::stringstream stream;
+        // std::stringstream stream;
 
-        fprintln(stream, C);
+        // fprintln(stream, C);
 
-        INFO(stream.str());
+        // INFO(stream.str());
 
         for (int w = 0; w < _i; w++) {
             for (int x = 0; x < _j; x++) {

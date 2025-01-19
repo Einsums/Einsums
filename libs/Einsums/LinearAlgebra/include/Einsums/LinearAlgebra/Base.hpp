@@ -418,7 +418,7 @@ void direct_product(typename AType::ValueType alpha, AType const &A, BType const
         }
     }
 
-    EINSUMS_OMP_PARALLEL_FOR
+    // EINSUMS_OMP_PARALLEL_FOR
     for (auto it = view.begin(); it != view.end(); it++) {
         T &target_value = std::apply(*C, *it);
         T  AB_product   = std::apply(A, *it) * std::apply(B, *it);
