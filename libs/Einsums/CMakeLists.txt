@@ -13,7 +13,6 @@ set(_Einsums_modules
   BLAS
   BLASBase
   BLASVendor
-  Benchmark
   Concepts
   Config
   Debugging
