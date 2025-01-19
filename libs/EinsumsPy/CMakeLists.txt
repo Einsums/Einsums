@@ -24,6 +24,7 @@ einsums_info("")
 einsums_info("  Configuring EinsumsPy modules:")
 
 foreach(module ${_EinsumsPy_modules})
+  einsums_info("    ${module}")
   add_subdirectory(${module})
 endforeach()
 

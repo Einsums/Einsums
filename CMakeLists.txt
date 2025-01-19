@@ -702,14 +702,32 @@ include(Einsums_SetupCatch)
 include(Einsums_SetupRangev3)
 include(Einsums_SetupH5cpp)
 include(Einsums_SetupArgparse)
-# include(einsums_SetupHPTT) include(Einsums_SetupHWLOC)
 include(Einsums_SetupSpdlog)
 include(Einsums_SetupAllocator)
-# include(Einsums_SetupCppTrace)
 
 if(EINSUMS_USE_LIBRETT AND EINSUMS_WITH_GPU_SUPPORT)
   include(Einsums_SetupLibreTT)
 endif()
+
+if (EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
+  if (EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
+    find_package(
+            Python "${EINSUMS_BUILD_PYTHON}" EXACT
+            COMPONENTS Interpreter Development NumPy
+            REQUIRED
+    )
+  else ()
+    find_package(
+            Python 3.10
+            COMPONENTS Interpreter Development NumPy
+            REQUIRED
+    )
+  endif ()
+
+  include(Einsums_SetupPybind11)
+
+  find_package(pybind11)
+endif ()
 
 if(EINSUMS_WITH_SANITIZERS)
   einsums_add_config_define(EINSUMS_HAVE_SANITIZERS)

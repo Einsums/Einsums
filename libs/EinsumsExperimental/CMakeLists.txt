@@ -17,6 +17,7 @@ einsums_info("")
 einsums_info("  Configuring EinsumsExperimental modules:")
 
 foreach(module ${_EinsumsExperimental_modules})
+  einsums_info("    ${module}")
   add_subdirectory(${module})
 endforeach()
 

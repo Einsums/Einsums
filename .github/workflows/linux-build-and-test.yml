@@ -29,10 +29,6 @@ jobs:
         build_type: [ RelWithDebInfo ]
         variant: [ default ]
         include:
-          - compiler: gcc
-            cmake_extra: >
-              -D EINSUMS_WITH_COVERAGE=ON
-
           - compiler: intel
             blas: mkl
             build_type: RelWithDebInfo
@@ -157,7 +153,7 @@ jobs:
           echo "NOTES=$NOTES"
           echo "SOURCES=$SOURCES"
           gcov $SOURCES || echo "returned $?"
-          lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
+          lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/_deps/\* --exclude \*/einsums-env/\*
 
       - name: Upload C++ coverage to Codecov
         if: ${{ contains(matrix.compiler, 'gcc') }}

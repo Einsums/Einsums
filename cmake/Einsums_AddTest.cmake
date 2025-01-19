@@ -129,7 +129,11 @@ endfunction(einsums_add_test_and_deps_test)
 # link to the testing library. Performance tests link to the performance_testing library.
 function(einsums_add_unit_test subcategory name)
   einsums_add_test_and_deps_test("Unit" "${subcategory}" ${name} ${ARGN} TESTING)
-  set_tests_properties("Tests.Unit.${subcategory}.${name}" PROPERTIES LABELS "UNIT_ONLY")
+  set_tests_properties("Tests.Unit.${subcategory}.${name}"
+          PROPERTIES
+          LABELS "UNIT_ONLY"
+          ENVIRONMENT "LLVM_PROFILE_FILE=${name}.profraw"
+  )
 endfunction(einsums_add_unit_test)
 
 function(einsums_add_regression_test subcategory name)

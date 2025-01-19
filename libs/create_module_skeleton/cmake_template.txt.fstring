@@ -19,6 +19,7 @@ einsums_info("")
 einsums_info("  Configuring {lib_name} modules:")
 
 foreach(module ${{_{lib_name}_modules}})
+  einsums_info("    ${{module}}")
   add_subdirectory(${{module}})
 endforeach()
 

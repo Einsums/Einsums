@@ -55,8 +55,15 @@ set(EINSUMS_LIBS
     CACHE INTERNAL "List of Einsums libraries" FORCE
 )
 
+include(Einsums_CodeCoverage)
+set(einsums_libs_public_static SHARED)
+if (EINSUMS_WITH_COVERAGE)
+  set(einsums_libs_public_static STATIC)
+endif ()
+
 foreach(lib ${EINSUMS_LIBS})
-  add_library(${lib} SHARED src/dummy.cpp)
+  add_library(${lib} ${einsums_libs_public_static} src/dummy.cpp)
+  einsums_append_coverage_compiler_flags_to_target(${lib} PUBLIC)
 
   # Add underscores before uppercase letters, except the first one
   string(REGEX REPLACE "([A-Z])" "_\\1" transformed_string ${lib})
@@ -128,24 +135,6 @@ endif()
 
 if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
   include(Einsums_ExtendWithPython)
-
-  if(EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
-    find_package(
-      Python "${EINSUMS_BUILD_PYTHON}" EXACT
-      COMPONENTS Interpreter Development NumPy
-      REQUIRED
-    )
-  else()
-    find_package(
-      Python 3.10
-      COMPONENTS Interpreter Development NumPy
-      REQUIRED
-    )
-  endif()
-
-  include(Einsums_SetupPybind11)
-
-  find_package(pybind11)
 
   foreach(lib ${PYTHON_LIBS})
     set(EINSUMS_PYTHON_LIB_NAME ${lib})

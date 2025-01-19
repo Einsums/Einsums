@@ -5,6 +5,7 @@
 
 include(Einsums_ExportTargets)
 include(Einsums_WriteModuleHeader)
+include(Einsums_CodeCoverage)
 
 function(einsums_add_module libname modulename)
   # Retrieve arguments
@@ -95,14 +96,12 @@ function(einsums_add_module libname modulename)
   endif()
 
   # collect zombie generated headers
-  file(GLOB_RECURSE zombie_generated_headers ${CMAKE_CURRENT_BINARY_DIR}/include/*.hpp
-       ${CMAKE_CURRENT_BINARY_DIR}/include_compatibility/*.hpp
-  )
+  file(GLOB_RECURSE zombie_generated_headers ${CMAKE_CURRENT_BINARY_DIR}/include/*.hpp)
   list(REMOVE_ITEM zombie_generated_headers ${generated_headers} ${compat_headers}
        ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/Config/ModulesEnabled.hpp
   )
   foreach(zombie_header IN LISTS zombie_generated_headers)
-    einsums_warn("Removing zombie generated header: ${zombie_header}")
+    einsums_warn("      Removing zombie generated header: ${zombie_header}")
     file(REMOVE ${zombie_header})
   endforeach()
 
@@ -127,6 +126,7 @@ function(einsums_add_module libname modulename)
 
   # create library modules
   add_library(${libname}_${modulename} ${module_library_type} ${sources} ${${modulename}_OBJECTS})
+  einsums_append_coverage_compiler_flags_to_target(${libname}_${modulename} ${module_public_keyword})
 
   if(EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES)
     # verify that all dependencies are from the same module category
