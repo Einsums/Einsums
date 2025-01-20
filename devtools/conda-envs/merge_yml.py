@@ -47,7 +47,7 @@ if __name__ == "__main__":
         description="Creates a conda environment yml file to develop Einsums.",
         usage="""
         
-%(prog)s [OPTIONS] COMPILER [BLAS]""",
+%(prog)s [OPTIONS] [COMPILER=default] [BLAS=openblas]""",
     )
 
     parser.add_argument(
@@ -59,8 +59,8 @@ if __name__ == "__main__":
         action="store_true"
     )
 
-    parser.add_argument("compiler", choices=["gcc", "intel", "windows"],
-                        help="The compiler to use (choices: gcc, intel, Windows)")
+    parser.add_argument("compiler", choices=["default", "intel", "windows"], default="default", nargs="?",
+                        help="The compiler to use (choices: default, intel, Windows). Default implies default for your platform.")
 
     # Optional positional argument with choices
     parser.add_argument(

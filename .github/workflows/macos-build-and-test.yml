@@ -26,7 +26,7 @@ jobs:
       matrix:
         build_type: [ Debug, RelWithDebInfo ]
 
-    name: "clang • openblas • ${{ matrix.build_type }}"
+    name: "default • openblas • ${{ matrix.build_type }}"
     runs-on: macos-latest
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
@@ -63,7 +63,7 @@ jobs:
         working-directory: src/devtools/conda-envs
         run: |
           pwd
-          python merge_yml.py gcc openblas
+          python merge_yml.py default openblas
 
       - name: Get Date
         id: get-date

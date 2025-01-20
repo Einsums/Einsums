@@ -24,7 +24,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler: [ gcc, intel ]
+        # compiler = default, implies the default compiler for the platform. for linux, this is gcc/g++
+        compiler: [ default, intel ]
         blas: [ openblas, mkl ]
         build_type: [ RelWithDebInfo ]
         variant: [ default ]
@@ -145,7 +146,7 @@ jobs:
         run: ctest --rerun-failed --output-on-failure
 
       - name: Generate coverage information
-        if: ${{ contains(matrix.compiler, 'gcc') }}
+        if: ${{ contains(matrix.compiler, 'default') }}
         working-directory: "${{github.workspace}}/build"
         run: |
           export NOTES=$(find . -name "*.gcno")
@@ -156,7 +157,7 @@ jobs:
           lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/_deps/\* --exclude \*/einsums-env/\*
 
       - name: Upload C++ coverage to Codecov
-        if: ${{ contains(matrix.compiler, 'gcc') }}
+        if: ${{ contains(matrix.compiler, 'default') }}
         uses: codecov/codecov-action@v5
         with:
           directory: "${{github.workspace}}/build"
