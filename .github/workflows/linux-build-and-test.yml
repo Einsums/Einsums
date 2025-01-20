@@ -82,6 +82,7 @@ jobs:
         with:
           miniforge-version: latest
           activate-environment: einsums-env
+          conda-remove-defaults: "true"
 
       - name: Install ruamel.yaml
         run: |
