@@ -52,7 +52,7 @@ jobs:
         working-directory: src/devtools/conda-envs
         run: |
           pwd
-          python merge_yml.py --docs gcc openblas
+          python merge_yml.py --docs default openblas
 
       - name: Get Date
         id: get-date
