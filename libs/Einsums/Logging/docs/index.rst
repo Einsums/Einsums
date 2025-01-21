@@ -8,7 +8,7 @@
 Einsums Logging
 ===============
 
-TODO: High-level description of the module.
+This module contains several macros for setting up logs, as well as providing log levels.
 
 See the :ref:`API reference <modules_Einsums_Logging_api>` of this module for more
 details.

@@ -8,7 +8,8 @@
 TensorBase
 ==========
 
-TODO: High-level description of the module.
+This module contains the definitions for several tensor bases. These bases can be used
+to specify properties on tensors.
 
 See the :ref:`API reference <modules_TensorBase_api>` of this module for more
 details.

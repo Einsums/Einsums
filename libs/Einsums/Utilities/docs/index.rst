@@ -9,7 +9,7 @@
 Utilities
 =========
 
-TODO: High-level description of the module.
+This module contains several general utilities, such as the global random number generator.
 
 See the :ref:`API reference <modules_Utilities_api>` of this module for more
 details.

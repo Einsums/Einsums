@@ -8,7 +8,7 @@
 TensorUtilities
 ===============
 
-TODO: High-level description of the module.
+This module contains several useful tensor utilities.
 
 See the :ref:`API reference <modules_TensorUtilities_api>` of this module for more
 details.

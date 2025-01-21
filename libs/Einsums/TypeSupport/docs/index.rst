@@ -8,7 +8,7 @@
 TypeSupport
 ===========
 
-TODO: High-level description of the module.
+This module contains several utilities for metaprogramming with types.
 
 See the :ref:`API reference <modules_TypeSupport_api>` of this module for more
 details.

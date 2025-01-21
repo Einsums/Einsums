@@ -35,7 +35,7 @@ struct DeviceTensor;
  *
  * @brief Tests whether the given type is a tensor or not.
  *
- * Checks to see if the given type is derived from einsums::tensor_base::TensorBase.
+ * Checks to see if the given type defines the functions full_view_of_underlying, name, dim, and dims.
  *
  * @tparam D The type to check.
  */
@@ -116,9 +116,6 @@ constexpr inline bool IsLockableV = requires(D var) {
  *
  * @brief Tests whether the given tensor type has a storage type and rank.
  *
- * This checks to see if the tensor derives RankTensorBase and TypedTensorBase.
- * Try not to rely on a tensor deriving TRTensorBase, as this may not always be the case.
- *
  * @tparam D The tensor type to check.
  * @tparam T The storage type stored by the tensor.
  * @tparam Rank The expected rank of the tensor.
@@ -130,9 +127,6 @@ constexpr inline bool IsTRTensorV = IsTypedTensorV<D, T> && IsRankTensorV<D, Ran
  * @property IsTRLTensorV
  *
  * @brief Tests whether the given tensor type has a storage type and rank and can be locked.
- *
- * This checks to see if the tensor derives RankTensorBase, TypedTensorBase, and LockableTensorBase.
- * Try not to rely on a tensor deriving TRLTensorBase, as this may not always be the case.
  *
  * @tparam D The tensor type to check.
  * @tparam Rank The expected rank of the tensor.
@@ -146,7 +140,7 @@ constexpr inline bool IsTRLTensorV = IsTypedTensorV<D, T> && IsRankTensorV<D, Ra
  *
  * @brief Checks to see if the tensor is available in-core.
  *
- * Checks the tensor against CoreTensorBase.
+ * Checks the tensor against tensor_base::CoreTensor.
  *
  * @tparam D The tensor to check.
  */
@@ -159,7 +153,7 @@ constexpr inline bool IsIncoreTensorV = std::is_base_of_v<einsums::tensor_base::
  *
  * @brief Checks to see if the tensor is available to graphics hardware.
  *
- * Checks the tensor against DeviceTensorBase.
+ * Checks the tensor against tensor_base::DeviceTensor.
  *
  * @tparam D The tensor to check.
  */
@@ -172,7 +166,7 @@ constexpr inline bool IsDeviceTensorV = std::is_base_of_v<einsums::tensor_base::
  *
  * @brief Checks to see if the tensor is stored on-disk.
  *
- * Checks whether the tensor inherits DiskTensorBase.
+ * Checks whether the tensor inherits tensor_base::DiskTensor.
  *
  * @tparam D The tensor type to check.
  */
@@ -184,7 +178,7 @@ constexpr inline bool IsDiskTensorV = std::is_base_of_v<einsums::tensor_base::Di
  *
  * @brief Checks to see if the tensor is a view of another.
  *
- * Checks whether the tensor inherits TensorViewBaseNoExtra.
+ * Checks to see if the type has a typedef called @code underlying_type .
  *
  * @tparam D The tensor type to check.
  */
@@ -195,8 +189,6 @@ constexpr inline bool IsTensorViewV = requires { typename D::underlying_type; };
  * @property IsViewOfV
  *
  * @brief Checks to see if the tensor is a view of another tensor with the kind of tensor specified.
- *
- * Checks whether the tensor inherits the appropriate TensorViewBase.
  *
  * @tparam D The tensor type to check.
  * @tparam Viewed The type of tensor expected to be viewed.
@@ -212,7 +204,7 @@ constexpr inline bool IsViewOfV = requires {
  *
  * @brief Checks to see if the tensor is a basic tensor.
  *
- * Checks to see if the tensor inherits BasicTensorBaseNoExtra.
+ * Checks to see if the type defines the functions data, stride, and strides.
  *
  * @tparam D The tensor to check.
  */
@@ -228,8 +220,7 @@ constexpr inline bool IsBasicTensorV = requires(D tensor) {
  *
  * @brief Checks to see if the tensor is a tensor collection with the given storage type.
  *
- * Checks to see if the tensor inherits CollectedTensorBaseOnlyStored if a type is given, or CollectedTensorBaseNoExtra if type is not
- * given.
+ * Checks to see if the type defines the type @code StoredType .
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
@@ -297,6 +288,9 @@ constexpr bool test_application(std::index_sequence<ints...> const &) {
  * @property IsFunctionTensorV
  *
  * @brief Checks to see if the tensor is a function tensor.
+ *
+ * More specifically, checks to see if the tensor can be indexed using
+ * function call syntax.
  *
  * @tparam D The tensor type to check.
  */

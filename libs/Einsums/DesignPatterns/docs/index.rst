@@ -8,7 +8,7 @@
 Einsums DesignPatterns
 ======================
 
-TODO: High-level description of the module.
+This module contains macros and classes for using design patterns simply and easily.
 
 See the :ref:`API reference <modules_Einsums_DesignPatterns_api>` of this module for more
 details.

@@ -53,11 +53,11 @@ Then in your main.cpp you can have something like
 
 .. code-block:: c++
 
-    #include <einsums.hpp>
+    #include <Einsums/Tensor/Tensor.hpp>
 
     int main() {
 
-        auto A = einsums::create_tensor("A", 3, 3);
+        auto A = einsums::Tensor("A", 3, 3);
 
         return 0;
     }
@@ -86,15 +86,16 @@ if types or pasted into your code.
 How to create a Tensor
 ----------------------
 
-To create an Einsums Tensor, you can use the function :cpp:func:`einsums::create_tensor`.
+To create an Einsums Tensor, you can use the constructors for the tensor class
+:cpp:class:`einsums::Tensor`.
 
 All you need to do to create a basic tensor is pass a name for the tensor and the
 dimensionality of each index.::
 
-    #include <einsums.hpp>
+    #include <Einsums/Tensor/Tensor.hpp>
 
     int main(int, char**) {
-        auto A = einsums::create_tensor("A", 2, 2);  // --> einsums::Tensor<2, double>
+        auto A = einsums::Tensor{"A", 2, 2};  // --> einsums::Tensor<2, double>
 
         return 0;
     }
@@ -102,17 +103,17 @@ dimensionality of each index.::
 In this example, we are using the C++ ``auto`` to simplify the type signature. We can
 write the data type explicitly if we want to.::
 
-    #include <einsums.hpp>
+    #include <Einsums/Tensor/Tensor.hpp>
 
     int main(int, char**) {
         // Full explicit data type
-        einsums::Tensor<2, double> A = einsums::create_tensor("A", 2, 2);
+        einsums::Tensor<2, double> A = einsums::Tensor{"A", 2, 2};
 
         // The default underlying type of a tensor is `double`
-        einsums::Tensor<2> B = einsums::create_tensor("B", 2, 2);
+        einsums::Tensor<2> B = einsums::Tensor{"B", 2, 2};
 
         // Allow the compiler to determine things.
-        auto C = einsums::create_tensor("C", 2, 2);
+        auto C = einsums::Tensor{"C", 2, 2};
 
         return 0;
     }
@@ -122,17 +123,18 @@ write the data type explicitly if we want to.::
 While the default data type is double-precision floating point (``double``), you
 can explicitly specify which data type you want use.::
 
-    auto A = einsums::create_tensor<float>("A", 2, 2);
-
     auto B = einsums::Tensor<float>{"B", 2, 2};
 
 Einsums also supports the use of complex numbers.::
 
-    auto C = einsums::create_tensor<std::complex<double>>("C", 2, 2);
-
     auto D = einsums::Tensor<std::complex<float>>{"D", 2, 2};
 
-TODO: Write a more complete guide of creating Tensors in a quickstart guide.
+**Different Tensor Layouts**
+
+Einsums also provides several different tensor layouts. For a tensor that only has elements along
+a block diagonal, there is the :cpp:class:`einsums::BlockTensor`. When a tensor is blockwise sparse,
+but has blocks that are not on the diagonal, or have axes of varying dimensions, there is the
+:cpp:class:`einsums::TiledTensor`.
 
 TODO: Adding, removing, and sorting elements
 --------------------------------------------
