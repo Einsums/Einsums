@@ -104,7 +104,8 @@ jobs:
             -D EINSUMS_SHOW_WARNING=OFF \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
-            -D EINSUMS_WITH_COVERAGE=ON
+            -D EINSUMS_WITH_COVERAGE=ON \
+            ${{ inputs.build_configure_extra_args }}
 
       - name: Build and Install
         run: |

@@ -421,7 +421,8 @@ einsums_option(
 )
 
 einsums_option(
-  EINSUMS_WITH_SANITIZERS BOOL "Configure with sanitizer instrumentation support." OFF
+        EINSUMS_WITH_SANITIZERS STRING "Configure with sanitizer instrumentation support." OFF
+        STRINGS "OFF;;address;leak;memory;thread;undefined"
   CATEGORY "Debugging"
   ADVANCED
 )
@@ -676,7 +677,6 @@ else()
     einsums_add_compile_flag_if_available(-wd1286)
   endif()
 
-  set(__has_timestamp_support OFF)
   include(Einsums_TargetArch)
 
   einsums_target_architecture(__target_arch)
@@ -730,9 +730,9 @@ if (EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
 endif ()
 
 if (EINSUMS_WITH_SANITIZERS AND NOT MSVC)
-  einsums_info("Adding sanitizer flags")
-  target_compile_options(einsums_private_flags INTERFACE -fsanitize=thread)
-  target_link_options(einsums_private_flags INTERFACE -fsanitize=thread)
+  einsums_info("Adding sanitizer flags for ${EINSUMS_WITH_SANITIZERS}")
+  target_compile_options(einsums_private_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})
+  target_link_options(einsums_private_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})
   #  target_compile_options(einsums_public_flags INTERFACE -fsanitize=address,undefined)
   #  add_link_options(-fsanitize=address,undefined)
   einsums_add_config_define(EINSUMS_HAVE_SANITIZERS)
