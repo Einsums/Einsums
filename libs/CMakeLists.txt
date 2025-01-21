@@ -138,7 +138,7 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
 
   foreach(lib ${PYTHON_LIBS})
     set(EINSUMS_PYTHON_LIB_NAME ${lib})
-    add_library(${lib} SHARED src/dummy.cpp)
+    add_library(${lib} ${PYTHON_LIB_TYPE} src/dummy.cpp)
     set_target_properties(
       ${lib}
       PROPERTIES VERSION ${EINSUMS_VERSION}
