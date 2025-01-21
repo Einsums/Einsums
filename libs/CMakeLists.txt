@@ -128,7 +128,7 @@ set(PYTHON_LIBS
 )
 
 if(APPLE)
-  set(PYTHON_LIB_TYPE MODULE)
+  set(PYTHON_LIB_TYPE SHARED)
 else()
   set(PYTHON_LIB_TYPE SHARED)
 endif()
