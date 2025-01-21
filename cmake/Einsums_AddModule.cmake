@@ -134,7 +134,8 @@ function(einsums_add_module libname modulename)
       # consider only module dependencies, not other targets
       string(FIND ${dep} "${libname}_" find_index)
       if(${find_index} EQUAL 0)
-        string(SUBSTRING ${dep} 5 -1 dep) # cut off leading "einsums_"
+        string(LENGTH "${libname}_" lib_length)
+        string(SUBSTRING ${dep} ${lib_length} -1 dep) # cut off leading "einsums_"
         list(FIND _${libname}_modules ${dep} dep_index)
         if(${dep_index} EQUAL -1)
           einsums_error(

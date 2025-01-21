@@ -125,8 +125,7 @@ jobs:
           else
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
-          ls "${{github.workspace}}"
-          ls
+          ls "${{github.workspace}}/installed/lib"
           pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/src/tests" --cov="${{github.workspace}}/einsums" --cov-report=xml
 
       - name: Generate coverage information
