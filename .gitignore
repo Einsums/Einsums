@@ -79,3 +79,6 @@ docs/build
 
 # File created by merge_yaml.py script
 conda.yml
+
+# Profiling files.
+*profile.txt*
