@@ -11,10 +11,19 @@ Provides compile-time contraction pattern analysis to determine optimal operatio
 ## Requirements
 A C++ compiler with C++20 support.
 
-The following libraries are required to build EinsumsInCpp:
+The following libraries are required to build Einsums:
 
 * BLAS and LAPACK
 * HDF5
+
+The following libraries are also required, but will be fetched if they can not be found.
+
+* fmtlib >= 11
+* Catch2 >= 3
+* range-v3 >= 12
+* Einsums/h5cpp
+* p-ranav/argparse
+* gabime/spdlog >= 1
 
 On my personal development machine, I use MKL for the above requirements. On GitHub Actions, stock BLAS, LAPACK, and FFTW3 are used.
 
@@ -23,6 +32,9 @@ Optional requirements:
 * A Fast Fourier Transform library, either FFTW3 or DFT from MKL.
 * For call stack backtracing, refer to the requirements listed [here](https://github.com/bombela/backward-cpp).
 * HIP for graphics card support. Uses hipBlas, hipSolver, and the HIP language. Does not yet support hipFFT.
+* cpptrace for backtraces.
+* LibreTT for GPU transposes.
+* pybind11 for the Python extension module.
 
 ## Examples
 This will optimize at compile-time to a BLAS dgemm call.

@@ -42,8 +42,8 @@ other system-level dependencies to build it on your system.
 
 .. tab-set::
 
-  .. tab-item:: Linux
-    :sync: linux
+  .. tab-item:: General
+    :sync: general
 
     You will need:
 
@@ -58,21 +58,38 @@ other system-level dependencies to build it on your system.
 
     * CMake
 
+    The following is also required, but will be downloaded if not given:
+
+    * fmtlib >= 11
+
+    * Catch2 >= 3
+    
+    * range-v3 >= 12
+    
+    * Einsums/h5cpp
+    
+    * p-ranav/argparse
+    
+    * gabime/spdlog >= 1
+
     Optional:
 
     * For the Fourier Transform abilities, you will need either `FFTW3 <https://www.fftw.org>`__
       or MKL.
 
-    .. tab-set::
+    * HIP for GPU support.
 
-      .. tab-item:: Debian/Ubuntu Linux
+    * LibreTT for high-performance GPU tensor transposes.
 
-        Need to include instructions for installing system-wide dependencies
-        on various distributions.
+    * pybind11 for the Python extension module.
 
-      .. tab-item:: CentOS/RHEL
 
-        blah blah blah
+  .. tab-item:: Linux
+    :sync: linux
+
+    Optional:
+
+    * cpptrace for C++ backtraces.
 
   .. tab-item:: macOS
     :sync: macos
