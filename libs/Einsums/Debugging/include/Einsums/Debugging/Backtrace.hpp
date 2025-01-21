@@ -22,7 +22,7 @@ EINSUMS_EXPORT std::string backtrace(std::size_t frames_no = EINSUMS_HAVE_THREAD
 
 namespace einsums::util {
 
-inline std::string backtrace(std::size_t frames_no = EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH) {
+inline std::string backtrace(std::size_t frames_no = 0) {
     return "";
 }
 
