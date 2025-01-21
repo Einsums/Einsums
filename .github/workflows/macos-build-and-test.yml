@@ -125,7 +125,7 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
           
-          pytest "${{github.workspace}}/tests" --cov="${{github.workspace}}/tests" --cov="${{github.workspace}}/einsums" --cov-report=xml
+          pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/src/tests" --cov="${{github.workspace}}/einsums" --cov-report=xml
 
       - name: Generate coverage information
         working-directory: "${{github.workspace}}/build"
