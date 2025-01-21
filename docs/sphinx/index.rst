@@ -37,8 +37,8 @@ dgemm call:
 .. code-block::
 
    using einsums;                        // Provides Tensor, create_tensor, and create_random_tensor
-   using einsums::tensor_algebra;        // Provides einsum and Indices
-   using einsums::tensor_algebra::index; // Provides i, j, k
+   using einsums::tensor_algebra;        // Provides einsum
+   using einsums::index;                 // Provides i, j, k, Indices
 
    Tensor<2> A = create_random_tensor("A", 7, 7);
    Tensor<2> B = create_random_tensor("B", 7, 7);
@@ -120,6 +120,12 @@ dgemm call:
 
       +++
 
+      .. button-ref:: contributors/index
+         :expand:
+         :color: primary
+         :click-parent:
+
+         To the contributor's guide
 
 .. Indices and tables
 .. ==================
