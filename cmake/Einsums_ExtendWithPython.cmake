@@ -33,7 +33,7 @@ function(einsums_extend_with_python target)
       ${target}
       PROPERTIES PREFIX ""
                DEBUG_POSTFIX ""
-               INSTALL_RPATH "${CMAKE_INSTALL_RPATH};\@rpath/../"
+               INSTALL_RPATH "${CMAKE_INSTALL_RPATH};\@loader_path/../"
     )
   elseif(NOT MSVC)
     set_target_properties(

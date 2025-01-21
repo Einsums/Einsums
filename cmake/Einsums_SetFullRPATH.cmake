@@ -4,7 +4,7 @@
 #----------------------------------------------------------------------------------------------
 
 if(APPLE)
-    list(APPEND CMAKE_INSTALL_RPATH "\@rpath")
+    list(APPEND CMAKE_INSTALL_RPATH "\@loader_path")
 elseif(NOT MSVC)
     list(APPEND CMAKE_INSTALL_RPATH "\$ORIGIN")
 endif()
