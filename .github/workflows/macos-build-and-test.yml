@@ -105,6 +105,7 @@ jobs:
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
             -D EINSUMS_WITH_COVERAGE=ON \
+            -D EINSUMS_BUILD_PYTHON=ON \
             ${{ inputs.build_configure_extra_args }}
 
       - name: Build and Install
@@ -114,6 +115,17 @@ jobs:
       - name: Test (CTest) - Unit Tests
         working-directory: "${{ github.workspace }}/build"
         run: ctest --rerun-failed --output-on-failure
+
+      - name: Test (Pytest) - unit tests
+        working-directory: "${{github.workspace}}/installed"
+        run: |
+          if [[ "${{runner.os}}" == "Windows" ]]; then
+            export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
+          else
+            export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
+          fi
+          
+          pytest "${{github.workspace}}/tests" --cov="${{github.workspace}}/tests" --cov="${{github.workspace}}/einsums" --cov-report=xml
 
       - name: Generate coverage information
         working-directory: "${{github.workspace}}/build"
@@ -133,6 +145,16 @@ jobs:
           disable_search: true
           file: ${{github.workspace}}/build/coverage.info
           flags: cpp
+          token: ${{ secrets.CODECOV_TOKEN }}
+      
+      - name: Upload Python coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: "${{github.workspace}}"
+          working-directory: "${{github.workspace}}"
+          disable_search: true
+          flags: python
+          file: ${{github.workspace}}/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Test (find_package) - consume installation

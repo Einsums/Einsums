@@ -16,10 +16,13 @@ dependencies:
   - fmt
   - range-v3
   - cpptrace
-  - pybind11
   # HDF5
   # * zlib brings headers; hdf5 package only bring libzlib
   - hdf5
   - zlib
   - numpy
   - mimalloc
+  # Python stuff
+  - pybind11
+  - pytest
+  - numpy
