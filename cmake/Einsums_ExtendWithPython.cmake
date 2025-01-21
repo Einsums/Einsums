@@ -42,5 +42,11 @@ function(einsums_extend_with_python target)
                DEBUG_POSTFIX ""
                INSTALL_RPATH "${CMAKE_INSTALL_RPATH};\$ORIGIN/../"
     )
+  else()
+    set_target_properties(
+      ${target}
+      PROPERTIES PREFIX ""
+                  DEBUG_POSTFIX ""
+    )
   endif()
 endfunction()
