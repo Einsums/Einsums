@@ -4,7 +4,7 @@
 #----------------------------------------------------------------------------------------------
 
 function(einsums_add_executable name)
-  set(options GPU EXCLUDE_FROM_ALL EXCLUDE_FROM_DEFAULT_BUILD INTERNAL_FLAGS NOLIBS UNITY_BUILD)
+  set(options GPU EXCLUDE_FROM_ALL EXCLUDE_FROM_DEFAULT_BUILD INTERNAL_FLAGS NOLIBS UNITY_BUILD NOINSTALL)
   set(one_value_args
       INI
       FOLDER
@@ -56,7 +56,7 @@ function(einsums_add_executable name)
   # add the executable build target
   if(${name}_EXCLUDE_FROM_ALL)
     set(exclude_from_all EXCLUDE_FROM_ALL TRUE)
-  else()
+  elseif (NOT ${name}_NOINSTALL)
     set(install_destination ${CMAKE_INSTALL_BINDIR})
     if(${name}_INSTALL_SUFFIX)
       set(install_destination ${${name}_INSTALL_SUFFIX})

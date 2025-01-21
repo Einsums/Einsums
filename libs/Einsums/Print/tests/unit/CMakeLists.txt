@@ -14,6 +14,7 @@ foreach(test ${PrintTests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     FOLDER ${folder_name}
+          NOINSTALL
   )
 
   einsums_add_unit_test("Modules.Print" ${test})

@@ -28,6 +28,7 @@ foreach(example_program ${{example_programs}})
     ${{example_program}} INTERNAL_FLAGS
     SOURCES ${{sources}} ${{${{example_program}}_FLAGS}}
     FOLDER "Examples/Modules/{lib_symb}/{module_name}"
+    NOINSTALL
   )
 
   einsums_add_example_target_dependencies("Modules.{lib_symb}.{module_name}" ${{example_program}})
