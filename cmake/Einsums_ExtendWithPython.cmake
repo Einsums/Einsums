@@ -5,16 +5,19 @@
 
 function(einsums_extend_with_python_headers target)
   target_link_libraries(${target} PRIVATE pybind11::headers)
-  target_include_directories(${target} PRIVATE ${Python_INCLUDE_DIRS})
+  target_include_directories(${target} PRIVATE ${Python_INCLUDE_DIRS} ${Python3_INCLUDE_DIRS})
 endfunction()
 
 function(einsums_extend_with_python target)
-  # if (APPLE) target_link_options(${target} PUBLIC -undefined dynamic_lookup) endif ()
+  # if (APPLE)
+  #   target_link_options(${target} PUBLIC -dynamiclib)
+  # endif()
 
   # target_include_directories(${target} PRIVATE ${Python_INCLUDE_DIRS}) target_link_libraries(
   # ${target} PRIVATE pybind11::module pybind11::lto pybind11::windows_extras )
 
-  target_link_libraries(${target} PRIVATE pybind11::module pybind11::lto pybind11::embed)
+  target_link_libraries(${target} PRIVATE pybind11::module pybind11::lto ${Python_LIBRARIES} ${Python3_LIBRARIES})
+  target_link_options(${target} PRIVATE ${Python_LINK_OPTIONS} ${Python3_LINK_OPTIONS})
   einsums_extend_with_python_headers(${target})
 
   if(MSVC)
