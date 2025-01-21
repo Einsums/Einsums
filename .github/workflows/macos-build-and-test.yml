@@ -106,7 +106,7 @@ jobs:
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
             -D EINSUMS_WITH_COVERAGE=ON \
             -D EINSUMS_BUILD_PYTHON=ON \
-            -D EINSUMS_WITH_BACKTRACES=ON \
+            -D EINSUMS_WITH_BACKTRACES=OFF \
             ${{ inputs.build_configure_extra_args }}
 
       - name: Build and Install
