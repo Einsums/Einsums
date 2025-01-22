@@ -26,8 +26,8 @@ void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, in
     hipblas_catch(hipblasDgemm(handle, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc));
 }
 
-void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, hipComplex const *alpha, hipComplex const *a, int lda,
-          hipComplex const *b, int ldb, hipComplex const *beta, hipComplex *c, int ldc) {
+void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, hipFloatComplex const *alpha, hipFloatComplex const *a, int lda,
+          hipFloatComplex const *b, int ldb, hipFloatComplex const *beta, hipFloatComplex *c, int ldc) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     hipblas_catch(hipblasCgemm(handle, transa, transb, m, n, k, (hipblasComplex const *)alpha, (hipblasComplex const *)a, lda,
@@ -55,7 +55,7 @@ void ger(int m, int n, double const *alpha, double const *x, int incx, double co
     hipblas_catch(hipblasDger(handle, m, n, alpha, x, incx, y, incy, A, lda));
 }
 
-void ger(int m, int n, hipComplex const *alpha, hipComplex const *x, int incx, hipComplex const *y, int incy, hipComplex *A, int lda) {
+void ger(int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *x, int incx, hipFloatComplex const *y, int incy, hipFloatComplex *A, int lda) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     hipblas_catch(hipblasCgerc(handle, m, n, (hipblasComplex const *)alpha, (hipblasComplex const *)x, incx, (hipblasComplex const *)y,
@@ -84,8 +84,8 @@ void gemv(hipblasOperation_t transa, int m, int n, double const *alpha, double c
     hipblas_catch(hipblasDgemv(handle, transa, m, n, alpha, a, lda, x, incx, beta, y, incy));
 }
 
-void gemv(hipblasOperation_t transa, int m, int n, hipComplex const *alpha, hipComplex const *a, int lda, hipComplex const *x, int incx,
-          hipComplex const *beta, hipComplex *y, int incy) {
+void gemv(hipblasOperation_t transa, int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *a, int lda, hipFloatComplex const *x, int incx,
+          hipFloatComplex const *beta, hipFloatComplex *y, int incy) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     hipblas_catch(hipblasCgemv(handle, transa, m, n, (hipblasComplex const *)alpha, (hipblasComplex const *)a, lda,
@@ -112,7 +112,7 @@ void scal(int size, double const *alpha, double *x, int incx) {
     hipblas_catch(hipblasDscal(handle, size, alpha, x, incx));
 }
 
-void scal(int size, hipComplex const *alpha, hipComplex *x, int incx) {
+void scal(int size, hipFloatComplex const *alpha, hipFloatComplex *x, int incx) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     hipblas_catch(hipblasCscal(handle, size, (hipblasComplex const *)alpha, (hipblasComplex *)x, incx));
@@ -184,7 +184,7 @@ int gesv(int n, int nrhs, double *A, int lda, int *ipiv, double *B, int ldb, dou
     return out;
 }
 
-int gesv(int n, int nrhs, hipComplex *A, int lda, int *ipiv, hipComplex *B, int ldb, hipComplex *X, int ldx) {
+int gesv(int n, int nrhs, hipFloatComplex *A, int lda, int *ipiv, hipFloatComplex *B, int ldb, hipFloatComplex *X, int ldx) {
     hipsolverHandle_t handle = einsums::gpu::get_solver_handle();
 
     int  out;
@@ -254,7 +254,7 @@ EINSUMS_EXPORT void axpy(int n, double const *alpha, double const *X, int incx, 
 
     hipblas_catch(hipblasDaxpy(handle, n, alpha, X, incx, Y, incy));
 }
-EINSUMS_EXPORT void axpy(int n, hipComplex const *alpha, hipComplex const *X, int incx, hipComplex *Y, int incy) {
+EINSUMS_EXPORT void axpy(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex *Y, int incy) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     hipblas_catch(hipblasCaxpy(handle, n, (hipblasComplex *)alpha, (hipblasComplex *)X, incx, (hipblasComplex *)Y, incy));
@@ -283,7 +283,7 @@ EINSUMS_EXPORT void axpby(int n, double const *alpha, double const *X, int incx,
     hipblas_catch(hipblasGetStream(handle, &stream));
     daxpby_kernel<<<einsums::gpu::block_size(n), einsums::gpu::blocks(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
 }
-EINSUMS_EXPORT void axpby(int n, hipComplex const *alpha, hipComplex const *X, int incx, hipComplex const *beta, hipComplex *Y, int incy) {
+EINSUMS_EXPORT void axpby(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta, hipFloatComplex *Y, int incy) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     // hipblas_catch(hipblasCaxpby(handle, n, (hipblasComplex *)alpha, (hipblasComplex *)X, incx, beta, (hipblasComplex *)Y, incy));
@@ -333,8 +333,8 @@ __global__ EINSUMS_EXPORT void daxpby_kernel(int n, double const *alpha, double 
         Y[y_index] = *alpha * X[x_index] + *beta * Y[y_index];
     }
 }
-__global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipComplex const *alpha, hipComplex const *X, int incx, hipComplex const *beta,
-                                             hipComplex *Y, int incy) {
+__global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta,
+                                             hipFloatComplex *Y, int incy) {
     int thread, kernel_size;
 
     get_worker_info(thread, kernel_size);
@@ -444,8 +444,8 @@ __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n,
     }
 }
 
-__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, hipComplex const *A, int lda, hipComplex const *B, int ldb,
-                                         hipComplex *C, int ldc) {
+__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, hipFloatComplex const *A, int lda, hipFloatComplex const *B, int ldb,
+                                         hipFloatComplex *C, int ldc) {
     int thread, kernel_size;
 
     get_worker_info(thread, kernel_size);
@@ -466,7 +466,7 @@ __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n,
         j = quotient;
 
         curr_index += kernel_size;
-        hipComplex term;
+        hipFloatComplex term;
 
         if (!TransA) {
             term = A[i * lda + j];

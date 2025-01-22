@@ -38,13 +38,13 @@ void gpu_permute(const int *perm, const int dim, const double alpha, const doubl
     librettExecute(plan, (void *)A, B);
 }
 
-void gpu_permute(const int *perm, const int dim, const hipComplex alpha, const hipComplex *A, const int *sizeA, const hipComplex beta,
-              hipComplex *B) {
+void gpu_permute(const int *perm, const int dim, const hipFloatComplex alpha, const hipFloatComplex *A, const int *sizeA, const hipFloatComplex beta,
+              hipFloatComplex *B) {
     librettHandle plan;
 
     librett_gpuStream_t stream = gpu::get_stream();
 
-    librettPlan(&plan, dim, (int *)sizeA, (int *)perm, sizeof(hipComplex), stream);
+    librettPlan(&plan, dim, (int *)sizeA, (int *)perm, sizeof(hipFloatComplex), stream);
 
     librettExecute(plan, (void *)A, B);
 }

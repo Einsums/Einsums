@@ -27,6 +27,14 @@ if(EINSUMS_WITH_GPU_SUPPORT)
 
   set(TensorGPUModules Einsums_GPUStreams)
   set(TensorGPUDeps hip::host hip::device)
+
+  if(EINSUMS_WITH_CUDA)
+  foreach(f IN LISTS TensorSources)
+    if(f MATCHES ".*\.hip")
+      set_source_files_properties("src/${f}" PROPERTIES LANGUAGE CUDA)
+    endif()
+  endforeach()
+endif()
 endif()
 
 include(Einsums_AddModule)

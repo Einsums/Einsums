@@ -6,7 +6,7 @@
 if(EINSUMS_WITH_HIP AND NOT TARGET roc::rocblas)
   if(EINSUMS_WTIH_CUDA)
     einsums_error(
-      "Both EINSUMS_WITH_CUDA and EINSUMS_WITH_HIP are ON. Please choose one of the for einsums to work properly"
+      "Both EINSUMS_WITH_CUDA and EINSUMS_WITH_HIP are ON. Please choose one of them for einsums to work properly"
     )
   endif()
 
@@ -37,8 +37,6 @@ if(EINSUMS_WITH_HIP AND NOT TARGET roc::rocblas)
     set(CMAKE_HIP_COMPILER_ROCM_ROOT ${HIP_ROCM_ROOT})
   endif()
 
-  check_language(HIP)
-
   if(CMAKE_HIP_COMPILER_ROCM_ROOT)
     cmake_path(APPEND CMAKE_HIP_COMPILER_ROCM_ROOT "lib" "cmake" OUTPUT_VARIABLE __hip_cmake_dir)
 
@@ -49,7 +47,7 @@ if(EINSUMS_WITH_HIP AND NOT TARGET roc::rocblas)
     set(ENV{amd_comgr_DIR} ${amd_comgr_DIR})
 
     cmake_path(APPEND __hip_cmake_dir "hip" OUTPUT_VARIABLE hip_DIR)
-    set(ENV{hip_DIR} ${hipblas_DIR})
+    set(ENV{hip_DIR} ${hip_DIR})
 
     cmake_path(APPEND __hip_cmake_dir "hsa-runtime64" OUTPUT_VARIABLE hsa-runtime64_DIR)
     set(ENV{hsa-runtime64_DIR} ${hsa-runtime64_DIR})

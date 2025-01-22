@@ -27,8 +27,8 @@ void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, float const alph
                              float *B);
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta,
                              double *B);
-void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipComplex const alpha, hipComplex const *A, int const *sizeA,
-                             hipComplex const beta, hipComplex *B);
+void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipFloatComplex const alpha, hipFloatComplex const *A, int const *sizeA,
+                             hipFloatComplex const beta, hipFloatComplex *B);
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipDoubleComplex const alpha, hipDoubleComplex const *A, int const *sizeA,
                              hipDoubleComplex const beta, hipDoubleComplex *B);
 #endif

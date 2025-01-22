@@ -988,7 +988,7 @@ struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums:
 
 #ifdef __HIP__
 template <typename T, size_t Rank>
-struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsums::DeviceTensor<T, Rank>>, tensor_base::DeviceTensor {
+struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsums::DeviceTensor<T, Rank>>, tensor_base::DeviceTensorBase {
   private:
     detail::HostToDeviceMode _mode{detail::DEV_ONLY};
 

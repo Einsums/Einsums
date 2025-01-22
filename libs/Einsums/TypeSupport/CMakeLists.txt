@@ -18,7 +18,7 @@ set(TypeSupportHeaders
 set(TypeSupportSources)
 
 if(EINSUMS_WITH_GPU_SUPPORT)
-  list(APPEND TypeSupportHeaders Einsums/TypeSupport/GPUCast.hpp)
+  list(APPEND TypeSupportHeaders Einsums/TypeSupport/GPUCast.hpp Einsums/TypeSupport/GPUComplex.hpp)
 
   set(TypeSupportGPUDeps hip::host hip::device)
 else()

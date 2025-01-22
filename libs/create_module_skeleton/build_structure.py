@@ -69,6 +69,13 @@ def build_structure(output_base, lib_name, module_name, python=False, **kwargs):
         python=python,
         python_deps="pybind11::embed" if python else "",
         gpu_head="if(EINSUMS_WITH_GPU_SUPPORT)" if kwargs["gpu"] else "",
-        gpu_foot="endif()" if kwargs["gpu"] else "",
+        gpu_foot=f"""
+        if(EINSUMS_WITH_CUDA)
+          foreach(f IN LISTS {module_name}Sources)
+            set_source_file_properties("src/${{f}}" PROPERTIES LANGUAGE CUDA)
+          endforeach()
+        endif()
+        endif()
+        """ if kwargs["gpu"] else "",
         **kwargs
     )

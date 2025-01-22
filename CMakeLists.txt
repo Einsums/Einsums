@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #---------------------------------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.24 FATAL_ERROR) # 3.24 for FetchContent_Declare(FIND_PACKAGE_ARGS
+cmake_minimum_required(VERSION 3.25.2 FATAL_ERROR) # 3.25.2 for CUDA20 support.
 
 # Overrides must go before project() statement, otherwise they are ignored
 
@@ -311,6 +311,7 @@ einsums_option(EINSUMS_WITH_CUDA BOOL "${CUDA_OPTION_STRING}" OFF ADVANCED)
 
 # No need for the user to specify the option explicitly
 einsums_option(EINSUMS_WITH_HIP BOOL "${HIP_OPTION_STRING}" OFF ADVANCED)
+einsums_option(EINSUMS_ADD_COMPLEX_OPERATORS BOOL "Add definitions for complex operators. This may fix issues when compiling for CUDA targets." OFF ADVANCED)
 if("${CMAKE_CXX_COMPILER}" MATCHES "hipcc$")
   set(EINSUMS_WITH_HIP
       ON
@@ -327,6 +328,9 @@ endif()
 
 if(EINSUMS_WITH_CUDA OR EINSUMS_WITH_HIP)
   einsums_add_config_define(EINSUMS_HAVE_GPU_SUPPORT)
+  if(EINSUMS_ADD_COMPLEX_OPERATORS)
+    einsums_add_config_define(EINSUMS_ADD_COMPLEX_OPERATORS)
+  endif()
   set(EINSUMS_WITH_GPU_SUPPORT ON)
   set(EINSUMS_WITH_GPU_SUPPORT
       ON

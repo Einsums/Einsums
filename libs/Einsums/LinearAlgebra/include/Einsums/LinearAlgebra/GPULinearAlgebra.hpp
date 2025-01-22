@@ -86,7 +86,7 @@ __global__ void true_dot_kernel(BiggestTypeT<T1, T2> *C, T1 const *__restrict__ 
             quotient %= strides[i];
         }
 
-        if constexpr (std::is_same_v<T1, hipComplex> || std::is_same_v<T1, hipDoubleComplex>) {
+        if constexpr (std::is_same_v<T1, hipFloatComplex> || std::is_same_v<T1, hipDoubleComplex>) {
             T1 conjugate = A[curr_index];
             conjugate.y  = -conjugate.y;
             temp         = temp + conjugate * B[curr_index];
@@ -107,8 +107,8 @@ EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, i
 EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, double const *alpha, double const *a,
                          int lda, double const *b, int ldb, double const *beta, double *c, int ldc);
 
-EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, hipComplex const *alpha,
-                         hipComplex const *a, int lda, hipComplex const *b, int ldb, hipComplex const *beta, hipComplex *c, int ldc);
+EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, hipFloatComplex const *alpha,
+                         hipFloatComplex const *a, int lda, hipFloatComplex const *b, int ldb, hipFloatComplex const *beta, hipFloatComplex *c, int ldc);
 
 EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, hipDoubleComplex const *alpha,
                          hipDoubleComplex const *a, int lda, hipDoubleComplex const *b, int ldb, hipDoubleComplex const *beta,
@@ -121,7 +121,7 @@ EINSUMS_EXPORT void ger(int m, int n, float const *alpha, float const *x, int in
 
 EINSUMS_EXPORT void ger(int m, int n, double const *alpha, double const *x, int incx, double const *y, int incy, double *A, int lda);
 
-EINSUMS_EXPORT void ger(int m, int n, hipComplex const *alpha, hipComplex const *x, int incx, hipComplex const *y, int incy, hipComplex *A,
+EINSUMS_EXPORT void ger(int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *x, int incx, hipFloatComplex const *y, int incy, hipFloatComplex *A,
                         int lda);
 
 EINSUMS_EXPORT void ger(int m, int n, hipDoubleComplex const *alpha, hipDoubleComplex const *x, int incx, hipDoubleComplex const *y,
@@ -136,8 +136,8 @@ EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, float const *a
 EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, double const *alpha, double const *a, int lda, double const *x, int incx,
                          double const *beta, double *y, int incy);
 
-EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, hipComplex const *alpha, hipComplex const *a, int lda,
-                         hipComplex const *x, int incx, hipComplex const *beta, hipComplex *y, int incy);
+EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *a, int lda,
+                         hipFloatComplex const *x, int incx, hipFloatComplex const *beta, hipFloatComplex *y, int incy);
 
 EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, hipDoubleComplex const *alpha, hipDoubleComplex const *a, int lda,
                          hipDoubleComplex const *x, int incx, hipDoubleComplex const *beta, hipDoubleComplex *y, int incy);
@@ -149,7 +149,7 @@ EINSUMS_EXPORT void scal(int size, float const *alpha, float *x, int incx);
 
 EINSUMS_EXPORT void scal(int size, double const *alpha, double *x, int incx);
 
-EINSUMS_EXPORT void scal(int size, hipComplex const *alpha, hipComplex *x, int incx);
+EINSUMS_EXPORT void scal(int size, hipFloatComplex const *alpha, hipFloatComplex *x, int incx);
 
 EINSUMS_EXPORT void scal(int size, hipDoubleComplex const *alpha, hipDoubleComplex *x, int incx);
 
@@ -162,8 +162,8 @@ __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n,
 __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, double const *A, int lda, double const *B, int ldb,
                                          double *C, int ldc);
 
-__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, hipComplex const *A, int lda, hipComplex const *B, int ldb,
-                                         hipComplex *C, int ldc);
+__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, hipFloatComplex const *A, int lda, hipFloatComplex const *B, int ldb,
+                                         hipFloatComplex *C, int ldc);
 
 __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, hipDoubleComplex const *A, int lda,
                                          hipDoubleComplex const *B, int ldb, hipDoubleComplex *C, int ldc);
@@ -173,7 +173,7 @@ __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n,
  */
 EINSUMS_EXPORT int gesv(int n, int nrhs, float *A, int lda, int *ipiv, float *B, int ldb, float *X, int ldx);
 EINSUMS_EXPORT int gesv(int n, int nrhs, double *A, int lda, int *ipiv, double *B, int ldb, double *X, int ldx);
-EINSUMS_EXPORT int gesv(int n, int nrhs, hipComplex *A, int lda, int *ipiv, hipComplex *B, int ldb, hipComplex *X, int ldx);
+EINSUMS_EXPORT int gesv(int n, int nrhs, hipFloatComplex *A, int lda, int *ipiv, hipFloatComplex *B, int ldb, hipFloatComplex *X, int ldx);
 EINSUMS_EXPORT int gesv(int n, int nrhs, hipDoubleComplex *A, int lda, int *ipiv, hipDoubleComplex *B, int ldb, hipDoubleComplex *X,
                         int ldx);
 
@@ -182,7 +182,7 @@ EINSUMS_EXPORT int gesv(int n, int nrhs, hipDoubleComplex *A, int lda, int *ipiv
  */
 EINSUMS_EXPORT void axpy(int n, float const *alpha, float const *X, int incx, float *Y, int incy);
 EINSUMS_EXPORT void axpy(int n, double const *alpha, double const *X, int incx, double *Y, int incy);
-EINSUMS_EXPORT void axpy(int n, hipComplex const *alpha, hipComplex const *X, int incx, hipComplex *Y, int incy);
+EINSUMS_EXPORT void axpy(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex *Y, int incy);
 EINSUMS_EXPORT void axpy(int n, hipDoubleComplex const *alpha, hipDoubleComplex const *X, int incx, hipDoubleComplex *Y, int incy);
 
 /**
@@ -190,15 +190,15 @@ EINSUMS_EXPORT void axpy(int n, hipDoubleComplex const *alpha, hipDoubleComplex 
  */
 EINSUMS_EXPORT void axpby(int n, float const *alpha, float const *X, int incx, float const *beta, float *Y, int incy);
 EINSUMS_EXPORT void axpby(int n, double const *alpha, double const *X, int incx, double const *beta, double *Y, int incy);
-EINSUMS_EXPORT void axpby(int n, hipComplex const *alpha, hipComplex const *X, int incx, hipComplex const *beta, hipComplex *Y, int incy);
+EINSUMS_EXPORT void axpby(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta, hipFloatComplex *Y, int incy);
 EINSUMS_EXPORT void axpby(int n, hipDoubleComplex const *alpha, hipDoubleComplex const *X, int incx, hipDoubleComplex const *beta,
                           hipDoubleComplex *Y, int incy);
 
 __global__ EINSUMS_EXPORT void saxpby_kernel(int n, float const *alpha, float const *X, int incx, float const *beta, float *Y, int incy);
 __global__ EINSUMS_EXPORT void daxpby_kernel(int n, double const *alpha, double const *X, int incx, double const *beta, double *Y,
                                              int incy);
-__global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipComplex const *alpha, hipComplex const *X, int incx, hipComplex const *beta,
-                                             hipComplex *Y, int incy);
+__global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta,
+                                             hipFloatComplex *Y, int incy);
 __global__ EINSUMS_EXPORT void zaxpby_kernel(int n, hipDoubleComplex const *alpha, hipDoubleComplex const *X, int incx,
                                              hipDoubleComplex const *beta, hipDoubleComplex *Y, int incy);
 

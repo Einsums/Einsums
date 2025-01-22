@@ -14,7 +14,7 @@ namespace einsums {
  *
  * To cast between types, use <tt>HipCast<To, From>::cast(param)</tt>.
  *
- * Valid types are @c float , @c double , @c complex<float> , @c complex<double> , @c hipComplex , and @c hipDoubleComplex .
+ * Valid types are @c float , @c double , @c complex<float> , @c complex<double> , @c hipFloatComplex , and @c hipDoubleComplex .
  *
  * @tparam To The type to cast to.
  * @tparam From The type to cast from.
@@ -37,17 +37,17 @@ struct HipCast<double, float> {
 
 template <>
 struct HipCast<std::complex<float>, float> {
-    __host__ __device__ static inline std::complex<float> cast(float from) { return std::complex<float>(from); }
+    __host__ static inline std::complex<float> cast(float from) { return std::complex<float>(from); }
 };
 
 template <>
 struct HipCast<std::complex<double>, float> {
-    __host__ __device__ static inline std::complex<double> cast(float from) { return std::complex<double>((double)from); }
+    __host__ static inline std::complex<double> cast(float from) { return std::complex<double>((double)from); }
 };
 
 template <>
-struct HipCast<hipComplex, float> {
-    __host__ __device__ static inline hipComplex cast(float from) { return make_hipComplex(from, 0.0f); }
+struct HipCast<hipFloatComplex, float> {
+    __host__ __device__ static inline hipFloatComplex cast(float from) { return make_hipFloatComplex(from, 0.0f); }
 };
 
 template <>
@@ -67,17 +67,17 @@ struct HipCast<double, double> {
 
 template <>
 struct HipCast<std::complex<float>, double> {
-    __host__ __device__ static inline std::complex<float> cast(double from) { return std::complex<float>((float)from); }
+    __host__ static inline std::complex<float> cast(double from) { return std::complex<float>((float)from); }
 };
 
 template <>
 struct HipCast<std::complex<double>, double> {
-    __host__ __device__ static inline std::complex<double> cast(double from) { return std::complex<double>(from); }
+    __host__ static inline std::complex<double> cast(double from) { return std::complex<double>(from); }
 };
 
 template <>
-struct HipCast<hipComplex, double> {
-    __host__ __device__ static inline hipComplex cast(double from) { return make_hipComplex((float)from, 0.0f); }
+struct HipCast<hipFloatComplex, double> {
+    __host__ __device__ static inline hipFloatComplex cast(double from) { return make_hipFloatComplex((float)from, 0.0f); }
 };
 
 template <>
@@ -87,104 +87,98 @@ struct HipCast<hipDoubleComplex, double> {
 
 template <>
 struct HipCast<float, std::complex<float>> {
-    __host__ __device__ static inline float cast(std::complex<float> from) { return from.real(); }
+    __host__ static inline float cast(std::complex<float> from) { return from.real(); }
 };
 
 template <>
 struct HipCast<double, std::complex<float>> {
-    __host__ __device__ static inline double cast(std::complex<float> from) { return (double)from.real(); }
+    __host__ static inline double cast(std::complex<float> from) { return (double)from.real(); }
 };
 
 template <>
 struct HipCast<std::complex<float>, std::complex<float>> {
-    __host__ __device__ static inline std::complex<float> cast(std::complex<float> from) { return from; }
+    __host__ static inline std::complex<float> cast(std::complex<float> from) { return from; }
 };
 
 template <>
 struct HipCast<std::complex<double>, std::complex<float>> {
-    __host__ __device__ static inline std::complex<double> cast(std::complex<float> from) {
+    __host__ static inline std::complex<double> cast(std::complex<float> from) {
         return std::complex<double>((double)from.real(), (double)from.imag());
     }
 };
 
 template <>
-struct HipCast<hipComplex, std::complex<float>> {
-    __host__ __device__ static inline hipComplex cast(std::complex<float> from) { return *reinterpret_cast<hipComplex *>(&from); }
+struct HipCast<hipFloatComplex, std::complex<float>> {
+    __host__ static inline hipFloatComplex cast(std::complex<float> from) { return *reinterpret_cast<hipFloatComplex *>(&from); }
 };
 
 template <>
 struct HipCast<hipDoubleComplex, std::complex<float>> {
-    __host__ __device__ static inline hipDoubleComplex cast(std::complex<float> from) {
+    __host__ static inline hipDoubleComplex cast(std::complex<float> from) {
         return make_hipDoubleComplex((double)from.real(), (double)from.imag());
     }
 };
 
 template <>
 struct HipCast<float, std::complex<double>> {
-    __host__ __device__ static inline float cast(std::complex<double> from) { return (float)from.real(); }
+    __host__ static inline float cast(std::complex<double> from) { return (float)from.real(); }
 };
 
 template <>
 struct HipCast<double, std::complex<double>> {
-    __host__ __device__ static inline double cast(std::complex<double> from) { return from.real(); }
+    __host__ static inline double cast(std::complex<double> from) { return from.real(); }
 };
 
 template <>
 struct HipCast<std::complex<float>, std::complex<double>> {
-    __host__ __device__ static inline std::complex<float> cast(std::complex<double> from) {
+    __host__ static inline std::complex<float> cast(std::complex<double> from) {
         return std::complex<float>((float)from.real(), (float)from.imag());
     }
 };
 
 template <>
 struct HipCast<std::complex<double>, std::complex<double>> {
-    __host__ __device__ static inline std::complex<double> cast(std::complex<double> from) { return from; }
+    __host__ static inline std::complex<double> cast(std::complex<double> from) { return from; }
 };
 
 template <>
-struct HipCast<hipComplex, std::complex<double>> {
-    __host__ __device__ static inline hipComplex cast(std::complex<double> from) {
-        return make_hipComplex((float)from.real(), (float)from.imag());
-    }
+struct HipCast<hipFloatComplex, std::complex<double>> {
+    __host__ static inline hipFloatComplex cast(std::complex<double> from) { return make_hipFloatComplex((float)from.real(), (float)from.imag()); }
 };
 
 template <>
 struct HipCast<hipDoubleComplex, std::complex<double>> {
-    __host__ __device__ static inline hipDoubleComplex cast(std::complex<double> from) {
-        return *reinterpret_cast<hipDoubleComplex *>(&from);
-    }
+    __host__ static inline hipDoubleComplex cast(std::complex<double> from) { return *reinterpret_cast<hipDoubleComplex *>(&from); }
 };
 
 template <>
-struct HipCast<float, hipComplex> {
-    __host__ __device__ static inline float cast(hipComplex from) { return from.x; }
+struct HipCast<float, hipFloatComplex> {
+    __host__ __device__ static inline float cast(hipFloatComplex from) { return from.x; }
 };
 
 template <>
-struct HipCast<double, hipComplex> {
-    __host__ __device__ static inline double cast(hipComplex from) { return (double)from.x; }
+struct HipCast<double, hipFloatComplex> {
+    __host__ __device__ static inline double cast(hipFloatComplex from) { return (double)from.x; }
 };
 
 template <>
-struct HipCast<std::complex<float>, hipComplex> {
-    __host__ __device__ static inline std::complex<float> cast(hipComplex from) { return *reinterpret_cast<std::complex<float> *>(&from); }
+struct HipCast<std::complex<float>, hipFloatComplex> {
+    __host__ static inline std::complex<float> cast(hipFloatComplex from) { return *reinterpret_cast<std::complex<float> *>(&from); }
 };
 
 template <>
-struct HipCast<std::complex<double>, hipComplex> {
-    __host__ __device__ static inline std::complex<double> cast(hipComplex from) {
-        return std::complex<double>((double)from.x, (double)from.y);
-    }
+struct HipCast<std::complex<double>, hipFloatComplex> {
+    __host__ static inline std::complex<double> cast(hipFloatComplex from) { return std::complex<double>((double)from.x, (double)from.y); }
 };
 
 template <>
-struct HipCast<hipComplex, hipComplex> {
-    __host__ __device__ static inline hipComplex cast(hipComplex from) { return from; }
+struct HipCast<hipFloatComplex, hipFloatComplex> {
+    __host__ __device__ static inline hipFloatComplex cast(hipFloatComplex from) { return from; }
 };
 
 template <>
-struct HipCast<hipDoubleComplex, hipComplex> {
-    __host__ __device__ static inline hipDoubleComplex cast(hipComplex from) {
+struct HipCast<hipDoubleComplex, hipFloatComplex> {
+    __host__ __device__ static inline hipDoubleComplex cast(hipFloatComplex from) {
         return make_hipDoubleComplex((double)from.x, (double)from.x);
     }
 };
@@ -201,21 +195,17 @@ struct HipCast<double, hipDoubleComplex> {
 
 template <>
 struct HipCast<std::complex<float>, hipDoubleComplex> {
-    __host__ __device__ static inline std::complex<float> cast(hipDoubleComplex from) {
-        return std::complex<float>((float)from.x, (float)from.y);
-    }
+    __host__ static inline std::complex<float> cast(hipDoubleComplex from) { return std::complex<float>((float)from.x, (float)from.y); }
 };
 
 template <>
 struct HipCast<std::complex<double>, hipDoubleComplex> {
-    __host__ __device__ static inline std::complex<double> cast(hipDoubleComplex from) {
-        return *reinterpret_cast<std::complex<double> *>(&from);
-    }
+    __host__ static inline std::complex<double> cast(hipDoubleComplex from) { return *reinterpret_cast<std::complex<double> *>(&from); }
 };
 
 template <>
-struct HipCast<hipComplex, hipDoubleComplex> {
-    __host__ __device__ static inline hipComplex cast(hipDoubleComplex from) { return make_hipComplex((float)from.x, (float)from.y); }
+struct HipCast<hipFloatComplex, hipDoubleComplex> {
+    __host__ __device__ static inline hipFloatComplex cast(hipDoubleComplex from) { return make_hipFloatComplex((float)from.x, (float)from.y); }
 };
 
 template <>
@@ -223,4 +213,4 @@ struct HipCast<hipDoubleComplex, hipDoubleComplex> {
     __host__ __device__ static inline hipDoubleComplex cast(hipDoubleComplex from) { return from; }
 };
 
-}
+} // namespace einsums

@@ -44,6 +44,10 @@ if(EINSUMS_WITH_GPU_SUPPORT)
   foreach(test ${TensorAlgebraTests2})
     set(sources ${test}.hip)
 
+    if(EINSUMS_WITH_CUDA)
+      set_source_files_properties(${test}.hip PROPERTIES LANGUAGE CUDA)
+    endif()
+
     source_group("Source Files" FILES ${sources})
 
     einsums_add_executable(

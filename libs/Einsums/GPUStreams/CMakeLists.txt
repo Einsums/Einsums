@@ -10,6 +10,14 @@ if(EINSUMS_WITH_GPU_SUPPORT)
 
   set(GPUStreamsSources GPUStreams.hip)
 
+  if(EINSUMS_WITH_CUDA)
+    foreach(f IN LISTS GPUStreamsSources)
+      if(f MATCHES ".*\.hip")
+        set_source_files_properties("src/${f}" PROPERTIES LANGUAGE CUDA)
+      endif()
+    endforeach()
+  endif()
+
   include(Einsums_AddModule)
   einsums_add_module(
     Einsums GPUStreams

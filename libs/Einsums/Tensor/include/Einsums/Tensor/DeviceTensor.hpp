@@ -5,6 +5,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/DesignPatterns/Lockable.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
@@ -264,7 +265,7 @@ class HostDevReference {
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t rank>
-struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
+struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
                       einsums::tensor_base::AlgebraOptimizedTensor,
                       design_pats::Lockable<std::recursive_mutex> {
   public:
@@ -281,7 +282,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
     /**
      * @brief Copy construct a new GPU tensor.
      */
-    DeviceTensor(DeviceTensor<T, Rank> const &other, detail::HostToDeviceMode mode = detail::UNKNOWN);
+    DeviceTensor(DeviceTensor<T, rank> const &other, detail::HostToDeviceMode mode = detail::UNKNOWN);
 
     /**
      * @brief Destructor.
@@ -306,7 +307,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
      */
     template <typename... Dims>
         requires requires {
-            requires(sizeof...(Dims) == Rank);
+            requires(sizeof...(Dims) == rank);
             requires(!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
         }
     explicit DeviceTensor(std::string name, detail::HostToDeviceMode mode, Dims... dims);
@@ -329,7 +330,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
      */
     template <typename... Dims>
         requires requires {
-            requires(sizeof...(Dims) == Rank);
+            requires(sizeof...(Dims) == rank);
             requires(!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
         }
     explicit DeviceTensor(std::string name, Dims... dims);
@@ -368,7 +369,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
      *
      * @param dims The dimensions of the new tensor in Dim form.
      */
-    explicit DeviceTensor(Dim<Rank> dims, detail::HostToDeviceMode mode = detail::DEV_ONLY);
+    explicit DeviceTensor(Dim<rank> dims, detail::HostToDeviceMode mode = detail::DEV_ONLY);
 
     /**
      * @brief Construct a new Tensor object from a TensorView.
@@ -377,14 +378,14 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
      *
      * @param other The tensor view to copy.
      */
-    DeviceTensor(DeviceTensorView<T, Rank> const &other);
+    DeviceTensor(DeviceTensorView<T, rank> const &other);
 
     /**
      * @brief Resize a tensor.
      *
      * @param dims The new dimensions of a tensor.
      */
-    void resize(Dim<Rank> dims);
+    void resize(Dim<rank> dims);
 
     /**
      * @brief Resize a tensor.
@@ -392,8 +393,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
      * @param dims The new dimensions of a tensor.
      */
     template <typename... Dims>
-    auto resize(Dims... dims) -> std::enable_if_t<(std::is_integral_v<Dims> && ... && (sizeof...(Dims) == Rank)), void> {
-        resize(Dim<Rank>{static_cast<size_t>(dims)...});
+    auto resize(Dims... dims) -> std::enable_if_t<(std::is_integral_v<Dims> && ... && (sizeof...(Dims) == rank)), void> {
+        resize(Dim<rank>{static_cast<size_t>(dims)...});
     }
 
     /**
@@ -537,17 +538,17 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
     /**
      * Assignments
      */
-    DeviceTensor<T, Rank> &assign(DeviceTensor<T, Rank> const &other);
-    DeviceTensor<T, Rank> &assign(Tensor<T, Rank> const &other);
+    DeviceTensor<T, rank> &assign(DeviceTensor<T, rank> const &other);
+    DeviceTensor<T, rank> &assign(Tensor<T, rank> const &other);
 
-    DeviceTensor<T, Rank> &init(DeviceTensor<T, Rank> const &other, einsums::detail::HostToDeviceMode mode = einsums::detail::UNKNOWN);
+    DeviceTensor<T, rank> &init(DeviceTensor<T, rank> const &other, einsums::detail::HostToDeviceMode mode = einsums::detail::UNKNOWN);
 
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
-    DeviceTensor<T, Rank> &assign(DeviceTensor<TOther, Rank> const &other);
+    DeviceTensor<T, rank> &assign(DeviceTensor<TOther, rank> const &other);
 
     template <typename TOther>
-    DeviceTensor<T, Rank> &assign(DeviceTensorView<TOther, Rank> const &other);
+    DeviceTensor<T, rank> &assign(DeviceTensorView<TOther, rank> const &other);
 
     /**
      * @brief Subscripts into the tensor.
@@ -596,62 +597,62 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
      * @brief Subscripts into the tensor and creates a view.
      */
     template <typename... MultiIndex>
-        requires NumOfType<Range, Rank, MultiIndex...>
-    auto operator()(MultiIndex... index) const -> DeviceTensorView<T, Rank>;
+        requires NumOfType<Range, rank, MultiIndex...>
+    auto operator()(MultiIndex... index) const -> DeviceTensorView<T, rank>;
 
     /**
      * @brief Copy data from one tensor to another.
      */
-    auto operator=(DeviceTensor<T, Rank> const &other) -> DeviceTensor<T, Rank> &;
+    auto operator=(DeviceTensor<T, rank> const &other) -> DeviceTensor<T, rank> &;
 
     /**
      * @brief Copy data from one tensor to another, and convert types.
      */
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
-    auto operator=(DeviceTensor<TOther, Rank> const &other) -> DeviceTensor<T, Rank> &;
+    auto operator=(DeviceTensor<TOther, rank> const &other) -> DeviceTensor<T, rank> &;
 
     /**
      * @brief Copy data from a tensor view into a tensor.
      */
     template <typename TOther>
-    auto operator=(DeviceTensorView<TOther, Rank> const &other) -> DeviceTensor<T, Rank> &;
+    auto operator=(DeviceTensorView<TOther, rank> const &other) -> DeviceTensor<T, rank> &;
 
     /**
      * @brief Copy data from one tensor to another.
      */
-    auto operator=(Tensor<T, Rank> const &other) -> DeviceTensor<T, Rank> &;
+    auto operator=(Tensor<T, rank> const &other) -> DeviceTensor<T, rank> &;
 
     /**
      * Fill a tensor with a value.
      */
-    auto operator=(T const &fill_value) -> DeviceTensor<T, Rank> &;
+    auto operator=(T const &fill_value) -> DeviceTensor<T, rank> &;
 
     /**
      * @brief Operate and assign every element with a scalar.
      */
-    DeviceTensor<T, Rank> &add_assign(T const &other);
-    DeviceTensor<T, Rank> &mult_assign(T const &other);
-    DeviceTensor<T, Rank> &sub_assign(T const &other);
-    DeviceTensor<T, Rank> &div_assign(T const &other);
+    DeviceTensor<T, rank> &add_assign(T const &other);
+    DeviceTensor<T, rank> &mult_assign(T const &other);
+    DeviceTensor<T, rank> &sub_assign(T const &other);
+    DeviceTensor<T, rank> &div_assign(T const &other);
 
-    DeviceTensor<T, Rank> &operator*=(T const &other) { return this->mult_assign(other); }
-    DeviceTensor<T, Rank> &operator+=(T const &other) { return this->add_assign(other); }
-    DeviceTensor<T, Rank> &operator-=(T const &other) { return this->sub_assign(other); }
-    DeviceTensor<T, Rank> &operator/=(T const &other) { return this->div_assign(other); }
+    DeviceTensor<T, rank> &operator*=(T const &other) { return this->mult_assign(other); }
+    DeviceTensor<T, rank> &operator+=(T const &other) { return this->add_assign(other); }
+    DeviceTensor<T, rank> &operator-=(T const &other) { return this->sub_assign(other); }
+    DeviceTensor<T, rank> &operator/=(T const &other) { return this->div_assign(other); }
 
     /**
      * @brief Operate and assign two tensors element-wise.
      */
-    DeviceTensor<T, Rank> &add_assign(DeviceTensor<T, Rank> const &other);
-    DeviceTensor<T, Rank> &mult_assign(DeviceTensor<T, Rank> const &other);
-    DeviceTensor<T, Rank> &sub_assign(DeviceTensor<T, Rank> const &other);
-    DeviceTensor<T, Rank> &div_assign(DeviceTensor<T, Rank> const &other);
+    DeviceTensor<T, rank> &add_assign(DeviceTensor<T, rank> const &other);
+    DeviceTensor<T, rank> &mult_assign(DeviceTensor<T, rank> const &other);
+    DeviceTensor<T, rank> &sub_assign(DeviceTensor<T, rank> const &other);
+    DeviceTensor<T, rank> &div_assign(DeviceTensor<T, rank> const &other);
 
-    DeviceTensor<T, Rank> &operator*=(DeviceTensor<T, Rank> const &other) { return this->mult_assign(other); }
-    DeviceTensor<T, Rank> &operator+=(DeviceTensor<T, Rank> const &other) { return this->add_assign(other); }
-    DeviceTensor<T, Rank> &operator-=(DeviceTensor<T, Rank> const &other) { return this->sub_assign(other); }
-    DeviceTensor<T, Rank> &operator/=(DeviceTensor<T, Rank> const &other) { return this->div_assign(other); }
+    DeviceTensor<T, rank> &operator*=(DeviceTensor<T, rank> const &other) { return this->mult_assign(other); }
+    DeviceTensor<T, rank> &operator+=(DeviceTensor<T, rank> const &other) { return this->add_assign(other); }
+    DeviceTensor<T, rank> &operator-=(DeviceTensor<T, rank> const &other) { return this->sub_assign(other); }
+    DeviceTensor<T, rank> &operator/=(DeviceTensor<T, rank> const &other) { return this->div_assign(other); }
 
     /**
      * @brief Get the dimension for the given rank.
@@ -659,14 +660,14 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
     size_t dim(int d) const {
         // Add support for negative indices.
         if (d < 0)
-            d += Rank;
+            d += rank;
         return _dims[d];
     }
 
     /**
      * @brief Get all the dimensions.
      */
-    Dim<Rank> dims() const { return _dims; }
+    Dim<rank> dims() const { return _dims; }
 
     /**
      * @brief Get the dimensions available to the GPU.
@@ -693,14 +694,14 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
      */
     size_t stride(int d) const noexcept {
         if (d < 0)
-            d += Rank;
+            d += rank;
         return _strides[d];
     }
 
     /**
      * @brief Get all the strides.
      */
-    Stride<Rank> strides() const noexcept { return _strides; }
+    Stride<rank> strides() const noexcept { return _strides; }
 
     /**
      * @brief Get the strides available to the GPU.
@@ -742,12 +743,12 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
     /**
      * @brief Copy a host tensor to the device.
      */
-    explicit DeviceTensor(Tensor<T, Rank> const &, detail::HostToDeviceMode mode = detail::MAPPED);
+    explicit DeviceTensor(Tensor<T, rank> const &, detail::HostToDeviceMode mode = detail::MAPPED);
 
     /**
      * @brief Copy a device tensor to the host.
      */
-    operator einsums::Tensor<T, Rank>() const;
+    operator einsums::Tensor<T, rank>() const;
 
   private:
     /**
@@ -762,7 +763,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
      *
      * @brief The dimensions of the tensor.
      */
-    einsums::Dim<Rank> _dims;
+    einsums::Dim<rank> _dims;
 
     /**
      * @property _gpu_dims
@@ -776,7 +777,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
      *
      * @brief The strides of the tensor.
      */
-    einsums::Stride<Rank> _strides;
+    einsums::Stride<rank> _strides;
 
     /**
      * @property _gpu_strides
@@ -806,13 +807,13 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
      */
     detail::HostToDeviceMode _mode{detail::UNKNOWN};
 
-    friend struct DeviceTensorView<T, Rank>;
+    friend struct DeviceTensorView<T, rank>;
 
     template <typename TOther, size_t RankOther>
     friend struct DeviceTensorView;
 
     template <typename TOther, size_t RankOther>
-    friend struct DeviceTensor;
+    friend struct einsums::DeviceTensor;
 };
 
 /**
@@ -822,12 +823,12 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensor,
  */
 template <typename T>
 struct DeviceTensor<T, 0>
-    : public tensor_base::DeviceTensor, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
+    : public einsums::tensor_base::DeviceTensorBase, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
   public:
     using dev_datatype           = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
     using host_datatype          = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
     using ValueType              = T;
-    constexpr static size_t Rank = rank;
+    constexpr static size_t Rank = 0;
 
     /**
      * @brief Construct a new tensor on the GPU.
@@ -1049,14 +1050,14 @@ struct DeviceTensor<T, 0>
         switch (mode) {
         case detail::MAPPED:
             this->_host_data = new T();
-            *_host_data      = (T)other;
+            *_host_data      = other.operator T();
             hip_catch(hipHostRegister((void *)this->_host_data, sizeof(T), hipHostRegisterDefault));
             hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
             break;
         case detail::PINNED:
             hip_catch(hipHostMalloc((void **)&(this->_host_data), sizeof(T), 0));
             hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-            *_host_data = (T)other;
+            *_host_data = other.operator T();
             break;
         case detail::DEV_ONLY:
             this->_host_data = nullptr;
@@ -1112,11 +1113,11 @@ struct DeviceTensor<T, 0>
     friend struct DeviceTensorView;
 
     template <typename TOther, size_t RankOther>
-    friend struct DeviceTensor;
+    friend struct einsums::DeviceTensor;
 };
 
-template <typename T, size_t Rank>
-struct DeviceTensorView : public tensor_base::DeviceTensor,
+template <typename T, size_t rank>
+struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
                           design_pats::Lockable<std::recursive_mutex>,
                           tensor_base::AlgebraOptimizedTensor {
   public:
@@ -1124,7 +1125,7 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
     using host_datatype          = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
     using ValueType              = T;
     constexpr static size_t Rank = rank;
-    using underlying_type        = DeviceTensor<T, Rank>
+    using underlying_type        = einsums::DeviceTensor<T, rank>;
 
     DeviceTensorView() = delete;
 
@@ -1145,7 +1146,7 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
      * @brief Create a tensor view around the given tensor.
      */
     template <size_t OtherRank, typename... Args>
-    DeviceTensorView(einsums::DeviceTensor<T, OtherRank> const &other, Dim<Rank> const &dim, Args &&...args)
+    DeviceTensorView(einsums::DeviceTensor<T, OtherRank> const &other, Dim<rank> const &dim, Args &&...args)
         : _name{other._name}, _dims{dim} {
         common_initialization(other, std::forward<Args>(args)...);
     }
@@ -1154,7 +1155,7 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
      * @brief Create a tensor view around the given tensor.
      */
     template <size_t OtherRank, typename... Args>
-    explicit DeviceTensorView(DeviceTensorView<T, OtherRank> &other, Dim<Rank> const &dim, Args &&...args)
+    explicit DeviceTensorView(DeviceTensorView<T, OtherRank> &other, Dim<rank> const &dim, Args &&...args)
         : _name{other.name()}, _dims{dim} {
         common_initialization(other, std::forward<Args>(args)...);
     }
@@ -1163,7 +1164,7 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
      * @brief Create a tensor view around the given tensor.
      */
     template <size_t OtherRank, typename... Args>
-    explicit DeviceTensorView(DeviceTensorView<T, OtherRank> const &other, Dim<Rank> const &dim, Args &&...args)
+    explicit DeviceTensorView(DeviceTensorView<T, OtherRank> const &other, Dim<rank> const &dim, Args &&...args)
         : _name{other.name()}, _dims{dim} {
         common_initialization(const_cast<DeviceTensorView<T, OtherRank> &>(other), std::forward<Args>(args)...);
     }
@@ -1172,7 +1173,7 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
      * Create a device tensor view that maps an in-core tensor to the GPU.
      */
     template <CoreBasicTensorConcept TensorType>
-        requires(TensorType::Rank == Rank)
+        requires(TensorType::Rank == rank)
     explicit DeviceTensorView(TensorType &core_tensor) {
         _name                    = core_tensor.name();
         _dims                    = core_tensor.dims();
@@ -1184,13 +1185,13 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
 
         dims_to_strides(_dims, _strides);
 
-        hip_catch(hipMalloc((void **)&(_gpu_dims), 3 * sizeof(size_t) * Rank));
-        this->_gpu_strides       = this->_gpu_dims + Rank;
-        this->_gpu_index_strides = this->_gpu_dims + 2 * Rank;
+        hip_catch(hipMalloc((void **)&(_gpu_dims), 3 * sizeof(size_t) * rank));
+        this->_gpu_strides       = this->_gpu_dims + rank;
+        this->_gpu_index_strides = this->_gpu_dims + 2 * rank;
 
-        hip_catch(hipMemcpy((void *)this->_gpu_dims, (void const *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
-        hip_catch(hipMemcpy((void *)this->_gpu_strides, (void const *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
-        hip_catch(hipMemcpy((void *)this->_gpu_index_strides, (void const *)this->_index_strides.data(), sizeof(size_t) * Rank,
+        hip_catch(hipMemcpy((void *)this->_gpu_dims, (void const *)this->_dims.data(), sizeof(size_t) * rank, hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)this->_gpu_strides, (void const *)this->_strides.data(), sizeof(size_t) * rank, hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)this->_gpu_index_strides, (void const *)this->_index_strides.data(), sizeof(size_t) * rank,
                             hipMemcpyHostToDevice));
         gpu::device_synchronize();
 
@@ -1198,11 +1199,11 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
         hip_catch(hipHostGetDevicePointer((void **)&_data, _host_data, 0));
     }
 
-    DeviceTensorView<T, Rank> &assign(T const *other);
+    DeviceTensorView<T, rank> &assign(T const *other);
 
     template <template <typename, size_t> typename AType>
-        requires DeviceRankTensor<AType<T, Rank>, Rank, T>
-    DeviceTensorView<T, Rank> &assign(AType<T, Rank> const &other);
+        requires DeviceRankTensor<AType<T, rank>, rank, T>
+    DeviceTensorView<T, rank> &assign(AType<T, rank> const &other);
 
     void set_all(T const &value);
 
@@ -1217,13 +1218,13 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
      * @brief Copy data from another tensor.
      */
     template <template <typename, size_t> typename AType>
-        requires DeviceRankTensor<AType<T, Rank>, Rank, T>
-    auto operator=(AType<T, Rank> const &other) -> DeviceTensorView &;
+        requires DeviceRankTensor<AType<T, rank>, rank, T>
+    auto operator=(AType<T, rank> const &other) -> DeviceTensorView &;
 
     /**
      * @brief Copy data from another tensor.
      */
-    auto operator=(DeviceTensorView<T, Rank> const &other) -> DeviceTensorView &;
+    auto operator=(DeviceTensorView<T, rank> const &other) -> DeviceTensorView &;
 
     /**
      * @brief Fill the view with a value.
@@ -1233,10 +1234,10 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
         return *this;
     }
 
-    DeviceTensorView<T, Rank> &mult_assign(T const &value);
-    DeviceTensorView<T, Rank> &div_assign(T const &value);
-    DeviceTensorView<T, Rank> &add_assign(T const &value);
-    DeviceTensorView<T, Rank> &sub_assign(T const &value);
+    DeviceTensorView<T, rank> &mult_assign(T const &value);
+    DeviceTensorView<T, rank> &div_assign(T const &value);
+    DeviceTensorView<T, rank> &add_assign(T const &value);
+    DeviceTensorView<T, rank> &sub_assign(T const &value);
 
     /**
      * @brief Operate each element in the view with a scalar.
@@ -1305,12 +1306,12 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
     /**
      * @brief Get a pointer to an element in the view.
      */
-    dev_datatype *gpu_data_array(std::array<size_t, Rank> const &index_list);
+    dev_datatype *gpu_data_array(std::array<size_t, rank> const &index_list);
 
     /**
      * @brief Get a const pointer to an element in the view.
      */
-    dev_datatype const *gpu_data_array(std::array<size_t, Rank> const &index_list) const;
+    dev_datatype const *gpu_data_array(std::array<size_t, rank> const &index_list) const;
 
     /**
      * @brief Get a value from the view.
@@ -1323,14 +1324,14 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
      */
     size_t dim(int d) const {
         if (d < 0)
-            d += Rank;
+            d += rank;
         return _dims[d];
     }
 
     /**
      * @brief Get the dimensions of the view.
      */
-    Dim<Rank> dims() const { return _dims; }
+    Dim<rank> dims() const { return _dims; }
 
     /**
      * @brief Get the dimensions of the view made available to the GPU.
@@ -1357,14 +1358,14 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
      */
     size_t stride(int d) const noexcept {
         if (d < 0)
-            d += Rank;
+            d += rank;
         return _strides[d];
     }
 
     /**
      * @brief Get the strides of the view.
      */
-    Stride<Rank> strides() const noexcept { return _strides; }
+    Stride<rank> strides() const noexcept { return _strides; }
 
     /**
      * @brief Get the strides of the view made available to the GPU.
@@ -1389,12 +1390,12 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
     /**
      * @brief Get the size of the view.
      */
-    size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+    size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + rank, 1, std::multiplies<>{}); }
 
-    operator einsums::Tensor<T, Rank>() const {
-        einsums::DeviceTensor<T, Rank> temp(*this);
+    operator einsums::Tensor<T, rank>() const {
+        einsums::DeviceTensor<T, rank> temp(*this);
 
-        return (einsums::Tensor<T, Rank>)temp;
+        return (einsums::Tensor<T, rank>)temp;
     }
 
   private:
@@ -1410,7 +1411,7 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
      *
      * @brief The dimensions of the view.
      */
-    einsums::Dim<Rank> _dims;
+    einsums::Dim<rank> _dims;
 
     /**
      * @property _gpu_dims
@@ -1424,7 +1425,7 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
      *
      * @brief The strides of the view.
      */
-    einsums::Stride<Rank> _strides, _index_strides;
+    einsums::Stride<rank> _strides, _index_strides;
 
     /**
      * @property _gpu_strides
@@ -1432,7 +1433,7 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
      * @brief The strides of the view made available to the GPU.
      */
     size_t *_gpu_strides{nullptr}, *_gpu_index_strides;
-    // Offsets<Rank> _offsets;
+    // Offsets<rank> _offsets;
 
     /**
      * @property _full_view_of_underlying
@@ -1460,14 +1461,14 @@ struct DeviceTensorView : public tensor_base::DeviceTensor,
      * @brief Method for initializing the view.
      */
     template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
-    auto common_initialization(TensorType<T, OtherRank> const &other, Args &&...args)
-        -> std::enable_if_t<std::is_base_of_v<::einsums::tensor_base::Tensor<T, OtherRank>, TensorType<T, OtherRank>>>;
+        requires(TRTensorConcept<TensorType<T, OtherRank>, OtherRank, T>)
+    void common_initialization(TensorType<T, OtherRank> const &other, Args &&...args);
 
     template <typename OtherT, size_t OtherRank>
     friend struct DeviceTensorView;
 
     template <typename OtherT, size_t OtherRank>
-    friend struct DeviceTensor;
+    friend struct ::einsums::DeviceTensor;
 };
 
 #ifdef __cpp_deduction_guides

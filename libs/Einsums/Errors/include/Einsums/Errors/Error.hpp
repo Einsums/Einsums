@@ -241,8 +241,10 @@ struct hip_exception : std::exception {
      */
     bool operator!=(hipError_t other) const { return error != other; }
 
-    friend bool operator==(hipError_t, hip_exception<error> const &);
-    friend bool operator!=(hipError_t, hip_exception<error> const &);
+    template<hipError_t error2>
+    friend bool operator==(hipError_t, hip_exception<error2> const &);
+    template<hipError_t error2>
+    friend bool operator!=(hipError_t, hip_exception<error2> const &);
 };
 
 /**
@@ -399,8 +401,10 @@ struct EINSUMS_EXPORT hipblas_exception : std::exception {
      */
     bool operator!=(hipblasStatus_t other) const { return error != other; }
 
-    friend bool operator==(hipblasStatus_t, hipblas_exception<error> const &);
-    friend bool operator!=(hipblasStatus_t, hipblas_exception<error> const &);
+    template<hipblasStatus_t error2>
+    friend bool operator==(hipblasStatus_t, hipblas_exception<error2> const &);
+    template<hipblasStatus_t error2>
+    friend bool operator!=(hipblasStatus_t, hipblas_exception<error2> const &);
 };
 
 /**
@@ -506,7 +510,9 @@ struct EINSUMS_EXPORT hipsolver_exception : std::exception {
      */
     bool operator!=(hipsolverStatus_t other) const { return error != other; }
 
-    friend bool operator==(hipsolverStatus_t, hipsolver_exception<error> const &);
+    template<hipsolverStatus_t error2>
+    friend bool operator==(hipsolverStatus_t, hipsolver_exception<error2> const &);
+    template<hipsolverStatus_t error2>
     friend bool operator!=(hipsolverStatus_t, hipsolver_exception<error> const &);
 };
 

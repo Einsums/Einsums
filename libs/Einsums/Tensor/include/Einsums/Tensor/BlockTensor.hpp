@@ -9,13 +9,15 @@
 
 #pragma once
 
+#include <Einsums/Config.hpp>
+
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
-#include <Einsums/Config.hpp>
 
 #include <concepts>
 #include <functional>
 #include <string>
+
 #include "Einsums/DesignPatterns/Lockable.hpp"
 
 // TODO:
@@ -38,13 +40,11 @@ namespace tensor_base {
  * @tparam TensorType The underlying type for the tensors.
  */
 template <typename T, size_t rank, typename TensorType>
-struct BlockTensor : public BlockTensorNoExtra,
-                     public design_pats::Lockable<std::recursive_mutex>,
-                     AlgebraOptimizedTensor {
+struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std::recursive_mutex>, AlgebraOptimizedTensor {
   public:
-    using StoredType = TensorType;
+    using StoredType             = TensorType;
     constexpr static size_t Rank = rank;
-    using ValueType = T;
+    using ValueType              = T;
 
     /**
      * @name Constructors
@@ -1140,9 +1140,7 @@ struct BlockTensor : public tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, 
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t Rank>
-struct BlockDeviceTensor : public virtual tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>,
-                           virtual tensor_base::DeviceTensor,
-                           virtual tensor_base::DeviceTypedTensor<T> {
+struct BlockDeviceTensor : public tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>, tensor_base::DeviceTensorBase {
   public:
     /**
      * @typedef host_datatype
@@ -1285,7 +1283,8 @@ struct BlockDeviceTensor : public virtual tensor_base::BlockTensor<T, Rank, eins
      */
     template <typename... Dims>
         requires(NoneOfType<detail::HostToDeviceMode, Dims...>)
-    explicit BlockDeviceTensor(std::string name, Dims... block_dims) : tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>(name) {
+    explicit BlockDeviceTensor(std::string name, Dims... block_dims)
+        : tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>(name) {
         this->_blocks.reserve(sizeof...(Dims));
 
         auto dims = std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(block_dims)...};
@@ -1296,7 +1295,8 @@ struct BlockDeviceTensor : public virtual tensor_base::BlockTensor<T, Rank, eins
 
             pass_dims.fill(dims[i]);
 
-            tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>::push_block(einsums::DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
+            tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>::push_block(
+                einsums::DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
         }
     }
 
@@ -1328,7 +1328,8 @@ struct BlockDeviceTensor : public virtual tensor_base::BlockTensor<T, Rank, eins
 
             pass_dims.fill(block_dims[i]);
 
-            tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>::push_block(einsums::DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
+            tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>::push_block(
+                einsums::DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
         }
     }
 
@@ -1442,11 +1443,6 @@ struct BlockDeviceTensor : public virtual tensor_base::BlockTensor<T, Rank, eins
 
         return std::apply(this->_blocks.at(block), index_list);
     }
-
-    /**
-     * Get the dimension of the tensor along a given axis.
-     */
-    size_t dim(int d) const override { return tensor_base::BlockTensor<T, Rank,einsums:: DeviceTensor<T, Rank>>::dim(d); }
 };
 #endif
 
@@ -1497,11 +1493,11 @@ TENSOR_EXPORT_RANK(BlockTensor, 2)
 TENSOR_EXPORT_RANK(BlockTensor, 3)
 TENSOR_EXPORT_RANK(BlockTensor, 4)
 
-#ifdef EINSUMS_COMPUTE_CODE
+#    ifdef EINSUMS_COMPUTE_CODE
 TENSOR_EXPORT_RANK(BlockDeviceTensor, 2)
 TENSOR_EXPORT_RANK(BlockDeviceTensor, 3)
 TENSOR_EXPORT_RANK(BlockDeviceTensor, 4)
-#endif
+#    endif
 
 #endif
 

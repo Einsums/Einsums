@@ -25,7 +25,7 @@ namespace einsums::tensor_base {
  *
  * Represents a tensor that stores different data types on the host and the device.
  * By default, if the host stores complex<float> or complex<double>, then it converts
- * it to hipComplex or hipDoubleComplex. The two types should have the same storage size.
+ * it to hipFloatComplex or hipDoubleComplex. The two types should have the same storage size.
  * @tparam HostT The host data type.
  * @tparam DevT The device type.
  */
@@ -40,7 +40,7 @@ struct DeviceTypedTensor {
      */
     using dev_datatype =
         std::conditional_t<std::is_void_v<DevT>,
-                           std::conditional_t<std::is_same_v<HostT, std::complex<float>>, hipComplex,
+                           std::conditional_t<std::is_same_v<HostT, std::complex<float>>, hipFloatComplex,
                                               std::conditional_t<std::is_same_v<HostT, std::complex<double>>, hipDoubleComplex, HostT>>,
                            DevT>;
 
@@ -72,7 +72,7 @@ struct CoreTensor {
  *
  * @brief Represents a tensor available to graphics hardware.
  */
-struct DeviceTensor {
+struct DeviceTensorBase {
 
 };
 #endif

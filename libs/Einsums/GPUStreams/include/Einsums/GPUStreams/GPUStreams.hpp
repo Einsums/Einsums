@@ -149,7 +149,7 @@ EINSUMS_DEVICE inline bool is_zero(float value) {
     return value == 0.0f;
 }
 
-EINSUMS_DEVICE inline bool is_zero(hipComplex value) {
+EINSUMS_DEVICE inline bool is_zero(hipFloatComplex value) {
     return value.x == 0.0f && value.y == 0.0f;
 }
 
@@ -170,7 +170,7 @@ EINSUMS_DEVICE inline void make_zero(float &value) {
     value = 0.0f;
 }
 
-EINSUMS_DEVICE inline void make_zero(hipComplex &value) {
+EINSUMS_DEVICE inline void make_zero(hipFloatComplex &value) {
     value.x = 0.0f;
     value.y = 0.0f;
 }
@@ -197,7 +197,7 @@ EINSUMS_DEVICE inline void atomicAdd_wrap(double *address, double value) {
 /**
  * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
  */
-EINSUMS_DEVICE inline void atomicAdd_wrap(hipComplex *address, hipComplex value) {
+EINSUMS_DEVICE inline void atomicAdd_wrap(hipFloatComplex *address, hipFloatComplex value) {
     atomicAdd(&(address->x), value.x);
     atomicAdd(&(address->y), value.y);
 }

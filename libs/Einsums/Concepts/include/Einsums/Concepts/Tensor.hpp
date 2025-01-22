@@ -158,7 +158,7 @@ constexpr inline bool IsIncoreTensorV = std::is_base_of_v<einsums::tensor_base::
  * @tparam D The tensor to check.
  */
 template <typename D>
-constexpr inline bool IsDeviceTensorV = std::is_base_of_v<einsums::tensor_base::DeviceTensor, D>;
+constexpr inline bool IsDeviceTensorV = std::is_base_of_v<einsums::tensor_base::DeviceTensorBase, D>;
 #endif
 
 /**
@@ -1357,7 +1357,7 @@ struct LocationTensorBaseOf<D> {
 #    if defined(EINSUMS_COMPUTE_CODE)
 template <DeviceTensorConcept D>
 struct LocationTensorBaseOf<D> {
-    using type = tensor_base::DeviceTensor;
+    using type = tensor_base::DeviceTensorBase;
 };
 #    endif
 #endif
