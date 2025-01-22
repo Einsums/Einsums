@@ -210,10 +210,5 @@ EINSUMS_DEVICE inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleCo
     atomicAdd(&(address->y), value.y);
 }
 
-/**
- * @brief Returns the number of threads within a warp on the current GPU device.
- */
-EINSUMS_HOST EINSUMS_EXPORT int get_warpsize(void);
-
 }
 }

@@ -309,8 +309,6 @@ __global__ EINSUMS_EXPORT void saxpby_kernel(int n, float const *alpha, float co
 
     get_worker_info(thread, kernel_size);
 
-    size_t curr_index = thread;
-
     for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
         size_t x_index = incx * curr_index;
         size_t y_index = incy * curr_index;
@@ -323,8 +321,6 @@ __global__ EINSUMS_EXPORT void daxpby_kernel(int n, double const *alpha, double 
     int thread, kernel_size;
 
     get_worker_info(thread, kernel_size);
-
-    size_t curr_index = thread;
 
     for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
         size_t x_index = incx * curr_index;
@@ -339,8 +335,6 @@ __global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipFloatComplex const *alpha
 
     get_worker_info(thread, kernel_size);
 
-    size_t curr_index = thread;
-
     for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
         size_t x_index = incx * curr_index;
         size_t y_index = incy * curr_index;
@@ -353,8 +347,6 @@ __global__ EINSUMS_EXPORT void zaxpby_kernel(int n, hipDoubleComplex const *alph
     int thread, kernel_size;
 
     get_worker_info(thread, kernel_size);
-
-    size_t curr_index = thread;
 
     for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
         size_t x_index = incx * curr_index;

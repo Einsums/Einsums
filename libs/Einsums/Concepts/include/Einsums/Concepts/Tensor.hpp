@@ -1376,24 +1376,32 @@ using LocationTensorBaseOfT = typename LocationTensorBaseOf<D>::type;
 
 namespace detail {
 
-template <typename T, typename... Args>
-constexpr auto count_of_type(/*Args... args*/) {
-    return (std::is_convertible_v<Args, T> + ... + 0);
+template <typename T>
+constexpr size_t count_of_type() {
+    return 0;
 }
 
+template <typename T, typename First, typename... Args>
+constexpr size_t count_of_type(/*Args... args*/) {
+    if constexpr (std::is_same_v<T, First>) {
+        return 1 + count_of_type<T, Args...>();
+    } else {
+        return count_of_type<T, Args...>();
+    }
+}
 } // namespace detail
 
 template <typename T, typename... Args>
-concept NoneOfType = detail::count_of_type<T, Args...>() == 0;
+concept NoneOfType = !(std::is_same_v<T, std::remove_cvref_t<Args>> || ... || false);
 
 template <typename T, typename... Args>
-concept AtLeastOneOfType = detail::count_of_type<T, Args...>() >= 1;
+concept AtLeastOneOfType = (std::is_same_v<T, std::remove_cvref_t<Args>> || ... || false);
 
 template <typename T, size_t Num, typename... Args>
-concept NumOfType = detail::count_of_type<T, Args...>() == Num;
+concept NumOfType = detail::count_of_type<T, std::remove_cvref_t<Args>...>() == Num;
 
 template <typename T, typename... Args>
-concept AllOfType = (std::is_same_v<T, Args> && ... && true);
+concept AllOfType = (std::is_same_v<T, std::remove_cvref_t<Args>> && ... && true);
 
 #ifdef EINSUMS_COMPUTE_CODE
 template <typename T>

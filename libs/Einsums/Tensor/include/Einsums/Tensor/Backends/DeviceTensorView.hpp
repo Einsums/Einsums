@@ -236,11 +236,13 @@ auto DeviceTensorView<T, rank>::gpu_data_array(::std::array<size_t, rank> const 
 
 template <typename T, size_t rank>
 template <typename... MultiIndex>
-auto DeviceTensorView<T, rank>::operator()(MultiIndex... index) const -> T {
+auto DeviceTensorView<T, rank>::operator()(MultiIndex&&... index) const -> T {
     using namespace einsums::gpu;
     T out;
 
-    hip_catch(hipMemcpy(&out, this->gpu_data(index...), sizeof(T), hipMemcpyDeviceToHost));
+    size_t ordinal = einsums::indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
+
+    hip_catch(hipMemcpy(&out, (const void *) (this->_data + ordinal), sizeof(T), hipMemcpyDeviceToHost));
     // no sync
 
     return out;

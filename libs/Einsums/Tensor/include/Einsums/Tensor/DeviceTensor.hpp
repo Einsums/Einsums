@@ -561,11 +561,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @return const T&
      */
     template <typename... MultiIndex>
-        requires requires {
-            requires NoneOfType<AllT, MultiIndex...>;
-            requires NoneOfType<Range, MultiIndex...>;
-        }
-    auto operator()(MultiIndex... index) const -> T;
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
+    auto operator()(MultiIndex &&...index) const -> T;
 
     /**
      * @brief Subscripts into the tensor.
@@ -578,26 +575,23 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @return const T&
      */
     template <typename... MultiIndex>
-        requires requires {
-            requires NoneOfType<AllT, MultiIndex...>;
-            requires NoneOfType<Range, MultiIndex...>;
-        }
-    auto operator()(MultiIndex... index) -> HostDevReference<T>;
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
+    auto operator()(MultiIndex &&...index) -> HostDevReference<T>;
 
     // WARNING: Chances are this function will not work if you mix All{}, Range{} and explicit indexes.
     /**
      * @brief Subscripts into the tensor and creates a view.
      */
     template <typename... MultiIndex>
-        requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
+        requires AtLeastOneOfType<AllT, MultiIndex...>
     auto operator()(MultiIndex... index)
-        -> DeviceTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>;
+        -> DeviceTensorView<T, count_of_type<einsums::AllT, MultiIndex...>() + count_of_type<einsums::Range, MultiIndex...>()>;
 
     /**
      * @brief Subscripts into the tensor and creates a view.
      */
     template <typename... MultiIndex>
-        requires NumOfType<Range, rank, MultiIndex...>
+        requires NumOfType<einsums::Range, rank, MultiIndex...>
     auto operator()(MultiIndex... index) const -> DeviceTensorView<T, rank>;
 
     /**
@@ -1317,7 +1311,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @brief Get a value from the view.
      */
     template <typename... MultiIndex>
-    auto operator()(MultiIndex... index) const -> T;
+    auto operator()(MultiIndex &&...index) const -> T;
 
     /**
      * @brief Get the dimension of the given rank.

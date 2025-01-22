@@ -184,13 +184,13 @@ EINSUMS_HOST void set_stream(hipStream_t stream, int thread_id) {
     hipsolver_catch(hipsolverSetStream(get_solver_handle(), stream));
 }
 
-EINSUMS_HOST int get_warpsize(void) {
-    static int warpsize = 0;
-    if (warpsize == 0) {
-        hip_catch(hipDeviceGetAttribute(&warpsize, hipDeviceAttributeWarpSize, 0));
-    }
-    return warpsize;
-}
+// EINSUMS_HOST int get_warpsize(void) {
+//     static int warpsize = 0;
+//     if (warpsize == 0) {
+//         hip_catch(hipDeviceGetAttribute(&warpsize, hipDeviceAttributeWarpSize, 0));
+//     }
+//     return warpsize;
+// }
 
 EINSUMS_HOST hipblasHandle_t get_blas_handle(int thread_id) {
     auto guard = std::lock_guard(detail::wait_mutex);

@@ -302,10 +302,10 @@ __global__ void copy_to_tensor(T *to_data, size_t const *index_strides, size_t c
         sentinel_to_indices<rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = einsums::indices_to_sentinel<rank>(from_strides, (size_t *) inds);
+        size_t from_ind = einsums::indices_to_sentinel<rank>(from_strides, (size_t *)inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = einsums::indices_to_sentinel<rank>(to_strides, (size_t *) inds);
+        size_t to_ind = einsums::indices_to_sentinel<rank>(to_strides, (size_t *)inds);
 
         // Do the copy.
         to_data[to_ind] = from_data[from_ind];
@@ -696,31 +696,23 @@ void DeviceTensor<T, rank>::write(T *data) {
 
 template <typename T, size_t rank>
 template <typename... MultiIndex>
-    requires requires {
-        requires NoneOfType<AllT, MultiIndex...>;
-        requires NoneOfType<Range, MultiIndex...>;
-    }
-T DeviceTensor<T, rank>::operator()(MultiIndex... index) const {
+    requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
+auto DeviceTensor<T, rank>::operator()(MultiIndex &&...index) const -> T {
     using namespace einsums::gpu;
 
+    static_assert(sizeof...(MultiIndex) == rank);
+
     T      out;
-    auto   index_list = ::std::array{static_cast<std::int64_t>(index)...};
-    size_t ordinal;
+    size_t ordinal = einsums::indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
 
     switch (_mode) {
     case einsums::detail::MAPPED:
     case einsums::detail::PINNED:
         assert(sizeof...(MultiIndex) <= _dims.size());
 
-        for (auto [i, _index] : enumerate(index_list)) {
-            if (_index < 0) {
-                index_list[i] = _dims[i] + _index;
-            }
-        }
-        ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return this->_host_data[ordinal];
     case einsums::detail::DEV_ONLY:
-        hip_catch(hipMemcpy((void *)&out, (void const *)this->gpu_data(index...), sizeof(T), hipMemcpyDeviceToHost));
+        hip_catch(hipMemcpy((void *)&out, (void const *)(this->_data + ordinal), sizeof(T), hipMemcpyDeviceToHost));
         // no sync
         return out;
     default:
@@ -730,21 +722,14 @@ T DeviceTensor<T, rank>::operator()(MultiIndex... index) const {
 
 template <typename T, size_t rank>
 template <typename... MultiIndex>
-    requires requires {
-        requires NoneOfType<AllT, MultiIndex...>;
-        requires NoneOfType<Range, MultiIndex...>;
-    }
-HostDevReference<T> DeviceTensor<T, rank>::operator()(MultiIndex... index) {
+    requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
+auto DeviceTensor<T, rank>::operator()(MultiIndex &&...index) -> HostDevReference<T> {
     using namespace einsums::gpu;
-    assert(sizeof...(MultiIndex) <= _dims.size());
+    static_assert(sizeof...(MultiIndex) == rank);
+    constexpr bool test = requires { requires !(std::is_same_v<einsums::AllT, std::remove_cvref_t<MultiIndex>> || ...); };
+    static_assert(test);
 
-    auto index_list = ::std::array{static_cast<::std::int64_t>(index)...};
-    for (auto [i, _index] : enumerate(index_list)) {
-        if (_index < 0) {
-            index_list[i] = _dims[i] + _index;
-        }
-    }
-    size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+    size_t ordinal = einsums::indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
 
     if (ordinal > this->size()) {
         EINSUMS_THROW_EXCEPTION(std::out_of_range, "Array index out of range!");
@@ -763,9 +748,9 @@ HostDevReference<T> DeviceTensor<T, rank>::operator()(MultiIndex... index) {
 
 template <typename T, size_t rank>
 template <typename... MultiIndex>
-    requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
+    requires AtLeastOneOfType<AllT, MultiIndex...>
 auto DeviceTensor<T, rank>::operator()(MultiIndex... index)
-    -> DeviceTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
+    -> DeviceTensorView<T, count_of_type<einsums::AllT, MultiIndex...>() + count_of_type<einsums::Range, MultiIndex...>()> {
     using namespace einsums::gpu;
     // Construct a TensorView using the indices provided as the starting point for the view.
     // e.g.:
@@ -804,13 +789,13 @@ auto DeviceTensor<T, rank>::operator()(MultiIndex... index)
         }
     });
 
-    return DeviceTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>{*this, ::std::move(dims),
-                                                                                                             offsets, strides};
+    return DeviceTensorView<T, count_of_type<einsums::AllT, MultiIndex...>() + count_of_type<einsums::Range, MultiIndex...>()>{
+        *this, ::std::move(dims), offsets, strides};
 }
 
 template <typename T, size_t rank>
 template <typename... MultiIndex>
-    requires NumOfType<Range, rank, MultiIndex...>
+    requires NumOfType<einsums::Range, rank, MultiIndex...>
 auto DeviceTensor<T, rank>::operator()(MultiIndex... index) const -> DeviceTensorView<T, rank> {
     using namespace einsums::gpu;
     Dim<rank>    dims{};
@@ -1190,7 +1175,6 @@ __global__ void add_and_assign(T *to_data, size_t const *index_strides, size_t c
     get_worker_info(worker, kernel_size);
 
     size_t curr_element = worker;
-
 
     size_t inds[rank];
     while (curr_element < elements) {

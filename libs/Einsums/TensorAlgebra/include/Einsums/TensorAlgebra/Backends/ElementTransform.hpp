@@ -46,8 +46,11 @@ auto element_transform(CType *C, UnaryOperator unary_opt) -> void {
     }
 }
 
-template <BlockTensorConcept CType, BlockTensorConcept... MultiTensors, size_t Rank, typename MultiOperator, typename T>
-    requires(IsIncoreRankBlockTensorV<MultiTensors, Rank, T> && ... && IsIncoreRankBlockTensorV<CType, Rank, T>)
+template <BlockTensorConcept CType, typename MultiOperator, BlockTensorConcept... MultiTensors>
+    requires requires {
+        requires (IsIncoreBlockTensorV<MultiTensors> && ... && IsIncoreBlockTensorV<CType>);
+        requires (SameUnderlyingAndRank<CType, MultiTensors> && ...);
+    }
 auto element(MultiOperator multi_opt, CType *C, MultiTensors &...tensors) {
     if (((C->num_blocks() != tensors.num_blocks()) || ...)) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "element: All tensors need to have the same number of blocks.");

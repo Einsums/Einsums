@@ -105,7 +105,6 @@ struct MappingList final {
      */
     void *attach(PyGPUView &view, void *pointer, size_t size) {
         auto guard = std::lock_guard(_lock);
-        bool found = false;
         for (auto &data : _pointers) {
             uint8_t const *base_arit = (uint8_t const *)data.get_pointer(), *ptr_arit = (uint8_t const *)pointer;
             ptrdiff_t      diff = ptr_arit - base_arit;
