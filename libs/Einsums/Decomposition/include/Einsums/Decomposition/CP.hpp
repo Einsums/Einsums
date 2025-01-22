@@ -21,6 +21,8 @@ template <TensorConcept TTensor, VectorConcept WTensor>
     requires requires {
         requires SameUnderlying<TTensor, WTensor>;
         requires InSamePlace<TTensor, WTensor>;
+        requires BasicTensorConcept<TTensor>;
+        requires BasicTensorConcept<WTensor>;
     }
 auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<ValueTypeT<TTensor>, TensorRank<TTensor>> {
     using TType            = ValueTypeT<TTensor>;
@@ -34,11 +36,14 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
     auto weighted_tensor = create_tensor_like(tensor);
     auto target_dims     = get_dim_ranges<TRank>(tensor);
 
-    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+    std::array<size_t, TRank> strides;
+
+    size_t elements = dims_to_strides(tensor.dims(), strides);
 
 #pragma omp parallel for
-    for (auto it = view.begin(); it < view.end(); it++) {
-        auto         target_combination = *it;
+    for (size_t elem = 0; elem < elements; elem++) {
+        thread_local std::array<size_t, TRank> target_combination;
+        sentinel_to_indices(elem, strides, target_combination);
         TType const &source             = std::apply(tensor, target_combination);
         TType       &target             = std::apply(weighted_tensor, target_combination);
         TType const &scale              = weights(std::get<0>(target_combination));
@@ -72,12 +77,15 @@ auto parafac_reconstruct(std::vector<Tensor<TType, 2>> const &factors) -> Tensor
     Tensor<TType, TRank> new_tensor(dims);
     new_tensor.zero();
 
-    auto indices = get_dim_ranges<TRank>(new_tensor);
-    auto view    = std::apply(ranges::views::cartesian_product, indices);
+    std::array<size_t, TRank> index_strides;
+
+    size_t elements = dims_to_strides(dims, index_strides);
 
 #pragma omp parallel for
-    for (auto it = view.begin(); it < view.end(); it++) {
-        auto   idx_combo = *it;
+    for (auto it = 0; it < elements; it++) {
+        thread_local std::array<size_t, TRank> idx_combo;
+        sentinel_to_indices(it, index_strides, idx_combo);
+
         TType &target    = std::apply(new_tensor, idx_combo);
         for (size_t r = 0; r < rank; r++) {
             double temp = 1.0;

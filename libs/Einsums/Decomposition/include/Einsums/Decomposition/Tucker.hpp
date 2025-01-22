@@ -11,6 +11,8 @@
 #include <Einsums/TensorAlgebra.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 
+#include "Einsums/TensorBase/IndexUtilities.hpp"
+
 namespace einsums::decomposition {
 
 template <TensorConcept TTensor>
@@ -32,9 +34,14 @@ auto tucker_reconstruct(TTensor const &g_tensor, std::vector<TensorLike<TTensor,
         new_tensor_buffer = new TTensor(dims_buffer);
         new_tensor_buffer->zero();
 
-        auto source_dims = get_dim_ranges<TensorRank<TTensor>>(*old_tensor_buffer);
+        std::array<size_t, TTensor::Rank> index_strides;
 
-        for (auto source_combination : std::apply(ranges::views::cartesian_product, source_dims)) {
+        size_t elements = dims_to_strides(old_tensor_buffer->dims(), index_strides);
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t element = 0; element < elements; element++) {
+            thread_local std::array<size_t, TTensor::Rank> source_combination;
+            sentinel_to_indices(element, index_strides, source_combination);
             for (size_t n = 0; n < full_idx; n++) {
                 auto target_combination         = source_combination;
                 std::get<i>(target_combination) = n;
@@ -125,9 +132,14 @@ auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, std::vector<size_t> &ran
         new_g_buffer   = new Tensor<TType, TRank>(dims_buffer);
         new_g_buffer->zero();
 
-        auto source_dims = get_dim_ranges<TRank>(*old_g_buffer);
+        std::array<size_t, TRank> index_strides;
 
-        for (auto source_combination : std::apply(ranges::views::cartesian_product, source_dims)) {
+        size_t elements = dims_to_strides(old_g_buffer->dims(), index_strides);
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t element = 0; element < elements; element++) {
+            thread_local std::array<size_t, TRank> source_combination;
+            sentinel_to_indices(element, index_strides, source_combination);
             for (size_t r = 0; r < rank; r++) {
                 auto target_combination         = source_combination;
                 std::get<i>(target_combination) = r;
@@ -190,9 +202,14 @@ auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, std::vector<size_t> &rank
                     new_fold_buffer = new TTensor<TType, TRank>(dims_buffer);
                     new_fold_buffer->zero();
 
-                    auto source_dims = get_dim_ranges<TRank>(*old_fold_buffer);
+                    std::array<size_t, TRank> index_strides;
 
-                    for (auto source_combination : std::apply(ranges::views::cartesian_product, source_dims)) {
+                    size_t elements = dims_to_strides(old_fold_buffer->dims(), index_strides);
+
+                    EINSUMS_OMP_PARALLEL_FOR
+                    for (size_t element = 0; element < elements; element++) {
+                        thread_local std::array<size_t, TRank> source_combination;
+                        sentinel_to_indices(element, index_strides, source_combination);
                         for (size_t r = 0; r < rank; r++) {
                             auto target_combination         = source_combination;
                             std::get<j>(target_combination) = r;

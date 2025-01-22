@@ -45,6 +45,7 @@ constexpr inline bool IsTensorV = requires(D tensor) {
     { tensor.name() } -> std::convertible_to<std::string>;
     tensor.dim(std::declval<int>());
     tensor.dims();
+    typename D::ValueType;
 };
 
 /**
