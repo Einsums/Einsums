@@ -38,9 +38,8 @@ auto tucker_reconstruct(TTensor const &g_tensor, std::vector<TensorLike<TTensor,
 
         size_t elements = dims_to_strides(old_tensor_buffer->dims(), index_strides);
 
-        EINSUMS_OMP_PARALLEL_FOR
         for (size_t element = 0; element < elements; element++) {
-            thread_local std::array<size_t, TTensor::Rank> source_combination;
+            std::array<size_t, TTensor::Rank> source_combination;
             sentinel_to_indices(element, index_strides, source_combination);
             for (size_t n = 0; n < full_idx; n++) {
                 auto target_combination         = source_combination;
@@ -136,9 +135,8 @@ auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, std::vector<size_t> &ran
 
         size_t elements = dims_to_strides(old_g_buffer->dims(), index_strides);
 
-        EINSUMS_OMP_PARALLEL_FOR
         for (size_t element = 0; element < elements; element++) {
-            thread_local std::array<size_t, TRank> source_combination;
+            std::array<size_t, TRank> source_combination;
             sentinel_to_indices(element, index_strides, source_combination);
             for (size_t r = 0; r < rank; r++) {
                 auto target_combination         = source_combination;
@@ -206,9 +204,8 @@ auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, std::vector<size_t> &rank
 
                     size_t elements = dims_to_strides(old_fold_buffer->dims(), index_strides);
 
-                    EINSUMS_OMP_PARALLEL_FOR
                     for (size_t element = 0; element < elements; element++) {
-                        thread_local std::array<size_t, TRank> source_combination;
+                        std::array<size_t, TRank> source_combination;
                         sentinel_to_indices(element, index_strides, source_combination);
                         for (size_t r = 0; r < rank; r++) {
                             auto target_combination         = source_combination;

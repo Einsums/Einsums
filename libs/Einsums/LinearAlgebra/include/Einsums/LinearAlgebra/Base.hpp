@@ -397,9 +397,7 @@ void symm_gemm(AType const &A, BType const &B, CType *C) {
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
 void direct_product(typename AType::ValueType alpha, AType const &A, BType const &B, typename CType::ValueType beta, CType *C) {
-    auto target_dims = get_dim_ranges<CType::Rank>(*C);
-    auto view        = std::apply(ranges::views::cartesian_product, target_dims);
-    using T          = typename AType::ValueType;
+    using T = typename AType::ValueType;
 
     // Ensure the various tensors passed in are the same dimensionality
     if (((C->dims() != A.dims()) || C->dims() != B.dims())) {
@@ -418,11 +416,25 @@ void direct_product(typename AType::ValueType alpha, AType const &A, BType const
         }
     }
 
-    // EINSUMS_OMP_PARALLEL_FOR
-    for (auto it = view.begin(); it != view.end(); it++) {
-        T &target_value = std::apply(*C, *it);
-        T  AB_product   = std::apply(A, *it) * std::apply(B, *it);
-        target_value    = beta * target_value + alpha * AB_product;
+    std::array<size_t, AType::Rank> index_strides;
+
+    size_t elements = dims_to_strides(A.dims(), index_strides);
+
+    if (!A.full_view_of_underlying() || !B.full_view_of_underlying() || !C->full_view_of_underlying()) {
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t item = 0; item < elements; item++) {
+
+            size_t A_ord, B_ord, C_ord;
+
+            sentinel_to_sentinels(item, index_strides, A.strides(), A_ord, B.strides(), B_ord, C->strides(), C_ord);
+
+            C->data()[C_ord] = beta * C->data()[C_ord] + alpha * (A.data()[A_ord] * B.data()[B_ord]);
+        }
+    } else {
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t item = 0; item < elements; item++) {
+            C->data()[item] = beta * C->data()[item] + alpha * (A.data()[item] * B.data()[item]);
+        }
     }
 }
 
