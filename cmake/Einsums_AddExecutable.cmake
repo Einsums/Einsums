@@ -12,6 +12,7 @@ function(einsums_add_executable name)
       HEADER_ROOT
       SOURCE_GLOB
       HEADER_GLOB
+          OUTPUT_NAME
       OUTPUT_SUFFIX
       INSTALL_SUFFIX
       LANGUAGE
@@ -149,7 +150,11 @@ function(einsums_add_executable name)
     endif()
   endif()
 
-  set_target_properties(${name} PROPERTIES OUTPUT_NAME "${EINSUMS_WITH_EXECUTABLE_PREFIX}${name}")
+  if (${name}_OUTPUT_NAME)
+    set_target_properties(${name} PROPERTIES OUTPUT_NAME "${EINSUMS_WITH_EXECUTABLE_PREFIX}${${name}_OUTPUT_NAME}")
+  else ()
+    set_target_properties(${name} PROPERTIES OUTPUT_NAME "${EINSUMS_WITH_EXECUTABLE_PREFIX}${name}")
+  endif ()
 
   if(exclude_from_all)
     set_target_properties(${name} PROPERTIES ${exclude_from_all})
