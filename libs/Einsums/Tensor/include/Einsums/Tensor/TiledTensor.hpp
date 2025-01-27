@@ -986,7 +986,7 @@ struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums:
     size_t dim(int d) const override { return this->_dims[d]; }
 };
 
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
 template <typename T, size_t Rank>
 struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsums::DeviceTensor<T, Rank>>, tensor_base::DeviceTensorBase {
   private:
@@ -1109,7 +1109,7 @@ struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsum
 };
 
 template <typename T, size_t Rank>
-struct TiledDeviceTensorView final : public tensor_base::TiledTensor<T, Rank, DeviceTensorView<T, Rank>>, tensor_base::DeviceTensor {
+struct TiledDeviceTensorView final : public tensor_base::TiledTensor<T, Rank, DeviceTensorView<T, Rank>>, tensor_base::DeviceTensorBase {
   private:
     bool                     _full_view_of_underlying{false};
     detail::HostToDeviceMode _mode{detail::DEV_ONLY};

@@ -290,8 +290,8 @@ static_assert(TensorConcept<BlockDeviceTensor<T, 2>>);
     static_assert(LockableConcept<BlockDeviceTensor<T, 2>>);
     static_assert(TRTensorConcept<BlockDeviceTensor<T, 2>, 2, T>);
     static_assert(TRLTensorConcept<BlockDeviceTensor<T, 2>, 2, T>);
-    static_assert(CoreTensorConcept<BlockDeviceTensor<T, 2>>);
-    static_assert(!DeviceTensorConcept<BlockDeviceTensor<T, 2>>);
+    static_assert(!CoreTensorConcept<BlockDeviceTensor<T, 2>>);
+    static_assert(DeviceTensorConcept<BlockDeviceTensor<T, 2>>);
     static_assert(!DiskTensorConcept<BlockDeviceTensor<T, 2>>);
     static_assert(!TensorViewConcept<BlockDeviceTensor<T, 2>>);
     static_assert(!BasicTensorConcept<BlockDeviceTensor<T, 2>>);
@@ -314,9 +314,9 @@ static_assert(TensorConcept<BlockDeviceTensor<T, 2>>);
     static_assert(LockableConcept<DeviceTensor<T, 2>>);
     static_assert(TRTensorConcept<DeviceTensor<T, 2>, 2, T>);
     static_assert(TRLTensorConcept<DeviceTensor<T, 2>, 2, T>);
-    static_assert(CoreTensorConcept<DeviceTensor<T, 2>>);
+    static_assert(!CoreTensorConcept<DeviceTensor<T, 2>>);
 #ifdef EINSUMS_COMPUTE_CODE
-    static_assert(!DeviceTensorConcept<DeviceTensor<T, 2>>);
+    static_assert(DeviceTensorConcept<DeviceTensor<T, 2>>);
 #endif
     static_assert(!DiskTensorConcept<DeviceTensor<T, 2>>);
     static_assert(!TensorViewConcept<DeviceTensor<T, 2>>);
@@ -340,9 +340,9 @@ static_assert(TensorConcept<BlockDeviceTensor<T, 2>>);
     static_assert(LockableConcept<DeviceTensorView<T, 2>>);
     static_assert(TRTensorConcept<DeviceTensorView<T, 2>, 2, T>);
     static_assert(TRLTensorConcept<DeviceTensorView<T, 2>, 2, T>);
-    static_assert(CoreTensorConcept<DeviceTensorView<T, 2>>);
+    static_assert(!CoreTensorConcept<DeviceTensorView<T, 2>>);
 #ifdef EINSUMS_COMPUTE_CODE
-    static_assert(!DeviceTensorConcept<DeviceTensorView<T, 2>>);
+    static_assert(DeviceTensorConcept<DeviceTensorView<T, 2>>);
 #endif
     static_assert(!DiskTensorConcept<DeviceTensorView<T, 2>>);
     static_assert(TensorViewConcept<DeviceTensorView<T, 2>>);
@@ -366,9 +366,9 @@ static_assert(TensorConcept<BlockDeviceTensor<T, 2>>);
     static_assert(LockableConcept<TiledDeviceTensor<T, 2>>);
     static_assert(TRTensorConcept<TiledDeviceTensor<T, 2>, 2, T>);
     static_assert(TRLTensorConcept<TiledDeviceTensor<T, 2>, 2, T>);
-    static_assert(CoreTensorConcept<TiledDeviceTensor<T, 2>>);
+    static_assert(!CoreTensorConcept<TiledDeviceTensor<T, 2>>);
 #ifdef EINSUMS_COMPUTE_CODE
-    static_assert(!DeviceTensorConcept<TiledDeviceTensor<T, 2>>);
+    static_assert(DeviceTensorConcept<TiledDeviceTensor<T, 2>>);
 #endif
     static_assert(!DiskTensorConcept<TiledDeviceTensor<T, 2>>);
     static_assert(!TensorViewConcept<TiledDeviceTensor<T, 2>>);
@@ -392,9 +392,9 @@ static_assert(TensorConcept<BlockDeviceTensor<T, 2>>);
     static_assert(LockableConcept<TiledDeviceTensorView<T, 2>>);
     static_assert(TRTensorConcept<TiledDeviceTensorView<T, 2>, 2, T>);
     static_assert(TRLTensorConcept<TiledDeviceTensorView<T, 2>, 2, T>);
-    static_assert(CoreTensorConcept<TiledDeviceTensorView<T, 2>>);
+    static_assert(!CoreTensorConcept<TiledDeviceTensorView<T, 2>>);
 #ifdef EINSUMS_COMPUTE_CODE
-    static_assert(!DeviceTensorConcept<TiledDeviceTensorView<T, 2>>);
+    static_assert(DeviceTensorConcept<TiledDeviceTensorView<T, 2>>);
 #endif
     static_assert(!DiskTensorConcept<TiledDeviceTensorView<T, 2>>);
     static_assert(TensorViewConcept<TiledDeviceTensorView<T, 2>>);
