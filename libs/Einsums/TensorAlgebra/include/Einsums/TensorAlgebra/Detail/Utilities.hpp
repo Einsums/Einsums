@@ -185,10 +185,10 @@ auto get_dim_for(ScalarType const &tensor, std::tuple<> const &args) {
 }
 #endif
 
-template <typename AIndex, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
+template <typename AIndex, typename TargetCombination, typename LinkCombination, typename... TargetPositionInC,
           typename... LinkPositionInLink>
-auto construct_index(std::tuple<TargetCombination...> const &target_combination, std::tuple<TargetPositionInC...> const & /*unused*/,
-                     std::tuple<LinkCombination...> const   &link_combination, std::tuple<LinkPositionInLink...> const   &/*unused*/) {
+auto construct_index(TargetCombination const &target_combination, std::tuple<TargetPositionInC...> const & /*unused*/,
+                     LinkCombination const   &link_combination, std::tuple<LinkPositionInLink...> const   &/*unused*/) {
 
     constexpr auto IsAIndexInC    = detail::find_position<AIndex, TargetPositionInC...>();
     constexpr auto IsAIndexInLink = detail::find_position<AIndex, LinkPositionInLink...>();
@@ -212,13 +212,13 @@ construct_indices(std::tuple<TargetCombination...> const &target_combination, st
     return std::make_tuple(construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...);
 }
 
-template <typename AIndex, typename... UniqueTargetIndices, typename... UniqueTargetCombination, typename... TargetPositionInC,
-          typename... UniqueLinkIndices, typename... UniqueLinkCombination, typename... LinkPositionInLink>
+template <typename AIndex, typename UniqueTargetCombination, typename UniqueLinkCombination, typename... UniqueTargetIndices,
+          typename... TargetPositionInC, typename... UniqueLinkIndices, typename... LinkPositionInLink>
 auto construct_index_from_unique_target_combination(std::tuple<UniqueTargetIndices...> const & /*unique_target_indices*/,
-                                                    std::tuple<UniqueTargetCombination...> const &unique_target_combination,
+                                                    UniqueTargetCombination const &unique_target_combination,
                                                     std::tuple<TargetPositionInC...> const & /*unused*/,
                                                     std::tuple<UniqueLinkIndices...> const & /*unique_link_indices*/,
-                                                    std::tuple<UniqueLinkCombination...> const &unique_link_combination,
+                                                    UniqueLinkCombination const &unique_link_combination,
                                                     std::tuple<LinkPositionInLink...> const & /*unused*/) {
 
     constexpr auto IsAIndexInC    = detail::find_position<AIndex, UniqueTargetIndices...>();
@@ -247,13 +247,13 @@ constexpr auto construct_indices_from_unique_combination(std::tuple<UniqueTarget
                                                                                     unique_link_combination, link_position_in_link)...);
 }
 
-template <typename... AIndices, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
+template <typename TargetCombination, typename LinkCombination, typename... AIndices, typename... TargetPositionInC,
           typename... LinkPositionInLink>
-constexpr auto construct_indices(std::tuple<AIndices...> const & /*unused*/, std::tuple<TargetCombination...> const &target_combination,
+constexpr auto construct_indices(std::tuple<AIndices...> const & /*unused*/, TargetCombination const &target_combination,
                                  std::tuple<TargetPositionInC...> const  &target_position_in_C,
-                                 std::tuple<LinkCombination...> const    &link_combination,
+                                 LinkCombination const    &link_combination,
                                  std::tuple<LinkPositionInLink...> const &link_position_in_link) {
-    return construct_indices<AIndices...>(target_combination, target_position_in_C, link_combination, link_position_in_link);
+    return std::make_tuple(construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...);
 }
 
 #if !defined(DOXYGEN)
@@ -377,8 +377,8 @@ size_t get_grid_ranges_for_many_b(BType const &B, std::tuple<> const &B_indices)
 }
 
 template <typename UniqueIndex, int BDim, TensorConcept BType, typename BHead>
-auto get_grid_ranges_for_many_b(BType const             &B,
-                                std::tuple<BHead> const &B_indices) -> std::enable_if<std::is_same_v<BHead, UniqueIndex>, size_t> {
+auto get_grid_ranges_for_many_b(BType const &B, std::tuple<BHead> const &B_indices)
+    -> std::enable_if<std::is_same_v<BHead, UniqueIndex>, size_t> {
     if constexpr (IsTiledTensorV<BType>) {
         return B.grid_size(BDim);
     } else if constexpr (IsBlockTensorV<BType>) {
@@ -469,8 +469,8 @@ size_t get_grid_ranges_for_many_c(CType const &C, std::tuple<CHead> const &C_ind
 template <typename UniqueIndex, int CDim, typename CType, TensorConcept AType, TensorConcept BType, typename CHead, typename... CIndices,
           typename... AIndices, typename... BIndices>
 auto get_grid_ranges_for_many_c(CType const &C, std::tuple<CHead, CIndices...> const &C_indices, AType const &A,
-                                std::tuple<AIndices...> const &A_indices, BType const &B,
-                                std::tuple<BIndices...> const &B_indices) -> std::enable_if_t<sizeof...(CIndices) != 0, size_t> {
+                                std::tuple<AIndices...> const &A_indices, BType const &B, std::tuple<BIndices...> const &B_indices)
+    -> std::enable_if_t<sizeof...(CIndices) != 0, size_t> {
     if constexpr (std::is_same_v<CHead, UniqueIndex>) {
         if constexpr (IsTiledTensorV<CType>) {
             return C.grid_size(CDim);

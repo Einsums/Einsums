@@ -571,8 +571,15 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     // The tests need a wait.
     // #pragma omp taskwait depend(in: *C, testC)
     if constexpr (CRank != 0) {
-        auto target_dims = get_dim_ranges<CRank>(*C);
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+        Stride<CRank> index_strides;
+
+        size_t elements = dims_to_strides(C->dims(), index_strides);
+
+        for (size_t item = 0; item < elements; item++) {
+            std::array<int64_t, CRank> target_combination;
+
+            sentinel_to_indices(item, index_strides, target_combination);
+
             CDataType Cvalue{std::apply(*C, target_combination)};
             if constexpr (!IsComplexV<CDataType>) {
                 if (std::isnan(Cvalue)) {
@@ -621,10 +628,17 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
 #    if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     if constexpr (CRank != 0) {
         // Need to walk through the entire C and testC comparing values and reporting differences.
-        auto target_dims = get_dim_ranges<CRank>(*C);
         bool print_info_and_abort{false};
 
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+        Stride<CRank> index_strides;
+
+        size_t elements = dims_to_strides(C->dims(), index_strides);
+
+        for (size_t item = 0; item < elements; item++) {
+            std::array<int64_t, CRank> target_combination;
+
+            sentinel_to_indices(item, index_strides, target_combination);
+
             CDataType Cvalue{std::apply(*C, target_combination)};
             CDataType Ctest{std::apply(testC, target_combination)};
 

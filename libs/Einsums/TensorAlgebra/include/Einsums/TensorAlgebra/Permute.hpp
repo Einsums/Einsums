@@ -92,13 +92,18 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
         linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
     } else {
-        auto view = std::apply(ranges::views::cartesian_product, target_dims);
+        Stride<ARank> index_strides;
+        size_t elements = dims_to_strides(A.dims(), index_strides);
 
         EINSUMS_OMP_PARALLEL_FOR
-        for (auto it = view.begin(); it < view.end(); it++) {
-            auto A_order = detail::construct_indices<AIndices...>(*it, target_position_in_A, *it, target_position_in_A);
+        for (size_t i = 0; i < elements; i++) {
+            thread_local std::array<int64_t, ARank> index;
 
-            T &target_value = std::apply(*C, *it);
+            sentinel_to_indices(i, index_strides, index);
+
+            auto A_order = detail::construct_indices(A_indices, index, target_position_in_A, index, target_position_in_A);
+
+            T &target_value = std::apply(*C, index);
             T  A_value      = std::apply(A, A_order);
 
             target_value = C_prefactor * target_value + A_prefactor * A_value;
