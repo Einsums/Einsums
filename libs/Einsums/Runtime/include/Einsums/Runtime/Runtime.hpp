@@ -130,7 +130,7 @@ struct EINSUMS_EXPORT Runtime : public design_pats::Lockable<std::recursive_mute
     void call_startup_functions(bool pre_startup);
     void call_shutdown_functions(bool pre_shutdown);
 
-    friend void einsums::finalize();
+    friend int einsums::finalize();
 
     std::list<StartupFunctionType>  _pre_startup_functions;
     std::list<StartupFunctionType>  _startup_functions;

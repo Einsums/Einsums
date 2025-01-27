@@ -39,6 +39,7 @@ einsums_add_module(
     Einsums_Concepts
     Einsums_Errors
     Einsums_Print
+    Einsums_Profile
     Einsums_Tensor
     Einsums_TensorUtilities
     Einsums_TypeSupport

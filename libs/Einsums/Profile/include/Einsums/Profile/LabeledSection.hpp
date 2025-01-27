@@ -5,21 +5,21 @@
 
 #pragma once
 
-/**
- * @brief Convenience wrapper to Section.
- *
- * Use of this macro requires that (BEGIN|END)_EINSUMS_NAMESPACE_(CPP|HPP)() defined
- * in _Common.hpp is included and used.
- * Constructs a label that includes the encompassing namespace and function names.
- * This macro also includes an extra label that will be appended to the section name.
- */
-#define LabeledSection1(x)
+#include <Einsums/Profile/Section.hpp>
+
+#include <fmt/format.h>
 
 /**
  * @brief Convenience wrapper to Section.
  *
- * Use of this macro requires that (BEGIN|END)_EINSUMS_NAMESPACE_(CPP|HPP)() defined
- * in _Common.hpp is included and used.
+ * Constructs a label that includes the encompassing namespace and function names.
+ * This macro also includes an extra label that will be appended to the section name.
+ */
+#define LabeledSection1(x) const Section _section(fmt::format("{} {}", __func__, x))
+
+/**
+ * @brief Convenience wrapper to Section.
+ *
  * Constructs a label that includes the encompassing namespace and function names.
  */
-#define LabeledSection0()
+#define LabeledSection0() const Section _section(fmt::format("{}", __func__))

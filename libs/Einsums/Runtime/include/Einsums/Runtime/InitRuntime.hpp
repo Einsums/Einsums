@@ -142,6 +142,6 @@ inline void initialize(int argc, char const *const *argv, InitParams const &para
 /// einsums::stop(), \ref einsums::finalize() can be called from within or outside the runtime.
 ///
 /// \pre the runtime is initialized
-EINSUMS_EXPORT void finalize();
+EINSUMS_EXPORT int finalize();
 
 } // namespace einsums

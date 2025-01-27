@@ -92,7 +92,6 @@ template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, Ma
         requires SameUnderlying<AType, BType, CType>;
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
-    LabeledSection0();
     detail::gemm<TransA, TransB>(alpha, A, B, beta, C);
 }
 

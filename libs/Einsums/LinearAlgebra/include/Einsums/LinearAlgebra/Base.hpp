@@ -9,6 +9,7 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
@@ -38,7 +39,6 @@ void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C)
 }
 
 template <bool TransA, typename U, CoreBasicTensorConcept AType, CoreBasicTensorConcept XType, CoreBasicTensorConcept YType>
-
     requires requires {
         requires SameUnderlying<AType, XType, YType>;
         requires RankTensorConcept<AType, 2>;
@@ -397,6 +397,8 @@ void symm_gemm(AType const &A, BType const &B, CType *C) {
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
 void direct_product(typename AType::ValueType alpha, AType const &A, BType const &B, typename CType::ValueType beta, CType *C) {
+    LabeledSection0();
+
     using T = typename AType::ValueType;
 
     // Ensure the various tensors passed in are the same dimensionality
