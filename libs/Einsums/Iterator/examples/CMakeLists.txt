@@ -14,7 +14,7 @@ else()
   return()
 endif()
 
-set(example_programs CartesianProduct)
+set(example_programs )
 
 foreach(example_program ${example_programs})
   set(sources ${example_program}.cpp)
