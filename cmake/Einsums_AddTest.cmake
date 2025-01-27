@@ -42,10 +42,8 @@ function(einsums_add_test category name)
   endif()
 
   set(args "--einsums:no-install-signal-handlers")
+  set(args ${args} "--einsums:no-profiler-report")
   set(args "${${name}_ARGS}" "${${name}_UNPARSED_ARGUMENTS}" ${args})
-
-  # TODO: Perhaps one day we will allow command line arguments to tests.
-  unset(args)
 
   set(_script_location ${PROJECT_BINARY_DIR})
 
