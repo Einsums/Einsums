@@ -883,11 +883,38 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     operator TensorType() const {
         TensorType out(_dims);
         out.set_name(name());
-        out.zero();
 
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            std::apply(out, target_combination) = std::apply(*this, target_combination);
+        Stride<Rank> tile_strides;
+
+        size_t tiles = 1;
+
+        for (ptrdiff_t i = Rank - 1; i >= 0; i--) {
+            tile_strides[i] = tiles;
+            tiles *= grid_size(i);
+        }
+
+        for (size_t tile = 0; tile < tiles; tile++) {
+            std::array<int64_t, Rank> tile_index;
+
+            sentinel_to_indices(tile, tile_strides, tile_index);
+
+            if (!this->has_tile(tile_index) || this->has_zero_size(tile_index)) {
+                continue;
+            } else {
+                // Calculate the view ranges.
+                thread_local std::array<Range, Rank> ranges;
+
+                for (size_t i = 0; i < Rank; i++) {
+                    ranges[i] =
+                        Range{this->tile_offset(i)[tile_index[i]], this->tile_offset(i)[tile_index[i]] + this->tile_size(i)[tile_index[i]]};
+                }
+
+                // Create the view.
+                auto tile_view = std::apply(out, ranges);
+
+                // Assign.
+                tile_view = this->tile(tile_index);
+            }
         }
 
         return out;
