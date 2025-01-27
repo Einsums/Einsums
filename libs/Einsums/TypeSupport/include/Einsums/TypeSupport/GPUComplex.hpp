@@ -89,7 +89,7 @@ __device__ inline hipDoubleComplex mult(hipFloatComplex x, hipDoubleComplex y) {
     return make_hipDoubleComplex(::fma(-x.y, y.y, x.x * y.x), ::fma(x.y, y.x, x.x * y.y));
 }
 
-__device__ inline hipDoubleComplex mult(hipDoubleComplex x, hipDoubleComplex y, hipDoubleComplex z) {
+__device__ inline hipDoubleComplex mult(hipDoubleComplex x, hipDoubleComplex y) {
     return make_hipDoubleComplex(::fma(-x.y, y.y, x.x * y.x), ::fma(x.y, y.x, x.x * y.y));
 }
 
@@ -113,7 +113,7 @@ __device__ inline hipDoubleComplex div(hipFloatComplex x, hipDoubleComplex y) {
     return make_hipDoubleComplex(::fmaf(x.y, y.y, x.x * y.x) / denom, ::fmaf(x.y, y.x, -x.x * y.y) / denom);
 }
 
-__device__ inline hipDoubleComplex div(hipDoubleComplex x, hipDoubleComplex y, hipDoubleComplex z) {
+__device__ inline hipDoubleComplex div(hipDoubleComplex x, hipDoubleComplex y) {
     const double denom = y.x * y.x + y.y * y.y;
     return make_hipDoubleComplex(::fmaf(x.y, y.y, x.x * y.x) / denom, ::fmaf(x.y, y.x, -x.x * y.y) / denom);
 }
@@ -133,7 +133,7 @@ __device__ inline hipDoubleComplex div(float x, hipDoubleComplex y) {
     return make_hipDoubleComplex((x * y.x) / denom, (-x * y.y) / denom);
 }
 
-__device__ inline hipDoubleComplex div(float x, hipDoubleComplex y, hipDoubleComplex z) {
+__device__ inline hipDoubleComplex div(double x, hipDoubleComplex y) {
     const double denom = y.x * y.x + y.y * y.y;
     return make_hipDoubleComplex((x * y.x) / denom, (-x * y.y) / denom);
 }
