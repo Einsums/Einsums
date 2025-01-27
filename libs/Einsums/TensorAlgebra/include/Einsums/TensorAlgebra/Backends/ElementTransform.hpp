@@ -68,7 +68,7 @@ auto element(MultiOperator multi_opt, CType *C, MultiTensors &...tensors) {
 
 template <template <typename, size_t> typename CType, template <typename, size_t> typename... MultiTensors, size_t Rank,
           typename MultiOperator, typename T>
-    requires(!(IsIncoreRankBlockTensorV<MultiTensors<T, Rank>, Rank, T> && ... && IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>))
+    requires(!(IsIncoreRankBlockTensorV<MultiTensors<T, Rank>, Rank, T> && ... && !IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>))
 auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &...tensors) {
     LabeledSection0();
 
