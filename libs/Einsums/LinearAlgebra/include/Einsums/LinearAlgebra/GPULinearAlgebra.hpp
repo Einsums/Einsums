@@ -10,6 +10,7 @@
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
 #include <Einsums/TypeSupport/GPUCast.hpp>
+#include <Einsums/TypeSupport/GPUComplex.hpp>
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
@@ -35,9 +36,6 @@ __global__ void dot_kernel(BiggestTypeT<T1, T2> *C, T1 const *__restrict__ A, T2
 
     BiggestTypeT<T1, T2> temp;
     make_zero(temp);
-    if (thread_id == 0) {
-        make_zero(*C);
-    }
 
     size_t A_index, B_index;
 
@@ -52,7 +50,7 @@ __global__ void dot_kernel(BiggestTypeT<T1, T2> *C, T1 const *__restrict__ A, T2
             quotient %= strides[i];
         }
 
-        temp = temp + A[A_index] * B[B_index];
+        temp = einsums::gpu_ops::fma(A[A_index], B[B_index], temp);
     }
 
     einsums::gpu::atomicAdd_wrap(C, temp);
@@ -69,9 +67,6 @@ __global__ void true_dot_kernel(BiggestTypeT<T1, T2> *C, T1 const *__restrict__ 
 
     BiggestTypeT<T1, T2> temp;
     make_zero(temp);
-    if (thread_id == 0) {
-        make_zero(*C);
-    }
 
     size_t A_index, B_index;
 
@@ -89,9 +84,9 @@ __global__ void true_dot_kernel(BiggestTypeT<T1, T2> *C, T1 const *__restrict__ 
         if constexpr (std::is_same_v<T1, hipFloatComplex> || std::is_same_v<T1, hipDoubleComplex>) {
             T1 conjugate = A[curr_index];
             conjugate.y  = -conjugate.y;
-            temp         = temp + conjugate * B[curr_index];
+            temp         = einsums::gpu_ops::fma(conjugate, B[curr_index], temp);
         } else {
-            temp = temp + A[curr_index] * B[curr_index];
+            temp = einsums::gpu_ops::fma(A[curr_index], B[curr_index], temp);
         }
     }
 
@@ -108,7 +103,8 @@ EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, i
                          int lda, double const *b, int ldb, double const *beta, double *c, int ldc);
 
 EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, hipFloatComplex const *alpha,
-                         hipFloatComplex const *a, int lda, hipFloatComplex const *b, int ldb, hipFloatComplex const *beta, hipFloatComplex *c, int ldc);
+                         hipFloatComplex const *a, int lda, hipFloatComplex const *b, int ldb, hipFloatComplex const *beta,
+                         hipFloatComplex *c, int ldc);
 
 EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, hipDoubleComplex const *alpha,
                          hipDoubleComplex const *a, int lda, hipDoubleComplex const *b, int ldb, hipDoubleComplex const *beta,
@@ -121,8 +117,8 @@ EINSUMS_EXPORT void ger(int m, int n, float const *alpha, float const *x, int in
 
 EINSUMS_EXPORT void ger(int m, int n, double const *alpha, double const *x, int incx, double const *y, int incy, double *A, int lda);
 
-EINSUMS_EXPORT void ger(int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *x, int incx, hipFloatComplex const *y, int incy, hipFloatComplex *A,
-                        int lda);
+EINSUMS_EXPORT void ger(int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *x, int incx, hipFloatComplex const *y, int incy,
+                        hipFloatComplex *A, int lda);
 
 EINSUMS_EXPORT void ger(int m, int n, hipDoubleComplex const *alpha, hipDoubleComplex const *x, int incx, hipDoubleComplex const *y,
                         int incy, hipDoubleComplex *A, int lda);
@@ -162,8 +158,8 @@ __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n,
 __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, double const *A, int lda, double const *B, int ldb,
                                          double *C, int ldc);
 
-__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, hipFloatComplex const *A, int lda, hipFloatComplex const *B, int ldb,
-                                         hipFloatComplex *C, int ldc);
+__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, hipFloatComplex const *A, int lda,
+                                         hipFloatComplex const *B, int ldb, hipFloatComplex *C, int ldc);
 
 __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, hipDoubleComplex const *A, int lda,
                                          hipDoubleComplex const *B, int ldb, hipDoubleComplex *C, int ldc);
@@ -190,15 +186,16 @@ EINSUMS_EXPORT void axpy(int n, hipDoubleComplex const *alpha, hipDoubleComplex 
  */
 EINSUMS_EXPORT void axpby(int n, float const *alpha, float const *X, int incx, float const *beta, float *Y, int incy);
 EINSUMS_EXPORT void axpby(int n, double const *alpha, double const *X, int incx, double const *beta, double *Y, int incy);
-EINSUMS_EXPORT void axpby(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta, hipFloatComplex *Y, int incy);
+EINSUMS_EXPORT void axpby(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta,
+                          hipFloatComplex *Y, int incy);
 EINSUMS_EXPORT void axpby(int n, hipDoubleComplex const *alpha, hipDoubleComplex const *X, int incx, hipDoubleComplex const *beta,
                           hipDoubleComplex *Y, int incy);
 
 __global__ EINSUMS_EXPORT void saxpby_kernel(int n, float const *alpha, float const *X, int incx, float const *beta, float *Y, int incy);
 __global__ EINSUMS_EXPORT void daxpby_kernel(int n, double const *alpha, double const *X, int incx, double const *beta, double *Y,
                                              int incy);
-__global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta,
-                                             hipFloatComplex *Y, int incy);
+__global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx,
+                                             hipFloatComplex const *beta, hipFloatComplex *Y, int incy);
 __global__ EINSUMS_EXPORT void zaxpby_kernel(int n, hipDoubleComplex const *alpha, hipDoubleComplex const *X, int incx,
                                              hipDoubleComplex const *beta, hipDoubleComplex *Y, int incy);
 
@@ -228,9 +225,9 @@ __global__ void direct_product_kernel(T beta, T *__restrict__ C, size_t const *_
         }
 
         if (beta == T{0.0}) {
-            C[C_index] = alpha * A[A_index] * B[B_index];
+            C[C_index] = gpu_ops::mult(gpu_ops::mult(alpha, A[A_index]), B[B_index]);
         } else {
-            C[C_index] = beta * C[C_index] + alpha * A[A_index] * B[B_index];
+            C[C_index] = gpu_ops::fma(gpu_ops::mult(alpha, A[A_index]), B[B_index], gpu_ops::mult(beta, C[C_index]));
         }
     }
 }
@@ -263,8 +260,8 @@ template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType>
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     using namespace einsums::gpu;
 
-    using dev_datatype    = typename AType::dev_datatype;
     using T               = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
+    using dev_datatype    = typename tensor_base::DeviceTypedTensor<T>::dev_datatype;
     constexpr size_t Rank = AType::Rank;
 
     dev_datatype            *gpu_out;
@@ -284,6 +281,7 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
     }
 
     hip_catch(hipMemcpy(gpu_strides, strides.data(), Rank * sizeof(size_t), hipMemcpyHostToDevice));
+    hip_catch(hipMemset(gpu_out, 0, sizeof(T)));
 
     gpu::dot_kernel<Rank><<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(),
                                                                                        gpu_strides, A.gpu_strides(), B.gpu_strides());
@@ -304,8 +302,8 @@ template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType>
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     using namespace einsums::gpu;
 
-    using dev_datatype    = typename AType::dev_datatype;
     using T               = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
+    using dev_datatype    = typename tensor_base::DeviceTypedTensor<T>::dev_datatype;
     constexpr size_t Rank = AType::Rank;
 
     dev_datatype            *gpu_out;
@@ -326,6 +324,7 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
     }
 
     hip_catch(hipMemcpy(gpu_strides, strides.data(), Rank * sizeof(size_t), hipMemcpyHostToDevice));
+    hip_catch(hipMemset(gpu_out, 0, sizeof(T)));
 
     gpu::true_dot_kernel<Rank><<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(
         gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(), gpu_strides, A.gpu_strides(), B.gpu_strides());

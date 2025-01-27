@@ -124,7 +124,7 @@ __global__ void einsum_generic_algorithm_gpu(size_t const *__restrict__ unique_s
             C_sentinel += (C_stride_unique[i] / sizeof(DataType)) * unique_index;
         }
 
-        einsums::gpu::atomicAdd_wrap(C + C_sentinel, AB_prefactor * A[A_sentinel] * B[B_sentinel]);
+        einsums::gpu::atomicAdd_wrap(C + C_sentinel, gpu_ops::mult(gpu_ops::mult(AB_prefactor, A[A_sentinel]), B[B_sentinel]));
     }
 }
 
@@ -165,9 +165,10 @@ __global__ void einsum_generic_algorithm_direct_product_gpu(
 
         // We can do this here since we are guaranteed to see each element only once.
         if (is_zero(C_prefactor)) {
-            C[C_sentinel] = AB_prefactor * A[A_sentinel] * B[B_sentinel];
+            C[C_sentinel] = gpu_ops::mult(gpu_ops::mult(AB_prefactor, A[A_sentinel]), B[B_sentinel]);
         } else {
-            C[C_sentinel] = C_prefactor * C[C_sentinel] + AB_prefactor * A[A_sentinel] * B[B_sentinel];
+            C[C_sentinel] =
+                gpu_ops::fma(gpu_ops::mult(AB_prefactor, A[A_sentinel]), B[B_sentinel], gpu_ops::mult(C_prefactor, C[C_sentinel]));
         }
     }
 }
@@ -213,10 +214,10 @@ __global__ void einsum_generic_zero_rank_gpu(size_t const *__restrict__ unique_s
             B_sentinel += (B_stride_unique[i] / sizeof(DataType)) * unique_index;
         }
 
-        value = value + A[A_sentinel] * B[B_sentinel];
+        value = gpu_ops::fma(A[A_sentinel], B[B_sentinel], value);
     }
 
-    einsums::gpu::atomicAdd_wrap(C, AB_prefactor * value);
+    einsums::gpu::atomicAdd_wrap(C, gpu_ops::mult(AB_prefactor, value));
 }
 
 /**
@@ -255,7 +256,7 @@ __global__ void dot_kernel(size_t const *unique_strides, T *__restrict__ C, T co
             B_sentinel += (B_strides[i] / sizeof(T)) * unique_index;
         }
 
-        value = value + A[A_sentinel] * B[B_sentinel];
+        value = gpu_ops::fma(A[A_sentinel], B[B_sentinel], value);
     }
 
     einsums::gpu::atomicAdd_wrap(C, value);
@@ -294,9 +295,10 @@ __global__ void direct_product_kernel(size_t const *__restrict__ index_strides, 
 
         // We can do this here since we are guaranteed to see each element only once.
         if (is_zero(C_prefactor)) {
-            C[C_sentinel] = AB_prefactor * A[A_sentinel] * B[B_sentinel];
+            C[C_sentinel] = gpu_ops::mult(gpu_ops::mult(AB_prefactor, A[A_sentinel]), B[B_sentinel]);
         } else {
-            C[C_sentinel] = C_prefactor * C[C_sentinel] + AB_prefactor * A[A_sentinel] * B[B_sentinel];
+            C[C_sentinel] =
+                gpu_ops::fma(gpu_ops::mult(AB_prefactor, A[A_sentinel]), B[B_sentinel], gpu_ops::mult(C_prefactor, C[C_sentinel]));
         }
     }
 }
@@ -319,7 +321,7 @@ __global__ void scale_array(T factor, T *__restrict__ array, size_t max_index) {
     } else {
 
         for (size_t curr_index = thread_id; curr_index < max_index; curr_index += kernel_size) {
-            array[curr_index] = factor * array[curr_index];
+            array[curr_index] = gpu_ops::mult(factor, array[curr_index]);
         }
     }
 }

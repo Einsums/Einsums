@@ -7,41 +7,140 @@
 
 #include <Einsums/Config.hpp>
 
-#ifdef EINSUMS_ADD_COMPLEX_OPERATORS
+#include <hip/hip_complex.h>
+#include <hip/hip_runtime.h>
+#include <hip/hip_runtime_api.h>
 
-#    include <hip/hip_complex.h>
-#    include <hip/hip_runtime.h>
-#    include <hip/hip_runtime_api.h>
+namespace einsums::gpu_ops {
 
-__host__ __device__ inline hipFloatComplex operator+(hipFloatComplex first, hipFloatComplex second) {
-    return hipCaddf(first, second);
+__device__ inline float fma(float x, float y, float z) {
+    return ::fmaf(x, y, z);
 }
 
-__host__ __device__ inline hipFloatComplex operator-(hipFloatComplex first, hipFloatComplex second) {
-    return hipCsubf(first, second);
+__device__ inline double fma(double x, float y, double z) {
+    return ::fma(x, y, z);
 }
 
-__host__ __device__ inline hipFloatComplex operator*(hipFloatComplex first, hipFloatComplex second) {
-    return hipCmulf(first, second);
+__device__ inline double fma(float x, double y, double z) {
+    return ::fma(x, y, z);
 }
 
-__host__ __device__ inline hipFloatComplex operator/(hipFloatComplex first, hipFloatComplex second) {
-    return hipCdivf(first, second);
+__device__ inline double fma(double x, double y, double z) {
+    return ::fma(x, y, z);
 }
 
-__host__ __device__ inline hipDoubleComplex operator+(hipDoubleComplex first, hipDoubleComplex second) {
-    return hipCadd(first, second);
+__device__ inline hipFloatComplex fma(hipFloatComplex x, float y, hipFloatComplex z) {
+    return make_hipFloatComplex(::fmaf(x.x, y, z.x), x.y + z.y);
 }
 
-__host__ __device__ inline hipDoubleComplex operator-(hipDoubleComplex first, hipDoubleComplex second) {
-    return hipCsub(first, second);
+__device__ inline hipFloatComplex fma(hipFloatComplex x, double y, hipFloatComplex z) {
+    return make_hipFloatComplex(::fmaf(x.x, y, z.x), x.y + z.y);
 }
 
-__host__ __device__ inline hipDoubleComplex operator*(hipDoubleComplex first, hipDoubleComplex second) {
-    return hipCmul(first, second);
+__device__ inline hipFloatComplex fma(float x, hipFloatComplex y, hipFloatComplex z) {
+    return make_hipFloatComplex(::fmaf(x, y.x, z.x), y.y + z.y);
 }
 
-__host__ __device__ inline hipDoubleComplex operator/(hipDoubleComplex first, hipDoubleComplex second) {
-    return hipCdiv(first, second);
+__device__ inline hipFloatComplex fma(double x, hipFloatComplex y, hipFloatComplex z) {
+    return make_hipFloatComplex(::fmaf(x, y.x, z.x), y.y + z.y);
 }
-#endif
+
+__device__ inline hipFloatComplex fma(hipFloatComplex x, hipFloatComplex y, hipFloatComplex z) {
+    return make_hipFloatComplex(::fmaf(-x.y, y.y, ::fmaf(x.x, y.x, z.x)), ::fmaf(x.y, y.x, ::fmaf(x.x, y.y, z.y)));
+}
+
+__device__ inline hipDoubleComplex fma(hipDoubleComplex x, float y, hipDoubleComplex z) {
+    return make_hipDoubleComplex(::fma(x.x, y, z.x), x.y + z.y);
+}
+
+__device__ inline hipDoubleComplex fma(hipDoubleComplex x, double y, hipDoubleComplex z) {
+    return make_hipDoubleComplex(::fma(x.x, y, z.x), x.y + z.y);
+}
+
+__device__ inline hipDoubleComplex fma(hipDoubleComplex x, hipFloatComplex y, hipDoubleComplex z) {
+    return make_hipDoubleComplex(::fma(-x.y, y.y, ::fma(x.x, y.x, z.x)), ::fma(x.y, y.x, ::fma(x.x, y.y, z.y)));
+}
+
+__device__ inline hipDoubleComplex fma(float x, hipDoubleComplex y, hipDoubleComplex z) {
+    return make_hipDoubleComplex(::fma(x, y.x, z.x), y.y + z.y);
+}
+
+__device__ inline hipDoubleComplex fma(double x, hipDoubleComplex y, hipDoubleComplex z) {
+    return make_hipDoubleComplex(::fma(x, y.x, z.x), y.y + z.y);
+}
+
+__device__ inline hipDoubleComplex fma(hipFloatComplex x, hipDoubleComplex y, hipDoubleComplex z) {
+    return make_hipDoubleComplex(::fma(-x.y, y.y, ::fma(x.x, y.x, z.x)), ::fma(x.y, y.x, ::fma(x.x, y.y, z.y)));
+}
+
+__device__ inline hipDoubleComplex fma(hipDoubleComplex x, hipDoubleComplex y, hipDoubleComplex z) {
+    return make_hipDoubleComplex(::fma(-x.y, y.y, ::fma(x.x, y.x, z.x)), ::fma(x.y, y.x, ::fma(x.x, y.y, z.y)));
+}
+
+__device__ inline hipFloatComplex mult(hipFloatComplex x, hipFloatComplex y) {
+    return make_hipFloatComplex(::fmaf(-x.y, y.y, x.x * y.x), ::fmaf(x.y, y.x, x.x * y.y));
+}
+
+__device__ inline hipDoubleComplex mult(hipDoubleComplex x, hipFloatComplex y) {
+    return make_hipDoubleComplex(::fma(-x.y, y.y, x.x * y.x), ::fma(x.y, y.x, x.x * y.y));
+}
+
+__device__ inline hipDoubleComplex mult(hipFloatComplex x, hipDoubleComplex y) {
+    return make_hipDoubleComplex(::fma(-x.y, y.y, x.x * y.x), ::fma(x.y, y.x, x.x * y.y));
+}
+
+__device__ inline hipDoubleComplex mult(hipDoubleComplex x, hipDoubleComplex y, hipDoubleComplex z) {
+    return make_hipDoubleComplex(::fma(-x.y, y.y, x.x * y.x), ::fma(x.y, y.x, x.x * y.y));
+}
+
+template<typename T1, typename T2>
+__device__ inline auto mult(T1 x, T2 y) -> std::conditional_t<(sizeof(T1) >= sizeof(T2)), T1, T2>{
+    return x * y;
+}
+
+__device__ inline hipFloatComplex div(hipFloatComplex x, hipFloatComplex y) {
+    const float denom = y.x * y.x + y.y * y.y;
+    return make_hipFloatComplex(::fmaf(x.y, y.y, x.x * y.x) / denom, ::fmaf(x.y, y.x, -x.x * y.y) / denom);
+}
+
+__device__ inline hipDoubleComplex div(hipDoubleComplex x, hipFloatComplex y) {
+    const double denom = y.x * y.x + y.y * y.y;
+    return make_hipDoubleComplex(::fmaf(x.y, y.y, x.x * y.x) / denom, ::fmaf(x.y, y.x, -x.x * y.y) / denom);
+}
+
+__device__ inline hipDoubleComplex div(hipFloatComplex x, hipDoubleComplex y) {
+    const double denom = y.x * y.x + y.y * y.y;
+    return make_hipDoubleComplex(::fmaf(x.y, y.y, x.x * y.x) / denom, ::fmaf(x.y, y.x, -x.x * y.y) / denom);
+}
+
+__device__ inline hipDoubleComplex div(hipDoubleComplex x, hipDoubleComplex y, hipDoubleComplex z) {
+    const double denom = y.x * y.x + y.y * y.y;
+    return make_hipDoubleComplex(::fmaf(x.y, y.y, x.x * y.x) / denom, ::fmaf(x.y, y.x, -x.x * y.y) / denom);
+}
+
+__device__ inline hipFloatComplex div(float x, hipFloatComplex y) {
+    const float denom = y.x * y.x + y.y * y.y;
+    return make_hipFloatComplex((x * y.x) / denom, (-x * y.y) / denom);
+}
+
+__device__ inline hipFloatComplex div(double x, hipFloatComplex y) {
+    const double denom = y.x * y.x + y.y * y.y;
+    return make_hipFloatComplex((x * y.x) / denom, (-x * y.y) / denom);
+}
+
+__device__ inline hipDoubleComplex div(float x, hipDoubleComplex y) {
+    const double denom = y.x * y.x + y.y * y.y;
+    return make_hipDoubleComplex((x * y.x) / denom, (-x * y.y) / denom);
+}
+
+__device__ inline hipDoubleComplex div(float x, hipDoubleComplex y, hipDoubleComplex z) {
+    const double denom = y.x * y.x + y.y * y.y;
+    return make_hipDoubleComplex((x * y.x) / denom, (-x * y.y) / denom);
+}
+
+template<typename T1, typename T2>
+__device__ inline auto div(T1 x, T2 y) -> std::conditional_t<(sizeof(T1) >= sizeof(T2)), T1, T2>{
+    return x / y;
+}
+
+} // namespace einsums::gpu_ops

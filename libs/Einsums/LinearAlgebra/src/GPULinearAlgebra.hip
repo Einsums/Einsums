@@ -313,7 +313,7 @@ __global__ EINSUMS_EXPORT void saxpby_kernel(int n, float const *alpha, float co
         size_t x_index = incx * curr_index;
         size_t y_index = incy * curr_index;
 
-        Y[y_index] = *alpha * X[x_index] + *beta * Y[y_index];
+        Y[y_index] = gpu_ops::fma(*alpha, X[x_index], gpu_ops::mult(*beta, Y[y_index]));
     }
 }
 __global__ EINSUMS_EXPORT void daxpby_kernel(int n, double const *alpha, double const *X, int incx, double const *beta, double *Y,
@@ -326,7 +326,7 @@ __global__ EINSUMS_EXPORT void daxpby_kernel(int n, double const *alpha, double 
         size_t x_index = incx * curr_index;
         size_t y_index = incy * curr_index;
 
-        Y[y_index] = *alpha * X[x_index] + *beta * Y[y_index];
+        Y[y_index] = gpu_ops::fma(*alpha, X[x_index], gpu_ops::mult(*beta, Y[y_index]));
     }
 }
 __global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta,
@@ -339,7 +339,7 @@ __global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipFloatComplex const *alpha
         size_t x_index = incx * curr_index;
         size_t y_index = incy * curr_index;
 
-        Y[y_index] = *alpha * X[x_index] + *beta * Y[y_index];
+        Y[y_index] = gpu_ops::fma(*alpha, X[x_index], gpu_ops::mult(*beta, Y[y_index]));
     }
 }
 __global__ EINSUMS_EXPORT void zaxpby_kernel(int n, hipDoubleComplex const *alpha, hipDoubleComplex const *X, int incx,
@@ -352,7 +352,7 @@ __global__ EINSUMS_EXPORT void zaxpby_kernel(int n, hipDoubleComplex const *alph
         size_t x_index = incx * curr_index;
         size_t y_index = incy * curr_index;
 
-        Y[y_index] = *alpha * X[x_index] + *beta * Y[y_index];
+        Y[y_index] = gpu_ops::fma(*alpha, X[x_index], gpu_ops::mult(*beta, Y[y_index]));
     }
 }
 
@@ -467,9 +467,9 @@ __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n,
         }
 
         if (!TransB) {
-            term = term * B[i * ldb + a] * B[j * ldb + b];
+            term = gpu_ops::mult(gpu_ops::mult(term, B[i * ldb + a]), B[j * ldb + b]);
         } else {
-            term = term * B[a * ldb + i] * B[b * ldb + j];
+            term = gpu_ops::mult(gpu_ops::mult(term, B[a * ldb + i]), B[b * ldb + j]);
         }
 
         atomicAdd(&(C[a * ldc + b].x), term.x);
@@ -508,9 +508,9 @@ __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n,
         }
 
         if (!TransB) {
-            term = term * B[i * ldb + a] * B[j * ldb + b];
+            term = gpu_ops::mult(gpu_ops::mult(term, B[i * ldb + a]), B[j * ldb + b]);
         } else {
-            term = term * B[a * ldb + i] * B[b * ldb + j];
+            term = gpu_ops::mult(gpu_ops::mult(term, B[a * ldb + i]), B[b * ldb + j]);
         }
 
         atomicAdd(&(C[a * ldc + b].x), term.x);

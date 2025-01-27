@@ -1157,13 +1157,15 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         // Can't perform checks on data. Assume the user knows what they're doing.
         // This function is used when interfacing with libint2.
 
-        auto   target_dims = get_dim_ranges<Rank>(*this);
-        size_t item{0};
+        size_t elements = this->size();
 
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            T &target = std::apply(*this, target_combination);
-            target    = other[item];
-            item++;
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t item = 0; item < elements; item++) {
+            size_t new_item;
+
+            sentinel_to_sentinels(item, _index_strides, _strides, new_item);
+
+            this->_data[new_item] = other[item];
         }
 
         return *this;
@@ -1176,13 +1178,19 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         if (this == &other)
             return *this;
 
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
+        if (this->size() != other.size() || this->dims() != other.dims()) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform copy assignment. The tensor views have different dimensions.");
+        }
 
-#pragma omp parallel for default(none) shared(view, other)
-        for (auto target_combination = view.begin(); target_combination != view.end(); ++target_combination) {
-            T &target = std::apply(*this, *target_combination);
-            target    = std::apply(other, *target_combination);
+        size_t elements = this->size();
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t item = 0; item < elements; item++) {
+            size_t out_item, in_item;
+
+            sentinel_to_sentinels(item, _index_strides, _strides, out_item, other._strides, in_item);
+
+            this->_data[out_item] = other.data()[in_item];
         }
 
         return *this;
@@ -1199,13 +1207,30 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
                 return *this;
         }
 
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
+        if (this->size() != other.size() || this->dims() != other.dims()) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform copy assignment. The tensor views have different dimensions.");
+        }
 
-        // #pragma omp parallel for default(none) shared(view, other)
-        for (auto target_combination = view.begin(); target_combination != view.end(); ++target_combination) {
-            T &target = std::apply(*this, *target_combination);
-            target    = std::apply(other, *target_combination);
+        size_t elements = this->size();
+
+        if (other.full_view_of_underlying()) {
+            EINSUMS_OMP_PARALLEL_FOR
+            for (size_t item = 0; item < elements; item++) {
+                size_t out_item, in_item;
+
+                sentinel_to_sentinels(item, _index_strides, _strides, out_item);
+
+                this->_data[out_item] = other.data()[item];
+            }
+        } else {
+            EINSUMS_OMP_PARALLEL_FOR
+            for (size_t item = 0; item < elements; item++) {
+                size_t out_item, in_item;
+
+                sentinel_to_sentinels(item, _index_strides, _strides, out_item, other._strides, in_item);
+
+                this->_data[out_item] = other.data()[in_item];
+            }
         }
 
         return *this;
@@ -1215,15 +1240,16 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * Fill this view with a single value.
      */
     auto operator=(T const &fill_value) -> TensorView & {
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
+        size_t elements = this->size();
 
-#pragma omp parallel for default(none) shared(view, fill_value)
-        for (auto target_combination = view.begin(); target_combination != view.end(); ++target_combination) {
-            T &target = std::apply(*this, *target_combination);
-            target    = fill_value;
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t item = 0; item < elements; item++) {
+            size_t out_item;
+
+            sentinel_to_sentinels(item, _index_strides, _strides, out_item);
+
+            this->_data[out_item] = fill_value;
         }
-
         return *this;
     }
 
@@ -1233,12 +1259,15 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 #    endif
 #    define OPERATOR(OP)                                                                                                                   \
         auto operator OP(const T &value)->TensorView & {                                                                                   \
-            auto target_dims = get_dim_ranges<Rank>(*this);                                                                                \
-            auto view        = std::apply(ranges::views::cartesian_product, target_dims);                                                  \
-            /* EINSUMS_OMP_PARALLEL_FOR */                                                                                                 \
-            for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {                         \
-                T        &target = std::apply(*this, *target_combination);                                                                 \
-                target OP value;                                                                                                           \
+            size_t elements = this->size();                                                                                                \
+                                                                                                                                           \
+            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            for (size_t item = 0; item < elements; item++) {                                                                               \
+                size_t out_item;                                                                                                           \
+                                                                                                                                           \
+                sentinel_to_sentinels(item, _index_strides, _strides, out_item);                                                           \
+                                                                                                                                           \
+                this->_data[out_item] OP value;                                                                                        \
             }                                                                                                                              \
                                                                                                                                            \
             return *this;                                                                                                                  \
@@ -1699,9 +1728,12 @@ void write(h5::fd_t const &fd, TensorView<T, Rank> const &ref, Args &&...args) {
                            h5::chunk{chunk_temp} /*| h5::gzip{9} | h5::fill_value<T>(0.0)*/);
     }
 
-    auto dims = get_dim_ranges<Rank - 1>(ref);
+    Stride<Rank - 1> index_strides;
+    size_t elements = dims_to_strides(Dim<Rank - 1>(ref.dims().cbegin(), std::next(ref.dims().cbegin(), Rank - 1)), index_strides);
 
-    for (auto combination : std::apply(ranges::views::cartesian_product, dims)) {
+    for (size_t item = 0; item < elements; item++) {
+        std::array<int64_t, Rank - 1> combination;
+        sentinel_to_indices(item, index_strides, combination);
         // We generate all the cartesian products for all the dimensions except the final dimension
         // We call write on that final dimension.
         detail::add_elements<Rank - 1>(view_offset, offset_default, combination);
@@ -1934,11 +1966,19 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
 #    else
             } else if constexpr (Rank > 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #    endif
-                auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
+
+
+                Stride<Rank - 1> index_strides;
+                size_t elements = dims_to_strides(std::array<int64_t, Rank - 1>(A.dims().cbegin(), std::next(A.dims().cbegin(), Rank - 1)), index_strides);
+
                 auto final_dim   = A.dim(Rank - 1);
                 auto ndigits     = detail::ndigits(final_dim);
 
-                for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+                for (size_t item = 0; item < elements; item++) {
+                    std::array<int64_t, Rank - 1> target_combination;
+
+                    sentinel_to_indices(item, index_strides, target_combination);
+
                     std::ostringstream oss;
                     for (int j = 0; j < final_dim; j++) {
                         if (j % options.width == 0) {
@@ -1985,15 +2025,15 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
 #    else
             } else if constexpr (Rank == 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #    endif
-                auto target_dims = einsums::get_dim_ranges<Rank>(A);
+                size_t elements = A.size();
 
-                for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+                for (size_t item = 0; item < elements; item++) {
                     std::ostringstream oss;
                     oss << "(";
-                    oss << fmt::format("{}", fmt::join(target_combination, ", "));
+                    oss << fmt::format("{}, ", item);
                     oss << "): ";
 
-                    T value = std::apply(A, target_combination);
+                    T value = A(item);
                     if (std::abs(value) > 1.0E+5) {
                         if constexpr (std::is_floating_point_v<T>)
                             oss << fmt::format(fg(fmt::color::white) | bg(fmt::color::red), "{:14.8f} ", value);

@@ -5,6 +5,7 @@
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TypeSupport/GPUCast.hpp>
+#include <Einsums/TypeSupport/GPUComplex.hpp>
 
 #include <bits/utility.h>
 #include <hip/hip_common.h>
@@ -57,7 +58,7 @@ __global__ void einsum_generic_algorithm_gpu(
                 C_index += C_stride[i] * (quotient / C_index_strides[i]);
                 quotient %= C_index_strides[i];
             }
-            C[C_index] = C[C_index] * C_prefactor;
+            C[C_index] = gpu_ops::mult(C[C_index], C_prefactor);
         }
     }
 
@@ -86,7 +87,7 @@ __global__ void einsum_generic_algorithm_gpu(
             B_sentinel += B_stride[i] * Unique_index[B_index_table[i]];
         }
 
-        einsums::gpu::atomicAdd_wrap(C + C_sentinel, (CDataType)(AB_prefactor * A[A_sentinel] * B[B_sentinel]));
+        einsums::gpu::atomicAdd_wrap(C + C_sentinel, (CDataType)(gpu_ops::mult(gpu_ops::mult(AB_prefactor, A[A_sentinel]), B[B_sentinel])));
     }
 }
 
@@ -131,7 +132,7 @@ __global__ void einsum_generic_algorithm_direct_product_gpu(
                 C_index += C_stride[i] * (quotient / C_index_strides[i]);
                 quotient %= C_index_strides[i];
             }
-            C[C_index] = C[C_index] * C_prefactor;
+            C[C_index] = gpu_ops::mult(C[C_index], C_prefactor);
         }
     }
 
@@ -160,7 +161,7 @@ __global__ void einsum_generic_algorithm_direct_product_gpu(
             B_sentinel += B_stride[i] * Unique_index[B_index_table[i]];
         }
 
-        C[C_sentinel] = C[C_sentinel] + (CDataType)(AB_prefactor * A[A_sentinel] * B[B_sentinel]);
+        C[C_sentinel] = gpu_ops::fma(gpu_ops::mult(AB_prefactor, A[A_sentinel]), B[B_sentinel], C[C_sentinel]);
     }
 }
 
@@ -204,10 +205,10 @@ __global__ void einsum_generic_zero_rank_gpu(
             B_sentinel += B_stride[i] * Unique_index[B_index_table[i]];
         }
 
-        value = value + A[A_sentinel] * B[B_sentinel];
+        value = gpu_ops::fma(A[A_sentinel], B[B_sentinel], value);
     }
 
-    atomicAdd_wrap(C, (CDataType)(AB_prefactor * value));
+    atomicAdd_wrap(C, gpu_ops::mult(AB_prefactor, value));
 }
 
 template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices,

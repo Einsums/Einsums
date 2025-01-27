@@ -1263,7 +1263,7 @@ __global__ void mul_and_assign(T *to_data, size_t const *index_strides, size_t c
         size_t to_ind = einsums::indices_to_sentinel<rank>(to_strides, inds);
 
         // Do the copy.
-        to_data[to_ind] = to_data[to_ind] * from_data[from_ind];
+        to_data[to_ind] = gpu_ops::mult(to_data[to_ind], from_data[from_ind]);
 
         // Increment.
         curr_element += kernel_size;
@@ -1300,7 +1300,7 @@ __global__ void div_and_assign(T *to_data, size_t const *index_strides, size_t c
         size_t to_ind = einsums::indices_to_sentinel<rank>(to_strides, inds);
 
         // Do the copy.
-        to_data[to_ind] = to_data[to_ind] / from_data[from_ind];
+        to_data[to_ind] = gpu_ops::div(to_data[to_ind], from_data[from_ind]);
 
         // Increment.
         curr_element += kernel_size;
@@ -1399,7 +1399,7 @@ __global__ void mul_and_assign_scal(T *to_data, size_t const *index_strides, siz
         size_t to_ind = einsums::indices_to_sentinel<rank>(to_strides, inds);
 
         // Do the copy.
-        to_data[to_ind] = to_data[to_ind] * scalar;
+        to_data[to_ind] = gpu_ops::mult(to_data[to_ind], scalar);
 
         // Increment.
         curr_element += kernel_size;
@@ -1431,7 +1431,7 @@ __global__ void div_and_assign_scal(T *to_data, size_t const *index_strides, siz
         size_t to_ind = einsums::indices_to_sentinel<rank>(to_strides, inds);
 
         // Do the copy.
-        to_data[to_ind] = to_data[to_ind] / scalar;
+        to_data[to_ind] = gpu_ops::div(to_data[to_ind], scalar);
 
         // Increment.
         curr_element += kernel_size;

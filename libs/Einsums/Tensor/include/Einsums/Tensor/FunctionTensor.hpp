@@ -28,11 +28,15 @@ namespace tensor_base {
 /**
  * @struct FunctionTensor
  *
- * @brief Optional base class for function tensors. This class provides functionality 
+ * @brief Optional base class for function tensors. This class provides some useful functionality.
  *
  * A function tensor is one which takes advantage of the use of the operator() to index tensors to provide a way to
  * call a function. An example of this might be the Kronecker delta, which has such simple structure that creating
- * a whole new tensor object for it would be wasteful.
+ * a whole new tensor object for it would be wasteful. This class does not define all function tensors. Instead,
+ * it provides some useful behavior so that users can create their own with minimal effort. The only thing that
+ * is required of function tensors is that they follow TensorConcept and they provide a function call operator
+ * that can take as many arguments as the rank of the tensor. This does mean that other tensor classes, like
+ * Tensor and BlockTensor, are also function tensors, though they do not inherit this class.
  */
 template <typename T, size_t rank>
 struct FunctionTensor : public CoreTensor {
@@ -222,13 +226,16 @@ struct FunctionTensor : public CoreTensor {
         Tensor<T, Rank> out(dims());
         out.set_name(name());
 
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
+        Stride<Rank> index_strides;
+        size_t elements = dims_to_strides(dims(), index_strides);
 
-#pragma omp parallel for default(none) shared(view, out)
-        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
-            T &target = std::apply(out, *target_combination);
-            target    = std::apply(*this, *target_combination);
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t item = 0; item < elements; item++) {
+            thread_local std::array<int64_t, Rank> index;
+
+            sentinel_to_indices(item, index_strides, index);
+
+            out.data()[item] = call(index);
         }
 
         return out;

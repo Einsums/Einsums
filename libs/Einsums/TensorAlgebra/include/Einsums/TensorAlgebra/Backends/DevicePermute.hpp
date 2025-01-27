@@ -58,7 +58,7 @@ __global__ void permute_kernel(int const *perm, T const alpha, T const *A, size_
             B_sentinel += strideB[i] * A_index[perm[i]];
         }
 
-        B[B_sentinel] = beta * B[B_sentinel] + alpha * A[A_sentinel];
+        B[B_sentinel] = gpu_ops::fma(alpha,  A[A_sentinel], beta * B[B_sentinel]);
     }
 }
 

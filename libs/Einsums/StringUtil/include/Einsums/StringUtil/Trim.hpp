@@ -12,7 +12,10 @@ namespace einsums::string_util {
 
 // trim from start (in place)
 static inline void ltrim(std::string &s) {
-    s.erase(s.begin(), std::ranges::find_if(s, [](unsigned char ch) { return !std::isspace(ch); }));
+    auto first_nospace = std::find_if(s.cbegin(), s.cend(), [](unsigned char ch) {return !std::isspace(ch);});
+    if(first_nospace != s.cend()) {
+        s.erase(s.begin(), first_nospace);
+    }
 }
 
 // trim from end (in place)
