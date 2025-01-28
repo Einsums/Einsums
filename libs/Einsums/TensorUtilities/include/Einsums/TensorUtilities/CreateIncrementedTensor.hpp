@@ -8,8 +8,6 @@
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
-#include <range/v3/view/cartesian_product.hpp>
-
 #include <complex>
 #include <string>
 
@@ -39,16 +37,13 @@ template <typename T = double, typename... MultiIndex>
 auto create_incremented_tensor(std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
-    T    counter{0.0};
-    auto target_dims = get_dim_ranges<sizeof...(MultiIndex)>(A);
-    auto view        = std::apply(ranges::views::cartesian_product, target_dims);
+    size_t elements = A.size();
 
-    for (auto it = view.begin(); it != view.end(); it++) {
-        std::apply(A, *it) = counter;
+    for (size_t item = 0; item < elements; item++) {
         if constexpr (std::is_same_v<T, std::complex<float>> || std::is_same_v<T, std::complex<double>>) {
-            counter += T{1.0, 1.0};
+            A.data()[item] = T(item, item);
         } else {
-            counter += T{1.0};
+            A.data()[item] = T(item);
         }
     }
 

@@ -20,7 +20,6 @@ The following libraries are also required, but will be fetched if they can not b
 
 * fmtlib >= 11
 * Catch2 >= 3
-* range-v3 >= 12
 * Einsums/h5cpp
 * p-ranav/argparse
 * gabime/spdlog >= 1

@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Einsums/Tensor/Tensor.hpp>
+#include "Einsums/Concepts/Tensor.hpp"
 
 namespace einsums {
 
@@ -24,20 +25,31 @@ auto rmsd(AType const &tensor1, BType const &tensor2) -> ValueTypeT<AType> {
 
     TType diff = 0.0;
 
-    size_t nelem = 1;
-    for_sequence<TRank>([&](auto i) { nelem *= tensor1.dim(i); });
+    std::array<size_t, TRank> index_strides;
+    size_t elements = dims_to_strides(tensor1.dims(), index_strides);
 
-    auto target_dims = get_dim_ranges<TRank>(tensor1);
-    auto view        = std::apply(ranges::views::cartesian_product, target_dims);
+//#pragma omp parallel for reduction(+ : diff)
+    for (size_t item = 0; item < elements; item++) {
+        thread_local std::array<size_t, TRank> target_combination;
+        sentinel_to_indices(item, index_strides, target_combination);
 
-#pragma omp parallel for reduction(+ : diff)
-    for (auto it = view.begin(); it < view.end(); it++) {
-        auto  target_combination = *it;
-        TType target1            = std::apply(tensor1, target_combination);
-        TType target2            = std::apply(tensor2, target_combination);
+        TType target1, target2;
+
+        if constexpr (IsFastSubscriptableV<AType>) {
+            target1 = tensor1.subscript(target_combination);
+        } else {
+            target1 = std::apply(tensor1, target_combination);
+        }
+
+        if constexpr (IsFastSubscriptableV<BType>) {
+            target2 = tensor2.subscript(target_combination);
+        } else {
+            target2 = std::apply(tensor2, target_combination);
+        }
+
         diff += (target1 - target2) * (target1 - target2);
     }
 
-    return std::sqrt(diff / nelem);
+    return std::sqrt(diff / elements);
 }
 } // namespace einsums

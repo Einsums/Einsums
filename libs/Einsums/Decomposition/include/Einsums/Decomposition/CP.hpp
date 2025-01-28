@@ -34,7 +34,6 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
     }
 
     auto weighted_tensor = create_tensor_like(tensor);
-    auto target_dims     = get_dim_ranges<TRank>(tensor);
 
     std::array<size_t, TRank> strides;
 

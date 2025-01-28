@@ -11,7 +11,6 @@
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <fmt/std.h>
-#include <range/v3/utility/common_tuple.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -325,22 +324,6 @@ void fprintln_warn(std::ostream &os, std::string_view const &format, Ts const...
 } // namespace einsums
 
 #if !defined(DOXYGEN)
-// template <typename... Ts>
-// struct fmt::formatter<ranges::common_tuple<Ts...>> {
-//     template <typename ParseContext>
-//     constexpr auto parse(ParseContext &ctx) {
-//         return ctx.begin();
-//     }
-
-//     template <typename FormatContext>
-//     auto format(ranges::common_tuple<Ts...> const &ct, FormatContext &ctx) {
-//         // Create a tuple from the common_tuple
-//         auto tpl = static_cast<std::tuple<Ts...>>(ct);
-
-//         // Join the tuple elements with a separator (default ", ")
-//         return fmt::format_to(ctx.out(), "{}", fmt::join(tpl, ", "));
-//     }
-// };
 
 template <std::integral IntType>
 struct fmt::formatter<einsums::print::ordinal<IntType>> {

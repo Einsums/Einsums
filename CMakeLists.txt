@@ -703,7 +703,6 @@ set(EINSUMS_WITH_TARGET_ARCHITECTURE
 # Find other dependencies.
 include(Einsums_SetupFmt)
 include(Einsums_SetupCatch)
-include(Einsums_SetupRangev3)
 include(Einsums_SetupH5cpp)
 include(Einsums_SetupArgparse)
 include(Einsums_SetupSpdlog)

@@ -8,10 +8,6 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 
-#include <range/v3/range_fwd.hpp>
-#include <range/v3/view/cartesian_product.hpp>
-#include <range/v3/view/iota.hpp>
-
 #include <cstdarg>
 #include <cstddef>
 #include <source_location>
@@ -125,19 +121,6 @@ inline auto get_dim_ranges_for_many(CType const &C, std::tuple<CIndices...> cons
 namespace detail {
 
 /**
- * @brief Get the dim ranges object
- *
- * @tparam TensorType
- * @tparam I
- * @param tensor The tensor object to query
- * @return A tuple containing the dimension ranges compatible with range-v3 cartesian_product function.
- */
-template <typename TensorType, std::size_t... I>
-auto get_dim_ranges(TensorType const &tensor, std::index_sequence<I...>) {
-    return std::tuple{ranges::views::ints(0, (int)tensor.dim(I))...};
-}
-
-/**
  * @brief Adds elements from two sources into the target.
  *
  * Useful in adding offsets to a set of indices.
@@ -159,23 +142,6 @@ void add_elements(Target &target, Source1 const &source1, Source2 const &source2
 }
 
 } // namespace detail
-
-/**
- * @brief Find the ranges for each dimension of a tensor.
- *
- * The returned tuple is compatible with ranges-v3 cartesian_product function.
- *
- * @tparam N
- * @tparam TensorType
- * @tparam Rank
- * @tparam T
- * @param tensor Tensor to query
- * @return Tuple containing the range for each dimension of the tensor.
- */
-template <int N, typename TensorType>
-auto get_dim_ranges(TensorType const &tensor) {
-    return detail::get_dim_ranges(tensor, std::make_index_sequence<N>{});
-}
 
 /**
  * @brief Converts a single sentinel value into a list of indices.

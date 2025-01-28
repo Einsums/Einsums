@@ -67,9 +67,6 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 
     auto target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
 
-    auto target_dims = get_dim_ranges<CRank>(*C);
-    auto a_dims      = detail::get_dim_ranges_for(A, target_position_in_A);
-
     // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
     if (C_prefactor == T{0.0}) {
         *C = T{0.0};

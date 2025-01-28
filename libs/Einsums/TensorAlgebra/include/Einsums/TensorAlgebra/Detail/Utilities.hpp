@@ -8,8 +8,6 @@
 #include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 
-#include <range/v3/view/iota.hpp>
-
 #include <tuple>
 
 namespace einsums::tensor_algebra {
@@ -68,11 +66,6 @@ constexpr auto _unique_find_type_with_position() {
     } else {
         return _unique_find_type_with_position<T, Position + 1, Args...>();
     }
-}
-
-template <TensorConcept TensorType, typename... Args, size_t... I>
-auto get_dim_ranges_for(TensorType const &tensor, std::tuple<Args...> const &args, std::index_sequence<I...> /*seq*/) {
-    return std::tuple{ranges::views::ints(0, (int)tensor.dim(std::get<2 * I + 1>(args)))...};
 }
 
 template <TensorConcept TensorType, typename... Args, size_t... I>
@@ -156,10 +149,10 @@ constexpr auto unique_find_type_with_position(std::tuple<Ts...> const & /*unused
  *
  * @return A tuple of ranges to be used to iterate over a tensor.
  */
-template <TensorConcept TensorType, typename... Args>
-auto get_dim_ranges_for(TensorType const &tensor, std::tuple<Args...> const &args) {
-    return detail::get_dim_ranges_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
-}
+// template <TensorConcept TensorType, typename... Args>
+// auto get_dim_ranges_for(TensorType const &tensor, std::tuple<Args...> const &args) {
+//     return detail::get_dim_ranges_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
+// }
 
 /**
  * Create a tuple containing the dimensions of a tensor.
@@ -173,11 +166,11 @@ auto get_dim_for(TensorType const &tensor, std::tuple<Args...> const &args) {
 }
 
 #ifndef DOXYGEN
-template <typename ScalarType>
-    requires(!TensorConcept<ScalarType>)
-auto get_dim_ranges_for(ScalarType const &tensor, std::tuple<> const &args) {
-    return std::tuple{};
-}
+// template <typename ScalarType>
+//     requires(!TensorConcept<ScalarType>)
+// auto get_dim_ranges_for(ScalarType const &tensor, std::tuple<> const &args) {
+//     return std::tuple{};
+// }
 
 template <typename ScalarType>
 auto get_dim_for(ScalarType const &tensor, std::tuple<> const &args) {
@@ -187,8 +180,8 @@ auto get_dim_for(ScalarType const &tensor, std::tuple<> const &args) {
 
 template <typename AIndex, typename TargetCombination, typename LinkCombination, typename... TargetPositionInC,
           typename... LinkPositionInLink>
-auto construct_index(TargetCombination const &target_combination, std::tuple<TargetPositionInC...> const & /*unused*/,
-                     LinkCombination const   &link_combination, std::tuple<LinkPositionInLink...> const   &/*unused*/) {
+ptrdiff_t construct_index(TargetCombination const &target_combination, std::tuple<TargetPositionInC...> const & /*unused*/,
+                          LinkCombination const   &link_combination, std::tuple<LinkPositionInLink...> const   &/*unused*/) {
 
     constexpr auto IsAIndexInC    = detail::find_position<AIndex, TargetPositionInC...>();
     constexpr auto IsAIndexInLink = detail::find_position<AIndex, LinkPositionInLink...>();
@@ -209,17 +202,18 @@ template <typename... AIndices, typename... TargetCombination, typename... Targe
 constexpr auto
 construct_indices(std::tuple<TargetCombination...> const &target_combination, std::tuple<TargetPositionInC...> const &target_position_in_C,
                   std::tuple<LinkCombination...> const &link_combination, std::tuple<LinkPositionInLink...> const &link_position_in_link) {
-    return std::array<ptrdiff_t, sizeof...(AIndices)>{construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...};
+    return std::array<ptrdiff_t, sizeof...(AIndices)>{
+        construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...};
 }
 
 template <typename AIndex, typename UniqueTargetCombination, typename UniqueLinkCombination, typename... UniqueTargetIndices,
           typename... TargetPositionInC, typename... UniqueLinkIndices, typename... LinkPositionInLink>
-auto construct_index_from_unique_target_combination(std::tuple<UniqueTargetIndices...> const & /*unique_target_indices*/,
-                                                    UniqueTargetCombination const &unique_target_combination,
-                                                    std::tuple<TargetPositionInC...> const & /*unused*/,
-                                                    std::tuple<UniqueLinkIndices...> const & /*unique_link_indices*/,
-                                                    UniqueLinkCombination const &unique_link_combination,
-                                                    std::tuple<LinkPositionInLink...> const & /*unused*/) {
+ptrdiff_t construct_index_from_unique_target_combination(std::tuple<UniqueTargetIndices...> const & /*unique_target_indices*/,
+                                                         UniqueTargetCombination const &unique_target_combination,
+                                                         std::tuple<TargetPositionInC...> const & /*unused*/,
+                                                         std::tuple<UniqueLinkIndices...> const & /*unique_link_indices*/,
+                                                         UniqueLinkCombination const &unique_link_combination,
+                                                         std::tuple<LinkPositionInLink...> const & /*unused*/) {
 
     constexpr auto IsAIndexInC    = detail::find_position<AIndex, UniqueTargetIndices...>();
     constexpr auto IsAIndexInLink = detail::find_position<AIndex, UniqueLinkIndices...>();
@@ -242,9 +236,9 @@ constexpr auto construct_indices_from_unique_combination(std::tuple<UniqueTarget
                                                          std::tuple<UniqueLinkIndices...> const       &unique_link_indices,
                                                          std::tuple<UniqueLinkCombination...> const   &unique_link_combination,
                                                          std::tuple<LinkPositionInLink...> const      &link_position_in_link) {
-    return std::array<ptrdiff_t, sizeof...(AIndices)>{construct_index_from_unique_target_combination<AIndices>(unique_target_indices, unique_target_combination,
-                                                                                    target_position_in_C, unique_link_indices,
-                                                                                    unique_link_combination, link_position_in_link)...};
+    return std::array<ptrdiff_t, sizeof...(AIndices)>{
+        construct_index_from_unique_target_combination<AIndices>(unique_target_indices, unique_target_combination, target_position_in_C,
+                                                                 unique_link_indices, unique_link_combination, link_position_in_link)...};
 }
 
 template <typename UniqueTargetCombination, typename UniqueLinkCombination, typename... AIndices, typename... UniqueTargetIndices,
@@ -256,9 +250,9 @@ constexpr auto construct_indices_from_unique_combination(std::tuple<AIndices...>
                                                          std::tuple<UniqueLinkIndices...> const   &unique_link_indices,
                                                          UniqueLinkCombination const              &unique_link_combination,
                                                          std::tuple<LinkPositionInLink...> const  &link_position_in_link) {
-    return std::array<ptrdiff_t, sizeof...(AIndices)>{construct_index_from_unique_target_combination<AIndices>(unique_target_indices, unique_target_combination,
-                                                                                    target_position_in_C, unique_link_indices,
-                                                                                    unique_link_combination, link_position_in_link)...};
+    return std::array<ptrdiff_t, sizeof...(AIndices)>{
+        construct_index_from_unique_target_combination<AIndices>(unique_target_indices, unique_target_combination, target_position_in_C,
+                                                                 unique_link_indices, unique_link_combination, link_position_in_link)...};
 }
 
 template <typename TargetCombination, typename LinkCombination, typename... AIndices, typename... TargetPositionInC,
@@ -266,7 +260,8 @@ template <typename TargetCombination, typename LinkCombination, typename... AInd
 constexpr auto construct_indices(std::tuple<AIndices...> const & /*unused*/, TargetCombination const &target_combination,
                                  std::tuple<TargetPositionInC...> const &target_position_in_C, LinkCombination const &link_combination,
                                  std::tuple<LinkPositionInLink...> const &link_position_in_link) {
-    return std::array<ptrdiff_t, sizeof...(AIndices)>{construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...};
+    return std::array<ptrdiff_t, sizeof...(AIndices)>{
+        construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...};
 }
 
 #if !defined(DOXYGEN)

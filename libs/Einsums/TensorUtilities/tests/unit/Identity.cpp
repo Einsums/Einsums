@@ -26,13 +26,15 @@ TEMPLATE_TEST_CASE("Identity", "[tensor]", float, double, std::complex<float>, s
 TEMPLATE_TEST_CASE("Identity - 3d", "[tensor]", float, double, std::complex<float>, std::complex<double>) {
     auto I = einsums::create_identity_tensor<TestType>("I", 3, 3, 3);
 
-    std::vector v1{0, 1, 2};
-    auto        product = ranges::views::cartesian_product(v1, v1, v1);
+    auto strides = I.strides();
+    size_t elements = I.size();
 
-    for (auto const &tuple : product) {
-        auto i = std::get<0>(tuple);
-        auto j = std::get<1>(tuple);
-        auto k = std::get<2>(tuple);
+
+    for (size_t item = 0; item < elements; item++) {
+        std::array<size_t, 3> index;
+        sentinel_to_indices(item, strides, index);
+
+        auto [i, j, k] = index;
 
         if (i == j && j == k) {
             REQUIRE(I(i, j, k) == TestType{1.0});

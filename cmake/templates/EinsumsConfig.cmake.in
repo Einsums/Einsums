@@ -18,7 +18,6 @@ list(APPEND CMAKE_PREFIX_PATH "${_einsums_root_dir}/lib")
 
 # include external targets
 include("${CMAKE_CURRENT_LIST_DIR}/EinsumsH5cppTarget.cmake")
-einsums_find_package(range-v3 REQUIRED)
 # include exported targets
 include("${CMAKE_CURRENT_LIST_DIR}/einsums_internal_targets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/EinsumsTargets.cmake")

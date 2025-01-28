@@ -14,8 +14,6 @@
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 
-#include <range/v3/view/cartesian_product.hpp>
-
 #include <cmath>
 #include <cstddef>
 #include <tuple>
@@ -92,30 +90,37 @@ Tensor<T, 2> unfold(CType<T, CRank> const &source) {
     auto source_position_in_source = detail::find_type_with_position(source_only, source_indices);
     auto link_position_in_source   = detail::find_type_with_position(link, source_indices);
 
-    auto link_dims   = detail::get_dim_ranges_for(target, detail::find_type_with_position(link, target_indices));
-    auto source_dims = detail::get_dim_ranges_for(source, source_position_in_source);
+    auto link_dims   = detail::get_dim_for(target, detail::find_type_with_position(link, target_indices));
+    auto source_dims = detail::get_dim_for(source, source_position_in_source);
 
-    auto link_view   = std::apply(ranges::views::cartesian_product, link_dims);
-    auto source_view = std::apply(ranges::views::cartesian_product, source_dims);
+    std::array<size_t, std::tuple_size_v<decltype(link_dims)>> link_strides;
+    size_t link_elems = dims_to_strides(link_dims, link_strides);
 
-    
+    Stride<std::tuple_size_v<decltype(source_dims)>> source_strides;
+    size_t source_elems = dims_to_strides(source_dims, source_strides);
 
-#pragma omp parallel for
-    for (auto link_it = link_view.begin(); link_it < link_view.end(); link_it++) {
-        size_t Z{0};
-        for (auto source_it = source_view.begin(); source_it < source_view.end(); source_it++) {
+    #pragma omp parallel for collapse(2)
+    for (size_t link_item = 0; link_item < link_elems; link_item++) {
+        for (size_t source_item = 0; source_item < source_elems; source_item++) {
+            thread_local std::array<uint64_t, 2> link_it;
+            thread_local std::array<uint64_t, std::tuple_size_v<decltype(source_dims)>> source_it;
+            sentinel_to_indices(link_item, link_strides, link_it);
+            sentinel_to_indices(source_item, source_strides, source_it);
 
-            auto target_order = std::make_tuple(std::get<0>(*link_it), Z);
+            auto target_order = std::array{std::get<0>(link_it), source_item};
 
             auto source_order =
-                detail::construct_indices(source_indices, *source_it, source_position_in_source, *link_it, link_position_in_source);
+                detail::construct_indices(source_indices, source_it, source_position_in_source, link_it, link_position_in_source);
 
-            T &target_value = std::apply(target, target_order);
-            T  source_value = std::apply(source, source_order);
+            T source_value;
 
-            target_value = source_value;
+            if constexpr (IsFastSubscriptableV<CType<T, CRank>>) {
+                source_value = source.subscript(source_order);
+            } else {
+                source_value = std::apply(source, source_order);
+            }
 
-            Z++;
+            target.subscript(target_order) = source_value;
         }
     }
 

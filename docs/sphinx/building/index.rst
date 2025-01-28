@@ -64,8 +64,6 @@ other system-level dependencies to build it on your system.
 
     * Catch2 >= 3
     
-    * range-v3 >= 12
-    
     * Einsums/h5cpp
     
     * p-ranav/argparse
