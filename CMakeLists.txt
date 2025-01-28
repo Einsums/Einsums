@@ -476,6 +476,7 @@ einsums_info("EINSUMS_LINALG_INT_INTERFACE ${EINSUMS_LINALG_INT_INTERFACE}")
 
 find_package(OpenMP REQUIRED MODULE COMPONENTS CXX)
 target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
+einsums_info("OpenMP Version ${OpenMP_CXX_VERSION}")
 
 # ##################################################################################################
 # C++ feature tests
