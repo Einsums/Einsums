@@ -13,6 +13,11 @@ function(einsums_extend_with_python target)
     set_target_properties(${target} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
   endif()
 
+  if(UNIX AND NOT APPLE)
+    # shouldn't be needed (nor should EinsumsPy tests be embed) but adding for now
+    target_link_libraries(${target} PRIVATE pybind11::embed)
+  endif()
+
   if(APPLE)
     set_target_properties(
       ${target}
