@@ -281,13 +281,14 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
     }
 
     hip_catch(hipMemcpy(gpu_strides, strides.data(), Rank * sizeof(size_t), hipMemcpyHostToDevice));
-    hip_catch(hipMemset(gpu_out, 0, sizeof(T)));
+    // Zero the initial value.
+    T out{0.0};
+    hip_catch(hipMemcpy(gpu_out, &out, sizeof(T), hipMemcpyHostToDevice));
 
     gpu::dot_kernel<Rank><<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(),
                                                                                        gpu_strides, A.gpu_strides(), B.gpu_strides());
     stream_wait();
 
-    T out;
     hip_catch(hipMemcpy((void *)&out, (void *)gpu_out, sizeof(T), hipMemcpyDeviceToHost));
     // No sync
 
@@ -324,13 +325,15 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
     }
 
     hip_catch(hipMemcpy(gpu_strides, strides.data(), Rank * sizeof(size_t), hipMemcpyHostToDevice));
-    hip_catch(hipMemset(gpu_out, 0, sizeof(T)));
+
+    // Zero the initial value
+    T out{0.0};
+    hip_catch(hipMemcpy(gpu_out, &out, sizeof(T), hipMemcpyHostToDevice));
 
     gpu::true_dot_kernel<Rank><<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(
         gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(), gpu_strides, A.gpu_strides(), B.gpu_strides());
     stream_wait();
 
-    T out;
     hip_catch(hipMemcpy((void *)&out, (void *)gpu_out, sizeof(T), hipMemcpyDeviceToHost));
     // No sync
 

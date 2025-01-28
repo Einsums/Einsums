@@ -209,7 +209,7 @@ template <typename... AIndices, typename... TargetCombination, typename... Targe
 constexpr auto
 construct_indices(std::tuple<TargetCombination...> const &target_combination, std::tuple<TargetPositionInC...> const &target_position_in_C,
                   std::tuple<LinkCombination...> const &link_combination, std::tuple<LinkPositionInLink...> const &link_position_in_link) {
-    return std::make_tuple(construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...);
+    return std::array<ptrdiff_t, sizeof...(AIndices)>{construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...};
 }
 
 template <typename AIndex, typename UniqueTargetCombination, typename UniqueLinkCombination, typename... UniqueTargetIndices,
@@ -242,18 +242,31 @@ constexpr auto construct_indices_from_unique_combination(std::tuple<UniqueTarget
                                                          std::tuple<UniqueLinkIndices...> const       &unique_link_indices,
                                                          std::tuple<UniqueLinkCombination...> const   &unique_link_combination,
                                                          std::tuple<LinkPositionInLink...> const      &link_position_in_link) {
-    return std::make_tuple(construct_index_from_unique_target_combination<AIndices>(unique_target_indices, unique_target_combination,
+    return std::array<ptrdiff_t, sizeof...(AIndices)>{construct_index_from_unique_target_combination<AIndices>(unique_target_indices, unique_target_combination,
                                                                                     target_position_in_C, unique_link_indices,
-                                                                                    unique_link_combination, link_position_in_link)...);
+                                                                                    unique_link_combination, link_position_in_link)...};
+}
+
+template <typename UniqueTargetCombination, typename UniqueLinkCombination, typename... AIndices, typename... UniqueTargetIndices,
+          typename... TargetPositionInC, typename... UniqueLinkIndices, typename... LinkPositionInLink>
+constexpr auto construct_indices_from_unique_combination(std::tuple<AIndices...> const            &A_indices,
+                                                         std::tuple<UniqueTargetIndices...> const &unique_target_indices,
+                                                         UniqueTargetCombination const            &unique_target_combination,
+                                                         std::tuple<TargetPositionInC...> const   &target_position_in_C,
+                                                         std::tuple<UniqueLinkIndices...> const   &unique_link_indices,
+                                                         UniqueLinkCombination const              &unique_link_combination,
+                                                         std::tuple<LinkPositionInLink...> const  &link_position_in_link) {
+    return std::array<ptrdiff_t, sizeof...(AIndices)>{construct_index_from_unique_target_combination<AIndices>(unique_target_indices, unique_target_combination,
+                                                                                    target_position_in_C, unique_link_indices,
+                                                                                    unique_link_combination, link_position_in_link)...};
 }
 
 template <typename TargetCombination, typename LinkCombination, typename... AIndices, typename... TargetPositionInC,
           typename... LinkPositionInLink>
 constexpr auto construct_indices(std::tuple<AIndices...> const & /*unused*/, TargetCombination const &target_combination,
-                                 std::tuple<TargetPositionInC...> const  &target_position_in_C,
-                                 LinkCombination const    &link_combination,
+                                 std::tuple<TargetPositionInC...> const &target_position_in_C, LinkCombination const &link_combination,
                                  std::tuple<LinkPositionInLink...> const &link_position_in_link) {
-    return std::make_tuple(construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...);
+    return std::array<ptrdiff_t, sizeof...(AIndices)>{construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...};
 }
 
 #if !defined(DOXYGEN)

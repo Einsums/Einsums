@@ -279,10 +279,28 @@ constexpr bool test_application(std::index_sequence<ints...> const &) {
 }
 
 template <typename T, size_t... ints>
-    requires requires(T tensor, std::index_sequence<ints...> seq) { tensor(get_zero<ints>()...); }
+    requires requires(T tensor, std::index_sequence<ints...> seq) {
+        tensor(get_zero<ints>()...);
+        tensor(std::declval<std::array<int64_t, sizeof...(ints)>>());
+    }
 constexpr bool test_application(std::index_sequence<ints...> const &) {
     return true;
 }
+
+template <typename T, size_t... ints>
+constexpr bool test_fastsubscript(std::index_sequence<ints...> const &) {
+    return false;
+}
+
+template <typename T, size_t... ints>
+    requires requires(T tensor, std::index_sequence<ints...> seq) {
+        tensor.subscript(get_zero<ints>()...);
+        tensor.subscript(std::declval<std::array<uint64_t, sizeof...(ints)>>());
+    }
+constexpr bool test_fastsubscript(std::index_sequence<ints...> const &) {
+    return true;
+}
+
 } // namespace detail
 
 /**
@@ -291,13 +309,30 @@ constexpr bool test_application(std::index_sequence<ints...> const &) {
  * @brief Checks to see if the tensor is a function tensor.
  *
  * More specifically, checks to see if the tensor can be indexed using
- * function call syntax.
+ * function call syntax, and it provides a function called subscript.
+ * The subscript function should not do any bounds checking or negative index checking,
+ * whereas the function call operator should.
  *
  * @tparam D The tensor type to check.
  */
 template <typename D>
 constexpr inline bool IsFunctionTensorV = requires {
     requires detail::test_application<D>(std::make_index_sequence<D::Rank>());
+    requires IsRankTensorV<D>;
+};
+
+/**
+ * @property IsFastSubscriptableV
+ *
+ * @brief Checks to see if the tensor provides the subscript function.
+ *
+ * The subscript function should not do any bounds checking, nor should it accept negative indices as valid,
+ * unless negative indices have some sort of meaning outside of index wrapping. These checks add up when iterating over
+ * a tensor with millions of entries, so being able to skip them when bounds compliance is guaranteed can speed up code.
+ */
+template <typename D>
+constexpr inline bool IsFastSubscriptableV = requires {
+    requires detail::test_fastsubscript<D>(std::make_index_sequence<D::Rank>());
     requires IsRankTensorV<D>;
 };
 
@@ -841,6 +876,16 @@ concept BlockTensorConcept = IsBlockTensorV<D, StoredType>;
  */
 template <typename D>
 concept FunctionTensorConcept = IsFunctionTensorV<D>;
+
+/**
+ * @concept FastSubscriptableConcept
+ *
+ * @brief Checks to see if the tensor has a faster method of subscripting.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+concept FastSubscriptableConcept = IsFastSubscriptableV<D>;
 
 /**
  * @concept AlgebraTensorConcept

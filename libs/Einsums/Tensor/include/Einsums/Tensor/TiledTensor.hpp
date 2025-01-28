@@ -1111,6 +1111,18 @@ struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsum
         return std::apply(out, array_ind);
     }
 
+    template <typename int_type>
+        requires(std::is_integral_v<int_type>)
+    auto operator()(std::array<int_type, Rank> const &index) const -> T {
+        return std::apply(*this, index);
+    }
+
+    template <typename int_type>
+        requires(std::is_integral_v<int_type>)
+    auto operator()(std::array<int_type, Rank> const &index) -> HostDevReference<T> {
+        return std::apply(*this, index);
+    }
+
     template <TiledTensorConcept TensorOther>
         requires(SameUnderlyingAndRank<TiledDeviceTensor<T, Rank>, TensorOther>)
     TiledDeviceTensor<T, Rank> &operator=(TensorOther const &copy) {
@@ -1223,6 +1235,18 @@ struct TiledDeviceTensorView final : public tensor_base::TiledTensor<T, Rank, De
         auto &out = this->tile(coords);
 
         return std::apply(out, array_ind);
+    }
+
+    template <typename int_type>
+        requires(std::is_integral_v<int_type>)
+    auto operator()(std::array<int_type, Rank> const &index) const -> T {
+        return std::apply(*this, index);
+    }
+
+    template <typename int_type>
+        requires(std::is_integral_v<int_type>)
+    auto operator()(std::array<int_type, Rank> const &index) -> HostDevReference<T> {
+        return std::apply(*this, index);
     }
 
     size_t dim(int d) const override { return this->_dims[d]; }

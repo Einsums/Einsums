@@ -586,6 +586,44 @@ constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::a
     return stride;
 }
 
+namespace detail {
+
+template<ptrdiff_t index, size_t Dims, typename arr_type2, typename... TupleDims>
+requires requires {
+    requires sizeof...(TupleDims) == Dims;
+    requires std::is_integral_v<arr_type2>;
+}
+constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out) {
+    if constexpr (index < 0 || index >= sizeof...(TupleDims)) {
+        return 1;
+    } else {
+        size_t stride = dims_to_strides<index + 1>(dims, out);
+
+        out[index] = stride;
+
+        return stride * std::get<index>(dims);
+    }
+}
+
+}
+
+/**
+ * @brief Compute the strides for turning a sentinel into a list of indices.
+ *
+ * @param dims The list of dimensions.
+ * @param out The calculated strides.
+ * @return The size calculated from the dimensions. Can be safely ignored.
+ */
+template <typename arr_type2, size_t Dims, typename... TupleDims>
+requires requires {
+    requires sizeof...(TupleDims) == Dims;
+    requires std::is_integral_v<arr_type2>;
+}
+constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out) {
+    
+    return detail::dims_to_strides<0>(dims, out);
+}
+
 #ifndef DOXYGEN
 template <int I, typename Head, typename Index>
 int compile_index_table(std::tuple<Head> const &, Index const &, int &out) {

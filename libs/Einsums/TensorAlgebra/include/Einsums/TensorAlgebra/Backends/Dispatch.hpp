@@ -108,8 +108,8 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
     constexpr auto A_target_position_in_C = detail::find_type_with_position(A_indices, C_indices);
     constexpr auto B_target_position_in_C = detail::find_type_with_position(B_indices, C_indices);
 
-    auto unique_target_dims = detail::get_dim_ranges_for(*C, detail::unique_find_type_with_position(C_unique, C_indices));
-    auto unique_link_dims   = detail::get_dim_ranges_for(A, link_position_in_A);
+    auto unique_target_dims = detail::get_dim_for(*C, detail::unique_find_type_with_position(C_unique, C_indices));
+    auto unique_link_dims   = detail::get_dim_for(A, link_position_in_A);
 
     constexpr auto contiguous_link_position_in_A = detail::contiguous_positions(link_position_in_A);
     constexpr auto contiguous_link_position_in_B = detail::contiguous_positions(link_position_in_B);

@@ -81,9 +81,9 @@ auto parafac_reconstruct(std::vector<Tensor<TType, 2>> const &factors) -> Tensor
 
     size_t elements = dims_to_strides(dims, index_strides);
 
-#pragma omp parallel for
+
     for (auto it = 0; it < elements; it++) {
-        thread_local std::array<size_t, TRank> idx_combo;
+        std::array<size_t, TRank> idx_combo;
         sentinel_to_indices(it, index_strides, idx_combo);
 
         TType &target    = std::apply(new_tensor, idx_combo);

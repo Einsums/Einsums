@@ -344,12 +344,20 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             requires NoneOfType<Range, MultiIndex...>;
             requires NoneOfType<Dim<Rank>, MultiIndex...>;
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
+            requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
         }
     auto operator()(MultiIndex &&...index) const -> T const & {
         static_assert(sizeof...(MultiIndex) == Rank);
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, std::forward<MultiIndex>(index)...);
 
+        return _data[ordinal];
+    }
+
+    template <typename int_type>
+        requires requires { requires std::is_integral_v<int_type>; }
+    auto subscript(std::array<int_type, Rank> const &index) const -> T const & {
+        size_t ordinal = indices_to_sentinel(_strides, index);
         return _data[ordinal];
     }
 
@@ -369,6 +377,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             requires NoneOfType<Range, MultiIndex...>;
             requires NoneOfType<Dim<Rank>, MultiIndex...>;
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
+            requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
         }
     auto subscript(MultiIndex &&...index) const -> T const & {
         static_assert(sizeof...(MultiIndex) == Rank);
@@ -395,11 +404,19 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             requires NoneOfType<Range, MultiIndex...>;
             requires NoneOfType<Dim<Rank>, MultiIndex...>;
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
+            requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
         }
     auto operator()(MultiIndex &&...index) -> T & {
         static_assert(sizeof...(MultiIndex) == Rank);
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, std::forward<MultiIndex>(index)...);
+        return _data[ordinal];
+    }
+
+    template <typename int_type>
+        requires requires { requires std::is_integral_v<int_type>; }
+    auto subscript(std::array<int_type, Rank> const &index) -> T & {
+        size_t ordinal = indices_to_sentinel(_strides, index);
         return _data[ordinal];
     }
 
@@ -419,6 +436,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             requires NoneOfType<Range, MultiIndex...>;
             requires NoneOfType<Dim<Rank>, MultiIndex...>;
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
+            requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
         }
     auto subscript(MultiIndex &&...index) -> T & {
         static_assert(sizeof...(MultiIndex) == Rank);
@@ -1267,7 +1285,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
                                                                                                                                            \
                 sentinel_to_sentinels(item, _index_strides, _strides, out_item);                                                           \
                                                                                                                                            \
-                this->_data[out_item] OP value;                                                                                        \
+                this->_data[out_item] OP value;                                                                                            \
             }                                                                                                                              \
                                                                                                                                            \
             return *this;                                                                                                                  \
@@ -1338,6 +1356,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * Subscript into the tensor.
      */
     template <typename... MultiIndex>
+    requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
     auto subscript(MultiIndex &&...index) const -> T const & {
         static_assert(sizeof...(MultiIndex) == Rank);
         size_t ordinal = indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
@@ -1348,10 +1367,28 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * Subscript into the tensor.
      */
     template <typename... MultiIndex>
+    requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
     auto subscript(MultiIndex &&...index) -> T & {
         static_assert(sizeof...(MultiIndex) == Rank);
 
         size_t ordinal = indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
+        return _data[ordinal];
+    }
+
+    template <typename int_type>
+    requires(std::is_integral_v<int_type>)
+    auto subscript(std::array<int_type, Rank> const &index) const -> T const & {
+        size_t ordinal = indices_to_sentinel(_strides, index);
+        return _data[ordinal];
+    }
+
+    /**
+     * Subscript into the tensor.
+     */
+    template <typename int_type>
+    requires(std::is_integral_v<int_type>)
+    auto subscript(std::array<int_type, Rank> const &index) -> T & {
+        size_t ordinal = indices_to_sentinel(_strides, index);
         return _data[ordinal];
     }
 
@@ -1967,12 +2004,12 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
             } else if constexpr (Rank > 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #    endif
 
-
                 Stride<Rank - 1> index_strides;
-                size_t elements = dims_to_strides(std::array<int64_t, Rank - 1>(A.dims().cbegin(), std::next(A.dims().cbegin(), Rank - 1)), index_strides);
+                size_t elements = dims_to_strides(std::array<int64_t, Rank - 1>(A.dims().cbegin(), std::next(A.dims().cbegin(), Rank - 1)),
+                                                  index_strides);
 
-                auto final_dim   = A.dim(Rank - 1);
-                auto ndigits     = detail::ndigits(final_dim);
+                auto final_dim = A.dim(Rank - 1);
+                auto ndigits   = detail::ndigits(final_dim);
 
                 for (size_t item = 0; item < elements; item++) {
                     std::array<int64_t, Rank - 1> target_combination;

@@ -578,6 +578,18 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
     auto operator()(MultiIndex &&...index) -> HostDevReference<T>;
 
+    template <typename int_type>
+        requires(std::is_integral_v<int_type>)
+    auto operator()(std::array<int_type, Rank> const &index) const -> T {
+        return std::apply(*this, index);
+    }
+
+    template <typename int_type>
+        requires(std::is_integral_v<int_type>)
+    auto operator()(std::array<int_type, Rank> const &index) -> HostDevReference<T> {
+        return std::apply(*this, index);
+    }
+
     // WARNING: Chances are this function will not work if you mix All{}, Range{} and explicit indexes.
     /**
      * @brief Subscripts into the tensor and creates a view.
@@ -1312,6 +1324,12 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      */
     template <typename... MultiIndex>
     auto operator()(MultiIndex &&...index) const -> T;
+
+    template <typename int_type>
+        requires(std::is_integral_v<int_type>)
+    auto operator()(std::array<int_type, Rank> const &index) const -> T {
+        return std::apply(*this, index);
+    }
 
     /**
      * @brief Get the dimension of the given rank.

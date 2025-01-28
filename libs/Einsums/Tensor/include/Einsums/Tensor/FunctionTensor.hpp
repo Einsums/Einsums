@@ -48,7 +48,7 @@ struct FunctionTensor : public CoreTensor {
     /**
      * @brief Checks for negative indices and makes them positive, then performs range checking.
      */
-    virtual void fix_indices(std::array<int, rank> *inds) const {
+    virtual void fix_indices(std::array<ptrdiff_t, rank> *inds) const {
         for (int i = 0; i < Rank; i++) {
             int orig = inds->at(i);
             if (inds->at(i) < 0) {
@@ -67,7 +67,7 @@ struct FunctionTensor : public CoreTensor {
     }
 
   public:
-    using ValueType = T;
+    using ValueType              = T;
     constexpr static size_t Rank = rank;
 
     FunctionTensor()                       = default;
@@ -111,7 +111,7 @@ struct FunctionTensor : public CoreTensor {
      * function call. Due to the inability to override methods with variable parameters,
      * this method with a set input type is the workaround.
      */
-    virtual T call(std::array<int, Rank> const &inds) const = 0;
+    virtual T call(std::array<size_t, Rank> const &inds) const = 0;
 
     template <typename... MultiIndex>
         requires requires {
@@ -119,11 +119,34 @@ struct FunctionTensor : public CoreTensor {
             requires(std::is_integral_v<MultiIndex> && ...);
         }
     T operator()(MultiIndex... inds) const {
-        auto new_inds = std::array<int, Rank>{static_cast<int>(inds)...};
+        auto new_inds = std::array<ptrdiff_t, Rank>{static_cast<int>(inds)...};
 
         fix_indices(&new_inds);
 
         return this->call(new_inds);
+    }
+
+    template <typename... MultiIndex>
+        requires requires {
+            requires(sizeof...(MultiIndex) == Rank);
+            requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
+        }
+    T subscript(MultiIndex... inds) const {
+        return this->call(std::array<uint64_t, Rank>{inds...});
+    }
+
+    template <typename int_type>
+        requires requires { requires(std::is_integral_v<int_type>); }
+    T subscript(std::array<int_type, Rank> const &inds) const {
+        if constexpr (std::is_same_v<int_type, uint64_t>) {
+            return this->call(inds);
+        } else {
+            std::array<uint64_t, Rank> new_inds;
+            for (size_t i = 0; i < Rank; i++) {
+                new_inds[i] = static_cast<uint64_t>(inds[i]);
+            }
+            return this->call(new_inds);
+        }
     }
 
     template <typename Storage>
@@ -227,7 +250,7 @@ struct FunctionTensor : public CoreTensor {
         out.set_name(name());
 
         Stride<Rank> index_strides;
-        size_t elements = dims_to_strides(dims(), index_strides);
+        size_t       elements = dims_to_strides(dims(), index_strides);
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t item = 0; item < elements; item++) {
@@ -296,7 +319,7 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
     }
 
   public:
-    using ValueType = T;
+    using ValueType              = T;
     constexpr static size_t Rank = rank;
 
     FunctionTensorView() = default;
@@ -353,7 +376,7 @@ template <typename T>
 struct KroneckerDelta {
   public:
     constexpr static size_t Rank = 2;
-    using ValueType = T;
+    using ValueType              = T;
 
     constexpr KroneckerDelta() : dim_{0} {}
 
@@ -361,29 +384,53 @@ struct KroneckerDelta {
 
     constexpr ~KroneckerDelta() = default;
 
-    constexpr T operator()(size_t i, size_t j) const {
-        if(i == j) {
+    template <typename T1, typename T2>
+        requires(std::is_integral_v<T1> && std::is_integral_v<T2>)
+    constexpr T operator()(T1 i, T2 j) const {
+        if (i == j) {
             return T{1.0};
         } else {
             return T{0.0};
         }
     }
 
-    constexpr size_t dim(int i) const {
-        return dim_;
+    template <typename int_type>
+        requires(std::is_integral_v<int_type>)
+    constexpr T operator()(std::array<int_type, 2> const &index) const {
+        if (index[0] == index[1]) {
+            return T{1.0};
+        } else {
+            return T{0.0};
+        }
     }
 
-    constexpr Dim<2> dims() const {
-        return Dim{dim_, dim_};
+    template <typename T1, typename T2>
+        requires(std::is_integral_v<T1> && std::is_integral_v<T2>)
+    constexpr T subscript(T1 i, T2 j) const {
+        if (i == j) {
+            return T{1.0};
+        } else {
+            return T{0.0};
+        }
     }
 
-    constexpr std::string name() const {
-        return "Kronecker delta";
+    template <typename int_type>
+        requires(std::is_integral_v<int_type>)
+    constexpr T subscript(std::array<int_type, 2> const &index) const {
+        if (index[0] == index[1]) {
+            return T{1.0};
+        } else {
+            return T{0.0};
+        }
     }
 
-    constexpr bool full_view_of_underlying() const {
-        return true;
-    }
+    constexpr size_t dim(int i) const { return dim_; }
+
+    constexpr Dim<2> dims() const { return Dim{dim_, dim_}; }
+
+    constexpr std::string name() const { return "Kronecker delta"; }
+
+    constexpr bool full_view_of_underlying() const { return true; }
 
   private:
     size_t dim_;

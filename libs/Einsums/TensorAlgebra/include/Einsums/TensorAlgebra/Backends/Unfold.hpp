@@ -98,6 +98,8 @@ Tensor<T, 2> unfold(CType<T, CRank> const &source) {
     auto link_view   = std::apply(ranges::views::cartesian_product, link_dims);
     auto source_view = std::apply(ranges::views::cartesian_product, source_dims);
 
+    
+
 #pragma omp parallel for
     for (auto link_it = link_view.begin(); link_it < link_view.end(); link_it++) {
         size_t Z{0};
