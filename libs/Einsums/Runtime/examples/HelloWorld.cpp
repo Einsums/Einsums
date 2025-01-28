@@ -5,13 +5,22 @@
 
 #include <Einsums/Print.hpp>
 #include <Einsums/Runtime.hpp>
+#include <Einsums/Tensor.hpp>
+#include <Einsums/TensorAlgebra.hpp>
 
 int einsums_main() {
-    einsums::println("Hello world!");
+    using namespace einsums;
+    using namespace einsums::index;
 
-    einsums::finalize();
+    println("Hello world!");
 
-    return EXIT_SUCCESS;
+    auto A = create_random_tensor("A", 3, 3);
+    auto B = create_random_tensor("B", 3, 3);
+    auto C = create_random_tensor("C", 3, 3);
+
+    tensor_algebra::einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
+
+    return finalize();
 }
 
 int main(int argc, char **argv) {

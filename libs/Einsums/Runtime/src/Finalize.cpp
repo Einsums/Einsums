@@ -13,8 +13,10 @@
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 
+#include <cstdlib>
+
 namespace einsums {
-void finalize() {
+int finalize() {
     auto &rt = runtime();
     rt.call_shutdown_functions(true);
     EINSUMS_LOG_INFO("ran pre-shutdown functions");
@@ -29,12 +31,13 @@ void finalize() {
     // this function destroys the runtime.
     rt.deinit_global_data();
 
-    // This is the only explicit finalization routine. This is because the runtime depends on the 
+    // This is the only explicit finalization routine. This is because the runtime depends on the
     // profiler. If the profiler used the normal finalization, then it would also depend on the runtime.
     // This would cause a dependency error.
     profile::finalize();
 
     EINSUMS_LOG_INFO("einsums shutdown completed");
 
+    return EXIT_SUCCESS;
 }
 } // namespace einsums

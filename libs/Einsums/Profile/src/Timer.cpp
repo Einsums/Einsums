@@ -6,6 +6,8 @@
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/Timer.hpp>
 
+#include <fmt/chrono.h>
+
 #include <cassert>
 #include <chrono>
 #include <map>
@@ -60,8 +62,6 @@ void print_timer_info(std::shared_ptr<TimerDetail> timer, std::FILE *fp) { // NO
         }
         fprintln(fp, "{0:<{1}} : {3: <{4}}{2}", buffer, width, timer->name, "", print::current_indent_level());
     } else {
-        fprintln(fp);
-        fprintln(fp);
         fprintln(fp, "Timing information:");
         fprintln(fp);
     }
@@ -81,6 +81,7 @@ void print_timer_info(std::shared_ptr<TimerDetail> timer, std::FILE *fp) { // NO
 
 void initialize() {
     using namespace detail;
+
     root              = std::make_shared<TimerDetail>();
     root->name        = "Total Run Time";
     root->total_calls = 1;

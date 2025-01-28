@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ int einsums_main(int argc, char *const *const argv) {
 
     Catch::StringMaker<float>::precision  = std::numeric_limits<float>::digits10;
     Catch::StringMaker<double>::precision = std::numeric_limits<double>::digits10;
-    auto seed = session.config().rngSeed();
+    auto seed                             = session.config().rngSeed();
 
     einsums::seed_random(seed);
 

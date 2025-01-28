@@ -1,0 +1,47 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
+#include <Einsums/Config.hpp>
+
+#include <Einsums/Logging.hpp>
+#include <Einsums/Print.hpp>
+#include <Einsums/StringUtil/FromString.hpp>
+
+#include <cstdlib>
+#include <omp-tools.h>
+
+namespace einsums {
+
+int ompt_initialize(ompt_function_lookup_t lookup, int initial_device_num, ompt_data_t *tool_data) {
+    println("Initializing OMPT");
+    return 1;
+}
+
+void ompt_finalize(ompt_data_t * /* tool_data */) {
+    EINSUMS_LOG_INFO("OpenMP runtime is shutting down...\n");
+}
+
+extern "C" {
+ompt_start_tool_result_t *ompt_start_tool(unsigned int omp_version, char const *runtime_version) {
+    char const *optstr   = std::getenv("EINSUMS_USE_OMPT");
+    bool        use_ompt = optstr != nullptr ? from_string<bool>(optstr, false) : false;
+
+    // Einsums println function uses an OpenMP function to check if it's running in a parallel
+    // section. Unfortunately, within this function OpenMP is still initializing and that function
+    // may hang.
+    if (use_ompt)
+        fprintf(stdout, "ompt_start_tool: running on omp_version %d, runtime_version %s\n", omp_version, runtime_version);
+
+    static ompt_start_tool_result_t result;
+    result.initialize      = &ompt_initialize;
+    result.finalize        = &ompt_finalize;
+    result.tool_data.value = 0L;
+    result.tool_data.ptr   = nullptr;
+
+    return use_ompt ? &result : nullptr;
+}
+}
+
+} // namespace einsums

@@ -3,7 +3,7 @@
 ## Overall Ideas
 
 Here are ideas for Einsums that either haven't been assigned to a submodule or
-do not necessarily fit within a signle submodule.
+do not necessarily fit within a single submodule.
 
 ## Per-Submodule Ideas
 
@@ -19,11 +19,7 @@ new submodules.
   are provided that can be easily enabled and disabled at compile-time. Enable them in
   test and development builds, but disable them (at least `EINSUMS_LOG_TRACE`) for production.~~
 
-### TensorAlgebra
-
-* Need a way to test which algorithm is being used by `einsum`.
-  The current OuterProduct unit test is running the generic algorithm
-  when I think it should be using `ger`.
+### Profile
 
 ### RuntimeConfiguration
 
@@ -32,6 +28,10 @@ new submodules.
   and argv from the RuntimeConfiguration. Currently, it is being given the original
   argc and argv from `main` and Catch2 is reporting `Unrecognised token: --einsum`
   error. The test is still permitted to run but having a clean test output would be better.
+
+### TensorAlgebra
+
+* Need a way to test which algorithm is being used by `einsum`.
 
 ## Testing Harness
 

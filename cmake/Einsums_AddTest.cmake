@@ -42,10 +42,8 @@ function(einsums_add_test category name)
   endif()
 
   set(args "--einsums:no-install-signal-handlers")
+  set(args ${args} "--einsums:no-profiler-report")
   set(args "${${name}_ARGS}" "${${name}_UNPARSED_ARGUMENTS}" ${args})
-
-  # TODO: Perhaps one day we will allow command line arguments to tests.
-  unset(args)
 
   set(_script_location ${PROJECT_BINARY_DIR})
 
@@ -125,36 +123,37 @@ function(einsums_add_test_and_deps_test category subcategory name)
   endif()
 endfunction(einsums_add_test_and_deps_test)
 
+function(einsums_set_test_properties name labels)
+  set_tests_properties(${name}
+          PROPERTIES
+          LABELS ${labels}
+          ENVIRONMENT "LLVM_PROFILE_FILE=${name}.profraw;TSAN_OPTIONS=ignore_noninstrumented_modules=1;LSAN_OPTIONS=suppression=${PROJECT_SOURCE_DIR}/devtools/lsan.supp"
+  )
+endfunction()
+
 # Only unit and regression tests link to the testing library. Performance tests and examples don't
 # link to the testing library. Performance tests link to the performance_testing library.
 function(einsums_add_unit_test subcategory name)
   einsums_add_test_and_deps_test("Unit" "${subcategory}" ${name} ${ARGN} TESTING)
-  set_tests_properties("Tests.Unit.${subcategory}.${name}"
-          PROPERTIES
-          LABELS "UNIT_ONLY"
-          ENVIRONMENT "LLVM_PROFILE_FILE=${name}.profraw"
-  )
+  einsums_set_test_properties("Tests.Unit.${subcategory}.${name}" "UNIT_ONLY")
 endfunction(einsums_add_unit_test)
 
 function(einsums_add_regression_test subcategory name)
   # ARGN needed in case we add a test with the same executable
   einsums_add_test_and_deps_test("Regressions" "${subcategory}" ${name} ${ARGN} TESTING)
-  set_tests_properties(
-    "Tests.Regressions.${subcategory}.${name}" PROPERTIES LABELS "REGRESSION_ONLY"
-  )
+  einsums_set_test_properties("Tests.Regressions.${subcategory}.${name}" "REGRESSION_ONLY")
 endfunction(einsums_add_regression_test)
 
 function(einsums_add_performance_test subcategory name)
   einsums_add_test_and_deps_test(
     "Performance" "${subcategory}" ${name} ${ARGN} RUN_SERIAL PERFORMANCE_TESTING
   )
-  set_tests_properties(
-    "Tests.Performance.${subcategory}.${name}" PROPERTIES LABELS "PERFORMANCE_ONLY"
-  )
+  einsums_set_test_properties("Tests.Performance.${subcategory}.${name}" "PERFORMANCE_ONLY")
 endfunction(einsums_add_performance_test)
 
 function(einsums_add_example_test subcategory name)
   einsums_add_test_and_deps_test("Examples" "${subcategory}" ${name} ${ARGN})
+  einsums_set_test_properties("Tests.Examples.${subcategory}.${name}" "EXAMPLES_ONLY")
 endfunction(einsums_add_example_test)
 
 # To create target examples.<name> when calling make examples need 2 distinct rules for examples and

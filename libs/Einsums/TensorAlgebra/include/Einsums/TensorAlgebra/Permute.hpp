@@ -24,13 +24,14 @@ namespace einsums::tensor_algebra {
 #if !defined(EINSUMS_WINDOWS)
 namespace detail {
 
-void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta, float *B);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta,
+                            float *B);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta,
-                         double *B);
+                            double *B);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
-                         std::complex<float> const beta, std::complex<float> *B);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
-                         std::complex<double> const beta, std::complex<double> *B);
+                            std::complex<float> const beta, std::complex<float> *B);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
+                            int const *sizeA, std::complex<double> const beta, std::complex<double> *B);
 
 } // namespace detail
 #endif
@@ -47,16 +48,15 @@ template <CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices
         requires std::is_arithmetic_v<U>;
     }
 void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
-          std::tuple<AIndices...> const &A_indices, AType const &A) {
+             std::tuple<AIndices...> const &A_indices, AType const &A) {
     using T                = typename AType::ValueType;
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
 
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
-                        ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
-                                      A.name(), print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices))
-                        : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
-                                      print_tuple_no_type(A_indices)));
+                        ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices,
+                                      UC_prefactor, C->name(), C_indices)
+                        : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices));
 
     T const C_prefactor = UC_prefactor;
     T const A_prefactor = UA_prefactor;
@@ -142,7 +142,7 @@ template <BlockTensorConcept AType, BlockTensorConcept CType, typename... CIndic
         requires std::is_arithmetic_v<U>;
     }
 void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
-          std::tuple<AIndices...> const &A_indices, AType const &A) {
+             std::tuple<AIndices...> const &A_indices, AType const &A) {
 
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
@@ -179,7 +179,7 @@ template <TiledTensorConcept AType, TiledTensorConcept CType, typename... CIndic
         requires std::is_arithmetic_v<U>;
     }
 void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
-          std::tuple<AIndices...> const &A_indices, AType const &A) {
+             std::tuple<AIndices...> const &A_indices, AType const &A) {
 
     using ADataType        = typename AType::ValueType;
     using CDataType        = typename CType::ValueType;
@@ -229,7 +229,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 }
 
 template <typename... Args>
-[[deprecated("The name sort is confusing, since we are not sorting values. Please use permute instead. This function will be removed in the future.")]]
+[[deprecated("The name sort is confusing, since we are not sorting values. Please use permute instead. This function will be removed in "
+             "the future.")]]
 inline auto sort(Args &&...args) -> decltype(permute(std ::forward<Args>(args)...)) {
     return permute(std ::forward<Args>(args)...);
 }

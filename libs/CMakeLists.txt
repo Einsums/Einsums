@@ -106,7 +106,6 @@ foreach(lib ${EINSUMS_LIBS})
     ${lib}
     PROPERTIES VERSION ${EINSUMS_VERSION}
                SOVERSION ${EINSUMS_SOVERSION}
-               CLEAN_DIRECT_OUTPUT 1
                OUTPUT_NAME ${lib}
                FOLDER "Core"
   )
@@ -127,30 +126,21 @@ set(PYTHON_LIBS
     CACHE INTERNAL "List of Python libraries for Einsums" FORCE
 )
 
-if(APPLE)
-  set(PYTHON_LIB_TYPE SHARED)
-else()
-  set(PYTHON_LIB_TYPE SHARED)
-endif()
-
 if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
   include(Einsums_ExtendWithPython)
 
   foreach(lib ${PYTHON_LIBS})
     set(EINSUMS_PYTHON_LIB_NAME ${lib})
-    add_library(${lib} ${PYTHON_LIB_TYPE} src/dummy.cpp)
-    if (APPLE)
-      target_link_options(${lib} PUBLIC -undefined dynamic_lookup)
-    endif ()
+    pybind11_add_module(${lib} MODULE src/dummy.cpp)
+
     set_target_properties(
       ${lib}
-      PROPERTIES VERSION ${EINSUMS_VERSION}
-                 SOVERSION ${EINSUMS_SOVERSION}
-                 CLEAN_DIRECT_OUTPUT 1
-                 OUTPUT_NAME ${lib}
+      PROPERTIES OUTPUT_NAME ${lib}
+                 EXPORT_NAME ${lib}
                  FOLDER "Core"
     )
 
+    # adds some RPATH and link flags
     einsums_extend_with_python(${lib})
 
     install(

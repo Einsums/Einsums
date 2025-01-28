@@ -734,10 +734,8 @@ endif ()
 
 if (EINSUMS_WITH_SANITIZERS AND NOT MSVC)
   einsums_info("Adding sanitizer flags for ${EINSUMS_WITH_SANITIZERS}")
-  target_compile_options(einsums_private_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})
-  target_link_options(einsums_private_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})
-  #  target_compile_options(einsums_public_flags INTERFACE -fsanitize=address,undefined)
-  #  add_link_options(-fsanitize=address,undefined)
+  target_compile_options(einsums_public_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})
+  target_link_options(einsums_public_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})
   einsums_add_config_define(EINSUMS_HAVE_SANITIZERS)
 endif()
 

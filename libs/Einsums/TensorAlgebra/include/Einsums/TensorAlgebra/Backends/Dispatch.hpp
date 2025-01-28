@@ -47,6 +47,7 @@ template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType
 auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
             BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor, std::tuple<AIndices...> const & /*As*/,
             AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B) -> void {
+    // profile::Timer const _timer();
     print::Indent const _indent;
 
     using ADataType        = AType::ValueType;
@@ -500,18 +501,30 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     EINSUMS_LOG_TRACE("BEGIN: einsum");
+    std::unique_ptr<Section> _section;
     if constexpr (IsTensorV<CType>) {
         EINSUMS_LOG_INFO(std::fabs(UC_prefactor) > EINSUMS_ZERO
                              ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
                                            A.name(), A_indices, B.name(), B_indices, UC_prefactor, C->name(), C_indices)
                              : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, UAB_prefactor, A.name(),
                                            A_indices, B.name(), B_indices));
+        _section.reset(
+            new Section(std::fabs(UC_prefactor) > EINSUMS_ZERO
+                            ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
+                                          A.name(), A_indices, B.name(), B_indices, UC_prefactor, C->name(), C_indices)
+                            : fmt::format(R"(einsums: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, UAB_prefactor, A.name(),
+                                          A_indices, B.name(), B_indices)));
     } else {
         EINSUMS_LOG_INFO(
             std::fabs(UC_prefactor) > EINSUMS_ZERO
                 ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(),
                               B_indices, UC_prefactor, C_indices)
                 : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(), B_indices));
+        _section.reset(new Section(std::fabs(UC_prefactor) > EINSUMS_ZERO
+                                       ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(),
+                                                     A_indices, B.name(), B_indices, UC_prefactor, C_indices)
+                                       : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices,
+                                                     B.name(), B_indices)));
     }
 
     CDataType const  C_prefactor  = UC_prefactor;

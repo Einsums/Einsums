@@ -60,12 +60,15 @@ set(EINSUMS_CXX_COMPILER_VERSION
 )
 
 einsums_find_package(fmt 11 REQUIRED)
-einsums_find_package(cpptrace 0.7 REQUIRED)
 einsums_find_package(argparse 3 REQUIRED)
 einsums_find_package(spdlog 1 REQUIRED)
 einsums_find_package(ZLIB REQUIRED)
 einsums_find_package(TargetHDF5 REQUIRED)
 einsums_find_package(OpenMP MODULE COMPONENTS CXX)
+
+if (@EINSUMS_WITH_BACKTRACES@)
+  einsums_find_package(cpptrace 0.7 REQUIRED)
+endif ()
 
 if (NOT TARGET tgt::lapack)
   add_library(tgt::lapack INTERFACE IMPORTED)

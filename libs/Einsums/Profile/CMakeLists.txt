@@ -7,7 +7,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(ProfileHeaders Einsums/Profile/LabeledSection.hpp Einsums/Profile/Timer.hpp)
 
-set(ProfileSources Timer.cpp)
+set(ProfileSources OMPT.cpp Section.cpp Timer.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
@@ -15,6 +15,6 @@ einsums_add_module(
   SOURCES ${ProfileSources}
   HEADERS ${ProfileHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES Einsums_Config Einsums_Logging Einsums_Print
+  MODULE_DEPENDENCIES Einsums_Config Einsums_Logging Einsums_Print Einsums_StringUtil
   CMAKE_SUBDIRS examples tests
 )
