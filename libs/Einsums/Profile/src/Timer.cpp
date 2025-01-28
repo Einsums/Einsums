@@ -6,6 +6,8 @@
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/Timer.hpp>
 
+#include <fmt/chrono.h>
+
 #include <cassert>
 #include <chrono>
 #include <map>
@@ -36,9 +38,8 @@ struct TimerDetail {
     time_point start_time;
 };
 
-std::shared_ptr<TimerDetail>                                current_timer{nullptr};
-std::shared_ptr<TimerDetail>                                root{nullptr};
-std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
+std::shared_ptr<TimerDetail> current_timer{nullptr};
+std::shared_ptr<TimerDetail> root{nullptr};
 
 } // namespace detail
 
@@ -62,8 +63,6 @@ void print_timer_info(std::shared_ptr<TimerDetail> timer, std::FILE *fp) { // NO
         fprintln(fp, "{0:<{1}} : {3: <{4}}{2}", buffer, width, timer->name, "", print::current_indent_level());
     } else {
         fprintln(fp, "Timing information:");
-        fprintln(fp, "  Start time: {:%F %T}", start_time);
-        fprintln(fp, "  End time:   {:%F %T}", std::chrono::high_resolution_clock::now());
         fprintln(fp);
     }
 
@@ -82,7 +81,6 @@ void print_timer_info(std::shared_ptr<TimerDetail> timer, std::FILE *fp) { // NO
 
 void initialize() {
     using namespace detail;
-    start_time = std::chrono::high_resolution_clock::now();
 
     root              = std::make_shared<TimerDetail>();
     root->name        = "Total Run Time";

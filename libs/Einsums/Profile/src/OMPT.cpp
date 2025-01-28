@@ -26,9 +26,13 @@ void ompt_finalize(ompt_data_t * /* tool_data */) {
 extern "C" {
 ompt_start_tool_result_t *ompt_start_tool(unsigned int omp_version, char const *runtime_version) {
     char const *optstr   = std::getenv("EINSUMS_USE_OMPT");
-    bool        use_ompt = from_string<bool>(optstr, false);
+    bool        use_ompt = optstr != nullptr ? from_string<bool>(optstr, false) : false;
 
-    println("ompt_start_tool: running on omp_version {}, runtime_version {}", omp_version, runtime_version);
+    // Einsums println function uses an OpenMP function to check if it's running in a parallel
+    // section. Unfortunately, within this function OpenMP is still initializing and that function
+    // may hang.
+    if (use_ompt)
+        fprintf(stdout, "ompt_start_tool: running on omp_version %d, runtime_version %s\n", omp_version, runtime_version);
 
     static ompt_start_tool_result_t result;
     result.initialize      = &ompt_initialize;
