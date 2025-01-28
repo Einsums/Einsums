@@ -107,7 +107,7 @@ Tensor<T, 2> unfold(CType<T, CRank> const &source) {
             sentinel_to_indices(link_item, link_strides, link_it);
             sentinel_to_indices(source_item, source_strides, source_it);
 
-            auto target_order = std::array{std::get<0>(link_it), source_item};
+            auto target_order = std::array<size_t, 2>{std::get<0>(link_it), source_item};
 
             auto source_order =
                 detail::construct_indices(source_indices, source_it, source_position_in_source, link_it, link_position_in_source);
