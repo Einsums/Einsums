@@ -1,4 +1,6 @@
 /*build*/
+testing/consume/build
+.vscode/Testing
 
 # Prerequisites
 *.d
@@ -38,7 +40,6 @@ CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
-Testing
 Makefile
 cmake_install.cmake
 install_manifest.txt
@@ -75,3 +76,9 @@ docs/build
 # JetBrains project files
 .idea
 *.env
+
+# File created by merge_yaml.py script
+conda.yml
+
+# Profiling files.
+*profile.txt*

@@ -44,54 +44,67 @@
 set(PN TargetHDF5)
 
 # 1st precedence - libraries passed in through -DHDF5_LIBRARIES
-if (HDF5_LIBRARIES AND HDF5_INCLUDE_DIRS)
-    if (HDF5_VERSION)
-        if (NOT ${PN}_FIND_QUIETLY)
-            message (STATUS "HDF5 detection suppressed.")
-        endif()
-
-        add_library (tgt::hdf5 INTERFACE IMPORTED)
-        set_property (TARGET tgt::hdf5 PROPERTY INTERFACE_LINK_LIBRARIES ${HDF5_LIBRARIES})
-        set_property (TARGET tgt::hdf5 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${HDF5_INCLUDE_DIRS})
-        set (${PN}_VERSION ${HDF5_VERSION})
-    else()
-        message (FATAL_ERROR "Humor the build system - pass in the version, too (for example, -DHDF5_VERSION=1.8.17).")
+if(HDF5_LIBRARIES AND HDF5_INCLUDE_DIRS)
+  if(HDF5_VERSION)
+    if(NOT ${PN}_FIND_QUIETLY)
+      message(STATUS "HDF5 detection suppressed.")
     endif()
+
+    add_library(tgt::hdf5 INTERFACE IMPORTED)
+    set_property(TARGET tgt::hdf5 PROPERTY INTERFACE_LINK_LIBRARIES ${HDF5_LIBRARIES})
+    set_property(TARGET tgt::hdf5 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${HDF5_INCLUDE_DIRS})
+    set(${PN}_VERSION ${HDF5_VERSION})
+  else()
+    message(
+      FATAL_ERROR
+        "Humor the build system - pass in the version, too (for example, -DHDF5_VERSION=1.8.17)."
+    )
+  endif()
 else()
-    # 2nd precedence - target already prepared and findable in TargetHDF5Config.cmake
-    find_package (TargetHDF5 QUIET CONFIG)
-    if ((TARGET tgt::hdf5) AND (${PN}_VERSION))
-        if (NOT ${PN}_FIND_QUIETLY)
-            message (STATUS "TargetHDF5Config detected.")
-        endif()
-    else()
-        # 3rd precedence - usual variables from FindHDF5.cmake
-        find_package (HDF5 QUIET COMPONENTS ${HDF5_FIND_COMPONENTS})
-        if (NOT ${PN}_FIND_QUIETLY)
-            message (STATUS "HDF5 detected.")
-        endif()
-
-        add_library (tgt::hdf5 INTERFACE IMPORTED)
-        set_property (TARGET tgt::hdf5 PROPERTY INTERFACE_LINK_LIBRARIES ${HDF5_LIBRARIES})
-        set_property (TARGET tgt::hdf5 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${HDF5_INCLUDE_DIRS})
-        set (${PN}_VERSION ${HDF5_VERSION})
-
-        unset (HDF5_FOUND)
-        unset (HDF5_VERSION)
-        unset (HDF5_LIBRARIES)
-        unset (HDF5_INCLUDE_DIRS)
+  # 2nd precedence - target already prepared and findable in TargetHDF5Config.cmake
+  find_package(TargetHDF5 QUIET CONFIG)
+  if((TARGET tgt::hdf5) AND (${PN}_VERSION))
+    if(NOT ${PN}_FIND_QUIETLY)
+      message(STATUS "TargetHDF5Config detected.")
     endif()
+  else()
+    # 3rd precedence - usual variables from FindHDF5.cmake
+    find_package(HDF5 QUIET COMPONENTS ${HDF5_FIND_COMPONENTS})
+    if(NOT ${PN}_FIND_QUIETLY)
+      message(STATUS "HDF5 detected.")
+    endif()
+
+    add_library(tgt::hdf5 INTERFACE IMPORTED)
+    set_property(TARGET tgt::hdf5 PROPERTY INTERFACE_LINK_LIBRARIES ${HDF5_LIBRARIES})
+    set_property(TARGET tgt::hdf5 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${HDF5_INCLUDE_DIRS})
+    set(${PN}_VERSION ${HDF5_VERSION})
+
+    unset(HDF5_FOUND)
+    unset(HDF5_VERSION)
+    unset(HDF5_LIBRARIES)
+    unset(HDF5_INCLUDE_DIRS)
+  endif()
 endif()
 
-if (${PN}_VERSION MATCHES "^([0-9]+).([0-9]+).*$")
-    set(${PN}_VERSION_Mm "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}")
+if(${PN}_VERSION MATCHES "^([0-9]+).([0-9]+).*$")
+  set(${PN}_VERSION_Mm "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}")
 endif()
 
-get_property(_ill TARGET tgt::hdf5 PROPERTY INTERFACE_LINK_LIBRARIES)
-get_property(_iid TARGET tgt::hdf5 PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+get_property(
+  _ill
+  TARGET tgt::hdf5
+  PROPERTY INTERFACE_LINK_LIBRARIES
+)
+get_property(
+  _iid
+  TARGET tgt::hdf5
+  PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+)
 set(${PN}_MESSAGE "Found HDF5: ${_ill} (found version ${${PN}_VERSION})")
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(${PN}
-                                  REQUIRED_VARS ${PN}_MESSAGE
-                                  VERSION_VAR ${PN}_VERSION)
+find_package_handle_standard_args(
+  ${PN}
+  REQUIRED_VARS ${PN}_MESSAGE
+  VERSION_VAR ${PN}_VERSION
+)

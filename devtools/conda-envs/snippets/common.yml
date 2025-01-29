@@ -1,0 +1,28 @@
+name: einsums-dev
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  # Development
+  - cmake
+  - ccache
+  - cxx-compiler
+  - ninja
+  - lcov
+  # Prebuilts to save einsums the work
+  - cpp-argparse
+  - catch2
+  - fftw
+  - fmt
+  - cpptrace
+  # HDF5
+  # * zlib brings headers; hdf5 package only bring libzlib
+  - hdf5
+  - zlib
+  - numpy
+  - mimalloc
+  # Python stuff
+  - pybind11
+  - pytest
+  - numpy
+  - pytest-cov

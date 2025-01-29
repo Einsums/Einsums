@@ -1,0 +1,48 @@
+name: Identify changed files
+
+on:
+  workflow_call:
+    outputs:
+      filters:
+        description: Matched filters
+        value: ${{ jobs.need_check.outputs.filters }}
+
+permissions: read-all
+
+jobs:
+  need_check:
+    name: Find
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      filters: ${{ steps.result.outputs.result }}
+    steps:
+      - name: Check file changes
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
+        id: changes
+        with:
+          filters: |
+            docs:
+              - 'docs/**'
+              - 'libs/**/*.hpp'
+            ci:
+              - '.github/workflows/**'
+            src:
+              - 'cmake/**'
+              - 'libs/**'
+              - 'testing/**'
+
+      - name: Set output
+        id: result
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log("Number of files changed:");
+            console.log(context.payload.pull_request.changed_files);
+            if (context.payload.pull_request.changed_files < 500) {
+              return '${{ steps.changes.outputs.changes }}';
+            }
+            // Treat everything as changed for huge PRs.
+            return ["docs", "ci", "src"];
+
+      - run: echo '${{ steps.result.outputs.result }}'

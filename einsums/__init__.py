@@ -16,15 +16,10 @@ if __modpath not in sys.path:
 
 try:
     from . import core
-
-    if core.gpu_enabled():
-        from . import gpu_except
 except (ModuleNotFoundError, ImportError):
     try:
+        print("Importing core in a different way.")
         import core
-
-        if core.gpu_enabled():
-            import gpu_except
     except (ModuleNotFoundError, ImportError) as e:
         raise RuntimeError(
             f"File is {__file__}, path is {sys.path} and version is {sys.version}"
@@ -32,18 +27,24 @@ except (ModuleNotFoundError, ImportError):
 
 from . import utils  # pylint: disable=wrong-import-position
 
-core.initialize()
-
-__outfile = False  # pylint: disable=invalid-name
-
-
-def set_finalize_arg(out_arg: bool | str):
+def initialize() :
     """
-    Sets the argument to pass to einsums.core.finalize. By default, the argument is False, which tells it not to print the
-    timing file. If the argument is True, the timing file will be printed to standard output. If
-    it is a file name, that will be used as the timing file, and the timing will be printed there on exit.
+    Filter out Python arguments and pass on einsums arguments. Einsums arguments are prefixed with
+    '--einsums'.
     """
-    __outfile = out_arg
+    pass_args = [sys.argv[0]]
 
+    if len(sys.argv) > 1 :
+        einsums_arg = False
+        for arg in sys.argv[1:] :
+            if einsums_arg :
+                pass_args.append(arg)
+                einsums_arg = False
+            elif arg == "--einsums" :
+                einsums_arg = True
 
-atexit.register(core.finalize, __outfile)
+    core.initialize(pass_args)
+
+initialize()
+
+atexit.register(core.finalize)

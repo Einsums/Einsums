@@ -1,12 +1,24 @@
 name: Documentation
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      build_ref:
+        type: string
+        required: false
+      build_cache_suffix:
+        type: string
+        required: false
+        default: "default"
+      build_cache_size:
+        type: string
+        required: false
+        default: 2G
+      build_configure_extra_args:
+        type: string
+        required: false
+
+permissions: read-all
 
 jobs:
   # Build job
@@ -15,32 +27,87 @@ jobs:
       run:
         shell: bash -el {0}
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    env:
+      CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
+      CCACHE_MAXSIZE: ${{ inputs.build_cache_size }}
 
-      - name: Create Environment
-        uses: conda-incubator/setup-miniconda@v2
+    steps:
+      - uses: actions/checkout@v4
         with:
-          activate-environment: docs-env
-          environment-file: devtools/conda-envs/docs.yml
-          miniforge-variant: Mambaforge
-          use-mamba: true
-          channels: conda-forge
+          ref: ${{ inputs.build_ref }}
+          path: src
+
+      # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          activate-environment: einsums-env
+          conda-remove-defaults: "true"
+
+      - name: Install ruamel.yaml
+        run: |
+          conda install -c conda-forge ruamel.yaml
+
+      - name: Merge Conda YAML files
+        working-directory: src/devtools/conda-envs
+        run: |
+          pwd
+          python merge_yml.py --docs default openblas
+
+      - name: Get Date
+        id: get-date
+        run: echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Cache Conda Environment
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CONDA }}/envs
+          key:
+            conda-docs-${{ steps.get-date.outputs.today }}-${{ hashFiles('src/devtools/conda-envs/conda.yml') }}-${{ env.CACHE_NUMBER }}
+        env:
+          # Increase this value to reset cache if src/devtools/conda-envs/conda.yml has not changed
+          CACHE_NUMBER: 0
+        id: cache
+
+      - name: Update environment
+        run: |
+          pwd
+          conda env update -n einsums-env -f src/devtools/conda-envs/conda.yml
+          conda activate einsums-env
+        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Conda Environment
         run: |
-          mamba info
-          mamba list
+          conda info
+          conda list
+
+      - name: Configure CMake
+        run: |
+          cmake \
+            -G Ninja \
+            -S "$GITHUB_WORKSPACE/src" \
+            -B "$GITHUB_WORKSPACE/build" \
+            -D EINSUMS_BUILD_PYTHON=OFF \
+            -D EINSUMS_WITH_COVERAGE=ON \
+            -D CMAKE_C_COMPILER_LAUNCHER=ccache \
+            -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -D CMAKE_BUILD_TYPE=Debug \
+            -D EINSUMS_SHOW_WARNING=OFF \
+            -D EINSUMS_WITH_DOCUMENTATION=ON \
+            -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
+            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+            ${{ matrix.cmake_extra }}
 
       - name: Build Documentation
         run: |
-          cd docs
-          make html
+          cmake --build "${{ github.workspace }}/build" --config Debug --target docs
+
 
       - name: GitHub Pages Deploy
         uses: JamesIves/github-pages-deploy-action@v4.4.3
         if: github.event_name == 'push' && github.repository == 'Einsums/Einsums' && ( startsWith( github.ref, 'refs/tags/' ) || github.ref == 'refs/heads/main' )
         with:
           branch: gh-pages
-          folder: docs/build/html
+          folder: ${{ github.workspace }}/share/Einsums/docs/html

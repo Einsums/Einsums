@@ -5,231 +5,38 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  #  Cancel a currently running workflow from the same PR or commit hash.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        cxx: [ L-Gnu, M-Clang, L-Intel ]
-        build_type: [ Release, Debug ]
-        hptt: [ ON, OFF ]
-        include:
-          - cmargs: ""
-          - testargs: ""
-          - cxx: L-Gnu
-            os: ubuntu-latest
-          - cxx: M-Clang
-            os: macos-latest
-          - cxx: L-Intel
-            os: ubuntu-latest
-            cmargs: >
-              -DCMAKE_CXX_COMPILER=icpx
-              -DMKL_INTERFACE=lp64
-              -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
-              -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
-            # OpenMP search dir needed b/c setting CMAKE_CXX_FLAGS overrides conda's CXXFLAGS that passes same dir as -isystem
-          - cxx: L-src
-            os: ubuntu-latest
-            build_type: Debug
-            hptt: ON
-            cmargs: >
-              -DFETCHCONTENT_QUIET=OFF
-              -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
-          - cxx: W-ClangCL
-            os: windows-latest
-            build_type: Release
-            hptt: OFF
-            llvm-version: "17.0.6"
-            cmargs: >
-              -DCMAKE_CXX_COMPILER=clang-cl
-              -DCMAKE_C_COMPILER=clang-cl
-              -DMKL_ROOT="${CONDA_PREFIX}"
-              -DEINSUMS_STATIC_BUILD=ON
-              -D CMAKE_CXX_FLAGS="-IC:\Miniconda3\envs\einsums-dev\opt\compiler\include"
-            testargs: >
-              -DCMAKE_CXX_COMPILER=clang-cl
-              -DCMAKE_C_COMPILER=clang-cl
-              -DMKL_ROOT="${CONDA_PREFIX}"
-              -DEINSUMS_STATIC_BUILD=ON
-              -D ZLIB_USE_STATIC_LIBS=ON
-        exclude:
-          - cxx: L-Intel
-            build_type: Debug
-    name: "Build • ${{ matrix.cxx }} • ${{ matrix.build_type }} • HPTT=${{ matrix.hptt }}"
-    runs-on: ${{matrix.os}}
-    defaults:
-      run:
-        shell: bash -el {0}
-    steps:
-      - uses: actions/checkout@v3
+  detect_changes:
+    name: "Detect Changes"
+    uses: ./.github/workflows/detect-changes.yml
 
-      - name: Write a Conda Env File
-        run: |
-          cat > export.yaml <<EOF
-          name: einsums-dev
-          channels:
-            - conda-forge
-            - nodefaults
-          dependencies:
-            - cmake
-            - ninja
-            - cxx-compiler
-            - catch2
-            - fftw
-            - fmt
-            - range-v3
-            - blas-devel
-            - lcov
-            #WMKL- mkl-devel=2023.2.0
-            #MKL- libblas=*=*mkl
-            #ACC- libblas=*=*accelerate
-            #OBL- libblas=*=*openblas
-            #OBL- openblas=*=*openmp*
-            - hdf5
-            - zlib
-            #- dpcpp_linux-64
-            #- mkl
-          EOF
-          if [[ "${{ runner.os }}" == "Linux" ]]; then
-            :
-            if [[ "${{ matrix.build_type }}" == "Release" ]]; then
-              sed -i "s;#MKL;;g" export.yaml
-            else
-              sed -i "s;#OBL;;g" export.yaml
-            fi
-            if [[ "${{ matrix.cxx }}" == "L-Intel" ]]; then
-              sed -i "s/#- dpcpp_linux-64/- dpcpp_linux-64=2024.0.0/g" export.yaml
-              sed -i "s/#- mkl/- mkl=2024.0.0/g" export.yaml
-            fi
-          fi
-          if [[ "${{ runner.os }}" == "macOS" ]]; then
-            :
-            sed -E -i.bak "s;#OBL;;g" export.yaml
-            sed -E -i.bak "s;- elfutils;;g" export.yaml
-          fi
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            :
-            sed -i "s;#WMKL;;g" export.yaml
-            sed -i "s;- blas-devel;;g" export.yaml
-            sed -i "s;- elfutils;;g" export.yaml
-            sed -i "s/- cxx/#- cxx/g" export.yaml
-            sed -i "s;#- dpcpp_linux-64;- clangdev ${{ matrix.llvm-version }};g" export.yaml
-          fi
-          # model sed for L/W
-          #   sed -i "s;;;g" export.yaml
-          # model sed for M
-          #   sed -E -i.bak "s;;;g" export.yaml
-          cat export.yaml
+  linux_default:
+    name: Linux
+    needs: [ detect_changes ]
+    if: ${{ contains(needs.detect_changes.outputs.filters, 'ci') || contains(needs.detect_changes.outputs.filters, 'src') }}
+    uses: ./.github/workflows/linux-build-and-test.yml
 
-      - name: Install dependencies
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: einsums-dev
-          #environment-file: devtools/conda-envs/${{matrix.environment}}
-          environment-file: export.yaml
-          miniforge-variant: Mambaforge
-          use-mamba: true
-          channels: conda-forge
+  macos_default:
+    name: macOS
+    needs: [ detect_changes ]
+    if: ${{ contains(needs.detect_changes.outputs.filters, 'ci') || contains(needs.detect_changes.outputs.filters, 'src') }}
+    uses: ./.github/workflows/macos-build-and-test.yml
 
-      # Step is unnecessary; remove step for debugging.
-      - name: Confound Environment - test fetched everything
-        if: matrix.cxx == 'L-src'
-        run: |
-          conda remove catch2 fmt range-v3 --solver=libmamba
+  documentation:
+    name: Documentation
+    needs: [ detect_changes ]
+    if: ${{ contains(needs.detect_changes.outputs.filters, 'docs') }}
+    uses: ./.github/workflows/docs.yml
 
-      - name: Conda environment
-        run: |
-          mamba info
-          mamba list
-
-      - name: Prepare compiler environment for Windows
-        if: ${{ runner.os == 'Windows' }}
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
-
-      - name: Configure CMake
-        run: |
-          cmake \
-            -S . \
-            -B "${{github.workspace}}/build" \
-            -G Ninja \
-            -D CMAKE_BUILD_TYPE=${{matrix.build_type}} \
-            -D EINSUMS_SHOW_WARNING=OFF \
-            -D EINSUMS_USE_HPTT=${{matrix.hptt}} \
-            -D EINSUMS_STATIC_BUILD=${{matrix.hptt}} \
-            -D EINSUMS_BUILD_PYTHON=OFF \
-            -D EINSUMS_COVERAGE=ON \
-            -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
-            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
-            ${{ matrix.cmargs }}
-
-      - name: Build & Install
-        run: |
-          cmake --build "${{github.workspace}}/build" --config ${{matrix.build_type}} --target install
-          cat "${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake"
-
-      - name: Test (CTest) - unit tests
-        working-directory: "${{github.workspace}}/build"
-        run: ctest --rerun-failed --output-on-failure
-
-      - name: Generate coverage information
-        working-directory: "${{github.workspace}}/build"
-        if: ${{runner.os != 'Windows'}}
-        run: |
-          export NOTES=$(find . -name "*.gcno")
-          export SOURCES=${NOTES/.gcno/}
-          echo "NOTES=$NOTES"
-          echo "SOURCES=$SOURCES"
-          gcov $SOURCES || echo "returned $?"
-          lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
-      
-      - name: Upload C++ coverage to Codecov
-        uses: codecov/codecov-action@v4
-        if: ${{runner.os != 'Windows'}}
-        with:
-          directory: "${{github.workspace}}/build"
-          working-directory: "${{github.workspace}}"
-          disable_search: true
-          file: ${{github.workspace}}/build/coverage.info
-          flags: cpp
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Test (find_package) - consume installation
-        shell: bash -l {0}
-        run: |
-          mkdir test_installed_library && cd test_installed_library
-          cat > CMakeLists.txt <<EOF
-          cmake_minimum_required(VERSION 3.8)
-          project(sample)
-          find_package(Einsums REQUIRED)
-          include(CMakePrintHelpers)
-          cmake_print_properties(
-            TARGETS
-              Einsums::einsums
-              HDF5::HDF5
-              tgt::lapack
-              OpenMP::OpenMP_CXX
-            PROPERTIES
-              IMPORTED_LINK_DEPENDENT_LIBRARIES
-              INTERFACE_LOCATION
-              INTERFACE_LINK_LIBRARIES
-              INTERFACE_INCLUDE_DIRECTORIES
-              INTERFACE_COMPILE_DEFINITIONS
-              INTERFACE_COMPILE_OPTIONS
-              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
-            )
-          add_executable(timings "../timing/main.cpp")
-          target_link_libraries(timings Einsums::einsums)
-          EOF
-          cmake -S . \
-            -B build \
-            -G Ninja \
-            --log-level verbose \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed" \
-            ${{ matrix.testargs }}
-          cmake --build build
-          ./build/timings
-
+#  windows_default:
+#    name: Windows
+#    needs: [ detect_changes ]
+#    if: ${{ contains(needs.detect_changes.outputs.filters, 'ci') || contains(needs.detect_changes.outputs.filters, 'src') }}
+#    uses: ./.github/workflows/windows-build-and-test.yml

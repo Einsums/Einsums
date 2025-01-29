@@ -1,0 +1,132 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
+cmake_policy(VERSION 3.22)
+
+# Forward EINSUMS_* cache variables
+include("${CMAKE_CURRENT_LIST_DIR}/EinsumsCacheVariables.cmake")
+
+# include einsums cmake utilities
+include("${CMAKE_CURRENT_LIST_DIR}/EinsumsMacros.cmake")
+
+# Find the installation root.
+get_filename_component(_einsums_root_dir "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+
+list(APPEND CMAKE_PREFIX_PATH "${_einsums_root_dir}/lib")
+
+# include external targets
+include("${CMAKE_CURRENT_LIST_DIR}/EinsumsH5cppTarget.cmake")
+# include exported targets
+include("${CMAKE_CURRENT_LIST_DIR}/einsums_internal_targets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/EinsumsTargets.cmake")
+
+einsums_set_cmake_policy(CMP0144 NEW)
+
+# Get the version number
+set(EINSUMS_VERSION_STRING "@EINSUMS_VERSION@")
+set(EINSUMS_VERSION_MAJOR @EINSUMS_VERSION_MAJOR@)
+set(EINSUMS_VERSION_MINOR @EINSUMS_VERSION_MINOR@)
+set(EINSUMS_VERSION_PATCH @EINSUMS_VERSION_PATCH@)
+
+# Get the build type
+set(EINSUMS_DEBUG_POSTFIX "@EINSUMS_DEBUG_POSTFIX@")
+set(EINSUMS_BUILD_TYPE "@EINSUMS_BUILD_TYPE@")
+
+# We explicitly set the default to 98 to force CMake to emit a -std=c++XX flag.
+# Some compilers (clang) have a different default standard for cpp and cu files,
+# but CMake does not know about this difference. If the standard is set to the
+# .cpp default in CMake, CMake will omit the flag, resulting in the wrong
+# standard for .cu files.
+set(CMAKE_CXX_STANDARD_DEFAULT 98)
+
+set(EINSUMS_GIT_COMMIT
+    "@EINSUMS_WITH_GIT_COMMIT@"
+    CACHE STRING "Revision of einsums from Git" FORCE
+)
+
+set(EINSUMS_CXX_COMPILER
+    "@CMAKE_CXX_COMPILER@"
+    CACHE STRING "CXX compiler for einsums" FORCE
+)
+set(EINSUMS_CXX_COMPILER_ID
+    "@CMAKE_CXX_COMPILER_ID@"
+    CACHE STRING "CXX compiler id for einsums" FORCE
+)
+set(EINSUMS_CXX_COMPILER_VERSION
+    "@CMAKE_CXX_COMPILER_VERSION@"
+    CACHE STRING "CXX compiler version for einsums" FORCE
+)
+
+einsums_find_package(fmt 11 REQUIRED)
+einsums_find_package(argparse 3 REQUIRED)
+einsums_find_package(spdlog 1 REQUIRED)
+einsums_find_package(ZLIB REQUIRED)
+einsums_find_package(TargetHDF5 REQUIRED)
+einsums_find_package(OpenMP MODULE COMPONENTS CXX)
+
+if (@EINSUMS_WITH_BACKTRACES@)
+  einsums_find_package(cpptrace 0.7 REQUIRED)
+endif ()
+
+if (NOT TARGET tgt::lapack)
+  add_library(tgt::lapack INTERFACE IMPORTED)
+  if (@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)  # EINSUMS_LINALG_VENDOR
+    set(MKL_INTERFACE @EINSUMS_LINALG_INT_INTERFACE@)  # EINSUMS_LINALG_INT_INTERFACE
+    find_package(MKL CONFIG ${extraArgs})
+    set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES MKL::MKL)
+  else ()
+    set(BLA_VENDOR @EINSUMS_LINALG_VENDOR@)  # EINSUMS_LINALG_VENDOR
+    if (@EINSUMS_LINALG_INT_INTERFACE@ STREQUAL lp64)  # EINSUMS_LINALG_INT_INTERFACE
+      set(BLA_SIZEOF_INTEGER 4)
+    else ()
+      set(BLA_SIZEOF_INTEGER 8)
+    endif ()
+    find_package(BLAS MODULE ${extraArgs})
+    find_package(LAPACK MODULE ${extraArgs})
+    set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS)
+  endif ()
+  set(EINSUMS_@EINSUMS_LINALG_INT_INTERFACE@_FOUND 1)
+endif ()
+
+if (@EINSUMS_FFT_LIBRARY@ STREQUAL mkl)  # EINSUMS_FFT_LIBRARY
+  if (@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)  # EINSUMS_LINALG_VENDOR
+    add_library(FFT::FFT ALIAS tgt::lapack)
+  endif ()
+elseif (@EINSUMS_FFT_LIBRARY@ STREQUAL fftw3)  # EINSUMS_FFT_LIBRARY
+  find_package(FFTW MODULE COMPONENTS FLOAT_LIB DOUBLE_LIB ${extraArgs})
+  add_library(FFT::FFT INTERFACE IMPORTED)
+  target_link_libraries(FFT::FFT INTERFACE FFTW::Float FFTW::Double)
+endif ()
+
+# Look for Python dependencies ... I'm not entirely sure this is needed
+# since the Python module is just consumed and not compiled again.
+if (@EINSUMS_BUILD_PYTHON@)
+  find_package(
+          Python3
+          COMPONENTS Interpreter Development
+          REQUIRED
+  )
+  find_package(pybind11 REQUIRED)
+endif ()
+
+
+# If using hip...then dependencies need to be found and listed here.
+
+if (NOT EINSUMS_CMAKE_LOGLEVEL)
+  set(EINSUMS_CMAKE_LOGLEVEL "WARN")
+endif ()
+
+einsums_check_compiler_compatibility()
+
+# Since we offer Einsums::Einsums, Einsums::EinsumsPy, and Einsums::EinsumsExperimental
+# we need to let the user ask for COMPONENTS and then ensure we have everything needed
+# for the specified COMPONENT and set Einsums_FOUND to TRUE or FALSE
+if (TARGET Einsums::Einsums)
+  set(Einsums_FOUND TRUE)
+endif ()
+
+if (NOT DEFINED ${CMAKE_FIND_PACKAGE_NAME}_FOUND)
+  set(${CMAKE_FIND_PACKAGE_NAME}_FOUND TRUE)
+endif ()

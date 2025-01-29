@@ -11,10 +11,18 @@ Provides compile-time contraction pattern analysis to determine optimal operatio
 ## Requirements
 A C++ compiler with C++20 support.
 
-The following libraries are required to build EinsumsInCpp:
+The following libraries are required to build Einsums:
 
 * BLAS and LAPACK
 * HDF5
+
+The following libraries are also required, but will be fetched if they can not be found.
+
+* fmtlib >= 11
+* Catch2 >= 3
+* Einsums/h5cpp
+* p-ranav/argparse
+* gabime/spdlog >= 1
 
 On my personal development machine, I use MKL for the above requirements. On GitHub Actions, stock BLAS, LAPACK, and FFTW3 are used.
 
@@ -23,15 +31,18 @@ Optional requirements:
 * A Fast Fourier Transform library, either FFTW3 or DFT from MKL.
 * For call stack backtracing, refer to the requirements listed [here](https://github.com/bombela/backward-cpp).
 * HIP for graphics card support. Uses hipBlas, hipSolver, and the HIP language. Does not yet support hipFFT.
+* cpptrace for backtraces.
+* LibreTT for GPU transposes.
+* pybind11 for the Python extension module.
 
 ## Examples
 This will optimize at compile-time to a BLAS dgemm call.
 ```C++
-#include "einsums/TensorAlgebra.hpp"
+#include "Einsums/TensorAlgebra.hpp"
 
 using einsums;  // Provides Tensor and create_random_tensor
-using einsums::TensorAlgebra;  // Provides einsum and Indices
-using einsums::TensorAlgrebra::Index;  // Provides i, j, k
+using einsums::tensor_algebra;  // Provides einsum and Indices
+using einsums::index;  // Provides i, j, k
 
 Tensor<2> A = create_random_tensor("A", 7, 7);
 Tensor<2> B = create_random_tensor("B", 7, 7);
@@ -42,15 +53,15 @@ einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
 
 Two-Electron Contribution to the Fock Matrix
 ```C++
-#include "einsums/TensorAlgebra.hpp"
+#include "Einsums/TensorAlgebra.hpp"
 
 using namespace einsums;
 
 void build_Fock_2e_einsum(Tensor<2> *F,
                           const Tensor<4> &g,
                           const Tensor<2> &D) {
-    using namespace einsums::TensorAlgebra;
-    using namespace einsums::TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::index;
 
     // Will compile-time optimize to BLAS gemv
     einsum(1.0, Indices{p, q}, F,
