@@ -160,6 +160,9 @@ constexpr inline bool IsIncoreTensorV = std::is_base_of_v<einsums::tensor_base::
  */
 template <typename D>
 constexpr inline bool IsDeviceTensorV = std::is_base_of_v<einsums::tensor_base::DeviceTensorBase, D>;
+#elif !defined(DOXYGEN)
+template <typename D>
+constexpr inline bool IsDeviceTensorV = false;
 #endif
 
 /**
@@ -358,11 +361,8 @@ constexpr inline bool IsAlgebraTensorV = std::is_base_of_v<einsums::tensor_base:
  * @tparam Tensors The tensors to check.
  */
 template <typename... Tensors>
-constexpr inline bool IsInSamePlaceV = (IsIncoreTensorV<Tensors> && ...) || (IsDiskTensorV<Tensors> && ...)
-#if defined(EINSUMS_COMPUTE_CODE)
-                                       || (IsDeviceTensorV<Tensors> && ...)
-#endif
-    ;
+constexpr inline bool IsInSamePlaceV =
+    (IsIncoreTensorV<Tensors> && ...) || (IsDiskTensorV<Tensors> && ...) || (IsDeviceTensorV<Tensors> && ...);
 
 /**
  * @property IsIncoreRankTensorV
@@ -376,7 +376,6 @@ constexpr inline bool IsInSamePlaceV = (IsIncoreTensorV<Tensors> && ...) || (IsD
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsIncoreRankTensorV = IsIncoreTensorV<D> && IsTRTensorV<D, Rank, T>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @property IsDeviceRankTensorV
  *
@@ -388,7 +387,6 @@ constexpr inline bool IsIncoreRankTensorV = IsIncoreTensorV<D> && IsTRTensorV<D,
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsDeviceRankTensorV = IsDeviceTensorV<D> && IsTRTensorV<D, Rank, T>;
-#endif
 
 /**
  * @property IsDiskRankTensorV
@@ -450,7 +448,6 @@ constexpr inline bool IsRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, R
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsIncoreRankBasicTensorV = IsBasicTensorV<D> && IsTRTensorV<D, Rank, T> && IsIncoreTensorV<D>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @property IsDeviceRankBasicTensorV
  *
@@ -462,7 +459,6 @@ constexpr inline bool IsIncoreRankBasicTensorV = IsBasicTensorV<D> && IsTRTensor
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsDeviceRankBasicTensorV = IsBasicTensorV<D> && IsTRTensorV<D, Rank, T> && IsDeviceTensorV<D>;
-#endif
 
 /**
  * @property IsIncoreRankBlockTensorV
@@ -476,7 +472,6 @@ constexpr inline bool IsDeviceRankBasicTensorV = IsBasicTensorV<D> && IsTRTensor
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsIncoreRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, Rank, T> && IsIncoreTensorV<D>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @property IsDeviceRankBlockTensorV
  *
@@ -488,7 +483,6 @@ constexpr inline bool IsIncoreRankBlockTensorV = IsBlockTensorV<D> && IsTRTensor
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsDeviceRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, Rank, T> && IsDeviceTensorV<D>;
-#endif
 
 /**
  * @property IsIncoreRankTiledTensorV
@@ -502,7 +496,6 @@ constexpr inline bool IsDeviceRankBlockTensorV = IsBlockTensorV<D> && IsTRTensor
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsIncoreRankTiledTensorV = IsTiledTensorV<D> && IsTRTensorV<D, Rank, T> && IsIncoreTensorV<D>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @property IsDeviceRankTiledTensorV
  *
@@ -514,7 +507,6 @@ constexpr inline bool IsIncoreRankTiledTensorV = IsTiledTensorV<D> && IsTRTensor
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsDeviceRankTiledTensorV = IsTiledTensorV<D> && IsTRTensorV<D, Rank, T> && IsDeviceTensorV<D>;
-#endif
 
 /**
  * @property IsIncoreBasicTensorV
@@ -528,7 +520,6 @@ constexpr inline bool IsDeviceRankTiledTensorV = IsTiledTensorV<D> && IsTRTensor
 template <typename D>
 constexpr inline bool IsIncoreBasicTensorV = IsIncoreTensorV<D> && IsBasicTensorV<D>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @property IsDeviceBasicTensorV
  *
@@ -540,7 +531,6 @@ constexpr inline bool IsIncoreBasicTensorV = IsIncoreTensorV<D> && IsBasicTensor
  */
 template <typename D>
 constexpr inline bool IsDeviceBasicTensorV = IsDeviceTensorV<D> && IsBasicTensorV<D>;
-#endif
 
 /**
  * @property IsDiskBasicTensorV
@@ -566,7 +556,6 @@ constexpr inline bool IsDiskBasicTensorV = IsDiskTensorV<D> && IsBasicTensorV<D>
 template <typename D>
 constexpr inline bool IsIncoreTiledTensorV = IsIncoreTensorV<D> && IsTiledTensorV<D>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @property IsDeviceTiledTensorV
  *
@@ -578,7 +567,6 @@ constexpr inline bool IsIncoreTiledTensorV = IsIncoreTensorV<D> && IsTiledTensor
  */
 template <typename D>
 constexpr inline bool IsDeviceTiledTensorV = IsDeviceTensorV<D> && IsTiledTensorV<D>;
-#endif
 
 /**
  * @property IsDiskTiledTensorV
@@ -604,7 +592,6 @@ constexpr inline bool IsDiskTiledTensorV = IsDiskTensorV<D> && IsTiledTensorV<D>
 template <typename D>
 constexpr inline bool IsIncoreBlockTensorV = IsIncoreTensorV<D> && IsBlockTensorV<D>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @property IsDeviceBLockTensorV
  *
@@ -616,7 +603,6 @@ constexpr inline bool IsIncoreBlockTensorV = IsIncoreTensorV<D> && IsBlockTensor
  */
 template <typename D>
 constexpr inline bool IsDeviceBLockTensorV = IsDeviceTensorV<D> && IsBlockTensorV<D>;
-#endif
 
 /**
  * @property IsDiskBlockTensorV
@@ -762,7 +748,6 @@ concept TRLTensorConcept = IsTRLTensorV<D, Rank, T>;
 template <typename D>
 concept CoreTensorConcept = IsIncoreTensorV<D>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @concept DeviceTensorConcept
  *
@@ -774,7 +759,6 @@ concept CoreTensorConcept = IsIncoreTensorV<D>;
  */
 template <typename D>
 concept DeviceTensorConcept = IsDeviceTensorV<D>;
-#endif
 
 /**
  * @concept DiskTensorConcept
@@ -909,7 +893,6 @@ concept AlgebraTensorConcept = IsAlgebraTensorV<D>;
 template <typename D, size_t Rank, typename T>
 concept CoreRankTensor = IsIncoreRankTensorV<D, Rank, T>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @concept DeviceRankTensor
  *
@@ -921,7 +904,6 @@ concept CoreRankTensor = IsIncoreRankTensorV<D, Rank, T>;
  */
 template <typename D, size_t Rank, typename T>
 concept DeviceRankTensor = IsDeviceRankTensorV<D, Rank, T>;
-#endif
 
 /**
  * @concept DiskRankTensor
@@ -983,7 +965,6 @@ concept RankBlockTensor = IsRankBlockTensorV<D, Rank, T>;
 template <typename D, size_t Rank, typename T>
 concept CoreRankBasicTensor = IsIncoreRankBasicTensorV<D, Rank, T>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @concept DeviceRankBasicTensor
  *
@@ -995,7 +976,6 @@ concept CoreRankBasicTensor = IsIncoreRankBasicTensorV<D, Rank, T>;
  */
 template <typename D, size_t Rank, typename T>
 concept DeviceRankBasicTensor = IsDeviceRankBasicTensorV<D, Rank, T>;
-#endif
 
 /**
  * @concept CoreRankBlockTensor
@@ -1009,7 +989,6 @@ concept DeviceRankBasicTensor = IsDeviceRankBasicTensorV<D, Rank, T>;
 template <typename D, size_t Rank, typename T>
 concept CoreRankBlockTensor = IsIncoreRankBlockTensorV<D, Rank, T>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @concept DeviceRankBlockTensor
  *
@@ -1021,7 +1000,6 @@ concept CoreRankBlockTensor = IsIncoreRankBlockTensorV<D, Rank, T>;
  */
 template <typename D, size_t Rank, typename T>
 concept DeviceRankBlockTensor = IsDeviceRankBlockTensorV<D, Rank, T>;
-#endif
 
 /**
  * @concept CoreRankTiledTensor
@@ -1035,7 +1013,6 @@ concept DeviceRankBlockTensor = IsDeviceRankBlockTensorV<D, Rank, T>;
 template <typename D, size_t Rank, typename T>
 concept CoreRankTiledTensor = IsIncoreRankTiledTensorV<D, Rank, T>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @concept DeviceRankTiledTensor
  *
@@ -1047,7 +1024,6 @@ concept CoreRankTiledTensor = IsIncoreRankTiledTensorV<D, Rank, T>;
  */
 template <typename D, size_t Rank, typename T>
 concept DeviceRankTiledTensor = IsDeviceRankTiledTensorV<D, Rank, T>;
-#endif
 
 /**
  * @concept CoreBasicTensorConcept
@@ -1059,7 +1035,6 @@ concept DeviceRankTiledTensor = IsDeviceRankTiledTensorV<D, Rank, T>;
 template <typename D>
 concept CoreBasicTensorConcept = IsIncoreBasicTensorV<D>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @concept DeviceBasicTensorConcept
  *
@@ -1069,7 +1044,6 @@ concept CoreBasicTensorConcept = IsIncoreBasicTensorV<D>;
  */
 template <typename D>
 concept DeviceBasicTensorConcept = IsDeviceBasicTensorV<D>;
-#endif
 
 /**
  * @concept CoreBlockTensorConcept
@@ -1081,7 +1055,6 @@ concept DeviceBasicTensorConcept = IsDeviceBasicTensorV<D>;
 template <typename D>
 concept CoreBlockTensorConcept = IsIncoreBlockTensorV<D>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @concept DeviceBlockTensorConcept
  *
@@ -1091,7 +1064,6 @@ concept CoreBlockTensorConcept = IsIncoreBlockTensorV<D>;
  */
 template <typename D>
 concept DeviceBlockTensorConcept = IsDeviceBLockTensorV<D>;
-#endif
 
 /**
  * @concept CoreTiledTensorConcept
@@ -1103,7 +1075,6 @@ concept DeviceBlockTensorConcept = IsDeviceBLockTensorV<D>;
 template <typename D>
 concept CoreTiledTensorConcept = IsIncoreTiledTensorV<D>;
 
-#if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @concept DeviceTiledTensorConcept
  *
@@ -1113,7 +1084,6 @@ concept CoreTiledTensorConcept = IsIncoreTiledTensorV<D>;
  */
 template <typename D>
 concept DeviceTiledTensorConcept = IsDeviceTiledTensorV<D>;
-#endif
 
 /**
  * @concept InSamePlace

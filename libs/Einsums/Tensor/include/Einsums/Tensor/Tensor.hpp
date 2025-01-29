@@ -45,6 +45,7 @@
 #include <vector>
 
 #include "Einsums/DesignPatterns/Lockable.hpp"
+#include "Einsums/Utilities/Tuple.hpp"
 
 #if defined(EINSUMS_COMPUTE_CODE)
 #    include <hip/hip_common.h>
@@ -2002,7 +2003,7 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
 #    endif
 
                 Stride<Rank - 1> index_strides;
-                size_t elements = dims_to_strides(std::array<int64_t, Rank - 1>(A.dims().cbegin(), std::next(A.dims().cbegin(), Rank - 1)),
+                size_t elements = dims_to_strides(einsums::slice_array<Rank - 1>(A.data()),
                                                   index_strides);
 
                 auto final_dim = A.dim(Rank - 1);
