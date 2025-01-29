@@ -126,4 +126,5 @@ The following is not supported, but may be supported in the future.
     :maxdepth: 2
     
     /libs/Einsums/modules
+    /libs/EinsumsPy/modules
 

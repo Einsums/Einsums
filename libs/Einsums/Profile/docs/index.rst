@@ -1,8 +1,8 @@
-
+..
     Copyright (c) The Einsums Developers. All rights reserved.
     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-.. _modules_Profiling:
+.. _modules_Einsums_Profile:
 
 =========
 Profiling
@@ -10,7 +10,7 @@ Profiling
 
 This module contains symbols for profiling Einsums.
 
-See the :ref:`API reference <modules_Profiling_api>` of this module for more
+See the :ref:`API reference <modules_Einsums_Profile_api>` of this module for more
 details.
 
 --------------

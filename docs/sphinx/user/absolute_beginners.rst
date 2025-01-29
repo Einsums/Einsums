@@ -16,7 +16,7 @@ suggestions, please do not hesitate to `reach out <https://github.com/Einsums/Ei
 Welcome to Einsums!
 -------------------
 
-Einsums is an open-source C++ library. It provides **Tensor**, a homogeneous n-dimensional
+Einsums is an open-source C++ library. It provides :cpp:class:`Tensor`, a homogeneous n-dimensional
 tensor object, with methods to efficiently operate on it. Einsums can be used to perform
 a wide variety of mathematical operations on tensors.
 
@@ -53,24 +53,26 @@ Then in your main.cpp you can have something like
 
 .. code-block:: c++
 
-    #include <Einsums/Tensor/Tensor.hpp>
+    #include <Einsums/Tensor/Tensor.hpp> // Provides Tensor
 
     int main() {
 
-        auto A = einsums::Tensor("A", 3, 3);
+        auto A = einsums::Tensor("A", 3, 3); // Tensor<double, 2>
 
         return 0;
     }
 
 Einsums is also compatible with Python through Pybind 11. To use it, simply use :code:`import einsums`. Much of
-the C++ code is exported under the :code:`einsums.core` module, with some extra utilities in other modules. 
+the C++ code is exported under the :py:mod:`einsums.core` module, with some extra utilities in other modules. 
 
 Reading the example code
 ------------------------------
 
 If you are not already comfortable with reading tutorials that contain a lot code,
 you might not know how to interpret a code block that looks
-like this::
+like this
+
+.. code-block:: C++
 
     auto A = einsums::create_random_tensor(6);
     auto B = einsums::Tensor{std::move(A), -1, 6};
@@ -87,7 +89,7 @@ How to create a Tensor
 ----------------------
 
 To create an Einsums Tensor, you can use the constructors for the tensor class
-:cpp:class:`einsums::Tensor`.
+:cpp:class:`Tensor`.
 
 All you need to do to create a basic tensor is pass a name for the tensor and the
 dimensionality of each index.::
@@ -129,12 +131,22 @@ Einsums also supports the use of complex numbers.::
 
     auto D = einsums::Tensor<std::complex<float>>{"D", 2, 2};
 
+The only supported data types are floating point and complex floating point. Integers and arbitrary objects are not supported.
+
 **Different Tensor Layouts**
 
 Einsums also provides several different tensor layouts. For a tensor that only has elements along
-a block diagonal, there is the :cpp:class:`einsums::BlockTensor`. When a tensor is blockwise sparse,
+a block diagonal, there is the :cpp:class:`BlockTensor`. When a tensor is blockwise sparse,
 but has blocks that are not on the diagonal, or have axes of varying dimensions, there is the
-:cpp:class:`einsums::TiledTensor`.
+:cpp:class:`TiledTensor`, which can be viewed by a :cpp:class:`TiledTensorView`.
+
+**Different Tensor Storage**
+
+Einsums intends to provide tensors that are compatible with GPU and CPU operations, as well as tensors stored on disk.
+These are intended to be drop-in replacements, though there may be some variability in the interfaces for these tensors.
+The disk tensor class is :cpp:class:`DiskTensor`, which can be viewed by a :cpp:class:`DiskView`.
+For GPU tensors, there are :cpp:class:`DeviceTensor` and :cpp:class:`DeviceTensorView`, as well as
+:cpp:class:`BlockDeviceTensor`, :cpp:class:`TiledDeviceTensor`, and :cpp:class:`TiledDeviceTensorView`. 
 
 TODO: Adding, removing, and sorting elements
 --------------------------------------------

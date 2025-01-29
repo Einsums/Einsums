@@ -2,14 +2,14 @@
     Copyright (c) The Einsums Developers. All rights reserved.
     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-.. _modules_LinearAlgebra:
+.. _modules_Einsums_LinearAlgebra:
 
 Linear Algebra
 ==============
 
 This module contains the user-facing definitions of various linear algebra routines.
 
-See the :ref:`API reference <modules_LinearAlgebra_api>` of this module for more
+See the :ref:`API reference <modules_Einsums_LinearAlgebra_api>` of this module for more
 details.
 
 Here are some of the public symbols that are available to use.

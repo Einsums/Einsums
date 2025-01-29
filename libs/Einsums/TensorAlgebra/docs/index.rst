@@ -1,8 +1,8 @@
-
+..
     Copyright (c) The Einsums Developers. All rights reserved.
     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-.. _modules_TensorAlgebra:
+.. _modules_Einsums_TensorAlgebra:
 
 =============
 TensorAlgebra
@@ -10,7 +10,7 @@ TensorAlgebra
 
 Contains tensor contractions.
 
-See the :ref:`API reference <modules_TensorAlgebra_api>` of this module for more
+See the :ref:`API reference <modules_Einsums_TensorAlgebra_api>` of this module for more
 details.
 
 ----------

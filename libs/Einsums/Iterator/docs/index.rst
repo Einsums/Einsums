@@ -1,8 +1,8 @@
-
+..
     Copyright (c) The Einsums Developers. All rights reserved.
     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-.. _modules_Iterator:
+.. _modules_Einsums_Iterator:
 
 ========
 Iterator
@@ -10,7 +10,7 @@ Iterator
 
 This module defines symbols for iterating over things at compile time.
 
-See the :ref:`API reference <modules_Iterator_api>` of this module for more
+See the :ref:`API reference <modules_Einsums_Iterator_api>` of this module for more
 details.
 
 A few of the symbols may be useful for those using Einsums.
