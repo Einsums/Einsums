@@ -53,6 +53,7 @@ einsums_add_module(
     Einsums_Profile
     Einsums_Print
     Einsums_DesignPatterns
+    Einsums_Utilities
     ${TensorGPUModules}
   CMAKE_SUBDIRS examples tests
 )
