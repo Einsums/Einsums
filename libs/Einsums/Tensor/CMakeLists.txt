@@ -48,6 +48,7 @@ einsums_add_module(
     Einsums_Config
     Einsums_Errors
     Einsums_Iterator
+    Einsums_Logging
     Einsums_TensorBase
     Einsums_TypeSupport
     Einsums_Profile

@@ -10,7 +10,12 @@
 #include <Einsums/StringUtil/FromString.hpp>
 
 #include <cstdlib>
+
+// The CMake file should prevent this entire file from being compiled.
+// We do this check just to make sure.
+#if defined(EINSUMS_HAVE_OMP_TOOLS_H)
 #include <omp-tools.h>
+#endif
 
 namespace einsums {
 
@@ -25,7 +30,11 @@ void ompt_finalize(ompt_data_t * /* tool_data */) {
 
 extern "C" {
 ompt_start_tool_result_t *ompt_start_tool(unsigned int omp_version, char const *runtime_version) {
+    fprintf(stdout, "HERE\n");
     char const *optstr   = std::getenv("EINSUMS_USE_OMPT");
+    if (optstr) {
+         fprintf(stdout, "EINSUMS_USE_OMPT: %s\n", optstr);
+    }
     bool        use_ompt = optstr != nullptr ? from_string<bool>(optstr, false) : false;
 
     // Einsums println function uses an OpenMP function to check if it's running in a parallel

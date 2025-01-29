@@ -28,6 +28,6 @@ einsums_add_module(
   HEADERS ${TensorUtilitiesHeaders}
   DEPENDENCIES
   MODULE_DEPENDENCIES Einsums_TensorBase Einsums_Tensor Einsums_LinearAlgebra Einsums_Concepts
-                      Einsums_Utilities
+                      Einsums_Utilities Einsums_Logging
   CMAKE_SUBDIRS examples tests
 )

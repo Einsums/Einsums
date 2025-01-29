@@ -223,6 +223,15 @@ function(einsums_check_for_unistd_h)
 endfunction()
 
 # ##################################################################################################
+function(einsums_check_for_omp_tools_h)
+  einsums_add_config_test(
+    EINSUMS_WITH_OMP_TOOLS_H
+    SOURCE cmake/tests/omp_tools.cpp
+    FILE ${ARGN}
+  )
+endfunction()
+
+# ##################################################################################################
 function(einsums_check_for_libfun_std_experimental_optional)
   einsums_add_config_test(
     EINSUMS_WITH_LIBFUN_EXPERIMENTAL_OPTIONAL

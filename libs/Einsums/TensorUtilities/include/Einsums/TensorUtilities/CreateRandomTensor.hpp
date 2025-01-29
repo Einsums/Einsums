@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Einsums/Concepts/Complex.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/Utilities/Random.hpp>
@@ -39,6 +40,8 @@ namespace einsums {
  */
 template <typename T = double, bool Normalize = false, typename... MultiIndex>
 auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
+    EINSUMS_LOG_TRACE("creating random tensor {}, {}", name, std::forward_as_tuple(index...));
+
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
     double const lower_bound = -1.0;
@@ -47,7 +50,7 @@ auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tenso
     std::uniform_real_distribution<double> unif(lower_bound, upper_bound);
 
     if constexpr (std::is_same_v<T, std::complex<float>>) {
-// #pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
+        // #pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
@@ -58,7 +61,7 @@ auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tenso
             });
         }
     } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-// #pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
+        // #pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
@@ -69,7 +72,7 @@ auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tenso
             });
         }
     } else {
-// #pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
+        // #pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();

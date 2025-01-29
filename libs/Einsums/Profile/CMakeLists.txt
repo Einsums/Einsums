@@ -9,7 +9,7 @@ set(ProfileHeaders Einsums/Profile/LabeledSection.hpp Einsums/Profile/Timer.hpp)
 
 set(ProfileSources Section.cpp Timer.cpp)
 
-if (OpenMP_CXX_VERSION_MAJOR GREATER_EQUAL 5)
+if (EINSUMS_WITH_OMP_TOOLS_H)
   list(APPEND ProfileSource OMPT.cpp)
 endif()
 

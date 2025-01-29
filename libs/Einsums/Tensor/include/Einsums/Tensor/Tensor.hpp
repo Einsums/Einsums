@@ -10,8 +10,10 @@
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/File.hpp>
 #include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/DesignPatterns/Lockable.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Iterator/Enumerate.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
@@ -43,9 +45,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "Einsums/DesignPatterns/Lockable.hpp"
-#include "Einsums/Utilities/Tuple.hpp"
 
 #if defined(EINSUMS_COMPUTE_CODE)
 #    include <hip/hip_common.h>
@@ -342,7 +341,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             requires NoneOfType<Range, MultiIndex...>;
             requires NoneOfType<Dim<Rank>, MultiIndex...>;
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
-            requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
+            requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
         }
     auto operator()(MultiIndex &&...index) const -> T const & {
         static_assert(sizeof...(MultiIndex) == Rank);
@@ -375,7 +374,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             requires NoneOfType<Range, MultiIndex...>;
             requires NoneOfType<Dim<Rank>, MultiIndex...>;
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
-            requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
+            requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
         }
     auto subscript(MultiIndex &&...index) const -> T const & {
         static_assert(sizeof...(MultiIndex) == Rank);
@@ -402,7 +401,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             requires NoneOfType<Range, MultiIndex...>;
             requires NoneOfType<Dim<Rank>, MultiIndex...>;
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
-            requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
+            requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
         }
     auto operator()(MultiIndex &&...index) -> T & {
         static_assert(sizeof...(MultiIndex) == Rank);
@@ -434,7 +433,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             requires NoneOfType<Range, MultiIndex...>;
             requires NoneOfType<Dim<Rank>, MultiIndex...>;
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
-            requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
+            requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
         }
     auto subscript(MultiIndex &&...index) -> T & {
         static_assert(sizeof...(MultiIndex) == Rank);
@@ -1354,7 +1353,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * Subscript into the tensor.
      */
     template <typename... MultiIndex>
-    requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
     auto subscript(MultiIndex &&...index) const -> T const & {
         static_assert(sizeof...(MultiIndex) == Rank);
         size_t ordinal = indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
@@ -1365,7 +1364,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * Subscript into the tensor.
      */
     template <typename... MultiIndex>
-    requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
     auto subscript(MultiIndex &&...index) -> T & {
         static_assert(sizeof...(MultiIndex) == Rank);
 
@@ -1374,7 +1373,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     }
 
     template <typename int_type>
-    requires(std::is_integral_v<int_type>)
+        requires(std::is_integral_v<int_type>)
     auto subscript(std::array<int_type, Rank> const &index) const -> T const & {
         size_t ordinal = indices_to_sentinel(_strides, index);
         return _data[ordinal];
@@ -1384,7 +1383,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * Subscript into the tensor.
      */
     template <typename int_type>
-    requires(std::is_integral_v<int_type>)
+        requires(std::is_integral_v<int_type>)
     auto subscript(std::array<int_type, Rank> const &index) -> T & {
         size_t ordinal = indices_to_sentinel(_strides, index);
         return _data[ordinal];
@@ -1879,6 +1878,7 @@ TensorView(std::string, Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> T
  */
 template <typename Type = double, typename... Args>
 auto create_tensor(std::string const &name, Args... args) {
+    EINSUMS_LOG_TRACE("creating tensor {}, {}", name, std::forward_as_tuple(args...));
     return Tensor<Type, sizeof...(Args)>{name, args...};
 }
 
