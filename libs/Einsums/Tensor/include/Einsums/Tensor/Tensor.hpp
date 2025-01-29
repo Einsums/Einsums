@@ -22,6 +22,7 @@
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
+#include <Einsums/Utilities/Tuple.hpp>
 
 #include <algorithm>
 #include <array>
@@ -2003,8 +2004,7 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
 #    endif
 
                 Stride<Rank - 1> index_strides;
-                size_t elements = dims_to_strides(einsums::slice_array<Rank - 1>(A.data()),
-                                                  index_strides);
+                size_t           elements = dims_to_strides(einsums::slice_array<Rank - 1>(A.data()), index_strides);
 
                 auto final_dim = A.dim(Rank - 1);
                 auto ndigits   = detail::ndigits(final_dim);
