@@ -4,10 +4,36 @@
 #----------------------------------------------------------------------------------------------
 
 if(EINSUMS_WITH_EXAMPLES)
-  einsums_add_pseudo_target(Examples.Modules.Tensor)
-  einsums_add_pseudo_dependencies(Examples.Modules Examples.Modules.Tensor)
+  einsums_add_pseudo_target(Examples.Modules.Einsums.Tensor)
+  einsums_add_pseudo_dependencies(Examples.Modules Examples.Modules.Einsums.Tensor)
   if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
-    einsums_add_pseudo_target(Tests.Examples.Modules.Tensor)
-    einsums_add_pseudo_dependencies(Tests.Examples.Modules Tests.Examples.Modules.Tensor)
+    einsums_add_pseudo_target(Tests.Examples.Modules.Einsums.Tensor)
+    einsums_add_pseudo_dependencies(Tests.Examples.Modules Tests.Examples.Modules.Einsums.Tensor)
   endif()
+else()
+  return()
 endif()
+
+set(example_programs TensorView)
+
+foreach (example_program ${example_programs})
+  set(sources ${example_program}.cpp)
+
+  source_group("Source Files" FILES ${sources})
+
+  # add example executable
+  einsums_add_executable(
+          T_${example_program} INTERNAL_FLAGS
+          SOURCES ${sources} ${${example_program}_FLAGS}
+          FOLDER "Examples/Modules/Tensor"
+          NOINSTALL
+  )
+
+  einsums_add_example_target_dependencies("Modules.Einsums.Tensor" T_${example_program})
+
+  if (EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
+    einsums_add_example_test(
+            "Modules.Einsums.Tensor" T_${example_program} ${${example_program}_PARAMETERS}
+    )
+  endif ()
+endforeach ()
