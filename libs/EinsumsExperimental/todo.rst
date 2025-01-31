@@ -8,7 +8,7 @@
 EinsumsExperimental Library TODO
 ================================
 
-This file lists all of the in the EinsumsExperimental library that contain TODO directives. If you are an experienced
+This file lists  some of the symbols in the EinsumsExperimental library that contain TODO directives. If you are an experienced
 C++ programmer, feel free to help us out by solving some of these.
 
 -----
