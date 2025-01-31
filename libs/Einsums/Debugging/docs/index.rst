@@ -8,7 +8,7 @@
 Debugging
 =========
 
-TODO: High-level description of the module.
+This module contains some things to help with debugging, including handling backtraces.
 
 See the :ref:`API reference <modules_Einsums_Debugging_api>` of this module for more
 details.

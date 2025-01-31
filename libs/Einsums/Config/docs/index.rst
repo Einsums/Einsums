@@ -12,3 +12,13 @@ This module contains several utilities for telling the compiler how to handle th
 
 See the :ref:`API reference <modules_Einsums_Config_api>` of this module for more
 details.
+
+Public Symbols
+--------------
+
+Most symbols in this module are private. However, there is one that may be of use to users.
+
+.. c:macro:: EINSUMS_COMPUTE_CODE
+
+    This macro is only defined when Einsums is built with GPU capabilities. It is an easy way
+    to determine when GPU support is available.

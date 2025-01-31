@@ -8,7 +8,7 @@
 BLASBase
 ========
 
-TODO: High-level description of the module.
+This module contains some compatiblity definitions to make switching BLAS libraries easier.
 
 See the :ref:`API reference <modules_Einsums_BLASBase_api>` of this module for more
 details.
