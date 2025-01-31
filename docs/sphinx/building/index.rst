@@ -58,7 +58,7 @@ other system-level dependencies to build it on your system.
 
     * CMake
 
-    The following is also required, but will be downloaded if not given:
+    The following are also required, but will be downloaded if not given:
 
     * fmtlib >= 11
 
@@ -75,7 +75,7 @@ other system-level dependencies to build it on your system.
     * For the Fourier Transform abilities, you will need either `FFTW3 <https://www.fftw.org>`__
       or MKL.
 
-    * HIP for GPU support.
+    * HIP for GPU support. If using an Nvidia platform, CUDA is also required.
 
     * LibreTT for high-performance GPU tensor transposes.
 
@@ -115,7 +115,7 @@ the Einsums repository.::
     git clone https://github.com/Einsums/Einsums.git
     cd Einsums
 
-Then you want to do the following:
+Then you will want to do the following:
 
 1. Create a dedicated development environment (conda environment),
 2. Install all needed dependencies (*build*, and also *test*, and *doc*
@@ -123,7 +123,7 @@ Then you want to do the following:
 3. Build Einsums.
 
 To create an ``einsums-dev`` development environment with every required and
-optional dependency installed, run::
+optional dependency installed, except for HIP, run::
 
     conda env create -f devtools/conda-envs/environment.yml
     conda activate einsums-dev
@@ -136,7 +136,7 @@ To build Einsums in an activated development environment, run::
     make
 
 This will build Einsums inside the ``build`` directory. You can then run tests
-(``ctest``), or take other development steps like build the html documentation
+(``ctest`` and ``pytest``), or take other development steps like build the html documentation
 or running benchmarks.
 
 Customizing builds

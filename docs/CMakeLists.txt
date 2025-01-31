@@ -83,7 +83,7 @@ foreach(_cat ${EINSUMS_OPTION_CATEGORIES})
   endforeach()
 endforeach()
 
-set(SPHINX_CMAKE_VARIABLES_RST_DEST "${CMAKE_CURRENT_BINARY_DIR}/generated/CMakeVariables.rst")
+set(SPHINX_CMAKE_VARIABLES_RST_DEST "${CMAKE_CURRENT_BINARY_DIR}/sphinx/generated/CMakeVariables.rst")
 configure_file(
   "${PROJECT_SOURCE_DIR}/cmake/templates/CMakeVariables.rst.in" ${SPHINX_CMAKE_VARIABLES_RST_DEST}
   @ONLY
