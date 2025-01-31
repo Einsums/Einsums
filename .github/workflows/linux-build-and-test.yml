@@ -94,9 +94,9 @@ jobs:
           pwd
           python merge_yml.py ${{ matrix.compiler }} ${{ matrix.blas }}
 
-      - name: Get Date
+      - name: Get Week
         id: get-date
-        run: echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
+        run: echo "week=$(/bin/date -u '+%W')" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Cache Conda env
@@ -104,7 +104,7 @@ jobs:
         with:
           path: ${{ env.CONDA }}/envs
           key:
-            conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('src/devtools/conda-envs/conda.yml') }}-${{ env.CACHE_NUMBER }}
+            conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.week }}-${{ hashFiles('src/devtools/conda-envs/conda.yml') }}-${{ env.CACHE_NUMBER }}
         env:
           # Increase this value to reset cache if etc/example-environment.yml has not changed
           CACHE_NUMBER: 0
@@ -177,7 +177,7 @@ jobs:
           files: ${{github.workspace}}/build/coverage.info
           flags: cpp
           token: ${{ secrets.CODECOV_TOKEN }}
-      
+
       - name: Upload Python coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
