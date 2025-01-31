@@ -108,8 +108,10 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/src/share/Einsums/docs/html
           cp -rv ${{ github.workspace }}/build/share/Einsums/docs/html/* ${{ github.workspace }}/src/share/Einsums/docs/html
-          
+
       - name: GitHub Pages Deploy
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}/src
         uses: JamesIves/github-pages-deploy-action@v4.4.3
         if: github.event_name == 'push' && github.repository == 'Einsums/Einsums' && ( startsWith( github.ref, 'refs/tags/' ) || github.ref == 'refs/heads/main' )
         with:
