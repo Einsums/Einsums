@@ -18,7 +18,8 @@ on:
         type: string
         required: false
 
-permissions: read-all
+permissions:
+  contents: write
 
 jobs:
   # Build job
