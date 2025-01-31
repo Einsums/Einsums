@@ -55,9 +55,9 @@ jobs:
           pwd
           python merge_yml.py --docs default openblas
 
-      - name: Get Date
+      - name: Get Week
         id: get-date
-        run: echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
+        run: echo "week=$(/bin/date -u '+%W')" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Cache Conda Environment
@@ -65,7 +65,7 @@ jobs:
         with:
           path: ${{ env.CONDA }}/envs
           key:
-            conda-docs-${{ steps.get-date.outputs.today }}-${{ hashFiles('src/devtools/conda-envs/conda.yml') }}-${{ env.CACHE_NUMBER }}
+            conda-docs-${{ steps.get-date.outputs.week }}-${{ hashFiles('src/devtools/conda-envs/conda.yml') }}-${{ env.CACHE_NUMBER }}
         env:
           # Increase this value to reset cache if src/devtools/conda-envs/conda.yml has not changed
           CACHE_NUMBER: 0
