@@ -1,0 +1,982 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/LinearAlgebra.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/LinearAlgebra/api/LinearAlgebra';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Jan 31, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/LinearAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TiledTensor.html">Einsums/LinearAlgebra/TiledTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Unoptimized.html">Einsums/LinearAlgebra/Unoptimized.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BlockTensor.html">Einsums/LinearAlgebra/BlockTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPULinearAlgebra.html">Einsums/LinearAlgebra/GPULinearAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Base.html">Einsums/LinearAlgebra/Base.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/LinearAlgebra.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-linearalgebra-hpp">
+<span id="modules-einsums-einsums-linearalgebra-hpp-api"></span><h1>Einsums/LinearAlgebra.hpp<a class="headerlink" href="#einsums-linearalgebra-hpp" title="Permalink to this heading">#</a></h1>
+<p>Defined in header .</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebraE">
+<span id="_CPPv3N7einsums14linear_algebraE"></span><span id="_CPPv2N7einsums14linear_algebraE"></span><span id="einsums::linear_algebra"></span><span class="target" id="namespaceeinsums_1_1linear__algebra"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">linear_algebra</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-enums">Enums</p>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra4NormE">
+<span id="_CPPv3N7einsums14linear_algebra4NormE"></span><span id="_CPPv2N7einsums14linear_algebra4NormE"></span><span class="target" id="_linear_algebra_8hpp_1a8f7603f971807d204e2fdd99c094f070"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Norm</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra4NormE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Indicates the type of norm to compute. </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra4Norm6MaxAbsE">
+<span id="_CPPv3N7einsums14linear_algebra4Norm6MaxAbsE"></span><span id="_CPPv2N7einsums14linear_algebra4Norm6MaxAbsE"></span><span class="target" id="_linear_algebra_8hpp_1a8f7603f971807d204e2fdd99c094f070a70daa745cdfcc8f37de05539bc55d60d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MaxAbs</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra4Norm6MaxAbsE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><span class="math notranslate nohighlight">\(val = max(abs(Aij))\)</span>, largest absolute value of the matrix A. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra4Norm3OneE">
+<span id="_CPPv3N7einsums14linear_algebra4Norm3OneE"></span><span id="_CPPv2N7einsums14linear_algebra4Norm3OneE"></span><span class="target" id="_linear_algebra_8hpp_1a8f7603f971807d204e2fdd99c094f070a06c2cea18679d64399783748fa367bdd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">One</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra4Norm3OneE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><span class="math notranslate nohighlight">\(val = norm1(A)\)</span>, 1-norm of the matrix A (maximum column sum) </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra4Norm8InfinityE">
+<span id="_CPPv3N7einsums14linear_algebra4Norm8InfinityE"></span><span id="_CPPv2N7einsums14linear_algebra4Norm8InfinityE"></span><span class="target" id="_linear_algebra_8hpp_1a8f7603f971807d204e2fdd99c094f070aeb2ac5b04180d8d6011a016aeb8f75b3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Infinity</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra4Norm8InfinityE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><span class="math notranslate nohighlight">\(val = normI(A)\)</span>, infinity norm of the matrix A (maximum row sum) </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra4Norm9FrobeniusE">
+<span id="_CPPv3N7einsums14linear_algebra4Norm9FrobeniusE"></span><span id="_CPPv2N7einsums14linear_algebra4Norm9FrobeniusE"></span><span class="target" id="_linear_algebra_8hpp_1a8f7603f971807d204e2fdd99c094f070aaa17ea000d1c6e31414adf8083928f30"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Frobenius</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra4Norm9FrobeniusE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><span class="math notranslate nohighlight">\(val = normF(A)\)</span>, Frobenius norm of the matrix A (square root of sum of squares). </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra7VectorsE">
+<span id="_CPPv3N7einsums14linear_algebra7VectorsE"></span><span id="_CPPv2N7einsums14linear_algebra7VectorsE"></span><span class="target" id="_linear_algebra_8hpp_1a8d1fa4a45906afec9b237713434d5a3f"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Vectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra7VectorsE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra7Vectors3AllE">
+<span id="_CPPv3N7einsums14linear_algebra7Vectors3AllE"></span><span id="_CPPv2N7einsums14linear_algebra7Vectors3AllE"></span><span class="target" id="_linear_algebra_8hpp_1a8d1fa4a45906afec9b237713434d5a3fab1c94ca2fbc3e78fc30069c8d0f01680"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">All</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra7Vectors3AllE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra7Vectors4SomeE">
+<span id="_CPPv3N7einsums14linear_algebra7Vectors4SomeE"></span><span id="_CPPv2N7einsums14linear_algebra7Vectors4SomeE"></span><span class="target" id="_linear_algebra_8hpp_1a8d1fa4a45906afec9b237713434d5a3fa695c6ae413c00446733d926ccadefd8b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Some</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra7Vectors4SomeE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra7Vectors9OverwriteE">
+<span id="_CPPv3N7einsums14linear_algebra7Vectors9OverwriteE"></span><span id="_CPPv2N7einsums14linear_algebra7Vectors9OverwriteE"></span><span class="target" id="_linear_algebra_8hpp_1a8d1fa4a45906afec9b237713434d5a3fada364eb37e143f6b2b5559aa03f5913a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Overwrite</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra7Vectors9OverwriteE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra7Vectors4NoneE">
+<span id="_CPPv3N7einsums14linear_algebra7Vectors4NoneE"></span><span id="_CPPv2N7einsums14linear_algebra7Vectors4NoneE"></span><span class="target" id="_linear_algebra_8hpp_1a8d1fa4a45906afec9b237713434d5a3fa6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra7Vectors4NoneE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13TensorConceptEN7einsums14linear_algebra10sum_squareEvRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE">
+<span id="_CPPv3I_13TensorConceptEN7einsums14linear_algebra10sum_squareERK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE"></span><span id="_CPPv2I_13TensorConceptEN7einsums14linear_algebra10sum_squareERK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1aa11cb44fa6372a653076d252804457fd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sum_square</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13TensorConceptEN7einsums14linear_algebra10sum_squareEvRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="einsums::linear_algebra::sum_square::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConceptEN7einsums14linear_algebra10sum_squareEvRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="einsums::linear_algebra::sum_square::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">scale</span></span>, <a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConceptEN7einsums14linear_algebra10sum_squareEvRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="einsums::linear_algebra::sum_square::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sumsq</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConceptEN7einsums14linear_algebra10sum_squareEvRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the square sum of a tensor. </p>
+<p>returns the values scale_out and sumsq_out such that   <div class="math notranslate nohighlight">
+\[  (scale_{out}^{2})*sumsq_{out} = a( 1 )^{2} +...+ a( n )^{2} + (scale_{in}^{2})*sumsq_{in},
+\]</div>
+</p>
+<p>Under the hood the LAPACK routine <code class="docutils literal notranslate"><span class="pre">lassq</span></code> is used.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NEED</span><span class="w"> </span><span class="n">TO</span><span class="w"> </span><span class="n">ADD</span><span class="w"> </span><span class="n">AN</span><span class="w"> </span><span class="n">EXAMPLE</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AType</strong> – The type of the tensor </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>a</strong> – The tensor to compute the sum of squares for </p></li>
+<li><p><strong>scale</strong> – scale_in and scale_out for the equation provided </p></li>
+<li><p><strong>sumsq</strong> – sumsq_in and sumsq_out for the equation provided </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmEvK1URK5ATypeRK5BTypeK1UP5CType">
+<span id="_CPPv3I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmEK1URK5ATypeRK5BTypeK1UP5CType"></span><span id="_CPPv2I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmEK1URK5ATypeRK5BTypeK1UP5CType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransB</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a160856782a0b7421f065c25008ccc8c0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gemm</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmEvK1URK5ATypeRK5BTypeK1UP5CType" title="einsums::linear_algebra::gemm::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmEvK1URK5ATypeRK5BTypeK1UP5CType" title="einsums::linear_algebra::gemm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmEvK1URK5ATypeRK5BTypeK1UP5CType" title="einsums::linear_algebra::gemm::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmEvK1URK5ATypeRK5BTypeK1UP5CType" title="einsums::linear_algebra::gemm::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmEvK1URK5ATypeRK5BTypeK1UP5CType" title="einsums::linear_algebra::gemm::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmEvK1URK5ATypeRK5BTypeK1UP5CType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>General matrix multiplication. </p>
+<p>Takes two rank-2 tensors ( <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code> ) performs the multiplication and stores the result in to another rank-2 tensor that is passed in ( <code class="docutils literal notranslate"><span class="pre">C</span></code> ).</p>
+<p>In this equation, <code class="docutils literal notranslate"><span class="pre">TransA</span></code> is op(A) and <code class="docutils literal notranslate"><span class="pre">TransB</span></code> is op(B).   <div class="math notranslate nohighlight">
+\[C = \alpha \;op(A) \;op(B) + \beta C
+\]</div>
+</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;C&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">gemm</span><span class="o">&lt;</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TransA</strong> – Tranpose A? true or false </p></li>
+<li><p><strong>TransB</strong> – Tranpose B? true or false </p></li>
+<li><p><strong>T</strong> – the underlying data type </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>alpha</strong> – Scaling factor for the product of A and B </p></li>
+<li><p><strong>A</strong> – First input tensor </p></li>
+<li><p><strong>B</strong> – Second input tensor </p></li>
+<li><p><strong>beta</strong> – Scaling factor for the output tensor C </p></li>
+<li><p><strong>C</strong> – Output tensor </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmE11RemoveViewTI5ATypeEK1URK5ATypeRK5BType">
+<span id="_CPPv3I_b_b_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmEK1URK5ATypeRK5BType"></span><span id="_CPPv2I_b_b_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmEK1URK5ATypeRK5BType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransB</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1aca658fce123bf44ff0b3ad69025abb52"></span><span class="n"><span class="pre">RemoveViewT</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmE11RemoveViewTI5ATypeEK1URK5ATypeRK5BType" title="einsums::linear_algebra::gemm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gemm</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmE11RemoveViewTI5ATypeEK1URK5ATypeRK5BType" title="einsums::linear_algebra::gemm::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmE11RemoveViewTI5ATypeEK1URK5ATypeRK5BType" title="einsums::linear_algebra::gemm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmE11RemoveViewTI5ATypeEK1URK5ATypeRK5BType" title="einsums::linear_algebra::gemm::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0EN7einsums14linear_algebra4gemmE11RemoveViewTI5ATypeEK1URK5ATypeRK5BType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>General matrix multiplication. Returns new tensor. </p>
+<p>Takes two rank-2 tensors performs the multiplication and returns the result</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">gemm</span><span class="o">&lt;</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TransA</strong> – Tranpose A? </p></li>
+<li><p><strong>TransB</strong> – Tranpose B? </p></li>
+<li><p><strong>T</strong> – the underlying data type </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>alpha</strong> – Scaling factor for the product of A and B </p></li>
+<li><p><strong>A</strong> – First input tensor </p></li>
+<li><p><strong>B</strong> – Second input tensor </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>resulting tensor </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra9symm_gemmEvRK5ATypeRK5BTypeP5CType">
+<span id="_CPPv3I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra9symm_gemmERK5ATypeRK5BTypeP5CType"></span><span id="_CPPv2I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra9symm_gemmERK5ATypeRK5BTypeP5CType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransB</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a0edd50227102da02c16958e177214bc5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">symm_gemm</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra9symm_gemmEvRK5ATypeRK5BTypeP5CType" title="einsums::linear_algebra::symm_gemm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra9symm_gemmEvRK5ATypeRK5BTypeP5CType" title="einsums::linear_algebra::symm_gemm::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra9symm_gemmEvRK5ATypeRK5BTypeP5CType" title="einsums::linear_algebra::symm_gemm::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra9symm_gemmEvRK5ATypeRK5BTypeP5CType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes a common double multiplication between two matrices. </p>
+<p>Computes <span class="math notranslate nohighlight">\( C = OP(B)^T OP(A) OP(B) \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0EN7einsums14linear_algebra4gemvEvK1URK5ATypeRK5XTypeK1UP5YType">
+<span id="_CPPv3I_b_13MatrixConcept_13VectorConcept_13VectorConcept0EN7einsums14linear_algebra4gemvEK1URK5ATypeRK5XTypeK1UP5YType"></span><span id="_CPPv2I_b_13MatrixConcept_13VectorConcept_13VectorConcept0EN7einsums14linear_algebra4gemvEK1URK5ATypeRK5XTypeK1UP5YType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">YType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1aa7a74d479fd88cfd8e882373f2007073"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gemv</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0EN7einsums14linear_algebra4gemvEvK1URK5ATypeRK5XTypeK1UP5YType" title="einsums::linear_algebra::gemv::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0EN7einsums14linear_algebra4gemvEvK1URK5ATypeRK5XTypeK1UP5YType" title="einsums::linear_algebra::gemv::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0EN7einsums14linear_algebra4gemvEvK1URK5ATypeRK5XTypeK1UP5YType" title="einsums::linear_algebra::gemv::XType"><span class="n"><span class="pre">XType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">z</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0EN7einsums14linear_algebra4gemvEvK1URK5ATypeRK5XTypeK1UP5YType" title="einsums::linear_algebra::gemv::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0EN7einsums14linear_algebra4gemvEvK1URK5ATypeRK5XTypeK1UP5YType" title="einsums::linear_algebra::gemv::YType"><span class="n"><span class="pre">YType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0EN7einsums14linear_algebra4gemvEvK1URK5ATypeRK5XTypeK1UP5YType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>General matrix-vector multiplication. </p>
+<p>This function performs one of the matrix-vector operations   <div class="math notranslate nohighlight">
+\[   y := alpha*A*z + beta*y\mathrm{,\ or\ }y := alpha*A^{T}*z + beta*y,
+\]</div>
+ where alpha and beta are scalars, z and y are vectors and A is an <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NEED</span><span class="w"> </span><span class="n">TO</span><span class="w"> </span><span class="n">ADD</span><span class="w"> </span><span class="n">AN</span><span class="w"> </span><span class="n">EXAMPLE</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TransA</strong> – Transpose matrix A? true or false </p></li>
+<li><p><strong>AType</strong> – The type of the matrix A </p></li>
+<li><p><strong>XType</strong> – The type of the vector z </p></li>
+<li><p><strong>YType</strong> – The type of the vector y </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>alpha</strong> – Scaling factor for the product of A and z </p></li>
+<li><p><strong>A</strong> – Matrix A </p></li>
+<li><p><strong>z</strong> – Vector z </p></li>
+<li><p><strong>beta</strong> – Scaling factor for the output vector y </p></li>
+<li><p><strong>y</strong> – Output vector y </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4syevEvP5ATypeP5WType">
+<span id="_CPPv3I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4syevEP5ATypeP5WType"></span><span id="_CPPv2I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4syevEP5ATypeP5WType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a75af263a41fef3f7628a1d737ed8624c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">syev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4syevEvP5ATypeP5WType" title="einsums::linear_algebra::syev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4syevEvP5ATypeP5WType" title="einsums::linear_algebra::syev::WType"><span class="n"><span class="pre">WType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">W</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4syevEvP5ATypeP5WType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.</p>
+<p>This routines assumes the upper triangle of A is stored. The lower triangle is not referenced.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create tensors A and b.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="c1">// Fill A with the symmetric data.</span>
+<span class="n">A</span><span class="p">.</span><span class="n">vector_data</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">VectorData</span><span class="p">{</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span><span class="w"> </span><span class="mf">6.0</span><span class="p">};</span>
+
+<span class="c1">// On exit, A is destroyed and replaced with the eigenvectors.</span>
+<span class="c1">// b is replaced with the eigenvalues in ascending order.</span>
+<span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">syev</span><span class="p">(</span><span class="o">&amp;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>AType</strong> – The type of the tensor A </p></li>
+<li><p><strong>WType</strong> – The type of the tensor W </p></li>
+<li><p><strong>ComputeEigenvectors</strong> – If true, eigenvalues and eigenvectors are computed. If false, only eigenvalues are computed. Defaults to true. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>A</strong> – On entry, the symmetric matrix A in the leading N-by-N upper triangular part of A. On exit, if eigenvectors are requested, the orthonormal eigenvectors of A. Any data previously stored in A is destroyed. </p></li>
+<li><p><strong>W</strong> – On exit, the eigenvalues in ascending order. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4geevEvP5ATypeP5WTypeP5ATypeP5AType">
+<span id="_CPPv3I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4geevEP5ATypeP5WTypeP5ATypeP5AType"></span><span id="_CPPv2I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4geevEP5ATypeP5WTypeP5ATypeP5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeLeftRightEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a48cb33d634bef6c32ac7450d797b1748"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">geev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4geevEvP5ATypeP5WTypeP5ATypeP5AType" title="einsums::linear_algebra::geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4geevEvP5ATypeP5WTypeP5ATypeP5AType" title="einsums::linear_algebra::geev::WType"><span class="n"><span class="pre">WType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">W</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4geevEvP5ATypeP5WTypeP5ATypeP5AType" title="einsums::linear_algebra::geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lvecs</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4geevEvP5ATypeP5WTypeP5ATypeP5AType" title="einsums::linear_algebra::geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rvecs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4geevEvP5ATypeP5WTypeP5ATypeP5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Compute the general eigendecomposition of a matrix. </p>
+<p>Can only be used to compute both left and right eigen vectors or neither. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4heevEvP5ATypeP5WType">
+<span id="_CPPv3I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4heevEP5ATypeP5WType"></span><span id="_CPPv2I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4heevEP5ATypeP5WType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a8e4c75d9e18944a011e3e3a97d9d3cd0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">heev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4heevEvP5ATypeP5WType" title="einsums::linear_algebra::heev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4heevEvP5ATypeP5WType" title="einsums::linear_algebra::heev::WType"><span class="n"><span class="pre">WType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">W</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra4heevEvP5ATypeP5WType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra4gesvEiP5ATypeP5BType">
+<span id="_CPPv3I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra4gesvEP5ATypeP5BType"></span><span id="_CPPv2I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra4gesvEP5ATypeP5BType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a10ae81aaf74d5783c8c782d537293222"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gesv</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra4gesvEiP5ATypeP5BType" title="einsums::linear_algebra::gesv::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra4gesvEiP5ATypeP5BType" title="einsums::linear_algebra::gesv::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra4gesvEiP5ATypeP5BType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_13MatrixConceptEN7einsums14linear_algebra4syevENSt5tupleI11RemoveViewTI5ATypeE15BasicTensorLikeI5ATypeN5AType9ValueTypeEXL1EEEEERK5AType">
+<span id="_CPPv3I_b_13MatrixConceptEN7einsums14linear_algebra4syevERK5AType"></span><span id="_CPPv2I_b_13MatrixConceptEN7einsums14linear_algebra4syevERK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a4ff6e5357aa764367ef3bf28e3700e1d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">RemoveViewT</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_b_13MatrixConceptEN7einsums14linear_algebra4syevENSt5tupleI11RemoveViewTI5ATypeE15BasicTensorLikeI5ATypeN5AType9ValueTypeEXL1EEEEERK5AType" title="einsums::linear_algebra::syev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">BasicTensorLike</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_b_13MatrixConceptEN7einsums14linear_algebra4syevENSt5tupleI11RemoveViewTI5ATypeE15BasicTensorLikeI5ATypeN5AType9ValueTypeEXL1EEEEERK5AType" title="einsums::linear_algebra::syev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_13MatrixConceptEN7einsums14linear_algebra4syevENSt5tupleI11RemoveViewTI5ATypeE15BasicTensorLikeI5ATypeN5AType9ValueTypeEXL1EEEEERK5AType" title="einsums::linear_algebra::syev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">syev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_13MatrixConceptEN7einsums14linear_algebra4syevENSt5tupleI11RemoveViewTI5ATypeE15BasicTensorLikeI5ATypeN5AType9ValueTypeEXL1EEEEERK5AType" title="einsums::linear_algebra::syev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_13MatrixConceptEN7einsums14linear_algebra4syevENSt5tupleI11RemoveViewTI5ATypeE15BasicTensorLikeI5ATypeN5AType9ValueTypeEXL1EEEEERK5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.</p>
+<p>This routines assumes the upper triangle of A is stored. The lower triangle is not referenced.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create tensors A and b.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="c1">// Fill A with the symmetric data.</span>
+<span class="n">A</span><span class="p">.</span><span class="n">vector_data</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">VectorData</span><span class="p">{</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span><span class="w"> </span><span class="mf">6.0</span><span class="p">};</span>
+
+<span class="c1">// On exit, A is not destroyed. The eigenvectors and eigenvalues are returned in a std::tuple.</span>
+<span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">evecs</span><span class="p">,</span><span class="w"> </span><span class="n">evals</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">syev</span><span class="p">(</span><span class="n">A</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>AType</strong> – The type of the tensor A </p></li>
+<li><p><strong>ComputeEigenvectors</strong> – If true, eigenvalues and eigenvectors are computed. If false, only eigenvalues are computed. Defaults to true. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>A</strong> – The symmetric matrix A in the leading N-by-N upper triangular part of A. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>std::tuple&lt;Tensor&lt;T, 2&gt;, Tensor&lt;T, 1&gt;&gt; The eigenvectors and eigenvalues. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13TensorConceptEN7einsums14linear_algebra5scaleEvN5AType9ValueTypeEP5AType">
+<span id="_CPPv3I_13TensorConceptEN7einsums14linear_algebra5scaleEN5AType9ValueTypeEP5AType"></span><span id="_CPPv2I_13TensorConceptEN7einsums14linear_algebra5scaleEN5AType9ValueTypeEP5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1aa38a312c4825f0649ff14fbde5db9360"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scale</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConceptEN7einsums14linear_algebra5scaleEvN5AType9ValueTypeEP5AType" title="einsums::linear_algebra::scale::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scale</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConceptEN7einsums14linear_algebra5scaleEvN5AType9ValueTypeEP5AType" title="einsums::linear_algebra::scale::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConceptEN7einsums14linear_algebra5scaleEvN5AType9ValueTypeEP5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Scales a tensor by a scalar.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_ones_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="c1">// A is filled with 1.0</span>
+<span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">scale</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">A</span><span class="p">);</span>
+<span class="c1">// A is now filled with 2.0</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AType</strong> – The type of the tensor </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>scale</strong> – The scalar to scale the tensor by </p></li>
+<li><p><strong>A</strong> – The tensor to scale </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra9scale_rowEv6size_tN5AType9ValueTypeEP5AType">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra9scale_rowE6size_tN5AType9ValueTypeEP5AType"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra9scale_rowE6size_tN5AType9ValueTypeEP5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1adb1ec5656f0d1daa2610db59f240d3cb"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scale_row</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row</span></span>, <span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra9scale_rowEv6size_tN5AType9ValueTypeEP5AType" title="einsums::linear_algebra::scale_row::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scale</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra9scale_rowEv6size_tN5AType9ValueTypeEP5AType" title="einsums::linear_algebra::scale_row::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra9scale_rowEv6size_tN5AType9ValueTypeEP5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra12scale_columnEv6size_tN5AType9ValueTypeEP5AType">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra12scale_columnE6size_tN5AType9ValueTypeEP5AType"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra12scale_columnE6size_tN5AType9ValueTypeEP5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a66271fa79c4504f128c83eeb2ca65b67"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scale_column</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span>, <span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra12scale_columnEv6size_tN5AType9ValueTypeEP5AType" title="einsums::linear_algebra::scale_column::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scale</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra12scale_columnEv6size_tN5AType9ValueTypeEP5AType" title="einsums::linear_algebra::scale_column::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra12scale_columnEv6size_tN5AType9ValueTypeEP5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3powE11RemoveViewTI5ATypeERK5ATypeN5AType9ValueTypeEN5AType9ValueTypeE">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra3powERK5ATypeN5AType9ValueTypeEN5AType9ValueTypeE"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra3powERK5ATypeN5AType9ValueTypeEN5AType9ValueTypeE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1afb3a86a156190e9062ff86dfd5962dbd"></span><span class="n"><span class="pre">RemoveViewT</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3powE11RemoveViewTI5ATypeERK5ATypeN5AType9ValueTypeEN5AType9ValueTypeE" title="einsums::linear_algebra::pow::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pow</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3powE11RemoveViewTI5ATypeERK5ATypeN5AType9ValueTypeEN5AType9ValueTypeE" title="einsums::linear_algebra::pow::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3powE11RemoveViewTI5ATypeERK5ATypeN5AType9ValueTypeEN5AType9ValueTypeE" title="einsums::linear_algebra::pow::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3powE11RemoveViewTI5ATypeERK5ATypeN5AType9ValueTypeEN5AType9ValueTypeE" title="einsums::linear_algebra::pow::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cutoff</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3powE11RemoveViewTI5ATypeERK5ATypeN5AType9ValueTypeEN5AType9ValueTypeE" title="einsums::linear_algebra::pow::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3powE11RemoveViewTI5ATypeERK5ATypeN5AType9ValueTypeEN5AType9ValueTypeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the matrix power of a to alpha. Return a new tensor, does not destroy a. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AType</strong> – </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>a</strong> – Matrix to take power of </p></li>
+<li><p><strong>alpha</strong> – The power to take </p></li>
+<li><p><strong>cutoff</strong> – Values below cutoff are considered zero.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>std::enable_if_t&lt;std::is_base_of_v&lt;Detail::TensorBase&lt;double, 2&gt;, AType&gt;, AType&gt; </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType">
+<span id="_CPPv3I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotERK5ATypeRK5BType"></span><span id="_CPPv2I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotERK5ATypeRK5BType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a8b4c11e97e59ffd8a1f6e83984aeab7f"></span><span class="n"><span class="pre">BiggestTypeT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="einsums::linear_algebra::dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="einsums::linear_algebra::dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dot</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="einsums::linear_algebra::dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="einsums::linear_algebra::dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Performs the dot product between two tensors. </p>
+<p>This performs <span class="math notranslate nohighlight">\(\sum_{ijk\cdots} A_{ijk\cdots}B_{ijk\cdots}\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – One of the tensors </p></li>
+<li><p><strong>B</strong> – The other tensor. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra8true_dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType">
+<span id="_CPPv3I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra8true_dotERK5ATypeRK5BType"></span><span id="_CPPv2I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra8true_dotERK5ATypeRK5BType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1aedac201ee8e06e2d81510190dd1f8375"></span><span class="n"><span class="pre">BiggestTypeT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra8true_dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="einsums::linear_algebra::true_dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra8true_dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="einsums::linear_algebra::true_dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">true_dot</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra8true_dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="einsums::linear_algebra::true_dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra8true_dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="einsums::linear_algebra::true_dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra8true_dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Performs the true dot product between two tensors. </p>
+<p>This performs <span class="math notranslate nohighlight">\(\sum_{ijk\cdots} A_{ijk\cdots}^* B_{ijk\cdots}\)</span>, where the asterisk indicates the complex conjugate. If the tensors are real-valued, then this is equivalent to dot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – One of the tensors. The complex conjugate is taken of this. </p></li>
+<li><p><strong>B</strong> – The other tensor. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType">
+<span id="_CPPv3I_13TensorConcept_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotERK5ATypeRK5BTypeRK5CType"></span><span id="_CPPv2I_13TensorConcept_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotERK5ATypeRK5BTypeRK5CType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a480923a4eb4fe745c276af8ac8a369e1"></span><span class="n"><span class="pre">BiggestTypeT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="einsums::linear_algebra::dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="einsums::linear_algebra::dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="einsums::linear_algebra::dot::CType"><span class="n"><span class="pre">CType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dot</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="einsums::linear_algebra::dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="einsums::linear_algebra::dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="einsums::linear_algebra::dot::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptEN7einsums14linear_algebra3dotE12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Performs the dot product between three tensors. </p>
+<p>This performs <span class="math notranslate nohighlight">\(\sum_{ijk\cdots} A_{ijk\cdots}B_{ijk\cdots}C_{ijk\cdots}\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – One of the tensors. </p></li>
+<li><p><strong>B</strong> – The second tensor. </p></li>
+<li><p><strong>C</strong> – The third tensor. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra4axpyEvN5XType9ValueTypeERK5XTypeP5YType">
+<span id="_CPPv3I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra4axpyEN5XType9ValueTypeERK5XTypeP5YType"></span><span id="_CPPv2I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra4axpyEN5XType9ValueTypeERK5XTypeP5YType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">YType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a2ebf12fe46c8d2ad1f0ff6270e6174fa"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">axpy</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra4axpyEvN5XType9ValueTypeERK5XTypeP5YType" title="einsums::linear_algebra::axpy::XType"><span class="n"><span class="pre">XType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra4axpyEvN5XType9ValueTypeERK5XTypeP5YType" title="einsums::linear_algebra::axpy::XType"><span class="n"><span class="pre">XType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">X</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra4axpyEvN5XType9ValueTypeERK5XTypeP5YType" title="einsums::linear_algebra::axpy::YType"><span class="n"><span class="pre">YType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra4axpyEvN5XType9ValueTypeERK5XTypeP5YType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra5axpbyEvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType">
+<span id="_CPPv3I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra5axpbyEN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType"></span><span id="_CPPv2I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra5axpbyEN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">YType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1aba710aa27410dfe79f7423dd867dfadc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">axpby</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra5axpbyEvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType" title="einsums::linear_algebra::axpby::XType"><span class="n"><span class="pre">XType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra5axpbyEvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType" title="einsums::linear_algebra::axpby::XType"><span class="n"><span class="pre">XType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">X</span></span>, <span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra5axpbyEvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType" title="einsums::linear_algebra::axpby::XType"><span class="n"><span class="pre">XType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra5axpbyEvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType" title="einsums::linear_algebra::axpby::YType"><span class="n"><span class="pre">YType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConceptEN7einsums14linear_algebra5axpbyEvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra3gerEvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType">
+<span id="_CPPv3I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra3gerEN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType"></span><span id="_CPPv2I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra3gerEN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XYType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1aff8e44cfd98ac014611d6c065353e812"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ger</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra3gerEvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="einsums::linear_algebra::ger::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra3gerEvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="einsums::linear_algebra::ger::XYType"><span class="n"><span class="pre">XYType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">X</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra3gerEvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="einsums::linear_algebra::ger::XYType"><span class="n"><span class="pre">XYType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">Y</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra3gerEvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="einsums::linear_algebra::ger::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra3gerEvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra5getrfEiP10TensorTypePNSt6vectorIN4blas5int_tEEE">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra5getrfEP10TensorTypePNSt6vectorIN4blas5int_tEEE"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra5getrfEP10TensorTypePNSt6vectorIN4blas5int_tEEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1aefe560491faec2f6b676e8e7b3521769"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getrf</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra5getrfEiP10TensorTypePNSt6vectorIN4blas5int_tEEE" title="einsums::linear_algebra::getrf::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../BLAS/api/BLAS.html#_CPPv4N7einsums4blasE" title="einsums::blas"><span class="n"><span class="pre">blas</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pivot</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra5getrfEiP10TensorTypePNSt6vectorIN4blas5int_tEEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the LU factorization of a general m-by-n matrix. </p>
+<p>The routine computes the LU factorization of a general m-by-n matrix A as   <div class="math notranslate nohighlight">
+\[A = P*L*U
+\]</div>
+ where P is a permutation matrix, L is lower triangular with unit diagonal elements and U is upper triangular. The routine uses partial pivoting, with row interchanges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TensorType</strong> – </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>A</strong> – </p></li>
+<li><p><strong>pivot</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra5getriEiP10TensorTypeRKNSt6vectorIN4blas5int_tEEE">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra5getriEP10TensorTypeRKNSt6vectorIN4blas5int_tEEE"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra5getriEP10TensorTypeRKNSt6vectorIN4blas5int_tEEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1abc5cd43105feaf750e5fdf2397f104d3"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getri</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra5getriEiP10TensorTypeRKNSt6vectorIN4blas5int_tEEE" title="einsums::linear_algebra::getri::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../BLAS/api/BLAS.html#_CPPv4N7einsums4blasE" title="einsums::blas"><span class="n"><span class="pre">blas</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">pivot</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra5getriEiP10TensorTypeRKNSt6vectorIN4blas5int_tEEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the inverse of a matrix using the LU factorization computed by getrf. </p>
+<p>The routine computes the inverse <span class="math notranslate nohighlight">\(inv(A)\)</span> of a general matrix <span class="math notranslate nohighlight">\(A\)</span>. Before calling this routine, call getrf to factorize <span class="math notranslate nohighlight">\(A\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TensorType</strong> – The type of the tensor </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>A</strong> – The matrix to invert </p></li>
+<li><p><strong>pivot</strong> – The pivot vector from getrf </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int If 0, the execution is successful. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra6invertEvP10TensorType">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra6invertEP10TensorType"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra6invertEP10TensorType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a340b2b96388d2e8c53063161ab3969c2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">invert</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra6invertEvP10TensorType" title="einsums::linear_algebra::invert::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra6invertEvP10TensorType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Inverts a matrix. </p>
+<p>Utilizes the LAPACK routines getrf and getri to invert a matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TensorType</strong> – The type of the tensor </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>A</strong> – Matrix to invert. On exit, the inverse of A. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_12SmartPointerEN7einsums14linear_algebra6invertEvP8SmartPtr">
+<span id="_CPPv3I_12SmartPointerEN7einsums14linear_algebra6invertEP8SmartPtr"></span><span id="_CPPv2I_12SmartPointerEN7einsums14linear_algebra6invertEP8SmartPtr"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">SmartPointer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SmartPtr</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a7b5deedc6fb113e40451bd84c94268e8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">invert</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_12SmartPointerEN7einsums14linear_algebra6invertEvP8SmartPtr" title="einsums::linear_algebra::invert::SmartPtr"><span class="n"><span class="pre">SmartPtr</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_12SmartPointerEN7einsums14linear_algebra6invertEvP8SmartPtr" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra4normE14RemoveComplexTIN5AType9ValueTypeEE4NormRK5AType">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra4normE4NormRK5AType"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra4normE4NormRK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a6140403a72743a0f5aee9bba47a5ccfd"></span><a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra4normE14RemoveComplexTIN5AType9ValueTypeEE4NormRK5AType" title="einsums::linear_algebra::norm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">norm</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums14linear_algebra4NormE" title="einsums::linear_algebra::Norm"><span class="n"><span class="pre">Norm</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">norm_type</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra4normE14RemoveComplexTIN5AType9ValueTypeEE4NormRK5AType" title="einsums::linear_algebra::norm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra4normE14RemoveComplexTIN5AType9ValueTypeEE4NormRK5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the norm of a matrix. </p>
+<p>Returns the value of the one norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a real matrix A.</p>
+<p><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">norm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">norm</span><span class="p">(</span><span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">Norm</span><span class="o">::</span><span class="n">One</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">);</span>
+</pre></div>
+</div>
+</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function assumes that the matrix is stored in column-major order.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AType</strong> – The type of the matrix </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>norm_type</strong> – where Norm::One denotes the one norm of a matrix (maximum column sum), Norm::Infinity denotes the infinity norm of a matrix (maximum row sum) and Norm::Frobenius denotes the Frobenius norm of a matrix (square root of sum of squares). Note that <span class="math notranslate nohighlight">\( max(abs(A(i,j))) \)</span> is not a consistent matrix norm. </p></li>
+<li><p><strong>a</strong> – The matrix to compute the norm of </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The norm of the matrix </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13TensorConceptEN7einsums14linear_algebra8vec_normE14RemoveComplexTIN5AType9ValueTypeEERK5AType">
+<span id="_CPPv3I_13TensorConceptEN7einsums14linear_algebra8vec_normERK5AType"></span><span id="_CPPv2I_13TensorConceptEN7einsums14linear_algebra8vec_normERK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a28b826e02427e541bbcaa1480b7171b7"></span><a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConceptEN7einsums14linear_algebra8vec_normE14RemoveComplexTIN5AType9ValueTypeEERK5AType" title="einsums::linear_algebra::vec_norm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vec_norm</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13TensorConceptEN7einsums14linear_algebra8vec_normE14RemoveComplexTIN5AType9ValueTypeEERK5AType" title="einsums::linear_algebra::vec_norm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConceptEN7einsums14linear_algebra8vec_normE14RemoveComplexTIN5AType9ValueTypeEERK5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra3svdERK5AType"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra3svdERK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a023fd6bae45b0752421974fb005e59bc"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType" title="einsums::linear_algebra::svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType" title="einsums::linear_algebra::svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType" title="einsums::linear_algebra::svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">svd</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType" title="einsums::linear_algebra::svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">_A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra13svd_nullspaceE6TensorIN5AType9ValueTypeEXL2EEERK5AType">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra13svd_nullspaceERK5AType"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra13svd_nullspaceERK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a1a945cc7926d42a069d35afb1ee5bb3c"></span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra13svd_nullspaceE6TensorIN5AType9ValueTypeEXL2EEERK5AType" title="einsums::linear_algebra::svd_nullspace::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">svd_nullspace</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra13svd_nullspaceE6TensorIN5AType9ValueTypeEXL2EEERK5AType" title="einsums::linear_algebra::svd_nullspace::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">_A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra13svd_nullspaceE6TensorIN5AType9ValueTypeEXL2EEERK5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra6svd_ddENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra6svd_ddERK5AType7Vectors"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra6svd_ddERK5AType7Vectors"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a60d9a2dd8ba9126abb4a9f31eb1c4da2"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra6svd_ddENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors" title="einsums::linear_algebra::svd_dd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra6svd_ddENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors" title="einsums::linear_algebra::svd_dd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra6svd_ddENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors" title="einsums::linear_algebra::svd_dd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">svd_dd</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra6svd_ddENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors" title="einsums::linear_algebra::svd_dd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">_A</span></span>, <a class="reference internal" href="#_CPPv4N7einsums14linear_algebra7VectorsE" title="einsums::linear_algebra::Vectors"><span class="n"><span class="pre">Vectors</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">job</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums14linear_algebra7VectorsE" title="einsums::linear_algebra::Vectors"><span class="n"><span class="pre">Vectors</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums14linear_algebra7Vectors3AllE" title="einsums::linear_algebra::Vectors::All"><span class="n"><span class="pre">All</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra6svd_ddENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra13truncated_svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTI5ATypeEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType6size_t">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra13truncated_svdERK5AType6size_t"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra13truncated_svdERK5AType6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a6e8a9c393007c29b1c54315334dfdd8f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra13truncated_svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTI5ATypeEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType6size_t" title="einsums::linear_algebra::truncated_svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra13truncated_svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTI5ATypeEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType6size_t" title="einsums::linear_algebra::truncated_svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra13truncated_svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTI5ATypeEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType6size_t" title="einsums::linear_algebra::truncated_svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">truncated_svd</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra13truncated_svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTI5ATypeEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType6size_t" title="einsums::linear_algebra::truncated_svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">_A</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra13truncated_svdENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTI5ATypeEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType6size_t" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra14truncated_syevENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType6size_t">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra14truncated_syevERK5AType6size_t"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra14truncated_syevERK5AType6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a4b5ac1be726ba4251d80a36cca915321"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra14truncated_syevENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType6size_t" title="einsums::linear_algebra::truncated_syev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra14truncated_syevENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType6size_t" title="einsums::linear_algebra::truncated_syev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">truncated_syev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra14truncated_syevENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType6size_t" title="einsums::linear_algebra::truncated_syev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra14truncated_syevENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType6size_t" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept0EN7einsums14linear_algebra13pseudoinverseE6TensorI1TXL2EEERK5AType1T">
+<span id="_CPPv3I_13MatrixConcept0EN7einsums14linear_algebra13pseudoinverseERK5AType1T"></span><span id="_CPPv2I_13MatrixConcept0EN7einsums14linear_algebra13pseudoinverseERK5AType1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a76cef7faa5be141b470bab4e18b2e1ab"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_13MatrixConcept0EN7einsums14linear_algebra13pseudoinverseE6TensorI1TXL2EEERK5AType1T" title="einsums::linear_algebra::pseudoinverse::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pseudoinverse</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConcept0EN7einsums14linear_algebra13pseudoinverseE6TensorI1TXL2EEERK5AType1T" title="einsums::linear_algebra::pseudoinverse::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept0EN7einsums14linear_algebra13pseudoinverseE6TensorI1TXL2EEERK5AType1T" title="einsums::linear_algebra::pseudoinverse::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">tol</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConcept0EN7einsums14linear_algebra13pseudoinverseE6TensorI1TXL2EEERK5AType1T" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra25solve_continuous_lyapunovE6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK5QType">
+<span id="_CPPv3I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra25solve_continuous_lyapunovERK5ATypeRK5QType"></span><span id="_CPPv2I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra25solve_continuous_lyapunovERK5ATypeRK5QType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a553da8511d2833a6347a0a5ddffae29c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra25solve_continuous_lyapunovE6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK5QType" title="einsums::linear_algebra::solve_continuous_lyapunov::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">solve_continuous_lyapunov</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra25solve_continuous_lyapunovE6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK5QType" title="einsums::linear_algebra::solve_continuous_lyapunov::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra25solve_continuous_lyapunovE6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK5QType" title="einsums::linear_algebra::solve_continuous_lyapunov::QType"><span class="n"><span class="pre">QType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">Q</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConcept_13MatrixConceptEN7einsums14linear_algebra25solve_continuous_lyapunovE6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK5QType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra2qrENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra2qrERK5AType"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra2qrERK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1abd88622c587e6981b8948259bcafe52b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra2qrENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType" title="einsums::linear_algebra::qr::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra2qrENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType" title="einsums::linear_algebra::qr::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">qr</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra2qrENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType" title="einsums::linear_algebra::qr::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">_A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra2qrENSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra1qE6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType">
+<span id="_CPPv3I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra1qERK5ATypeRK7TauType"></span><span id="_CPPv2I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra1qERK5ATypeRK7TauType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TauType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1ac6860517b165c9bb9d9db5f74c7a0d94"></span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra1qE6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType" title="einsums::linear_algebra::q::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">q</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra1qE6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType" title="einsums::linear_algebra::q::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">qr</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra1qE6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType" title="einsums::linear_algebra::q::TauType"><span class="n"><span class="pre">TauType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tau</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConcept_13VectorConceptEN7einsums14linear_algebra1qE6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0EN7einsums14linear_algebra14direct_productEv1TRK5ATypeRK5BType1TP5CType">
+<span id="_CPPv3I_13TensorConcept_13TensorConcept_13TensorConcept0EN7einsums14linear_algebra14direct_productE1TRK5ATypeRK5BType1TP5CType"></span><span id="_CPPv2I_13TensorConcept_13TensorConcept_13TensorConcept0EN7einsums14linear_algebra14direct_productE1TRK5ATypeRK5BType1TP5CType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1a2dde92383a3ec3ddd76bdb7c8c4ed94c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">direct_product</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0EN7einsums14linear_algebra14direct_productEv1TRK5ATypeRK5BType1TP5CType" title="einsums::linear_algebra::direct_product::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0EN7einsums14linear_algebra14direct_productEv1TRK5ATypeRK5BType1TP5CType" title="einsums::linear_algebra::direct_product::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0EN7einsums14linear_algebra14direct_productEv1TRK5ATypeRK5BType1TP5CType" title="einsums::linear_algebra::direct_product::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0EN7einsums14linear_algebra14direct_productEv1TRK5ATypeRK5BType1TP5CType" title="einsums::linear_algebra::direct_product::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0EN7einsums14linear_algebra14direct_productEv1TRK5ATypeRK5BType1TP5CType" title="einsums::linear_algebra::direct_product::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0EN7einsums14linear_algebra14direct_productEv1TRK5ATypeRK5BType1TP5CType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3detEN5AType9ValueTypeERK5AType">
+<span id="_CPPv3I_13MatrixConceptEN7einsums14linear_algebra3detERK5AType"></span><span id="_CPPv2I_13MatrixConceptEN7einsums14linear_algebra3detERK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_linear_algebra_8hpp_1ad355d74e4aa54dd86e72b743238ad8c7"></span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3detEN5AType9ValueTypeERK5AType" title="einsums::linear_algebra::det::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">det</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3detEN5AType9ValueTypeERK5AType" title="einsums::linear_algebra::det::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptEN7einsums14linear_algebra3detEN5AType9ValueTypeERK5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the determinant of a matrix. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

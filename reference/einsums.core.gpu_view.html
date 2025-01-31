@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums Python GPU Views &#8212; Einsums 0.6.1 documentation</title>
+    <title>Einsums Python GPU Views &#8212; Einsums 1.0.0-trunk documentation</title>
   
   
   
@@ -17,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -28,31 +27,33 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=e37360c5" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/design-tabs.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/einsums.core.gpu_view';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Einsums Python Runtime Tensors" href="einsums.core.runtimetensor.html" />
-    <link rel="prev" title="Einsums Python Tensor Algebra" href="einsums.core.tensor_algebra.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.6.1" />
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Jan 31, 2025"/>
   </head>
   
   
@@ -143,8 +144,8 @@
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="index.html">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
     API Reference
   </a>
 </li>
@@ -182,22 +183,6 @@
   <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
   <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
 </button></div>
-      
-        <div class="navbar-item"><ul class="navbar-icon-links"
-    aria-label="Icon Links">
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
-        </li>
-</ul></div>
       
     </div>
     
@@ -252,8 +237,8 @@
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="index.html">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
     API Reference
   </a>
 </li>
@@ -283,22 +268,6 @@
   <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
 </button></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links"
-    aria-label="Icon Links">
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
-        </li>
-</ul></div>
-        
       </div>
     
   </div>
@@ -309,36 +278,17 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="classes.html">Classes/Structs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="class.tensor.html">Tensor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="class.tensorview.html">Tensor View</a></li>
-<li class="toctree-l2"><a class="reference internal" href="class.devicetensor.html">Device Tensor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="class.devicetensorview.html">Device Tensor Views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="class.runtimetensor.html">Runtime Tensors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="class.runtimetensorview.html">Runtime Tensor Views</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="einsums.core.html">Einsums Core Module</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.tensor_algebra.html">Einsums Python Tensor Algebra</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Einsums Python GPU Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.runtimetensor.html">Einsums Python Runtime Tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="functions.html">Functions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html">Linear Algebra (BLAS, LAPACK, etc.)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="python_module.html">Einsums Python Module</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="einsums.core.html">Einsums Core Module</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="einsums.core.tensor_algebra.html">Einsums Python Tensor Algebra</a></li>
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">Einsums Python GPU Views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html">Einsums Python Runtime Tensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html">Einsums Utilities Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html">HIP Exceptions in Python</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1"><a class="reference external" href="https://codecov.io/github/Einsums/Einsums">Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="einsums.utils.html">Einsums Utilities Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="einsums.gpu_except.html">HIP Exceptions in Python</a></li>
 </ul>
 </div>
 </nav></div>
@@ -346,9 +296,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -374,15 +329,6 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums reference</a></li>
-    
-    
-    <li class="breadcrumb-item"><a href="python_module.html" class="nav-link">Einsums Python Module</a></li>
-    
-    
-    <li class="breadcrumb-item"><a href="einsums.core.html" class="nav-link">Einsums Core Module</a></li>
-    
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums Python GPU Views</span></li>
   </ul>
 </nav>
@@ -451,8 +397,8 @@ tensors. Views can not be created with this mode from Python.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">GPUView</span></span><a class="headerlink" href="#einsums.core.GPUView" title="Permalink to this definition">#</a></dt>
 <dd><p>A view that wraps data to allow for it to be transferred between the host and a device. As an example
 of the use of these views, see below.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">einsums</span> <span class="k">as</span> <span class="nn">ein</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ein</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">plan</span> <span class="o">=</span> <span class="n">ein</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">compile_plan</span><span class="p">(</span><span class="s2">&quot;ij&quot;</span><span class="p">,</span> <span class="s2">&quot;ik&quot;</span><span class="p">,</span> <span class="s2">&quot;kj&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
@@ -589,24 +535,6 @@ of the use of these views, see below.</p>
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="einsums.core.tensor_algebra.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Einsums Python Tensor Algebra</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="einsums.core.runtimetensor.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Einsums Python Runtime Tensors</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
@@ -626,7 +554,7 @@ of the use of these views, see below.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUViewMode"><code class="docutils literal notranslate"><span class="pre">GPUViewMode</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUViewMode"><code class="docutils literal notranslate"><span class="pre">GPUViewMode</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUViewMode.name"><code class="docutils literal notranslate"><span class="pre">GPUViewMode.name</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUViewMode.value"><code class="docutils literal notranslate"><span class="pre">GPUViewMode.value</span></code></a></li>
 </ul>
@@ -634,19 +562,19 @@ of the use of these views, see below.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.COPY"><code class="docutils literal notranslate"><span class="pre">COPY</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.MAP"><code class="docutils literal notranslate"><span class="pre">MAP</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.DEVICE_TENSOR"><code class="docutils literal notranslate"><span class="pre">DEVICE_TENSOR</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView"><code class="docutils literal notranslate"><span class="pre">GPUView</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.__init__"><code class="docutils literal notranslate"><span class="pre">GPUView.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.dims"><code class="docutils literal notranslate"><span class="pre">GPUView.dims()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.strides"><code class="docutils literal notranslate"><span class="pre">GPUView.strides()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.dim"><code class="docutils literal notranslate"><span class="pre">GPUView.dim()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.stride"><code class="docutils literal notranslate"><span class="pre">GPUView.stride()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.fmt_spec"><code class="docutils literal notranslate"><span class="pre">GPUView.fmt_spec()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.update_H2D"><code class="docutils literal notranslate"><span class="pre">GPUView.update_H2D()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.update_D2H"><code class="docutils literal notranslate"><span class="pre">GPUView.update_D2H()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.size"><code class="docutils literal notranslate"><span class="pre">GPUView.size()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.__len__"><code class="docutils literal notranslate"><span class="pre">GPUView.__len__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.rank"><code class="docutils literal notranslate"><span class="pre">GPUView.rank()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.itemsize"><code class="docutils literal notranslate"><span class="pre">GPUView.itemsize()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView"><code class="docutils literal notranslate"><span class="pre">GPUView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.__init__"><code class="docutils literal notranslate"><span class="pre">GPUView.__init__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.dims"><code class="docutils literal notranslate"><span class="pre">GPUView.dims</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.strides"><code class="docutils literal notranslate"><span class="pre">GPUView.strides</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.dim"><code class="docutils literal notranslate"><span class="pre">GPUView.dim</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.stride"><code class="docutils literal notranslate"><span class="pre">GPUView.stride</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.fmt_spec"><code class="docutils literal notranslate"><span class="pre">GPUView.fmt_spec</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.update_H2D"><code class="docutils literal notranslate"><span class="pre">GPUView.update_H2D</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.update_D2H"><code class="docutils literal notranslate"><span class="pre">GPUView.update_D2H</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.size"><code class="docutils literal notranslate"><span class="pre">GPUView.size</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.__len__"><code class="docutils literal notranslate"><span class="pre">GPUView.__len__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.rank"><code class="docutils literal notranslate"><span class="pre">GPUView.rank</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GPUView.itemsize"><code class="docutils literal notranslate"><span class="pre">GPUView.itemsize</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -665,8 +593,8 @@ of the use of these views, see below.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -677,7 +605,7 @@ of the use of these views, see below.</p>
 
   <p class="copyright">
     
-      © Copyright 2022-2024, Einsums Developers.
+      © Copyright 2022-2025, Einsums Developers.
       <br/>
     
   </p>
@@ -686,7 +614,7 @@ of the use of these views, see below.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
     <br/>
   </p>
 </div>
@@ -699,7 +627,8 @@ of the use of these views, see below.</p>
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

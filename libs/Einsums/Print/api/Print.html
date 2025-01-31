@@ -1,0 +1,670 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/Print.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/Print/api/Print';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Jan 31, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Print.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/Print.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-print-hpp">
+<span id="modules-einsums-einsums-print-hpp-api"></span><h1>Einsums/Print.hpp<a class="headerlink" href="#einsums-print-hpp" title="Permalink to this heading">#</a></h1>
+<p>Defined in header .</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums7printlnEvRKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums7printlnERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums7printlnERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1acbb59156898b4ebf8137d7f75fc4f1be"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">println</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums7printlnEvRKNSt11string_viewEDpK2Ts" title="einsums::println::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums7printlnEvRKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums7printlnEvRKN3fmt10text_styleERKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums7printlnERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums7printlnERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1ae0d9c2674b8f542214e06d9dcf8d368b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">println</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">text_style</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">style</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums7printlnEvRKN3fmt10text_styleERKNSt11string_viewEDpK2Ts" title="einsums::println::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums7printlnEvRKN3fmt10text_styleERKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7printlnERKN3fmt10text_styleERKNSt11string_viewE">
+<span id="_CPPv3N7einsums7printlnERKN3fmt10text_styleERKNSt11string_viewE"></span><span id="_CPPv2N7einsums7printlnERKN3fmt10text_styleERKNSt11string_viewE"></span><span id="einsums::println__fmt::text_styleCR.std::string_viewCR"></span><span class="target" id="_print_8hpp_1afbb546e8493afe1872b0283647293127"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">println</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">text_style</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">style</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7printlnERKN3fmt10text_styleERKNSt11string_viewE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7printlnEv">
+<span id="_CPPv3N7einsums7printlnEv"></span><span id="_CPPv2N7einsums7printlnEv"></span><span id="einsums::println"></span><span class="target" id="_print_8hpp_1abdbb4497af5e2ecb42e01c9730a0e4fb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">println</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7printlnEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums8fprintlnEvPNSt4FILEERKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums8fprintlnEPNSt4FILEERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums8fprintlnEPNSt4FILEERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1a142d6b66f0be235313624b11d57fb990"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums8fprintlnEvPNSt4FILEERKNSt11string_viewEDpK2Ts" title="einsums::fprintln::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums8fprintlnEvPNSt4FILEERKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums8fprintlnEvPNSt4FILEERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums8fprintlnEPNSt4FILEERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums8fprintlnEPNSt4FILEERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1aa54fe2734d560b4018703318732c5529"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">text_style</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">style</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums8fprintlnEvPNSt4FILEERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts" title="einsums::fprintln::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums8fprintlnEvPNSt4FILEERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums8fprintlnEPNSt4FILEERKNSt6stringE">
+<span id="_CPPv3N7einsums8fprintlnEPNSt4FILEERKNSt6stringE"></span><span id="_CPPv2N7einsums8fprintlnEPNSt4FILEERKNSt6stringE"></span><span id="einsums::fprintln__std::FILEP.ssCR"></span><span class="target" id="_print_8hpp_1a68397a49ec3709b524367fce9fce3006"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums8fprintlnEPNSt4FILEERKNSt6stringE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums8fprintlnEPNSt4FILEERKN3fmt10text_styleERKNSt11string_viewE">
+<span id="_CPPv3N7einsums8fprintlnEPNSt4FILEERKN3fmt10text_styleERKNSt11string_viewE"></span><span id="_CPPv2N7einsums8fprintlnEPNSt4FILEERKN3fmt10text_styleERKNSt11string_viewE"></span><span id="einsums::fprintln__std::FILEP.fmt::text_styleCR.std::string_viewCR"></span><span class="target" id="_print_8hpp_1afdec78fd4081964f8818c0f0663db3d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">text_style</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">style</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums8fprintlnEPNSt4FILEERKN3fmt10text_styleERKNSt11string_viewE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums8fprintlnEPNSt4FILEE">
+<span id="_CPPv3N7einsums8fprintlnEPNSt4FILEE"></span><span id="_CPPv2N7einsums8fprintlnEPNSt4FILEE"></span><span id="einsums::fprintln__std::FILEP"></span><span class="target" id="_print_8hpp_1a91a0320642eee6d5d5dfe6c635722af5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums8fprintlnEPNSt4FILEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums8fprintlnEvRNSt7ostreamERKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums8fprintlnERNSt7ostreamERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums8fprintlnERNSt7ostreamERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1af4251e9238bb3a6bb6154df91ddefc0c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums8fprintlnEvRNSt7ostreamERKNSt11string_viewEDpK2Ts" title="einsums::fprintln::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums8fprintlnEvRNSt7ostreamERKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums8fprintlnEvRNSt7ostreamERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums8fprintlnERNSt7ostreamERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums8fprintlnERNSt7ostreamERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1ae6be4208740856714e35886d84165245"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">text_style</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">style</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums8fprintlnEvRNSt7ostreamERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts" title="einsums::fprintln::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums8fprintlnEvRNSt7ostreamERKN3fmt10text_styleERKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums8fprintlnERNSt7ostreamERKNSt6stringE">
+<span id="_CPPv3N7einsums8fprintlnERNSt7ostreamERKNSt6stringE"></span><span id="_CPPv2N7einsums8fprintlnERNSt7ostreamERKNSt6stringE"></span><span id="einsums::fprintln__osR.ssCR"></span><span class="target" id="_print_8hpp_1aba7638c90772d3a84f6d4c7bf9123fb5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums8fprintlnERNSt7ostreamERKNSt6stringE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums8fprintlnERNSt7ostreamERKN3fmt10text_styleERKNSt11string_viewE">
+<span id="_CPPv3N7einsums8fprintlnERNSt7ostreamERKN3fmt10text_styleERKNSt11string_viewE"></span><span id="_CPPv2N7einsums8fprintlnERNSt7ostreamERKN3fmt10text_styleERKNSt11string_viewE"></span><span id="einsums::fprintln__osR.fmt::text_styleCR.std::string_viewCR"></span><span class="target" id="_print_8hpp_1a60db89b1eec7111ea6436610736e7192"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">text_style</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">style</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums8fprintlnERNSt7ostreamERKN3fmt10text_styleERKNSt11string_viewE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums8fprintlnERNSt7ostreamE">
+<span id="_CPPv3N7einsums8fprintlnERNSt7ostreamE"></span><span id="_CPPv2N7einsums8fprintlnERNSt7ostreamE"></span><span id="einsums::fprintln__osR"></span><span class="target" id="_print_8hpp_1aeba0a01f5fcc6a1355eb5df8ff0abe61"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums8fprintlnERNSt7ostreamE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums13println_abortEvRKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums13println_abortERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums13println_abortERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1a04414cc794fd00c81b1d314ec666829e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">println_abort</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums13println_abortEvRKNSt11string_viewEDpK2Ts" title="einsums::println_abort::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums13println_abortEvRKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums12println_warnEvRKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums12println_warnERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums12println_warnERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1a09a71e17d0f47c61adcb951f4d26e632"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">println_warn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums12println_warnEvRKNSt11string_viewEDpK2Ts" title="einsums::println_warn::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums12println_warnEvRKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums14fprintln_abortEvPNSt4FILEERKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums14fprintln_abortEPNSt4FILEERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums14fprintln_abortEPNSt4FILEERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1afa16c745b1104d3ad313567589f14489"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln_abort</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums14fprintln_abortEvPNSt4FILEERKNSt11string_viewEDpK2Ts" title="einsums::fprintln_abort::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums14fprintln_abortEvPNSt4FILEERKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums13fprintln_warnEvPNSt4FILEERKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums13fprintln_warnEPNSt4FILEERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums13fprintln_warnEPNSt4FILEERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1a5720dd13f5f28a9869aa87cb1e1f9498"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln_warn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums13fprintln_warnEvPNSt4FILEERKNSt11string_viewEDpK2Ts" title="einsums::fprintln_warn::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums13fprintln_warnEvPNSt4FILEERKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums14fprintln_abortEvRNSt7ostreamERKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums14fprintln_abortERNSt7ostreamERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums14fprintln_abortERNSt7ostreamERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1a2e2758f71439f9adca36d0d86710f9fd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln_abort</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">os</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums14fprintln_abortEvRNSt7ostreamERKNSt11string_viewEDpK2Ts" title="einsums::fprintln_abort::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums14fprintln_abortEvRNSt7ostreamERKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums13fprintln_warnEvRNSt7ostreamERKNSt11string_viewEDpK2Ts">
+<span id="_CPPv3IDpEN7einsums13fprintln_warnERNSt7ostreamERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums13fprintln_warnERNSt7ostreamERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_print_8hpp_1a4cc47c70286b72552cc9528f4faaadb7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln_warn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">os</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums13fprintln_warnEvRNSt7ostreamERKNSt11string_viewEDpK2Ts" title="einsums::fprintln_warn::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums13fprintln_warnEvRNSt7ostreamERKNSt11string_viewEDpK2Ts" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5printE">
+<span id="_CPPv3N7einsums5printE"></span><span id="_CPPv2N7einsums5printE"></span><span id="einsums::print"></span><span class="target" id="namespaceeinsums_1_1print"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">print</span></span></span><a class="headerlink" href="#_CPPv4N7einsums5printE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print6indentEv">
+<span id="_CPPv3N7einsums5print6indentEv"></span><span id="_CPPv2N7einsums5print6indentEv"></span><span id="einsums::print::indent"></span><span class="target" id="_print_8hpp_1a338f8df3dc31a53462b2d36ebf66f416"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print6indentEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Add spaces to the global indentation counter. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print8deindentEv">
+<span id="_CPPv3N7einsums5print8deindentEv"></span><span id="_CPPv2N7einsums5print8deindentEv"></span><span id="einsums::print::deindent"></span><span class="target" id="_print_8hpp_1a245f2c117c0bb67367217e67ab6169e0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deindent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print8deindentEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Removes spaces from the global indentation counter. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print20current_indent_levelEv">
+<span id="_CPPv3N7einsums5print20current_indent_levelEv"></span><span id="_CPPv2N7einsums5print20current_indent_levelEv"></span><span id="einsums::print::current_indent_level"></span><span class="target" id="_print_8hpp_1a7204885db4c31cf9af9d06467d6c98f8"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">current_indent_level</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print20current_indent_levelEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Returns the current indentation level. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print22always_print_thread_idEb">
+<span id="_CPPv3N7einsums5print22always_print_thread_idEb"></span><span id="_CPPv2N7einsums5print22always_print_thread_idEb"></span><span id="einsums::print::always_print_thread_id__b"></span><span class="target" id="_print_8hpp_1a47c539e95a8327cff0c065123c9bae4d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">always_print_thread_id</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">onoff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print22always_print_thread_idEb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Controls whether a line header is printed for the main thread or not. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>onoff</strong> – If true, print thread id for main and child threads, otherwise just print for child threads. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print15suppress_outputEb">
+<span id="_CPPv3N7einsums5print15suppress_outputEb"></span><span id="_CPPv2N7einsums5print15suppress_outputEb"></span><span id="einsums::print::suppress_output__b"></span><span class="target" id="_print_8hpp_1a0888e513e1cd70b71b60ef967b943c76"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">suppress_output</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">onoff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print15suppress_outputEb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Silences all output. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>onoff</strong> – If true, output is suppressed, otherwise printing is allowed. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print6IndentE">
+<span id="_CPPv3N7einsums5print6IndentE"></span><span id="_CPPv2N7einsums5print6IndentE"></span><span id="einsums::print::Indent"></span><span class="target" id="structeinsums_1_1print_1_1_indent"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Indent</span></span></span><a class="headerlink" href="#_CPPv4N7einsums5print6IndentE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Print.hpp&gt;</em></div>
+<p>Controls indentation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print6Indent6IndentEv">
+<span id="_CPPv3N7einsums5print6Indent6IndentEv"></span><span id="_CPPv2N7einsums5print6Indent6IndentEv"></span><span id="einsums::print::Indent::Indent"></span><span class="target" id="structeinsums_1_1print_1_1_indent_1a452e4e96a6f932e136d19113e3c3d84c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Indent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print6Indent6IndentEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print6IndentD0Ev">
+<span id="_CPPv3N7einsums5print6IndentD0Ev"></span><span id="_CPPv2N7einsums5print6IndentD0Ev"></span><span id="einsums::print::Indent::~Indent"></span><span class="target" id="structeinsums_1_1print_1_1_indent_1a585fdfbe126f7dc520ca8a8479a0d98d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Indent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print6IndentD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt8integralEEN7einsums5print7ordinalE">
+<span id="_CPPv3I_NSt8integralEEN7einsums5print7ordinalE"></span><span id="_CPPv2I_NSt8integralEEN7einsums5print7ordinalE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">integral</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IntType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1print_1_1ordinal"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ordinal</span></span></span><a class="headerlink" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Print.hpp&gt;</em></div>
+<p>Wraps an integer. When the ordinal is printed, it will add the appropriate ordinal suffix to that integer. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinal7ordinalEv">
+<span id="_CPPv3N7einsums5print7ordinal7ordinalEv"></span><span id="_CPPv2N7einsums5print7ordinal7ordinalEv"></span><span id="einsums::print::ordinal::ordinalCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1a92c1ba245ad0e4a5af910b1d1069a915"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ordinal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinal7ordinalEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinal7ordinalERK7ordinalI7IntTypeE">
+<span id="_CPPv3N7einsums5print7ordinal7ordinalERK7ordinalI7IntTypeE"></span><span id="_CPPv2N7einsums5print7ordinal7ordinalERK7ordinalI7IntTypeE"></span><span id="einsums::print::ordinal::ordinal__ordinal:IntType:CRCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1a811f09896d3370c87dac56089bf530c8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ordinal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums5print7ordinal7ordinalERK7ordinalI7IntTypeE" title="einsums::print::ordinal::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinal7ordinalERK7ordinalI7IntTypeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinal7ordinalERR7ordinalI7IntTypeE">
+<span id="_CPPv3N7einsums5print7ordinal7ordinalERR7ordinalI7IntTypeE"></span><span id="_CPPv2N7einsums5print7ordinal7ordinalERR7ordinalI7IntTypeE"></span><span id="einsums::print::ordinal::ordinal__ordinal:IntType:RRCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1af5f38ef93635a6066ebac7b1523f019b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ordinal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums5print7ordinal7ordinalERR7ordinalI7IntTypeE" title="einsums::print::ordinal::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinal7ordinalERR7ordinalI7IntTypeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinal7ordinalERK7IntType">
+<span id="_CPPv3N7einsums5print7ordinal7ordinalERK7IntType"></span><span id="_CPPv2N7einsums5print7ordinal7ordinalERK7IntType"></span><span id="einsums::print::ordinal::ordinal__IntTypeCRCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1ac9014f94a1f83e0f412e834ea657ef4f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ordinal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinal7ordinalERK7IntType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Cast constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinalD0Ev">
+<span id="_CPPv3N7einsums5print7ordinalD0Ev"></span><span id="_CPPv2N7einsums5print7ordinalD0Ev"></span><span id="einsums::print::ordinal::~ordinalCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1a819461c6a0b6613755aa25491a22b169"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~ordinal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinalD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Deleter. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinalaSERK7ordinalI7IntTypeE">
+<span id="_CPPv3N7einsums5print7ordinalaSERK7ordinalI7IntTypeE"></span><span id="_CPPv2N7einsums5print7ordinalaSERK7ordinalI7IntTypeE"></span><span id="einsums::print::ordinal::assign-operator__ordinal:IntType:CR"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1a5f5f176b2435e5fe874ad547303de9f0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinalaSERK7ordinalI7IntTypeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Copy assignment. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinalaSERR7ordinalI7IntTypeE">
+<span id="_CPPv3N7einsums5print7ordinalaSERR7ordinalI7IntTypeE"></span><span id="_CPPv2N7einsums5print7ordinalaSERR7ordinalI7IntTypeE"></span><span id="einsums::print::ordinal::assign-operator__ordinal:IntType:RR"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1a9df3e14682643fa70fb332f48cbcb0d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinalaSERR7ordinalI7IntTypeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Move assignment. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums5print7ordinalcv7IntTypeEv">
+<span id="_CPPv3NK7einsums5print7ordinalcv7IntTypeEv"></span><span id="_CPPv2NK7einsums5print7ordinalcv7IntTypeEv"></span><span id="einsums::print::ordinal::castto-IntType-operatorCCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1ae16a515628834dde76ad8d18681a576a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums5print7ordinalcv7IntTypeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Cast to underlying integer type. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinalcvR7IntTypeEv">
+<span id="_CPPv3N7einsums5print7ordinalcvR7IntTypeEv"></span><span id="_CPPv2N7einsums5print7ordinalcvR7IntTypeEv"></span><span id="einsums::print::ordinal::castto-IntTypeR-operatorCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1adf5d06cd507d835d781897717ae3069e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&amp;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinalcvR7IntTypeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Cast to reference of the underlying integer type. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK7einsums5print7ordinalcv1TEv">
+<span id="_CPPv3I0ENK7einsums5print7ordinalcv1TEv"></span><span id="_CPPv2I0ENK7einsums5print7ordinalcv1TEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1print_1_1ordinal_1ab03ef59ad07c69807a119e507d0eb1fd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0ENK7einsums5print7ordinalcv1TEv" title="einsums::print::ordinal::operator T::T"><span class="n"><span class="pre">T</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK7einsums5print7ordinalcv1TEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Cast to arbitrary type. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinal4val_E">
+<span id="_CPPv3N7einsums5print7ordinal4val_E"></span><span id="_CPPv2N7einsums5print7ordinal4val_E"></span><span id="einsums::print::ordinal::val___IntType"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1aea0b0795c500b52e30a13c329f3b6d08"></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">val_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinal4val_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>The value wrapped by the ordinal. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

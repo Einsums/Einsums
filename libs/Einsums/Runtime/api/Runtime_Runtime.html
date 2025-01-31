@@ -1,0 +1,550 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/Runtime/Runtime.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/Runtime/api/Runtime_Runtime';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Jan 31, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Runtime.html">Einsums/Runtime.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RuntimeForward.html">Einsums/Runtime/RuntimeForward.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Runtime/Runtime.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ShutdownFunction.html">Einsums/Runtime/ShutdownFunction.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StartupFunction.html">Einsums/Runtime/StartupFunction.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="InitRuntime.html">Einsums/Runtime/InitRuntime.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="InitLogging.html">Einsums/Runtime/Detail/InitLogging.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/Runtime/Runtime.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-runtime-runtime-hpp">
+<span id="modules-einsums-einsums-runtime-runtime-hpp-api"></span><h1>Einsums/Runtime/Runtime.hpp<a class="headerlink" href="#einsums-runtime-runtime-hpp" title="Permalink to this heading">#</a></h1>
+<p>Defined in header .</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4IEN3fmt9formatterIN7einsums12RuntimeStateEEE">
+<span id="_CPPv3IEN3fmt9formatterIN7einsums12RuntimeStateEEE"></span><span id="_CPPv2IEN3fmt9formatterIN7einsums12RuntimeStateEEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfmt_1_1formatter_3_01einsums_1_1_runtime_state_01_4"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">formatter</span></span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums12RuntimeStateE" title="einsums::RuntimeState"><span class="n"><span class="pre">RuntimeState</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">formatter</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">string_view</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4IEN3fmt9formatterIN7einsums12RuntimeStateEEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK3fmt9formatterIN7einsums12RuntimeStateEE6formatEDaN7einsums12RuntimeStateER13FormatContext">
+<span id="_CPPv3I0ENK3fmt9formatterIN7einsums12RuntimeStateEE6formatEN7einsums12RuntimeStateER13FormatContext"></span><span id="_CPPv2I0ENK3fmt9formatterIN7einsums12RuntimeStateEE6formatEN7einsums12RuntimeStateER13FormatContext"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FormatContext</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfmt_1_1formatter_3_01einsums_1_1_runtime_state_01_4_1a9b8beae30f9b2f8034155c646cbea81b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">format</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums12RuntimeStateE" title="einsums::RuntimeState"><span class="n"><span class="pre">RuntimeState</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">state</span></span>, <a class="reference internal" href="#_CPPv4I0ENK3fmt9formatterIN7einsums12RuntimeStateEE6formatEDaN7einsums12RuntimeStateER13FormatContext" title="fmt::formatter&lt;einsums::RuntimeState&gt;::format::FormatContext"><span class="n"><span class="pre">FormatContext</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ctx</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK3fmt9formatterIN7einsums12RuntimeStateEE6formatEDaN7einsums12RuntimeStateER13FormatContext" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-enums">Enums</p>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeStateE">
+<span id="_CPPv3N7einsums12RuntimeStateE"></span><span id="_CPPv2N7einsums12RuntimeStateE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393c"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RuntimeState</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int8_t</span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeStateE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState7InvalidE">
+<span id="_CPPv3N7einsums12RuntimeState7InvalidE"></span><span id="_CPPv2N7einsums12RuntimeState7InvalidE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393ca4bbb8f967da6d1a610596d7257179c2b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Invalid</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7InvalidE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState11InitializedE">
+<span id="_CPPv3N7einsums12RuntimeState11InitializedE"></span><span id="_CPPv2N7einsums12RuntimeState11InitializedE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393ca59d87a4758a9d35fbaf6b204341bb399"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialized</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState11InitializedE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState10PreStartupE">
+<span id="_CPPv3N7einsums12RuntimeState10PreStartupE"></span><span id="_CPPv2N7einsums12RuntimeState10PreStartupE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393cac9ed8b908cb7412b7697a4dffb3861e5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreStartup</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState10PreStartupE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState7StartupE">
+<span id="_CPPv3N7einsums12RuntimeState7StartupE"></span><span id="_CPPv2N7einsums12RuntimeState7StartupE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393ca13e685964c2548aa748f7ea263bad4e5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Startup</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7StartupE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState7PreMainE">
+<span id="_CPPv3N7einsums12RuntimeState7PreMainE"></span><span id="_CPPv2N7einsums12RuntimeState7PreMainE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393ca934b98b268b4cf502303d3663d6038ca"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreMain</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7PreMainE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState8StartingE">
+<span id="_CPPv3N7einsums12RuntimeState8StartingE"></span><span id="_CPPv2N7einsums12RuntimeState8StartingE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393cac2efe4bbd13e6cb0db293e72884273c0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Starting</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState8StartingE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState7RunningE">
+<span id="_CPPv3N7einsums12RuntimeState7RunningE"></span><span id="_CPPv2N7einsums12RuntimeState7RunningE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393ca5bda814c4aedb126839228f1a3d92f09"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Running</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7RunningE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState11PreShutdownE">
+<span id="_CPPv3N7einsums12RuntimeState11PreShutdownE"></span><span id="_CPPv2N7einsums12RuntimeState11PreShutdownE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393ca3e1ed7de078f8f35e9e5499e7fecb604"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreShutdown</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState11PreShutdownE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState8ShutdownE">
+<span id="_CPPv3N7einsums12RuntimeState8ShutdownE"></span><span id="_CPPv2N7einsums12RuntimeState8ShutdownE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393ca1a4ebb180ba59b067782515ffee6e975"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Shutdown</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState8ShutdownE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState8StoppingE">
+<span id="_CPPv3N7einsums12RuntimeState8StoppingE"></span><span id="_CPPv2N7einsums12RuntimeState8StoppingE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393ca7b7ecb39b9e110c2a31409a1672bad23"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stopping</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState8StoppingE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState11TerminatingE">
+<span id="_CPPv3N7einsums12RuntimeState11TerminatingE"></span><span id="_CPPv2N7einsums12RuntimeState11TerminatingE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393ca720f84c3d4dcb9a556ac6adfd1e75b8c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Terminating</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState11TerminatingE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState7StoppedE">
+<span id="_CPPv3N7einsums12RuntimeState7StoppedE"></span><span id="_CPPv2N7einsums12RuntimeState7StoppedE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393cac23e2b09ebe6bf4cb5e2a9abe85c0be2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stopped</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7StoppedE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState14LastValidStateE">
+<span id="_CPPv3N7einsums12RuntimeState14LastValidStateE"></span><span id="_CPPv2N7einsums12RuntimeState14LastValidStateE"></span><span class="target" id="_runtime_2_runtime_8hpp_1a5ec3f07d14ddbd42605d994cef62393ca9ba39dbc874ad49c184ac5e1c1564ac3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LastValidState</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState14LastValidStateE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7runtimeEv">
+<span id="_CPPv3N7einsums7runtimeEv"></span><span id="_CPPv2N7einsums7runtimeEv"></span><span id="einsums::runtime"></span><span class="target" id="_runtime_2_runtime_8hpp_1a459dfa7c0a4b7b2401177430f3738c0e"></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Runtime</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">runtime</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7runtimeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>The function <em>get_runtime</em> returns a reference to the (thread specific) runtime instance. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11runtime_ptrEv">
+<span id="_CPPv3N7einsums11runtime_ptrEv"></span><span id="_CPPv2N7einsums11runtime_ptrEv"></span><span id="einsums::runtime_ptr"></span><span class="target" id="_runtime_2_runtime_8hpp_1a33216269e1b3507b00c79538b5692db9"></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Runtime</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">runtime_ptr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11runtime_ptrEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14runtime_configEv">
+<span id="_CPPv3N7einsums14runtime_configEv"></span><span id="_CPPv2N7einsums14runtime_configEv"></span><span id="einsums::runtime_config"></span><span class="target" id="_runtime_2_runtime_8hpp_1acd9c21d35677bbbe6c171ca8e117bc55"></span><a class="reference internal" href="../../RuntimeConfiguration/api/RuntimeConfiguration.html#_CPPv4N7einsums20RuntimeConfigurationE" title="einsums::RuntimeConfiguration"><span class="n"><span class="pre">RuntimeConfiguration</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">runtime_config</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums14runtime_configEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10is_runningEv">
+<span id="_CPPv3N7einsums10is_runningEv"></span><span id="_CPPv2N7einsums10is_runningEv"></span><span id="einsums::is_running"></span><span class="target" id="_runtime_2_runtime_8hpp_1a30c109c68fa68db7cc88b9ee5fd9d3ef"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_running</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums10is_runningEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Test whether the runtime system is currently running. </p>
+<p>This function returns whether the runtime system is currently running or not, e.g. whether the current state of the runtime system is <em>einsums::RuntimeState::Running</em></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function needs to be executed on a pika-thread. It will return false otherwise. </p>
+</div>
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums21invalid_runtime_stateE">
+<span id="_CPPv3N7einsums21invalid_runtime_stateE"></span><span id="_CPPv2N7einsums21invalid_runtime_stateE"></span><span id="einsums::invalid_runtime_state"></span><span class="target" id="structeinsums_1_1invalid__runtime__state"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">invalid_runtime_state</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">runtime_error</span></span><a class="headerlink" href="#_CPPv4N7einsums21invalid_runtime_stateE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Runtime.hpp&gt;</em></div>
+<p>Indicates that the code is handling data that is uninitialized. </p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

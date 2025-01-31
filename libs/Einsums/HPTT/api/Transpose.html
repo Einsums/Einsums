@@ -1,0 +1,899 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/HPTT/Transpose.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/HPTT/api/Transpose';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Jan 31, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="HPTT.html">Einsums/HPTT/HPTT.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plan.html">Einsums/HPTT/Plan.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Macros.html">Einsums/HPTT/Macros.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Primes.html">Einsums/HPTT/Primes.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Utils.html">Einsums/HPTT/Utils.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HPTTTypes.html">Einsums/HPTT/HPTTTypes.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/HPTT/Transpose.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ComputeNode.html">Einsums/HPTT/ComputeNode.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/HPTT/Transpose.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-hptt-transpose-hpp">
+<span id="modules-einsums-einsums-hptt-transpose-hpp-api"></span><h1>Einsums/HPTT/Transpose.hpp<a class="headerlink" href="#einsums-hptt-transpose-hpp" title="Permalink to this heading">#</a></h1>
+<p>Defined in header .</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv44hptt">
+<span id="_CPPv34hptt"></span><span id="_CPPv24hptt"></span><span id="hptt"></span><span class="target" id="namespacehptt"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hptt</span></span></span><br /></dt>
+<dd><p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>: Paul Springer (<a class="reference external" href="mailto:springer&#37;&#52;&#48;aices&#46;rwth-aachen&#46;de">springer<span>&#64;</span>aices<span>&#46;</span>rwth-aachen<span>&#46;</span>de</a>) </p>
+</dd>
+</dl>
+</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4hptt9TransposeE">
+<span id="_CPPv3I0EN4hptt9TransposeE"></span><span id="_CPPv2I0EN4hptt9TransposeE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">floatType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classhptt_1_1_transpose"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Transpose</span></span></span><a class="headerlink" href="#_CPPv4I0EN4hptt9TransposeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Transpose.hpp&gt;</em></div>
+<p>The <a class="reference internal" href="#classhptt_1_1_transpose"><span class="std std-ref">Transpose</span></a> class encodes all information related to the execution of the tensor transposition. </p>
+<p>Once a transpose (henceforth referred to as plan) t has been created it can be executed via t-&gt;<a class="reference internal" href="#classhptt_1_1_transpose_1a2b746c9e065cb9369b6866b9d57a11dd"><span class="std std-ref">execute()</span></a>. Moreover, a plan can be reused multiple times. For this purpose you might want to have a look at the functions:<ul class="simple">
+<li><p><a class="reference internal" href="#classhptt_1_1_transpose_1a9afc9076ef2d232e33f8194760e569b0"><span class="std std-ref">setInputPtr()</span></a></p></li>
+<li><p><a class="reference internal" href="#classhptt_1_1_transpose_1a35b31b5d15519d35eea3dc70e0c3ed9f"><span class="std std-ref">setOutputPtr()</span></a></p></li>
+</ul>
+</p>
+<p>In addition to the normal <a class="reference internal" href="#classhptt_1_1_transpose_1a2b746c9e065cb9369b6866b9d57a11dd"><span class="std std-ref">execute()</span></a> function, this class also offers the <a class="reference internal" href="#classhptt_1_1_transpose_1a763d3b565a9ba52161bb3ae27946b459"><span class="std std-ref">execute_expert()</span></a> interface. This interface is intended for the expert user and offers more flexibility than <a class="reference internal" href="#classhptt_1_1_transpose_1a2b746c9e065cb9369b6866b9d57a11dd"><span class="std std-ref">execute()</span></a>. If you want to use the expert interface, then you might want to checkout the following functions as well:<ul class="simple">
+<li><p><a class="reference internal" href="#classhptt_1_1_transpose_1ad640635c2739b10852cb18aebab3eda2"><span class="std std-ref">resetThreadIds()</span></a></p></li>
+<li><p><a class="reference internal" href="#classhptt_1_1_transpose_1a7cb5c711416e4c6a4dd1bd2f8f1f80a8"><span class="std std-ref">addThreadId()</span></a></p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>floatType</strong> – The type of data this class can handle. </p>
+</dd>
+</dl>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose9TransposeEPKiPKiPKiPKiKiPK9floatTypeK9floatTypeP9floatTypeK9floatTypeK15SelectionMethodKiPKiKb">
+<span id="_CPPv3N4hptt9Transpose9TransposeEPKiPKiPKiPKiKiPK9floatTypeK9floatTypeP9floatTypeK9floatTypeK15SelectionMethodKiPKiKb"></span><span id="_CPPv2N4hptt9Transpose9TransposeEPKiPKiPKiPKiKiPK9floatTypeK9floatTypeP9floatTypeK9floatTypeK15SelectionMethodKiPKiKb"></span><span id="hptt::Transpose::Transpose__iCP.iCP.iCP.iCP.iC.floatTypeCP.floatTypeC.floatTypeP.floatTypeC.SelectionMethodC.iC.iCP.bC"></span><span class="target" id="classhptt_1_1_transpose_1aedda6a51aa961c44b04beac9d29ec577"></span><span class="sig-name descname"><span class="n"><span class="pre">Transpose</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt15SelectionMethodE" title="hptt::SelectionMethod"><span class="n"><span class="pre">SelectionMethod</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectionMethod</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9Transpose9TransposeEPKiPKiPKiPKiKiPK9floatTypeK9floatTypeP9floatTypeK9floatTypeK15SelectionMethodKiPKiKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>. </p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors </p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A </p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>selectionMethod</strong> – <strong>[in]</strong> Determines if auto-tuning should be used. See <a class="reference internal" href="HPTTTypes.html#namespacehptt_1a094cccf388ffcc1f01344331737e56d4"><span class="std std-ref">hptt::SelectionMethod</span></a> for details. ATTENTION: If you enable auto-tuning (e.g., hptt::MEASURE) then the output data will be used during the auto-tuning process. The original data (i.e., A and B), however, is preserved after this function call completes &amp;#8212; unless your input data (i.e. A) has invalid data (e.g., NaN, inf). </p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via <a class="reference internal" href="#classhptt_1_1_transpose_1a763d3b565a9ba52161bb3ae27946b459"><span class="std std-ref">execute_expert()</span></a>). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major). Column-Major: indices are stored from left to right (leftmost = stride-1 index) Row-Major: indices are stored from right to left (right = stride-1 index) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose9TransposeERK9Transpose">
+<span id="_CPPv3N4hptt9Transpose9TransposeERK9Transpose"></span><span id="_CPPv2N4hptt9Transpose9TransposeERK9Transpose"></span><span id="hptt::Transpose::Transpose__TransposeCR"></span><span class="target" id="classhptt_1_1_transpose_1a321e25f6df69aa3583d01188a88b6f6c"></span><span class="sig-name descname"><span class="n"><span class="pre">Transpose</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N4hptt9Transpose9TransposeERK9Transpose" title="hptt::Transpose::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9Transpose9TransposeERK9Transpose" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Copy construct a <a class="reference internal" href="#classhptt_1_1_transpose"><span class="std std-ref">Transpose</span></a> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9TransposeD0Ev">
+<span id="_CPPv3N4hptt9TransposeD0Ev"></span><span id="_CPPv2N4hptt9TransposeD0Ev"></span><span id="hptt::Transpose::~Transpose"></span><span class="target" id="classhptt_1_1_transpose_1afbbf2941a81ed1a2ca8dc6c7a58dc35a"></span><span class="sig-name descname"><span class="n"><span class="pre">~Transpose</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9TransposeD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose8getConjAEv">
+<span id="_CPPv3N4hptt9Transpose8getConjAEv"></span><span id="_CPPv2N4hptt9Transpose8getConjAEv"></span><span id="hptt::Transpose::getConjA"></span><span class="target" id="classhptt_1_1_transpose_1aef0653e8613a9675691af0f463d9dc3b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getConjA</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose8getConjAEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Indicates whether to conjugate the input tensor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose8setConjAEb">
+<span id="_CPPv3N4hptt9Transpose8setConjAEb"></span><span id="_CPPv2N4hptt9Transpose8setConjAEb"></span><span id="hptt::Transpose::setConjA__b"></span><span class="target" id="classhptt_1_1_transpose_1a1c7c7e4d35e0008c52ebbcb20c56b1ae"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setConjA</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">conjA</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose8setConjAEb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Change whether to conjugate the input tensor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose13getNumThreadsEv">
+<span id="_CPPv3NK4hptt9Transpose13getNumThreadsEv"></span><span id="_CPPv2NK4hptt9Transpose13getNumThreadsEv"></span><span id="hptt::Transpose::getNumThreadsC"></span><span class="target" id="classhptt_1_1_transpose_1a206277505a60be2c9d3d351a4f9113d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getNumThreads</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose13getNumThreadsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the number of threads to use in this operation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose13setNumThreadsEi">
+<span id="_CPPv3N4hptt9Transpose13setNumThreadsEi"></span><span id="_CPPv2N4hptt9Transpose13setNumThreadsEi"></span><span id="hptt::Transpose::setNumThreads__i"></span><span class="target" id="classhptt_1_1_transpose_1a9e52de5c46dde9768482f14e708c7aaf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setNumThreads</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose13setNumThreadsEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Set the number of threads to use in this operation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose8getAlphaEv">
+<span id="_CPPv3NK4hptt9Transpose8getAlphaEv"></span><span id="_CPPv2NK4hptt9Transpose8getAlphaEv"></span><span id="hptt::Transpose::getAlphaC"></span><span class="target" id="classhptt_1_1_transpose_1a1ea8450da7d97c2ea6e93198840c02cb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getAlpha</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose8getAlphaEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the scaling factor for A. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose7getBetaEv">
+<span id="_CPPv3NK4hptt9Transpose7getBetaEv"></span><span id="_CPPv2NK4hptt9Transpose7getBetaEv"></span><span id="hptt::Transpose::getBetaC"></span><span class="target" id="classhptt_1_1_transpose_1a49be663f58c35f5debff9e3317ae263f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getBeta</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose7getBetaEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the scaling factor for B. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose8setAlphaE9floatType">
+<span id="_CPPv3N4hptt9Transpose8setAlphaE9floatType"></span><span id="_CPPv2N4hptt9Transpose8setAlphaE9floatType"></span><span id="hptt::Transpose::setAlpha__floatType"></span><span class="target" id="classhptt_1_1_transpose_1a1eb8dbc57777eca18483201189792986"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setAlpha</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose8setAlphaE9floatType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>set the scaling factor for A. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose7setBetaE9floatType">
+<span id="_CPPv3N4hptt9Transpose7setBetaE9floatType"></span><span id="_CPPv2N4hptt9Transpose7setBetaE9floatType"></span><span id="hptt::Transpose::setBeta__floatType"></span><span class="target" id="classhptt_1_1_transpose_1a96c9dc8933298dfdbc8a7abb56d4d299"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setBeta</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose7setBetaE9floatType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>set the scaling factor for B. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose11setInputPtrEPK9floatType">
+<span id="_CPPv3N4hptt9Transpose11setInputPtrEPK9floatType"></span><span id="_CPPv2N4hptt9Transpose11setInputPtrEPK9floatType"></span><span id="hptt::Transpose::setInputPtr__floatTypeCP"></span><span class="target" id="classhptt_1_1_transpose_1a9afc9076ef2d232e33f8194760e569b0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setInputPtr</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose11setInputPtrEPK9floatType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Set the pointer for A. </p>
+<p>This features is especially useful if one wants to reuse the transposition over multiple invocations. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose12setOutputPtrEP9floatType">
+<span id="_CPPv3N4hptt9Transpose12setOutputPtrEP9floatType"></span><span id="_CPPv2N4hptt9Transpose12setOutputPtrEP9floatType"></span><span id="hptt::Transpose::setOutputPtr__floatTypeP"></span><span class="target" id="classhptt_1_1_transpose_1a35b31b5d15519d35eea3dc70e0c3ed9f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setOutputPtr</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose12setOutputPtrEP9floatType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Set the pointer for B. </p>
+<p>This features is especially useful if one wants to reuse the transposition over multiple invocations. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose11getInputPtrEv">
+<span id="_CPPv3NK4hptt9Transpose11getInputPtrEv"></span><span id="_CPPv2NK4hptt9Transpose11getInputPtrEv"></span><span id="hptt::Transpose::getInputPtrC"></span><span class="target" id="classhptt_1_1_transpose_1ac8e7c22eb008a5f4b759e8ab392cb56b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getInputPtr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose11getInputPtrEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get raw-data pointer to A. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose12getOutputPtrEv">
+<span id="_CPPv3NK4hptt9Transpose12getOutputPtrEv"></span><span id="_CPPv2NK4hptt9Transpose12getOutputPtrEv"></span><span id="hptt::Transpose::getOutputPtrC"></span><span class="target" id="classhptt_1_1_transpose_1a5a028cc5b71b6a2d415b5aa023ca224c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getOutputPtr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose12getOutputPtrEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get raw-data pointer to B. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose14resetThreadIdsEv">
+<span id="_CPPv3N4hptt9Transpose14resetThreadIdsEv"></span><span id="_CPPv2N4hptt9Transpose14resetThreadIdsEv"></span><span id="hptt::Transpose::resetThreadIds"></span><span class="target" id="classhptt_1_1_transpose_1ad640635c2739b10852cb18aebab3eda2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resetThreadIds</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose14resetThreadIdsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Clears the array that stores the OpenMP threadIds. This function should only be used in conjuction with <a class="reference internal" href="#classhptt_1_1_transpose_1a7cb5c711416e4c6a4dd1bd2f8f1f80a8"><span class="std std-ref">addThreadId()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose26setMaxAutotuningCandidatesEi">
+<span id="_CPPv3N4hptt9Transpose26setMaxAutotuningCandidatesEi"></span><span id="_CPPv2N4hptt9Transpose26setMaxAutotuningCandidatesEi"></span><span id="hptt::Transpose::setMaxAutotuningCandidates__i"></span><span class="target" id="classhptt_1_1_transpose_1aba0f27090ef5fb07e38a6dc37247dab0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setMaxAutotuningCandidates</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9Transpose26setMaxAutotuningCandidatesEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#classhptt_1_1_transpose_1aba0f27090ef5fb07e38a6dc37247dab0"><span class="std std-ref">setMaxAutotuningCandidates()</span></a> enables users to specify the number of candidates that should be tested during the autotuning phase </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose11addThreadIdEi">
+<span id="_CPPv3N4hptt9Transpose11addThreadIdEi"></span><span id="_CPPv2N4hptt9Transpose11addThreadIdEi"></span><span id="hptt::Transpose::addThreadId__i"></span><span class="target" id="classhptt_1_1_transpose_1a7cb5c711416e4c6a4dd1bd2f8f1f80a8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addThreadId</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">threadId</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose11addThreadIdEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This thread-safe function adds an OpenMP threadId to the set of threads that will participate in this tensor transposition. This function is only required in conjunction with the <a class="reference internal" href="#classhptt_1_1_transpose_1a763d3b565a9ba52161bb3ae27946b459"><span class="std std-ref">execute_expert()</span></a> interface where the transposition is executed from within a parallel region (i.e.,~HPTT does not spawn the threads). It is the programmers responsibility to specify the correct thread IDs that participate in this call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>threadId</strong> – <strong>[in]</strong> An OpenMP threadId </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose14printThreadIdsEv">
+<span id="_CPPv3NK4hptt9Transpose14printThreadIdsEv"></span><span id="_CPPv2NK4hptt9Transpose14printThreadIdsEv"></span><span id="hptt::Transpose::printThreadIdsC"></span><span class="target" id="classhptt_1_1_transpose_1ae57d6c3b3822dbb97aa765dae3affaf7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">printThreadIds</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose14printThreadIdsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Prints the thread ID’s used in this operation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose17getMasterThreadIdEv">
+<span id="_CPPv3NK4hptt9Transpose17getMasterThreadIdEv"></span><span id="_CPPv2NK4hptt9Transpose17getMasterThreadIdEv"></span><span id="hptt::Transpose::getMasterThreadIdC"></span><span class="target" id="classhptt_1_1_transpose_1ac9d29905fcaffd81dd5d4c0f8799cdfd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getMasterThreadId</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose17getMasterThreadIdEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Gets the ID of the master thread for the operation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose10createPlanEv">
+<span id="_CPPv3N4hptt9Transpose10createPlanEv"></span><span id="_CPPv2N4hptt9Transpose10createPlanEv"></span><span id="hptt::Transpose::createPlan"></span><span class="target" id="classhptt_1_1_transpose_1a99933a08b66aa4c1b677f88f5a79a966"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9Transpose10createPlanEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates the plan that encodes the execution of the tensor transposition. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_b_bEN4hptt9Transpose14execute_expertEvv">
+<span id="_CPPv3I_b_b_bEN4hptt9Transpose14execute_expertEv"></span><span id="_CPPv2I_b_b_bEN4hptt9Transpose14execute_expertEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">useStreamingStores</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">spawnThreads</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">betaIsZero</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classhptt_1_1_transpose_1a763d3b565a9ba52161bb3ae27946b459"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute_expert</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I_b_b_bEN4hptt9Transpose14execute_expertEvv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Executes the transposition. This functions requires that the plan has already been created via the <a class="reference internal" href="#classhptt_1_1_transpose_1a99933a08b66aa4c1b677f88f5a79a966"><span class="std std-ref">createPlan()</span></a> function. This function behaves similarly to the <a class="reference internal" href="#classhptt_1_1_transpose_1a2b746c9e065cb9369b6866b9d57a11dd"><span class="std std-ref">execute()</span></a> function but it offers additional template parameters to improve performance for very small tensor transpositions. Moreover it adds more flexibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>useStreamingStores</strong> – Iff this variable is set, HPTT will use streaming stores which improves performance because they avoid the write-allocate traffic incurred by the write to B. However, sometimes the user might want to avoid streaming stores because the packed data fits int cache and is reused shortly (e.g., within BLAS packing routines). </p></li>
+<li><p><strong>spawnThreads</strong> – If the variable is set, the threads will be spawned from within this call, otherwise it is expected that this function call executes from within a parallel region. </p></li>
+<li><p><strong>betaIsZero</strong> – Only set this variable if beta is zero. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose7executeEv">
+<span id="_CPPv3N4hptt9Transpose7executeEv"></span><span id="_CPPv2N4hptt9Transpose7executeEv"></span><span id="hptt::Transpose::execute"></span><span class="target" id="classhptt_1_1_transpose_1a2b746c9e065cb9369b6866b9d57a11dd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose7executeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Executes the transposition. This functions requires that the plan has already been created via the <a class="reference internal" href="#classhptt_1_1_transpose_1a99933a08b66aa4c1b677f88f5a79a966"><span class="std std-ref">createPlan()</span></a> function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose5printEv">
+<span id="_CPPv3N4hptt9Transpose5printEv"></span><span id="_CPPv2N4hptt9Transpose5printEv"></span><span id="hptt::Transpose::print"></span><span class="target" id="classhptt_1_1_transpose_1a702a4caa2b1382902c6bbd00d72a02a3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">print</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose5printEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Print information about this transpose operation. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose11createPlansERNSt6vectorINSt10shared_ptrI4PlanEEEE">
+<span id="_CPPv3NK4hptt9Transpose11createPlansERNSt6vectorINSt10shared_ptrI4PlanEEEE"></span><span id="_CPPv2NK4hptt9Transpose11createPlansERNSt6vectorINSt10shared_ptrI4PlanEEEE"></span><span id="hptt::Transpose::createPlans__std::vector:std::shared_ptr:Plan::RC"></span><span class="target" id="classhptt_1_1_transpose_1acdfb281dd6fb12948350497057f94caa"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createPlans</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Plan.html#_CPPv4N4hptt4PlanE" title="hptt::Plan"><span class="n"><span class="pre">Plan</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">plans</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose11createPlansERNSt6vectorINSt10shared_ptrI4PlanEEEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose10selectPlanERKNSt6vectorINSt10shared_ptrI4PlanEEEE">
+<span id="_CPPv3N4hptt9Transpose10selectPlanERKNSt6vectorINSt10shared_ptrI4PlanEEEE"></span><span id="_CPPv2N4hptt9Transpose10selectPlanERKNSt6vectorINSt10shared_ptrI4PlanEEEE"></span><span id="hptt::Transpose::selectPlan__std::vector:std::shared_ptr:Plan::CR"></span><span class="target" id="classhptt_1_1_transpose_1a1fb4586cfe6a2b1f1bcfda76a0086306"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Plan.html#_CPPv4N4hptt4PlanE" title="hptt::Plan"><span class="n"><span class="pre">Plan</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">selectPlan</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Plan.html#_CPPv4N4hptt4PlanE" title="hptt::Plan"><span class="n"><span class="pre">Plan</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">plans</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9Transpose10selectPlanERKNSt6vectorINSt10shared_ptrI4PlanEEEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose11fuseIndicesEv">
+<span id="_CPPv3N4hptt9Transpose11fuseIndicesEv"></span><span id="_CPPv2N4hptt9Transpose11fuseIndicesEv"></span><span id="hptt::Transpose::fuseIndices"></span><span class="target" id="classhptt_1_1_transpose_1ac2078ea54c9cbe29d10bf3a9f4d4c5f8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fuseIndices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9Transpose11fuseIndicesEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose11skipIndicesEPKiPKiPKiPKiKi">
+<span id="_CPPv3N4hptt9Transpose11skipIndicesEPKiPKiPKiPKiKi"></span><span id="_CPPv2N4hptt9Transpose11skipIndicesEPKiPKiPKiPKiKi"></span><span id="hptt::Transpose::skipIndices__iCP.iCP.iCP.iCP.iC"></span><span class="target" id="classhptt_1_1_transpose_1af4b9ea578dc1f9582149f9e30604c11e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">skipIndices</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">_sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">_perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">_outerSizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">_outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9Transpose11skipIndicesEPKiPKiPKiPKiKi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose24computeLeadingDimensionsEv">
+<span id="_CPPv3N4hptt9Transpose24computeLeadingDimensionsEv"></span><span id="_CPPv2N4hptt9Transpose24computeLeadingDimensionsEv"></span><span id="hptt::Transpose::computeLeadingDimensions"></span><span class="target" id="classhptt_1_1_transpose_1ae8233c030a56957b4ae17cdaebfaefd3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">computeLeadingDimensions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9Transpose24computeLeadingDimensionsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose17loopCostHeuristicERKNSt6vectorIiEE">
+<span id="_CPPv3NK4hptt9Transpose17loopCostHeuristicERKNSt6vectorIiEE"></span><span id="_CPPv2NK4hptt9Transpose17loopCostHeuristicERKNSt6vectorIiEE"></span><span id="hptt::Transpose::loopCostHeuristic__std::vector:i:CRC"></span><span class="target" id="classhptt_1_1_transpose_1a563b59d8aaef5535a6a5baf5234e29af"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loopCostHeuristic</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">loopOrder</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose17loopCostHeuristicERKNSt6vectorIiEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose24parallelismCostHeuristicERKNSt6vectorIiEE">
+<span id="_CPPv3NK4hptt9Transpose24parallelismCostHeuristicERKNSt6vectorIiEE"></span><span id="_CPPv2NK4hptt9Transpose24parallelismCostHeuristicERKNSt6vectorIiEE"></span><span id="hptt::Transpose::parallelismCostHeuristic__std::vector:i:CRC"></span><span class="target" id="classhptt_1_1_transpose_1ad84943aa726572b3d847ffad98456775"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parallelismCostHeuristic</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">loopOrder</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose24parallelismCostHeuristicERKNSt6vectorIiEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose16getLocalThreadIdEi">
+<span id="_CPPv3NK4hptt9Transpose16getLocalThreadIdEi"></span><span id="_CPPv2NK4hptt9Transpose16getLocalThreadIdEi"></span><span id="hptt::Transpose::getLocalThreadId__iC"></span><span class="target" id="classhptt_1_1_transpose_1add10a60f0119c2fb04434134475f7652"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLocalThreadId</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">myThreadId</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose16getLocalThreadIdEi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_bENK4hptt9Transpose11getStartEndEviRiRi">
+<span id="_CPPv3I_bENK4hptt9Transpose11getStartEndEiRiRi"></span><span id="_CPPv2I_bENK4hptt9Transpose11getStartEndEiRiRi"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">spawnThreads</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classhptt_1_1_transpose_1aacfdcfa49825bbdfef6540b046e03665"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getStartEnd</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">myStart</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">myEnd</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I_bENK4hptt9Transpose11getStartEndEviRiRi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose19setParallelStrategyEi">
+<span id="_CPPv3N4hptt9Transpose19setParallelStrategyEi"></span><span id="_CPPv2N4hptt9Transpose19setParallelStrategyEi"></span><span id="hptt::Transpose::setParallelStrategy__i"></span><span class="target" id="classhptt_1_1_transpose_1a2bb0cc20cb3ae7b65e9c4bfc6c56977c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setParallelStrategy</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose19setParallelStrategyEi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose12setLoopOrderEi">
+<span id="_CPPv3N4hptt9Transpose12setLoopOrderEi"></span><span id="_CPPv2N4hptt9Transpose12setLoopOrderEi"></span><span id="hptt::Transpose::setLoopOrder__i"></span><span class="target" id="classhptt_1_1_transpose_1a5fe7fabc02247721d25be95ce57f2439"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setLoopOrder</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose12setLoopOrderEi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose11parallelizeERNSt6vectorIiEERNSt6vectorIiEERiRNSt4listIiEEKfRKNSt6vectorIiEE">
+<span id="_CPPv3NK4hptt9Transpose11parallelizeERNSt6vectorIiEERNSt6vectorIiEERiRNSt4listIiEEKfRKNSt6vectorIiEE"></span><span id="_CPPv2NK4hptt9Transpose11parallelizeERNSt6vectorIiEERNSt6vectorIiEERiRNSt4listIiEEKfRKNSt6vectorIiEE"></span><span id="hptt::Transpose::parallelize__std::vector:i:R.std::vector:i:R.iR.std::list:i:R.floatC.std::vector:i:CRC"></span><span class="target" id="classhptt_1_1_transpose_1a75def759431c0058d8b125194e54e00b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parallelize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">parallelismStrategy</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">availableParallelismAtLoop</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">totalTasks</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">primeFactors</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">minBalancing</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">loopsAllowed</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose11parallelizeERNSt6vectorIiEERNSt6vectorIiEERiRNSt4listIiEEKfRKNSt6vectorIiEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose14getLoadBalanceERKNSt6vectorIiEE">
+<span id="_CPPv3NK4hptt9Transpose14getLoadBalanceERKNSt6vectorIiEE"></span><span id="_CPPv2NK4hptt9Transpose14getLoadBalanceERKNSt6vectorIiEE"></span><span id="hptt::Transpose::getLoadBalance__std::vector:i:CRC"></span><span class="target" id="classhptt_1_1_transpose_1ae196e7e70d8f83f460583ddbae39ff2e"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLoadBalance</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">parallelismStrategy</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose14getLoadBalanceERKNSt6vectorIiEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose21estimateExecutionTimeEKNSt10shared_ptrI4PlanEE">
+<span id="_CPPv3N4hptt9Transpose21estimateExecutionTimeEKNSt10shared_ptrI4PlanEE"></span><span id="_CPPv2N4hptt9Transpose21estimateExecutionTimeEKNSt10shared_ptrI4PlanEE"></span><span id="hptt::Transpose::estimateExecutionTime__std::shared_ptr:Plan:C"></span><span class="target" id="classhptt_1_1_transpose_1a34a111b08b171cdb370f91ecdee2544e"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">estimateExecutionTime</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Plan.html#_CPPv4N4hptt4PlanE" title="hptt::Plan"><span class="n"><span class="pre">Plan</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">plan</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9Transpose21estimateExecutionTimeEKNSt10shared_ptrI4PlanEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose15verifyParameterEPKiPKiPKiPKiKi">
+<span id="_CPPv3NK4hptt9Transpose15verifyParameterEPKiPKiPKiPKiKi"></span><span id="_CPPv2NK4hptt9Transpose15verifyParameterEPKiPKiPKiPKiKi"></span><span id="hptt::Transpose::verifyParameter__iCP.iCP.iCP.iCP.iCC"></span><span class="target" id="classhptt_1_1_transpose_1adcd15b97d7ddd3f095a82690069bdbbf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">verifyParameter</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">size</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose15verifyParameterEPKiPKiPKiPKiKi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose26getBestParallelismStrategyERNSt6vectorIiEE">
+<span id="_CPPv3NK4hptt9Transpose26getBestParallelismStrategyERNSt6vectorIiEE"></span><span id="_CPPv2NK4hptt9Transpose26getBestParallelismStrategyERNSt6vectorIiEE"></span><span id="hptt::Transpose::getBestParallelismStrategy__std::vector:i:RC"></span><span class="target" id="classhptt_1_1_transpose_1a61435242d92dd4e2033c326e3fd66990"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getBestParallelismStrategy</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bestParallelismStrategy</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose26getBestParallelismStrategyERNSt6vectorIiEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose16getBestLoopOrderERNSt6vectorIiEE">
+<span id="_CPPv3NK4hptt9Transpose16getBestLoopOrderERNSt6vectorIiEE"></span><span id="_CPPv2NK4hptt9Transpose16getBestLoopOrderERNSt6vectorIiEE"></span><span id="hptt::Transpose::getBestLoopOrder__std::vector:i:RC"></span><span class="target" id="classhptt_1_1_transpose_1ad0f7989b1679ad72c23cec5d587d2246"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getBestLoopOrder</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">loopOrder</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose16getBestLoopOrderERNSt6vectorIiEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose13getLoopOrdersERNSt6vectorINSt6vectorIiEEEE">
+<span id="_CPPv3NK4hptt9Transpose13getLoopOrdersERNSt6vectorINSt6vectorIiEEEE"></span><span id="_CPPv2NK4hptt9Transpose13getLoopOrdersERNSt6vectorINSt6vectorIiEEEE"></span><span id="hptt::Transpose::getLoopOrders__std::vector:std::vector:i::RC"></span><span class="target" id="classhptt_1_1_transpose_1ac123cd147ea26e5991256ab67de52d81"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLoopOrders</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">loopOrders</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose13getLoopOrdersERNSt6vectorINSt6vectorIiEEEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose24getParallelismStrategiesERNSt6vectorINSt6vectorIiEEEE">
+<span id="_CPPv3NK4hptt9Transpose24getParallelismStrategiesERNSt6vectorINSt6vectorIiEEEE"></span><span id="_CPPv2NK4hptt9Transpose24getParallelismStrategiesERNSt6vectorINSt6vectorIiEEEE"></span><span id="hptt::Transpose::getParallelismStrategies__std::vector:std::vector:i::RC"></span><span class="target" id="classhptt_1_1_transpose_1a11fbbc1f9f6763309f259b6330e28722"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getParallelismStrategies</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">parallelismStrategies</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose24getParallelismStrategiesERNSt6vectorINSt6vectorIiEEEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose27getAllParallelismStrategiesERNSt4listIiEERNSt6vectorIiEERNSt6vectorIiEERNSt6vectorINSt6vectorIiEEEE">
+<span id="_CPPv3NK4hptt9Transpose27getAllParallelismStrategiesERNSt4listIiEERNSt6vectorIiEERNSt6vectorIiEERNSt6vectorINSt6vectorIiEEEE"></span><span id="_CPPv2NK4hptt9Transpose27getAllParallelismStrategiesERNSt4listIiEERNSt6vectorIiEERNSt6vectorIiEERNSt6vectorINSt6vectorIiEEEE"></span><span id="hptt::Transpose::getAllParallelismStrategies__std::list:i:R.std::vector:i:R.std::vector:i:R.std::vector:std::vector:i::RC"></span><span class="target" id="classhptt_1_1_transpose_1ae22fc3730a74fdbafd8328b181e89800"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getAllParallelismStrategies</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">primeFactorsToMatch</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">availableParallelismAtLoop</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">achievedParallelismAtLoop</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">parallelismStrategies</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose27getAllParallelismStrategiesERNSt4listIiEERNSt6vectorIiEERNSt6vectorIiEERNSt6vectorINSt6vectorIiEEEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose23getAvailableParallelismERNSt6vectorIiEE">
+<span id="_CPPv3NK4hptt9Transpose23getAvailableParallelismERNSt6vectorIiEE"></span><span id="_CPPv2NK4hptt9Transpose23getAvailableParallelismERNSt6vectorIiEE"></span><span id="hptt::Transpose::getAvailableParallelism__std::vector:i:RC"></span><span class="target" id="classhptt_1_1_transpose_1a0b8ddbb85ef19868db1062937d668466"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getAvailableParallelism</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">numTasksPerLoop</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose23getAvailableParallelismERNSt6vectorIiEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose12getIncrementEi">
+<span id="_CPPv3NK4hptt9Transpose12getIncrementEi"></span><span id="_CPPv2NK4hptt9Transpose12getIncrementEi"></span><span id="hptt::Transpose::getIncrement__iC"></span><span class="target" id="classhptt_1_1_transpose_1a47880b17061ddc642a5a57607dbed910"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getIncrement</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">loopIdx</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose12getIncrementEi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose15executeEstimateEPK4Plan">
+<span id="_CPPv3N4hptt9Transpose15executeEstimateEPK4Plan"></span><span id="_CPPv2N4hptt9Transpose15executeEstimateEPK4Plan"></span><span id="hptt::Transpose::executeEstimate__PlanCP"></span><span class="target" id="classhptt_1_1_transpose_1a4e593ac6d7a813bd908e8bb9d82c5ee8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">executeEstimate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="Plan.html#_CPPv4N4hptt4PlanE" title="hptt::Plan"><span class="n"><span class="pre">Plan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">plan</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose15executeEstimateEPK4Plan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose12getTimeLimitEv">
+<span id="_CPPv3NK4hptt9Transpose12getTimeLimitEv"></span><span id="_CPPv2NK4hptt9Transpose12getTimeLimitEv"></span><span id="hptt::Transpose::getTimeLimitC"></span><span class="target" id="classhptt_1_1_transpose_1ae5d0fd584de6610933b818bdc560b1d3"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getTimeLimit</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose12getTimeLimitEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose2A_E">
+<span id="_CPPv3N4hptt9Transpose2A_E"></span><span id="_CPPv2N4hptt9Transpose2A_E"></span><span id="hptt::Transpose::A___floatTypeCP"></span><span class="target" id="classhptt_1_1_transpose_1a8a5b3ac740cfe16ff89afc92224a70b7"></span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">A_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose2A_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>rawdata pointer for A </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose2B_E">
+<span id="_CPPv3N4hptt9Transpose2B_E"></span><span id="_CPPv2N4hptt9Transpose2B_E"></span><span id="hptt::Transpose::B___floatTypeP"></span><span class="target" id="classhptt_1_1_transpose_1a92a4c3c6cb05ab0ac80a7ec8147f9bbf"></span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">B_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose2B_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>rawdata pointer for B </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose6alpha_E">
+<span id="_CPPv3N4hptt9Transpose6alpha_E"></span><span id="_CPPv2N4hptt9Transpose6alpha_E"></span><span id="hptt::Transpose::alpha___floatType"></span><span class="target" id="classhptt_1_1_transpose_1a982892e6c7900da7bd97e688ee841368"></span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">alpha_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose6alpha_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>scaling factor for A </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose5beta_E">
+<span id="_CPPv3N4hptt9Transpose5beta_E"></span><span id="_CPPv2N4hptt9Transpose5beta_E"></span><span id="hptt::Transpose::beta___floatType"></span><span class="target" id="classhptt_1_1_transpose_1a24e9a79fd8310f4d9d42360570054af8"></span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">beta_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose5beta_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>scaling factor for B </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose4dim_E">
+<span id="_CPPv3N4hptt9Transpose4dim_E"></span><span id="_CPPv2N4hptt9Transpose4dim_E"></span><span id="hptt::Transpose::dim___i"></span><span class="target" id="classhptt_1_1_transpose_1a3f6429b54868b935ac0ebe96b2b6c686"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dim_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose4dim_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>dimension of the tensor </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose6sizeA_E">
+<span id="_CPPv3N4hptt9Transpose6sizeA_E"></span><span id="_CPPv2N4hptt9Transpose6sizeA_E"></span><span id="hptt::Transpose::sizeA___std::vector:s:"></span><span class="target" id="classhptt_1_1_transpose_1a01c89f602a7e4055f122e252fc22a090"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sizeA_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose6sizeA_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>size of A </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose5perm_E">
+<span id="_CPPv3N4hptt9Transpose5perm_E"></span><span id="_CPPv2N4hptt9Transpose5perm_E"></span><span id="hptt::Transpose::perm___std::vector:i:"></span><span class="target" id="classhptt_1_1_transpose_1a177d265e9cdd6f3182134489727da9a0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">perm_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose5perm_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>permutation </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose11outerSizeA_E">
+<span id="_CPPv3N4hptt9Transpose11outerSizeA_E"></span><span id="_CPPv2N4hptt9Transpose11outerSizeA_E"></span><span id="hptt::Transpose::outerSizeA___std::vector:s:"></span><span class="target" id="classhptt_1_1_transpose_1a4130bc97a0bce19077e0b445cdb16a9a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outerSizeA_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose11outerSizeA_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>outer sizes of A </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose11outerSizeB_E">
+<span id="_CPPv3N4hptt9Transpose11outerSizeB_E"></span><span id="_CPPv2N4hptt9Transpose11outerSizeB_E"></span><span id="hptt::Transpose::outerSizeB___std::vector:s:"></span><span class="target" id="classhptt_1_1_transpose_1aadc34c19c5e89ff9d45fbd36fc7be036"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outerSizeB_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose11outerSizeB_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>outer sizes of B </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose4lda_E">
+<span id="_CPPv3N4hptt9Transpose4lda_E"></span><span id="_CPPv2N4hptt9Transpose4lda_E"></span><span id="hptt::Transpose::lda___std::vector:s:"></span><span class="target" id="classhptt_1_1_transpose_1ae18401acdc6c838d4903681da3215b2b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lda_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose4lda_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>strides for all dimensions of A (first dimension has a stride of 1) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose4ldb_E">
+<span id="_CPPv3N4hptt9Transpose4ldb_E"></span><span id="_CPPv2N4hptt9Transpose4ldb_E"></span><span id="hptt::Transpose::ldb___std::vector:s:"></span><span class="target" id="classhptt_1_1_transpose_1a0f3091beca69af163a118c1bcc0f7bdf"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ldb_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose4ldb_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>strides for all dimensions of B (first dimension has a stride of 1) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose10threadIds_E">
+<span id="_CPPv3N4hptt9Transpose10threadIds_E"></span><span id="_CPPv2N4hptt9Transpose10threadIds_E"></span><span id="hptt::Transpose::threadIds___std::vector:i:"></span><span class="target" id="classhptt_1_1_transpose_1a58252d71209605e849976c57c18ba482"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">threadIds_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose10threadIds_E" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>OpenMP threadIds of the threads involed in the transposition. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose11numThreads_E">
+<span id="_CPPv3N4hptt9Transpose11numThreads_E"></span><span id="_CPPv2N4hptt9Transpose11numThreads_E"></span><span id="hptt::Transpose::numThreads___i"></span><span class="target" id="classhptt_1_1_transpose_1ab042cbf39efd07a9d653fc755720e9a7"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">numThreads_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose11numThreads_E" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose27selectedParallelStrategyId_E">
+<span id="_CPPv3N4hptt9Transpose27selectedParallelStrategyId_E"></span><span id="_CPPv2N4hptt9Transpose27selectedParallelStrategyId_E"></span><span id="hptt::Transpose::selectedParallelStrategyId___i"></span><span class="target" id="classhptt_1_1_transpose_1ae80057995682536b3d994e6c70d325e0"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">selectedParallelStrategyId_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose27selectedParallelStrategyId_E" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose20selectedLoopOrderId_E">
+<span id="_CPPv3N4hptt9Transpose20selectedLoopOrderId_E"></span><span id="_CPPv2N4hptt9Transpose20selectedLoopOrderId_E"></span><span id="hptt::Transpose::selectedLoopOrderId___i"></span><span class="target" id="classhptt_1_1_transpose_1a525ffd19268bd6c0ef555ae92d470de2"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">selectedLoopOrderId_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose20selectedLoopOrderId_E" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose6conjA_E">
+<span id="_CPPv3N4hptt9Transpose6conjA_E"></span><span id="_CPPv2N4hptt9Transpose6conjA_E"></span><span id="hptt::Transpose::conjA___b"></span><span class="target" id="classhptt_1_1_transpose_1a93ee46fc1dd62f616a06416f9bb1c6ee"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">conjA_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose6conjA_E" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose11masterPlan_E">
+<span id="_CPPv3N4hptt9Transpose11masterPlan_E"></span><span id="_CPPv2N4hptt9Transpose11masterPlan_E"></span><span id="hptt::Transpose::masterPlan___std::shared_ptr:Plan:"></span><span class="target" id="classhptt_1_1_transpose_1ad505b71536763d8e3dab3acf6a058809"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Plan.html#_CPPv4N4hptt4PlanE" title="hptt::Plan"><span class="n"><span class="pre">Plan</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">masterPlan_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose11masterPlan_E" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose16selectionMethod_E">
+<span id="_CPPv3N4hptt9Transpose16selectionMethod_E"></span><span id="_CPPv2N4hptt9Transpose16selectionMethod_E"></span><span id="hptt::Transpose::selectionMethod___SelectionMethod"></span><span class="target" id="classhptt_1_1_transpose_1abf0666162efb22d5c60470bafc6abaf5"></span><a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt15SelectionMethodE" title="hptt::SelectionMethod"><span class="n"><span class="pre">SelectionMethod</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">selectionMethod_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose16selectionMethod_E" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose24maxAutotuningCandidates_E">
+<span id="_CPPv3N4hptt9Transpose24maxAutotuningCandidates_E"></span><span id="_CPPv2N4hptt9Transpose24maxAutotuningCandidates_E"></span><span id="hptt::Transpose::maxAutotuningCandidates___i"></span><span class="target" id="classhptt_1_1_transpose_1a2c8fdeb14c9ad0a4c1314bebbb5ffb3b"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">maxAutotuningCandidates_</span></span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose24maxAutotuningCandidates_E" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-static-attributes">Private Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose15blocking_micro_E">
+<span id="_CPPv3N4hptt9Transpose15blocking_micro_E"></span><span id="_CPPv2N4hptt9Transpose15blocking_micro_E"></span><span id="hptt::Transpose::blocking_micro___i"></span><span class="target" id="classhptt_1_1_transpose_1aa44c0195492466021cb22e012d7fa059"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">blocking_micro_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">REGISTER_BITS</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="m"><span class="pre">8</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose15blocking_micro_E" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose9blocking_E">
+<span id="_CPPv3N4hptt9Transpose9blocking_E"></span><span id="_CPPv2N4hptt9Transpose9blocking_E"></span><span id="hptt::Transpose::blocking___i"></span><span class="target" id="classhptt_1_1_transpose_1ab4cff666faef422af0551ddcb2c0fec3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">blocking_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4hptt9Transpose15blocking_micro_E" title="hptt::Transpose::blocking_micro_"><span class="n"><span class="pre">blocking_micro_</span></span></a><span class="w"> </span><span class="o"><span class="pre">*</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose9blocking_E" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose10infoLevel_E">
+<span id="_CPPv3N4hptt9Transpose10infoLevel_E"></span><span id="_CPPv2N4hptt9Transpose10infoLevel_E"></span><span id="hptt::Transpose::infoLevel___i"></span><span class="target" id="classhptt_1_1_transpose_1aedbfd864eaa727ca79ddba647798509e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">infoLevel_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose10infoLevel_E" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

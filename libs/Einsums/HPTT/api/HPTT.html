@@ -1,0 +1,1104 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/HPTT/HPTT.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/HPTT/api/HPTT';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Jan 31, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/HPTT/HPTT.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plan.html">Einsums/HPTT/Plan.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Macros.html">Einsums/HPTT/Macros.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Primes.html">Einsums/HPTT/Primes.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Utils.html">Einsums/HPTT/Utils.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HPTTTypes.html">Einsums/HPTT/HPTTTypes.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Transpose.html">Einsums/HPTT/Transpose.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ComputeNode.html">Einsums/HPTT/ComputeNode.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/HPTT/HPTT.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-hptt-hptt-hpp">
+<span id="modules-einsums-einsums-hptt-hptt-hpp-api"></span><h1>Einsums/HPTT/HPTT.hpp<a class="headerlink" href="#einsums-hptt-hptt-hpp" title="Permalink to this heading">#</a></h1>
+<p>Defined in header .</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416sTensorTransposePKiKiKfPKfPKiPKiKfPfPKiKiKi">
+<span id="_CPPv316sTensorTransposePKiKiKfPKfPKiPKiKfPfPKiKiKi"></span><span id="_CPPv216sTensorTransposePKiKiKfPKfPKiPKiKfPfPKiKiKi"></span><span id="sTensorTranspose__iCP.iC.floatC.floatCP.iCP.iCP.floatC.floatP.iCP.iC.iC"></span><span class="target" id="_h_p_t_t_8hpp_1abea1632bc27fc70f475a38129fb11d4f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sTensorTranspose</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416sTensorTransposePKiKiKfPKfPKiPKiKfPfPKiKiKi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the out-of-place tensor transposition of A into B. </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition.</p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major). </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416dTensorTransposePKiKiKdPKdPKiPKiKdPdPKiKiKi">
+<span id="_CPPv316dTensorTransposePKiKiKdPKdPKiPKiKdPdPKiKiKi"></span><span id="_CPPv216dTensorTransposePKiKiKdPKdPKiPKiKdPdPKiKiKi"></span><span id="dTensorTranspose__iCP.iC.doubleC.doubleCP.iCP.iCP.doubleC.doubleP.iCP.iC.iC"></span><span class="target" id="_h_p_t_t_8hpp_1a3a05d1f518d6c9fa6a22dc025c23abb5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dTensorTranspose</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416dTensorTransposePKiKiKdPKdPKiPKiKdPdPKiKiKi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the out-of-place tensor transposition of A into B.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition.</p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416cTensorTransposePKiKiKCfbPKCfPKiPKiKCfPCfPKiKiKi">
+<span id="_CPPv316cTensorTransposePKiKiKCfbPKCfPKiPKiKCfPCfPKiKiKi"></span><span id="_CPPv216cTensorTransposePKiKiKCfbPKCfPKiPKiKCfPCfPKiKiKi"></span><span id="cTensorTranspose__iCP.iC._Complex-floatC.b._Complex-floatCP.iCP.iCP._Complex-floatC._Complex-floatP.iCP.iC.iC"></span><span class="target" id="_h_p_t_t_8hpp_1adde30245d4786a4321514367df253db2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cTensorTranspose</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="kt"><span class="pre">_Complex</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">conjA</span></span>, <span class="kt"><span class="pre">_Complex</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">_Complex</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <span class="kt"><span class="pre">_Complex</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416cTensorTransposePKiKiKCfbPKCfPKiPKiKCfPCfPKiKiKi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the out-of-place tensor transposition of A into B. </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>conjA</strong> – <strong>[in]</strong> Whether to conjugate A. </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition.</p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major). </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416zTensorTransposePKiKiKCdbPKCdPKiPKiKCdPCdPKiKiKi">
+<span id="_CPPv316zTensorTransposePKiKiKCdbPKCdPKiPKiKCdPCdPKiKiKi"></span><span id="_CPPv216zTensorTransposePKiKiKCdbPKCdPKiPKiKCdPCdPKiKiKi"></span><span id="zTensorTranspose__iCP.iC._Complex-doubleC.b._Complex-doubleCP.iCP.iCP._Complex-doubleC._Complex-doubleP.iCP.iC.iC"></span><span class="target" id="_h_p_t_t_8hpp_1a7e640793f7f2bbd8bcfdbdd118546204"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">zTensorTranspose</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="kt"><span class="pre">_Complex</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">conjA</span></span>, <span class="kt"><span class="pre">_Complex</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">_Complex</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <span class="kt"><span class="pre">_Complex</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416zTensorTransposePKiKiKCdbPKCdPKiPKiKCdPCdPKiKiKi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the out-of-place tensor transposition of A into B.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>conjA</strong> – <strong>[in]</strong> Whether to conjugate A. </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition.</p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv44hptt">
+<span id="_CPPv34hptt"></span><span id="_CPPv24hptt"></span><span id="hptt"></span><span class="target" id="namespacehptt"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hptt</span></span></span><br /></dt>
+<dd><p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>: Paul Springer (<a class="reference external" href="mailto:springer&#37;&#52;&#48;aices&#46;rwth-aachen&#46;de">springer<span>&#64;</span>aices<span>&#46;</span>rwth-aachen<span>&#46;</span>de</a>) </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiK15SelectionMethodKiPKiKb">
+<span id="_CPPv3N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiK15SelectionMethodKiPKiKb"></span><span id="_CPPv2N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiK15SelectionMethodKiPKiKb"></span><span id="hptt::create_plan__iCP.iC.floatC.floatCP.iCP.iCP.floatC.floatP.iCP.SelectionMethodC.iC.iCP.bC"></span><span class="target" id="namespacehptt_1adf2198bb075f393fe9b73d6f48d0f7f0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt15SelectionMethodE" title="hptt::SelectionMethod"><span class="n"><span class="pre">SelectionMethod</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectionMethod</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiK15SelectionMethodKiPKiKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan. </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>selectionMethod</strong> – <strong>[in]</strong> Determines if auto-tuning should be used. See <a class="reference internal" href="HPTTTypes.html#namespacehptt_1a094cccf388ffcc1f01344331737e56d4"><span class="std std-ref">hptt::SelectionMethod</span></a> for details. ATTENTION: If you enable auto-tuning (e.g., hptt::MEASURE) then the output data will be used during the auto-tuning process. The original data (i.e., A and B), however, is preserved after this function call completes &amp;#8212; unless your input data (i.e. A) has invalid data (e.g., NaN, inf).</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major). </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiK15SelectionMethodKiPKiKb">
+<span id="_CPPv3N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiK15SelectionMethodKiPKiKb"></span><span id="_CPPv2N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiK15SelectionMethodKiPKiKb"></span><span id="hptt::create_plan__iCP.iC.doubleC.doubleCP.iCP.iCP.doubleC.doubleP.iCP.SelectionMethodC.iC.iCP.bC"></span><span class="target" id="namespacehptt_1a003efec1292c3f2b757746f181e05690"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt15SelectionMethodE" title="hptt::SelectionMethod"><span class="n"><span class="pre">SelectionMethod</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectionMethod</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiK15SelectionMethodKiPKiKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>selectionMethod</strong> – <strong>[in]</strong> Determines if auto-tuning should be used. See <a class="reference internal" href="HPTTTypes.html#namespacehptt_1a094cccf388ffcc1f01344331737e56d4"><span class="std std-ref">hptt::SelectionMethod</span></a> for details. ATTENTION: If you enable auto-tuning (e.g., hptt::MEASURE) then the output data will be used during the auto-tuning process. The original data (i.e., A and B), however, is preserved after this function call completes &amp;#8212; unless your input data (i.e. A) has invalid data (e.g., NaN, inf).</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiK15SelectionMethodKiPKiKb">
+<span id="_CPPv3N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiK15SelectionMethodKiPKiKb"></span><span id="_CPPv2N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiK15SelectionMethodKiPKiKb"></span><span id="hptt::create_plan__iCP.iC.FloatComplexC.FloatComplexCP.iCP.iCP.FloatComplexC.FloatComplexP.iCP.SelectionMethodC.iC.iCP.bC"></span><span class="target" id="namespacehptt_1a712741ccf5ab51320a8901a8f6d85fa8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt15SelectionMethodE" title="hptt::SelectionMethod"><span class="n"><span class="pre">SelectionMethod</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectionMethod</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiK15SelectionMethodKiPKiKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>selectionMethod</strong> – <strong>[in]</strong> Determines if auto-tuning should be used. See <a class="reference internal" href="HPTTTypes.html#namespacehptt_1a094cccf388ffcc1f01344331737e56d4"><span class="std std-ref">hptt::SelectionMethod</span></a> for details. ATTENTION: If you enable auto-tuning (e.g., hptt::MEASURE) then the output data will be used during the auto-tuning process. The original data (i.e., A and B), however, is preserved after this function call completes &amp;#8212; unless your input data (i.e. A) has invalid data (e.g., NaN, inf).</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiK15SelectionMethodKiPKiKb">
+<span id="_CPPv3N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiK15SelectionMethodKiPKiKb"></span><span id="_CPPv2N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiK15SelectionMethodKiPKiKb"></span><span id="hptt::create_plan__iCP.iC.DoubleComplexC.DoubleComplexCP.iCP.iCP.DoubleComplexC.DoubleComplexP.iCP.SelectionMethodC.iC.iCP.bC"></span><span class="target" id="namespacehptt_1a108059a665f1f9c5b7e51c8755a9cf57"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt15SelectionMethodE" title="hptt::SelectionMethod"><span class="n"><span class="pre">SelectionMethod</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectionMethod</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiK15SelectionMethodKiPKiKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>selectionMethod</strong> – <strong>[in]</strong> Determines if auto-tuning should be used. See <a class="reference internal" href="HPTTTypes.html#namespacehptt_1a094cccf388ffcc1f01344331737e56d4"><span class="std std-ref">hptt::SelectionMethod</span></a> for details. ATTENTION: If you enable auto-tuning (e.g., hptt::MEASURE) then the output data will be used during the auto-tuning process. The original data (i.e., A and B), however, is preserved after this function call completes &amp;#8212; unless your input data (i.e. A) has invalid data (e.g., NaN, inf).</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiKfPKfRKNSt6vectorIiEERKNSt6vectorIiEEKfPfRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">
+<span id="_CPPv3N4hptt11create_planERKNSt6vectorIiEEKiKfPKfRKNSt6vectorIiEERKNSt6vectorIiEEKfPfRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb"></span><span id="_CPPv2N4hptt11create_planERKNSt6vectorIiEEKiKfPKfRKNSt6vectorIiEERKNSt6vectorIiEEKfPfRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb"></span><span id="hptt::create_plan__std::vector:i:CR.iC.floatC.floatCP.std::vector:i:CR.std::vector:i:CR.floatC.floatP.std::vector:i:CR.SelectionMethodC.iC.std::vector:i:CR.bC"></span><span class="target" id="namespacehptt_1a2d93d7c292f80b38323bd4fcbd055dfb"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt15SelectionMethodE" title="hptt::SelectionMethod"><span class="n"><span class="pre">SelectionMethod</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectionMethod</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiKfPKfRKNSt6vectorIiEERKNSt6vectorIiEEKfPfRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>selectionMethod</strong> – <strong>[in]</strong> Determines if auto-tuning should be used. See <a class="reference internal" href="HPTTTypes.html#namespacehptt_1a094cccf388ffcc1f01344331737e56d4"><span class="std std-ref">hptt::SelectionMethod</span></a> for details. ATTENTION: If you enable auto-tuning (e.g., hptt::MEASURE) then the output data will be used during the auto-tuning process. The original data (i.e., A and B), however, is preserved after this function call completes &amp;#8212; unless your input data (i.e. A) has invalid data (e.g., NaN, inf).</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiKdPKdRKNSt6vectorIiEERKNSt6vectorIiEEKdPdRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">
+<span id="_CPPv3N4hptt11create_planERKNSt6vectorIiEEKiKdPKdRKNSt6vectorIiEERKNSt6vectorIiEEKdPdRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb"></span><span id="_CPPv2N4hptt11create_planERKNSt6vectorIiEEKiKdPKdRKNSt6vectorIiEERKNSt6vectorIiEEKdPdRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb"></span><span id="hptt::create_plan__std::vector:i:CR.iC.doubleC.doubleCP.std::vector:i:CR.std::vector:i:CR.doubleC.doubleP.std::vector:i:CR.SelectionMethodC.iC.std::vector:i:CR.bC"></span><span class="target" id="namespacehptt_1a84e448e515e3976282f2bc585c8ad0f5"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt15SelectionMethodE" title="hptt::SelectionMethod"><span class="n"><span class="pre">SelectionMethod</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectionMethod</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiKdPKdRKNSt6vectorIiEERKNSt6vectorIiEEKdPdRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>selectionMethod</strong> – <strong>[in]</strong> Determines if auto-tuning should be used. See <a class="reference internal" href="HPTTTypes.html#namespacehptt_1a094cccf388ffcc1f01344331737e56d4"><span class="std std-ref">hptt::SelectionMethod</span></a> for details. ATTENTION: If you enable auto-tuning (e.g., hptt::MEASURE) then the output data will be used during the auto-tuning process. The original data (i.e., A and B), however, is preserved after this function call completes &amp;#8212; unless your input data (i.e. A) has invalid data (e.g., NaN, inf).</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiK12FloatComplexPK12FloatComplexRKNSt6vectorIiEERKNSt6vectorIiEEK12FloatComplexP12FloatComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">
+<span id="_CPPv3N4hptt11create_planERKNSt6vectorIiEEKiK12FloatComplexPK12FloatComplexRKNSt6vectorIiEERKNSt6vectorIiEEK12FloatComplexP12FloatComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb"></span><span id="_CPPv2N4hptt11create_planERKNSt6vectorIiEEKiK12FloatComplexPK12FloatComplexRKNSt6vectorIiEERKNSt6vectorIiEEK12FloatComplexP12FloatComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb"></span><span id="hptt::create_plan__std::vector:i:CR.iC.FloatComplexC.FloatComplexCP.std::vector:i:CR.std::vector:i:CR.FloatComplexC.FloatComplexP.std::vector:i:CR.SelectionMethodC.iC.std::vector:i:CR.bC"></span><span class="target" id="namespacehptt_1a972fb0b5fb7812716d18ec4292443bbb"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt15SelectionMethodE" title="hptt::SelectionMethod"><span class="n"><span class="pre">SelectionMethod</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectionMethod</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiK12FloatComplexPK12FloatComplexRKNSt6vectorIiEERKNSt6vectorIiEEK12FloatComplexP12FloatComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>selectionMethod</strong> – <strong>[in]</strong> Determines if auto-tuning should be used. See <a class="reference internal" href="HPTTTypes.html#namespacehptt_1a094cccf388ffcc1f01344331737e56d4"><span class="std std-ref">hptt::SelectionMethod</span></a> for details. ATTENTION: If you enable auto-tuning (e.g., hptt::MEASURE) then the output data will be used during the auto-tuning process. The original data (i.e., A and B), however, is preserved after this function call completes &amp;#8212; unless your input data (i.e. A) has invalid data (e.g., NaN, inf).</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiK13DoubleComplexPK13DoubleComplexRKNSt6vectorIiEERKNSt6vectorIiEEK13DoubleComplexP13DoubleComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">
+<span id="_CPPv3N4hptt11create_planERKNSt6vectorIiEEKiK13DoubleComplexPK13DoubleComplexRKNSt6vectorIiEERKNSt6vectorIiEEK13DoubleComplexP13DoubleComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb"></span><span id="_CPPv2N4hptt11create_planERKNSt6vectorIiEEKiK13DoubleComplexPK13DoubleComplexRKNSt6vectorIiEERKNSt6vectorIiEEK13DoubleComplexP13DoubleComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb"></span><span id="hptt::create_plan__std::vector:i:CR.iC.DoubleComplexC.DoubleComplexCP.std::vector:i:CR.std::vector:i:CR.DoubleComplexC.DoubleComplexP.std::vector:i:CR.SelectionMethodC.iC.std::vector:i:CR.bC"></span><span class="target" id="namespacehptt_1a5afc4e6d0567f05ded63407a1422c78d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt15SelectionMethodE" title="hptt::SelectionMethod"><span class="n"><span class="pre">SelectionMethod</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">selectionMethod</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiK13DoubleComplexPK13DoubleComplexRKNSt6vectorIiEERKNSt6vectorIiEEK13DoubleComplexP13DoubleComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>selectionMethod</strong> – <strong>[in]</strong> Determines if auto-tuning should be used. See <a class="reference internal" href="HPTTTypes.html#namespacehptt_1a094cccf388ffcc1f01344331737e56d4"><span class="std std-ref">hptt::SelectionMethod</span></a> for details. ATTENTION: If you enable auto-tuning (e.g., hptt::MEASURE) then the output data will be used during the auto-tuning process. The original data (i.e., A and B), however, is preserved after this function call completes &amp;#8212; unless your input data (i.e. A) has invalid data (e.g., NaN, inf).</p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiKiKiPKiKb">
+<span id="_CPPv3N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiKiKiPKiKb"></span><span id="_CPPv2N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiKiKiPKiKb"></span><span id="hptt::create_plan__iCP.iC.floatC.floatCP.iCP.iCP.floatC.floatP.iCP.iC.iC.iCP.bC"></span><span class="target" id="namespacehptt_1a3a849c684ea73282427873d80627920f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxAutotuningCandidates</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiKiKiPKiKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan. </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>maxAutotuningCandidates</strong> – <strong>[in]</strong> Sets the number of candidates to be tested during the autotuning phase. </p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major). </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiKiKiPKiKb">
+<span id="_CPPv3N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiKiKiPKiKb"></span><span id="_CPPv2N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiKiKiPKiKb"></span><span id="hptt::create_plan__iCP.iC.doubleC.doubleCP.iCP.iCP.doubleC.doubleP.iCP.iC.iC.iCP.bC"></span><span class="target" id="namespacehptt_1aa733c8523eed0a503d45865dabaa7b8b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxAutotuningCandidates</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiKiKiPKiKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>maxAutotuningCandidates</strong> – <strong>[in]</strong> Sets the number of candidates to be tested during the autotuning phase. </p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiKiKiPKiKb">
+<span id="_CPPv3N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiKiKiPKiKb"></span><span id="_CPPv2N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiKiKiPKiKb"></span><span id="hptt::create_plan__iCP.iC.FloatComplexC.FloatComplexCP.iCP.iCP.FloatComplexC.FloatComplexP.iCP.iC.iC.iCP.bC"></span><span class="target" id="namespacehptt_1a9670713b5c4fffc9f6ccbe1e5035d13c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt12FloatComplexE" title="hptt::FloatComplex"><span class="n"><span class="pre">FloatComplex</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxAutotuningCandidates</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiKiKiPKiKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>maxAutotuningCandidates</strong> – <strong>[in]</strong> Sets the number of candidates to be tested during the autotuning phase. </p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiKiKiPKiKb">
+<span id="_CPPv3N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiKiKiPKiKb"></span><span id="_CPPv2N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiKiKiPKiKb"></span><span id="hptt::create_plan__iCP.iC.DoubleComplexC.DoubleComplexCP.iCP.iCP.DoubleComplexC.DoubleComplexP.iCP.iC.iC.iCP.bC"></span><span class="target" id="namespacehptt_1af5c7894f2e5d834fdc98b60aabdda579"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Transpose.html#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose"><span class="n"><span class="pre">Transpose</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_plan</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE" title="hptt::DoubleComplex"><span class="n"><span class="pre">DoubleComplex</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxAutotuningCandidates</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">threadIds</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiKiKiPKiKb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a Tensor Transposition plan.    </p>
+<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
+\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+B_{\pi(i_0,i_1,...)}. \]</div>
+ The plan can be reused over several transpositions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
+<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
+<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
+<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
+<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
+<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
+<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
+<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
+<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
+<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
+</ul>
+</p></li>
+<li><p><strong>maxAutotuningCandidates</strong> – <strong>[in]</strong> Sets the number of candidates to be tested during the autotuning phase. </p></li>
+<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition. </p></li>
+<li><p><strong>threadIds</strong> – <strong>[in]</strong> Array of OpenMP threadIds that participate in this tensor transposition. This parameter is only important if you want to call HPTT from within a parallel region (i.e., via execute_expert()). </p></li>
+<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

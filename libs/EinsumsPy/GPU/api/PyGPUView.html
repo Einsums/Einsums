@@ -1,0 +1,697 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>EinsumsPy/GPU/PyGPUView.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/EinsumsPy/GPU/api/PyGPUView';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Jan 31, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">EinsumsPy/GPU/PyGPUView.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">EinsumsPy/GPU/PyGPUView.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsumspy-gpu-pygpuview-hpp">
+<span id="modules-einsumspy-einsumspy-gpu-pygpuview-hpp-api"></span><h1>EinsumsPy/GPU/PyGPUView.hpp<a class="headerlink" href="#einsumspy-gpu-pygpuview-hpp" title="Permalink to this heading">#</a></h1>
+<p>Defined in header .</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6pythonE">
+<span id="_CPPv3N7einsums6pythonE"></span><span id="_CPPv2N7einsums6pythonE"></span><span id="einsums::python"></span><span class="target" id="namespaceeinsums_1_1python"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">python</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-typedefs">Typedefs</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python15SharedPyGPUViewE">
+<span id="_CPPv3N7einsums6python15SharedPyGPUViewE"></span><span id="_CPPv2N7einsums6python15SharedPyGPUViewE"></span><span class="target" id="_py_g_p_u_view_8hpp_1ad250f1c58bba042431f8d8be90463c4d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SharedPyGPUView</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N7einsums6python9PyGPUViewE" title="einsums::python::PyGPUView"><span class="n"><span class="pre">PyGPUView</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums6python15SharedPyGPUViewE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUViewE">
+<span id="_CPPv3N7einsums6python9PyGPUViewE"></span><span id="_CPPv2N7einsums6python9PyGPUViewE"></span><span id="einsums::python::PyGPUView"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyGPUView</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUViewE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;PyGPUView.hpp&gt;</em></div>
+<p>Makes the data in a Python buffer object available to the GPU. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView9PyGPUViewERN8pybind116bufferEN6detail10PyViewModeE">
+<span id="_CPPv3N7einsums6python9PyGPUView9PyGPUViewERN8pybind116bufferEN6detail10PyViewModeE"></span><span id="_CPPv2N7einsums6python9PyGPUView9PyGPUViewERN8pybind116bufferEN6detail10PyViewModeE"></span><span id="einsums::python::PyGPUView::PyGPUView__pybind11::bufferR.detail::PyViewMode"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a92177bcbe2586bf73dee2b425fc47635"></span><span class="sig-name descname"><span class="n"><span class="pre">PyGPUView</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">PyViewMode</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">COPY</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView9PyGPUViewERN8pybind116bufferEN6detail10PyViewModeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a view of the given buffer object. </p>
+<p>This makes the data in the buffer available to the GPU with the given mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>buffer</strong> – The buffer to make available. </p></li>
+<li><p><strong>mode</strong> – The mode for making the data available. Can not be detail::DEVICE_TENSOR. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER12DeviceTensorI1T4RankE">
+<span id="_CPPv3I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER12DeviceTensorI1T4RankE"></span><span id="_CPPv2I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER12DeviceTensorI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a36a309edfccb9e3b12bb1e151fd8e0f3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyGPUView</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../../Einsums/Tensor/docs/index.html#_CPPv4I0_6size_tE12DeviceTensor" title="DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER12DeviceTensorI1T4RankE" title="einsums::python::PyGPUView::PyGPUView::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER12DeviceTensorI1T4RankE" title="einsums::python::PyGPUView::PyGPUView::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER12DeviceTensorI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a view of the given tensor. </p>
+<p>This makes the data in the DeviceTensor available to be used alongside Python buffers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tensor</strong> – The tensor to convert. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER16DeviceTensorViewI1T4RankE">
+<span id="_CPPv3I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER16DeviceTensorViewI1T4RankE"></span><span id="_CPPv2I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER16DeviceTensorViewI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1add35848f3312a2b56dd4c3107a993c6a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyGPUView</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../../Einsums/Tensor/docs/index.html#_CPPv4I0_6size_tE16DeviceTensorView" title="DeviceTensorView"><span class="n"><span class="pre">DeviceTensorView</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER16DeviceTensorViewI1T4RankE" title="einsums::python::PyGPUView::PyGPUView::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER16DeviceTensorViewI1T4RankE" title="einsums::python::PyGPUView::PyGPUView::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewER16DeviceTensorViewI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a view of the given tensor. </p>
+<p>This makes the data in the DeviceTensor available to be used alongside Python buffers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tensor</strong> – The tensor to convert. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK12DeviceTensorI1T4RankE">
+<span id="_CPPv3I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK12DeviceTensorI1T4RankE"></span><span id="_CPPv2I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK12DeviceTensorI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a39db8985930d9c1a424c21fd392c02fd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyGPUView</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../../Einsums/Tensor/docs/index.html#_CPPv4I0_6size_tE12DeviceTensor" title="DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK12DeviceTensorI1T4RankE" title="einsums::python::PyGPUView::PyGPUView::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK12DeviceTensorI1T4RankE" title="einsums::python::PyGPUView::PyGPUView::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK12DeviceTensorI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a view of the given tensor. </p>
+<p>This makes the data in the DeviceTensor available to be used alongside Python buffers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tensor</strong> – The tensor to convert. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK16DeviceTensorViewI1T4RankE">
+<span id="_CPPv3I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK16DeviceTensorViewI1T4RankE"></span><span id="_CPPv2I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK16DeviceTensorViewI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1aa7bfd27e745f3d6d5beeff3031108ac6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyGPUView</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../../Einsums/Tensor/docs/index.html#_CPPv4I0_6size_tE16DeviceTensorView" title="DeviceTensorView"><span class="n"><span class="pre">DeviceTensorView</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK16DeviceTensorViewI1T4RankE" title="einsums::python::PyGPUView::PyGPUView::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK16DeviceTensorViewI1T4RankE" title="einsums::python::PyGPUView::PyGPUView::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_6size_tEN7einsums6python9PyGPUView9PyGPUViewERK16DeviceTensorViewI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Creates a view of the given tensor. </p>
+<p>This makes the data in the DeviceTensor available to be used alongside Python buffers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tensor</strong> – The tensor to convert. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView9PyGPUViewERK9PyGPUView">
+<span id="_CPPv3N7einsums6python9PyGPUView9PyGPUViewERK9PyGPUView"></span><span id="_CPPv2N7einsums6python9PyGPUView9PyGPUViewERK9PyGPUView"></span><span id="einsums::python::PyGPUView::PyGPUView__PyGPUViewCR"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a722b55fe51e0f9be1a31953fdcace5a9"></span><span class="sig-name descname"><span class="n"><span class="pre">PyGPUView</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums6python9PyGPUView9PyGPUViewERK9PyGPUView" title="einsums::python::PyGPUView::PyGPUView"><span class="n"><span class="pre">PyGPUView</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView9PyGPUViewERK9PyGPUView" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUViewD0Ev">
+<span id="_CPPv3N7einsums6python9PyGPUViewD0Ev"></span><span id="_CPPv2N7einsums6python9PyGPUViewD0Ev"></span><span id="einsums::python::PyGPUView::~PyGPUView"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1ae75e41f6741e47454e0160fb28eced7d"></span><span class="sig-name descname"><span class="n"><span class="pre">~PyGPUView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUViewD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView9host_dataEv">
+<span id="_CPPv3N7einsums6python9PyGPUView9host_dataEv"></span><span id="_CPPv2N7einsums6python9PyGPUView9host_dataEv"></span><span id="einsums::python::PyGPUView::host_data"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a43300ed981e8a2aafd46255ebef48955"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">host_data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView9host_dataEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the pointer to the host data. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView9host_dataEv">
+<span id="_CPPv3NK7einsums6python9PyGPUView9host_dataEv"></span><span id="_CPPv2NK7einsums6python9PyGPUView9host_dataEv"></span><span id="einsums::python::PyGPUView::host_dataC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1ae3ff3ed1c1dfca475181a3707ccf41bb"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">host_data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView9host_dataEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the pointer to the host data. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView8dev_dataEv">
+<span id="_CPPv3N7einsums6python9PyGPUView8dev_dataEv"></span><span id="_CPPv2N7einsums6python9PyGPUView8dev_dataEv"></span><span id="einsums::python::PyGPUView::dev_data"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a10f9a3c1d12966e0386c7ffc53fc690e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">dev_data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView8dev_dataEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the pointer to the device data. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView8dev_dataEv">
+<span id="_CPPv3NK7einsums6python9PyGPUView8dev_dataEv"></span><span id="_CPPv2NK7einsums6python9PyGPUView8dev_dataEv"></span><span id="einsums::python::PyGPUView::dev_dataC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a3a4c1a93fbb4ccfee0a0171d5355db18"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">dev_data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView8dev_dataEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the pointer to the device data. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView4dimsEv">
+<span id="_CPPv3NK7einsums6python9PyGPUView4dimsEv"></span><span id="_CPPv2NK7einsums6python9PyGPUView4dimsEv"></span><span id="einsums::python::PyGPUView::dimsC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a9177d30bf68a4475a58f3300626b3a0c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dims</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView4dimsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the dimensions of each axis. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView3dimEi">
+<span id="_CPPv3NK7einsums6python9PyGPUView3dimEi"></span><span id="_CPPv2NK7einsums6python9PyGPUView3dimEi"></span><span id="einsums::python::PyGPUView::dim__iC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a031e95467dd8e7cb9f3596b6040881ae"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dim</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView3dimEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the dimension of the given axis. Supports negative indexing. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView7stridesEv">
+<span id="_CPPv3NK7einsums6python9PyGPUView7stridesEv"></span><span id="_CPPv2NK7einsums6python9PyGPUView7stridesEv"></span><span id="einsums::python::PyGPUView::stridesC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a6c0ec78ac7423d4199356873b64a576d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">strides</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView7stridesEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the strides of each axis in bytes. </p>
+<p>This is different from how the C++ side works, which is in elements. To get the equivalent C++ stride, you must divide by <a class="reference internal" href="#classeinsums_1_1python_1_1_py_g_p_u_view_1a6a76b3c502d73abb87f31486e89f6162"><span class="std std-ref">PyGPUView::itemsize()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView6strideEi">
+<span id="_CPPv3NK7einsums6python9PyGPUView6strideEi"></span><span id="_CPPv2NK7einsums6python9PyGPUView6strideEi"></span><span id="einsums::python::PyGPUView::stride__iC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1af7e3e96f4eefeb2832a6310c71f6edc9"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView6strideEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the strides of the given axis in bytes. Supports negative indexing. </p>
+<p>This is different from how the C++ side works, which is in elements. To get the equivalent C++ stride, you must divide by <a class="reference internal" href="#classeinsums_1_1python_1_1_py_g_p_u_view_1a6a76b3c502d73abb87f31486e89f6162"><span class="std std-ref">PyGPUView::itemsize()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView8fmt_specEv">
+<span id="_CPPv3NK7einsums6python9PyGPUView8fmt_specEv"></span><span id="_CPPv2NK7einsums6python9PyGPUView8fmt_specEv"></span><span id="einsums::python::PyGPUView::fmt_specC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a079e307365a018de43f5c8dfa82b1984"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fmt_spec</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView8fmt_specEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the format specifier for the data type. </p>
+<p>This is specified by pybind11. For instance, floats are “f”, doubles are “d”, and long doubles are “g”. Complex types are “Z” followed by their underlying type. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView8gpu_dimsEv">
+<span id="_CPPv3N7einsums6python9PyGPUView8gpu_dimsEv"></span><span id="_CPPv2N7einsums6python9PyGPUView8gpu_dimsEv"></span><span id="einsums::python::PyGPUView::gpu_dims"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a30c159f7190d3ebf40cb0e937ec5d402"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_dims</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView8gpu_dimsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the device pointer to the array of the dimensions. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView8gpu_dimsEv">
+<span id="_CPPv3NK7einsums6python9PyGPUView8gpu_dimsEv"></span><span id="_CPPv2NK7einsums6python9PyGPUView8gpu_dimsEv"></span><span id="einsums::python::PyGPUView::gpu_dimsC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a982aa17f223113d1f619c1947d1e37ac"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_dims</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView8gpu_dimsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the device pointer to the array of the dimensions. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView11gpu_stridesEv">
+<span id="_CPPv3N7einsums6python9PyGPUView11gpu_stridesEv"></span><span id="_CPPv2N7einsums6python9PyGPUView11gpu_stridesEv"></span><span id="einsums::python::PyGPUView::gpu_strides"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a5e1f6dee0341c52bdc3765308ef8bdaa"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_strides</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView11gpu_stridesEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the device pointer to the array of the strides in bytes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView11gpu_stridesEv">
+<span id="_CPPv3NK7einsums6python9PyGPUView11gpu_stridesEv"></span><span id="_CPPv2NK7einsums6python9PyGPUView11gpu_stridesEv"></span><span id="einsums::python::PyGPUView::gpu_stridesC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a89cc92cedfd248e2ea58abd04ec37e6e"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_strides</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView11gpu_stridesEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the device pointer to the array of the strides in bytes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView4rankEv">
+<span id="_CPPv3NK7einsums6python9PyGPUView4rankEv"></span><span id="_CPPv2NK7einsums6python9PyGPUView4rankEv"></span><span id="einsums::python::PyGPUView::rankC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a44a32fa2d3c6761b7428c02d5c2e73fb"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rank</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView4rankEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the rank. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView4sizeEv">
+<span id="_CPPv3NK7einsums6python9PyGPUView4sizeEv"></span><span id="_CPPv2NK7einsums6python9PyGPUView4sizeEv"></span><span id="einsums::python::PyGPUView::sizeC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a591edd903095342d278aebe96a90719a"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView4sizeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the number of elements. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums6python9PyGPUView8itemsizeEv">
+<span id="_CPPv3NK7einsums6python9PyGPUView8itemsizeEv"></span><span id="_CPPv2NK7einsums6python9PyGPUView8itemsizeEv"></span><span id="einsums::python::PyGPUView::itemsizeC"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a6a76b3c502d73abb87f31486e89f6162"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">itemsize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums6python9PyGPUView8itemsizeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Get the size of each item. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView10update_H2DEv">
+<span id="_CPPv3N7einsums6python9PyGPUView10update_H2DEv"></span><span id="_CPPv2N7einsums6python9PyGPUView10update_H2DEv"></span><span id="einsums::python::PyGPUView::update_H2D"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a7310a5f3e1e634b3e099886d39eed25b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_H2D</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView10update_H2DEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Synchronize the data by sending the host data to the device. </p>
+<p>This only does something when the mode is set to detail::COPY. Otherwise, it does nothing. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView10update_D2HEv">
+<span id="_CPPv3N7einsums6python9PyGPUView10update_D2HEv"></span><span id="_CPPv2N7einsums6python9PyGPUView10update_D2HEv"></span><span id="einsums::python::PyGPUView::update_D2H"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a6a6a3759642a296480f096e495807077"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_D2H</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView10update_D2HEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Synchronize the data by sending the device data to the host. </p>
+<p>This only does something when the mode is set to detail::COPY. Otherwise, it does nothing. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView10_host_dataE">
+<span id="_CPPv3N7einsums6python9PyGPUView10_host_dataE"></span><span id="_CPPv2N7einsums6python9PyGPUView10_host_dataE"></span><span id="einsums::python::PyGPUView::_host_data__voidP"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1aacf02bc8989cc15ae8211056c5ba10a0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">_host_data</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView10_host_dataE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView9_dev_dataE">
+<span id="_CPPv3N7einsums6python9PyGPUView9_dev_dataE"></span><span id="_CPPv2N7einsums6python9PyGPUView9_dev_dataE"></span><span id="einsums::python::PyGPUView::_dev_data__voidP"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a41e18203a4bcc50748af98e37f77e912"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">_dev_data</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView9_dev_dataE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView5_dimsE">
+<span id="_CPPv3N7einsums6python9PyGPUView5_dimsE"></span><span id="_CPPv2N7einsums6python9PyGPUView5_dimsE"></span><span id="einsums::python::PyGPUView::_dims__std::vector:s:"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a911dd120560e0333197fde1bdeb38541"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_dims</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView5_dimsE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView8_stridesE">
+<span id="_CPPv3N7einsums6python9PyGPUView8_stridesE"></span><span id="_CPPv2N7einsums6python9PyGPUView8_stridesE"></span><span id="einsums::python::PyGPUView::_strides__std::vector:s:"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a362d1f2263c613997980df9785263624"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_strides</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView8_stridesE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView9_gpu_dimsE">
+<span id="_CPPv3N7einsums6python9PyGPUView9_gpu_dimsE"></span><span id="_CPPv2N7einsums6python9PyGPUView9_gpu_dimsE"></span><span id="einsums::python::PyGPUView::_gpu_dims__sP"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1af072148674e3492a226b26decdd4b556"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">_gpu_dims</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView9_gpu_dimsE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView12_gpu_stridesE">
+<span id="_CPPv3N7einsums6python9PyGPUView12_gpu_stridesE"></span><span id="_CPPv2N7einsums6python9PyGPUView12_gpu_stridesE"></span><span id="einsums::python::PyGPUView::_gpu_strides__sP"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a53280c50d7eb2adb20b271e28c0b5a6b"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">_gpu_strides</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView12_gpu_stridesE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView5_rankE">
+<span id="_CPPv3N7einsums6python9PyGPUView5_rankE"></span><span id="_CPPv2N7einsums6python9PyGPUView5_rankE"></span><span id="einsums::python::PyGPUView::_rank__s"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1ad229ff3224a68d69af2776499c138ff1"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_rank</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView5_rankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView9_itemsizeE">
+<span id="_CPPv3N7einsums6python9PyGPUView9_itemsizeE"></span><span id="_CPPv2N7einsums6python9PyGPUView9_itemsizeE"></span><span id="einsums::python::PyGPUView::_itemsize__s"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a5511610442647b6915b3898c09ee46fc"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_itemsize</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView9_itemsizeE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView11_alloc_sizeE">
+<span id="_CPPv3N7einsums6python9PyGPUView11_alloc_sizeE"></span><span id="_CPPv2N7einsums6python9PyGPUView11_alloc_sizeE"></span><span id="einsums::python::PyGPUView::_alloc_size__s"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a46f37ce40a1582b0e9da76b8a1cae68a"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_alloc_size</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView11_alloc_sizeE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView10_num_itemsE">
+<span id="_CPPv3N7einsums6python9PyGPUView10_num_itemsE"></span><span id="_CPPv2N7einsums6python9PyGPUView10_num_itemsE"></span><span id="einsums::python::PyGPUView::_num_items__s"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a641ee2c95bd246166a6e9d2b00bef657"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_num_items</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView10_num_itemsE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView9_fmt_specE">
+<span id="_CPPv3N7einsums6python9PyGPUView9_fmt_specE"></span><span id="_CPPv2N7einsums6python9PyGPUView9_fmt_specE"></span><span id="einsums::python::PyGPUView::_fmt_spec__ss"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a36685cad6dafea390bcfd908e7cf9888"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_fmt_spec</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView9_fmt_specE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView5_modeE">
+<span id="_CPPv3N7einsums6python9PyGPUView5_modeE"></span><span id="_CPPv2N7einsums6python9PyGPUView5_modeE"></span><span id="einsums::python::PyGPUView::_mode__detail::PyViewMode"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1ad3932e476da1e0db238a792f6a12d2d4"></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">PyViewMode</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_mode</span></span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView5_modeE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python9PyGPUView16_dev_tensor_modeE">
+<span id="_CPPv3N7einsums6python9PyGPUView16_dev_tensor_modeE"></span><span id="_CPPv2N7einsums6python9PyGPUView16_dev_tensor_modeE"></span><span id="einsums::python::PyGPUView::_dev_tensor_mode__einsums::detail::HostToDeviceMode"></span><span class="target" id="classeinsums_1_1python_1_1_py_g_p_u_view_1a24459bec38d95fca2ab3082f2503a002"></span><a class="reference internal" href="../../../Einsums/Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">HostToDeviceMode</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_dev_tensor_mode</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><a class="reference internal" href="../../../Einsums/Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">UNKNOWN</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums6python9PyGPUView16_dev_tensor_modeE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

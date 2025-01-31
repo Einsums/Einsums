@@ -1,0 +1,717 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Linear Algebra &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/LinearAlgebra/docs/index';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Einsums Logging" href="../../Logging/docs/index.html" />
+    <link rel="prev" title="Iterator" href="../../Iterator/docs/index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Jan 31, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../modules.html">Einsums modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Decomposition/docs/index.html">Decomposition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../DesignPatterns/docs/index.html">Einsums DesignPatterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../FFT/docs/index.html">Einsums FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GPUStreams/docs/index.html">GPUStreams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Logging/docs/index.html">Einsums Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Runtime/docs/index.html">Einsums Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../RuntimeConfiguration/docs/index.html">Einsums RuntimeConfiguration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Overview</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../modules.html" class="nav-link">Einsums modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Linear Algebra</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="linear-algebra">
+<span id="modules-linearalgebra"></span><h1>Linear Algebra<a class="headerlink" href="#linear-algebra" title="Permalink to this heading">#</a></h1>
+<p>This module contains the user-facing definitions of various linear algebra routines.</p>
+<p>See the <span class="xref std std-ref">API reference</span> of this module for more
+details.</p>
+<p>Here are some of the public symbols that are available to use.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13TensorConceptE10sum_squarevRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE">
+<span id="_CPPv3I_13TensorConceptE10sum_squareRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE"></span><span id="_CPPv2I_13TensorConceptE10sum_squareRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sum_square</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConceptE10sum_squarevRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="sum_square::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConceptE10sum_squarevRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="sum_square::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">scale</span></span>, <span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConceptE10sum_squarevRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="sum_square::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sumsq</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConceptE10sum_squarevRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the sum of the squares of the elements of a tensor. This uses the following formula.</p>
+<div class="math notranslate nohighlight">
+\[scale_{out}^2 * sum_{out} = A_1^2 + A_2^2 + \cdots + A_n^2 + scale_{in}^2 * sum_{in}\]</div>
+<p>On exit, the value of <code class="code docutils literal notranslate"><span class="pre">scale</span></code> will normally be 1. However, it may be different if the
+result of the sum would have caused either an overflow or an underflow.</p>
+<p>Currently only supports :code:<a href="#id1"><span class="problematic" id="id2">`</span></a>BasicTensor`s of rank 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The tensor to evaluate.</p></li>
+<li><p><strong>scale</strong> – The scale factor. It is both an input and output parameter.</p></li>
+<li><p><strong>sumsq</strong> – The starting point and result. It is both an input and output parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AType</strong> – The type of the tensor A.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemm1URK5ATypeRK5BType1UP5CType">
+<span id="_CPPv3I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemm1URK5ATypeRK5BType1UP5CType"></span><span id="_CPPv2I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemm1URK5ATypeRK5BType1UP5CType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransB</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="sig-name descname"><span class="n"><span class="pre">gemm</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemm1URK5ATypeRK5BType1UP5CType" title="gemm::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemm1URK5ATypeRK5BType1UP5CType" title="gemm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemm1URK5ATypeRK5BType1UP5CType" title="gemm::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemm1URK5ATypeRK5BType1UP5CType" title="gemm::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemm1URK5ATypeRK5BType1UP5CType" title="gemm::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemm1URK5ATypeRK5BType1UP5CType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Compute the matrix product between two matrices.</p>
+<p>Currently supports the following:</p>
+<p>For all of these, <code class="code docutils literal notranslate"><span class="pre">U,</span> <span class="pre">T</span> <span class="pre">=</span> <span class="pre">float,</span> <span class="pre">double,</span> <span class="pre">std::complex&lt;float&gt;,</span> <span class="pre">std::complex&lt;double&gt;</span></code>.</p>
+<p>For all of these, the rank is always rank 2.</p>
+<p>All of the stored types must match, though the prefactor’s type does not. It will be converted
+to match if it does not.</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">BasicTensor</span> <span class="pre">*</span> <span class="pre">BasicTensor</span> <span class="pre">=</span> <span class="pre">BasicTensor</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">BlockTensor</span> <span class="pre">*</span> <span class="pre">BlockTensor</span> <span class="pre">=</span> <span class="pre">BlockTensor</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">TiledTensor</span> <span class="pre">*</span> <span class="pre">TiledTensor</span> <span class="pre">=</span> <span class="pre">TiledTensor</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">OtherTensor</span> <span class="pre">*</span> <span class="pre">OtherTensor</span> <span class="pre">=</span> <span class="pre">OtherTensor</span></code></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> – Scale factor for the matrix product.</p></li>
+<li><p><strong>A</strong> – The left matrix in the product.</p></li>
+<li><p><strong>B</strong> – The right matrix in the product.</p></li>
+<li><p><strong>beta</strong> – The scale factor to apply to the C matrix on input.</p></li>
+<li><p><strong>C</strong> – The result. If <code class="code docutils literal notranslate"><span class="pre">beta</span></code> is not zero, then the value of <code class="code docutils literal notranslate"><span class="pre">C</span></code> on input will be scaled and added to the result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TransA</strong> – If true, transpose the A matrix.</p></li>
+<li><p><strong>TransB</strong> – If true, transpose the B matrix.</p></li>
+<li><p><strong>AType</strong> – The type of the A matrix.</p></li>
+<li><p><strong>BType</strong> – The type of the B matrix.</p></li>
+<li><p><strong>CType</strong> – The type  of the C matrix.</p></li>
+<li><p><strong>U</strong> – The type of the scale factors. It will be converted if needed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0E4gemm11RemoveViewTI5ATypeEK1URK5ATypeRK5BType">
+<span id="_CPPv3I_b_b_13MatrixConcept_13MatrixConcept0E4gemmK1URK5ATypeRK5BType"></span><span id="_CPPv2I_b_b_13MatrixConcept_13MatrixConcept0E4gemmK1URK5ATypeRK5BType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransB</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gemm</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0E4gemm11RemoveViewTI5ATypeEK1URK5ATypeRK5BType" title="gemm::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0E4gemm11RemoveViewTI5ATypeEK1URK5ATypeRK5BType" title="gemm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0E4gemm11RemoveViewTI5ATypeEK1URK5ATypeRK5BType" title="gemm::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">RemoveViewT</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0E4gemm11RemoveViewTI5ATypeEK1URK5ATypeRK5BType" title="gemm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0E4gemm11RemoveViewTI5ATypeEK1URK5ATypeRK5BType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Compute the matrix product between two matrices. This is a wrapper around the previous <code class="code docutils literal notranslate"><span class="pre">gemm</span></code>,
+but instead of returning its result in an output argument, it returns its result as an output
+value. It supports all the same combinations as the other definition of <code class="code docutils literal notranslate"><span class="pre">gemm</span></code>, but if it is passed
+a view, it will remove that view.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> – The scale factor on the matrix product.</p></li>
+<li><p><strong>A</strong> – The left matrix.</p></li>
+<li><p><strong>B</strong> – The right matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The matrix product scaled by <code class="code docutils literal notranslate"><span class="pre">alpha</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptE9symm_gemmvRK5ATypeRK5BTypeP5CType">
+<span id="_CPPv3I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptE9symm_gemmRK5ATypeRK5BTypeP5CType"></span><span id="_CPPv2I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptE9symm_gemmRK5ATypeRK5BTypeP5CType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransB</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">symm_gemm</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptE9symm_gemmvRK5ATypeRK5BTypeP5CType" title="symm_gemm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptE9symm_gemmvRK5ATypeRK5BTypeP5CType" title="symm_gemm::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <a class="reference internal" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptE9symm_gemmvRK5ATypeRK5BTypeP5CType" title="symm_gemm::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptE9symm_gemmvRK5ATypeRK5BTypeP5CType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This function computes <span class="math notranslate nohighlight">\(OP(B)^T OP(A) OP(B) = C\)</span>. It supports the same arguments
+as <code class="code docutils literal notranslate"><span class="pre">gemm</span></code>, since it normally calls <code class="code docutils literal notranslate"><span class="pre">gemm</span></code> in the back.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The middle tensor.</p></li>
+<li><p><strong>B</strong> – The tensor that will be multiplied on either side.</p></li>
+<li><p><strong>C</strong> – The output of the operation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TransA</strong> – Whether to transpose A.</p></li>
+<li><p><strong>TransB</strong> – Whether to transpose the second instance of B. The first instance will always be the opposite.</p></li>
+<li><p><strong>AType</strong> – The matrix type of A.</p></li>
+<li><p><strong>BType</strong> – The matrix type of B.</p></li>
+<li><p><strong>CType</strong> – The matrix type of the output.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0E4gemvvK1URK5ATypeRK5XTypeK1UP5YType">
+<span id="_CPPv3I_b_13MatrixConcept_13VectorConcept_13VectorConcept0E4gemvK1URK5ATypeRK5XTypeK1UP5YType"></span><span id="_CPPv2I_b_13MatrixConcept_13VectorConcept_13VectorConcept0E4gemvK1URK5ATypeRK5XTypeK1UP5YType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">YType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gemv</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0E4gemvvK1URK5ATypeRK5XTypeK1UP5YType" title="gemv::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0E4gemvvK1URK5ATypeRK5XTypeK1UP5YType" title="gemv::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0E4gemvvK1URK5ATypeRK5XTypeK1UP5YType" title="gemv::XType"><span class="n"><span class="pre">XType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">z</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0E4gemvvK1URK5ATypeRK5XTypeK1UP5YType" title="gemv::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0E4gemvvK1URK5ATypeRK5XTypeK1UP5YType" title="gemv::YType"><span class="n"><span class="pre">YType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0E4gemvvK1URK5ATypeRK5XTypeK1UP5YType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the matrix-vector product.</p>
+<p>Currently supports the following:</p>
+<p>For each of the arguments, <code class="code docutils literal notranslate"><span class="pre">U,T</span> <span class="pre">=</span> <span class="pre">float,</span> <span class="pre">double,</span> <span class="pre">std::complex&lt;float&gt;,</span> <span class="pre">std::complex&lt;double&gt;</span></code>.</p>
+<p>The stored types of each of the tensors must match.</p>
+<p>The rank of <code class="code docutils literal notranslate"><span class="pre">A</span></code> is 2 and the rank of <code class="code docutils literal notranslate"><span class="pre">X</span></code> and <code class="code docutils literal notranslate"><span class="pre">Y</span></code> is 1.</p>
+<ul class="simple">
+<li><p>BasicTensor * BasicTensor = BasicTensor</p></li>
+<li><p>BlockTensor * BasicTensor = BasicTensor</p></li>
+<li><p>TiledTensor * BasicTensor = BasicTensor</p></li>
+<li><p>TiledTensor * TiledTensor = BasicTensor</p></li>
+<li><p>TiledTensor * BasicTensor = TiledTensor</p></li>
+<li><p>TiledTensor * TiledTensor = TiledTensor</p></li>
+<li><p>OtherTensor * OtherTensor = OtherTensor</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> – The scale factor on the product.</p></li>
+<li><p><strong>A</strong> – The matrix in the product.</p></li>
+<li><p><strong>z</strong> – The vector in the product.</p></li>
+<li><p><strong>beta</strong> – The scale factor on the result vector.</p></li>
+<li><p><strong>y</strong> – The result vector. If <code class="code docutils literal notranslate"><span class="pre">beta</span></code> is not zero, then the value of this on entry will be scaled and added to the result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TransA</strong> – Whether to transpose the matrix.</p></li>
+<li><p><strong>AType</strong> – The type of the matrix.</p></li>
+<li><p><strong>XType</strong> – The type of the input vector.</p></li>
+<li><p><strong>YType</strong> – The type of the output vector.</p></li>
+<li><p><strong>U</strong> – The type of the scale factors. If it is not the same as the types stored by the tensors, it will be cast to match.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_13MatrixConcept_13VectorConceptE4syevvP5ATypeP5WType">
+<span id="_CPPv3I_b_13MatrixConcept_13VectorConceptE4syevP5ATypeP5WType"></span><span id="_CPPv2I_b_13MatrixConcept_13VectorConceptE4syevP5ATypeP5WType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">syev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4syevvP5ATypeP5WType" title="syev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4syevvP5ATypeP5WType" title="syev::WType"><span class="n"><span class="pre">WType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">W</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4syevvP5ATypeP5WType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the eigendecomposition of a symmetrix matrix.</p>
+<p>Supports the following:</p>
+<p><code class="code docutils literal notranslate"><span class="pre">A</span></code> and <code class="code docutils literal notranslate"><span class="pre">W</span></code> need to have the same stored type, and that type needs to be real.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">A</span></code> needs to be rank 2 and <code class="code docutils literal notranslate"><span class="pre">W</span></code> needs to be rank 1.</p>
+<ul class="simple">
+<li><p>BasicTensor to BasicTensor</p></li>
+<li><p>BlockTensor to BasicTensor</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – On entry, it is the matrix to decompose. On exit, it contains the eigenvectors in its columns, if told to compute the eigenvectors.</p></li>
+<li><p><strong>W</strong> – On exit, it contains the eigenvalues.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ComputeEigenvectors</strong> – If true, the eigenvectors will overwrite the <code class="code docutils literal notranslate"><span class="pre">A</span></code> matrix.</p></li>
+<li><p><strong>AType</strong> – The type of the matrix.</p></li>
+<li><p><strong>WType</strong> – The type of the vector.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_13MatrixConcept_13VectorConceptE4heevvP5ATypeP5WType">
+<span id="_CPPv3I_b_13MatrixConcept_13VectorConceptE4heevP5ATypeP5WType"></span><span id="_CPPv2I_b_13MatrixConcept_13VectorConceptE4heevP5ATypeP5WType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">heev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4heevvP5ATypeP5WType" title="heev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4heevvP5ATypeP5WType" title="heev::WType"><span class="n"><span class="pre">WType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">W</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4heevvP5ATypeP5WType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the eigendecomposition of a Hermitian matrix.</p>
+<p>Supports the following:</p>
+<p><code class="code docutils literal notranslate"><span class="pre">A</span></code> needs to be complex, and <code class="code docutils literal notranslate"><span class="pre">W</span></code> needs to be real. The types of the components of <code class="code docutils literal notranslate"><span class="pre">A</span></code> need to be the same as the
+type of the values of <code class="code docutils literal notranslate"><span class="pre">W</span></code>. For instance, <code class="code docutils literal notranslate"><span class="pre">std::complex&lt;float&gt;</span></code> and <code class="code docutils literal notranslate"><span class="pre">float</span></code>.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">A</span></code> needs to be rank 2 and <code class="code docutils literal notranslate"><span class="pre">W</span></code> needs to be rank 1.</p>
+<ul class="simple">
+<li><p>BasicTensor to BasicTensor</p></li>
+<li><p>BlockTensor to BasicTensor</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – On entry, it is the matrix to decompose. On exit, it contains the eigenvectors in its columns, if told to compute the eigenvectors.</p></li>
+<li><p><strong>W</strong> – On exit, it contains the eigenvalues.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ComputeEigenvectors</strong> – If true, the eigenvectors will overwrite the <code class="code docutils literal notranslate"><span class="pre">A</span></code> matrix.</p></li>
+<li><p><strong>AType</strong> – The type of the matrix.</p></li>
+<li><p><strong>WType</strong> – The type of the vector.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType">
+<span id="_CPPv3I_b_13MatrixConcept_13VectorConceptE4geevP5ATypeP5WTypeP5ATypeP5AType"></span><span id="_CPPv2I_b_13MatrixConcept_13VectorConceptE4geevP5ATypeP5WTypeP5ATypeP5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeLeftRightEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">geev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::WType"><span class="n"><span class="pre">WType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">W</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lvecs</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rvecs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Compute the eingendecomposition of a general matrix. If a real matrix has a complex eigenvalue, it will
+always come in a conjugate pair. In this case, the columns of the eigenvector matrix will
+act as the real and imaginary parts. The first column of the two will be the real part,
+and the second column will be the imaginary part of the first eigenvector. The imaginary
+part of the second eigenvector will be the negative of this vector. This only applies to
+real inputs. If the input is complex, then the eigenvectors will be stored as normal.</p>
+<p>Supports the following:</p>
+<p><code class="code docutils literal notranslate"><span class="pre">AType</span></code> needs to be rank2 and <code class="code docutils literal notranslate"><span class="pre">W</span></code> needs to be rank 1.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">W</span></code> needs to store complex values. <code class="code docutils literal notranslate"><span class="pre">A</span></code> can be real or complex. The stored
+types much match in precision, so <code class="code docutils literal notranslate"><span class="pre">std::complex&lt;float&gt;</span></code> will match either <code class="code docutils literal notranslate"><span class="pre">float</span></code>
+or <code class="code docutils literal notranslate"><span class="pre">std::complex&lt;float&gt;</span></code>.</p>
+<ul class="simple">
+<li><p>BasicTensor to BasicTensor</p></li>
+<li><p>BlockTensor to BasicTensor values and BlockTensor vectors</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The matrix to decompose. It will be overwritten on exit.</p></li>
+<li><p><strong>W</strong> – The eigenvalues of the matrix.</p></li>
+<li><p><strong>lvecs</strong> – If specified, it will contain the left eigenvectors.</p></li>
+<li><p><strong>rvecs</strong> – If specified, it will contain the right eigenvectors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ComputeLeftrightEigenvectors</strong> – If true, the eigenvectors will be computed.</p></li>
+<li><p><strong>AType</strong> – The type of the matrix and the vector outputs.</p></li>
+<li><p><strong>WType</strong> – The type of the value output.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>Finish this file.</p>
+</div>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../../Iterator/docs/index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Iterator</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../Logging/docs/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Einsums Logging</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

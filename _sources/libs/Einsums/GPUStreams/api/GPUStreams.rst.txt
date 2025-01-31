@@ -1,0 +1,20 @@
+
+.. 
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. _modules_Einsums_Einsums/GPUStreams/GPUStreams.hpp_api:
+
+-------------------------------------------------------------------------------
+Einsums/GPUStreams/GPUStreams.hpp
+-------------------------------------------------------------------------------
+
+Defined in header .
+
+See :ref:`modules_overview` for a list of names and headers that are part of the public
+|einsums| API.
+
+.. autodoxygenfile:: Einsums/GPUStreams/GPUStreams.hpp
+   :project: GPUStreams

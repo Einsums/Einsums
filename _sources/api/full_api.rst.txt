@@ -1,0 +1,57 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+========
+Full API
+========
+
+The full API of |einsums| is presented below. The listings for the public API above
+refer to the full documentation below.
+
+.. note::
+
+   Most names listed in the full API reference are implementation details or
+   considered unstable. They are listed mostly for completeness. If there is a
+   particular feature you think deserves being in the public API we may consider
+   promoting it.
+
+.. toctree::
+   :maxdepth: 1
+   
+   /libs/Einsums/Assertion/api/full_api.rst
+   /libs/Einsums/BLAS/api/full_api.rst
+   /libs/Einsums/BLASBase/api/full_api.rst
+   /libs/Einsums/BLASVendor/api/full_api.rst
+   /libs/Einsums/Concepts/api/full_api.rst
+   /libs/Einsums/Config/api/full_api.rst
+   /libs/Einsums/Debugging/api/full_api.rst
+   /libs/Einsums/Decomposition/api/full_api.rst
+   /libs/Einsums/DesignPatterns/api/full_api.rst
+   /libs/Einsums/FFT/api/full_api.rst
+   /libs/Einsums/GPUStreams/api/full_api.rst
+   /libs/Einsums/HPTT/api/full_api.rst
+   /libs/Einsums/Iterator/api/full_api.rst
+   /libs/Einsums/LinearAlgebra/api/full_api.rst
+   /libs/Einsums/Logging/api/full_api.rst
+   /libs/Einsums/Preprocessor/api/full_api.rst
+   /libs/Einsums/Print/api/full_api.rst
+   /libs/Einsums/Profile/api/full_api.rst
+   /libs/Einsums/Runtime/api/full_api.rst
+   /libs/Einsums/RuntimeConfiguration/api/full_api.rst
+   /libs/Einsums/StringUtil/api/full_api.rst
+   /libs/Einsums/Tensor/api/full_api.rst
+   /libs/Einsums/TensorAlgebra/api/full_api.rst
+   /libs/Einsums/TensorBase/api/full_api.rst
+   /libs/Einsums/TensorUtilities/api/full_api.rst
+   /libs/Einsums/TypeSupport/api/full_api.rst
+   /libs/Einsums/Utilities/api/full_api.rst
+   /libs/EinsumsPy/GPU/api/full_api.rst
+   /libs/EinsumsPy/Tensor/api/full_api.rst
+   /libs/EinsumsPy/TensorAlgebra/api/full_api.rst
+   /libs/EinsumsPy/TestUtils/api/full_api.rst
+
+
+.. _libs_unmodularized:

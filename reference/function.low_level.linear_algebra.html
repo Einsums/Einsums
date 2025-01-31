@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Low-Level Linear Algebra (BLAS, LAPACK, etc.) &#8212; Einsums 0.6.1 documentation</title>
+    <title>Low-Level Linear Algebra (BLAS, LAPACK, etc.) &#8212; Einsums 1.0.0-trunk documentation</title>
   
   
   
@@ -17,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -28,32 +27,33 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=e37360c5" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/design-tabs.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/function.low_level.linear_algebra';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Einsums Python Module" href="python_module.html" />
-    <link rel="prev" title="Linear Algebra (BLAS, LAPACK, etc.)" href="function.linear_algebra.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.6.1" />
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Jan 31, 2025"/>
   </head>
   
   
@@ -144,8 +144,8 @@
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="index.html">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
     API Reference
   </a>
 </li>
@@ -183,22 +183,6 @@
   <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
   <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
 </button></div>
-      
-        <div class="navbar-item"><ul class="navbar-icon-links"
-    aria-label="Icon Links">
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
-        </li>
-</ul></div>
       
     </div>
     
@@ -253,8 +237,8 @@
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="index.html">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
     API Reference
   </a>
 </li>
@@ -284,22 +268,6 @@
   <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
 </button></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links"
-    aria-label="Icon Links">
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
-        </li>
-</ul></div>
-        
       </div>
     
   </div>
@@ -310,36 +278,9 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="classes.html">Classes/Structs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="class.tensor.html">Tensor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="class.tensorview.html">Tensor View</a></li>
-<li class="toctree-l2"><a class="reference internal" href="class.devicetensor.html">Device Tensor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="class.devicetensorview.html">Device Tensor Views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="class.runtimetensor.html">Runtime Tensors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="class.runtimetensorview.html">Runtime Tensor Views</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="functions.html">Functions</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html">Linear Algebra (BLAS, LAPACK, etc.)</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="python_module.html">Einsums Python Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="einsums.core.html">Einsums Core Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="einsums.core.tensor_algebra.html">Einsums Python Tensor Algebra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="einsums.core.gpu_view.html">Einsums Python GPU Views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html">Einsums Python Runtime Tensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html">Einsums Utilities Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html">HIP Exceptions in Python</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1"><a class="reference external" href="https://codecov.io/github/Einsums/Einsums">Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function.linear_algebra.html">Linear Algebra (BLAS, LAPACK, etc.)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</a></li>
 </ul>
 </div>
 </nav></div>
@@ -347,9 +288,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -375,12 +321,6 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums reference</a></li>
-    
-    
-    <li class="breadcrumb-item"><a href="functions.html" class="nav-link">Functions</a></li>
-    
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</span></li>
   </ul>
 </nav>
@@ -414,21 +354,15 @@ end-users, as they do not provide a high-level interface to the linear algebra r
 </ul>
 <p>Before using any of the functions listed in this module, the Einsums BLAS subsystem needs to be initialized.
 This is done with the following function:</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums4blas10initializeEv">
-<span id="_CPPv3N7einsums4blas10initializeEv"></span><span id="_CPPv2N7einsums4blas10initializeEv"></span><span id="einsums::blas::initialize"></span><span class="target" id="namespaceeinsums_1_1blas_1a0f42ab149c20c98fd3d2d8a23c76e858"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">blas</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums4blas10initializeEv" title="Permalink to this definition">#</a><br /></dt>
-<dd><p>Initializes the underlying BLAS and LAPACK library. </p>
-<p>Handles any initialization that the underlying BLAS implementation requires. For example, a GPU implementation would likely need to obtain a device handle to run. That would be handled by this function.</p>
-<p>You typically will not need to call this function manually. einsums::initialize() will handle calling this function for you. </p>
-</dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: No breathe_default_project config setting to fall back on for directive with no ‘project’ or ‘path’ specified.</p>
+</div>
 <p>The BLAS subsystem should be finalized when you are done using the low-level linear algebra functions.</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums4blas8finalizeEv">
-<span id="_CPPv3N7einsums4blas8finalizeEv"></span><span id="_CPPv2N7einsums4blas8finalizeEv"></span><span id="einsums::blas::finalize"></span><span class="target" id="namespaceeinsums_1_1blas_1af9f978c9480acef44d04f82136c49df3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">blas</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">finalize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums4blas8finalizeEv" title="Permalink to this definition">#</a><br /></dt>
-<dd><p>Handles any shutdown procedure needed by the BLAS implementation. </p>
-</dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: No breathe_default_project config setting to fall back on for directive with no ‘project’ or ‘path’ specified.</p>
+</div>
 <section id="blas-level-1-functions">
 <h2>BLAS Level 1 Functions<a class="headerlink" href="#blas-level-1-functions" title="Permalink to this heading">#</a></h2>
 </section>
@@ -440,59 +374,10 @@ This is done with the following function:</p>
 <p>BLAS Level 3 routines perform matrix-matrix operations, such as matrix-matrix multiplication, rank-k update, and
 solutions of triangular systems.</p>
 <p>The following BLAS Level 3 functions are available:</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas4gemmEvcc8blas_int8blas_int8blas_int1TPK1T8blas_intPK1T8blas_int1TP1T8blas_int">
-<span id="_CPPv3I0EN7einsums4blas4gemmEcc8blas_int8blas_int8blas_int1TPK1T8blas_intPK1T8blas_int1TP1T8blas_int"></span><span id="_CPPv2I0EN7einsums4blas4gemmEcc8blas_int8blas_int8blas_int1TPK1T8blas_intPK1T8blas_int1TP1T8blas_int"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1blas_1ae7fc7e93b82c9a300509339dae40b988"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">blas</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">gemm</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">transa</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">transb</span></span>, <span class="n"><span class="pre">blas_int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">blas_int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">blas_int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas4gemmEvcc8blas_int8blas_int8blas_int1TPK1T8blas_intPK1T8blas_int1TP1T8blas_int" title="einsums::blas::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas4gemmEvcc8blas_int8blas_int8blas_int1TPK1T8blas_intPK1T8blas_int1TP1T8blas_int" title="einsums::blas::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="n"><span class="pre">blas_int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas4gemmEvcc8blas_int8blas_int8blas_int1TPK1T8blas_intPK1T8blas_int1TP1T8blas_int" title="einsums::blas::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">b</span></span>, <span class="n"><span class="pre">blas_int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ldb</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas4gemmEvcc8blas_int8blas_int8blas_int1TPK1T8blas_intPK1T8blas_int1TP1T8blas_int" title="einsums::blas::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas4gemmEvcc8blas_int8blas_int8blas_int1TPK1T8blas_intPK1T8blas_int1TP1T8blas_int" title="einsums::blas::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">c</span></span>, <span class="n"><span class="pre">blas_int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ldc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas4gemmEvcc8blas_int8blas_int8blas_int1TPK1T8blas_intPK1T8blas_int1TP1T8blas_int" title="Permalink to this definition">#</a><br /></dt>
-<dd><p>Perform a General Matrix Multiply (GEMM) operation. </p>
-<p>This function computes the product of two matrices,   <div class="math notranslate nohighlight">
-\[
-C = alpha * A * B + beta * C,
-\]</div>
- where A, B, and C are matrices, and alpha and beta are scalar values.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The function performs one of the following matrix operations:<ul class="simple">
-<li><p>If transA is ‘N’ or ‘n’ and transB is ‘N’ or ‘n’: <span class="math notranslate nohighlight">\(C = alpha * A * B + beta * C\)</span></p></li>
-<li><p>If transA is ‘N’ or ‘n’ and transB is ‘T’ or ‘t’: <span class="math notranslate nohighlight">\(C = alpha * A * B^T + beta * C\)</span></p></li>
-<li><p>If transA is ‘T’ or ‘t’ and transB is ‘N’ or ‘n’: <span class="math notranslate nohighlight">\(C = alpha * A^T * B + beta * C\)</span></p></li>
-<li><p>If transA is ‘T’ or ‘t’ and transB is ‘T’ or ‘t’: <span class="math notranslate nohighlight">\(C = alpha * A^T * B^T + beta * C\)</span></p></li>
-<li><p>If transA is ‘C’ or ‘c’ and transB is ‘N’ or ‘n’: <span class="math notranslate nohighlight">\(C = alpha * A^H * B + beta * C\)</span></p></li>
-<li><p>If transA is ‘C’ or ‘c’ and transB is ‘T’ or ‘t’: <span class="math notranslate nohighlight">\(C = alpha * A^H * B^T + beta * C\)</span></p></li>
-</ul>
-</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: No breathe_default_project config setting to fall back on for directive with no ‘project’ or ‘path’ specified.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>T</strong> – The datatype of the GEMM. </p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>transa</strong> – Whether to transpose matrix a :<ul>
-<li><p>’N’ or ‘n’ for no transpose,</p></li>
-<li><p>’T’ or ‘t’ for transpose,</p></li>
-<li><p>’C’ or ‘c’ for conjugate transpose. </p></li>
-</ul>
-</p></li>
-<li><p><strong>transb</strong> – Whether to transpose matrix b . </p></li>
-<li><p><strong>m</strong> – The number of rows in matrix A and C. </p></li>
-<li><p><strong>n</strong> – The number of columns in matrix B and C. </p></li>
-<li><p><strong>k</strong> – The number of columns in matrix A and rows in matrix B. </p></li>
-<li><p><strong>alpha</strong> – The scalar alpha. </p></li>
-<li><p><strong>a</strong> – A pointer to the matrix A with dimensions <code class="docutils literal notranslate"><span class="pre">(lda,</span> <span class="pre">k)</span></code> when transa is ‘N’ or ‘n’, and <code class="docutils literal notranslate"><span class="pre">(lda,</span> <span class="pre">m)</span></code> otherwise. </p></li>
-<li><p><strong>lda</strong> – Leading dimension of A, specifying the distance between two consecutive columns. </p></li>
-<li><p><strong>b</strong> – A pointer to the matrix B with dimensions <code class="docutils literal notranslate"><span class="pre">(ldb,</span> <span class="pre">n)</span></code> when transB is ‘N’ or ‘n’, and <code class="docutils literal notranslate"><span class="pre">(ldb,</span> <span class="pre">k)</span></code> otherwise. </p></li>
-<li><p><strong>ldb</strong> – Leading dimension of B, specifying the distance between two consecutive columns. </p></li>
-<li><p><strong>beta</strong> – The scalar beta. </p></li>
-<li><p><strong>c</strong> – A pointer to the matrix C with dimensions <code class="docutils literal notranslate"><span class="pre">(ldc,</span> <span class="pre">n)</span></code>. </p></li>
-<li><p><strong>ldc</strong> – Leading dimension of C, specifying the distance between two consecutive columns.</p></li>
-</ul>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None. </p>
-</dd>
-</dl>
-</dd></dl>
-
 </section>
 <section id="lapack-functions">
 <h2>LAPACK Functions<a class="headerlink" href="#lapack-functions" title="Permalink to this heading">#</a></h2>
@@ -512,24 +397,6 @@ C = alpha * A * B + beta * C,
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="function.linear_algebra.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Linear Algebra (BLAS, LAPACK, etc.)</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="python_module.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Einsums Python Module</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
@@ -570,8 +437,8 @@ C = alpha * A * B + beta * C,
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -582,7 +449,7 @@ C = alpha * A * B + beta * C,
 
   <p class="copyright">
     
-      © Copyright 2022-2024, Einsums Developers.
+      © Copyright 2022-2025, Einsums Developers.
       <br/>
     
   </p>
@@ -591,7 +458,7 @@ C = alpha * A * B + beta * C,
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
     <br/>
   </p>
 </div>
@@ -604,7 +471,8 @@ C = alpha * A * B + beta * C,
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

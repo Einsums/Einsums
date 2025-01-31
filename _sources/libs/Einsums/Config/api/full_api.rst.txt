@@ -1,0 +1,28 @@
+
+.. 
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. _modules_Einsums_Config_api:
+
+-------------------------------------------------------------------------------
+Einsums
+-------------------------------------------------------------------------------
+
+See :ref:`modules_overview` for a list of names and headers that are part of the public
+|einsums| API.
+
+
+.. toctree::
+   :maxdepth: 1
+
+   /libs/Einsums/Config/api/Config.rst
+   /libs/Einsums/Config/api/CompilerSpecific.rst
+   /libs/Einsums/Config/api/Namespace.rst
+   /libs/Einsums/Config/api/BranchHints.rst
+   /libs/Einsums/Config/api/Alias.rst
+   /libs/Einsums/Config/api/Types.rst
+   /libs/Einsums/Config/api/ExportDefinitions.rst
+   /libs/Einsums/Config/api/ForceInline.rst

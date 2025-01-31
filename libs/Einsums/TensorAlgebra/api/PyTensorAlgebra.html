@@ -1,0 +1,851 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>EinsumsPy/TensorAlgebra/PyTensorAlgebra.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/TensorAlgebra/api/PyTensorAlgebra';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Jan 31, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">EinsumsPy/TensorAlgebra/PyTensorAlgebra.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">EinsumsPy/TensorAlgebra/PyTensorAlgebra.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsumspy-tensoralgebra-pytensoralgebra-hpp">
+<span id="modules-einsums-einsumspy-tensoralgebra-pytensoralgebra-hpp-api"></span><h1>EinsumsPy/TensorAlgebra/PyTensorAlgebra.hpp<a class="headerlink" href="#einsumspy-tensoralgebra-pytensoralgebra-hpp" title="Permalink to this heading">#</a></h1>
+<p>Defined in header .</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebraE">
+<span id="_CPPv3N7einsums14tensor_algebraE"></span><span id="_CPPv2N7einsums14tensor_algebraE"></span><span id="einsums::tensor_algebra"></span><span class="target" id="namespaceeinsums_1_1tensor__algebra"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tensor_algebra</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebraE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra12compile_planENSt6stringENSt6stringENSt6stringE">
+<span id="_CPPv3N7einsums14tensor_algebra12compile_planENSt6stringENSt6stringENSt6stringE"></span><span id="_CPPv2N7einsums14tensor_algebra12compile_planENSt6stringENSt6stringENSt6stringE"></span><span id="einsums::tensor_algebra::compile_plan__ss.ss.ss"></span><span class="target" id="_py_tensor_algebra_8hpp_1a600ac9930331bb29c10e9d1b154fe3cd"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="einsums::tensor_algebra::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compile_plan</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">C_indices</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">A_indices</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B_indices</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra12compile_planENSt6stringENSt6stringENSt6stringE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra25PyEinsumDirectProductPlanE">
+<span id="_CPPv3N7einsums14tensor_algebra25PyEinsumDirectProductPlanE"></span><span id="_CPPv2N7einsums14tensor_algebra25PyEinsumDirectProductPlanE"></span><span id="einsums::tensor_algebra::PyEinsumDirectProductPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_direct_product_plan"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumDirectProductPlan</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebraE" title="einsums::tensor_algebra"><span class="n"><span class="pre">tensor_algebra</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="einsums::tensor_algebra::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra25PyEinsumDirectProductPlanE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanEv">
+<span id="_CPPv3N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanEv"></span><span id="_CPPv2N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanEv"></span><span id="einsums::tensor_algebra::PyEinsumDirectProductPlan::PyEinsumDirectProductPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_direct_product_plan_1ad4062ec144c55fdb0b5bc0b654962b08"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumDirectProductPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanERK19PyEinsumGenericPlan">
+<span id="_CPPv3N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanERK19PyEinsumGenericPlan"></span><span id="_CPPv2N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanERK19PyEinsumGenericPlan"></span><span id="einsums::tensor_algebra::PyEinsumDirectProductPlan::PyEinsumDirectProductPlan__PyEinsumGenericPlanCR"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_direct_product_plan_1a0dfd0196c14e5e170df1efd0db693518"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumDirectProductPlan</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="einsums::tensor_algebra::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">plan_base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanERK19PyEinsumGenericPlan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanERK25PyEinsumDirectProductPlan">
+<span id="_CPPv3N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanERK25PyEinsumDirectProductPlan"></span><span id="_CPPv2N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanERK25PyEinsumDirectProductPlan"></span><span id="einsums::tensor_algebra::PyEinsumDirectProductPlan::PyEinsumDirectProductPlan__PyEinsumDirectProductPlanCR"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_direct_product_plan_1af5de6de9f88dd9182484290571f4ff0d"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumDirectProductPlan</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanERK25PyEinsumDirectProductPlan" title="einsums::tensor_algebra::PyEinsumDirectProductPlan::PyEinsumDirectProductPlan"><span class="n"><span class="pre">PyEinsumDirectProductPlan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra25PyEinsumDirectProductPlan25PyEinsumDirectProductPlanERK25PyEinsumDirectProductPlan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra25PyEinsumDirectProductPlanD0Ev">
+<span id="_CPPv3N7einsums14tensor_algebra25PyEinsumDirectProductPlanD0Ev"></span><span id="_CPPv2N7einsums14tensor_algebra25PyEinsumDirectProductPlanD0Ev"></span><span id="einsums::tensor_algebra::PyEinsumDirectProductPlan::~PyEinsumDirectProductPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_direct_product_plan_1ae573bc0ef96e7b9756597d11ceb0d92a"></span><span class="sig-name descname"><span class="n"><span class="pre">~PyEinsumDirectProductPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra25PyEinsumDirectProductPlanD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums14tensor_algebra25PyEinsumDirectProductPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3NK7einsums14tensor_algebra25PyEinsumDirectProductPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2NK7einsums14tensor_algebra25PyEinsumDirectProductPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="einsums::tensor_algebra::PyEinsumDirectProductPlan::execute__pybind11::objectCR.pybind11::bufferR.pybind11::objectCR.pybind11::bufferCR.pybind11::bufferCRC"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_direct_product_plan_1ac6654abba203a12289e871dbd656f96b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK7einsums14tensor_algebra25PyEinsumDirectProductPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Execute the specified plan on the given tensors. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK7einsums14tensor_algebra25PyEinsumDirectProductPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3I0ENK7einsums14tensor_algebra25PyEinsumDirectProductPlan11execute_impE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2I0ENK7einsums14tensor_algebra25PyEinsumDirectProductPlan11execute_impE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_direct_product_plan_1a8d6429fec2463214e850c4f770188408"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute_imp</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra25PyEinsumDirectProductPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumDirectProductPlan::execute_imp::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra25PyEinsumDirectProductPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumDirectProductPlan::execute_imp::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK7einsums14tensor_algebra25PyEinsumDirectProductPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumDotPlanE">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumDotPlanE"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumDotPlanE"></span><span id="einsums::tensor_algebra::PyEinsumDotPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_dot_plan"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumDotPlan</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebraE" title="einsums::tensor_algebra"><span class="n"><span class="pre">tensor_algebra</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="einsums::tensor_algebra::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumDotPlanE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanEv">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanEv"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanEv"></span><span id="einsums::tensor_algebra::PyEinsumDotPlan::PyEinsumDotPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_dot_plan_1ab1b78face20ca1a78872e5f555c581f4"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumDotPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanERK19PyEinsumGenericPlan">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanERK19PyEinsumGenericPlan"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanERK19PyEinsumGenericPlan"></span><span id="einsums::tensor_algebra::PyEinsumDotPlan::PyEinsumDotPlan__PyEinsumGenericPlanCR"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_dot_plan_1a4517ef599d7fc2a86664055d984a7570"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumDotPlan</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="einsums::tensor_algebra::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">plan_base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanERK19PyEinsumGenericPlan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanERK15PyEinsumDotPlan">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanERK15PyEinsumDotPlan"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanERK15PyEinsumDotPlan"></span><span id="einsums::tensor_algebra::PyEinsumDotPlan::PyEinsumDotPlan__PyEinsumDotPlanCR"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_dot_plan_1a609428c289631ec365d4d5c722b88332"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumDotPlan</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanERK15PyEinsumDotPlan" title="einsums::tensor_algebra::PyEinsumDotPlan::PyEinsumDotPlan"><span class="n"><span class="pre">PyEinsumDotPlan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumDotPlan15PyEinsumDotPlanERK15PyEinsumDotPlan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumDotPlanD0Ev">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumDotPlanD0Ev"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumDotPlanD0Ev"></span><span id="einsums::tensor_algebra::PyEinsumDotPlan::~PyEinsumDotPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_dot_plan_1a2e407313efe8a9d18aa7cea41288efcd"></span><span class="sig-name descname"><span class="n"><span class="pre">~PyEinsumDotPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumDotPlanD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums14tensor_algebra15PyEinsumDotPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3NK7einsums14tensor_algebra15PyEinsumDotPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2NK7einsums14tensor_algebra15PyEinsumDotPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="einsums::tensor_algebra::PyEinsumDotPlan::execute__pybind11::objectCR.pybind11::bufferR.pybind11::objectCR.pybind11::bufferCR.pybind11::bufferCRC"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_dot_plan_1a13c0bdb812ddd576fbae7051f63b429b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK7einsums14tensor_algebra15PyEinsumDotPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Execute the specified plan on the given tensors. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK7einsums14tensor_algebra15PyEinsumDotPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3I0ENK7einsums14tensor_algebra15PyEinsumDotPlan11execute_impE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2I0ENK7einsums14tensor_algebra15PyEinsumDotPlan11execute_impE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_dot_plan_1a3cd7ac232615c165c316b624c75e2cc5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute_imp</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra15PyEinsumDotPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumDotPlan::execute_imp::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra15PyEinsumDotPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumDotPlan::execute_imp::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK7einsums14tensor_algebra15PyEinsumDotPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlanE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlanE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlanE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGemmPlan</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebraE" title="einsums::tensor_algebra"><span class="n"><span class="pre">tensor_algebra</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="einsums::tensor_algebra::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlanE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanEv">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanEv"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanEv"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::PyEinsumGemmPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a7ccfd36d19be437625e29d42b71d9a81"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGemmPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEiiiiiibbbRK19PyEinsumGenericPlan">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEiiiiiibbbRK19PyEinsumGenericPlan"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEiiiiiibbbRK19PyEinsumGenericPlan"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::PyEinsumGemmPlan__std::vector:i:CR.std::vector:i:CR.std::vector:i:CR.std::vector:i:CR.i.i.i.i.i.i.b.b.b.PyEinsumGenericPlanCR"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a2b701650df296a1cf83d512662ab9bfe"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGemmPlan</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A_link_inds</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B_link_inds</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">AC_inds</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">BC_inds</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">A_target_last_ind</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">A_link_last_ind</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B_target_last_ind</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B_link_last_ind</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">CA_target_last_ind</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">CB_target_last_ind</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_A</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_B</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_C</span></span>, <a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="einsums::tensor_algebra::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">plan_base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEiiiiiibbbRK19PyEinsumGenericPlan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanERK16PyEinsumGemmPlan">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanERK16PyEinsumGemmPlan"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanERK16PyEinsumGemmPlan"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::PyEinsumGemmPlan__PyEinsumGemmPlanCR"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a822eec0b289e7962598da817174bcc62"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGemmPlan</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanERK16PyEinsumGemmPlan" title="einsums::tensor_algebra::PyEinsumGemmPlan::PyEinsumGemmPlan"><span class="n"><span class="pre">PyEinsumGemmPlan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan16PyEinsumGemmPlanERK16PyEinsumGemmPlan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlanD0Ev">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlanD0Ev"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlanD0Ev"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::~PyEinsumGemmPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1ad5ccbe64b477a6c25afb42bd779e2738"></span><span class="sig-name descname"><span class="n"><span class="pre">~PyEinsumGemmPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlanD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums14tensor_algebra16PyEinsumGemmPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3NK7einsums14tensor_algebra16PyEinsumGemmPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2NK7einsums14tensor_algebra16PyEinsumGemmPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::execute__pybind11::objectCR.pybind11::bufferR.pybind11::objectCR.pybind11::bufferCR.pybind11::bufferCRC"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a8ad64c62919a9b0f25c1191fde92509a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK7einsums14tensor_algebra16PyEinsumGemmPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Execute the specified plan on the given tensors. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK7einsums14tensor_algebra16PyEinsumGemmPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3I0ENK7einsums14tensor_algebra16PyEinsumGemmPlan11execute_impE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2I0ENK7einsums14tensor_algebra16PyEinsumGemmPlan11execute_impE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a4d1b61e3280d48771d53d1db535e817c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute_imp</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra16PyEinsumGemmPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumGemmPlan::execute_imp::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra16PyEinsumGemmPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumGemmPlan::execute_imp::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK7einsums14tensor_algebra16PyEinsumGemmPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan8_AC_indsE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan8_AC_indsE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan8_AC_indsE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_AC_inds__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a449b92b7f5e7cbc3b220b9573811ce58"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_AC_inds</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan8_AC_indsE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan8_BC_indsE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan8_BC_indsE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan8_BC_indsE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_BC_inds__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a66e708e4c66f62dc47e9e12906f131fb"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_BC_inds</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan8_BC_indsE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan12_A_link_indsE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan12_A_link_indsE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan12_A_link_indsE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_A_link_inds__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1ad156080170b13f1e472b493f5933391f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_A_link_inds</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan12_A_link_indsE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan12_B_link_indsE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan12_B_link_indsE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan12_B_link_indsE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_B_link_inds__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1ade6c0d0e4f439f8a442fe2acf4a07897"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_B_link_inds</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan12_B_link_indsE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan18_A_target_last_indE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan18_A_target_last_indE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan18_A_target_last_indE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_A_target_last_ind__i"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a1f85e7034d0cf6679295ba56856cfb07"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_A_target_last_ind</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan18_A_target_last_indE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan16_A_link_last_indE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan16_A_link_last_indE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan16_A_link_last_indE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_A_link_last_ind__i"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a24ba99606b5f0bc6dd30c43f2b5568c7"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_A_link_last_ind</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan16_A_link_last_indE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan18_B_target_last_indE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan18_B_target_last_indE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan18_B_target_last_indE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_B_target_last_ind__i"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a3ba988b2608b7aad83adf9b29c5bb125"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_B_target_last_ind</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan18_B_target_last_indE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan16_B_link_last_indE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan16_B_link_last_indE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan16_B_link_last_indE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_B_link_last_ind__i"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1aecb42fc01ea102c4de54d48abd6c4817"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_B_link_last_ind</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan16_B_link_last_indE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan19_CA_target_last_indE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan19_CA_target_last_indE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan19_CA_target_last_indE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_CA_target_last_ind__i"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1aadc2824b171645d9754df03d6349e83a"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_CA_target_last_ind</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan19_CA_target_last_indE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan19_CB_target_last_indE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan19_CB_target_last_indE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan19_CB_target_last_indE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_CB_target_last_ind__i"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a5cc929cfa50151c84a765155da83e10d"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_CB_target_last_ind</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan19_CB_target_last_indE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_AE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_AE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_AE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_trans_A__b"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a26e5e8a4ced95bbe3d8bf2641cbb88cf"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_trans_A</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_AE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_BE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_BE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_BE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_trans_B__b"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a960a933554495f45c2dec77bfc14b6f4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_trans_B</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_BE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_CE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_CE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_CE"></span><span id="einsums::tensor_algebra::PyEinsumGemmPlan::_trans_C__b"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan_1a9b735d1438f3eb9fcf4d562c4698737e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_trans_C</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemmPlan8_trans_CE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlanE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlanE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlanE"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGemvPlan</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebraE" title="einsums::tensor_algebra"><span class="n"><span class="pre">tensor_algebra</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="einsums::tensor_algebra::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlanE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanEv">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanEv"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanEv"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::PyEinsumGemvPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a5a08d3e681ceeeb7bbcf87408f97e10f"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGemvPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEiiiibbRK19PyEinsumGenericPlan">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEiiiibbRK19PyEinsumGenericPlan"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEiiiibbRK19PyEinsumGenericPlan"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::PyEinsumGemvPlan__std::vector:i:CR.std::vector:i:CR.std::vector:i:CR.i.i.i.i.b.b.PyEinsumGenericPlanCR"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a5532f82c704c4b79b383a3654cdd91a8"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGemvPlan</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A_link_pos</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B_link_pos</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">AC_pos</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">A_target_last_ind</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">A_link_last_ind</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B_link_last_ind</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">C_target_last_ind</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_A</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">swap_AB</span></span>, <a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="einsums::tensor_algebra::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">plan_base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanERKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEiiiibbRK19PyEinsumGenericPlan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanERK16PyEinsumGemvPlan">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanERK16PyEinsumGemvPlan"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanERK16PyEinsumGemvPlan"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::PyEinsumGemvPlan__PyEinsumGemvPlanCR"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a5bc74d39ab109d67c122bc0134fe1c1c"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGemvPlan</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanERK16PyEinsumGemvPlan" title="einsums::tensor_algebra::PyEinsumGemvPlan::PyEinsumGemvPlan"><span class="n"><span class="pre">PyEinsumGemvPlan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan16PyEinsumGemvPlanERK16PyEinsumGemvPlan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlanD0Ev">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlanD0Ev"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlanD0Ev"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::~PyEinsumGemvPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a66d84b42266561273213c0f4a13cc5a1"></span><span class="sig-name descname"><span class="n"><span class="pre">~PyEinsumGemvPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlanD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums14tensor_algebra16PyEinsumGemvPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3NK7einsums14tensor_algebra16PyEinsumGemvPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2NK7einsums14tensor_algebra16PyEinsumGemvPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::execute__pybind11::objectCR.pybind11::bufferR.pybind11::objectCR.pybind11::bufferCR.pybind11::bufferCRC"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a2e320b5f6b8cfd5ba35c0d652302d16a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK7einsums14tensor_algebra16PyEinsumGemvPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Execute the specified plan on the given tensors. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK7einsums14tensor_algebra16PyEinsumGemvPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3I0ENK7einsums14tensor_algebra16PyEinsumGemvPlan11execute_impE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2I0ENK7einsums14tensor_algebra16PyEinsumGemvPlan11execute_impE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1ac3982472e6349f53c7f744c0f585ecad"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute_imp</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra16PyEinsumGemvPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumGemvPlan::execute_imp::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra16PyEinsumGemvPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumGemvPlan::execute_imp::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK7einsums14tensor_algebra16PyEinsumGemvPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan7_AC_posE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan7_AC_posE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan7_AC_posE"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::_AC_pos__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1aef97a862308175df4524610ea49c502c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_AC_pos</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan7_AC_posE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan11_A_link_posE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan11_A_link_posE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan11_A_link_posE"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::_A_link_pos__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a4872b3b5e0be37474461ba4182eb60bb"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_A_link_pos</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan11_A_link_posE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan11_B_link_posE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan11_B_link_posE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan11_B_link_posE"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::_B_link_pos__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a1ef2a9bf90a4fcc57426ae07aec9d398"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_B_link_pos</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan11_B_link_posE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan18_A_target_last_indE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan18_A_target_last_indE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan18_A_target_last_indE"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::_A_target_last_ind__i"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a660ed38630d69d3d9de39cd630fc8383"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_A_target_last_ind</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan18_A_target_last_indE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan16_A_link_last_indE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan16_A_link_last_indE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan16_A_link_last_indE"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::_A_link_last_ind__i"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a0de152cee8cdcdd56f3d87b252464f2a"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_A_link_last_ind</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan16_A_link_last_indE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan16_B_link_last_indE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan16_B_link_last_indE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan16_B_link_last_indE"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::_B_link_last_ind__i"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a335a26f987226aab8edf526fc3c84429"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_B_link_last_ind</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan16_B_link_last_indE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan18_C_target_last_indE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan18_C_target_last_indE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan18_C_target_last_indE"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::_C_target_last_ind__i"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a778b591a6a80343f29dab82fed67be02"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_C_target_last_ind</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan18_C_target_last_indE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan8_trans_AE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan8_trans_AE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan8_trans_AE"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::_trans_A__b"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a39ef32eba194c70bd2ca465b5d38c868"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_trans_A</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan8_trans_AE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan8_swap_ABE">
+<span id="_CPPv3N7einsums14tensor_algebra16PyEinsumGemvPlan8_swap_ABE"></span><span id="_CPPv2N7einsums14tensor_algebra16PyEinsumGemvPlan8_swap_ABE"></span><span id="einsums::tensor_algebra::PyEinsumGemvPlan::_swap_AB__b"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan_1a721882b6b02f53ac300773a3d90fd5c2"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_swap_AB</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra16PyEinsumGemvPlan8_swap_ABE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE">
+<span id="_CPPv3N7einsums14tensor_algebra19PyEinsumGenericPlanE"></span><span id="_CPPv2N7einsums14tensor_algebra19PyEinsumGenericPlanE"></span><span id="einsums::tensor_algebra::PyEinsumGenericPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;PyTensorAlgebra.hpp&gt;</em></div>
+<p>Holds the info for the generic algorithm, called when all the optimizations fail. </p>
+<p>Subclassed by <a class="reference internal" href="../../../EinsumsPy/TensorAlgebra/api/PyTensorAlgebra.html#classeinsums_1_1tensor__algebra_1_1_py_einsum_direct_product_plan"><span class="std std-ref">einsums::tensor_algebra::PyEinsumDirectProductPlan</span></a>, <a class="reference internal" href="../../../EinsumsPy/TensorAlgebra/api/PyTensorAlgebra.html#classeinsums_1_1tensor__algebra_1_1_py_einsum_dot_plan"><span class="std std-ref">einsums::tensor_algebra::PyEinsumDotPlan</span></a>, <a class="reference internal" href="../../../EinsumsPy/TensorAlgebra/api/PyTensorAlgebra.html#classeinsums_1_1tensor__algebra_1_1_py_einsum_gemm_plan"><span class="std std-ref">einsums::tensor_algebra::PyEinsumGemmPlan</span></a>, <a class="reference internal" href="../../../EinsumsPy/TensorAlgebra/api/PyTensorAlgebra.html#classeinsums_1_1tensor__algebra_1_1_py_einsum_gemv_plan"><span class="std std-ref">einsums::tensor_algebra::PyEinsumGemvPlan</span></a>, <a class="reference internal" href="../../../EinsumsPy/TensorAlgebra/api/PyTensorAlgebra.html#classeinsums_1_1tensor__algebra_1_1_py_einsum_ger_plan"><span class="std std-ref">einsums::tensor_algebra::PyEinsumGerPlan</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanEv">
+<span id="_CPPv3N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanEv"></span><span id="_CPPv2N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanEv"></span><span id="einsums::tensor_algebra::PyEinsumGenericPlan::PyEinsumGenericPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan_1a902888927e01dcf49fda9faa6d04c013"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanEiNSt6vectorIiEENSt6vectorIiEENSt6vectorIiEE">
+<span id="_CPPv3N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanEiNSt6vectorIiEENSt6vectorIiEENSt6vectorIiEE"></span><span id="_CPPv2N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanEiNSt6vectorIiEENSt6vectorIiEENSt6vectorIiEE"></span><span id="einsums::tensor_algebra::PyEinsumGenericPlan::PyEinsumGenericPlan__i.std::vector:i:.std::vector:i:.std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan_1a034cf462ab6fe90f3bb253e83d00aa4b"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_inds</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">C_permute</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">A_permute</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B_permute</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanEiNSt6vectorIiEENSt6vectorIiEENSt6vectorIiEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanERK19PyEinsumGenericPlan">
+<span id="_CPPv3N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanERK19PyEinsumGenericPlan"></span><span id="_CPPv2N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanERK19PyEinsumGenericPlan"></span><span id="einsums::tensor_algebra::PyEinsumGenericPlan::PyEinsumGenericPlan__PyEinsumGenericPlanCR"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan_1a9ee647c639892868918637316f849b65"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanERK19PyEinsumGenericPlan" title="einsums::tensor_algebra::PyEinsumGenericPlan::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan19PyEinsumGenericPlanERK19PyEinsumGenericPlan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanD0Ev">
+<span id="_CPPv3N7einsums14tensor_algebra19PyEinsumGenericPlanD0Ev"></span><span id="_CPPv2N7einsums14tensor_algebra19PyEinsumGenericPlanD0Ev"></span><span id="einsums::tensor_algebra::PyEinsumGenericPlan::~PyEinsumGenericPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan_1a7c2a1c0a8a400ff19febf655da642f53"></span><span class="sig-name descname"><span class="n"><span class="pre">~PyEinsumGenericPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums14tensor_algebra19PyEinsumGenericPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3NK7einsums14tensor_algebra19PyEinsumGenericPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2NK7einsums14tensor_algebra19PyEinsumGenericPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="einsums::tensor_algebra::PyEinsumGenericPlan::execute__pybind11::objectCR.pybind11::bufferR.pybind11::objectCR.pybind11::bufferCR.pybind11::bufferCRC"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan_1ad6b4e72c0d7a8a151c528f834960a852"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums14tensor_algebra19PyEinsumGenericPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Execute the specified plan on the given tensors. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK7einsums14tensor_algebra19PyEinsumGenericPlan15execute_genericEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3I0ENK7einsums14tensor_algebra19PyEinsumGenericPlan15execute_genericE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2I0ENK7einsums14tensor_algebra19PyEinsumGenericPlan15execute_genericE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan_1acd8242141dbbedc3b6e9d8ecc3b2ca9e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute_generic</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra19PyEinsumGenericPlan15execute_genericEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumGenericPlan::execute_generic::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra19PyEinsumGenericPlan15execute_genericEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumGenericPlan::execute_generic::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK7einsums14tensor_algebra19PyEinsumGenericPlan15execute_genericEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Execute the generic algorithm. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan10_C_permuteE">
+<span id="_CPPv3N7einsums14tensor_algebra19PyEinsumGenericPlan10_C_permuteE"></span><span id="_CPPv2N7einsums14tensor_algebra19PyEinsumGenericPlan10_C_permuteE"></span><span id="einsums::tensor_algebra::PyEinsumGenericPlan::_C_permute__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan_1aa1a5435593c77713fc8dfe1099afc5d4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_C_permute</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan10_C_permuteE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan10_A_permuteE">
+<span id="_CPPv3N7einsums14tensor_algebra19PyEinsumGenericPlan10_A_permuteE"></span><span id="_CPPv2N7einsums14tensor_algebra19PyEinsumGenericPlan10_A_permuteE"></span><span id="einsums::tensor_algebra::PyEinsumGenericPlan::_A_permute__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan_1a66f48b146cf1d8f5eccce3e9e1185e78"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_A_permute</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan10_A_permuteE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan10_B_permuteE">
+<span id="_CPPv3N7einsums14tensor_algebra19PyEinsumGenericPlan10_B_permuteE"></span><span id="_CPPv2N7einsums14tensor_algebra19PyEinsumGenericPlan10_B_permuteE"></span><span id="einsums::tensor_algebra::PyEinsumGenericPlan::_B_permute__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan_1aaffad089738af2c942890f4842909c55"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_B_permute</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan10_B_permuteE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan9_num_indsE">
+<span id="_CPPv3N7einsums14tensor_algebra19PyEinsumGenericPlan9_num_indsE"></span><span id="_CPPv2N7einsums14tensor_algebra19PyEinsumGenericPlan9_num_indsE"></span><span id="einsums::tensor_algebra::PyEinsumGenericPlan::_num_inds__i"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan_1a8cfa15021e569f22888ca8b3f227af5c"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_num_inds</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan9_num_indsE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan20_direct_product_swapE">
+<span id="_CPPv3N7einsums14tensor_algebra19PyEinsumGenericPlan20_direct_product_swapE"></span><span id="_CPPv2N7einsums14tensor_algebra19PyEinsumGenericPlan20_direct_product_swapE"></span><span id="einsums::tensor_algebra::PyEinsumGenericPlan::_direct_product_swap__b"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_generic_plan_1ac9c8ec5f10aeb39fa5673ddfe6e840ef"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_direct_product_swap</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlan20_direct_product_swapE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlanE">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumGerPlanE"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumGerPlanE"></span><span id="einsums::tensor_algebra::PyEinsumGerPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_ger_plan"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGerPlan</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebraE" title="einsums::tensor_algebra"><span class="n"><span class="pre">tensor_algebra</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="einsums::tensor_algebra::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlanE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanEv">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanEv"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanEv"></span><span id="einsums::tensor_algebra::PyEinsumGerPlan::PyEinsumGerPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_ger_plan_1a5d518720febe3dfec01b769edf917574"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGerPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanERKNSt6vectorIiEERKNSt6vectorIiEEbRK19PyEinsumGenericPlan">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanERKNSt6vectorIiEERKNSt6vectorIiEEbRK19PyEinsumGenericPlan"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanERKNSt6vectorIiEERKNSt6vectorIiEEbRK19PyEinsumGenericPlan"></span><span id="einsums::tensor_algebra::PyEinsumGerPlan::PyEinsumGerPlan__std::vector:i:CR.std::vector:i:CR.b.PyEinsumGenericPlanCR"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_ger_plan_1a2c9f780cb921d1d8a284d3740a524c3b"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGerPlan</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">CA_target_pos</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">CB_target_pos</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">swap_AB</span></span>, <a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra19PyEinsumGenericPlanE" title="einsums::tensor_algebra::PyEinsumGenericPlan"><span class="n"><span class="pre">PyEinsumGenericPlan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">plan_base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanERKNSt6vectorIiEERKNSt6vectorIiEEbRK19PyEinsumGenericPlan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanERK15PyEinsumGerPlan">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanERK15PyEinsumGerPlan"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanERK15PyEinsumGerPlan"></span><span id="einsums::tensor_algebra::PyEinsumGerPlan::PyEinsumGerPlan__PyEinsumGerPlanCR"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_ger_plan_1a0b01627db25041e6eefda79cbaa7726a"></span><span class="sig-name descname"><span class="n"><span class="pre">PyEinsumGerPlan</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanERK15PyEinsumGerPlan" title="einsums::tensor_algebra::PyEinsumGerPlan::PyEinsumGerPlan"><span class="n"><span class="pre">PyEinsumGerPlan</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan15PyEinsumGerPlanERK15PyEinsumGerPlan" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlanD0Ev">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumGerPlanD0Ev"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumGerPlanD0Ev"></span><span id="einsums::tensor_algebra::PyEinsumGerPlan::~PyEinsumGerPlan"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_ger_plan_1ad58d4e9050c0b6dc6b6b564c494d061d"></span><span class="sig-name descname"><span class="n"><span class="pre">~PyEinsumGerPlan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlanD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums14tensor_algebra15PyEinsumGerPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3NK7einsums14tensor_algebra15PyEinsumGerPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2NK7einsums14tensor_algebra15PyEinsumGerPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE"></span><span id="einsums::tensor_algebra::PyEinsumGerPlan::execute__pybind11::objectCR.pybind11::bufferR.pybind11::objectCR.pybind11::bufferCR.pybind11::bufferCRC"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_ger_plan_1a60cdaab5e86fc2eace06e43d172644e1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK7einsums14tensor_algebra15PyEinsumGerPlan7executeERKN8pybind116objectERN8pybind116bufferERKN8pybind116objectERKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Execute the specified plan on the given tensors. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK7einsums14tensor_algebra15PyEinsumGerPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE">
+<span id="_CPPv3I0ENK7einsums14tensor_algebra15PyEinsumGerPlan11execute_impE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span id="_CPPv2I0ENK7einsums14tensor_algebra15PyEinsumGerPlan11execute_impE1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_ger_plan_1a99a2e5d158e50d9fb054c6540c7c2c16"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute_imp</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra15PyEinsumGerPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumGerPlan::execute_imp::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">C_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <a class="reference internal" href="#_CPPv4I0ENK7einsums14tensor_algebra15PyEinsumGerPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="einsums::tensor_algebra::PyEinsumGerPlan::execute_imp::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">AB_prefactor</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK7einsums14tensor_algebra15PyEinsumGerPlan11execute_impEv1TRN8pybind116bufferE1TRKN8pybind116bufferERKN8pybind116bufferE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan8_swap_ABE">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumGerPlan8_swap_ABE"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumGerPlan8_swap_ABE"></span><span id="einsums::tensor_algebra::PyEinsumGerPlan::_swap_AB__b"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_ger_plan_1a1496b64a61bba4101bdf73556eb785ec"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_swap_AB</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan8_swap_ABE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan14_CA_target_posE">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumGerPlan14_CA_target_posE"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumGerPlan14_CA_target_posE"></span><span id="einsums::tensor_algebra::PyEinsumGerPlan::_CA_target_pos__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_ger_plan_1ae54d5725bcbb9d36d96f094e16f2053f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_CA_target_pos</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan14_CA_target_posE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan14_CB_target_posE">
+<span id="_CPPv3N7einsums14tensor_algebra15PyEinsumGerPlan14_CB_target_posE"></span><span id="_CPPv2N7einsums14tensor_algebra15PyEinsumGerPlan14_CB_target_posE"></span><span id="einsums::tensor_algebra::PyEinsumGerPlan::_CB_target_pos__std::vector:i:"></span><span class="target" id="classeinsums_1_1tensor__algebra_1_1_py_einsum_ger_plan_1a79de967ebd2731ce7ffe249049e01765"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_CB_target_pos</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra15PyEinsumGerPlan14_CB_target_posE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

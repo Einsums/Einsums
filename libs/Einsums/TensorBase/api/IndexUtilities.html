@@ -1,0 +1,658 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/TensorBase/IndexUtilities.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/TensorBase/api/IndexUtilities';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Jan 31, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="HashFunctions.html">Einsums/TensorBase/HashFunctions.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TensorBase/IndexUtilities.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TensorBase.html">Einsums/TensorBase/TensorBase.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Common.html">Einsums/TensorBase/Common.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/TensorBase/IndexUtilities.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-tensorbase-indexutilities-hpp">
+<span id="modules-einsums-einsums-tensorbase-indexutilities-hpp-api"></span><h1>Einsums/TensorBase/IndexUtilities.hpp<a class="headerlink" href="#einsums-tensorbase-indexutilities-hpp" title="Permalink to this heading">#</a></h1>
+<p>Defined in header .</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000DpDpDpDpEN7einsums23get_dim_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERK5BTypeRKNSt5tupleIDp8BIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE">
+<span id="_CPPv3I000DpDpDpDpEN7einsums23get_dim_ranges_for_manyERK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERK5BTypeRKNSt5tupleIDp8BIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE"></span><span id="_CPPv2I000DpDpDpDpEN7einsums23get_dim_ranges_for_manyERK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERK5BTypeRKNSt5tupleIDp8BIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">CIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">AIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">BIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">AllUniqueIndices</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a7300423d7ea310868557bac60e66c546"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_dim_ranges_for_many</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I000DpDpDpDpEN7einsums23get_dim_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERK5BTypeRKNSt5tupleIDp8BIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::get_dim_ranges_for_many::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000DpDpDpDpEN7einsums23get_dim_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERK5BTypeRKNSt5tupleIDp8BIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::get_dim_ranges_for_many::CIndices"><span class="n"><span class="pre">CIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_indices</span></span>, <a class="reference internal" href="#_CPPv4I000DpDpDpDpEN7einsums23get_dim_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERK5BTypeRKNSt5tupleIDp8BIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::get_dim_ranges_for_many::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000DpDpDpDpEN7einsums23get_dim_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERK5BTypeRKNSt5tupleIDp8BIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::get_dim_ranges_for_many::AIndices"><span class="n"><span class="pre">AIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A_indices</span></span>, <a class="reference internal" href="#_CPPv4I000DpDpDpDpEN7einsums23get_dim_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERK5BTypeRKNSt5tupleIDp8BIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::get_dim_ranges_for_many::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000DpDpDpDpEN7einsums23get_dim_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERK5BTypeRKNSt5tupleIDp8BIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::get_dim_ranges_for_many::BIndices"><span class="n"><span class="pre">BIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B_indices</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000DpDpDpDpEN7einsums23get_dim_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERK5BTypeRKNSt5tupleIDp8BIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::get_dim_ranges_for_many::AllUniqueIndices"><span class="n"><span class="pre">AllUniqueIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">All_unique_indices</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000DpDpDpDpEN7einsums23get_dim_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERK5BTypeRKNSt5tupleIDp8BIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Finds the dimensions for the requested indices. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>C</strong> – The C tensor. </p></li>
+<li><p><strong>C_indices</strong> – The indices for the C tensor. </p></li>
+<li><p><strong>A</strong> – The A tensor. </p></li>
+<li><p><strong>A_indices</strong> – The indices for the A tensor. </p></li>
+<li><p><strong>B</strong> – The B tensor. </p></li>
+<li><p><strong>B_indices</strong> – The indices for the B tensor. </p></li>
+<li><p><strong>All_unique_indices</strong> – The list of all indices with duplicates removed. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_tEN7einsums19sentinel_to_indicesEv6size_tPK6size_tP6size_t">
+<span id="_CPPv3I_6size_tEN7einsums19sentinel_to_indicesE6size_tPK6size_tP6size_t"></span><span id="_CPPv2I_6size_tEN7einsums19sentinel_to_indicesE6size_tPK6size_tP6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_unique_inds</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1ab8cb5d3e12b8dc28564e61998f4ffc67"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_indices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sentinel</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">unique_strides</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out_inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_tEN7einsums19sentinel_to_indicesEv6size_tPK6size_tP6size_t" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Converts a single sentinel value into a list of indices. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sentinel</strong> – The sentinel to convert. </p></li>
+<li><p><strong>unique_strides</strong> – The strides of the unique indices that the sentinel is iterating over. </p></li>
+<li><p><strong>out_inds</strong> – The converted indices. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_t00EN7einsums19sentinel_to_indicesEv6size_tRKNSt5arrayI11stride_int115num_unique_indsEERNSt5arrayI11stride_int215num_unique_indsEE">
+<span id="_CPPv3I_6size_t00EN7einsums19sentinel_to_indicesE6size_tRKNSt5arrayI11stride_int115num_unique_indsEERNSt5arrayI11stride_int215num_unique_indsEE"></span><span id="_CPPv2I_6size_t00EN7einsums19sentinel_to_indicesE6size_tRKNSt5arrayI11stride_int115num_unique_indsEERNSt5arrayI11stride_int215num_unique_indsEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_unique_inds</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride_int1</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride_int2</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a67deb8de3648660c9c2b1d3025adc48e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_indices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sentinel</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_6size_t00EN7einsums19sentinel_to_indicesEv6size_tRKNSt5arrayI11stride_int115num_unique_indsEERNSt5arrayI11stride_int215num_unique_indsEE" title="einsums::sentinel_to_indices::stride_int1"><span class="n"><span class="pre">stride_int1</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_t00EN7einsums19sentinel_to_indicesEv6size_tRKNSt5arrayI11stride_int115num_unique_indsEERNSt5arrayI11stride_int215num_unique_indsEE" title="einsums::sentinel_to_indices::num_unique_inds"><span class="n"><span class="pre">num_unique_inds</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unique_strides</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_6size_t00EN7einsums19sentinel_to_indicesEv6size_tRKNSt5arrayI11stride_int115num_unique_indsEERNSt5arrayI11stride_int215num_unique_indsEE" title="einsums::sentinel_to_indices::stride_int2"><span class="n"><span class="pre">stride_int2</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_t00EN7einsums19sentinel_to_indicesEv6size_tRKNSt5arrayI11stride_int115num_unique_indsEERNSt5arrayI11stride_int215num_unique_indsEE" title="einsums::sentinel_to_indices::num_unique_inds"><span class="n"><span class="pre">num_unique_inds</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">out_inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_t00EN7einsums19sentinel_to_indicesEv6size_tRKNSt5arrayI11stride_int115num_unique_indsEERNSt5arrayI11stride_int215num_unique_indsEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN7einsums19sentinel_to_indicesEv6size_tRK12StorageType1R12StorageType2">
+<span id="_CPPv3I00EN7einsums19sentinel_to_indicesE6size_tRK12StorageType1R12StorageType2"></span><span id="_CPPv2I00EN7einsums19sentinel_to_indicesE6size_tRK12StorageType1R12StorageType2"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType1</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType2</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a730aa312d0ff4c93161d2efe281b2237"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_indices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sentinel</span></span>, <a class="reference internal" href="#_CPPv4I00EN7einsums19sentinel_to_indicesEv6size_tRK12StorageType1R12StorageType2" title="einsums::sentinel_to_indices::StorageType1"><span class="n"><span class="pre">StorageType1</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unique_strides</span></span>, <a class="reference internal" href="#_CPPv4I00EN7einsums19sentinel_to_indicesEv6size_tRK12StorageType1R12StorageType2" title="einsums::sentinel_to_indices::StorageType2"><span class="n"><span class="pre">StorageType2</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">out_inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN7einsums19sentinel_to_indicesEv6size_tRK12StorageType1R12StorageType2" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums28sentinel_to_indices_mult_impE6size_t6size_t">
+<span id="_CPPv3N7einsums28sentinel_to_indices_mult_impE6size_t6size_t"></span><span id="_CPPv2N7einsums28sentinel_to_indices_mult_impE6size_t6size_t"></span><span id="einsums::sentinel_to_indices_mult_imp__s.s"></span><span class="target" id="_index_utilities_8hpp_1a5ee941c1b7ed6cb2ba77a7449155144b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_indices_mult_imp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ordinal</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums28sentinel_to_indices_mult_impE6size_t6size_t" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums28sentinel_to_indices_mult_impEv6size_t6size_tRR5Extra">
+<span id="_CPPv3I0EN7einsums28sentinel_to_indices_mult_impE6size_t6size_tRR5Extra"></span><span id="_CPPv2I0EN7einsums28sentinel_to_indices_mult_impE6size_t6size_tRR5Extra"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Extra</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a20c0471c1f1c457b3a3b0e3d589b554a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_indices_mult_imp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ordinal</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums28sentinel_to_indices_mult_impEv6size_t6size_tRR5Extra" title="einsums::sentinel_to_indices_mult_imp::Extra"><span class="n"><span class="pre">Extra</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">extra</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums28sentinel_to_indices_mult_impEv6size_t6size_tRR5Extra" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums28sentinel_to_indices_mult_impEv6size_t6size_tPK6size_tP6size_tDpRR4Rest">
+<span id="_CPPv3IDpEN7einsums28sentinel_to_indices_mult_impE6size_t6size_tPK6size_tP6size_tDpRR4Rest"></span><span id="_CPPv2IDpEN7einsums28sentinel_to_indices_mult_impE6size_t6size_tPK6size_tP6size_tDpRR4Rest"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Rest</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a6fa273a16a5aaf0f60dc7996b19acdae"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_indices_mult_imp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ordinal</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">strides</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">indices</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums28sentinel_to_indices_mult_impEv6size_t6size_tPK6size_tP6size_tDpRR4Rest" title="einsums::sentinel_to_indices_mult_imp::Rest"><span class="n"><span class="pre">Rest</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rest</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums28sentinel_to_indices_mult_impEv6size_t6size_tPK6size_tP6size_tDpRR4Rest" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00DpEN7einsums28sentinel_to_indices_mult_impEv6size_t6size_tRK6StrideR7IndicesDpRR4Rest">
+<span id="_CPPv3I00DpEN7einsums28sentinel_to_indices_mult_impE6size_t6size_tRK6StrideR7IndicesDpRR4Rest"></span><span id="_CPPv2I00DpEN7einsums28sentinel_to_indices_mult_impE6size_t6size_tRK6StrideR7IndicesDpRR4Rest"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stride</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Indices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Rest</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1af7408ce2dffa1928378717a6631d534f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_indices_mult_imp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ordinal</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <a class="reference internal" href="#_CPPv4I00DpEN7einsums28sentinel_to_indices_mult_impEv6size_t6size_tRK6StrideR7IndicesDpRR4Rest" title="einsums::sentinel_to_indices_mult_imp::Stride"><span class="n"><span class="pre">Stride</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">strides</span></span>, <a class="reference internal" href="#_CPPv4I00DpEN7einsums28sentinel_to_indices_mult_impEv6size_t6size_tRK6StrideR7IndicesDpRR4Rest" title="einsums::sentinel_to_indices_mult_imp::Indices"><span class="n"><span class="pre">Indices</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">indices</span></span>, <a class="reference internal" href="#_CPPv4I00DpEN7einsums28sentinel_to_indices_mult_impEv6size_t6size_tRK6StrideR7IndicesDpRR4Rest" title="einsums::sentinel_to_indices_mult_imp::Rest"><span class="n"><span class="pre">Rest</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rest</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00DpEN7einsums28sentinel_to_indices_mult_impEv6size_t6size_tRK6StrideR7IndicesDpRR4Rest" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_t0DpEN7einsums19sentinel_to_indicesEv6size_tPK6size_tDpRR11StridesInds">
+<span id="_CPPv3I_6size_t0DpEN7einsums19sentinel_to_indicesE6size_tPK6size_tDpRR11StridesInds"></span><span id="_CPPv2I_6size_t0DpEN7einsums19sentinel_to_indicesE6size_tPK6size_tDpRR11StridesInds"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_indices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">StridesInds</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a2d06a56558fb03b5ddca00d5b539ce51"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_indices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sentinel</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index_strides</span></span>, <a class="reference internal" href="#_CPPv4I_6size_t0DpEN7einsums19sentinel_to_indicesEv6size_tPK6size_tDpRR11StridesInds" title="einsums::sentinel_to_indices::StridesInds"><span class="n"><span class="pre">StridesInds</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_t0DpEN7einsums19sentinel_to_indicesEv6size_tPK6size_tDpRR11StridesInds" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Converts a single sentinel value into lists of indices. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sentinel</strong> – The sentinel to convert. </p></li>
+<li><p><strong>index_strides</strong> – The strides of the unique indices that the sentinel is iterating over. </p></li>
+<li><p><strong>strides_inds</strong> – The converted indices. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_t0DpEN7einsums19sentinel_to_indicesEv6size_tRKNSt5arrayI6size_t11num_indicesEEDpRR11StridesInds">
+<span id="_CPPv3I_6size_t0DpEN7einsums19sentinel_to_indicesE6size_tRKNSt5arrayI6size_t11num_indicesEEDpRR11StridesInds"></span><span id="_CPPv2I_6size_t0DpEN7einsums19sentinel_to_indicesE6size_tRKNSt5arrayI6size_t11num_indicesEEDpRR11StridesInds"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_indices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">StridesInds</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1ac76eed459bc5b3d52c6f8b55737e0c69"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_indices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sentinel</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_t0DpEN7einsums19sentinel_to_indicesEv6size_tRKNSt5arrayI6size_t11num_indicesEEDpRR11StridesInds" title="einsums::sentinel_to_indices::num_indices"><span class="n"><span class="pre">num_indices</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index_strides</span></span>, <a class="reference internal" href="#_CPPv4I_6size_t0DpEN7einsums19sentinel_to_indicesEv6size_tRKNSt5arrayI6size_t11num_indicesEEDpRR11StridesInds" title="einsums::sentinel_to_indices::StridesInds"><span class="n"><span class="pre">StridesInds</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_t0DpEN7einsums19sentinel_to_indicesEv6size_tRKNSt5arrayI6size_t11num_indicesEEDpRR11StridesInds" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums19sentinel_to_indicesEv6size_tRK11StorageTypeDpRR11StridesInds">
+<span id="_CPPv3I0DpEN7einsums19sentinel_to_indicesE6size_tRK11StorageTypeDpRR11StridesInds"></span><span id="_CPPv2I0DpEN7einsums19sentinel_to_indicesE6size_tRK11StorageTypeDpRR11StridesInds"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">StridesInds</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1adc713bd5053f214d6aac51f23677c33e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_indices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sentinel</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums19sentinel_to_indicesEv6size_tRK11StorageTypeDpRR11StridesInds" title="einsums::sentinel_to_indices::StorageType"><span class="n"><span class="pre">StorageType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index_strides</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums19sentinel_to_indicesEv6size_tRK11StorageTypeDpRR11StridesInds" title="einsums::sentinel_to_indices::StridesInds"><span class="n"><span class="pre">StridesInds</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN7einsums19sentinel_to_indicesEv6size_tRK11StorageTypeDpRR11StridesInds" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums30sentinel_to_sentinels_mult_impE6size_t6size_t">
+<span id="_CPPv3N7einsums30sentinel_to_sentinels_mult_impE6size_t6size_t"></span><span id="_CPPv2N7einsums30sentinel_to_sentinels_mult_impE6size_t6size_t"></span><span id="einsums::sentinel_to_sentinels_mult_imp__s.s"></span><span class="target" id="_index_utilities_8hpp_1af40a9701afbce55c6452e782c4d4298d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_sentinels_mult_imp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums30sentinel_to_sentinels_mult_impE6size_t6size_t" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_t5Extra">
+<span id="_CPPv3I0EN7einsums30sentinel_to_sentinels_mult_impE6size_t6size_t5Extra"></span><span id="_CPPv2I0EN7einsums30sentinel_to_sentinels_mult_impE6size_t6size_t5Extra"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Extra</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a74e3882c48ac39c040d9b1bc3f279c6c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_sentinels_mult_imp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ordinal</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_t5Extra" title="einsums::sentinel_to_sentinels_mult_imp::Extra"><span class="n"><span class="pre">Extra</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">extra</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_t5Extra" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_tPK6size_tR8SentinelDpRR4Rest">
+<span id="_CPPv3I0DpEN7einsums30sentinel_to_sentinels_mult_impE6size_t6size_tPK6size_tR8SentinelDpRR4Rest"></span><span id="_CPPv2I0DpEN7einsums30sentinel_to_sentinels_mult_impE6size_t6size_tPK6size_tR8SentinelDpRR4Rest"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Sentinel</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Rest</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a5bd3df4da87e66c09889e72ae26f0297"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_sentinels_mult_imp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ordinal</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">strides</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_tPK6size_tR8SentinelDpRR4Rest" title="einsums::sentinel_to_sentinels_mult_imp::Sentinel"><span class="n"><span class="pre">Sentinel</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sentinel</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_tPK6size_tR8SentinelDpRR4Rest" title="einsums::sentinel_to_sentinels_mult_imp::Rest"><span class="n"><span class="pre">Rest</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rest</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_tPK6size_tR8SentinelDpRR4Rest" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00DpEN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_tRK6StrideR8SentinelDpRR4Rest">
+<span id="_CPPv3I00DpEN7einsums30sentinel_to_sentinels_mult_impE6size_t6size_tRK6StrideR8SentinelDpRR4Rest"></span><span id="_CPPv2I00DpEN7einsums30sentinel_to_sentinels_mult_impE6size_t6size_tRK6StrideR8SentinelDpRR4Rest"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stride</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Sentinel</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Rest</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a19e001da5c5d500ebeb877a57e55bcbd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_sentinels_mult_imp</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ordinal</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <a class="reference internal" href="#_CPPv4I00DpEN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_tRK6StrideR8SentinelDpRR4Rest" title="einsums::sentinel_to_sentinels_mult_imp::Stride"><span class="n"><span class="pre">Stride</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">strides</span></span>, <a class="reference internal" href="#_CPPv4I00DpEN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_tRK6StrideR8SentinelDpRR4Rest" title="einsums::sentinel_to_sentinels_mult_imp::Sentinel"><span class="n"><span class="pre">Sentinel</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sentinel</span></span>, <a class="reference internal" href="#_CPPv4I00DpEN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_tRK6StrideR8SentinelDpRR4Rest" title="einsums::sentinel_to_sentinels_mult_imp::Rest"><span class="n"><span class="pre">Rest</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rest</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00DpEN7einsums30sentinel_to_sentinels_mult_impEv6size_t6size_tRK6StrideR8SentinelDpRR4Rest" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums30sentinel_to_sentinels_zero_impEv">
+<span id="_CPPv3N7einsums30sentinel_to_sentinels_zero_impEv"></span><span id="_CPPv2N7einsums30sentinel_to_sentinels_zero_impEv"></span><span id="einsums::sentinel_to_sentinels_zero_imp"></span><span class="target" id="_index_utilities_8hpp_1a7971cf0e04dd00948a856105f4b7f0f6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_sentinels_zero_imp</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums30sentinel_to_sentinels_zero_impEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums30sentinel_to_sentinels_zero_impEvRR5Extra">
+<span id="_CPPv3I0EN7einsums30sentinel_to_sentinels_zero_impERR5Extra"></span><span id="_CPPv2I0EN7einsums30sentinel_to_sentinels_zero_impERR5Extra"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Extra</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1aec6402b004838e63847e4e894a0bb215"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_sentinels_zero_imp</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums30sentinel_to_sentinels_zero_impEvRR5Extra" title="einsums::sentinel_to_sentinels_zero_imp::Extra"><span class="n"><span class="pre">Extra</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">extra</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums30sentinel_to_sentinels_zero_impEvRR5Extra" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00DpEN7einsums30sentinel_to_sentinels_zero_impEvRR6StrideR8SentinelDpRR4Rest">
+<span id="_CPPv3I00DpEN7einsums30sentinel_to_sentinels_zero_impERR6StrideR8SentinelDpRR4Rest"></span><span id="_CPPv2I00DpEN7einsums30sentinel_to_sentinels_zero_impERR6StrideR8SentinelDpRR4Rest"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stride</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Sentinel</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Rest</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1acdb469d13e0051d87f30d5b850a4afef"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_sentinels_zero_imp</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00DpEN7einsums30sentinel_to_sentinels_zero_impEvRR6StrideR8SentinelDpRR4Rest" title="einsums::sentinel_to_sentinels_zero_imp::Stride"><span class="n"><span class="pre">Stride</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">strides</span></span>, <a class="reference internal" href="#_CPPv4I00DpEN7einsums30sentinel_to_sentinels_zero_impEvRR6StrideR8SentinelDpRR4Rest" title="einsums::sentinel_to_sentinels_zero_imp::Sentinel"><span class="n"><span class="pre">Sentinel</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sentinel</span></span>, <a class="reference internal" href="#_CPPv4I00DpEN7einsums30sentinel_to_sentinels_zero_impEvRR6StrideR8SentinelDpRR4Rest" title="einsums::sentinel_to_sentinels_zero_imp::Rest"><span class="n"><span class="pre">Rest</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rest</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00DpEN7einsums30sentinel_to_sentinels_zero_impEvRR6StrideR8SentinelDpRR4Rest" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_t0DpEN7einsums21sentinel_to_sentinelsEv6size_tPK6size_tDpRR11StridesInds">
+<span id="_CPPv3I_6size_t0DpEN7einsums21sentinel_to_sentinelsE6size_tPK6size_tDpRR11StridesInds"></span><span id="_CPPv2I_6size_t0DpEN7einsums21sentinel_to_sentinelsE6size_tPK6size_tDpRR11StridesInds"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_indices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">StridesInds</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a2236c6390a020fcc0485ecc918a61ec5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_sentinels</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sentinel</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index_strides</span></span>, <a class="reference internal" href="#_CPPv4I_6size_t0DpEN7einsums21sentinel_to_sentinelsEv6size_tPK6size_tDpRR11StridesInds" title="einsums::sentinel_to_sentinels::StridesInds"><span class="n"><span class="pre">StridesInds</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_t0DpEN7einsums21sentinel_to_sentinelsEv6size_tPK6size_tDpRR11StridesInds" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Converts a single sentinel value into several sentinels for tensors with different strides. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sentinel</strong> – The sentinel to convert. </p></li>
+<li><p><strong>index_strides</strong> – The strides of the unique indices that the sentinel is iterating over. </p></li>
+<li><p><strong>strides_inds</strong> – The converted sentinels. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_t0DpEN7einsums21sentinel_to_sentinelsEv6size_tRKNSt5arrayI7int64_t11num_indicesEEDpRR11StridesInds">
+<span id="_CPPv3I_6size_t0DpEN7einsums21sentinel_to_sentinelsE6size_tRKNSt5arrayI7int64_t11num_indicesEEDpRR11StridesInds"></span><span id="_CPPv2I_6size_t0DpEN7einsums21sentinel_to_sentinelsE6size_tRKNSt5arrayI7int64_t11num_indicesEEDpRR11StridesInds"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_indices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">StridesInds</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a3119c6c8f3555c1aea2769b814ace822"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_sentinels</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sentinel</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_t0DpEN7einsums21sentinel_to_sentinelsEv6size_tRKNSt5arrayI7int64_t11num_indicesEEDpRR11StridesInds" title="einsums::sentinel_to_sentinels::num_indices"><span class="n"><span class="pre">num_indices</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index_strides</span></span>, <a class="reference internal" href="#_CPPv4I_6size_t0DpEN7einsums21sentinel_to_sentinelsEv6size_tRKNSt5arrayI7int64_t11num_indicesEEDpRR11StridesInds" title="einsums::sentinel_to_sentinels::StridesInds"><span class="n"><span class="pre">StridesInds</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_t0DpEN7einsums21sentinel_to_sentinelsEv6size_tRKNSt5arrayI7int64_t11num_indicesEEDpRR11StridesInds" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums21sentinel_to_sentinelsEv6size_tRK11StorageTypeDpRR11StridesInds">
+<span id="_CPPv3I0DpEN7einsums21sentinel_to_sentinelsE6size_tRK11StorageTypeDpRR11StridesInds"></span><span id="_CPPv2I0DpEN7einsums21sentinel_to_sentinelsE6size_tRK11StorageTypeDpRR11StridesInds"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">StridesInds</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1abfafc7742dd779f68a1967339171e587"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sentinel_to_sentinels</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sentinel</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums21sentinel_to_sentinelsEv6size_tRK11StorageTypeDpRR11StridesInds" title="einsums::sentinel_to_sentinels::StorageType"><span class="n"><span class="pre">StorageType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index_strides</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums21sentinel_to_sentinelsEv6size_tRK11StorageTypeDpRR11StridesInds" title="einsums::sentinel_to_sentinels::StridesInds"><span class="n"><span class="pre">StridesInds</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN7einsums21sentinel_to_sentinelsEv6size_tRK11StorageTypeDpRR11StridesInds" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_tEN7einsums19indices_to_sentinelE6size_tPK6size_tPK6size_t">
+<span id="_CPPv3I_6size_tEN7einsums19indices_to_sentinelEPK6size_tPK6size_t"></span><span id="_CPPv2I_6size_tEN7einsums19indices_to_sentinelEPK6size_tPK6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_unique_inds</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a23a87157d1203a85ccad08d1074c115f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indices_to_sentinel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">unique_strides</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_tEN7einsums19indices_to_sentinelE6size_tPK6size_tPK6size_t" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_tEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE">
+<span id="_CPPv3I_6size_tEN7einsums19indices_to_sentinelERKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE"></span><span id="_CPPv2I_6size_tEN7einsums19indices_to_sentinelERKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_unique_inds</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a5f2b0a1c1ab6d34277a9dfa3fb749a11"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indices_to_sentinel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_tEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE" title="einsums::indices_to_sentinel::num_unique_inds"><span class="n"><span class="pre">num_unique_inds</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unique_strides</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_tEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE" title="einsums::indices_to_sentinel::num_unique_inds"><span class="n"><span class="pre">num_unique_inds</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_tEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_tEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayI6size_t15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE">
+<span id="_CPPv3I_6size_tEN7einsums19indices_to_sentinelERKNSt5arrayI6size_t15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE"></span><span id="_CPPv2I_6size_tEN7einsums19indices_to_sentinelERKNSt5arrayI6size_t15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_unique_inds</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1aa35db274b2291e07f00071367724ac43"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indices_to_sentinel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_tEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayI6size_t15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE" title="einsums::indices_to_sentinel::num_unique_inds"><span class="n"><span class="pre">num_unique_inds</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unique_strides</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_tEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayI6size_t15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE" title="einsums::indices_to_sentinel::num_unique_inds"><span class="n"><span class="pre">num_unique_inds</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_tEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayI6size_t15num_unique_indsEERKNSt5arrayI6size_t15num_unique_indsEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_tDpEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex">
+<span id="_CPPv3I_6size_tDpEN7einsums19indices_to_sentinelERKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex"></span><span id="_CPPv2I_6size_tDpEN7einsums19indices_to_sentinelERKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_unique_inds</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">MultiIndex</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a6d86bebb14f3820a42e2de5199b47c26"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indices_to_sentinel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_tDpEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex" title="einsums::indices_to_sentinel::num_unique_inds"><span class="n"><span class="pre">num_unique_inds</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unique_strides</span></span>, <a class="reference internal" href="#_CPPv4I_6size_tDpEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex" title="einsums::indices_to_sentinel::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">indices</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I_6size_tDpEN7einsums19indices_to_sentinelE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN7einsums19indices_to_sentinelE6size_tRK12StorageType1RK12StorageType2">
+<span id="_CPPv3I00EN7einsums19indices_to_sentinelERK12StorageType1RK12StorageType2"></span><span id="_CPPv2I00EN7einsums19indices_to_sentinelERK12StorageType1RK12StorageType2"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType1</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType2</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a92ac23d2ecd7bc7a272d86b48e67793a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indices_to_sentinel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00EN7einsums19indices_to_sentinelE6size_tRK12StorageType1RK12StorageType2" title="einsums::indices_to_sentinel::StorageType1"><span class="n"><span class="pre">StorageType1</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unique_strides</span></span>, <a class="reference internal" href="#_CPPv4I00EN7einsums19indices_to_sentinelE6size_tRK12StorageType1RK12StorageType2" title="einsums::indices_to_sentinel::StorageType2"><span class="n"><span class="pre">StorageType2</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN7einsums19indices_to_sentinelE6size_tRK12StorageType1RK12StorageType2" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_tDpEN7einsums34indices_to_sentinel_negative_checkE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex">
+<span id="_CPPv3I_6size_tDpEN7einsums34indices_to_sentinel_negative_checkERKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex"></span><span id="_CPPv2I_6size_tDpEN7einsums34indices_to_sentinel_negative_checkERKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_unique_inds</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">MultiIndex</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a9ef7a0204103607fcac3f8aad72c86a6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indices_to_sentinel_negative_check</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_tDpEN7einsums34indices_to_sentinel_negative_checkE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex" title="einsums::indices_to_sentinel_negative_check::num_unique_inds"><span class="n"><span class="pre">num_unique_inds</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unique_strides</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_tDpEN7einsums34indices_to_sentinel_negative_checkE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex" title="einsums::indices_to_sentinel_negative_check::num_unique_inds"><span class="n"><span class="pre">num_unique_inds</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dims</span></span>, <a class="reference internal" href="#_CPPv4I_6size_tDpEN7einsums34indices_to_sentinel_negative_checkE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex" title="einsums::indices_to_sentinel_negative_check::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">indices</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_tDpEN7einsums34indices_to_sentinel_negative_checkE6size_tRKNSt5arrayINSt7int64_tE15num_unique_indsEERKNSt5arrayINSt7int64_tE15num_unique_indsEEDpRR10MultiIndex" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN7einsums34indices_to_sentinel_negative_checkE6size_tRK12StorageType1RK12StorageType2RK12StorageType3">
+<span id="_CPPv3I000EN7einsums34indices_to_sentinel_negative_checkERK12StorageType1RK12StorageType2RK12StorageType3"></span><span id="_CPPv2I000EN7einsums34indices_to_sentinel_negative_checkERK12StorageType1RK12StorageType2RK12StorageType3"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType1</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType2</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StorageType3</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1abd0b59148fc46ac1d06c5820787b50cc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indices_to_sentinel_negative_check</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I000EN7einsums34indices_to_sentinel_negative_checkE6size_tRK12StorageType1RK12StorageType2RK12StorageType3" title="einsums::indices_to_sentinel_negative_check::StorageType1"><span class="n"><span class="pre">StorageType1</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unique_strides</span></span>, <a class="reference internal" href="#_CPPv4I000EN7einsums34indices_to_sentinel_negative_checkE6size_tRK12StorageType1RK12StorageType2RK12StorageType3" title="einsums::indices_to_sentinel_negative_check::StorageType2"><span class="n"><span class="pre">StorageType2</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unique_dims</span></span>, <a class="reference internal" href="#_CPPv4I000EN7einsums34indices_to_sentinel_negative_checkE6size_tRK12StorageType1RK12StorageType2RK12StorageType3" title="einsums::indices_to_sentinel_negative_check::StorageType3"><span class="n"><span class="pre">StorageType3</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">inds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN7einsums34indices_to_sentinel_negative_checkE6size_tRK12StorageType1RK12StorageType2RK12StorageType3" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Converts indices to a sentinel. Checks for negative numbers and converts them. </p>
+<p>When checking for negative numbers, it will add the appropriate dimension to bring the index into the range for that dimension. Can not be used on GPU since it throws errors. Also, running all those if-statements would be very slow. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums15dims_to_stridesERKNSt6vectorI6size_tEERNSt6vectorI6size_tEE">
+<span id="_CPPv3N7einsums15dims_to_stridesERKNSt6vectorI6size_tEERNSt6vectorI6size_tEE"></span><span id="_CPPv2N7einsums15dims_to_stridesERKNSt6vectorI6size_tEERNSt6vectorI6size_tEE"></span><span id="einsums::dims_to_strides__std::vector:s:CR.std::vector:s:R"></span><span class="target" id="_index_utilities_8hpp_1ae2ebf296f909b0bd60dce408fd1466cc"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dims_to_strides</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dims</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums15dims_to_stridesERKNSt6vectorI6size_tEERNSt6vectorI6size_tEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00_6size_tEN7einsums15dims_to_stridesE6size_tRKNSt5arrayI9arr_type14DimsEERNSt5arrayI9arr_type24DimsEE">
+<span id="_CPPv3I00_6size_tEN7einsums15dims_to_stridesERKNSt5arrayI9arr_type14DimsEERNSt5arrayI9arr_type24DimsEE"></span><span id="_CPPv2I00_6size_tEN7einsums15dims_to_stridesERKNSt5arrayI9arr_type14DimsEERNSt5arrayI9arr_type24DimsEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">arr_type1</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">arr_type2</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dims</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1aa3ba5ac5111dcf8e3f5eb05bb39ac1ca"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dims_to_strides</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00_6size_tEN7einsums15dims_to_stridesE6size_tRKNSt5arrayI9arr_type14DimsEERNSt5arrayI9arr_type24DimsEE" title="einsums::dims_to_strides::arr_type1"><span class="n"><span class="pre">arr_type1</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00_6size_tEN7einsums15dims_to_stridesE6size_tRKNSt5arrayI9arr_type14DimsEERNSt5arrayI9arr_type24DimsEE" title="einsums::dims_to_strides::Dims"><span class="n"><span class="pre">Dims</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dims</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00_6size_tEN7einsums15dims_to_stridesE6size_tRKNSt5arrayI9arr_type14DimsEERNSt5arrayI9arr_type24DimsEE" title="einsums::dims_to_strides::arr_type2"><span class="n"><span class="pre">arr_type2</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00_6size_tEN7einsums15dims_to_stridesE6size_tRKNSt5arrayI9arr_type14DimsEERNSt5arrayI9arr_type24DimsEE" title="einsums::dims_to_strides::Dims"><span class="n"><span class="pre">Dims</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00_6size_tEN7einsums15dims_to_stridesE6size_tRKNSt5arrayI9arr_type14DimsEERNSt5arrayI9arr_type24DimsEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Compute the strides for turning a sentinel into a list of indices. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dims</strong> – The list of dimensions. </p></li>
+<li><p><strong>out</strong> – The calculated strides. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The size calculated from the dimensions. Can be safely ignored. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_6size_tDpEN7einsums15dims_to_stridesE6size_tRKNSt5tupleIDp9TupleDimsEERNSt5arrayI9arr_type24DimsEE">
+<span id="_CPPv3I0_6size_tDpEN7einsums15dims_to_stridesERKNSt5tupleIDp9TupleDimsEERNSt5arrayI9arr_type24DimsEE"></span><span id="_CPPv2I0_6size_tDpEN7einsums15dims_to_stridesERKNSt5tupleIDp9TupleDimsEERNSt5arrayI9arr_type24DimsEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">arr_type2</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dims</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">TupleDims</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a6e47779cbee89ba97bb4cddc416ce387"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dims_to_strides</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tDpEN7einsums15dims_to_stridesE6size_tRKNSt5tupleIDp9TupleDimsEERNSt5arrayI9arr_type24DimsEE" title="einsums::dims_to_strides::TupleDims"><span class="n"><span class="pre">TupleDims</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dims</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tDpEN7einsums15dims_to_stridesE6size_tRKNSt5tupleIDp9TupleDimsEERNSt5arrayI9arr_type24DimsEE" title="einsums::dims_to_strides::arr_type2"><span class="n"><span class="pre">arr_type2</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tDpEN7einsums15dims_to_stridesE6size_tRKNSt5tupleIDp9TupleDimsEERNSt5arrayI9arr_type24DimsEE" title="einsums::dims_to_strides::Dims"><span class="n"><span class="pre">Dims</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_6size_tDpEN7einsums15dims_to_stridesE6size_tRKNSt5tupleIDp9TupleDimsEERNSt5arrayI9arr_type24DimsEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Compute the strides for turning a sentinel into a list of indices. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dims</strong> – The list of dimensions. </p></li>
+<li><p><strong>out</strong> – The calculated strides. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The size calculated from the dimensions. Can be safely ignored. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpDpEN7einsums19compile_index_tableEvRKNSt5tupleIDp13UniqueIndicesEERKNSt5tupleIDp7IndicesEEPi">
+<span id="_CPPv3IDpDpEN7einsums19compile_index_tableERKNSt5tupleIDp13UniqueIndicesEERKNSt5tupleIDp7IndicesEEPi"></span><span id="_CPPv2IDpDpEN7einsums19compile_index_tableERKNSt5tupleIDp13UniqueIndicesEERKNSt5tupleIDp7IndicesEEPi"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">UniqueIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Indices</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_index_utilities_8hpp_1a61866e227be303bb3ac2f755d36ff34f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compile_index_table</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpDpEN7einsums19compile_index_tableEvRKNSt5tupleIDp13UniqueIndicesEERKNSt5tupleIDp7IndicesEEPi" title="einsums::compile_index_table::UniqueIndices"><span class="n"><span class="pre">UniqueIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">from_inds</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpDpEN7einsums19compile_index_tableEvRKNSt5tupleIDp13UniqueIndicesEERKNSt5tupleIDp7IndicesEEPi" title="einsums::compile_index_table::Indices"><span class="n"><span class="pre">Indices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">to_inds</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpDpEN7einsums19compile_index_tableEvRKNSt5tupleIDp13UniqueIndicesEERKNSt5tupleIDp7IndicesEEPi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Turn a list of indices into a link table. </p>
+<p>Takes a list of indices and creates a mapping so that an index list for a tensor can reference the unique index list. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
