@@ -140,7 +140,7 @@ file(
 
 list(APPEND sphinx_libs_source_files "index.rst" "overview.rst")
 
-foreach(lib ${EINSUMS_LIBS})
+foreach(lib IN LISTS EINSUMS_LIBS PYTHON_LIBS)
   list(APPEND sphinx_libs_source_files "${lib}/modules.rst")
 endforeach()
 

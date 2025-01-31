@@ -29,7 +29,6 @@ On my personal development machine, I use MKL for the above requirements. On Git
 Optional requirements:
 
 * A Fast Fourier Transform library, either FFTW3 or DFT from MKL.
-* For call stack backtracing, refer to the requirements listed [here](https://github.com/bombela/backward-cpp).
 * HIP for graphics card support. Uses hipBlas, hipSolver, and the HIP language. Does not yet support hipFFT.
 * cpptrace for backtraces.
 * LibreTT for GPU transposes.

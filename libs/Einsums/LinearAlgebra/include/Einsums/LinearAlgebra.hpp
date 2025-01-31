@@ -226,7 +226,9 @@ void syev(AType *A, WType *W) {
 /**
  * @brief Compute the general eigendecomposition of a matrix.
  *
- * Can only be used to compute both left and right eigen vectors or neither.
+ * Can only be used to compute both left and right eigenvectors or neither.
+ *
+ * @todo I think it would be neat if we had a way to choose.
  */
 template <bool ComputeLeftRightEigenvectors = true, MatrixConcept AType, VectorConcept WType>
     requires requires {

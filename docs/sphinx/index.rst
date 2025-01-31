@@ -15,7 +15,7 @@ Einsums's Documentation
    :hidden:
 
    User Guide <user/index>
-   API Reference <libs/overview>
+   API Reference </libs/overview>
    Building from source <building/index>
 
 **Version**: |release|
@@ -28,14 +28,14 @@ Einsums's Documentation
 Einsums provides compile-time contraction pattern analysis to determine the optimal tensor
 operation to perform. Einsums is a package for scientific computing in C++. It is a C++
 library that provides a multidimensional tensor object and an assortment of functions
-for fast operations on tensors, including mathematical, shape manipulation, sorting,
+for fast operations on tensors, including mathematical functions, shape manipulation, tensor permutations,
 I/O, discrete Fourier transforms, basic linear algebra, and tensor algebra. It also provides
 an interface to Python.
 
 As a short example, the following call to :code:`einsum` will optimize at compile-time to a BLAS
 dgemm call:
 
-.. code-block::
+.. code-block:: C++
 
    using einsums;                        // Provides Tensor, create_tensor, and create_random_tensor
    using einsums::tensor_algebra;        // Provides einsum
