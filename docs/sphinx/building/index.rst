@@ -11,8 +11,8 @@ Building from source
 
 .. note::
 
-   If you are only trying to install Einsums, we recommend using binaries -
-   Installation for details on that.
+   If you are only trying to install Einsums, we recommend using binaries.
+   See :ref:`Installation Instructions <installing>` for details on that.
 
 Building Einsums from source requires setting up system-level dependencies
 (compilers, BLAS/LAPACK libraries, etc.) first, and then invoking a build. The
@@ -35,10 +35,10 @@ other system-level dependencies to build it on your system.
    If you are using Conda, you can skip the steps in this section - with the
    exception of installing the Apple Developer Tools for macOS. All other
    dependencies will be installed automatically by the
-   ``mamba env create -f devtools environment.yml`` command.
+   ``conda env create -f devtools environment.yml`` command.
 
    If you don't have a conda installation yet, we recommend using
-   Mambaforge_; any conda flavor will work though.
+   Condaforge_; any conda flavor will work though.
 
 .. tab-set::
 
@@ -125,8 +125,8 @@ Then you want to do the following:
 To create an ``einsums-dev`` development environment with every required and
 optional dependency installed, run::
 
-    mamba env create -f devtools/conda-envs/environment.yml
-    mamba activate einsums-dev
+    conda env create -f devtools/conda-envs/environment.yml
+    conda activate einsums-dev
 
 To build Einsums in an activated development environment, run::
 
@@ -147,4 +147,4 @@ Customizing builds
 
    compilers_and_options
 
-.. _Mambaforge: https://github.com/conda-forge/miniforge#mambaforge
+.. _Condaforge: https://github.com/conda-forge/miniforge#condaforge

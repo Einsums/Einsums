@@ -20,6 +20,8 @@ Einsums is an open-source C++ library. It provides :cpp:class:`Tensor`, a homoge
 tensor object, with methods to efficiently operate on it. Einsums can be used to perform
 a wide variety of mathematical operations on tensors.
 
+.. _installing:
+
 Installing Einsums
 ==================
 
