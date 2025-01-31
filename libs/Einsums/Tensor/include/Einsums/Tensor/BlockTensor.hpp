@@ -20,7 +20,7 @@
 
 #include "Einsums/DesignPatterns/Lockable.hpp"
 
-// TODO:
+/// @todo
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/Tensor/DeviceTensor.hpp>
 #endif

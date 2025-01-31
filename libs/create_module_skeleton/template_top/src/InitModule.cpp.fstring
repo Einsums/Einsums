@@ -27,12 +27,12 @@ init_{lib_name}_{module_name} detail::initialize_module_{lib_name}_{module_name}
 
 void initialize_{lib_name}_{module_name}() {{
     EINSUMS_LOG_TRACE("initializing {lib_name}/{module_name}");
-    // TODO: Fill in.
+    /// @todo Fill in.
 }}
 
 void finalize_{lib_name}_{module_name}() {{
     EINSUMS_LOG_TRACE("finalizing module {lib_name}/{module_name}");
-    // TODO: Fill in.
+    /// @todo Fill in.
 }}
 
 }}

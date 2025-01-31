@@ -141,7 +141,8 @@ file(
 list(APPEND sphinx_libs_source_files "index.rst" "overview.rst")
 
 foreach(lib IN LISTS EINSUMS_LIBS PYTHON_LIBS)
-  list(APPEND sphinx_libs_source_files "${lib}/modules.rst")
+  file(GLOB _sphinx_sources RELATIVE "${PROJECT_SOURCE_DIR}/libs" "${PROJECT_SOURCE_DIR}/libs/${lib}/*.rst")
+  list(APPEND sphinx_libs_source_files ${_sphinx_sources})
 endforeach()
 
 foreach(sphinx_source_file ${sphinx_libs_source_files})

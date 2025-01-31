@@ -34,7 +34,7 @@ set(EinsumsPy_EXPORTS)
 foreach(module ${_EinsumsPy_modules})
   if(TARGET ${EINSUMS_PYTHON_LIB_NAME}_${module})
   set(EinsumsPy_EXPORT_FUNCTIONS
-    "${EinsumsPy_EXPORT_FUNCTIONS}EINSUMS_EXPORT void export_${module}(py::module_ &mod);\n"
+    "${EinsumsPy_EXPORT_FUNCTIONS}void export_${module}(py::module_ &mod);\n"
     )
   set(EinsumsPy_EXPORTS "${EinsumsPy_EXPORTS}    export_${module}(mod);\n")
   endif()

@@ -137,7 +137,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
 
         if (folds[i].dim(0) < rank) {
             // println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
-            // TODO: Need to padd U up to rank
+            /// @todo Need to padd U up to rank
             Tensor<TType, 2> Unew  = create_random_tensor<TType>("Padded SVD Left Vectors", folds[i].dim(0), rank);
             Unew(All, Range{0, m}) = U(All, All);
 

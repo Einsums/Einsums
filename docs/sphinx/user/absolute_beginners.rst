@@ -278,9 +278,13 @@ so further operations can cause undefined behavior. The underlying data is not m
 .. code:: C++
 
     Tensor<double, 3> A{"A", 3, 4, 5};
-    Tensor<double, 3> B{A, 2, 3, 10}; // Reshape A to have new dimensions. A is no longer valid after this call.
-    Tensor<double, 2> C{B, 10, -1}; // Reshape B to have a new rank and new dimensions. The -1 will be replaced with a
-                                    // number - 6 in this case - so that the size of the input and output are the same.
+    Tensor<double, 3> B{A, 2, 3, 10}; // Reshape A to have new dimensions.
+                                      // A is no longer valid after this call.
+
+    Tensor<double, 2> C{B, 10, -1}; // Reshape B to have a new rank and
+                                    // new dimensions. The -1 will be replaced with a
+                                    // number - 6 in this case - so that the size
+                                    // of the input and output are the same.
 
 A negative index will be treated as a wildcard, and the constructor will figure out what it should be instead to make the
 sizes correct.
@@ -293,8 +297,10 @@ This can be used to convert a 1D tensor into a 2D tensor.
 .. code:: C++
 
     Tensor<double, 1> A{"A", 30};
-    Tensor<double, 2> B{A, -1, 10}; // Make A into a 2D tensor. The -1 will be replaced with a
-                                    // number - 3 in this case - so that the size of the output matches the input.
+    Tensor<double, 2> B{A, -1, 10}; // Make A into a 2D tensor.
+                                    // The -1 will be replaced with a
+                                    // number - 3 in this case - so that
+                                    // the size of the output matches the input.
 
 
 More advanced Tensor operations
@@ -348,10 +354,12 @@ Most procedures provided by LAPACK and BLAS are available to use with tensors. H
     Tensor<double, 1> v = create_random_tensor("v", 10);
     Tensor<std::complex<double>, 1> evals{"evals", 10};
 
-    // gemm is available. Whether to transpose the inputs is passed as template parameters.
+    // gemm is available. Whether to transpose the inputs is
+    // passed as template parameters.
     linear_algebra::gemm<false, false>(A, B, &C);
 
-    // We can also do eigendecomposition. Whether to compute the eigenvectors is passed as a template parameter.
+    // We can also do eigendecomposition. Whether to compute 
+    // the eigenvectors is passed as a template parameter.
     linear_algebra::geev<true>(&A, &evals, &B, &C);
 
     // And dot products. This one does not conjugate the first argument.
@@ -374,7 +382,8 @@ Here's an example for something like :math:`C_{ijk} = A_{ik}B_{kj}`.
     auto C = create_random_tensor("C", 10, 10, 10);
 
     tensor_algebra::einsum(index::Indices{index::i, index::j, index::k}, &C, 
-        index::Indices{index::i, index::k}, A, index::Indices{index::k, index::j}, B);
+        index::Indices{index::i, index::k},
+        A, index::Indices{index::k, index::j}, B);
 
 If we do something that can become a BLAS call, then it will normally become a BLAS call. Currently, index permutations are not
 performed, so calls can only be optimized when the indices exactly match the pattern for a BLAS call. This will change in the future,
@@ -388,12 +397,15 @@ as permuting indices can seriously improve performance.
     auto B = create_random_tensor("B", 10, 10);
     double val;
 
-    // This will optimize to a dot product BLAS call. When the output should be a zero-rank tensor,
-    // a scalar may be used in its place. That way, you don't have to create a
-    // zero-rank tensor.
+    // This will optimize to a dot product BLAS call. When the output should be
+    // a zero-rank tensor, a scalar may be used in its place.
+    // That way, you don't have to deal with a zero-rank tensor.
     tensor_algebra::einsum(index::Indices{}, &val, 
-        index::Indices{index::i, index::j}, A, index::Indices{index::i, index::j}, B);
+        index::Indices{index::i, index::j}, A,
+        index::Indices{index::i, index::j}, B);
 
-    // This will not optimize to a BLAS call, since Einsums can't currently permute indices.
+    // This will not optimize to a BLAS call,
+    // since Einsums can't currently permute indices.
     tensor_algebra::einsum(index::Indices{}, &val, 
-        index::Indices{index::i, index::j}, A, index::Indices{index::j, index::i}, B);
+        index::Indices{index::i, index::j}, A,
+        index::Indices{index::j, index::i}, B);

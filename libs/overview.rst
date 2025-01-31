@@ -125,6 +125,7 @@ The following is not supported, but may be supported in the future.
     :caption: Modules
     :maxdepth: 2
     
-    /libs/Einsums/modules
-    /libs/EinsumsPy/modules
+    /libs/Einsums/index
+    /libs/EinsumsPy/index
+    /libs/EinsumsExperimental/index
 

@@ -746,7 +746,8 @@ template <int betaIsZero, typename floatType, bool useStreamingStores, bool conj
 void transpose_int_constStride1(floatType const * A, floatType * B, floatType const alpha, floatType const beta,
                                 ComputeNode const *plan) {
     int32_t const     end = plan->end - (plan->inc - 1);
-    constexpr int32_t inc = 1; // TODO
+    /// @todo Fix code.
+    constexpr int32_t inc = 1;
     size_t const      lda = plan->lda;
     size_t const      ldb = plan->ldb;
 

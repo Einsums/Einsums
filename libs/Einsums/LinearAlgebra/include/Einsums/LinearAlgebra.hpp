@@ -909,7 +909,7 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
 
     size_t n = A.dim(0);
 
-    /// TODO: Break this off into a separate schur function
+    //// @todo Break this off into a separate schur function
     // Compute Schur Decomposition of A
     Tensor<T, 2>             R = A; // R is a copy of A
     Tensor<T, 2>             wr("Schur Real Buffer", n, n);
@@ -932,7 +932,7 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
     return X;
 }
 
-// TODO: Bring this back
+/// @todo Bring this back
 // ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)
 
 template <MatrixConcept AType>
