@@ -13,5 +13,5 @@ This module contains all of the Python bindings for Einsums.
 .. toctree::
     :maxdepth: 2
 
-    /libs/Einsums/modules
-    /libs/Einsums/todo
+    /libs/EinsumsPy/modules
+    /libs/EinsumsPy/todo
