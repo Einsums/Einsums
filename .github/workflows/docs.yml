@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.build_ref }}
-          path: src
+      #          path: src
 
       # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
       - name: Setup Miniforge
@@ -50,31 +50,15 @@ jobs:
           conda install -c conda-forge ruamel.yaml
 
       - name: Merge Conda YAML files
-        working-directory: src/devtools/conda-envs
+        working-directory: devtools/conda-envs
         run: |
           pwd
           python merge_yml.py --docs default openblas
 
-      - name: Get Week
-        id: get-date
-        run: echo "week=$(/bin/date -u '+%W')" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Cache Conda Environment
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.CONDA }}/envs
-          key:
-            conda-docs-${{ steps.get-date.outputs.week }}-${{ hashFiles('src/devtools/conda-envs/conda.yml') }}-${{ env.CACHE_NUMBER }}
-        env:
-          # Increase this value to reset cache if src/devtools/conda-envs/conda.yml has not changed
-          CACHE_NUMBER: 0
-        id: cache
-
       - name: Update environment
         run: |
           pwd
-          conda env update -n einsums-env -f src/devtools/conda-envs/conda.yml
+          conda env update -n einsums-env -f devtools/conda-envs/conda.yml
           conda activate einsums-env
         if: steps.cache.outputs.cache-hit != 'true'
 
@@ -87,7 +71,7 @@ jobs:
         run: |
           cmake \
             -G Ninja \
-            -S "$GITHUB_WORKSPACE/src" \
+            -S "$GITHUB_WORKSPACE" \
             -B "$GITHUB_WORKSPACE/build" \
             -D EINSUMS_BUILD_PYTHON=OFF \
             -D EINSUMS_WITH_COVERAGE=ON \
@@ -106,14 +90,12 @@ jobs:
 
       - name: Copy Documentation
         run: |
-          mkdir -p ${{ github.workspace }}/src/share/Einsums/docs/html
-          cp -rv ${{ github.workspace }}/build/share/Einsums/docs/html/* ${{ github.workspace }}/src/share/Einsums/docs/html
+          mkdir -p ${{ github.workspace }}/share/Einsums/docs/html
+          cp -rv ${{ github.workspace }}/build/share/Einsums/docs/html/* ${{ github.workspace }}/share/Einsums/docs/html
 
       - name: GitHub Pages Deploy
-        env:
-          GITHUB_WORKSPACE: ${{ github.workspace }}/src
         uses: JamesIves/github-pages-deploy-action@v4.4.3
         if: github.event_name == 'push' && github.repository == 'Einsums/Einsums' && ( startsWith( github.ref, 'refs/tags/' ) || github.ref == 'refs/heads/main' )
         with:
           branch: gh-pages
-          folder: ${{ github.workspace }}/src/share/Einsums/docs/html
+          folder: ${{ github.workspace }}/share/Einsums/docs/html
