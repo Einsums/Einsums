@@ -6,6 +6,7 @@ on:
       filters:
         description: Matched filters
         value: ${{ jobs.need_check.outputs.filters }}
+  workflow_dispatch:  # Allow manual triggering
 
 permissions: read-all
 
@@ -17,15 +18,14 @@ jobs:
     outputs:
       filters: ${{ steps.result.outputs.result }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Check file changes
-        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
+        uses: dorny/paths-filter@v3.0.2
         id: changes
         with:
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           filters: |
             docs:
               - 'docs/**'
@@ -41,8 +41,31 @@ jobs:
       - name: Set output
         id: result
         uses: actions/github-script@v7
+        env:
+          CHANGES_JSON: ${{ toJson(steps.changes.outputs) }}
+          EVENT_NAME: ${{ github.event_name }}
         with:
           script: |
-            return '${{ steps.changes.outputs.changes }}';
+            console.log("Event Type:", process.env.EVENT_NAME);
+
+            if (process.env.EVENT_NAME === "workflow_dispatch") {
+              console.log("Manual trigger detected. Treating all filters as changed.");
+              return ["docs", "ci", "src"];
+            }
+
+            let changes = JSON.parse(process.env.CHANGES_JSON);
+            let matchedFilters = Object.keys(changes).filter(key => changes[key] === 'true');
+
+            if (process.env.EVENT_NAME === "pull_request") {
+              let changedFiles = context.payload.pull_request.changed_files;
+              console.log("Number of files changed:", changedFiles);
+              if (changedFiles < 50) {
+                return matchedFilters;
+              }
+              return ["docs", "ci", "src"];
+            } else {
+              // Always return the matched filters for push events
+              return matchedFilters;
+            }
 
       - run: echo '${{ steps.result.outputs.result }}'
