@@ -37,6 +37,22 @@ int einsums_main() {
     //
     // A subview of a tensor using offsets and strides
     //
+    // A:
+    // +-------+
+    // | 1 2 3 |
+    // +-------+
+    // | 4 5 6 |
+    // +-------+
+    // | 7 8 9 |
+    // +-------+
+    //
+    // viewA:
+    // +-----+
+    // | 5 6 |
+    // +-----+
+    // | 8 9 |
+    // +-----+
+    //
     {
         print::Indent _indent;
         println("Example 2");
@@ -58,6 +74,22 @@ int einsums_main() {
     // Example 3
     //
     // A skewed subview of a tensor using offsets and strides
+    //
+    // A:
+    // +-------+
+    // | 1 2 3 |
+    // +-------+
+    // | 4 5 6 |
+    // +-------+
+    // | 7 8 9 |
+    // +-------+
+    //
+    // viewA:
+    // +-----+
+    // | 1 2 |
+    // +-----+
+    // | 5 6 |
+    // +-----+
     //
     {
         print::Indent _indent;
@@ -81,6 +113,22 @@ int einsums_main() {
     //
     // A subview of a tensor using offsets and strides that skips one row and one column.
     // Of a 3x3 matrix the view should be of the corners.
+    //
+    // A:
+    // +-------+
+    // | 1 2 3 |
+    // +-------+
+    // | 4 5 6 |
+    // +-------+
+    // | 7 8 9 |
+    // +-------+
+    //
+    // viewA:
+    // +-----+
+    // | 1 3 |
+    // +-----+
+    // | 7 9 |
+    // +-----+
     //
     {
         print::Indent _indent;
