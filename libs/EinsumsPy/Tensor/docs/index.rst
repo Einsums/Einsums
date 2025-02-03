@@ -8,7 +8,8 @@
 EinsumsPy Tensor
 ================
 
-TODO: High-level description of the module.
+This module contains definitions that allow Python classes to extend Einsums tensors, and
+to use tensors in calculations.
 
 See the :ref:`API reference <modules_EinsumsPy_Tensor_api>` of this module for more
 details.

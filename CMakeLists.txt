@@ -114,7 +114,7 @@ einsums_option(
 if(MSVC)
   einsums_option(
     EINSUMS_WITH_VS_STARTUP_PROJECT STRING
-    "Defined the startup project for the einsums solution (default: ALL_BUILD)." "ALL_BUILD"
+    "Defines the startup project for the Einsums solution (default: ALL_BUILD)." "ALL_BUILD"
     ADVANCED
   )
   if(EINSUMS_WITH_VS_STARTUP_PROJECT)
@@ -127,7 +127,7 @@ endif()
 
 einsums_option(
   EINSUMS_WITH_DEPRECATION_WARNINGS BOOL "Enable warnings for deprecated facilities. (default: ON)"
-  ON ADVANCED
+  ON ADVANCED CATEGORY "Debugging"
 )
 
 if(EINSUMS_WITH_DEPRECATION_WARNINGS)
@@ -142,22 +142,24 @@ einsums_option(
   "Define which allocator should be linked in. Options are: system and mimalloc. (default: ${DEFAULT_MALLOC})"
   ${DEFAULT_MALLOC}
   STRINGS "system;mimalloc"
+  CATEGORY "Build Targets"
+  ADVANCED
 )
 
 # Compiler related build options
 einsums_option(
-  EINSUMS_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)" ON ADVANCED
+  EINSUMS_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)" ON ADVANCED CATEGORY "Debugging"
 )
 
 einsums_option(
   EINSUMS_WITH_COMPILER_WARNINGS_AS_ERROR BOOL "Turn compiler warnings into error (default: OFF)"
-  OFF ADVANCED
+  OFF ADVANCED CATEGORY "Debugging"
 )
 
 einsums_option(
-  EINSUMS_WITH_EXECUTABLE_PREFIX STRING "Executable prefix (default: none)." ""
+  EINSUMS_WITH_EXECUTABLE_PREFIX STRING "Sets a string to be prepended to executable names (default: none)." ""
   CATEGORY "Build Targets"
-  ADVANCED
+  ADVANCED CATEGORY "Build Targets"
 )
 
 einsums_option(
@@ -193,7 +195,7 @@ einsums_option(
   ADVANCED
 )
 
-einsums_option(EINSUMS_WITH_COVERAGE BOOL "Enable code coverage generation" OFF ADVANCED)
+einsums_option(EINSUMS_WITH_COVERAGE BOOL "Enable code coverage generation" OFF ADVANCED CATEGORY "Debugging")
 
 # ##################################################################################################
 
@@ -211,7 +213,7 @@ endif()
 
 einsums_option(
   EINSUMS_WITH_UNITY_BUILD BOOL "Enable unity build for certain build targets (default: OFF)" OFF
-  ADVANCED
+  ADVANCED CATEGORY "Build Targets"
 )
 if(EINSUMS_WITH_UNITY_BUILD)
   set(EINSUMS_WITH_UNITY_BUILD_OPTION UNITY_BUILD)
@@ -221,6 +223,7 @@ einsums_option(
   EINSUMS_WITH_PRECOMPILED_HEADERS BOOL
   "Enabled precompiled headers for certain build targets (experimental) (default: OFF)" OFF
   ADVANCED
+  CATEGORY "Build Targets"
 )
 if(EINSUMS_WITH_PRECOMPILED_HEADERS)
   set(EINSUMS_WITH_PRECOMPILED_HEADERS_INTERNAL ON)
@@ -300,6 +303,7 @@ einsums_option(
   "Build and link libraries and executables with full RPATHs (default: ${EINSUMS_FULL_RPATH_DEFAULT})"
   ${EINSUMS_FULL_RPATH_DEFAULT}
   ADVANCED
+  CATEGORY "Build Targets"
 )
 
 # ##################################################################################################
@@ -307,11 +311,10 @@ einsums_option(
 # ##################################################################################################
 set(CUDA_OPTION_STRING "Enable support for CUDA (default: OFF)")
 set(HIP_OPTION_STRING "Enable support for HIP (default: OFF)")
-einsums_option(EINSUMS_WITH_CUDA BOOL "${CUDA_OPTION_STRING}" OFF ADVANCED)
+einsums_option(EINSUMS_WITH_CUDA BOOL "${CUDA_OPTION_STRING}" OFF ADVANCED CATEGORY "Build Targets")
 
 # No need for the user to specify the option explicitly
-einsums_option(EINSUMS_WITH_HIP BOOL "${HIP_OPTION_STRING}" OFF ADVANCED)
-einsums_option(EINSUMS_ADD_COMPLEX_OPERATORS BOOL "Add definitions for complex operators. This may fix issues when compiling for CUDA targets." OFF ADVANCED)
+einsums_option(EINSUMS_WITH_HIP BOOL "${HIP_OPTION_STRING}" OFF ADVANCED CATEGORY "Build Targets")
 if("${CMAKE_CXX_COMPILER}" MATCHES "hipcc$")
   set(EINSUMS_WITH_HIP
       ON
@@ -328,9 +331,6 @@ endif()
 
 if(EINSUMS_WITH_CUDA OR EINSUMS_WITH_HIP)
   einsums_add_config_define(EINSUMS_HAVE_GPU_SUPPORT)
-  if(EINSUMS_ADD_COMPLEX_OPERATORS)
-    einsums_add_config_define(EINSUMS_ADD_COMPLEX_OPERATORS)
-  endif()
   set(EINSUMS_WITH_GPU_SUPPORT ON)
   set(EINSUMS_WITH_GPU_SUPPORT
       ON
@@ -361,11 +361,12 @@ einsums_option(
   "Use -fvisibility=hidden for builds on platforms which support it (default: ${EINSUMS_HIDDEN_VISIBILITY_DEFAULT})"
   ${EINSUMS_HIDDEN_VISIBILITY_DEFAULT}
   ADVANCED
+  CATEGORY "Build Targets"
 )
 
 einsums_option(
   EINSUMS_WITH_BACKTRACES BOOL "Attach backtraces to einsums exceptions (default: ON)" ON
-  CATEGORY "Errors"
+  CATEGORY "Debugging"
   ADVANCED
 )
 
@@ -385,7 +386,7 @@ if(EINSUMS_WITH_BACKTRACES)
   einsums_option(
     EINSUMS_WITH_THREAD_BACKTRACE_DEPTH STRING
     "Thread stack back trace depth being captured (default: 20)" "20"
-    CATEGORY "Thread Manager"
+    CATEGORY "Debugging"
     ADVANCED
   )
   einsums_add_config_define(
@@ -437,6 +438,7 @@ einsums_option(
   EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES BOOL
   "Verify that no modules are cross-referenced from a different module category (default: OFF)" OFF
   ADVANCED
+  CATEGORY "Debugging"
 )
 
 einsums_option(
@@ -445,6 +447,8 @@ einsums_option(
   "Build the Python module. A version for the Python build may be specified, or the value may be set to 'ON' for your current Python interpreter.
   Disable by specifying 'OFF'. Defaults to 'ON'."
   ON
+  CATEGORY "Features"
+  ADVANCED
 )
 
 if(EINSUMS_WITH_ITTNOTIFY)

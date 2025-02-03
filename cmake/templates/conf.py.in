@@ -106,6 +106,7 @@ for lib_dir in os.listdir(einsums_libs_dir):
     einsums_libs[lib_dir] = []
 
     full_lib_dir = os.path.join(einsums_libs_dir, lib_dir)
+    breathe_projects_source[lib_dir] = (full_lib_dir, [])
     for subdir_full, dirs, files in os.walk(full_lib_dir):
         # strip the prefix of the directory...
         subdir = subdir_full[len(full_lib_dir) + 1:]
@@ -114,7 +115,6 @@ for lib_dir in os.listdir(einsums_libs_dir):
         # subdirectories as a new breathe project
         if len(subdir) == 0:
             for directory in dirs:
-                breathe_projects_source[directory] = (subdir_full + '/' + directory, [])
                 einsums_libs[lib_dir].append(directory)
         # We are inside a module and need to add the files
         # to the breathe project
@@ -130,15 +130,14 @@ for lib_dir in os.listdir(einsums_libs_dir):
             # set
             subdirs = subdir.split('/')
             module = subdirs[0]
-            subdir = '/'.join(subdirs[1:])
+            #subdir = '/'.join(subdirs[1:])
             # And now add all remaining files
             # which are headers or source files
             for f in files:
-                # print(f)
                 if not file_regex.match(f) is None:
                     header_file_path = subdir_full + '/' + f
                     page_title, include_header = get_info_from_file(header_file_path)
-                    breathe_projects_source[module][1].append(subdir + '/' + f)
+                    breathe_projects_source[lib_dir][1].append(os.path.join(subdir, f))
                     include_prefix = 'include/'
                     include_index = header_file_path.find(include_prefix)
                     if include_index != -1:
@@ -189,7 +188,7 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 |einsums| API.
 
 .. autodoxygenfile:: {0}
-   :project: {1}
+   :project: {4}
 '''
 
 api_file = '''
@@ -199,16 +198,12 @@ api_file = '''
 
 '''
 
-print(breathe_projects_source)
-
 for lib in einsums_libs.keys():
+    breathe_projects[lib] = os.path.join('..', 'breathe', 'doxygen', lib, 'xml')
     for module in sorted(einsums_libs[lib]):
-        print(module)
-        breathe_projects[module] = os.path.join('..', 'breathe', 'doxygen', module, 'xml')
-
-        assert module in breathe_projects_source.keys()
-        module_sources = breathe_projects_source[module]
-        if len(module_sources[1]) == 0:
+        
+        module_sources = list(filter(lambda x: len(x.split(os.sep)) > 1 and module == x.split(os.sep)[0], breathe_projects_source[lib][1]))
+        if len(module_sources) == 0:
             continue
         basedir = os.path.abspath('.') + '/libs/' + lib + '/' + module + '/api'
         if not os.path.exists(basedir):
@@ -217,8 +212,9 @@ for lib in einsums_libs.keys():
             module_api_ref.write(api_ref_header.format(lib, module))
             header_refs = ''
             header_names = set()
-            for source in module_sources[1]:
-                header = source[len('include/'):]
+            for source in module_sources:
+                header = source.split(os.sep)
+                header = os.path.join(*header[header.index("include") + 1:])
                 header_splitted = re.split('[/ .]', header)
 
                 header_name = header_splitted[-2]
@@ -247,7 +243,6 @@ with open(os.path.abspath('.') + '/api/full_api.rst', 'w') as api_rst, open(f"{e
         api_rst.write(line.format(api_refs))
 
 # breathe_default_project = "Einsums"
-print(breathe_projects)
 
 breathe_doxygen_config_options = {
     'EXPAND_ONLY_PREDEF': 'YES',

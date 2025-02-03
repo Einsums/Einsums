@@ -69,7 +69,7 @@ EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type) {
         util::attach_debugger();
     }
 
-    // TODO: If einsums.diagnostics_on_terminate is true then print out a lot of information.
+    /// @todo If einsums.diagnostics_on_terminate is true then print out a lot of information.
 
     std::abort();
 }
@@ -133,7 +133,7 @@ RuntimeConfiguration const &Runtime::config() const {
 void Runtime::init() {
     EINSUMS_LOG_INFO("Runtime::init: initializing...");
     try {
-        // TODO: This would be a good place to create and initialize a thread pool
+        /// @todo This would be a good place to create and initialize a thread pool
 
         auto                                &runtime_vars = detail::RuntimeVars::get_singleton();
         std::lock_guard<detail::RuntimeVars> vars_guard(runtime_vars); // Lock the variables.
@@ -155,9 +155,9 @@ void Runtime::init() {
             add_shutdown_function(f);
         }
     } catch (std::exception const &e) {
-        // TODO: report_exception_and_terminate(e);
+        /// @todo report_exception_and_terminate(e);
     } catch (...) {
-        // TODO: report_exception_and_terminate(std::current_exception());
+        /// @todo report_exception_and_terminate(std::current_exception());
     }
 }
 

@@ -5,10 +5,10 @@
     ----------------------------------------------------------------------------------------------
 
 Compiler selection and customizing a build
-==========================================
+******************************************
 
 Selecting a specific compiler
------------------------------
+=============================
 
 CMake supports the standard environment variable ``CXX`` to select a specific C++ compiler.
 This environment variable is documented in the `CMake docs
@@ -23,7 +23,7 @@ CMake also supports passing the ``-DCMAKE_CXX_COMPILER=`` `variable
 to the command-line call to ``cmake``.
 
 Selecting build type
---------------------
+====================
 
 CMake natively supports four build types: ``Debug``, ``Release``, ``MinSizeRel``, and ``RelWithDebInfo``.
 
@@ -84,6 +84,5 @@ guaranteed to work.
 
    * Conversion to, from, or between floating-point types which would overflow the destination
 
-Internal Einsums testing
-------------------------
-
+See :ref:`the page on CMake variables <cmake_variables>` for a list of options that can be passed to
+CMake when configuring.

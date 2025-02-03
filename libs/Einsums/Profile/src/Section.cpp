@@ -6,7 +6,7 @@
 #include <Einsums/Profile/Section.hpp>
 #include <Einsums/Profile/Timer.hpp>
 
-// TODO: Connect to ITTNOTIFY
+/// @todo Connect to ITTNOTIFY
 namespace einsums {
 
 struct Section::Impl {

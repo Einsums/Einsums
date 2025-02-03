@@ -8,7 +8,7 @@
 EinsumsPy GPU
 =============
 
-TODO: High-level description of the module.
+This module enables GPU compatibility with Python.
 
 See the :ref:`API reference <modules_EinsumsPy_GPU_api>` of this module for more
 details.

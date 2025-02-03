@@ -8,7 +8,8 @@
 Einsums RuntimeConfiguration
 ============================
 
-TODO: High-level description of the module.
+This module contains facilities for runtime configuration. It is considered to be an internal
+module. No symbols will be useful to users.
 
 See the :ref:`API reference <modules_Einsums_RuntimeConfiguration_api>` of this module for more
 details.

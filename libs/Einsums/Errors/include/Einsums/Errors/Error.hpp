@@ -170,7 +170,7 @@ struct EINSUMS_EXPORT uninitialized_error : std::runtime_error {
 /**
  * @struct system_error
  *
- * Indicates that the code is handling data that is uninitialized.
+ * Indicates that an error happened when making a system call.
  */
 struct EINSUMS_EXPORT system_error : std::runtime_error {
     using std::runtime_error::runtime_error;
