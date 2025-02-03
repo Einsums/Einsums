@@ -10,7 +10,7 @@
 
 #include <type_traits>
 
-#include "Einsums/Concepts/Tensor.hpp"
+#include "Einsums/Concepts/TensorConcepts.hpp"
 
 namespace einsums {
 

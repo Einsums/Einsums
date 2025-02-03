@@ -9,7 +9,7 @@
 
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/File.hpp>
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/DesignPatterns/Lockable.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Iterator/Enumerate.hpp>

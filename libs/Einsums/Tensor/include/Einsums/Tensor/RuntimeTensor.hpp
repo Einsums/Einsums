@@ -3,7 +3,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/File.hpp>
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Tensor/Tensor.hpp>

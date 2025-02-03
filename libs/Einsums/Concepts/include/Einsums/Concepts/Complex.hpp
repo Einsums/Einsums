@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 
 #include <complex>
 #include <type_traits>

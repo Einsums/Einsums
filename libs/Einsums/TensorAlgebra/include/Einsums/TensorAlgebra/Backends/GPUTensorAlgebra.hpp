@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>

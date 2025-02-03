@@ -10,7 +10,7 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/SmartPointer.hpp>
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/LinearAlgebra/BlockTensor.hpp>
 #include <Einsums/LinearAlgebra/TiledTensor.hpp>

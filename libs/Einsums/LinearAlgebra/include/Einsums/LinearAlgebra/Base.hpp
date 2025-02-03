@@ -8,7 +8,7 @@
 #include <Einsums/Assert.hpp>
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/Complex.hpp>
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>

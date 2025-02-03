@@ -7,7 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra/Detail/Index.hpp>

@@ -24,7 +24,7 @@
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/Tensor/DeviceTensor.hpp>
 #endif
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 
 namespace einsums {

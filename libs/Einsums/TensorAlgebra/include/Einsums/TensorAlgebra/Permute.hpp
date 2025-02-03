@@ -8,7 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/SmartPointer.hpp>
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>

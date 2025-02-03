@@ -8,7 +8,7 @@
 
 #    include <Einsums/Config.hpp>
 
-#    include <Einsums/Concepts/Tensor.hpp>
+#    include <Einsums/Concepts/TensorConcepts.hpp>
 #    include <Einsums/LinearAlgebra.hpp>
 #    include <Einsums/Print.hpp>
 #    include <Einsums/Tensor/BlockTensor.hpp>
