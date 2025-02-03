@@ -13,6 +13,45 @@
 #include <vector>
 
 namespace einsums {
+    
+/**
+ * @struct Observable
+ *
+ * @brief Implementation of the Subject part of the Observable pattern from the Gang of Four.
+ *
+ * Here is an example of the use of this class.
+ *
+ * @code
+ *  void thread_observer(Observable<int> &observable) {
+ *      while (true) {
+ *          observable.wait_for_change();
+ *          int new_value = observable; // Use casting operator to get the value
+ *          std::cout << "Thread observer detected change: " << new_value << '\n';
+ *      }
+ *  }
+ *
+ *  int main() {
+ *      Observable<int> observable(0); // Initialize with 0
+ *
+ *      // Register a callback observer
+ *      observable.add_observer([](const int& value) {
+ *          std::cout << "Callback observer detected change: " << value << '\n';
+ *      });
+ *
+ *      // Launch a thread-based observer
+ *      std::thread observer_thread(thread_observer, std::ref(observable));
+ *
+ *      // Simulate changes in the variable
+ *      for (int i = 1; i <= 5; ++i) {
+ *          std::this_thread::sleep_for(std::chrono::seconds(1));
+ *          observable = i; // Use assignment operator
+ *      }
+ *
+ *      observer_thread.join();
+ *      return 0;
+ *  }
+ *  @endcode
+ */
 template <typename T>
 struct Observable {
     // Constructor
@@ -77,35 +116,3 @@ struct Observable {
 };
 
 } // namespace einsums
-
-// Example Usage
-/*
-void thread_observer(Observable<int> &observable) {
-    while (true) {
-        observable.wait_for_change();
-        int new_value = observable; // Use casting operator to get the value
-        std::cout << "Thread observer detected change: " << new_value << '\n';
-    }
-}
-
-int main() {
-    Observable<int> observable(0); // Initialize with 0
-
-    // Register a callback observer
-    observable.add_observer([](const int& value) {
-        std::cout << "Callback observer detected change: " << value << '\n';
-    });
-
-    // Launch a thread-based observer
-    std::thread observer_thread(thread_observer, std::ref(observable));
-
-    // Simulate changes in the variable
-    for (int i = 1; i <= 5; ++i) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        observable = i; // Use assignment operator
-    }
-
-    observer_thread.join();
-    return 0;
-}
-*/

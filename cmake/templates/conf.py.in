@@ -85,7 +85,7 @@ link_einsums_headers = {
 
 
 def find_link_einsums_header(include_header):
-    header_link = ""
+    header_link = include_header
     for base_path, header_list in link_einsums_headers.items():
         if include_header in header_list:
             header_link = f":einsums-header:`{base_path},{include_header}`"
@@ -225,9 +225,9 @@ for lib in einsums_libs.keys():
 
                 # Get the info from the dictionary using the header file path
                 page_title, include_header = header_info.get(header, ("None", "None"))
-                if page_title == "None":
+                if page_title == "None" or page_title == "" or page_title is None:
                     page_title = header
-                if include_header == "None":
+                if include_header == "None" or include_header == "" or include_header is None:
                     include_header = header
 
                 with open(basedir + '/' + header_name + '.rst', 'w') as header_ref :

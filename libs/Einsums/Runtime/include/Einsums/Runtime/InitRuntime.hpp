@@ -35,6 +35,11 @@ namespace detail {
 [[maybe_unused]] static std::vector<std::string> dummy_argv{app_name};
 } // namespace detail
 
+/**
+ * @struct InitParams
+ *
+ * @todo Document this type.
+ */
 struct InitParams {
     mutable StartupFunctionType  startup;
     mutable ShutdownFunctionType shutdown;

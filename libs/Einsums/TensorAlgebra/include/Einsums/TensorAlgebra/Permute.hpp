@@ -163,10 +163,10 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
  */
 template <typename CType, TensorConcept AType, TensorConcept BType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename... AllUniqueIndices>
-inline auto get_grid_ranges_for_many(CType const &C, ::std::tuple<CIndices...> const &C_indices, AType const &A,
-                                     ::std::tuple<AIndices...> const         &A_indices,
-                                     ::std::tuple<AllUniqueIndices...> const &All_unique_indices) {
-    return ::std::array{get_grid_ranges_for_many_a<AllUniqueIndices, 0>(C, C_indices, A, A_indices)...};
+inline auto get_grid_ranges_for_many(CType const &C, std::tuple<CIndices...> const &C_indices, AType const &A,
+                                     std::tuple<AIndices...> const         &A_indices,
+                                     std::tuple<AllUniqueIndices...> const &All_unique_indices) {
+    return std::array{get_grid_ranges_for_many_a<AllUniqueIndices, 0>(C, C_indices, A, A_indices)...};
 }
 
 template <TiledTensorConcept AType, TiledTensorConcept CType, typename... CIndices, typename... AIndices, typename U>

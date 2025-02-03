@@ -267,6 +267,17 @@ struct FunctionTensor : public CoreTensor {
 
 } // namespace tensor_base
 
+/**
+ * @class FuncPointerTensor
+ *
+ * @brief This is a function tensor that wraps a function pointer.
+ *
+ * Function tensors of this type wrap function pointers. Whenever their subscript method is
+ * called, the arguments will ultimately be passed on to the function pointer contained within.
+ *
+ * @tparam T The return type of the function.
+ * @tparam Rank The rank of the tensor.
+ */
 template <typename T, size_t Rank>
 struct FuncPointerTensor : public tensor_base::FunctionTensor<T, Rank>, tensor_base::CoreTensor {
   protected:
@@ -286,6 +297,15 @@ struct FuncPointerTensor : public tensor_base::FunctionTensor<T, Rank>, tensor_b
     size_t dim(int d) const override { return tensor_base::FunctionTensor<T, Rank>::dim(d); }
 };
 
+/**
+ * @struct FunctionTensorView
+ *
+ * @brief Acts as a view of a FunctionTensor.
+ *
+ * This class allows function tensors to define an offset and different dimensions for the indices.
+ * When called, the indices passed will be converted into what they would be in the original function
+ * tensor.
+ */
 template <typename T, size_t rank, size_t UnderlyingRank>
 struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
   protected:

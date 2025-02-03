@@ -60,7 +60,7 @@ template <typename... Dims>
         requires(!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
     }
 DeviceTensor<T, rank>::DeviceTensor(std::string name, einsums::detail::HostToDeviceMode mode, Dims... dims)
-    : _name{::std::move(name)}, _dims{static_cast<size_t>(dims)...}, _mode{mode} {
+    : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...}, _mode{mode} {
     using namespace einsums::gpu;
     static_assert(rank == sizeof...(dims), "Declared rank does not match provided dims");
 
@@ -75,7 +75,7 @@ DeviceTensor<T, rank>::DeviceTensor(std::string name, einsums::detail::HostToDev
     };
 
     // Row-major order of dimensions
-    ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+    std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
     size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
     switch (mode) {
@@ -113,8 +113,8 @@ template <typename... Dims>
         requires(sizeof...(Dims) == rank);
         requires(!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
     }
-DeviceTensor<T, rank>::DeviceTensor(::std::string name, Dims... dims)
-    : _name{::std::move(name)}, _dims{static_cast<size_t>(dims)...}, _mode{detail::DEV_ONLY} {
+DeviceTensor<T, rank>::DeviceTensor(std::string name, Dims... dims)
+    : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...}, _mode{detail::DEV_ONLY} {
     using namespace einsums::gpu;
     static_assert(rank == sizeof...(dims), "Declared rank does not match provided dims");
 
@@ -129,7 +129,7 @@ DeviceTensor<T, rank>::DeviceTensor(::std::string name, Dims... dims)
     };
 
     // Row-major order of dimensions
-    ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+    std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
     size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
     switch (_mode) {
@@ -163,8 +163,8 @@ DeviceTensor<T, rank>::DeviceTensor(::std::string name, Dims... dims)
 
 template <typename T, size_t rank>
 template <size_t OtherRank, typename... Dims>
-DeviceTensor<T, rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor, ::std::string name, Dims... dims)
-    : _name{::std::move(name)}, _dims{static_cast<size_t>(dims)...} {
+DeviceTensor<T, rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor, std::string name, Dims... dims)
+    : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
     using namespace einsums::gpu;
     if (existingTensor._mode == einsums::detail::UNKNOWN) {
         EINSUMS_THROW_EXCEPTION(uninitialized_error, "DeviceTensor being copied has not been initialized!");
@@ -220,7 +220,7 @@ DeviceTensor<T, rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
     }
 
     // Row-major order of dimensions
-    ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+    std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
     size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
     // Check size
@@ -237,7 +237,7 @@ DeviceTensor<T, rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
 }
 
 template <typename T, size_t rank>
-DeviceTensor<T, rank>::DeviceTensor(Dim<rank> dims, einsums::detail::HostToDeviceMode mode) : _dims{::std::move(dims)}, _mode{mode} {
+DeviceTensor<T, rank>::DeviceTensor(Dim<rank> dims, einsums::detail::HostToDeviceMode mode) : _dims{std::move(dims)}, _mode{mode} {
     using namespace einsums::gpu;
     struct Stride {
         size_t value{1};
@@ -250,7 +250,7 @@ DeviceTensor<T, rank>::DeviceTensor(Dim<rank> dims, einsums::detail::HostToDevic
     };
 
     // Row-major order of dimensions
-    ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+    std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
     size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
     switch (mode) {
@@ -372,7 +372,7 @@ DeviceTensor<T, rank>::DeviceTensor(DeviceTensorView<T, rank> const &other) : _n
     };
 
     // Row-major order of dimensions
-    ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+    std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
     size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
     this->_mode      = einsums::detail::DEV_ONLY;
@@ -464,7 +464,7 @@ void DeviceTensor<T, rank>::resize(Dim<rank> dims) {
     _dims = dims;
 
     // Row-major order of dimensions
-    ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+    std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
     size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
     if (size == old_size) {
@@ -541,13 +541,13 @@ DeviceTensor<T, rank>::dev_datatype *DeviceTensor<T, rank>::gpu_data(MultiIndex.
 #    if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     assert(sizeof...(MultiIndex) <= _dims.size());
 
-    auto index_list = ::std::array{static_cast<::std::int64_t>(index)...};
+    auto index_list = std::array{static_cast<std::int64_t>(index)...};
     for (auto [i, _index] : enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
     }
-    size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+    size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
     return _data + ordinal;
 #    endif
 }
@@ -563,13 +563,13 @@ const DeviceTensor<T, rank>::dev_datatype *DeviceTensor<T, rank>::gpu_data(Multi
 #    if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     assert(sizeof...(MultiIndex) <= _dims.size());
 
-    auto index_list = ::std::array{static_cast<::std::int64_t>(index)...};
+    auto index_list = std::array{static_cast<std::int64_t>(index)...};
     for (auto [i, _index] : enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
     }
-    size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+    size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
     return _data + ordinal;
 #    endif
 }
@@ -585,13 +585,13 @@ DeviceTensor<T, rank>::host_datatype *DeviceTensor<T, rank>::data(MultiIndex... 
 #    if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     assert(sizeof...(MultiIndex) <= _dims.size());
 
-    auto index_list = ::std::array{static_cast<::std::int64_t>(index)...};
+    auto index_list = std::array{static_cast<std::int64_t>(index)...};
     for (auto [i, _index] : enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
     }
-    size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+    size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
     return _host_data + ordinal;
 #    endif
 }
@@ -607,13 +607,13 @@ const DeviceTensor<T, rank>::host_datatype *DeviceTensor<T, rank>::data(MultiInd
 #    if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     assert(sizeof...(MultiIndex) <= _dims.size());
 
-    auto index_list = ::std::array{static_cast<::std::int64_t>(index)...};
+    auto index_list = std::array{static_cast<std::int64_t>(index)...};
     for (auto [i, _index] : enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
     }
-    size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+    size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
     return _host_data + ordinal;
 #    endif
 }
@@ -638,7 +638,7 @@ void DeviceTensor<T, rank>::read(std::vector<T> const &data) {
 }
 
 template <typename T, size_t rank>
-void DeviceTensor<T, rank>::write(::std::vector<T> &data) {
+void DeviceTensor<T, rank>::write(std::vector<T> &data) {
     using namespace einsums::gpu;
     if (data.size() != this->size()) {
         data.resize(this->size());
@@ -757,7 +757,7 @@ auto DeviceTensor<T, rank>::operator()(MultiIndex... index)
     //    Tensor T{"Big Tensor", 7, 7, 7, 7};
     //    T(0, 0) === T(0, 0, :, :) === TensorView{T, Dims<2>{7, 7}, Offset{0, 0}, Stride{49, 1}} ??
     // println("Here");
-    auto const &indices = ::std::forward_as_tuple(index...);
+    auto const &indices = std::forward_as_tuple(index...);
 
     Offset<rank>                                                                         offsets;
     Stride<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> strides{};
@@ -766,18 +766,18 @@ auto DeviceTensor<T, rank>::operator()(MultiIndex... index)
     int counter{0};
     for_sequence<sizeof...(MultiIndex)>([&](auto i) {
         // println("looking at {}", i);
-        if constexpr (::std::is_convertible_v<::std::tuple_element_t<i, ::std::tuple<MultiIndex...>>, ::std::int64_t>) {
+        if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, std::int64_t>) {
             auto tmp = static_cast<std::int64_t>(std::get<i>(indices));
             if (tmp < 0)
                 tmp = _dims[i] + tmp;
             offsets[i] = tmp;
-        } else if constexpr (::std::is_same_v<AllT, ::std::tuple_element_t<i, ::std::tuple<MultiIndex...>>>) {
+        } else if constexpr (std::is_same_v<AllT, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
             strides[counter] = _strides[i];
             dims[counter]    = _dims[i];
             counter++;
 
-        } else if constexpr (::std::is_same_v<Range, ::std::tuple_element_t<i, ::std::tuple<MultiIndex...>>>) {
-            auto range       = ::std::get<i>(indices);
+        } else if constexpr (std::is_same_v<Range, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
+            auto range       = std::get<i>(indices);
             offsets[counter] = range[0];
             if (range[1] < 0) {
                 auto temp = _dims[i] + range[1];
@@ -790,7 +790,7 @@ auto DeviceTensor<T, rank>::operator()(MultiIndex... index)
     });
 
     return DeviceTensorView<T, count_of_type<einsums::AllT, MultiIndex...>() + count_of_type<einsums::Range, MultiIndex...>()>{
-        *this, ::std::move(dims), offsets, strides};
+        *this, std::move(dims), offsets, strides};
 }
 
 template <typename T, size_t rank>
@@ -802,7 +802,7 @@ auto DeviceTensor<T, rank>::operator()(MultiIndex... index) const -> DeviceTenso
     Offset<rank> offset{};
     Stride<rank> stride = _strides;
 
-    auto ranges = get_array_from_tuple<::std::array<Range, rank>>(::std::forward_as_tuple(index...));
+    auto ranges = get_array_from_tuple<std::array<Range, rank>>(std::forward_as_tuple(index...));
 
     for (int r = 0; r < rank; r++) {
         auto range = ranges[r];
@@ -814,7 +814,7 @@ auto DeviceTensor<T, rank>::operator()(MultiIndex... index) const -> DeviceTenso
         dims[r] = range[1] - range[0];
     }
 
-    return DeviceTensorView<T, rank>{*this, ::std::move(dims), ::std::move(offset), ::std::move(stride)};
+    return DeviceTensorView<T, rank>{*this, std::move(dims), std::move(offset), std::move(stride)};
 }
 
 template <typename T, size_t rank>
@@ -841,7 +841,7 @@ DeviceTensor<T, rank> &DeviceTensor<T, rank>::assign(DeviceTensor<T, rank> const
         _dims = other._dims;
 
         // Row-major order of dimensions
-        ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         switch (_mode) {
@@ -898,7 +898,7 @@ DeviceTensor<T, rank> &DeviceTensor<T, rank>::assign(DeviceTensor<T, rank> const
 
 template <typename T, size_t rank>
 template <typename TOther>
-    requires(!::std::same_as<T, TOther>)
+    requires(!std::same_as<T, TOther>)
 auto DeviceTensor<T, rank>::assign(DeviceTensor<TOther, rank> const &other) -> DeviceTensor<T, rank> & {
     using namespace einsums::gpu;
     bool realloc{false};
@@ -922,7 +922,7 @@ auto DeviceTensor<T, rank>::assign(DeviceTensor<TOther, rank> const &other) -> D
         _dims = other._dims;
 
         // Row-major order of dimensions
-        ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         switch (_mode) {
@@ -1004,7 +1004,7 @@ DeviceTensor<T, rank> &DeviceTensor<T, rank>::assign(Tensor<T, rank> const &othe
         _dims = other.dims();
 
         // Row-major order of dimensions
-        ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         switch (_mode) {

@@ -17,9 +17,22 @@
 
 namespace einsums {
 
+#ifndef DOXYGEN
 template <typename Value>
 class ConfigObserver;
+#endif
 
+/**
+ * @class ConfigMap
+ *
+ * @brief Holds a mapping of string keys to configuration values.
+ *
+ * Objects of this type can hold maps of configuration variables. They can also act as a subject,
+ * which can attach observers. When a configuration variable is updated, this map will notify its
+ * observers with the new information. it has all of the methods and typedefs available from std::map.
+ *
+ * @tparam Value The type of data to be associated with each key.
+ */
 template <typename Value>
 class ConfigMap : public std::enable_shared_from_this<ConfigMap<Value>> {
   private:
@@ -336,6 +349,14 @@ template <typename Value>
 using SharedConfigMap = std::shared_ptr<ConfigMap<Value>>;
 // using SharedInfoMap = std::shared_ptr<InfoMap>;
 
+/**
+ * @class ConfigObserver
+ *
+ * @brief Represents an object that can observe a ConfigMap.
+ *
+ * Whenever the mapping the object is observing updates, the observer will receive a
+ * notification to update its state as well.
+ */
 template <typename Value>
 class ConfigObserver {
   public:
@@ -344,6 +365,15 @@ class ConfigObserver {
     virtual void update(SharedConfigMap<Value>) = 0;
 };
 
+/**
+ * @class GlobalConfigMap
+ *
+ * @brief This is a map that holds global configuration variables.
+ *
+ * This map holds three ConfigMap's inside. It has one for each of integer values, floating point values,
+ * and string values. Observers can observe this map, and depending on the type of the observer, it will
+ * be attached to the appropriate sub-map. This class is a singleton.
+ */
 class EINSUMS_EXPORT GlobalConfigMap {
     EINSUMS_SINGLETON_DEF(GlobalConfigMap)
   public:

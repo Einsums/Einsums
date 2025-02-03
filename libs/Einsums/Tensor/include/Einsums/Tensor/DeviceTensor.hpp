@@ -27,6 +27,7 @@
 
 namespace einsums {
 
+#ifndef DOXYGEN
 template <typename T, size_t Rank>
 struct DeviceTensorView;
 
@@ -35,6 +36,7 @@ struct DeviceTensor;
 
 template <typename T, size_t Rank>
 struct BlockDeviceTensor;
+#endif
 
 /**
  * @class HostDevReference
@@ -1122,6 +1124,14 @@ struct DeviceTensor<T, 0>
     friend struct einsums::DeviceTensor;
 };
 
+/**
+ * @struct DeviceTensorView
+ *
+ * @brief Holds a view of a DeviceTensor.
+ *
+ * This class allows for a view based at an offset and with different dimensions to be mapped
+ * back onto a DeviceTensor.
+ */
 template <typename T, size_t rank>
 struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
                           design_pats::Lockable<std::recursive_mutex>,

@@ -24,8 +24,8 @@ Public API
     time, as well as the ranks of the tensors. The :code:`C` tensor may also be a scalar if the index tuple is empty.
     The tensor parameters may be any combination of smart pointers. Also, the prefactors may be left off. If the first
     prefactor is left off, it will default to zero. If the second is left off, it will default to one. Most combinations
-    of kinds of tensors are accepted. However, for best results, avoid using :cpp:class:`FunctionTensor<T, Rank>`,
-    :cpp:class:`RuntimeTensor<T, Rank>`, or :cpp:class:`ArithmeticTensor`, as these can't be used with LAPACK or BLAS calls.
+    of kinds of tensors are accepted. However, for best results, avoid using :cpp:class:`FunctionTensor`,
+    :cpp:class:`RuntimeTensor`, or :cpp:class:`ArithmeticTensor`, as these can't be used with LAPACK or BLAS calls.
 
     This function will analyze the indices that it is given to determine if it can be turned into a BLAS call.
     As of the current version, it will not perform any major transpositions to force it into a BLAS call. The

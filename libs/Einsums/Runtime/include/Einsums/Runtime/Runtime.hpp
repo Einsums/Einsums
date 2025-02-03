@@ -168,6 +168,7 @@ EINSUMS_EXPORT bool is_running();
 
 } // namespace einsums
 
+#ifndef DOXYGEN
 template <>
 struct fmt::formatter<einsums::RuntimeState> : formatter<string_view> {
     template <typename FormatContext>
@@ -216,3 +217,4 @@ struct fmt::formatter<einsums::RuntimeState> : formatter<string_view> {
         return formatter<string_view>::format(name, ctx);
     }
 };
+#endif

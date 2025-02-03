@@ -193,13 +193,13 @@ auto DeviceTensorView<T, rank>::gpu_data(MultiIndex... index) -> DeviceTensorVie
     using namespace einsums::gpu;
     assert(sizeof...(MultiIndex) <= _dims.size());
 
-    auto index_list = ::std::array{static_cast<::std::int64_t>(index)...};
+    auto index_list = std::array{static_cast<std::int64_t>(index)...};
     for (auto [i, _index] : enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
     }
-    size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+    size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
     return _data + ordinal;
 }
 
@@ -209,28 +209,28 @@ auto DeviceTensorView<T, rank>::gpu_data(MultiIndex... index) const -> DeviceTen
     using namespace einsums::gpu;
     assert(sizeof...(MultiIndex) <= _dims.size());
 
-    auto index_list = ::std::array{static_cast<::std::int64_t>(index)...};
+    auto index_list = std::array{static_cast<std::int64_t>(index)...};
     for (auto [i, _index] : enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
     }
-    size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+    size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
     return _data + ordinal;
 }
 
 template <typename T, size_t rank>
-auto DeviceTensorView<T, rank>::gpu_data_array(::std::array<size_t, rank> const &index_list) -> DeviceTensorView<T, rank>::dev_datatype * {
+auto DeviceTensorView<T, rank>::gpu_data_array(std::array<size_t, rank> const &index_list) -> DeviceTensorView<T, rank>::dev_datatype * {
     using namespace einsums::gpu;
-    size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+    size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
     return _data + ordinal;
 }
 
 template <typename T, size_t rank>
-auto DeviceTensorView<T, rank>::gpu_data_array(::std::array<size_t, rank> const &index_list) const
+auto DeviceTensorView<T, rank>::gpu_data_array(std::array<size_t, rank> const &index_list) const
     -> DeviceTensorView<T, rank>::dev_datatype const * {
     using namespace einsums::gpu;
-    size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+    size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
     return _data + ordinal;
 }
 
@@ -316,7 +316,7 @@ void DeviceTensorView<T, rank>::common_initialization(TensorType<T, OtherRank> c
         // Else since we're different Ranks we cannot automatically determine our stride and the user MUST
         // provide the information
     } else {
-        if (::std::accumulate(_dims.begin(), _dims.end(), 1, ::std::multiplies<>()) == other.size()) {
+        if (std::accumulate(_dims.begin(), _dims.end(), 1, std::multiplies<>()) == other.size()) {
             dims_to_strides(_dims, default_strides);
         } else {
             // Stride information cannot be automatically deduced.  It must be provided.
@@ -336,7 +336,7 @@ void DeviceTensorView<T, rank>::common_initialization(TensorType<T, OtherRank> c
     dims_to_strides(_dims, _index_strides);
 
     // Determine the ordinal using the offsets provided (if any) and the strides of the parent
-    size_t ordinal = ::std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), size_t{0});
+    size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), size_t{0});
     _data          = other._data + ordinal;
     if (other._host_data != nullptr) {
         _host_data = other._host_data + ordinal;
