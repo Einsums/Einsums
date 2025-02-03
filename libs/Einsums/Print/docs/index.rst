@@ -18,6 +18,8 @@ details.
 Public Symbols
 --------------
 
+There are a few symbols that may be useful to users.
+
 .. cpp:class:: template<std::integral IntType> print::ordinal
 
     This is a wrapper for a value that allows formatting an integer as an ordinal, such as 1st, 2nd, etc.
