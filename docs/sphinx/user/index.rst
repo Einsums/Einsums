@@ -25,6 +25,7 @@ details are found in the reference. Follow the links below to find more informat
     :maxdepth: 1
 
     /libs/overview
+    ../reference/python_module
 
 .. toctree::
     :caption: Extras
