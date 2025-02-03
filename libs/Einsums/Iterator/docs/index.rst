@@ -13,6 +13,9 @@ This module defines symbols for iterating over things at compile time.
 See the :ref:`API reference <modules_Einsums_Iterator_api>` of this module for more
 details.
 
+Public API
+----------
+
 A few of the symbols may be useful for those using Einsums.
 
 .. cpp:function:: template<auto n, typename F> constexpr void for_sequence(F f)
