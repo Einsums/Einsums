@@ -8,7 +8,8 @@
 Einsums DesignPatterns
 ======================
 
-This module contains macros and classes for using design patterns simply and easily.
+This module contains macros and classes for using design patterns simply and easily. This is an internal API, though
+some advanced programmers may find them useful.
 
 See the :ref:`API reference <modules_Einsums_DesignPatterns_api>` of this module for more
 details.
