@@ -21,7 +21,7 @@ Einsums's Documentation
 **Version**: |release|
 
 **Useful links**:
-`Source Repository <https://github.com/Einsums/Einsums>`_ |
+`Source Repository <https://github.com/Einsums/Einsums>`_ |
 `Issue Tracker <https://github.com/Einsums/Einsums/issues>`_
 
 
@@ -103,7 +103,7 @@ dgemm call:
 
       +++
 
-      .. button-ref:: libs/overview
+      .. button-ref:: /libs/overview
          :expand:
          :color: primary
          :click-parent:
