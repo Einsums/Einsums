@@ -153,11 +153,19 @@ EINSUMS_EXPORT void on_abort(int signal) noexcept;
 EINSUMS_EXPORT void set_signal_handlers();
 } // namespace detail
 
-/// The function \a get_runtime returns a reference to the (thread
-/// specific) runtime instance.
+/**
+ * @brief Returns a reference to the current Runtime structure
+ */
 EINSUMS_EXPORT detail::Runtime &runtime();
+
+/**
+ * @brief Returns a pointer to the current Runtime structure.
+ */
 EINSUMS_EXPORT detail::Runtime *&runtime_ptr();
 
+/**
+ * @brief Gets a reference to the current runtime configuration structure.
+ */
 EINSUMS_EXPORT RuntimeConfiguration &runtime_config();
 
 ///////////////////////////////////////////////////////////////////////////

@@ -16,15 +16,10 @@ einsums::init_Einsums_Utilities::init_Einsums_Utilities() {
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
     einsums::register_pre_startup_function(einsums::initialize_Einsums_Utilities);
-    einsums::register_shutdown_function(einsums::finalize_Einsums_Utilities);
 }
 
 einsums::init_Einsums_Utilities einsums::detail::initialize_module_Einsums_Utilities;
 
 void einsums::initialize_Einsums_Utilities() {
     einsums::random_engine = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
-}
-
-void einsums::finalize_Einsums_Utilities() {
-    /// @todo Fill in.
 }
