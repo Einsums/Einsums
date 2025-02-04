@@ -8,12 +8,12 @@
 #include <Einsums/Assert.hpp>
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/Complex.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
-#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 namespace einsums::linear_algebra::detail {
 
@@ -332,7 +332,7 @@ auto dot(AType const &A, BType const &B, CType const &C)
     T result{0};
 #pragma omp parallel for reduction(+ : result)
     for (size_t i = 0; i < dim[0]; i++) {
-        result += vA(i) * vB(i) * vC(i);
+        result += subscript_tensor(vA, i) * subscript_tensor(vB, i) * subscript_tensor(vC, i);
     }
     return result;
 }

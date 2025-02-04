@@ -46,7 +46,7 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
         sentinel_to_indices(elem, strides, target_combination);
         TType const &source             = subscript_tensor(tensor, target_combination);
         TType       &target             = weighted_tensor.data()[elem];
-        TType const &scale              = weights(std::get<0>(target_combination));
+        TType const &scale              = subscript_tensor(weights, std::get<0>(target_combination));
 
         target = scale * source;
     }
