@@ -4,6 +4,15 @@ namespace einsums {
 
 namespace design_pats {
 
+/**
+ * @class Lockable
+ *
+ * @brief Base class that enables mutexes on an object, making thread safety a breeze.
+ *
+ * Simply inherit this class and the new class will have everything it needs to satisfy
+ * the Lockable requirement. You can even specify what kind of mutex to use to handle
+ * the locks.
+ */
 template <typename Mutex>
 class Lockable {
   public:

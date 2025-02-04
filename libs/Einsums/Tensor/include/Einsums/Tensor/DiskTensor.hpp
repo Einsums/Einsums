@@ -100,7 +100,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      * @param name The name for the tensor.
      * @param dims The dimensions of the tensor.
      */
-    template <typename... Dims, typename = std::enable_if_t<are_all_convertible_v<size_t, Dims...>::value>>
+    template <typename... Dims, typename = std::enable_if_t<are_all_convertible<size_t, Dims...>::value>>
     explicit DiskTensor(h5::fd_t &file, std::string name, Dims... dims)
         : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");

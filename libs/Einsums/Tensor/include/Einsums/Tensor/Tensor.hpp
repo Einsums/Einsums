@@ -54,6 +54,7 @@
 #endif
 
 namespace einsums {
+#ifndef DOXYGEN
 // Forward declaration of the Tensor printing function.
 template <RankTensorConcept AType>
     requires(BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>)
@@ -62,6 +63,7 @@ void println(AType const &A, TensorPrintOptions options = {});
 template <FileOrOStream Output, RankTensorConcept AType>
     requires(BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>)
 void fprintln(Output &fp, AType const &A, TensorPrintOptions options = {});
+#endif
 
 /**
  * @brief Represents a general tensor
@@ -314,7 +316,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
         }
     auto data(MultiIndex... index) -> T * {
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#if !defined(DOXYGEN)
         assert(sizeof...(MultiIndex) <= _dims.size());
 
         auto index_list = std::array{static_cast<ptrdiff_t>(index)...};

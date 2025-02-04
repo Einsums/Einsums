@@ -18,6 +18,7 @@
 namespace einsums {
 
 #ifndef DOXYGEN
+// Forward declaration.
 template <typename Value>
 class ConfigObserver;
 #endif
@@ -345,6 +346,11 @@ class ConfigMap : public std::enable_shared_from_this<ConfigMap<Value>> {
     friend class std::shared_ptr<ConfigObserver<Value>>;
 };
 
+/**
+ * @typedef SharedConfigMap
+ *
+ * @brief Shared pointer to a ConfigMap.
+ */
 template <typename Value>
 using SharedConfigMap = std::shared_ptr<ConfigMap<Value>>;
 // using SharedInfoMap = std::shared_ptr<InfoMap>;

@@ -8,7 +8,7 @@
 
 namespace einsums {
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN
 
 template <typename T, size_t rank>
 DeviceTensorView<T, rank>::DeviceTensorView(DeviceTensorView<T, rank> const &copy) {
@@ -91,7 +91,7 @@ __global__ void copy_to_tensor_array(T *to_data, size_t const *index_strides, si
 }
 } // namespace detail
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN
 
 template <typename T, size_t rank>
 DeviceTensorView<T, rank> &DeviceTensorView<T, rank>::assign(T const *data) {

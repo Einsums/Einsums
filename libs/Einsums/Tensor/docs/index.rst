@@ -11,7 +11,7 @@ Tensor
 This module contains code for the tensor types used in Einsums.
 
 See the :ref:`API reference <modules_Einsums_Tensor_api>` of this module for more
-details. ..
+details.
 
 ----------------
 Public Reference

@@ -571,7 +571,7 @@ void invert(TensorType *A) {
     }
 }
 
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#if !defined(DOXYGEN)
 template <SmartPointer SmartPtr>
 void invert(SmartPtr *A) {
     LabeledSection0();

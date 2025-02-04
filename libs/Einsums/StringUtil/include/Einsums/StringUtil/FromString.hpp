@@ -13,6 +13,11 @@
 
 namespace einsums {
 
+/**
+ * @struct from_string_impl
+ *
+ * @brief Converts a string from one kind to another.
+ */
 template <typename T, typename Enable = void>
 struct from_string_impl {
     template <typename Char>
@@ -50,6 +55,7 @@ void check_only_whitespace(std::basic_string<Char> const &s, std::size_t pos) {
     }
 }
 
+#ifndef DOXYGEN
 template <typename T>
 struct from_string_impl<T, std::enable_if_t<std::is_integral_v<T>>> {
     template <typename Char>
@@ -129,6 +135,7 @@ struct from_string_impl<T, std::enable_if_t<std::is_floating_point_v<T>>> {
         check_only_whitespace(value, pos);
     }
 };
+#endif
 
 template <typename T, typename Char>
 T from_string(std::basic_string<Char> const &v) {

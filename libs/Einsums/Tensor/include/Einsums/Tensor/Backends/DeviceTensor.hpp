@@ -18,7 +18,7 @@
 
 namespace einsums {
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN
 template <typename T, size_t rank>
 DeviceTensor<T, rank>::DeviceTensor(DeviceTensor<T, rank> const &copy, detail::HostToDeviceMode mode) {
     *this = copy;
@@ -356,7 +356,7 @@ __global__ void copy_to_tensor_conv(T *to_data, size_t const *index_strides, siz
 
 } // namespace detail
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN
 
 template <typename T, size_t rank>
 DeviceTensor<T, rank>::DeviceTensor(DeviceTensorView<T, rank> const &other) : _name{other.name()}, _dims{other.dims()} {
@@ -440,7 +440,7 @@ __global__ void set_all(T *data, size_t const *index_strides, size_t const *stri
 
 } // namespace detail
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN
 template <typename T, size_t rank>
 void DeviceTensor<T, rank>::resize(Dim<rank> dims) {
     using namespace einsums::gpu;
@@ -538,7 +538,7 @@ template <typename... MultiIndex>
     }
 DeviceTensor<T, rank>::dev_datatype *DeviceTensor<T, rank>::gpu_data(MultiIndex... index) {
     using namespace einsums::gpu;
-#    if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#    if !defined(DOXYGEN)
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
@@ -560,7 +560,7 @@ template <typename... MultiIndex>
     }
 const DeviceTensor<T, rank>::dev_datatype *DeviceTensor<T, rank>::gpu_data(MultiIndex... index) const {
     using namespace einsums::gpu;
-#    if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#    if !defined(DOXYGEN)
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
@@ -582,7 +582,7 @@ template <typename... MultiIndex>
     }
 DeviceTensor<T, rank>::host_datatype *DeviceTensor<T, rank>::data(MultiIndex... index) {
     using namespace einsums::gpu;
-#    if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#    if !defined(DOXYGEN)
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
@@ -604,7 +604,7 @@ template <typename... MultiIndex>
     }
 const DeviceTensor<T, rank>::host_datatype *DeviceTensor<T, rank>::data(MultiIndex... index) const {
     using namespace einsums::gpu;
-#    if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#    if !defined(DOXYGEN)
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
@@ -1442,7 +1442,7 @@ __global__ void div_and_assign_scal(T *to_data, size_t const *index_strides, siz
 
 } // namespace detail
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN
 
 template <typename T, size_t rank>
 DeviceTensor<T, rank> &DeviceTensor<T, rank>::add_assign(T const &other) {

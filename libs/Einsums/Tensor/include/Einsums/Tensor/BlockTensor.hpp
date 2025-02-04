@@ -375,7 +375,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
             requires NoneOfType<Range, MultiIndex...>;
         }
     auto data(MultiIndex... index) -> T * {
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#if !defined(DOXYGEN)
         assert(sizeof...(MultiIndex) <= Rank);
 
         auto index_list = std::array{static_cast<std::int64_t>(index)...};
@@ -1366,7 +1366,7 @@ struct BlockDeviceTensor : public tensor_base::BlockTensor<T, Rank, einsums::Dev
             requires NoneOfType<Range, MultiIndex...>;
         }
     auto gpu_data(MultiIndex... index) -> T * {
-#    if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#    if !defined(DOXYGEN)
         assert(sizeof...(MultiIndex) <= Rank);
 
         auto index_list = std::array{static_cast<std::int64_t>(index)...};

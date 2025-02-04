@@ -35,7 +35,7 @@ namespace einsums {
 namespace tensor_base {
 
 /**
- * @struct TiledTensorBase
+ * @struct TiledTensor
  *
  * Represents a tiled tensor. Is a lockable type.
  *
@@ -923,6 +923,13 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
 
 } // namespace tensor_base
 
+/**
+ * @struct TiledTensor
+ *
+ * @brief Holds a tile-wise sparse tensor.
+ *
+ * Tensors of this class have large blocks that are rigorously zero. These blocks need to line up on a grid.
+ */
 template <typename T, size_t Rank>
 struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Tensor<T, Rank>>, tensor_base::CoreTensor {
   protected:
@@ -982,6 +989,11 @@ struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Ten
     size_t dim(int d) const override { return this->_dims[d]; }
 };
 
+/**
+ * @struct TiledTensorView
+ *
+ * @brief Tensors of this class hold views of the tiles of a tiled tensor.
+ */
 template <typename T, size_t Rank>
 struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums::TensorView<T, Rank>>, tensor_base::CoreTensor {
   private:
@@ -1260,6 +1272,9 @@ TENSOR_EXPORT(TiledDeviceTensorView)
 TENSOR_EXPORT(TiledTensor)
 TENSOR_EXPORT(TiledTensorView)
 
+/**
+ * Prints a TiledTensor to standard output.
+ */
 template <einsums::TiledTensorConcept TensorType>
 void println(TensorType const &A, TensorPrintOptions options = {}) {
     using T               = typename TensorType::ValueType;
@@ -1301,6 +1316,9 @@ void println(TensorType const &A, TensorPrintOptions options = {}) {
     }
 }
 
+/**
+ * Prints a TiledTensor to a file pointer.
+ */
 template <einsums::TiledTensorConcept TensorType>
 void fprintln(FILE *fp, TensorType const &A, TensorPrintOptions options = {}) {
     using T               = typename TensorType::ValueType;
@@ -1342,6 +1360,9 @@ void fprintln(FILE *fp, TensorType const &A, TensorPrintOptions options = {}) {
     }
 }
 
+/**
+ * Prints a TiledTensor to an output stream.
+ */
 template <einsums::TiledTensorConcept TensorType>
 void fprintln(std::ostream &os, TensorType const &A, TensorPrintOptions options = {}) {
     using T               = typename TensorType::ValueType;
