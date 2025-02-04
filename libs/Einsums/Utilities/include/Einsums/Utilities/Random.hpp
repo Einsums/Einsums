@@ -4,6 +4,11 @@
 
 namespace einsums {
 
+/**
+ * @property random_engine
+ *
+ * @brief The global random engine for random number generation.
+ */
 EINSUMS_EXPORT extern std::default_random_engine random_engine;
 
 /**

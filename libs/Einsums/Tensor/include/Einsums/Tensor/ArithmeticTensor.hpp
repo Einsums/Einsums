@@ -11,10 +11,6 @@ namespace einsums {
 
 namespace detail {
 
-// Forward declarations.
-template <typename T, size_t Rank>
-struct TensorBase;
-
 /**
  * @struct AdditionOp
  *
@@ -50,12 +46,12 @@ inline T compute_arithmetic(T scalar, MultiIndex... inds) {
 }
 
 template <typename T1, template <typename, size_t> typename TensorType, typename T, size_t Rank, typename... MultiIndex>
-inline T compute_arithmetic(const TensorType<T, Rank> *tensor, MultiIndex... inds) {
+inline T compute_arithmetic(TensorType<T, Rank> const *tensor, MultiIndex... inds) {
     return (*tensor)(inds...);
 }
 
 template <typename T, typename Op, typename Left, typename Right, typename... MultiIndex>
-inline T compute_arithmetic(const std::tuple<Op, Left, Right> *input, MultiIndex... inds) {
+inline T compute_arithmetic(std::tuple<Op, Left, Right> const *input, MultiIndex... inds) {
     if constexpr (std::is_same_v<Op, AdditionOp>) {
         return compute_arithmetic<T>(std::get<1>(*input), inds...) + compute_arithmetic<T>(std::get<2>(*input), inds...);
     } else if constexpr (std::is_same_v<Op, SubtractionOp>) {
@@ -68,7 +64,7 @@ inline T compute_arithmetic(const std::tuple<Op, Left, Right> *input, MultiIndex
 }
 
 template <typename T, typename Operand, typename... MultiIndex>
-inline T compute_arithmetic(const std::tuple<SubtractionOp, Operand> *input, MultiIndex... inds) {
+inline T compute_arithmetic(std::tuple<SubtractionOp, Operand> const *input, MultiIndex... inds) {
     return -compute_arithmetic<T>(std::get<1>(*input), inds...);
 }
 
@@ -94,27 +90,27 @@ struct ArithmeticTensor : tensor_base::CoreTensor {
     std::string         _name{"(unnamed ArithmeticTensor)"};
 
   public:
-    using ValueType = T;
+    using ValueType              = T;
     constexpr static size_t Rank = rank;
 
     using tuple_type = std::tuple<Args...>;
 
-    ArithmeticTensor(const std::tuple<Args...> &input, Dim<Rank> dims) : _tuple{input}, _dims{dims} { ; }
+    ArithmeticTensor(std::tuple<Args...> const &input, Dim<Rank> dims) : _tuple{input}, _dims{dims} { ; }
 
     template <typename... MultiIndex>
     T operator()(MultiIndex... inds) const {
         return detail::compute_arithmetic<T>(&_tuple, inds...);
     }
 
-    const std::tuple<Args...> *get_tuple() const { return &_tuple; }
+    std::tuple<Args...> const *get_tuple() const { return &_tuple; }
 
     Dim<Rank> dims() const { return _dims; }
 
     size_t dim(int d) const { return _dims[d]; }
 
-    const std::string &name() const { return _name; }
+    std::string const &name() const { return _name; }
 
-    void set_name(const std::string &new_name) { _name = new_name; }
+    void set_name(std::string const &new_name) { _name = new_name; }
 };
 
 } // namespace einsums
@@ -176,20 +172,20 @@ OPERATOR(/, einsums::detail::DivisionOp)
 template <typename T, size_t Rank, typename... Args>
 auto operator-(const einsums::ArithmeticTensor<T, Rank, Args...> &&tensor)
     -> einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, const std::tuple<Args...> *> {
-    return einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, const std::tuple<Args...> *>(
+    return einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, std::tuple<Args...> const *>(
         std::make_tuple(einsums::detail::SubtractionOp(), tensor.get_tuple()));
 }
 
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
-auto operator-(const TensorType<T, Rank> &tensor)
-    -> einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, const TensorType<T, Rank> *> {
-    return einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, const TensorType<T, Rank> *>(
+auto operator-(TensorType<T, Rank> const &tensor)
+    -> einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, TensorType<T, Rank> const *> {
+    return einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, TensorType<T, Rank> const *>(
         std::make_tuple(einsums::detail::SubtractionOp(), &tensor), tensor.dims());
 }
 
 template <typename T, size_t Rank, typename... Args>
-auto operator-(const einsums::ArithmeticTensor<T, Rank, Args...> &tensor)
-    -> einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, const std::tuple<Args...> *> {
-    return einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, const std::tuple<Args...> *>(
+auto operator-(einsums::ArithmeticTensor<T, Rank, Args...> const &tensor)
+    -> einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, std::tuple<Args...> const *> {
+    return einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, std::tuple<Args...> const *>(
         std::make_tuple(einsums::detail::SubtractionOp(), tensor.get_tuple()), tensor.dims());
 }

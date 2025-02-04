@@ -30,7 +30,7 @@ operation to perform. Einsums is a package for scientific computing in C++. It i
 library that provides a multidimensional tensor object and an assortment of functions
 for fast operations on tensors, including mathematical functions, shape manipulation, tensor permutations,
 I/O, discrete Fourier transforms, basic linear algebra, and tensor algebra. It also provides
-an interface to Python. ...........................
+an interface to Python. ............................
 
 As a short example, the following call to :code:`einsum` will optimize at compile-time to a BLAS
 dgemm call:
