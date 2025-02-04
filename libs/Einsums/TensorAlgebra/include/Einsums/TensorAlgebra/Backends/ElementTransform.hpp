@@ -7,6 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
@@ -96,9 +97,9 @@ auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &
 
         sentinel_to_indices(item, index_strides, index);
 
-        T &target_value = std::apply(*C, index);
+        T &target_value = subscript_tensor(*C, index);
 
-        target_value = multi_opt(target_value, std::apply(tensors, index)...);
+        target_value = multi_opt(target_value, subscript_tensor(tensors, index)...);
     }
 }
 } // namespace einsums::tensor_algebra

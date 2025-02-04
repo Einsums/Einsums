@@ -8,6 +8,7 @@
 
 #    include <Einsums/Config.hpp>
 
+#    include <Einsums/Concepts/SubscriptChooser.hpp>
 #    include <Einsums/Concepts/Tensor.hpp>
 #    include <Einsums/LinearAlgebra.hpp>
 #    include <Einsums/Print.hpp>
@@ -593,7 +594,7 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
 
             sentinel_to_indices(item, index_strides, target_combination);
 
-            CDataType Cvalue{std::apply(*C, target_combination)};
+            CDataType Cvalue{subscript_tensor(*C, target_combination)};
             if constexpr (!IsComplexV<CDataType>) {
                 if (std::isnan(Cvalue)) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "NaN DETECTED!");
@@ -652,8 +653,8 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
 
             sentinel_to_indices(item, index_strides, target_combination);
 
-            CDataType Cvalue{std::apply(*C, target_combination)};
-            CDataType Ctest{std::apply(testC, target_combination)};
+            CDataType Cvalue{subscript_tensor(*C, target_combination)};
+            CDataType Ctest{subscript_tensor(testC, target_combination)};
 
             if constexpr (!IsComplexV<CDataType>) {
                 if (std::isnan(Cvalue) || std::isnan(Ctest)) {
