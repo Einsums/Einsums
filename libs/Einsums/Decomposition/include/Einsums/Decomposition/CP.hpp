@@ -11,6 +11,7 @@
 #include <Einsums/TensorAlgebra.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 namespace einsums::decomposition {
 
@@ -43,8 +44,8 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
     for (size_t elem = 0; elem < elements; elem++) {
         thread_local std::array<size_t, TRank> target_combination;
         sentinel_to_indices(elem, strides, target_combination);
-        TType const &source             = std::apply(tensor, target_combination);
-        TType       &target             = std::apply(weighted_tensor, target_combination);
+        TType const &source             = subscript_tensor(tensor, target_combination);
+        TType       &target             = weighted_tensor.data()[elem];
         TType const &scale              = weights(std::get<0>(target_combination));
 
         target = scale * source;
@@ -85,10 +86,10 @@ auto parafac_reconstruct(std::vector<Tensor<TType, 2>> const &factors) -> Tensor
         std::array<size_t, TRank> idx_combo;
         sentinel_to_indices(it, index_strides, idx_combo);
 
-        TType &target    = std::apply(new_tensor, idx_combo);
+        TType &target    = subscript_tensor(new_tensor, idx_combo);
         for (size_t r = 0; r < rank; r++) {
             double temp = 1.0;
-            for_sequence<TRank>([&](auto n) { temp *= factors[n](std::get<n>(idx_combo), r); });
+            for_sequence<TRank>([&](auto n) { temp *= subscript_tensor(factors[n], std::get<n>(idx_combo), r); });
             target += temp;
         }
     }

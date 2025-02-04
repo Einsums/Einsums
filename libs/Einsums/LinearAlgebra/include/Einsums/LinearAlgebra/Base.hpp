@@ -13,6 +13,7 @@
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 namespace einsums::linear_algebra::detail {
 
@@ -190,6 +191,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires !VectorConcept<AType>;
     }
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
+
     if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
         Dim<1> dim{1};
 
@@ -211,12 +214,11 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
             strides[i - 1] = strides[i] * dims[i];
         }
 
-        BiggestTypeT<typename AType::ValueType, typename BType::ValueType> out{0.0};
+        T out{0.0};
 
         for (size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
             sentinel_to_indices(sentinel, strides, index);
-
-            out += std::apply(A, index) * std::apply(B, index);
+            out += subscript_tensor(A, index) * subscript_tensor(B, index);
         }
 
         return out;
@@ -301,9 +303,9 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
             sentinel_to_indices(sentinel, strides, index);
 
             if constexpr (IsComplexV<AType>) {
-                out += std::conj(std::apply(A, index)) * std::apply(B, index);
+                out += std::conj(subscript_tensor(A, index)) * subscript_tensor(B, index);
             } else {
-                out += std::apply(A, index) * std::apply(B, index);
+                out += subscript_tensor(A, index) * subscript_tensor(B, index);
             }
         }
 
