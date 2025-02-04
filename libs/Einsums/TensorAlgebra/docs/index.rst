@@ -44,6 +44,12 @@ Public API
     :math:`C_{abc\cdots} = \alpha C_{abc\cdots} + \beta A_{cba\cdots}`, where the original value of the output tensor is
     scaled and added back into the output.
 
+    .. note::
+
+        This function uses HPTT to perform the tensor transpositions. However, HPTT does not work with :cpp:class:`TensorView`s.
+        You may see slowdowns if you use this with :cpp:class:`TensorView`s, though we are trying to improve this. The best bet
+        will probably be to copy the tensor view to a :cpp:class:`Tensor` first, then permute the elements.
+
 .. cpp:function:: template<typename... Args> sort(Args &&... args)
 
     This is the old version of :cpp:func:`permute`. It may be used for something completely different in the future.
