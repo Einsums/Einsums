@@ -33,6 +33,12 @@ struct StringLiteral {
     std::array<char, N> _arr{};
 };
 
+/**
+ * @brief Direct equality comparison between two string literals.
+ *
+ * @param _first The first string.
+ * @param _second The second string
+ */
 template <size_t N1, size_t N2>
 constexpr bool operator==(StringLiteral<N1> const &_first, StringLiteral<N2> const &_second) {
     if constexpr (N1 != N2) {
@@ -41,6 +47,12 @@ constexpr bool operator==(StringLiteral<N1> const &_first, StringLiteral<N2> con
     return _first.string_view() == _second.string_view();
 }
 
+/**
+ * @brief Direct inequality comparison between two string literals.
+ *
+ * @param _first The first string.
+ * @param _second The second string
+ */
 template <size_t N1, size_t N2>
 constexpr bool operator!=(StringLiteral<N1> const &_first, StringLiteral<N2> const &_second) {
     return !(_first == _second);
