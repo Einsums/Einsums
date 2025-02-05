@@ -36,6 +36,9 @@ namespace einsums {
  */
 template <std ::size_t Rank>
 struct Dim : std ::array<std ::int64_t, Rank> {
+    /**
+     * @brief Aggregate constructor.
+     */
     template <typename... Args>
     constexpr explicit Dim(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
 };
@@ -47,6 +50,9 @@ struct Dim : std ::array<std ::int64_t, Rank> {
  */
 template <std ::size_t Rank>
 struct Stride : std ::array<std ::int64_t, Rank> {
+    /**
+     * @brief Aggregate constructor.
+     */
     template <typename... Args>
     constexpr explicit Stride(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
 };
@@ -58,6 +64,9 @@ struct Stride : std ::array<std ::int64_t, Rank> {
  */
 template <std ::size_t Rank>
 struct Offset : std ::array<std ::int64_t, Rank> {
+    /**
+     * @brief Aggregate constructor.
+     */
     template <typename... Args>
     constexpr explicit Offset(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
 };
@@ -69,6 +78,9 @@ struct Offset : std ::array<std ::int64_t, Rank> {
  */
 template <std ::size_t Rank>
 struct Count : std ::array<std ::int64_t, Rank> {
+    /**
+     * @brief Aggregate constructor.
+     */
     template <typename... Args>
     constexpr explicit Count(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
 };
@@ -80,6 +92,9 @@ struct Count : std ::array<std ::int64_t, Rank> {
  */
 template <std ::size_t Rank>
 struct Chunk : std ::array<std ::int64_t, Rank> {
+    /**
+     * @brief Aggregate constructor.
+     */
     template <typename... Args>
     constexpr explicit Chunk(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
 };

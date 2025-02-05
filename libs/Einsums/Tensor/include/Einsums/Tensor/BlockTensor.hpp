@@ -42,9 +42,26 @@ namespace tensor_base {
 template <typename T, size_t rank, typename TensorType>
 struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std::recursive_mutex>, AlgebraOptimizedTensor {
   public:
-    using StoredType             = TensorType;
+    /**
+     * @typedef StoredType
+     *
+     * @brief The kind of tensor that is used by this structured tensor to store data.
+     */
+    using StoredType = TensorType;
+
+    /**
+     * @property Rank
+     *
+     * @brief The rank of the tensor.
+     */
     constexpr static size_t Rank = rank;
-    using ValueType              = T;
+
+    /**
+     * @typedef ValueType
+     *
+     * @brief The type of data stored in the tensor.
+     */
+    using ValueType = T;
 
     /**
      * @name Constructors
@@ -938,10 +955,19 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      */
     [[nodiscard]] bool full_view_of_underlying() const noexcept { return true; }
 
+    /**
+     * @brief Lock the tensor.
+     */
     void lock() const { Lockable::lock(); }
 
+    /**
+     * @brief Unlock the tensor.
+     */
     void unlock() const { Lockable::unlock(); }
 
+    /**
+     * @brief Try to lock the tensor, returning true if successful.
+     */
     bool try_lock() const { return Lockable::try_lock(); }
 
     /**

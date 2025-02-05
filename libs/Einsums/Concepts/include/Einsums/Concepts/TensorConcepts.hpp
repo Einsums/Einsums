@@ -1317,8 +1317,10 @@ using ValueTypeT = typename ValueType<D>::type;
 template <typename D>
 constexpr size_t TensorRank = 0;
 
+#ifndef DOXYGEN
 template <TensorConcept D>
 constexpr size_t TensorRank<D> = D::Rank;
+#endif
 
 /**
  * @struct BiggestType
