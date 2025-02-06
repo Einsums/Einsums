@@ -25,7 +25,7 @@ void create_K(double *__restrict__ K, double const *__restrict__ D, double const
             K[i * norbs + j] = 0.0;
             for (size_t k = 0; k < norbs; k++) {
                 for (size_t l = 0; l < norbs; l++) {
-                    K[i * norbs + j] -= D[k * norbs + l] * TEI[norbs * (norbs * (norbs * i + l) + k) + j];
+                    K[i * norbs + j] -= D[k * norbs + l] * TEI[norbs * (norbs * (norbs * i + k) + j) + l];
                 }
             }
         }
@@ -41,12 +41,7 @@ void create_G(double *__restrict__ G, double const *__restrict__ J, double const
 }
 
 void create_J_omp(double *__restrict__ J, double const *__restrict__ D, double const *__restrict__ TEI, size_t norbs) {
-#pragma omp parallel for simd collapse(2)
-    for (size_t i = 0; i < norbs; i++) {
-        for (size_t j = 0; j < norbs; j++) {
-            J[i * norbs + j] = 0.0;
-        }
-    }
+    memset(J, 0, norbs * sizeof(double));
 
 #pragma omp parallel for simd collapse(4)
     for (size_t i = 0; i < norbs; i++) {
@@ -61,19 +56,14 @@ void create_J_omp(double *__restrict__ J, double const *__restrict__ D, double c
 }
 
 void create_K_omp(double *__restrict__ K, double const *__restrict__ D, double const *__restrict__ TEI, size_t norbs) {
-#pragma omp parallel for simd collapse(2)
-    for (size_t i = 0; i < norbs; i++) {
-        for (size_t j = 0; j < norbs; j++) {
-            K[i * norbs + j] = 0.0;
-        }
-    }
+    memset(K, 0, norbs * sizeof(double));
 
 #pragma omp parallel for simd collapse(4)
     for (size_t i = 0; i < norbs; i++) {
         for (size_t j = 0; j < norbs; j++) {
             for (size_t k = 0; k < norbs; k++) {
                 for (size_t l = 0; l < norbs; l++) {
-                    K[i * norbs + j] += 2 * D[k * norbs + l] * TEI[norbs * (norbs * (norbs * i + l) + k) + j];
+                    K[i * norbs + j] += 2 * D[k * norbs + l] * TEI[norbs * (norbs * (norbs * i + k) + j) + l];
                 }
             }
         }
@@ -92,7 +82,6 @@ void create_G_omp(double *__restrict__ G, double const *__restrict__ J, double c
 double mean(double const *__restrict__ values, size_t num_values) {
     double out = 0;
 
-#pragma omp parallel for simd reduction(+ : out)
     for (size_t i = 0; i < num_values; i++) {
         out += values[i];
     }
@@ -103,7 +92,6 @@ double mean(double const *__restrict__ values, size_t num_values) {
 double variance(double const *__restrict__ values, size_t num_values, double mean) {
     double out = 0;
 
-#pragma omp parallel for simd reduction(+ : out)
     for (size_t i = 0; i < num_values; i++) {
         out += (values[i] - mean) * (values[i] - mean);
     }
@@ -222,13 +210,11 @@ int main(int argc, char **argv) {
     TEI       = calloc(norbs * norbs * norbs * norbs, sizeof(double));
 
 // Set up the density matrix.
-#pragma omp parallel for
     for (size_t i = 0; i < norbs * norbs; i++) {
         D[i] = random_double();
     }
 
 // Set up the TEI matrix.
-#pragma omp parallel for
     for (size_t i = 0; i < norbs * norbs * norbs * norbs; i++) {
         TEI[i] = random_double();
     }
@@ -260,9 +246,10 @@ int main(int argc, char **argv) {
     double K_mean   = mean(times_K, trials);
     double G_mean   = mean(times_G, trials);
     double tot_mean = mean(times_tot, trials);
-    printf("Non-omp times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, stdev %lf s\n", J_mean,
-           stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean), tot_mean,
-           stdev(times_tot, trials, tot_mean));
+    printf(
+        "Non-omp times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, stdev %lf s\n",
+        J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean), tot_mean,
+        stdev(times_tot, trials, tot_mean));
 
     // Calculate the OMP times.
     for (int i = 0; i < trials; i++) {
@@ -291,8 +278,8 @@ int main(int argc, char **argv) {
     K_mean   = mean(times_K, trials);
     G_mean   = mean(times_G, trials);
     tot_mean = mean(times_tot, trials);
-    printf("omp times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, stdev %lf s\n", J_mean,
-           stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean), tot_mean,
+    printf("omp times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, stdev %lf s\n",
+           J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean), tot_mean,
            stdev(times_tot, trials, tot_mean));
 
     free(J);
