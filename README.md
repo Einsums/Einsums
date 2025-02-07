@@ -84,7 +84,7 @@ Einsums with a permutation of the two-electron integrals, using a selected algor
 
 The following shows the difference in overall performance as the number of orbitals increases.
 
-![einsums Growth](/images/Performace_comp.png)
+![einsums Growth](/images/Performance_comp.png)
 
 These timings were computed on a system with  an Intel Core i7-13700K with 32 GB of DDR5 RAM and an
 AMD Radeon 7900X graphics card running Debian 12, kernel version 6.1.
