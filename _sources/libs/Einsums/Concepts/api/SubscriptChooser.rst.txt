@@ -5,21 +5,16 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _modules_Einsums_Concepts_api:
+.. _modules_Einsums_Einsums/Concepts/SubscriptChooser.hpp_api:
 
 -------------------------------------------------------------------------------
-Einsums
+Einsums/Concepts/SubscriptChooser.hpp
 -------------------------------------------------------------------------------
+
+Defined in header .
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
-
-.. toctree::
-   :maxdepth: 1
-
-   /libs/Einsums/Concepts/api/Complex.rst
-   /libs/Einsums/Concepts/api/SmartPointer.rst
-   /libs/Einsums/Concepts/api/File.rst
-   /libs/Einsums/Concepts/api/SubscriptChooser.rst
-   /libs/Einsums/Concepts/api/Tensor.rst
+.. autodoxygenfile:: Einsums/Concepts/SubscriptChooser.hpp
+   :project: Concepts
