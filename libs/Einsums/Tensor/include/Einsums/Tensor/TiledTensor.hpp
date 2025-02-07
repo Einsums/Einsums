@@ -14,6 +14,7 @@
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/HashFunctions.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 #include <string>
 
@@ -408,7 +409,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     T operator()(MultiIndex... index) const {
         auto coords = tile_of(index...);
 
-        auto array_ind = std::array<int, Rank>{static_cast<int>(index)...};
+        auto array_ind = std::array<int64_t, Rank>{static_cast<int64_t>(index)...};
 
         // Find the index in the tile.
         for (int i = 0; i < Rank; i++) {
@@ -419,7 +420,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         }
 
         if (has_tile(coords)) {
-            return std::apply(tile(coords), array_ind);
+            return subscript_tensor(tile(coords), array_ind);
         } else {
             return T{0.0};
         }
@@ -436,7 +437,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     T &operator()(MultiIndex... index) {
         auto coords = tile_of(index...);
 
-        auto array_ind = std::array<int, Rank>{static_cast<int>(index)...};
+        auto array_ind = std::array<int64_t, Rank>{static_cast<int64_t>(index)...};
 
         // Find the index in the tile.
         for (int i = 0; i < Rank; i++) {
@@ -447,7 +448,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         }
         auto &out = tile(coords);
 
-        return std::apply(out, array_ind);
+        return subscript_tensor(out, array_ind);
     }
 
     template <typename Container>
@@ -481,7 +482,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         }
 
         if (has_tile(coords)) {
-            return std::apply(tile(coords), array_ind);
+            return subscript_tensor(tile(coords), array_ind);
         } else {
             return T{0.0};
         }
@@ -518,7 +519,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         }
         auto &out = tile(coords);
 
-        return std::apply(out, array_ind);
+        return subscript_tensor(out, array_ind);
     }
 
     /**
@@ -1092,7 +1093,7 @@ struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsum
         }
 
         if (this->has_tile(coords)) {
-            return std::apply(this->tile(coords), array_ind);
+            return subscript_tensor(this->tile(coords), array_ind);
         } else {
             return T{0};
         }
@@ -1120,7 +1121,7 @@ struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsum
         }
         auto &out = this->tile(coords);
 
-        return std::apply(out, array_ind);
+        return subscript_tensor(out, array_ind);
     }
 
     template <typename int_type>
@@ -1218,7 +1219,7 @@ struct TiledDeviceTensorView final : public tensor_base::TiledTensor<T, Rank, De
         }
 
         if (this->has_tile(coords)) {
-            return std::apply(this->tile(coords), array_ind);
+            return subscript_tensor(this->tile(coords), array_ind);
         } else {
             return T{0};
         }
@@ -1246,7 +1247,7 @@ struct TiledDeviceTensorView final : public tensor_base::TiledTensor<T, Rank, De
         }
         auto &out = this->tile(coords);
 
-        return std::apply(out, array_ind);
+        return subscript_tensor(out, array_ind);
     }
 
     template <typename int_type>

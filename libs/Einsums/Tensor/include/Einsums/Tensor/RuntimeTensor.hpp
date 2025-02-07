@@ -10,6 +10,7 @@
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <hip/hip_common.h>
@@ -380,7 +381,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 
             einsums::sentinel_to_indices(sentinel, _strides, index);
 
-            _data[sentinel] = (T)std::apply(other, index);
+            _data[sentinel] = (T)subscript_tensor(other, index);
         }
 
         return *this;
@@ -1109,7 +1110,7 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
                 hold %= _index_strides[i];
             }
 
-            _data[ord] = std::apply(other, index);
+            _data[ord] = subscript_tensor(other, index);
         }
 
         return *this;
@@ -1138,7 +1139,7 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
                 hold %= _index_strides[i];
             }
 
-            _data[ord] = std::apply(other, index);
+            _data[ord] = subscript_tensor(other, index);
         }
 
         return *this;

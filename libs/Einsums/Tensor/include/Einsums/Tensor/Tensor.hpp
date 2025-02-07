@@ -23,6 +23,7 @@
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
 #include <Einsums/Utilities/Tuple.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 #include <algorithm>
 #include <array>
@@ -218,7 +219,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param other The tensor view to copy.
      */
-    Tensor(TensorView<T, rank> const &other) : _name{other._name}, _dims{other._dims} {
+    Tensor(TensorView<T, rank> const &other) : _name{other.name()}, _dims{other.dims()} {
         size_t size = dims_to_strides(_dims, _strides);
 
         // Resize the data structure
@@ -229,7 +230,8 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             thread_local std::array<size_t, Rank> index;
 
             sentinel_to_indices(sentinel, _strides, index);
-            std::apply(*this, index) = std::apply(other, index);
+
+            _data[sentinel] = subscript_tensor(other, index);
         }
     }
 
@@ -680,11 +682,9 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
 
         size_t size = this->size();
 
-        // EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < size; sentinel++) {
-            thread_local std::array<size_t, Rank> index;
-            sentinel_to_indices(sentinel, index);
-            std::apply(*this, index) = std::apply(other, index);
+            _data[sentinel] = other.data()[sentinel];
         }
 
         return *this;
@@ -706,7 +706,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         for (size_t sentinel = 0; sentinel < size; sentinel++) {
             thread_local std::array<size_t, Rank> index;
             sentinel_to_indices(sentinel, index);
-            std::apply(*this, index) = std::apply(other, index);
+            _data[sentinel] = subscript_tensor(other, index);
         }
 
         return *this;
@@ -723,7 +723,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         for (size_t sentinel = 0; sentinel < size; sentinel++) {
             thread_local std::array<size_t, Rank> index;
             sentinel_to_indices(sentinel, index);
-            std::apply(*this, index) = std::apply(other, index);
+            _data[sentinel] = other.subscript(index);
         }
 
         return *this;

@@ -47,7 +47,7 @@ constexpr inline bool IsTensorV = requires(D tensor) {
     { tensor.name() } -> std::convertible_to<std::string>;
     tensor.dim(std::declval<int>());
     tensor.dims();
-    typename D::ValueType;
+    typename std::remove_cvref_t<D>::ValueType;
 };
 
 /**
@@ -60,8 +60,8 @@ constexpr inline bool IsTensorV = requires(D tensor) {
  */
 template <typename D, typename T>
 constexpr inline bool IsTypedTensorV = requires {
-    typename D::ValueType;
-    requires std::is_same_v<typename D::ValueType, T>;
+    typename std::remove_cvref_t<D>::ValueType;
+    requires std::is_same_v<typename std::remove_cvref_t<D>::ValueType, T>;
 };
 
 /**
@@ -74,8 +74,8 @@ constexpr inline bool IsTypedTensorV = requires {
  */
 template <typename D, ptrdiff_t Rank = -1>
 constexpr inline bool IsRankTensorV = requires {
-    D::Rank;
-    requires(Rank == -1) || (Rank == D::Rank);
+    std::remove_cvref_t<D>::Rank;
+    requires(Rank == -1) || (Rank == std::remove_cvref_t<D>::Rank);
 };
 
 /**
@@ -202,7 +202,7 @@ constexpr inline bool IsTensorViewV = requires { typename D::underlying_type; };
 template <typename D, typename Viewed>
 constexpr inline bool IsViewOfV = requires {
     requires IsTensorViewV<D>;
-    requires std::is_same_v<typename D::underlying_type, Viewed>;
+    requires std::is_same_v<typename std::remove_cvref_t<D>::underlying_type, Viewed>;
 };
 
 /**
@@ -233,8 +233,8 @@ constexpr inline bool IsBasicTensorV = requires(D tensor) {
  */
 template <typename D, typename stored_type = void>
 constexpr inline bool IsCollectedTensorV = requires {
-    typename D::StoredType;
-    requires std::is_same_v<stored_type, void> || std::is_same_v<stored_type, typename D::StoredType>;
+    typename std::remove_cvref_t<D>::StoredType;
+    requires std::is_void_v<stored_type> || std::is_same_v<stored_type, typename std::remove_cvref_t<D>::StoredType>;
 };
 
 /**
@@ -250,8 +250,8 @@ constexpr inline bool IsCollectedTensorV = requires {
  */
 template <typename D, typename StoredType = void>
 constexpr inline bool IsTiledTensorV = requires {
-    requires std::is_base_of_v<einsums::tensor_base::TiledTensorNoExtra, D>;
-    requires std::is_same_v<StoredType, void> || std::is_same_v<typename D::StoredType, StoredType>;
+    requires std::is_base_of_v<einsums::tensor_base::TiledTensorNoExtra, std::remove_cvref_t<D>>;
+    requires std::is_void_v<StoredType> || std::is_same_v<typename std::remove_cvref_t<D>::StoredType, StoredType>;
 };
 
 /**
@@ -267,8 +267,8 @@ constexpr inline bool IsTiledTensorV = requires {
  */
 template <typename D, typename StoredType = void>
 constexpr inline bool IsBlockTensorV = requires {
-    requires std::is_base_of_v<einsums::tensor_base::BlockTensorNoExtra, D>;
-    requires std::is_same_v<StoredType, void> || std::is_same_v<typename D::StoredType, StoredType>;
+    requires std::is_base_of_v<einsums::tensor_base::BlockTensorNoExtra, std::remove_cvref_t<D>>;
+    requires std::is_void_v<StoredType> || std::is_same_v<typename std::remove_cvref_t<D>::StoredType, StoredType>;
 };
 
 namespace detail {
@@ -322,7 +322,7 @@ constexpr bool test_fastsubscript(std::index_sequence<ints...> const &) {
  */
 template <typename D>
 constexpr inline bool IsFunctionTensorV = requires {
-    requires detail::test_application<D>(std::make_index_sequence<D::Rank>());
+    requires detail::test_application<D>(std::make_index_sequence<std::remove_cvref_t<D>::Rank>());
     requires IsRankTensorV<D>;
 };
 
@@ -337,7 +337,7 @@ constexpr inline bool IsFunctionTensorV = requires {
  */
 template <typename D>
 constexpr inline bool IsFastSubscriptableV = requires {
-    requires detail::test_fastsubscript<D>(std::make_index_sequence<D::Rank>());
+    requires detail::test_fastsubscript<D>(std::make_index_sequence<std::remove_cvref_t<D>::Rank>());
     requires IsRankTensorV<D>;
 };
 

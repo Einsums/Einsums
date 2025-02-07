@@ -10,9 +10,10 @@
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 #include <cstdint>
-#include "Einsums/Config/CompilerSpecific.hpp"
+#include <Einsums/Config/CompilerSpecific.hpp>
 
 namespace einsums::linear_algebra::detail {
 
@@ -48,7 +49,7 @@ auto dot(AType const &A, BType const &B) -> Result {
             quotient %= strides[i];
         }
 
-        out += (Result)std::apply(A, index) * (Result)std::apply(B, index);
+        out += (Result)subscript_tensor(A, index) * (Result)subscript_tensor(B, index);
     }
 
     return out;
@@ -88,9 +89,9 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
         }
 
         if constexpr (IsComplexV<typename AType::ValueType>) {
-            out += (T)std::conj(std::apply(A, index)) * (T)std::apply(B, index);
+            out += (T)std::conj(subscript_tensor(A, index)) * (T)subscript_tensor(B, index);
         } else {
-            out += (T)std::apply(A, index) * (T)std::apply(B, index);
+            out += (T)subscript_tensor(A, index) * (T)subscript_tensor(B, index);
         }
     }
 
@@ -226,7 +227,7 @@ void direct_product(U alpha, AType const &A, BType const &B, U, CType *C) {
             quotient %= strides[i];
         }
 
-        std::apply(*C, index) = alpha * std::apply(A, index) * std::apply(B, index);
+        subscript_tensor(*C, index) = alpha * subscript_tensor(A, index) * subscript_tensor(B, index);
     }
 }
 
@@ -271,7 +272,7 @@ void scale(typename AType::ValueType alpha, AType *A) {
             index[i] = quotient / strides[i];
             quotient %= strides[i];
         }
-        std::apply(*A, index) *= alpha;
+        subscript_tensor(*A, index) *= alpha;
     }
 }
 

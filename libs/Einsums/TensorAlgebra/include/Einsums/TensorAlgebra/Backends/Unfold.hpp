@@ -7,6 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
@@ -94,15 +95,15 @@ Tensor<T, 2> unfold(CType<T, CRank> const &source) {
     auto source_dims = detail::get_dim_for(source, source_position_in_source);
 
     std::array<size_t, std::tuple_size_v<decltype(link_dims)>> link_strides;
-    size_t link_elems = dims_to_strides(link_dims, link_strides);
+    size_t                                                     link_elems = dims_to_strides(link_dims, link_strides);
 
     Stride<std::tuple_size_v<decltype(source_dims)>> source_strides;
-    size_t source_elems = dims_to_strides(source_dims, source_strides);
+    size_t                                           source_elems = dims_to_strides(source_dims, source_strides);
 
-    #pragma omp parallel for collapse(2)
+#pragma omp parallel for collapse(2)
     for (size_t link_item = 0; link_item < link_elems; link_item++) {
         for (size_t source_item = 0; source_item < source_elems; source_item++) {
-            thread_local std::array<uint64_t, 2> link_it;
+            thread_local std::array<uint64_t, 2>                                        link_it;
             thread_local std::array<uint64_t, std::tuple_size_v<decltype(source_dims)>> source_it;
             sentinel_to_indices(link_item, link_strides, link_it);
             sentinel_to_indices(source_item, source_strides, source_it);
@@ -112,14 +113,7 @@ Tensor<T, 2> unfold(CType<T, CRank> const &source) {
             auto source_order =
                 detail::construct_indices(source_indices, source_it, source_position_in_source, link_it, link_position_in_source);
 
-            T source_value;
-
-            if constexpr (IsFastSubscriptableV<CType<T, CRank>>) {
-                source_value = source.subscript(source_order);
-            } else {
-                source_value = std::apply(source, source_order);
-            }
-
+            T source_value                 = subscript_tensor(source, source_order);
             target.subscript(target_order) = source_value;
         }
     }

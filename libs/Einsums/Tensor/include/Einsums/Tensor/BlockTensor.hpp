@@ -24,6 +24,7 @@
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/Tensor/DeviceTensor.hpp>
 #endif
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 
@@ -513,7 +514,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
             }
         }
 
-        return std::apply(_blocks.at(block), index_list);
+        return subscript_tensor(_blocks.at(block), index_list);
     }
 
     /**
@@ -576,7 +577,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
             }
         }
 
-        return std::apply(_blocks.at(block), index_list);
+        return subscript_tensor(_blocks.at(block), index_list);
     }
 
     /**
@@ -629,7 +630,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
             }
         }
 
-        return std::apply(_blocks.at(block), index_list);
+        return subscript_tensor(_blocks.at(block), index_list);
     }
 
     /**
@@ -1467,7 +1468,7 @@ struct BlockDeviceTensor : public tensor_base::BlockTensor<T, Rank, einsums::Dev
             }
         }
 
-        return std::apply(this->_blocks.at(block), index_list);
+        return subscript_tensor(this->_blocks.at(block), index_list);
     }
 };
 #endif
