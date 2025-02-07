@@ -2004,7 +2004,7 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
 #    endif
 
                 Stride<Rank - 1> index_strides;
-                size_t           elements = dims_to_strides(einsums::slice_array<Rank - 1>(A.data()), index_strides);
+                size_t           elements = dims_to_strides(einsums::slice_array<Rank - 1>(A.dims()), index_strides);
 
                 auto final_dim = A.dim(Rank - 1);
                 auto ndigits   = detail::ndigits(final_dim);
@@ -2026,7 +2026,7 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
                                 oss << fmt::format("{:<14}",
                                                    fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
                         }
-                        auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
+                        auto new_tuple = std::tuple_cat(target_combination, std::tuple(j));
                         T    value     = std::apply(A, new_tuple);
                         if (std::abs(value) > 1.0E+10) {
                             if constexpr (std::is_floating_point_v<T>)
