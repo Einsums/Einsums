@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <type_traits>
 
 namespace einsums {
