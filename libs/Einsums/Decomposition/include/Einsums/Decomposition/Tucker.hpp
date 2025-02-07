@@ -10,8 +10,8 @@
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra.hpp>
 #include <Einsums/TensorBase/Common.hpp>
-
-#include "Einsums/TensorBase/IndexUtilities.hpp"
+#include <Einsums/TensorBase/IndexUtilities.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 namespace einsums::decomposition {
 
@@ -45,8 +45,8 @@ auto tucker_reconstruct(TTensor const &g_tensor, std::vector<TensorLike<TTensor,
                 auto target_combination         = source_combination;
                 std::get<i>(target_combination) = n;
 
-                ValueTypeT<TTensor> &source = std::apply(*old_tensor_buffer, source_combination);
-                ValueTypeT<TTensor> &target = std::apply(*new_tensor_buffer, target_combination);
+                ValueTypeT<TTensor> &source = subscript_tensor(*old_tensor_buffer, source_combination);
+                ValueTypeT<TTensor> &target = subscript_tensor(*new_tensor_buffer, target_combination);
 
                 target += source * factors[i](n, std::get<i>(source_combination));
             }
@@ -142,8 +142,8 @@ auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, std::vector<size_t> &ran
                 auto target_combination         = source_combination;
                 std::get<i>(target_combination) = r;
 
-                TType &source = std::apply(*old_g_buffer, source_combination);
-                TType &target = std::apply(*new_g_buffer, target_combination);
+                TType &source = subscript_tensor(*old_g_buffer, source_combination);
+                TType &target = subscript_tensor(*new_g_buffer, target_combination);
 
                 target += source * factors[i](std::get<i>(source_combination), r);
             }
@@ -211,8 +211,8 @@ auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, std::vector<size_t> &rank
                             auto target_combination         = source_combination;
                             std::get<j>(target_combination) = r;
 
-                            TType &source = std::apply(*old_fold_buffer, source_combination);
-                            TType &target = std::apply(*new_fold_buffer, target_combination);
+                            TType &source = subscript_tensor(*old_fold_buffer, source_combination);
+                            TType &target = subscript_tensor(*new_fold_buffer, target_combination);
 
                             target += source * factors[j](std::get<j>(source_combination), r);
                         }
