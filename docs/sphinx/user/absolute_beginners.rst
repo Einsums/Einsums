@@ -87,6 +87,44 @@ you would type. Everything that is comment and has ``-->`` in front of it is pot
 ``-->`` should not be copied into your code and will cause a compile error
 if types or pasted into your code.
 
+Setting up a program
+====================
+
+To create a program using Einsums, you must initialize the library before you do anything with Einsums,
+and finalize it after you finish using Einsums.
+
+.. code:: C++
+
+    int main(int argc, char **argv) {
+        einsums::initialize(argc, argv);
+
+        // Your code here.
+
+        einsums::finalize();
+
+        return 0;
+    }
+
+In some cases, you may also need to wrap your code in OpenMP directives in order to improve performance. This is
+to avoid having to reinitialize the OpenMP environment every time Einsums needs to make a parallel call.
+
+.. code:: C++
+
+    int main(int argc, char **argv) {
+    #pragma omp parallel
+    {
+    #   pragma omp single
+        {
+            einsums::initialize(argc, argv);
+
+            // Your code here.
+
+            einsums::finalize();
+        }
+    }
+        return 0; // This needs to be outside. You can't return from within a parallel block.
+    }
+
 How to create a Tensor
 ======================
 

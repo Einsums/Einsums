@@ -186,111 +186,118 @@ double random_double() {
 }
 
 int main(int argc, char **argv) {
-    // Seed the random number generator.
-    struct timeval seed;
-    gettimeofday(&seed, NULL);
-    srand(seed.tv_sec ^ seed.tv_usec);
+#pragma omp parallel
+    {
+#pragma omp single
+        {
+            // Seed the random number generator.
+            struct timeval seed;
+            gettimeofday(&seed, NULL);
+            srand(seed.tv_sec ^ seed.tv_usec);
 
-    int norbs, trials;
+            int norbs, trials;
 
-    double *times_J, *times_K, *times_G, *times_tot, *J, *K, *G, *TEI, *D;
+            double *times_J, *times_K, *times_G, *times_tot, *J, *K, *G, *TEI, *D;
 
-    parse_args(argc, argv, &norbs, &trials);
+            parse_args(argc, argv, &norbs, &trials);
 
-    printf("Running %d trials with %d orbitals.\n", trials, norbs);
+            printf("Running %d trials with %d orbitals.\n", trials, norbs);
 
-    times_J   = calloc(trials, sizeof(double));
-    times_K   = calloc(trials, sizeof(double));
-    times_G   = calloc(trials, sizeof(double));
-    times_tot = calloc(trials, sizeof(double));
-    J         = calloc(norbs * norbs, sizeof(double));
-    K         = calloc(norbs * norbs, sizeof(double));
-    G         = calloc(norbs * norbs, sizeof(double));
-    D         = calloc(norbs * norbs, sizeof(double));
-    TEI       = calloc(norbs * norbs * norbs * norbs, sizeof(double));
+            times_J   = calloc(trials, sizeof(double));
+            times_K   = calloc(trials, sizeof(double));
+            times_G   = calloc(trials, sizeof(double));
+            times_tot = calloc(trials, sizeof(double));
+            J         = calloc(norbs * norbs, sizeof(double));
+            K         = calloc(norbs * norbs, sizeof(double));
+            G         = calloc(norbs * norbs, sizeof(double));
+            D         = calloc(norbs * norbs, sizeof(double));
+            TEI       = calloc(norbs * norbs * norbs * norbs, sizeof(double));
 
-// Set up the density matrix.
-    for (size_t i = 0; i < norbs * norbs; i++) {
-        D[i] = random_double();
+            // Set up the density matrix.
+            for (size_t i = 0; i < norbs * norbs; i++) {
+                D[i] = random_double();
+            }
+
+            // Set up the TEI matrix.
+            for (size_t i = 0; i < norbs * norbs * norbs * norbs; i++) {
+                TEI[i] = random_double();
+            }
+
+            // Calculate the times.
+            for (int i = 0; i < trials; i++) {
+                clock_t start = clock();
+
+                create_J(J, D, TEI, norbs);
+
+                clock_t J_time = clock();
+
+                create_K(K, D, TEI, norbs);
+
+                clock_t K_time = clock();
+
+                create_G(G, J, K, norbs);
+
+                clock_t G_time = clock();
+
+                times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
+                times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
+                times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
+                times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+            }
+
+            // Print the timing info.
+            double J_mean   = mean(times_J, trials);
+            double K_mean   = mean(times_K, trials);
+            double G_mean   = mean(times_G, trials);
+            double tot_mean = mean(times_tot, trials);
+            printf("Non-omp times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, "
+                   "stdev %lf s\n",
+                   J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean),
+                   tot_mean, stdev(times_tot, trials, tot_mean));
+
+            // Calculate the OMP times.
+            for (int i = 0; i < trials; i++) {
+                clock_t start = clock();
+
+                create_J_omp(J, D, TEI, norbs);
+
+                clock_t J_time = clock();
+
+                create_K_omp(K, D, TEI, norbs);
+
+                clock_t K_time = clock();
+
+                create_G_omp(G, J, K, norbs);
+
+                clock_t G_time = clock();
+
+                times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
+                times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
+                times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
+                times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+            }
+
+            // Print the timing info.
+            J_mean   = mean(times_J, trials);
+            K_mean   = mean(times_K, trials);
+            G_mean   = mean(times_G, trials);
+            tot_mean = mean(times_tot, trials);
+            printf("omp times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, stdev "
+                   "%lf s\n",
+                   J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean),
+                   tot_mean, stdev(times_tot, trials, tot_mean));
+
+            free(J);
+            free(K);
+            free(G);
+            free(D);
+            free(TEI);
+            free(times_J);
+            free(times_K);
+            free(times_G);
+            free(times_tot);
+        }
     }
-
-// Set up the TEI matrix.
-    for (size_t i = 0; i < norbs * norbs * norbs * norbs; i++) {
-        TEI[i] = random_double();
-    }
-
-    // Calculate the times.
-    for (int i = 0; i < trials; i++) {
-        clock_t start = clock();
-
-        create_J(J, D, TEI, norbs);
-
-        clock_t J_time = clock();
-
-        create_K(K, D, TEI, norbs);
-
-        clock_t K_time = clock();
-
-        create_G(G, J, K, norbs);
-
-        clock_t G_time = clock();
-
-        times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
-        times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
-        times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
-        times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
-    }
-
-    // Print the timing info.
-    double J_mean   = mean(times_J, trials);
-    double K_mean   = mean(times_K, trials);
-    double G_mean   = mean(times_G, trials);
-    double tot_mean = mean(times_tot, trials);
-    printf(
-        "Non-omp times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, stdev %lf s\n",
-        J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean), tot_mean,
-        stdev(times_tot, trials, tot_mean));
-
-    // Calculate the OMP times.
-    for (int i = 0; i < trials; i++) {
-        clock_t start = clock();
-
-        create_J_omp(J, D, TEI, norbs);
-
-        clock_t J_time = clock();
-
-        create_K_omp(K, D, TEI, norbs);
-
-        clock_t K_time = clock();
-
-        create_G_omp(G, J, K, norbs);
-
-        clock_t G_time = clock();
-
-        times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
-        times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
-        times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
-        times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
-    }
-
-    // Print the timing info.
-    J_mean   = mean(times_J, trials);
-    K_mean   = mean(times_K, trials);
-    G_mean   = mean(times_G, trials);
-    tot_mean = mean(times_tot, trials);
-    printf("omp times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, stdev %lf s\n",
-           J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean), tot_mean,
-           stdev(times_tot, trials, tot_mean));
-
-    free(J);
-    free(K);
-    free(G);
-    free(D);
-    free(TEI);
-    free(times_J);
-    free(times_K);
-    free(times_G);
-    free(times_tot);
 
     return 0;
 }
