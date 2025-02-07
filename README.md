@@ -73,7 +73,21 @@ void build_Fock_2e_einsum(Tensor<2> *F,
 }
 ```
 
+Here are some comparisons between different methods of building the Hartree-Fock G matrix out of the two-electron integrals and the density matrix.
+The first plot uses timings for 100 ortbitals using several methods: C for loops with compiler loop vectorization; C for loops with
+OpenMP loop vectorization and parallelization; Fortran do-concurrent loops; BLAS with a for loop for calculating the K matrix, gemv for the
+J matrix, and axpy for the G matrix; BLAS with a for loop to permute the two-electron integrals, then gemv for the J and K matrices
+and axpy for the G matrix; Einsums without permuting the two-electron integrals, using the generic algorithm for the K matrix; and
+Einsums with a permutation of the two-electron integrals, using a selected algorithm for the K matrix.
+
 ![einsum Performance](/images/Performance.png)
+
+The following shows the difference in overall performance as the number of orbitals increases.
+
+![einsums Growth](/images/Performace_comp.png)
+
+These timings were computed on a system with  an Intel Core i7-13700K with 32 GB of DDR5 RAM and an
+AMD Radeon 7900X graphics card running Debian 12, kernel version 6.1.
 
 W Intermediates in CCD
 ```C++
