@@ -11,6 +11,7 @@
 #include <Einsums/Logging.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 #include <cmath>
 #include <cstddef>
@@ -61,21 +62,9 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                                                                              link_combination, link_position_in_link);
 
             // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
+            ADataType A_value = subscript_tensor(A, A_order);
 
-            ADataType A_value;
-            BDataType B_value;
-
-            if constexpr (IsFastSubscriptableV<AType>) {
-                A_value = A.subscript(A_order);
-            } else {
-                A_value = std::apply(A, A_order);
-            }
-
-            if constexpr (IsFastSubscriptableV<BType>) {
-                B_value = B.subscript(B_order);
-            } else {
-                B_value = std::apply(B, B_order);
-            }
+            BDataType B_value = subscript_tensor(B, B_order);
 
             sum += AB_prefactor * A_value * B_value;
         }
@@ -92,7 +81,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
         Stride<sizeof...(LinkDims)> link_index_strides;
         size_t                      link_elements = dims_to_strides(link_dims, link_index_strides);
 
-//        EINSUMS_OMP_PARALLEL_FOR
+        //        EINSUMS_OMP_PARALLEL_FOR
         for (size_t item = 0; item < target_elements; item++) {
             thread_local std::array<int64_t, sizeof...(TargetDims)> target_combination;
             sentinel_to_indices(item, target_index_strides, target_combination);
@@ -117,20 +106,8 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                     B_indices, C_unique, target_combination, target_position_in_C, link_unique, link_combination, link_position_in_link);
 
                 // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
-
-                ADataType A_value;
-                BDataType B_value;
-                if constexpr (IsFastSubscriptableV<AType>) {
-                    A_value = A.subscript(A_order);
-                } else {
-                    A_value = std::apply(A, A_order);
-                }
-
-                if constexpr (IsFastSubscriptableV<BType>) {
-                    B_value = B.subscript(B_order);
-                } else {
-                    B_value = std::apply(B, B_order);
-                }
+                ADataType A_value = subscript_tensor(A, A_order);
+                BDataType B_value = subscript_tensor(B, B_order);
 
                 sum += AB_prefactor * A_value * B_value;
             }
@@ -143,7 +120,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                 target_value += sum;
             } else {
 
-                CDataType &target_value = std::apply(*C, C_order);
+                CDataType &target_value = subscript_tensor(*C, C_order);
                 if (C_prefactor == CDataType{0.0})
                     target_value = CDataType{0.0};
                 target_value *= C_prefactor;
@@ -179,19 +156,8 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                                                                              std::tuple<>(), std::tuple<>(), target_position_in_C);
 
             // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
-            ADataType A_value;
-            BDataType B_value;
-            if constexpr (IsFastSubscriptableV<AType>) {
-                A_value = A.subscript(A_order);
-            } else {
-                A_value = std::apply(A, A_order);
-            }
-
-            if constexpr (IsFastSubscriptableV<BType>) {
-                B_value = B.subscript(B_order);
-            } else {
-                B_value = std::apply(B, B_order);
-            }
+            ADataType A_value = subscript_tensor(A, A_order);
+            BDataType B_value = subscript_tensor(B, B_order);
 
             CDataType sum = AB_prefactor * A_value * B_value;
 
@@ -203,7 +169,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                 target_value += sum;
             } else {
 
-                CDataType &target_value = std::apply(*C, C_order);
+                CDataType &target_value = subscript_tensor(*C, C_order);
                 if (C_prefactor == CDataType{0.0})
                     target_value = CDataType{0.0};
                 target_value *= C_prefactor;

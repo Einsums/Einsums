@@ -14,6 +14,7 @@
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorBase/Common.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/TensorAlgebra/Backends/DevicePermute.hpp>
@@ -100,8 +101,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 
             auto A_order = detail::construct_indices(A_indices, index, target_position_in_A, index, target_position_in_A);
 
-            T &target_value = std::apply(*C, index);
-            T  A_value      = std::apply(A, A_order);
+            T &target_value = subscript_tensor(*C, index);
+            T  A_value      = subscript_tensor(A, A_order);
 
             target_value = C_prefactor * target_value + A_prefactor * A_value;
         }
