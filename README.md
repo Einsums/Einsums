@@ -74,6 +74,7 @@ void build_Fock_2e_einsum(Tensor<2> *F,
 ```
 
 Here are some comparisons between different methods of building the Hartree-Fock G matrix out of the two-electron integrals and the density matrix.
+The code for this is similar to the sample above.
 The first plot uses timings for 100 ortbitals using several methods: C for loops with compiler loop vectorization; C for loops with
 OpenMP loop vectorization and parallelization; Fortran do-concurrent loops; BLAS with a for loop for calculating the K matrix, gemv for the
 J matrix, and axpy for the G matrix; BLAS with a for loop to permute the two-electron integrals, then gemv for the J and K matrices
