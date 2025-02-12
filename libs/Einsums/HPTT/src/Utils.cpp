@@ -100,9 +100,9 @@ void getPrimeFactors(std::uint16_t n, std::list<std::uint16_t> &primeFactors) {
         return;
     }
 
-    int quotient = n;
+    uint16_t quotient = n;
 
-    for (size_t index = 0; index < SHORT_PRIMES; index++) {
+    for (uint8_t index = 0; index < SHORT_PRIMES; index++) {
         std::uint16_t prime = detail::short_primes[index];
         while (quotient % prime == 0) {
             quotient /= prime;
@@ -141,9 +141,9 @@ void getPrimeFactors(std::uint32_t n, std::list<std::uint32_t> &primeFactors) {
         return;
     }
 
-    int quotient = n;
+    uint32_t quotient = n;
 
-    for (size_t index = 0; index < INT_PRIMES; index++) {
+    for (uint16_t index = 0; index < INT_PRIMES; index++) {
         std::uint32_t prime = detail::int_primes[index];
         while (quotient % prime == 0) {
             quotient /= prime;
@@ -247,9 +247,9 @@ void getPrimeFactors(std::int16_t n, std::list<std::int16_t> &primeFactors) {
         return;
     }
 
-    int quotient = n;
+    int16_t quotient = n;
 
-    for (size_t index = 0; index < SHORT_PRIMES; index++) {
+    for (uint8_t index = 0; index < SHORT_PRIMES; index++) {
         std::int16_t prime = detail::short_primes[index];
         while (quotient % prime == 0) {
             quotient /= prime;
@@ -288,9 +288,9 @@ void getPrimeFactors(std::int32_t n, std::list<std::int32_t> &primeFactors) {
         return;
     }
 
-    int quotient = n;
+    int32_t quotient = n;
 
-    for (size_t index = 0; index < INT_PRIMES; index++) {
+    for (uint16_t index = 0; index < INT_PRIMES; index++) {
         std::int32_t prime = detail::int_primes[index];
         while (quotient % prime == 0) {
             quotient /= prime;
