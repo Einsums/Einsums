@@ -9,8 +9,11 @@ set(SPDLOG_INSTALL TRUE)
 set(SPDLOG_FMT_EXTERNAL TRUE)
 fetchcontent_declare(
   spdlog
-  GIT_REPOSITORY https://github.com/gabime/spdlog.git
-  GIT_TAG v1.x
-  FIND_PACKAGE_ARGS 1
+  URL https://github.com/gabime/spdlog/archive/refs/tags/v1.15.1.tar.gz
+  FIND_PACKAGE_ARGS 1.15
 )
+
+# Ensure the option is set before spdlog is configured
+set(SPDLOG_MSVC_UTF8 FALSE CACHE BOOL "Disable MSVC UTF-8 support in spdlog" FORCE)
+
 fetchcontent_makeavailable(spdlog)

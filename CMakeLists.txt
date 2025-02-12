@@ -474,10 +474,12 @@ get_property(
 )
 einsums_info("EINSUMS_LINALG_INT_INTERFACE ${EINSUMS_LINALG_INT_INTERFACE}")
 
-find_package(OpenMP REQUIRED MODULE COMPONENTS CXX)
-target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
-#einsums_info("OpenMP Version ${OpenMP_CXX_MAJOR_VERSION}")
-einsums_check_for_omp_tools_h(DEFINITIONS EINSUMS_HAVE_OMP_TOOLS_H)
+find_package(OpenMP  MODULE COMPONENTS CXX)
+if (TARGET OpenMP::OpenMP_CXX)
+  target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
+  #einsums_info("OpenMP Version ${OpenMP_CXX_MAJOR_VERSION}")
+  einsums_check_for_omp_tools_h(DEFINITIONS EINSUMS_HAVE_OMP_TOOLS_H)
+endif()
 
 # ##################################################################################################
 # C++ feature tests
@@ -514,13 +516,7 @@ if(MSVC)
   add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/EHsc>)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # For Clang and ClangCL
-  if(WIN32)
-    # ClangCL on Windows
-    add_compile_options(-fcxx-exceptions -fseh-exceptions)
-  else()
-    # Clang on macOS/Linux
-    add_compile_options(-fcxx-exceptions)
-  endif()
+  add_compile_options(-fcxx-exceptions)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   # For GCC (Linux/macOS)
   add_compile_options(-fexceptions)
