@@ -250,8 +250,8 @@ int main(int argc, char **argv) {
             double K_mean   = mean(times_K, trials);
             double G_mean   = mean(times_G, trials);
             double tot_mean = mean(times_tot, trials);
-            printf("Non-omp times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, "
-                   "stdev %lf s\n",
+            printf("Non-omp times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, "
+                   "stdev %lg s\n",
                    J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean),
                    tot_mean, stdev(times_tot, trials, tot_mean));
 
@@ -282,8 +282,8 @@ int main(int argc, char **argv) {
             K_mean   = mean(times_K, trials);
             G_mean   = mean(times_G, trials);
             tot_mean = mean(times_tot, trials);
-            printf("omp times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, stdev "
-                   "%lf s\n",
+            printf("omp times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, stdev "
+                   "%lg s\n",
                    J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean),
                    tot_mean, stdev(times_tot, trials, tot_mean));
 

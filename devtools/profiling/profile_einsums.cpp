@@ -167,8 +167,8 @@ int main(int argc, char **argv) {
             double K_mean   = mean(times_K);
             double G_mean   = mean(times_G);
             double tot_mean = mean(times_tot);
-            printf("einsums times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, "
-                   "stdev %lf s\n",
+            printf("einsums times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, "
+                   "stdev %lg s\n",
                    J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
                    stdev(times_tot, tot_mean));
 
@@ -208,9 +208,9 @@ int main(int argc, char **argv) {
             G_mean           = mean(times_G);
             tot_mean         = mean(times_tot);
             double sort_mean = mean(times_sort);
-            printf("sorted times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, "
-                   "stdev %lf "
-                   "s\ntotal: %lf s, stdev %lf s\n",
+            printf("sorted times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, "
+                   "stdev %lg "
+                   "s\ntotal: %lg s, stdev %lg s\n",
                    J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
                    stdev(times_tot, tot_mean));
 

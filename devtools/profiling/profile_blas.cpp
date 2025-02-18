@@ -137,6 +137,7 @@ void parse_args(int argc, char **argv, int *norbs, int *trials) {
 template<class Generator>
 void fill_random(std::vector<double> &buffer, Generator &generator) {
     std::uniform_real_distribution random_gen(-1.0, 1.0);
+    #pragma omp parallel for
     for(size_t i = 0; i < buffer.size(); i++){
         buffer[i] = random_gen(generator);
     }
@@ -189,7 +190,7 @@ int main(int argc, char **argv) {
     double G_mean   = mean(times_G);
     double tot_mean = mean(times_tot);
     printf(
-        "einsums times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, stdev %lf s\n",
+        "einsums times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, stdev %lg s\n",
         J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
         stdev(times_tot, tot_mean));
 
@@ -222,7 +223,7 @@ int main(int argc, char **argv) {
     K_mean   = mean(times_K);
     G_mean   = mean(times_G);
     tot_mean = mean(times_tot);
-    printf("sorted times:\nform J: %lf s, stdev %lf s\nform K: %lf s, stdev %lf s\nform G: %lf s, stdev %lf s\ntotal: %lf s, stdev %lf s\n",
+    printf("sorted times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, stdev %lg s\n",
            J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
            stdev(times_tot, tot_mean));
 
