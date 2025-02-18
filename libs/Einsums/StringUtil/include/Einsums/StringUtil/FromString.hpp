@@ -16,10 +16,17 @@ namespace einsums {
 /**
  * @struct from_string_impl
  *
- * @brief Converts a string from one kind to another.
+ * @brief Converts a string to a value.
  */
 template <typename T, typename Enable = void>
 struct from_string_impl {
+
+    /**
+     * @brief Performs the string conversion.
+     *
+     * @param value The string to read.
+     * @param target The output variable.
+     */
     template <typename Char>
     static void call(std::basic_string<Char> const &value, T &target) {
         std::basic_istringstream<Char> stream(value);

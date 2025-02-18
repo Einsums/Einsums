@@ -45,7 +45,7 @@ struct BlockDeviceTensor;
  * This class provides some functionality of a reference, but the data may actually be stored on the device.
  * Data is copied back and forth with each call.
  *
- * @note It is best to avoid needing this class, as a whole bunch of small memory transfers is very slow.
+ * @note It is best to avoid using this class, as a whole bunch of small memory transfers is very slow.
  */
 template <typename T>
 class HostDevReference {
@@ -325,7 +325,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * Constructs a new DeviceTensor object using the information provided in \p name and \p dims .
      *
      * @code
-     * auto A = DeviceTensor("A", 3, 3);
+     * auto A = DeviceTensor("A", detail::DEV_ONLY, 3, 3);
      * @endcode
      *
      * The newly constructed DeviceTensor is NOT zeroed out for you. If you start having NaN issues
@@ -333,6 +333,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
      * @param name Name of the new tensor.
+     * @param mode The storage mode of the tensor.
      * @param dims The dimensions of each rank of the tensor.
      */
     template <typename... Dims>
@@ -398,6 +399,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @brief Construct a new DeviceTensor object using the dimensions given by Dim object.
      *
      * @param dims The dimensions of the new tensor in Dim form.
+     * @param mode The storage mode of the tensor.
      */
     explicit DeviceTensor(Dim<rank> dims, detail::HostToDeviceMode mode = detail::DEV_ONLY);
 
@@ -1536,7 +1538,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
     /**
      * @brief Set every value in the tensor to the one passed to this method.
      *
-     * @param set_all The value to fill the tensor with.
+     * @param value The value to fill the tensor with.
      */
     void set_all(T const &value);
 
