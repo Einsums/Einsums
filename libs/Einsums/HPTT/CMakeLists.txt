@@ -17,10 +17,9 @@ set(HPTTHeaders
     Einsums/HPTT/Plan.hpp
     Einsums/HPTT/Transpose.hpp
     Einsums/HPTT/Utils.hpp
-    Einsums/HPTT/Primes.hpp
 )
 
-set(HPTTSources HPTT.cpp Plan.cpp Transpose.cpp Utils.cpp)
+set(HPTTSources HPTT.cpp Plan.cpp Transpose.cpp Utils.cpp Primes.hpp)
 
 include(Einsums_AddModule)
 einsums_add_module(

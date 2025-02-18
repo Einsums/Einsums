@@ -9,7 +9,8 @@
 HPTT
 ====
 
-Fork of the High-performance Tensor Transpose library.
+Fork of the High-performance Tensor Transpose library by Paul Springer. See the `Github repo <https://github.com/springer13/hptt>`_ for more information.
+See the file `THIRD-PARTY-LICENSES.txt` for licensing information.
 
 See the :ref:`API reference <modules_Einsums_HPTT_api>` of this module for more
 details.
