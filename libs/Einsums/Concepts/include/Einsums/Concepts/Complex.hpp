@@ -12,15 +12,18 @@
 
 namespace einsums {
 
-template <typename>
-inline constexpr bool IsComplexV = false;
-
 /**
  * @var IsComplexV
  *
  * @brief Tests whether a type is a complex type.
  *
  * @tparam T The type to test.
+ */
+template <typename>
+inline constexpr bool IsComplexV = false;
+
+/**
+ * @copydoc IsComplexV
  */
 template <typename T>
 inline constexpr bool IsComplexV<std::complex<T>> = std::is_floating_point_v<T>;

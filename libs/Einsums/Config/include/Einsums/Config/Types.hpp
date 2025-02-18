@@ -493,7 +493,7 @@ class ConfigMap : public std::enable_shared_from_this<ConfigMap<Value>> {
      * Normally, emplace may try to construct an object, even if insertion would fail. This version does not
      * try to construct the object if the insertion would fail.
      *
-     * @param Key The key to use for the placement.
+     * @param key The key to use for the placement.
      * @param args The arguments to pass to the constructor.
      *
      * @return A pair containing an iterator pointing to the element that was constructed, as well as a flag
@@ -510,7 +510,7 @@ class ConfigMap : public std::enable_shared_from_this<ConfigMap<Value>> {
      * Normally, emplace may try to construct an object, even if insertion would fail. This version does not
      * try to construct the object if the insertion would fail.
      *
-     * @param Key The key to use for the placement.
+     * @param key The key to use for the placement.
      * @param args The arguments to pass to the constructor.
      *
      * @return A pair containing an iterator pointing to the element that was constructed, as well as a flag

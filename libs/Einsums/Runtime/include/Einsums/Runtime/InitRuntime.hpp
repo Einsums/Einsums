@@ -44,6 +44,7 @@ struct InitParams {
 ///
 /// \param f entry point of the first task on the einsums runtime
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -53,6 +54,7 @@ EINSUMS_EXPORT int start(std::function<int()> f, std::vector<std::string> const 
 ///
 /// \param f entry point of the first task on the einsums runtime
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -62,6 +64,7 @@ EINSUMS_EXPORT int start(std::nullptr_t f, std::vector<std::string> const &argv,
 ///
 /// \param f entry point of the first task on the einsums runtime
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -71,6 +74,7 @@ EINSUMS_EXPORT int start(std::function<int(int, char **)> f, std::vector<std::st
 ///
 /// \param f entry point of the first task on the einsums runtime
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -81,6 +85,7 @@ EINSUMS_EXPORT int start(std::function<int(int, char const *const *)> f, std::ve
 ///
 /// \param f entry point of the first task on the einsums runtime
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -91,6 +96,7 @@ EINSUMS_EXPORT int start(std::function<int(std::vector<std::string> &)> f, std::
 ///
 /// \param f entry point of the first task on the einsums runtime
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -100,7 +106,9 @@ EINSUMS_EXPORT int start(std::function<int(std::vector<std::string> const &)> f,
 /// \brief Initialize the runtime and start a function.
 ///
 /// \param f entry point of the first task on the einsums runtime
+/// \param argc The number of command line arguments.
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -109,7 +117,9 @@ EINSUMS_EXPORT int start(std::function<int(int, char **)> f, int argc, char **ar
 /// \brief Initialize the runtime and start a function.
 ///
 /// \param f entry point of the first task on the einsums runtime
+/// \param argc The number of command line arguments.
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -119,7 +129,9 @@ EINSUMS_EXPORT int start(std::function<int(int, char const *const *)> f, int arg
 /// \brief Initialize the runtime and start a function.
 ///
 /// \param f entry point of the first task on the einsums runtime
+/// \param argc The number of arguments.
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -133,7 +145,9 @@ int start(Function &&f, int argc, char **argv, InitParams const &params = InitPa
 /// \brief Initialize the runtime and start a function.
 ///
 /// \param f entry point of the first task on the einsums runtime
+/// \param argc The number of command line arguments.
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -149,6 +163,7 @@ int start(Function &&f, int argc, char const *const *argv, InitParams const &par
 /// \param f entry point of the first task on the einsums runtime. f will be passed all non-einsums
 /// command line arguments.
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is stopped
@@ -159,6 +174,7 @@ EINSUMS_EXPORT void initialize(std::function<int(int, char **)> f, std::vector<s
 ///
 /// \param f entry point of the first task on the einsums runtime
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -169,6 +185,7 @@ EINSUMS_EXPORT void initialize(std::function<int(int, char const *const *)> f, s
 ///
 /// \param f entry point of the first task on the einsums runtime
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -176,8 +193,8 @@ EINSUMS_EXPORT void initialize(std::function<int()> f, std::vector<std::string> 
 
 /// \brief Initialize the runtime.
 ///
-/// \param f entry point of the first task on the einsums runtime
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -188,6 +205,7 @@ EINSUMS_EXPORT void initialize(std::nullptr_t, std::vector<std::string> const &a
 /// No task is created on the runtime.
 ///
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not initialized
@@ -198,7 +216,9 @@ inline void initialize(std::vector<std::string> const &argv, InitParams const &p
 /// \brief Initialize the runtime.
 ///
 /// \param f entry point of the first task on the einsums runtime
+/// \param argc The number of arguments.
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -207,7 +227,9 @@ EINSUMS_EXPORT void initialize(std::function<int(int, char **)> f, int argc, cha
 /// \brief Initialize the runtime.
 ///
 /// \param f entry point of the first task on the einsums runtime
+/// \param argc The number of arguments.
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -216,8 +238,9 @@ EINSUMS_EXPORT void initialize(std::function<int(int, char const *const *)> f, i
 
 /// \brief Initialize the runtime.
 ///
-/// \param f entry point of the first task on the einsums runtime
+/// \param argc The number of arguments.
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -226,7 +249,9 @@ EINSUMS_EXPORT void initialize(std::nullptr_t, int argc, char const *const *argv
 /// \brief Initialize the runtime.
 ///
 /// \param f entry point of the first task on the einsums runtime
+/// \param argc The number of arguments.
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -241,7 +266,9 @@ void initialize(Function &&f, int argc, char **argv, InitParams const &params = 
 /// \brief Initialize the runtime.
 ///
 /// \param f entry point of the first task on the einsums runtime
+/// \param argc The number of arguments.
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -255,8 +282,9 @@ void initialize(Function &&f, int argc, char const *const *argv, InitParams cons
 
 /// \brief Initialize the runtime.
 ///
-/// \param f entry point of the first task on the einsums runtime
+/// \param argc Then number of arguments.
 /// \param argv array of arguments. The first element is ignored.
+/// \param params The initialization parameters.
 ///
 /// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
 /// \pre the runtime is not running
@@ -265,11 +293,6 @@ inline void initialize(int argc, char const *const *argv, InitParams const &para
 }
 
 /// \brief Signal the runtime that it may be stopped.
-///
-/// Until \ref einsums::finalize() has been called, \ref einsums::stop() will not return. This
-/// function exists to distinguish between the runtime being idle but still expecting work to be
-/// scheduled on it and the runtime being idle and ready to be shutdown. Unlike \ref
-/// einsums::stop(), \ref einsums::finalize() can be called from within or outside the runtime.
 ///
 /// \pre the runtime is initialized
 EINSUMS_EXPORT int finalize();
