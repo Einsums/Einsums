@@ -186,7 +186,7 @@ void RuntimeConfiguration::parse_command_line(std::function<void(argparse::Argum
     }
 
     try {
-        argument_parser->parse_args(original);
+        argument_parser->parse_known_args(original);
     } catch (std::exception const &err) {
         std::cerr << err.what() << std::endl;
         std::cerr << argument_parser;

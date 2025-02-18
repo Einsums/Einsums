@@ -141,6 +141,10 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
                                       same_ordering_link_position_in_AB && same_ordering_target_position_in_CA &&
                                       !same_ordering_target_position_in_CB && std::tuple_size_v<decltype(B_target_position_in_C)> == 0 &&
                                       !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
+    constexpr auto is_gemv_possible_flip =
+        contiguous_link_position_in_A && contiguous_link_position_in_B && contiguous_target_position_in_B &&
+        same_ordering_link_position_in_AB && same_ordering_target_position_in_CB && !same_ordering_target_position_in_CA &&
+        std::tuple_size_v<decltype(A_target_position_in_C)> == 0 && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
 
     constexpr auto element_wise_multiplication =
         C_exactly_matches_A && C_exactly_matches_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
@@ -351,6 +355,60 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
             }
 
             return;
+        } else if constexpr (is_gemv_possible_flip) {
+            if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
+                // Fall through to generic algorithm.
+                goto generic_default;
+            }
+
+            constexpr bool transpose_B = std::get<1>(link_position_in_B) == 0;
+
+            Dim<2>    dB;
+            Dim<1>    dA, dC;
+            Stride<2> sB;
+            Stride<1> sA, sC;
+
+            dB[0] = product_dims(B_target_position_in_C, *C);
+            dB[1] = product_dims(link_position_in_B, B);
+            sB[0] = last_stride(target_position_in_B, B);
+            sB[1] = last_stride(link_position_in_B, B);
+            if constexpr (transpose_B) {
+                std::swap(dB[0], dB[1]);
+                std::swap(sB[0], sB[1]);
+            }
+
+            dA[0] = product_dims(link_position_in_A, A);
+            sA[0] = last_stride(link_position_in_A, A);
+
+            dC[0] = product_dims(B_target_position_in_C, *C);
+            sC[0] = last_stride(B_target_position_in_C, *C);
+
+#    ifdef EINSUMS_COMPUTE_CODE
+            std::conditional_t<IsIncoreTensorV<AType>, const TensorView<ADataType, 1>, const DeviceTensorView<ADataType, 2>> tA{
+                const_cast<AType &>(A), dA, sA};
+            std::conditional_t<IsIncoreTensorV<BType>, TensorView<BDataType, 2> const, DeviceTensorView<BDataType, 1> const> tB{
+                const_cast<BType &>(B), dB, sB};
+            std::conditional_t<IsIncoreTensorV<CType>, TensorView<CDataType, 1>, DeviceTensorView<CDataType, 1>> tC{*C, dC, sC};
+#    else
+            const TensorView<ADataType, 1> tA{const_cast<AType &>(A), dA, sA};
+            TensorView<BDataType, 2> const tB{const_cast<BType &>(B), dB, sB};
+            TensorView<CDataType, 1>       tC{*C, dC, sC};
+#    endif
+
+            // println(*C);
+            // println(tC);
+            // println(A);
+            // println(tA);
+            // println(B);
+            // println(tB);
+
+            if constexpr (transpose_B) {
+                linear_algebra::gemv<true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+            } else {
+                linear_algebra::gemv<false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+            }
+
+            return;
         }
         // To use a gemm the input tensors need to be at least rank 2
         else if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
@@ -509,6 +567,7 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                                            A.name(), A_indices, B.name(), B_indices, UC_prefactor, C->name(), C_indices)
                              : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, UAB_prefactor, A.name(),
                                            A_indices, B.name(), B_indices));
+        // look
         _section.reset(
             new Section(std::fabs(UC_prefactor) > EINSUMS_ZERO
                             ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
@@ -521,6 +580,7 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                 ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(),
                               B_indices, UC_prefactor, C_indices)
                 : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(), B_indices));
+        // look
         _section.reset(new Section(std::fabs(UC_prefactor) > EINSUMS_ZERO
                                        ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(),
                                                      A_indices, B.name(), B_indices, UC_prefactor, C_indices)
