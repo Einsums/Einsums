@@ -102,7 +102,7 @@ struct FunctionTensor : public CoreTensor {
      * @brief Create a new function tensor with the given name and dimensions.
      *
      * @param name The name of the tensor.
-     * @param args The dimensions of the tensor.
+     * @param dims The dimensions of the tensor.
      */
     template <typename... Args>
         requires requires {
@@ -290,7 +290,7 @@ struct FunctionTensor : public CoreTensor {
      *
      * Creates a view based on the indices, which can be ranges or single values.
      *
-     * @param inds The index to use for the subscript.
+     * @param index The index to use for the subscript.
      */
     template <typename... MultiIndex>
         requires NumOfType<Range, Rank, MultiIndex...>
@@ -436,7 +436,7 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
      *
      * @brief A list of the index offsets.
      */
-    Offset<rank>                                          _offsets;
+    Offset<rank> _offsets;
 
     /**
      * @property _index_template
@@ -446,14 +446,14 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
      * The template will contain negative values where indices need to be replaced. Non-negative values
      * will be left intact when being passed to the viewed tensor.
      */
-    std::array<int, UnderlyingRank>                       _index_template;
+    std::array<int, UnderlyingRank> _index_template;
 
     /**
      * @property _full_view
      *
      * @brief Determines whether the view sees all of the data of the underlying tensor.
      */
-    bool                                                  _full_view{true};
+    bool _full_view{true};
 
     /**
      * @brief Takes the input indices and applies the offsets and template to prepare it to be passed to the
@@ -505,8 +505,8 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
      * @param func_tens The underlying tensor that this object views.
      * @param offsets The offset for each axis in the view.
      * @param dims The dimensions of the view.
-     * @param index_template A template for the indices. It contains negative numbers where values should be filled in, and full indices where they
-     * have been explicitly specified.
+     * @param index_template A template for the indices. It contains negative numbers where values should be filled in, and full indices
+     * where they have been explicitly specified.
      */
     FunctionTensorView(std::string name, tensor_base::FunctionTensor<T, UnderlyingRank> *func_tens, Offset<Rank> const &offsets,
                        Dim<Rank> const &dims, std::array<int, UnderlyingRank> const &index_template)
@@ -537,8 +537,8 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
      * @param func_tens The underlying tensor that this object views.
      * @param offsets The offset for each axis in the view.
      * @param dims The dimensions of the view.
-     * @param index_template A template for the indices. It contains negative numbers where values should be filled in, and full indices where they
-     * have been explicitly specified.
+     * @param index_template A template for the indices. It contains negative numbers where values should be filled in, and full indices
+     * where they have been explicitly specified.
      */
     FunctionTensorView(tensor_base::FunctionTensor<T, UnderlyingRank> const *func_tens, Offset<Rank> const &offsets, Dim<Rank> const &dims,
                        std::array<int, UnderlyingRank> const &index_template)
@@ -578,15 +578,42 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
 template <typename T>
 struct KroneckerDelta {
   public:
+    /**
+     * @property Rank
+     *
+     * @brief The rank of the tensor.
+     */
     constexpr static size_t Rank = 2;
-    using ValueType              = T;
 
+    /**
+     * @typedef ValueType
+     *
+     * @brief The type of data returned by the tensor.
+     */
+    using ValueType = T;
+
+    /**
+     * Default constructs the tensor to have dimensions of zero.
+     */
     constexpr KroneckerDelta() : dim_{0} {}
 
+    /**
+     * @brief Construct a new Kronecker delta tensor with the specified dimension.
+     *
+     * @param dim The length of one side of the tensor. The Kronecker delta tensor is square, so this will be the same for both dimensions.
+     */
     constexpr KroneckerDelta(size_t dim) : dim_{dim} {}
 
     constexpr ~KroneckerDelta() = default;
 
+    /**
+     * @brief Compute the Kronecker delta.
+     *
+     * This just compares the indices. If the indices are the same, then it returns 1. Otherwise, it returns zero.
+     *
+     * @param i The first index.
+     * @param j The second index.
+     */
     template <typename T1, typename T2>
         requires(std::is_integral_v<T1> && std::is_integral_v<T2>)
     constexpr T operator()(T1 i, T2 j) const {
@@ -597,6 +624,13 @@ struct KroneckerDelta {
         }
     }
 
+    /**
+     * @brief Compute the Kronecker delta.
+     *
+     * This just compares the indices. If the indices are the same, then it returns 1. Otherwise, it returns zero.
+     *
+     * @param index The indices for the tensor.
+     */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
     constexpr T operator()(std::array<int_type, 2> const &index) const {
@@ -607,6 +641,14 @@ struct KroneckerDelta {
         }
     }
 
+    /**
+     * @brief Compute the Kronecker delta.
+     *
+     * This just compares the indices. If the indices are the same, then it returns 1. Otherwise, it returns zero.
+     *
+     * @param i The first index.
+     * @param j The second index.
+     */
     template <typename T1, typename T2>
         requires(std::is_integral_v<T1> && std::is_integral_v<T2>)
     constexpr T subscript(T1 i, T2 j) const {
@@ -617,6 +659,13 @@ struct KroneckerDelta {
         }
     }
 
+    /**
+     * @brief Compute the Kronecker delta.
+     *
+     * This just compares the indices. If the indices are the same, then it returns 1. Otherwise, it returns zero.
+     *
+     * @param index The indices for the tensor.
+     */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
     constexpr T subscript(std::array<int_type, 2> const &index) const {
@@ -627,15 +676,40 @@ struct KroneckerDelta {
         }
     }
 
+    /**
+     * @brief Returns the length of one side of the tensor.
+     *
+     * Because the tensor is square, the argument is ignored.
+     *
+     * @param i The axis to query. Ignored because the tensor is square.
+     */
     constexpr size_t dim(int i) const { return dim_; }
 
+    /**
+     * @brief Get the dimensions of the tensor.
+     */
     constexpr Dim<2> dims() const { return Dim{dim_, dim_}; }
 
+    /**
+     * @brief Get the name of the tensor.
+     *
+     * The name of the tensor is always <tt>"Kronecker delta"</tt>.
+     */
     constexpr std::string name() const { return "Kronecker delta"; }
 
+    /**
+     * @brief Checks to see if the tensor sees all of its data.
+     *
+     * Because this is the full tensor, this will always return true.
+     */
     constexpr bool full_view_of_underlying() const { return true; }
 
   private:
+    /**
+     * @property dim_
+     *
+     * @brief This is the length of one side of the tensor.
+     */
     size_t dim_;
 };
 

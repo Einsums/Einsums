@@ -3,6 +3,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/File.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
@@ -10,7 +11,6 @@
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
-#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <hip/hip_common.h>
@@ -33,19 +33,43 @@ namespace einsums {
  * @class RuntimeTensor
  *
  * @brief Represents a tensor whose properties can be determined at runtime but not compile time.
+ *
+ * This kind of tensor is unable to be used in many of the
+ *
+ * @tparam T The data type stored by the tensor.
  */
 template <typename T>
 struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
                                       tensor_base::RuntimeTensorNoType,
                                       design_pats::Lockable<std::recursive_mutex> {
   public:
-    using Vector    = VectorData<T>;
+    /**
+     * @typedef Vector
+     *
+     * @brief Represents how the data is stored in the tensor.
+     */
+    using Vector = VectorData<T>;
+
+    /**
+     * @typedef ValueType
+     *
+     * @brief Represents the data type stored in the tensor.
+     */
     using ValueType = T;
 
     RuntimeTensor() = default;
 
+    /**
+     * @brief Default copy constructor.
+     */
     RuntimeTensor(RuntimeTensor<T> const &copy) = default;
 
+    /**
+     * @brief Create a new runtime tensor with the given name and dimensions.
+     *
+     * @param name the new name of the tensor.
+     * @param dims The dimensions of the tensor.
+     */
     RuntimeTensor(std::string name, std::vector<size_t> const &dims) : _rank{dims.size()}, _name{name}, _dims{dims} {
         size_t size = 1;
         _strides.resize(_rank);
@@ -58,6 +82,11 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         _data.resize(size);
     }
 
+    /**
+     * @brief Create a new runtime tensor with the given dimensions.
+     *
+     * @param dims The dimensions of the tensor.
+     */
     explicit RuntimeTensor(std::vector<size_t> const &dims) : _rank{dims.size()}, _dims{dims} {
         size_t size = 1;
         _strides.resize(_rank);
@@ -70,6 +99,13 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         _data.resize(size);
     }
 
+    /**
+     * @brief Copy a tensor into a runtime tensor.
+     *
+     * The data from the tensor will be copied, not mapped. If you want to alias the data, use a RuntimeTensorView instead.
+     *
+     * @param copy The tensor to copy.
+     */
     template <size_t Rank>
     RuntimeTensor(Tensor<T, Rank> const &copy) : _rank{Rank}, _dims(Rank), _strides(Rank), _name{copy.name()} {
         for (int i = 0; i < Rank; i++) {
@@ -82,6 +118,13 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         std::memcpy(_data.data(), copy.data(), copy.size() * sizeof(T));
     }
 
+    /**
+     * @brief Copy a tensor view into a runtime tensor.
+     *
+     * The data from the tensor will be copied, not mapped. If you want to alias the data, use a RuntimeTensorView instead.
+     *
+     * @param copy The tensor view to copy.
+     */
     template <size_t Rank>
     RuntimeTensor(TensorView<T, Rank> const &copy) : _rank{Rank}, _dims(Rank), _strides(Rank) {
         size_t size = 1;
@@ -107,26 +150,59 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 
     virtual ~RuntimeTensor() = default;
 
+    /**
+     * @brief Set all of the data in the tensor to zero.
+     */
     virtual void zero() { std::memset(_data.data(), 0, _data.size() * sizeof(T)); }
 
+    /**
+     * @brief Set all of the data in the tensor to the same value.
+     *
+     * @param val The value to fill the tensor with.
+     */
     virtual void set_all(T val) { std::fill(_data.begin(), _data.end(), val); }
 
+    /**
+     * @brief Get the pointer to the stored data.
+     */
     T *data() { return _data.data(); }
 
+    /**
+     * @copydoc data()
+     */
     T const *data() const { return _data.data(); }
 
+    /**
+     * @brief Get the pointer to the stored data starting at the given index.
+     *
+     * @param index A collection of integers to use as the index.
+     */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     T *data(Storage const &index) {
         return &(_data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index)));
     }
 
+    /**
+     * @brief Get the pointer to the stored data starting at the given index.
+     *
+     * @param index A collection of integers to use as the index.
+     */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     const T *data(Storage const &index) const {
         return &(_data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index)));
     }
 
+    /**
+     * @brief Subscript into the tensor, checking for validity of the index.
+     *
+     * This function will check the indices. If an index is negative, it will be wrapped around.
+     * It will also make sure that the indices aren't too big. It will also check to see that
+     * the correct number of indices were passed.
+     *
+     * @param index The index to use for the subscript.
+     */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     T &operator()(Storage const &index) {
@@ -136,6 +212,15 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return _data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index));
     }
 
+    /**
+     * @brief Subscript into the tensor, checking for validity of the index.
+     *
+     * This function will check the indices. If an index is negative, it will be wrapped around.
+     * It will also make sure that the indices aren't too big. It will also check to see that
+     * the correct number of indices were passed.
+     *
+     * @param index The index to use for the subscript.
+     */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     const T &operator()(Storage const &index) const {
@@ -145,6 +230,11 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return _data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index));
     }
 
+    /**
+     * @brief Get the pointer to the stored data starting at the given index.
+     *
+     * @param args A collection of integers to use as the index.
+     */
     template <typename... Args>
     T *data(Args... args) {
         if (sizeof...(Args) > rank()) {
@@ -154,6 +244,11 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return _data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index));
     }
 
+    /**
+     * @brief Get the pointer to the stored data starting at the given index.
+     *
+     * @param args A collection of integers to use as the index.
+     */
     template <typename... Args>
     T const *data(Args... args) const {
         if (sizeof...(Args) > rank()) {
@@ -164,8 +259,17 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
     }
 
     /**
-     * TODO: std::variant can't handle references. We might be able to make our own variant that can.
-     * This new variant may also be able to replace HostDevReference.
+     * @brief Subscript into the tensor, checking for validity of the index.
+     *
+     * This function will check the indices. If an index is negative, it will be wrapped around.
+     * It will also make sure that the indices aren't too big. If fewer indices than necessary
+     * are passed, it will throw an error. This will hopefully change in the future to allow for
+     * the creation of views. It will still throw an error when too many arguments are passed.
+     *
+     * @param args The index to use for the subscript.
+     *
+     * @todo std::variant can't handle references. We may be able to make our own, but for right now,
+     * this will not be able to handle the wrong number of arguments.
      */
     template <typename... Args>
         requires(std::is_integral_v<Args> && ...)
@@ -180,6 +284,15 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return _data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index));
     }
 
+    /**
+     * @brief Subscript into the tensor, checking for validity of the index.
+     *
+     * This function will check the indices. If an index is negative, it will be wrapped around.
+     * It will also make sure that the indices aren't too big. If too few indices are passed,
+     * it will create a view.
+     *
+     * @param args The index to use for the subscript.
+     */
     template <typename... Args>
         requires(std::is_integral_v<Args> && ...)
     std::variant<T, RuntimeTensorView<T>> operator()(Args... args) const {
@@ -201,6 +314,13 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         }
     }
 
+    /**
+     * @brief Subscripts into the tensor with ranges.
+     *
+     * This function creates a view based on the ranges passed in.
+     *
+     * @param args The indices to use. Can be integers, ranges, or All.
+     */
     template <typename... Args>
         requires((!std::is_integral_v<Args>) || ...)
     RuntimeTensorView<T> operator()(Args... args) const {
@@ -235,6 +355,13 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
      * Special cases:
      *    Range{a, a + 1}: Keep the axis in the view. It will have dimension 1 and only have the a'th element. a can not be negative.
      *    Range{-1, a}: Remove the axis from the view. It will still affect the offset. a can not be negative.
+     */
+    /**
+     * @brief Create a view with the specified parameters.
+     *
+     * Internal function only.
+     *
+     * @param slices A list of slices to use when specifying the parameters of the view.
      */
     RuntimeTensorView<T> operator()(std::vector<Range> const &slices) {
         if (slices.size() > _rank) {
@@ -277,6 +404,13 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return RuntimeTensorView<T>(*this, dims, strides, offsets);
     }
 
+    /**
+     * @brief Create a view with the specified parameters.
+     *
+     * Internal function only.
+     *
+     * @param slices A list of slices to use when specifying the parameters of the view.
+     */
     RuntimeTensorView<T> const operator()(std::vector<Range> const &slices) const {
         if (slices.size() > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to tensor!");
@@ -318,6 +452,11 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return RuntimeTensorView<T>(*this, dims, strides, offsets);
     }
 
+    /**
+     * @brief Copy the data from one tensor into this tensor.
+     *
+     * @param other The tensor to copy from.
+     */
     template <size_t Rank>
     RuntimeTensor<T> &operator=(Tensor<T, Rank> const &other) {
         if (_rank != Rank) {
@@ -337,6 +476,11 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Copy the data from one tensor into this tensor.
+     *
+     * @param other The tensor to copy from.
+     */
     template <typename TOther, size_t Rank>
     RuntimeTensor<T> &operator=(Tensor<TOther, Rank> const &other) {
         if (_rank != Rank) {
@@ -360,6 +504,11 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Copy the data from one tensor view into this tensor.
+     *
+     * @param other The tensor view to copy from.
+     */
     template <typename TOther, size_t Rank>
     RuntimeTensor<T> &operator=(TensorView<TOther, Rank> const &other) {
         if (_rank != Rank) {
@@ -387,6 +536,11 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Copy the data from one tensor into this tensor.
+     *
+     * @param other The tensor to copy from.
+     */
     virtual RuntimeTensor<T> &operator=(RuntimeTensor<T> const &other) {
         if (_rank != other.rank()) {
             _rank = other.rank();
@@ -409,6 +563,11 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Copy the data from one tensor view into this tensor.
+     *
+     * @param other The tensor view to copy from.
+     */
     virtual RuntimeTensor<T> &operator=(RuntimeTensorView<T> const &other) {
         if (_dims != other.dims() || _rank != other.rank()) {
             if (_rank != other.rank()) {
@@ -439,6 +598,11 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Copy the data from one tensor into this tensor.
+     *
+     * @param other The tensor to copy from.
+     */
     template <typename TOther>
     RuntimeTensor<T> &operator=(RuntimeTensor<TOther> const &other) {
         if (_rank != other.rank()) {
@@ -462,6 +626,11 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Copy the data from one tensor view into this tensor.
+     *
+     * @param other The tensor view to copy from.
+     */
     template <typename TOther>
     RuntimeTensor<T> &operator=(RuntimeTensorView<TOther> const &other) {
         if (_rank != other.rank()) {
@@ -489,83 +658,95 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Fill the tensor with the given value.
+     *
+     * @param value The value to fill the tensor with.
+     */
     virtual RuntimeTensor<T> &operator=(T value) {
         set_all(value);
         return *this;
     }
 
-#define OPERATOR(OP, NAME)                                                                                                                 \
-    template <typename TOther>                                                                                                             \
-    auto operator OP(const TOther &b)->RuntimeTensor<T> & {                                                                                \
-        EINSUMS_OMP_PARALLEL {                                                                                                             \
-            auto tid       = omp_get_thread_num();                                                                                         \
-            auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
-            auto begin     = _data.begin() + chunksize * tid;                                                                              \
-            auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                         \
-            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                          \
-                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
-                    (*i) OP(T)(RemoveComplexT<T>) b;                                                                                       \
-                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
-                    (*i) OP(T) b.real();                                                                                                   \
-                } else {                                                                                                                   \
-                    (*i) OP(T) b;                                                                                                          \
+#ifndef DOXYGEN
+#    define OPERATOR(OP, NAME)                                                                                                             \
+        template <typename TOther>                                                                                                         \
+        auto operator OP(const TOther &b)->RuntimeTensor<T> & {                                                                            \
+            EINSUMS_OMP_PARALLEL {                                                                                                         \
+                auto tid       = omp_get_thread_num();                                                                                     \
+                auto chunksize = _data.size() / omp_get_num_threads();                                                                     \
+                auto begin     = _data.begin() + chunksize * tid;                                                                          \
+                auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                     \
+                EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                      \
+                    if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                    \
+                        (*i) OP(T)(RemoveComplexT<T>) b;                                                                                   \
+                    } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                           \
+                        (*i) OP(T) b.real();                                                                                               \
+                    } else {                                                                                                               \
+                        (*i) OP(T) b;                                                                                                      \
+                    }                                                                                                                      \
                 }                                                                                                                          \
             }                                                                                                                              \
+            return *this;                                                                                                                  \
         }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }                                                                                                                                      \
-    template <typename TOther>                                                                                                             \
-    auto operator OP(const RuntimeTensor<TOther> &b)->RuntimeTensor<T> & {                                                                 \
-        if (size() != b.size()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(dimension_error, "tensors differ in size : {} {}", size(), b.size());                                  \
-        }                                                                                                                                  \
-        T            *this_data = this->data();                                                                                            \
-        const TOther *b_data    = b.data();                                                                                                \
-        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
-        for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                         \
-            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
-                this->_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                           \
-            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
-                this->_data[sentinel] OP(T) b_data[sentinel].real();                                                                       \
-            } else {                                                                                                                       \
-                this->_data[sentinel] OP(T) b_data[sentinel];                                                                              \
+        template <typename TOther>                                                                                                         \
+        auto operator OP(const RuntimeTensor<TOther> &b)->RuntimeTensor<T> & {                                                             \
+            if (size() != b.size()) {                                                                                                      \
+                EINSUMS_THROW_EXCEPTION(dimension_error, "tensors differ in size : {} {}", size(), b.size());                              \
             }                                                                                                                              \
+            T            *this_data = this->data();                                                                                        \
+            const TOther *b_data    = b.data();                                                                                            \
+            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                     \
+                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
+                    this->_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                       \
+                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
+                    this->_data[sentinel] OP(T) b_data[sentinel].real();                                                                   \
+                } else {                                                                                                                   \
+                    this->_data[sentinel] OP(T) b_data[sentinel];                                                                          \
+                }                                                                                                                          \
+            }                                                                                                                              \
+            return *this;                                                                                                                  \
         }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }                                                                                                                                      \
                                                                                                                                            \
-    template <typename TOther>                                                                                                             \
-    auto operator OP(const RuntimeTensorView<TOther> &b)->RuntimeTensor<T> & {                                                             \
-        if (b.rank() != rank()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error,                                                                                   \
-                                    "Can not perform the operation with runtime tensor and view of different ranks!");                     \
-        }                                                                                                                                  \
-        if (b.dims() != dims()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(dimension_error,                                                                                       \
-                                    "Can not perform the operation with runtime tensor and view of different dimensions!");                \
-        }                                                                                                                                  \
-        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
-        for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                         \
-            thread_local std::vector<size_t> index(rank());                                                                                \
-            sentinel_to_indices(sentinel, this->_strides, index);                                                                          \
-            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
-                (*this)(index) OP(T)(RemoveComplexT<T>) b(index);                                                                          \
-            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
-                (*this)(index) OP(T) b(index).real();                                                                                      \
-            } else {                                                                                                                       \
-                (*this)(index) OP(T) b(index);                                                                                             \
+        template <typename TOther>                                                                                                         \
+        auto operator OP(const RuntimeTensorView<TOther> &b)->RuntimeTensor<T> & {                                                         \
+            if (b.rank() != rank()) {                                                                                                      \
+                EINSUMS_THROW_EXCEPTION(tensor_compat_error,                                                                               \
+                                        "Can not perform the operation with runtime tensor and view of different ranks!");                 \
             }                                                                                                                              \
-        }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }
+            if (b.dims() != dims()) {                                                                                                      \
+                EINSUMS_THROW_EXCEPTION(dimension_error,                                                                                   \
+                                        "Can not perform the operation with runtime tensor and view of different dimensions!");            \
+            }                                                                                                                              \
+            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                     \
+                thread_local std::vector<size_t> index(rank());                                                                            \
+                sentinel_to_indices(sentinel, this->_strides, index);                                                                      \
+                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
+                    (*this)(index) OP(T)(RemoveComplexT<T>) b(index);                                                                      \
+                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
+                    (*this)(index) OP(T) b(index).real();                                                                                  \
+                } else {                                                                                                                   \
+                    (*this)(index) OP(T) b(index);                                                                                         \
+                }                                                                                                                          \
+            }                                                                                                                              \
+            return *this;                                                                                                                  \
+        }
 
     OPERATOR(*=, mult)
     OPERATOR(/=, div)
     OPERATOR(+=, add)
     OPERATOR(-=, sub)
 
-#undef OPERATOR
+#    undef OPERATOR
+#endif
 
+    /**
+     * @brief Get the length of the tensor along a given axis.
+     *
+     * @param d The axis to query. Negative values will wrap around.
+     */
     virtual size_t dim(int d) const {
         // Add support for negative indices.
         if (d < 0) {
@@ -573,11 +754,27 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         }
         return _dims.at(d);
     }
+
+    /**
+     * @brief Get the dimensions of the tensor.
+     */
     virtual std::vector<size_t> dims() const noexcept { return _dims; }
 
+    /**
+     * @brief Return the vector containing the data stored by the tensor.
+     */
     virtual Vector const &vector_data() const { return _data; }
-    virtual Vector       &vector_data() { return _data; }
 
+    /**
+     * @brief Return the vector containing the data stored by the tensor.
+     */
+    virtual Vector &vector_data() { return _data; }
+
+    /**
+     * @brief Get the stride along a given axis.
+     *
+     * @param d The axis to query. Negative values will wrap around.
+     */
     virtual auto stride(int d) const -> size_t {
         if (d < 0) {
             d += _rank;
@@ -585,8 +782,14 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return _strides.at(d);
     }
 
+    /**
+     * @brief Return the strides of the tensor.
+     */
     virtual auto strides() const noexcept -> std::vector<size_t> { return _strides; }
 
+    /**
+     * @brief Create a rank-1 view of the tensor.
+     */
     virtual auto to_rank_1_view() const -> RuntimeTensorView<T> {
         size_t              size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
         std::vector<size_t> dim{size};
@@ -594,22 +797,68 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         return RuntimeTensorView<T>{*this, dim};
     }
 
-    // Returns the linear size of the tensor
+    /**
+     * @brief Returns the linear size of the tensor.
+     */
     virtual auto size() const -> size_t { return _data.size(); }
 
+    /**
+     * @brief Returns whether the tensor sees all of the underlying data.
+     *
+     * This type of tensor will always see all of its underlying data, so this will always be true.
+     */
     virtual bool full_view_of_underlying() const noexcept { return true; }
 
+    /**
+     * @brief Get the rank of the tensor.
+     */
     virtual size_t rank() const noexcept { return this->_rank; }
 
+    /**
+     * @brief Set the name of the tensor.
+     *
+     * @param new_name The new name of the tensor.
+     */
     virtual void set_name(std::string const &new_name) { this->_name = new_name; }
 
+    /**
+     * @brief Get the name of the tensor.
+     */
     virtual std::string const &name() const noexcept { return this->_name; }
 
   protected:
-    Vector              _data;
-    std::string         _name{"(unnamed)"};
+    /**
+     * @property _data
+     *
+     * @brief The vector containing the data stored by the tensor.
+     */
+    Vector _data;
+
+    /**
+     * @property _name
+     *
+     * @brief The name of the tensor.
+     */
+    std::string _name{"(unnamed)"};
+
+    /**
+     * @property _dims
+     *
+     * @brief The dimensions of the tensor.
+     */
+    /**
+     * @property _strides
+     *
+     * @brief The strides of the tensor.
+     */
     std::vector<size_t> _dims, _strides;
-    size_t              _rank{0};
+
+    /**
+     * @property _rank
+     *
+     * @brief The rank of the tensor.
+     */
+    size_t _rank{0};
 
     template <typename TOther>
     friend class RuntimeTensorView;
@@ -629,24 +878,52 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
                                           public tensor_base::RuntimeTensorViewNoType,
                                           public design_pats::Lockable<std::recursive_mutex> {
   public:
+    /**
+     * @typedef ValueType
+     *
+     * @brief The data type stored by the tensor.
+     */
     using ValueType = T;
 
     RuntimeTensorView() = default;
 
+    /**
+     * @brief Default copy constructor.
+     *
+     * @param copy The tensor to copy.
+     */
     RuntimeTensorView(RuntimeTensorView<T> const &copy) = default;
 
+    /**
+     * @brief Creates a new view based on another view.
+     *
+     * This view and the other view will share the same data pointer.
+     *
+     * @param view The tensor to view.
+     */
     RuntimeTensorView(RuntimeTensor<T> &view)
         : _data{view.data()}, _name{view.name()}, _dims{view.dims()}, _strides{view.strides()}, _rank{view.rank()}, _size{view.size()},
           _full_view{true}, _index_strides(view.rank()) {
         dims_to_strides(_dims, _index_strides);
     }
 
+    /**
+     * @brief Creates a view of a tensor.
+     *
+     * @param view The tensor to view.
+     */
     RuntimeTensorView(RuntimeTensor<T> const &view)
         : _data{(T *)view.data()}, _name{view.name()}, _dims{view.dims()}, _strides{view.strides()}, _rank{view.rank()}, _size{view.size()},
           _full_view{true}, _index_strides(view.rank()) {
         dims_to_strides(_dims, _index_strides);
     }
 
+    /**
+     * @brief Creates a view of a tensor with new dimensions specified.
+     *
+     * @param other The tensor to view.
+     * @param dims The new dimensions for the view.
+     */
     RuntimeTensorView(RuntimeTensor<T> const &other, std::vector<size_t> const &dims)
         : _rank{dims.size()}, _dims{dims}, _full_view{true}, _index_strides(dims.size()) {
         _size = 1;
@@ -661,6 +938,12 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         dims_to_strides(_dims, _index_strides);
     }
 
+    /**
+     * @brief Creates a view of a tensor with new dimensions specified.
+     *
+     * @param other The tensor to view.
+     * @param dims The new dimensions for the view.
+     */
     RuntimeTensorView(RuntimeTensor<T> &other, std::vector<size_t> const &dims)
         : _rank{dims.size()}, _dims{dims}, _full_view{true}, _index_strides(dims.size()) {
         _size = 1;
@@ -675,6 +958,12 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         dims_to_strides(_dims, _index_strides);
     }
 
+    /**
+     * @brief Creates a view of a tensor with new dimensions specified.
+     *
+     * @param other The tensor to view.
+     * @param dims The new dimensions for the view.
+     */
     RuntimeTensorView(RuntimeTensorView<T> &other, std::vector<size_t> const &dims)
         : _rank{dims.size()}, _dims{dims}, _full_view{other.full_view_of_underlying()}, _index_strides(dims.size()) {
         _size = 1;
@@ -689,6 +978,12 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         dims_to_strides(_dims, _index_strides);
     }
 
+    /**
+     * @brief Creates a view of a tensor with new dimensions specified.
+     *
+     * @param other The tensor to view.
+     * @param dims The new dimensions for the view.
+     */
     RuntimeTensorView(RuntimeTensorView<T> const &other, std::vector<size_t> const &dims)
         : _rank{dims.size()}, _dims{dims}, _full_view{other.full_view_of_underlying()}, _index_strides(dims.size()) {
         _size = 1;
@@ -703,6 +998,14 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         dims_to_strides(_dims, _index_strides);
     }
 
+    /**
+     * @brief Creates a view of a tensor with new dimensions, strides, and offsets specified.
+     *
+     * @param other The tensor to view.
+     * @param dims The new dimensions for the view.
+     * @param strides The new strides for the view.
+     * @param offsets The offsets for the view.
+     */
     RuntimeTensorView(RuntimeTensor<T> &other, std::vector<size_t> const &dims, std::vector<size_t> const &strides,
                       std::vector<size_t> const &offsets)
         : _rank{dims.size()}, _dims{dims}, _strides{strides}, _full_view{other.dims() == dims && other.strides() == strides},
@@ -714,6 +1017,14 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         dims_to_strides(_dims, _index_strides);
     }
 
+    /**
+     * @brief Creates a view of a tensor with new dimensions, strides, and offsets specified.
+     *
+     * @param other The tensor to view.
+     * @param dims The new dimensions for the view.
+     * @param strides The new strides for the view.
+     * @param offsets The offsets for the view.
+     */
     RuntimeTensorView(RuntimeTensor<T> const &other, std::vector<size_t> const &dims, std::vector<size_t> const &strides,
                       std::vector<size_t> const &offsets)
         : _rank{dims.size()}, _dims{dims}, _strides{strides}, _full_view{other.dims() == dims && other.strides() == strides},
@@ -725,6 +1036,14 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         dims_to_strides(_dims, _index_strides);
     }
 
+    /**
+     * @brief Creates a view of a tensor with new dimensions, strides, and offsets specified.
+     *
+     * @param other The tensor to view.
+     * @param dims The new dimensions for the view.
+     * @param strides The new strides for the view.
+     * @param offsets The offsets for the view.
+     */
     RuntimeTensorView(RuntimeTensorView<T> &other, std::vector<size_t> const &dims, std::vector<size_t> const &strides,
                       std::vector<size_t> const &offsets)
         : _rank{dims.size()}, _dims{dims}, _strides{strides},
@@ -736,6 +1055,14 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         dims_to_strides(_dims, _index_strides);
     }
 
+    /**
+     * @brief Creates a view of a tensor with new dimensions, strides, and offsets specified.
+     *
+     * @param other The tensor to view.
+     * @param dims The new dimensions for the view.
+     * @param strides The new strides for the view.
+     * @param offsets The offsets for the view.
+     */
     RuntimeTensorView(RuntimeTensorView<T> const &other, std::vector<size_t> const &dims, std::vector<size_t> const &strides,
                       std::vector<size_t> const &offsets)
         : _rank{dims.size()}, _dims{dims}, _strides{strides},
@@ -747,6 +1074,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         dims_to_strides(_dims, _index_strides);
     }
 
+    /**
+     * @brief Creates a view of a tensor with compile-time rank.
+     *
+     * @param copy The tensor to view.
+     */
     template <size_t Rank>
     RuntimeTensorView(TensorView<T, Rank> &copy)
         : _data{copy.data()}, _dims(Rank), _strides(Rank), _rank{Rank}, _full_view{copy.full_view_of_underlying()} {
@@ -761,6 +1093,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         }
     }
 
+    /**
+     * @brief Creates a view of a tensor with compile-time rank.
+     *
+     * @param copy The tensor to view.
+     */
     template <size_t Rank>
     RuntimeTensorView(TensorView<T, Rank> const &copy)
         : _dims(Rank), _strides(Rank), _rank{Rank}, _full_view{copy.full_view_of_underlying()} {
@@ -777,6 +1114,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         }
     }
 
+    /**
+     * @brief Creates a view of a tensor with compile-time rank.
+     *
+     * @param copy The tensor to view.
+     */
     template <size_t Rank>
     RuntimeTensorView(Tensor<T, Rank> &copy)
         : _data{copy.data()}, _dims(Rank), _strides(Rank), _rank{Rank}, _full_view{true}, _index_strides(Rank), _size{copy.size()} {
@@ -787,6 +1129,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         }
     }
 
+    /**
+     * @brief Creates a view of a tensor with compile-time rank.
+     *
+     * @param copy The tensor to view.
+     */
     template <size_t Rank>
     RuntimeTensorView(Tensor<T, Rank> const &copy)
         : _dims(Rank), _strides(Rank), _rank{Rank}, _full_view{true}, _index_strides(Rank), _size{copy.size()} {
@@ -800,6 +1147,9 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
 
     virtual ~RuntimeTensorView() = default;
 
+    /**
+     * @brief Set all the entries in the tensor to zero.
+     */
     virtual void zero() {
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < _size; sentinel++) {
@@ -814,6 +1164,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         }
     }
 
+    /**
+     * @brief Fill the tensor with the specified value.
+     *
+     * @param val The value to fill the tensor with.
+     */
     virtual void set_all(T val) {
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < _size; sentinel++) {
@@ -828,34 +1183,68 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         }
     }
 
+    /**
+     * @brief Return a pointer to the beginning of the data.
+     */
     T *data() { return _data; }
 
+    /**
+     * @brief Return a pointer to the beginning of the data.
+     */
     T const *data() const { return _data; }
 
+    /**
+     * @brief Return a pointer to the data starting at the given index.
+     */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     T *data(Storage const &index) {
         return &(_data[einsums::indices_to_sentinel_negative_check(_strides, _dims, index)]);
     }
 
+    /**
+     * @brief Return a pointer to the data starting at the given index.
+     */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     const T *data(Storage const &index) const {
         return &(_data[einsums::indices_to_sentinel_negative_check(_strides, _dims, index)]);
     }
 
+    /**
+     * @brief Subscript into the tensor.
+     *
+     * This version checks for negative values and does boudns checking.
+     *
+     * @param index The index to use for subscripting.
+     */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     T &operator()(Storage const &index) {
         return _data[einsums::indices_to_sentinel_negative_check(_strides, _dims, index)];
     }
 
+    /**
+     * @brief Subscript into the tensor.
+     *
+     * This version checks for negative values and does boudns checking.
+     *
+     * @param index The index to use for subscripting.
+     */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     const T &operator()(Storage const &index) const {
         return _data[einsums::indices_to_sentinel_negative_check(_strides, _dims, index)];
     }
 
+    /**
+     * @brief Get the data starting at the given index.
+     *
+     * This version is mainly for rank-1 tensors. The index is treated as the first index
+     * if it is not rank-1.
+     *
+     * @param index The index for the starting point.
+     */
     T *data(ptrdiff_t index) {
         if (index < 0) {
             index += _dims[0];
@@ -863,6 +1252,14 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return &(_data[index * _strides[0]]);
     }
 
+    /**
+     * @brief Get the data starting at the given index.
+     *
+     * This version is mainly for rank-1 tensors. The index is treated as the first index
+     * if it is not rank-1.
+     *
+     * @param index The index for the starting point.
+     */
     T const *data(ptrdiff_t index) const {
         if (index < 0) {
             index += _dims[0];
@@ -870,6 +1267,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return &(_data[index * _strides[0]]);
     }
 
+    /**
+     * @brief Get the data starting at the given index.
+     *
+     * @param args The indices for the starting point.
+     */
     template <typename... Args>
     T *data(Args... args) {
         if (sizeof...(Args) > rank()) {
@@ -879,6 +1281,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return _data[einsums::indices_to_sentinel_negative_check(_strides, _dims, index)];
     }
 
+    /**
+     * @brief Get the data starting at the given index.
+     *
+     * @param args The indices for the starting point.
+     */
     template <typename... Args>
     T const *data(Args... args) const {
         if (sizeof...(Args) > rank()) {
@@ -889,6 +1296,13 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
     }
 
     /**
+     * @brief Subscript into the tensor.
+     *
+     * If there aren't enough indices, an error will be thrown. In the future, this may create a view
+     * in this case instead. This version checks for negative indices and does bounds checking.
+     *
+     * @param args The indices to use for the subscript.
+     *
      * TODO: std::variant can't handle references. We might be able to make our own variant that can.
      * This new variant may also be able to replace HostDevReference.
      */
@@ -905,6 +1319,13 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return _data[einsums::indices_to_sentinel_negative_check(_strides, _dims, index)];
     }
 
+    /**
+     * @brief Subscript into the tensor.
+     *
+     * If there aren't enough indices, a view will be created. This version checks for negative indices and does bounds checking.
+     *
+     * @param args The indices to use for the subscript.
+     */
     template <typename... Args>
         requires(std::is_integral_v<Args> && ...)
     std::variant<T, RuntimeTensorView<T>> operator()(Args... args) const {
@@ -926,6 +1347,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         }
     }
 
+    /**
+     * @brief Create a view with the given parameters.
+     *
+     * @param args The indices for the subscript. Can contain Range and All.
+     */
     template <typename... Args>
         requires((!std::is_integral_v<Args>) || ...)
     const RuntimeTensorView<T> operator()(Args... args) const {
@@ -956,6 +1382,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return (*this)(slices);
     }
 
+    /**
+     * @brief Create a view with the given parameters.
+     *
+     * @param args The indices for the subscript. Can contain Range and All.
+     */
     template <typename... Args>
         requires((!std::is_integral_v<Args>) || ...)
     RuntimeTensorView<T> operator()(Args... args) {
@@ -986,6 +1417,13 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return (*this)(slices);
     }
 
+    /**
+     * @brief Index into the tensor.
+     *
+     * This version is more intended for rank-1 tensors.
+     *
+     * @param index The index for the tensor.
+     */
     T &operator()(ptrdiff_t index) {
         if (index < 0) {
             index += _dims[0];
@@ -993,6 +1431,13 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return _data[index * _strides[0]];
     }
 
+    /**
+     * @brief Index into the tensor.
+     *
+     * This version is more intended for rank-1 tensors.
+     *
+     * @param index The index for the tensor.
+     */
     T const &operator()(ptrdiff_t index) const {
         if (index < 0) {
             index += _dims[0];
@@ -1004,6 +1449,13 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
      * Special cases:
      *    Rank{a, a}: Keep the axis in the view. It will have dimension 1 and only have the a'th element. a can not be negative.
      *    Rank{-1, a}: Remove the axis from the view. It will still affect the offset. a can not be negative.
+     */
+    /**
+     * @brief Create a tensor view with the given parameters.
+     *
+     * This is an internal function only.
+     *
+     * @param slices The slices to use for the creation of the tensor view.
      */
     RuntimeTensorView<T> operator()(std::vector<Range> const &slices) {
         if (slices.size() > _rank) {
@@ -1046,6 +1498,13 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return RuntimeTensorView<T>(*this, dims, strides, offsets);
     }
 
+    /**
+     * @brief Create a tensor view with the given parameters.
+     *
+     * This is an internal function only.
+     *
+     * @param slices The slices to use for the creation of the tensor view.
+     */
     RuntimeTensorView<T> operator()(std::vector<Range> const &slices) const {
         if (slices.size() > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to tensor!");
@@ -1087,6 +1546,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return RuntimeTensorView<T>(*this, dims, strides, offsets);
     }
 
+    /**
+     * @brief Copy data from one tensor into this tensor.
+     *
+     * @param other The tensor to copy from.
+     */
     template <typename TOther, size_t Rank>
     RuntimeTensorView<T> &operator=(Tensor<TOther, Rank> const &other) {
         if (_rank != Rank) {
@@ -1116,6 +1580,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Copy data from one tensor into this tensor.
+     *
+     * @param other The tensor to copy from.
+     */
     template <typename TOther, size_t Rank>
     RuntimeTensorView<T> &operator=(TensorView<TOther, Rank> const &other) {
         if (_rank != Rank) {
@@ -1145,6 +1614,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Copy data from one tensor into this tensor.
+     *
+     * @param other The tensor to copy from.
+     */
     virtual RuntimeTensorView<T> &operator=(RuntimeTensor<T> const &other) {
         if (_rank != other.rank()) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not assign a runtime tensor to a runtime view with a different rank!");
@@ -1171,6 +1645,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Copy data from one tensor into this tensor.
+     *
+     * @param other The tensor to copy from.
+     */
     virtual RuntimeTensorView<T> &operator=(RuntimeTensorView<T> const &other) {
         if (_rank != other.rank()) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not assign a runtime view to a runtime view with a different rank!");
@@ -1198,6 +1677,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Copy data from one tensor into this tensor.
+     *
+     * @param other The tensor to copy from.
+     */
     template <typename TOther>
     RuntimeTensorView<T> &operator=(RuntimeTensor<TOther> const &other) {
         if (_rank != other.rank()) {
@@ -1225,6 +1709,11 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Copy data from one tensor into this tensor.
+     *
+     * @param other The tensor to copy from.
+     */
     template <typename TOther>
     RuntimeTensorView<T> &operator=(RuntimeTensorView<TOther> const &other) {
         if (_rank != other.rank()) {
@@ -1253,98 +1742,110 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * @brief Fill the tensor with the given value.
+     *
+     * @param value The value to fill the tensor with.
+     */
     virtual RuntimeTensorView<T> &operator=(T value) {
         set_all(value);
         return *this;
     }
 
-#define OPERATOR(OP, NAME)                                                                                                                 \
-    template <typename TOther>                                                                                                             \
-    auto operator OP(const TOther &b)->RuntimeTensorView<T> & {                                                                            \
-        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
-        for (size_t sentinel = 0; sentinel < _size; sentinel++) {                                                                          \
-            size_t hold = sentinel, ord = 0;                                                                                               \
+#ifndef DOXYGEN
+#    define OPERATOR(OP, NAME)                                                                                                             \
+        template <typename TOther>                                                                                                         \
+        auto operator OP(const TOther &b)->RuntimeTensorView<T> & {                                                                        \
+            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            for (size_t sentinel = 0; sentinel < _size; sentinel++) {                                                                      \
+                size_t hold = sentinel, ord = 0;                                                                                           \
                                                                                                                                            \
-            for (int i = 0; i < _rank; i++) {                                                                                              \
-                ord += _strides[i] * (hold / _index_strides[i]);                                                                           \
-                hold %= _index_strides[i];                                                                                                 \
+                for (int i = 0; i < _rank; i++) {                                                                                          \
+                    ord += _strides[i] * (hold / _index_strides[i]);                                                                       \
+                    hold %= _index_strides[i];                                                                                             \
+                }                                                                                                                          \
+                                                                                                                                           \
+                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
+                    this->_data[ord] OP(T)(RemoveComplexT<T>) b;                                                                           \
+                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
+                    this->_data[ord] OP(T) b.real();                                                                                       \
+                } else {                                                                                                                   \
+                    this->_data[ord] OP(T) b;                                                                                              \
+                }                                                                                                                          \
             }                                                                                                                              \
+            return *this;                                                                                                                  \
+        }                                                                                                                                  \
                                                                                                                                            \
-            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
-                this->_data[ord] OP(T)(RemoveComplexT<T>) b;                                                                               \
-            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
-                this->_data[ord] OP(T) b.real();                                                                                           \
-            } else {                                                                                                                       \
-                this->_data[ord] OP(T) b;                                                                                                  \
+        template <typename TOther>                                                                                                         \
+        auto operator OP(const RuntimeTensor<TOther> &b)->RuntimeTensorView<T> & {                                                         \
+            if (b.rank() != rank()) {                                                                                                      \
+                EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform the operation with runtime views of different ranks!");      \
             }                                                                                                                              \
-        }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }                                                                                                                                      \
-                                                                                                                                           \
-    template <typename TOther>                                                                                                             \
-    auto operator OP(const RuntimeTensor<TOther> &b)->RuntimeTensorView<T> & {                                                             \
-        if (b.rank() != rank()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform the operation with runtime views of different ranks!");          \
-        }                                                                                                                                  \
-        if (b.dims() != dims()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform the operation with runtime views of different dimensions!");         \
-        }                                                                                                                                  \
-        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
-        for (size_t sentinel = 0; sentinel < _size; sentinel++) {                                                                          \
-            size_t hold = sentinel, ord = 0, b_ord = 0;                                                                                    \
-                                                                                                                                           \
-            for (int i = 0; i < _rank; i++) {                                                                                              \
-                ord += _strides[i] * (hold / _index_strides[i]);                                                                           \
-                b_ord += b.stride(i) * (hold / _index_strides[i]);                                                                         \
-                hold %= _index_strides[i];                                                                                                 \
+            if (b.dims() != dims()) {                                                                                                      \
+                EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform the operation with runtime views of different dimensions!");     \
             }                                                                                                                              \
-            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
-                this->_data[ord] OP(T)(RemoveComplexT<T>) b.data()[b_ord];                                                                 \
-            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
-                this->_data[ord] OP(T) b.data()[b_ord].real();                                                                             \
-            } else {                                                                                                                       \
-                this->_data[ord] OP(T) b.data()[b_ord];                                                                                    \
-            }                                                                                                                              \
-        }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }                                                                                                                                      \
+            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            for (size_t sentinel = 0; sentinel < _size; sentinel++) {                                                                      \
+                size_t hold = sentinel, ord = 0, b_ord = 0;                                                                                \
                                                                                                                                            \
-    template <typename TOther>                                                                                                             \
-    auto operator OP(const RuntimeTensorView<TOther> &b)->RuntimeTensorView<T> & {                                                         \
-        if (b.rank() != rank()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform the operation with runtime views of different ranks!");          \
-        }                                                                                                                                  \
-        if (b.dims() != dims()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform the operation with runtime views of different dimensions!");         \
-        }                                                                                                                                  \
-        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
-        for (size_t sentinel = 0; sentinel < _size; sentinel++) {                                                                          \
-            size_t hold = sentinel, ord = 0, b_ord = 0;                                                                                    \
-                                                                                                                                           \
-            for (int i = 0; i < _rank; i++) {                                                                                              \
-                ord += _strides[i] * (hold / _index_strides[i]);                                                                           \
-                b_ord += b.stride(i) * (hold / _index_strides[i]);                                                                         \
-                hold %= _index_strides[i];                                                                                                 \
+                for (int i = 0; i < _rank; i++) {                                                                                          \
+                    ord += _strides[i] * (hold / _index_strides[i]);                                                                       \
+                    b_ord += b.stride(i) * (hold / _index_strides[i]);                                                                     \
+                    hold %= _index_strides[i];                                                                                             \
+                }                                                                                                                          \
+                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
+                    this->_data[ord] OP(T)(RemoveComplexT<T>) b.data()[b_ord];                                                             \
+                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
+                    this->_data[ord] OP(T) b.data()[b_ord].real();                                                                         \
+                } else {                                                                                                                   \
+                    this->_data[ord] OP(T) b.data()[b_ord];                                                                                \
+                }                                                                                                                          \
             }                                                                                                                              \
-                                                                                                                                           \
-            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
-                this->_data[ord] OP(T)(RemoveComplexT<T>) b.data()[b_ord];                                                                 \
-            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
-                this->_data[ord] OP(T) b.data()[b_ord].real();                                                                             \
-            } else {                                                                                                                       \
-                this->_data[ord] OP(T) b.data()[b_ord];                                                                                    \
-            }                                                                                                                              \
+            return *this;                                                                                                                  \
         }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }
+                                                                                                                                           \
+        template <typename TOther>                                                                                                         \
+        auto operator OP(const RuntimeTensorView<TOther> &b)->RuntimeTensorView<T> & {                                                     \
+            if (b.rank() != rank()) {                                                                                                      \
+                EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform the operation with runtime views of different ranks!");      \
+            }                                                                                                                              \
+            if (b.dims() != dims()) {                                                                                                      \
+                EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform the operation with runtime views of different dimensions!");     \
+            }                                                                                                                              \
+            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            for (size_t sentinel = 0; sentinel < _size; sentinel++) {                                                                      \
+                size_t hold = sentinel, ord = 0, b_ord = 0;                                                                                \
+                                                                                                                                           \
+                for (int i = 0; i < _rank; i++) {                                                                                          \
+                    ord += _strides[i] * (hold / _index_strides[i]);                                                                       \
+                    b_ord += b.stride(i) * (hold / _index_strides[i]);                                                                     \
+                    hold %= _index_strides[i];                                                                                             \
+                }                                                                                                                          \
+                                                                                                                                           \
+                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
+                    this->_data[ord] OP(T)(RemoveComplexT<T>) b.data()[b_ord];                                                             \
+                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
+                    this->_data[ord] OP(T) b.data()[b_ord].real();                                                                         \
+                } else {                                                                                                                   \
+                    this->_data[ord] OP(T) b.data()[b_ord];                                                                                \
+                }                                                                                                                          \
+            }                                                                                                                              \
+            return *this;                                                                                                                  \
+        }
 
     OPERATOR(*=, mult)
     OPERATOR(/=, div)
     OPERATOR(+=, add)
     OPERATOR(-=, sub)
 
-#undef OPERATOR
+#    undef OPERATOR
+#endif
 
+    /**
+     * @brief Get the length of the tensor along the given axis.
+     *
+     * @param d The axis to query. Negative indices will be wrapped around.
+     */
     virtual auto dim(int d) const -> size_t {
         // Add support for negative indices.
         if (d < 0) {
@@ -1352,8 +1853,17 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         }
         return _dims.at(d);
     }
+
+    /**
+     * @brief Gets the dimensions of the tensor.
+     */
     virtual auto dims() const noexcept -> std::vector<size_t> { return _dims; }
 
+    /**
+     * @brief Gets the stride of the tensor along the given axis.
+     *
+     * @param d The axis to query. Negative indices will be wrapped around.
+     */
     virtual auto stride(int d) const -> size_t {
         if (d < 0) {
             d += _rank;
@@ -1361,8 +1871,16 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return _strides.at(d);
     }
 
+    /**
+     * @brief Gets the strides of the tensor.
+     */
     virtual auto strides() const noexcept -> std::vector<size_t> { return _strides; }
 
+    /**
+     * @brief Gets the rank-1 veiw of the tensor.
+     *
+     * This does not work well for tensor views due to the variation in strides.
+     */
     virtual auto to_rank_1_view() const -> RuntimeTensorView<T> {
         size_t              size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
         std::vector<size_t> dim{size};
@@ -1370,23 +1888,90 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         return RuntimeTensorView<T>{*this, dim};
     }
 
-    // Returns the linear size of the tensor
+    /**
+     * @brief Returns the linear size of the tensor.
+     */
     virtual auto size() const noexcept -> size_t { return _size; }
 
-    virtual bool full_view_of_underlying() const noexcept { return true; }
+    /**
+     * @brief Checks whether the tensor sees all of the underlying data.
+     */
+    virtual bool full_view_of_underlying() const noexcept { return _full_view; }
 
+    /**
+     * @brief Returns the name of the tensor.
+     */
     virtual std::string const &name() const { return _name; };
 
+    /**
+     * @brief Sets the name of the tensor.
+     *
+     * @param new_name The new name for the tensor.
+     */
     virtual void set_name(std::string const &new_name) { _name = new_name; };
 
+    /**
+     * @brief Gets the rank of the tensor.
+     */
     virtual size_t rank() const noexcept { return _rank; }
 
   protected:
-    T                  *_data;
-    std::string         _name{"(unnamed view)"};
+    /**
+     * @property _data
+     *
+     * @brief The pointer to the stored data.
+     */
+    T *_data;
+
+    /**
+     * @property _name
+     *
+     * @brief The name of the tensor.
+     */
+    std::string _name{"(unnamed view)"};
+
+    /**
+     * @property _dims
+     *
+     * @brief The dimensions of the tensor view.
+     */
+    /**
+     * @property _strides
+     *
+     * @brief The strides of the tensor view.
+     */
+    /**
+     * @property _index_strides
+     *
+     * @brief The strides as determined by the dimensions.
+     *
+     * This set of strides is used for converting a linear offset into a set of indices.
+     */
     std::vector<size_t> _dims, _strides, _index_strides;
-    size_t              _rank{0}, _size{0}, _alloc_size{0};
-    bool                _full_view{false};
+
+    /**
+     * @property _rank
+     *
+     * @brief The rank of the tensor.
+     */
+    /**
+     * @property _size
+     *
+     * @brief The number of elements of the tensor.
+     */
+    /**
+     * @property _alloc_size
+     *
+     * @brief The number of elements including those that are skipped by the strides.
+     */
+    size_t _rank{0}, _size{0}, _alloc_size{0};
+
+    /**
+     * @property _full_view
+     *
+     * @brief Indicates whether the tensor sees all of the underlying data.
+     */
+    bool _full_view{false};
 };
 
 #ifndef DOXYGEN

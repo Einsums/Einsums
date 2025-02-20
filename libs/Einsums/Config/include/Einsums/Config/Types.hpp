@@ -1018,36 +1018,167 @@ class ConfigObserver {
 class EINSUMS_EXPORT GlobalConfigMap {
     EINSUMS_SINGLETON_DEF(GlobalConfigMap)
   public:
+    /**
+     * @brief Checks to see if the map is empty.
+     */
     bool empty() const noexcept;
 
+    /**
+     * @brief Gets the size of the map.
+     */
     size_t size() const noexcept;
 
+    /**
+     * @brief Gets the maximum number of buckets in the map.
+     */
     size_t max_size() const noexcept;
 
+    /**
+     * @brief Clears the map.
+     */
     void clear() noexcept;
 
+    /**
+     * @brief Removes the entry at a given key.
+     *
+     * @param key The key to remove.
+     */
     size_t erase(std::string const &key);
 
+    /**
+     * @brief Get the string value stored at the given key.
+     *
+     * Throws an error if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
     std::string  &at_string(std::string const &key);
+
+    /**
+     * @brief Get the integer value stored at the given key.
+     *
+     * Throws an error if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
     std::int64_t &at_int(std::string const &key);
+
+    /**
+     * @brief Get the floating point value stored at the given key.
+     *
+     * Throws an error if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
     double       &at_double(std::string const &key);
 
+    /**
+     * @brief Get the string value stored at the given key.
+     *
+     * Throws an error if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
     std::string const  &at_string(std::string const &key) const;
+
+    /**
+     * @brief Get the integer value stored at the given key.
+     *
+     * Throws an error if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
     std::int64_t const &at_int(std::string const &key) const;
+
+    /**
+     * @brief Get the floating point value stored at the given key.
+     *
+     * Throws an error if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
     double const       &at_double(std::string const &key) const;
 
+    /**
+     * @brief Get the string value stored at the given key.
+     *
+     * Adds the key to the map if it doesn't exist.
+     *
+     * @param key The key to query.
+     */
     std::string  &get_string(std::string const &key);
+
+    /**
+     * @brief Get the integer value stored at the given key.
+     *
+     * Adds the key to the map if it doesn't exist.
+     *
+     * @param key The key to query.
+     */
     std::int64_t &get_int(std::string const &key);
+
+    /**
+     * @brief Get the floating point value stored at the given key.
+     *
+     * Adds the key to the map if it doesn't exist.
+     *
+     * @param key The key to query.
+     */
     double       &get_double(std::string const &key);
 
+    /**
+     * @brief Get the string value stored at the given key.
+     *
+     * Throws an error if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
     std::string const  &get_string(std::string const &key) const;
+
+    /**
+     * @brief Get the integer value stored at the given key.
+     *
+     * Throws an error if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
     std::int64_t const &get_int(std::string const &key) const;
+
+    /**
+     * @brief Get the floating point value stored at the given key.
+     *
+     * Throws an error if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
     double const       &get_double(std::string const &key) const;
 
+    /**
+     * @brief Returns the map containing string options.
+     */
     std::shared_ptr<ConfigMap<std::string>>  get_string_map();
+
+    /**
+     * @brief Returns the map containing integer options.
+     */
     std::shared_ptr<ConfigMap<std::int64_t>> get_int_map();
+
+    /**
+     * @brief Returns the map containing floating point options.
+     */
     std::shared_ptr<ConfigMap<double>>       get_double_map();
 
+    /**
+     * @brief Attach an observer to the global configuration map.
+     *
+     * The observer should be an object derived from ConfigObserver. The template parameter
+     * on the ConfigObserver class
+     * determines which map or maps the observer will be attached to. The template parameter can
+     * be either @c std::string , @c std::int64_t , or @c double . If the observer derives from
+     * multiple of these observers, it will be attached to each map that it is able to.
+     *
+     * @param obs The observer to attach.
+     */
     template <typename T>
     void attach(std::shared_ptr<T> &obs) {
         if constexpr (std::is_base_of_v<ConfigObserver<std::string>, T>) {
@@ -1063,6 +1194,11 @@ class EINSUMS_EXPORT GlobalConfigMap {
         }
     }
 
+    /**
+     * @brief Detach an observer from the global configuration map.
+     *
+     * @param obs The observer to remove.
+     */
     template <typename T>
     void detach(std::shared_ptr<T> &obs) {
         if constexpr (std::is_base_of_v<ConfigObserver<std::string>, T>) {
@@ -1078,13 +1214,33 @@ class EINSUMS_EXPORT GlobalConfigMap {
         }
     }
 
+    /**
+     * @brief Update all of the observers of the map that something has changed.
+     */
     void notify();
 
   private:
     explicit GlobalConfigMap();
 
+    /**
+     * @property str_map_
+     *
+     * @brief Holds the string valued options.
+     */
     std::shared_ptr<ConfigMap<std::string>>  str_map_;
+
+    /**
+     * @property int_map_
+     *
+     * @brief Holds the integer valued options.
+     */
     std::shared_ptr<ConfigMap<std::int64_t>> int_map_;
+
+    /**
+     * @property double_map_
+     *
+     * @brief Holds the floating-point valued options.
+     */
     std::shared_ptr<ConfigMap<double>>       double_map_;
 };
 

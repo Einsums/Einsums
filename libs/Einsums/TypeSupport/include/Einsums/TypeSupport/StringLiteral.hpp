@@ -14,14 +14,35 @@
 
 namespace einsums {
 
-/// Normal strings cannot be used as template parameters, but this can.
-/// This is needed for the parameters names in the NamedTuples.
+/**
+ * @struct StringLiteral
+ *
+ * Normal strings cannot be used as template parameters, but this can.
+ * This is needed for the parameters' names in the NamedTuples.
+ *
+ * @tparam N The size of the string including the null terminator.
+ */
 template <size_t N>
 struct StringLiteral {
+    /**
+     * @brief Constructs a new string literal out of the list of characters.
+     *
+     * @param chars The characters for the string.
+     */
     constexpr StringLiteral(auto const... chars) : _arr{chars..., '\0'} {}
 
+    /**
+     * @brief Constructs a new string literal out of the list of characters.
+     *
+     * @param arr The characters for the string.
+     */
     constexpr StringLiteral(std::array<char, N> const &arr) : _arr(arr) {}
 
+    /**
+     * @brief Constructs a new stringn literal out of a string.
+     *
+     * @param str The string to use for the construction
+     */
     constexpr StringLiteral(char const (&str)[N]) { std::copy_n(str, N, std::data(_arr)); }
 
     /// Returns the value as a string
@@ -30,6 +51,11 @@ struct StringLiteral {
     /// Returns the value as a string
     constexpr std::string_view string_view() const { return std::string_view(std::data(_arr), N - 1); }
 
+    /**
+     * @property _arr
+     *
+     * @brief The array containing the string data.
+     */
     std::array<char, N> _arr{};
 };
 
