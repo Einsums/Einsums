@@ -41,9 +41,26 @@ namespace tensor_base {
 template <typename T, size_t rank>
 struct FunctionTensor : public CoreTensor {
   protected:
-    Dim<rank>   _dims;
+    /**
+     * @property _dims
+     *
+     * @brief The dimensions of the tensor.
+     */
+    Dim<rank> _dims;
+
+    /**
+     * @property _name
+     *
+     * @brief The name of the tensor.
+     */
     std::string _name{"(unnamed)"};
-    size_t      _size;
+
+    /**
+     * @property _size
+     *
+     * @brief The size of the tensor. Equal to the product of the dimensions.
+     */
+    size_t _size;
 
     /**
      * @brief Checks for negative indices and makes them positive, then performs range checking.
@@ -61,18 +78,32 @@ struct FunctionTensor : public CoreTensor {
                 } else {
                     message = fmt::format("{}({}) ", message, inds->at(i));
                 }
-                EINSUMS_THROW_EXCEPTION(std::out_of_range, "{}is too far less than zero or is greater than {}", message, _dims[i]);
+                EINSUMS_THROW_EXCEPTION(std::out_of_range, "{}is too far below zero or is greater than {}", message, _dims[i]);
             }
         }
     }
 
   public:
-    using ValueType              = T;
+    /**
+     * @typedef ValueType
+     *
+     * @brief The type of data returned by the tensor.
+     */
+    using ValueType = T;
+
+    /**
+     * @property Rank
+     *
+     * @brief The rank of the tensor.
+     */
     constexpr static size_t Rank = rank;
 
-    FunctionTensor()                       = default;
-    FunctionTensor(FunctionTensor const &) = default;
-
+    /**
+     * @brief Create a new function tensor with the given name and dimensions.
+     *
+     * @param name The name of the tensor.
+     * @param args The dimensions of the tensor.
+     */
     template <typename... Args>
         requires requires {
             requires(!std::is_same_v<Args, Dim<Rank>> || ...);
@@ -86,6 +117,12 @@ struct FunctionTensor : public CoreTensor {
         }
     }
 
+    /**
+     * @brief Create a new function tensor with the given name and dimensions.
+     *
+     * @param name The name of the tensor.
+     * @param dims The dimensions of the tensor.
+     */
     FunctionTensor(std::string name, Dim<Rank> dims) : _dims(dims), _name{name} {
         _size = 1;
 
@@ -94,6 +131,11 @@ struct FunctionTensor : public CoreTensor {
         }
     }
 
+    /**
+     * @brief Create a new function tensor with the given dimensions.
+     *
+     * @param dims The dimensions of the tensor.
+     */
     FunctionTensor(Dim<Rank> dims) : _dims(dims) {
         _size = 1;
 
@@ -110,9 +152,16 @@ struct FunctionTensor : public CoreTensor {
      * This is the method that should be overloaded in child classes to perform the actual
      * function call. Due to the inability to override methods with variable parameters,
      * this method with a set input type is the workaround.
+     *
+     * @param inds The index for the function.
      */
     virtual T call(std::array<size_t, Rank> const &inds) const = 0;
 
+    /**
+     * @brief Subscript into the function tensor, wrapping negative indices and performing bounds checks.
+     *
+     * @param inds The index to use for the subscript.
+     */
     template <typename... MultiIndex>
         requires requires {
             requires(sizeof...(MultiIndex) == Rank);
@@ -126,6 +175,11 @@ struct FunctionTensor : public CoreTensor {
         return this->call(new_inds);
     }
 
+    /**
+     * @brief Subscript into the function tensor without checking for negative indices or bounds.
+     *
+     * @param inds The index to use for the subscript.
+     */
     template <typename... MultiIndex>
         requires requires {
             requires(sizeof...(MultiIndex) == Rank);
@@ -135,6 +189,11 @@ struct FunctionTensor : public CoreTensor {
         return this->call(std::array<uint64_t, Rank>{inds...});
     }
 
+    /**
+     * @brief Subscript into the function tensor without checking for negative indices or bounds.
+     *
+     * @param inds The index to use for the subscript.
+     */
     template <typename int_type>
         requires requires { requires(std::is_integral_v<int_type>); }
     T subscript(std::array<int_type, Rank> const &inds) const {
@@ -149,6 +208,11 @@ struct FunctionTensor : public CoreTensor {
         }
     }
 
+    /**
+     * @brief Subscript into the function tensor, wrapping negative indices and performing bounds checks.
+     *
+     * @param inds The index to use for the subscript.
+     */
     template <typename Storage>
         requires requires {
             requires !std::is_integral_v<Storage>;
@@ -168,6 +232,13 @@ struct FunctionTensor : public CoreTensor {
         return this->call(new_inds);
     }
 
+    /**
+     * @brief Subscript into the function tensor, wrapping negative indices and performing bounds checks.
+     *
+     * Creates a view when one of the indices is All.
+     *
+     * @param inds The index to use for the subscript.
+     */
     template <typename... MultiIndex>
         requires requires {
             requires(sizeof...(MultiIndex) == Rank);
@@ -214,6 +285,13 @@ struct FunctionTensor : public CoreTensor {
             this, offsets, dims, index_template);
     }
 
+    /**
+     * @brief Subscript into the function tensor, wrapping negative indices and performing bounds checks.
+     *
+     * Creates a view based on the indices, which can be ranges or single values.
+     *
+     * @param inds The index to use for the subscript.
+     */
     template <typename... MultiIndex>
         requires NumOfType<Range, Rank, MultiIndex...>
     auto operator()(MultiIndex... index) const -> FunctionTensorView<T, Rank, Rank> {
@@ -237,14 +315,33 @@ struct FunctionTensor : public CoreTensor {
         return FunctionTensorView<T, Rank, Rank>{this, std::move(offset), std::move(dims), index_template};
     }
 
+    /**
+     * @brief Get the dimensions of the tensor.
+     */
     virtual Dim<Rank> dims() const { return _dims; }
 
+    /**
+     * @brief Get the dimension of the tensor along a given axis.
+     *
+     * @param d The axis to query.
+     */
     virtual auto dim(int d) const -> size_t { return _dims[d]; }
 
+    /**
+     * @brief Get the name of the tensor.
+     */
     virtual std::string const &name() const { return _name; }
 
+    /**
+     * @brief Set the name of the tensor.
+     *
+     * @param str The new name.
+     */
     virtual void set_name(std::string const &str) { _name = str; }
 
+    /**
+     * @brief Convert the function tensor into a regular tensor.
+     */
     operator Tensor<T, Rank>() const {
         Tensor<T, Rank> out(dims());
         out.set_name(name());
@@ -281,20 +378,38 @@ struct FunctionTensor : public CoreTensor {
 template <typename T, size_t Rank>
 struct FuncPointerTensor : public tensor_base::FunctionTensor<T, Rank>, tensor_base::CoreTensor {
   protected:
+    /**
+     * @property _func_ptr
+     *
+     * @brief The function pointer called by the subscript operator.
+     */
     T (*_func_ptr)(std::array<int, Rank> const &);
 
   public:
+    /**
+     * @brief Construct a new function tensor with the given dimensions and function pointer.
+     *
+     * @param name The new name of the tensor.
+     * @param func_ptr The function pointer that will actually be doing the work.
+     * @param dims The dimensions of the tensor.
+     */
     template <typename... Args>
     FuncPointerTensor(std::string name, T (*func_ptr)(std::array<int, Rank> const &), Args... dims)
         : tensor_base::FunctionTensor<T, Rank>(name, dims...), _func_ptr(func_ptr) {}
 
+    /**
+     * @brief Copy a function pointer tensor.
+     *
+     * @param copy The tensor to copy.
+     */
     FuncPointerTensor(FuncPointerTensor<T, Rank> const &copy) : tensor_base::FunctionTensor<T, Rank>(copy) { _func_ptr = copy._func_ptr; }
 
     virtual ~FuncPointerTensor() = default;
 
+    /**
+     * @brief Call the function with the given indices.
+     */
     virtual T call(std::array<int, Rank> const &inds) const override { return _func_ptr(inds); }
-
-    size_t dim(int d) const override { return tensor_base::FunctionTensor<T, Rank>::dim(d); }
 };
 
 /**
@@ -309,11 +424,41 @@ struct FuncPointerTensor : public tensor_base::FunctionTensor<T, Rank>, tensor_b
 template <typename T, size_t rank, size_t UnderlyingRank>
 struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
   protected:
+    /**
+     * @property _func_tensor
+     *
+     * @brief A pointer to the underlying function tensor.
+     */
     tensor_base::FunctionTensor<T, UnderlyingRank> const *_func_tensor;
+
+    /**
+     * @property _offsets
+     *
+     * @brief A list of the index offsets.
+     */
     Offset<rank>                                          _offsets;
+
+    /**
+     * @property _index_template
+     *
+     * @brief Contains a template for the indices.
+     *
+     * The template will contain negative values where indices need to be replaced. Non-negative values
+     * will be left intact when being passed to the viewed tensor.
+     */
     std::array<int, UnderlyingRank>                       _index_template;
+
+    /**
+     * @property _full_view
+     *
+     * @brief Determines whether the view sees all of the data of the underlying tensor.
+     */
     bool                                                  _full_view{true};
 
+    /**
+     * @brief Takes the input indices and applies the offsets and template to prepare it to be passed to the
+     * underlying tensor.
+     */
     virtual std::array<int, UnderlyingRank> apply_view(std::array<int, rank> const &inds) const {
         std::array<int, UnderlyingRank> out{_index_template};
         int                             curr_rank = 0;
@@ -339,10 +484,30 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
     }
 
   public:
-    using ValueType              = T;
+    /**
+     * @typedef ValueType
+     *
+     * @brief The type of data returned by the tensor.
+     */
+    using ValueType = T;
+
+    /**
+     * @property Rank
+     *
+     * @brief The rank of the view.
+     */
     constexpr static size_t Rank = rank;
 
-    FunctionTensorView() = default;
+    /**
+     * @brief Create a function tensor view with the given name, offsets, dimensions, etc.
+     *
+     * @param name The name of the view.
+     * @param func_tens The underlying tensor that this object views.
+     * @param offsets The offset for each axis in the view.
+     * @param dims The dimensions of the view.
+     * @param index_template A template for the indices. It contains negative numbers where values should be filled in, and full indices where they
+     * have been explicitly specified.
+     */
     FunctionTensorView(std::string name, tensor_base::FunctionTensor<T, UnderlyingRank> *func_tens, Offset<Rank> const &offsets,
                        Dim<Rank> const &dims, std::array<int, UnderlyingRank> const &index_template)
         : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template}, tensor_base::FunctionTensor<T, Rank>(name, dims) {
@@ -366,10 +531,22 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
         }
     }
 
+    /**
+     * @brief Create a function tensor view with the given offsets, dimensions, etc.
+     *
+     * @param func_tens The underlying tensor that this object views.
+     * @param offsets The offset for each axis in the view.
+     * @param dims The dimensions of the view.
+     * @param index_template A template for the indices. It contains negative numbers where values should be filled in, and full indices where they
+     * have been explicitly specified.
+     */
     FunctionTensorView(tensor_base::FunctionTensor<T, UnderlyingRank> const *func_tens, Offset<Rank> const &offsets, Dim<Rank> const &dims,
                        std::array<int, UnderlyingRank> const &index_template)
         : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template}, tensor_base::FunctionTensor<T, Rank>(dims) {}
 
+    /**
+     * @brief Function tensor view copy constructor.
+     */
     FunctionTensorView(FunctionTensorView const &copy) : tensor_base::FunctionTensor<T, Rank>(copy) {
         _func_tensor    = copy._func_tensor;
         _offsets        = copy._offsets;
@@ -377,11 +554,17 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
         _full_view      = copy._full_view;
     }
 
+    /**
+     * @brief Call the underlying function of the function tensor.
+     */
     virtual T call(std::array<int, Rank> const &inds) const {
         auto fixed_inds = apply_view(inds);
         return _func_tensor->call(fixed_inds);
     }
 
+    /**
+     * @brief Returns whether the view sees all of the data of the underlying tensor.
+     */
     bool full_view_of_underlying() const { return _full_view; }
 };
 
