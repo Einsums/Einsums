@@ -510,6 +510,8 @@ else()
   add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
 endif(NOT WIN32)
 
+einsums_info("CMAKE_CXX_COMPILER_ID is ${CMAKE_CXX_COMPILER_ID}")
+
 # Add exception handling flags based on the compiler and platform
 if(MSVC)
   # For MSVC, use /EHsc or /EHa depending on the level of SEH required
