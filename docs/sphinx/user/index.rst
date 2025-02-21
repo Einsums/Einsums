@@ -142,7 +142,7 @@ The benchmark was performed on a system with the following specifications.
 |                         +------------------+------------------------+
 |                         | Storage          | 2 TB NVME SSD storage  |
 |                         +------------------+------------------------+
-|                         | Operating System | Debian Bookworm 12.6   |
+|                         | Operating System | Debian Bookworm        |
 |                         +------------------+------------------------+
 |                         | Einsums Version  | 1.0-pre                |
 |                         +------------------+------------------------+
