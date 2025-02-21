@@ -42,7 +42,7 @@ using SharedRuntimeTensorView = std::shared_ptr<RuntimeTensorView<T>>;
  * @tparam T The type stored in the tensor.
  */
 template <typename T>
-class EINSUMS_EXPORT PyTensorIterator {
+class EINSUMS_PY_EXPORT PyTensorIterator {
   private:
     std::mutex           _lock;
     size_t               _curr_index, _elements;
@@ -1777,6 +1777,6 @@ void export_tensor(pybind11::module &mod) {
 #undef OPERATOR
 }
 
-EINSUMS_EXPORT void export_tensor_typeless(pybind11::module_ &mod);
+EINSUMS_PY_EXPORT void export_tensor_typeless(pybind11::module_ &mod);
 
 } // namespace einsums::python

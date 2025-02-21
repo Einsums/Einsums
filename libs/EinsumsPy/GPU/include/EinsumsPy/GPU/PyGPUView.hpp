@@ -19,7 +19,7 @@ namespace detail {
  *
  * @brief Details how to handle the data viewed by the PyGPUView object.
  */
-enum EINSUMS_EXPORT PyViewMode {
+enum EINSUMS_PY_EXPORT PyViewMode {
     /**
      * @brief Map the data into the GPU address space.
      * With this mode, data synchronization is handled by the memory bus.
@@ -52,7 +52,7 @@ using SharedPyGPUView = std::shared_ptr<PyGPUView>;
  *
  * @brief Makes the data in a Python buffer object available to the GPU.
  */
-class EINSUMS_EXPORT PyGPUView {
+class EINSUMS_PY_EXPORT PyGPUView {
   public:
     /**
      * @brief Creates a view of the given buffer object.

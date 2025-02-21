@@ -474,10 +474,12 @@ get_property(
 )
 einsums_info("EINSUMS_LINALG_INT_INTERFACE ${EINSUMS_LINALG_INT_INTERFACE}")
 
-find_package(OpenMP REQUIRED MODULE COMPONENTS CXX)
-target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
-#einsums_info("OpenMP Version ${OpenMP_CXX_MAJOR_VERSION}")
-einsums_check_for_omp_tools_h(DEFINITIONS EINSUMS_HAVE_OMP_TOOLS_H)
+find_package(OpenMP  MODULE COMPONENTS CXX)
+if (TARGET OpenMP::OpenMP_CXX)
+  target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
+  #einsums_info("OpenMP Version ${OpenMP_CXX_MAJOR_VERSION}")
+  einsums_check_for_omp_tools_h(DEFINITIONS EINSUMS_HAVE_OMP_TOOLS_H)
+endif()
 
 # ##################################################################################################
 # C++ feature tests
@@ -508,19 +510,19 @@ else()
   add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
 endif(NOT WIN32)
 
+einsums_info("CMAKE_CXX_COMPILER_ID is ${CMAKE_CXX_COMPILER_ID}")
+
 # Add exception handling flags based on the compiler and platform
 if(MSVC)
   # For MSVC, use /EHsc or /EHa depending on the level of SEH required
   add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/EHsc>)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  # For Clang and ClangCL
-  if(WIN32)
-    # ClangCL on Windows
-    add_compile_options(-fcxx-exceptions -fseh-exceptions)
-  else()
-    # Clang on macOS/Linux
+  if (WIN32)
+    einsums_info("clang-cl assumed")
+    add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/EHsc>)
+  else ()
     add_compile_options(-fcxx-exceptions)
-  endif()
+  endif ()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   # For GCC (Linux/macOS)
   add_compile_options(-fexceptions)

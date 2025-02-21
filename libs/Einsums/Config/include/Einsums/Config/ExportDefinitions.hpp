@@ -50,6 +50,12 @@
 #        define EINSUMS_EXPORT EINSUMS_SYMBOL_IMPORT
 #    endif
 
+#    if defined(EINSUMS_PY_EXPORTS)
+#        define EINSUMS_PY_EXPORT EINSUMS_SYMBOL_EXPORT
+#    else
+#        define EINSUMS_PY_EXPORT EINSUMS_SYMBOL_IMPORT
+#    endif
+
 #    if defined(EINSUMS_EXPERIMENTAL_EXPORTS)
 #        define EINSUMS_EXPERIMENTAL_EXPORT EINSUMS_SYMBOL_EXPORT
 #    else

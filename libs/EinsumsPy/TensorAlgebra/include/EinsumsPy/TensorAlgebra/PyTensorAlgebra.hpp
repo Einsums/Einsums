@@ -33,15 +33,15 @@
 namespace einsums::tensor_algebra {
 
 namespace detail {
-EINSUMS_EXPORT std::vector<size_t> get_dim_ranges_for_many(pybind11::buffer_info const &C, std::vector<int> const &C_perm,
+EINSUMS_PY_EXPORT std::vector<size_t> get_dim_ranges_for_many(pybind11::buffer_info const &C, std::vector<int> const &C_perm,
                                                            pybind11::buffer_info const &A, std::vector<int> const &A_perm,
                                                            pybind11::buffer_info const &B, std::vector<int> const &B_perm,
                                                            int unique_indices);
-EINSUMS_EXPORT std::vector<size_t> get_dim_ranges_for_many(pybind11::buffer_info const &A, std::vector<int> const &A_perm,
+EINSUMS_PY_EXPORT std::vector<size_t> get_dim_ranges_for_many(pybind11::buffer_info const &A, std::vector<int> const &A_perm,
                                                            pybind11::buffer_info const &B, std::vector<int> const &B_perm,
                                                            int unique_indices);
 
-EINSUMS_EXPORT std::string intersect(std::string const &st1, std::string const &st2);
+EINSUMS_PY_EXPORT std::string intersect(std::string const &st1, std::string const &st2);
 
 template <typename T>
 std::list<T> intersect(std::vector<T> const &vec1, std::vector<T> const &vec2) {
@@ -59,11 +59,11 @@ std::list<T> intersect(std::vector<T> const &vec1, std::vector<T> const &vec2) {
 
 #ifdef EINSUMS_COMPUTE_CODE
 
-EINSUMS_EXPORT std::vector<size_t> get_dim_ranges_for_many(python::PyGPUView const &C, std::vector<int> const &C_perm,
+EINSUMS_PY_EXPORT std::vector<size_t> get_dim_ranges_for_many(python::PyGPUView const &C, std::vector<int> const &C_perm,
                                                            python::PyGPUView const &A, std::vector<int> const &A_perm,
                                                            python::PyGPUView const &B, std::vector<int> const &B_perm, int unique_indices);
 
-EINSUMS_EXPORT std::vector<size_t> get_dim_ranges_for_many(python::PyGPUView const &A, std::vector<int> const &A_perm,
+EINSUMS_PY_EXPORT std::vector<size_t> get_dim_ranges_for_many(python::PyGPUView const &A, std::vector<int> const &A_perm,
                                                            python::PyGPUView const &B, std::vector<int> const &B_perm, int unique_indices);
 /**
  * Perform the generic algorithm on the GPU.
@@ -334,7 +334,7 @@ __global__ void scale_array(T factor, T *__restrict__ array, size_t max_index) {
  *
  * @brief Holds the info for the generic algorithm, called when all the optimizations fail.
  */
-class EINSUMS_EXPORT PyEinsumGenericPlan {
+class EINSUMS_PY_EXPORT PyEinsumGenericPlan {
   protected:
     std::vector<int> _C_permute, _A_permute, _B_permute;
     int              _num_inds;
@@ -616,7 +616,7 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
                          pybind11::buffer const &A, pybind11::buffer const &B) const;
 };
 
-class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
+class EINSUMS_PY_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
   private:
 #ifdef EINSUMS_COMPUTE_CODE
     template <typename T>
@@ -730,7 +730,7 @@ class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
                          pybind11::buffer const &A, pybind11::buffer const &B) const override;
 };
 
-class EINSUMS_EXPORT PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
+class EINSUMS_PY_EXPORT PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
   private:
 #ifdef EINSUMS_COMPUTE_CODE
     template <typename T>
@@ -821,7 +821,7 @@ class EINSUMS_EXPORT PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
                          pybind11::buffer const &A, pybind11::buffer const &B) const override;
 };
 
-class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
+class EINSUMS_PY_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
   private:
     bool _swap_AB;
 
@@ -950,7 +950,7 @@ class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
                          pybind11::buffer const &A, pybind11::buffer const &B) const override;
 };
 
-class EINSUMS_EXPORT PyEinsumGemvPlan : public PyEinsumGenericPlan {
+class EINSUMS_PY_EXPORT PyEinsumGemvPlan : public PyEinsumGenericPlan {
   private:
     std::vector<int> _AC_pos, _A_link_pos, _B_link_pos;
     int              _A_target_last_ind, _A_link_last_ind, _B_link_last_ind, _C_target_last_ind;
@@ -1104,7 +1104,7 @@ class EINSUMS_EXPORT PyEinsumGemvPlan : public PyEinsumGenericPlan {
                          pybind11::buffer const &A, pybind11::buffer const &B) const override;
 };
 
-class EINSUMS_EXPORT PyEinsumGemmPlan : public PyEinsumGenericPlan {
+class EINSUMS_PY_EXPORT PyEinsumGemmPlan : public PyEinsumGenericPlan {
   private:
     std::vector<int> _AC_inds, _BC_inds, _A_link_inds, _B_link_inds;
     int              _A_target_last_ind, _A_link_last_ind, _B_target_last_ind, _B_link_last_ind, _CA_target_last_ind, _CB_target_last_ind;
@@ -1319,6 +1319,6 @@ class EINSUMS_EXPORT PyEinsumGemmPlan : public PyEinsumGenericPlan {
                          pybind11::buffer const &A, pybind11::buffer const &B) const override;
 };
 
-EINSUMS_EXPORT std::shared_ptr<PyEinsumGenericPlan> compile_plan(std::string C_indices, std::string A_indices, std::string B_indices);
+EINSUMS_PY_EXPORT std::shared_ptr<PyEinsumGenericPlan> compile_plan(std::string C_indices, std::string A_indices, std::string B_indices);
 
 } // namespace einsums::tensor_algebra

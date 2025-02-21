@@ -17,7 +17,7 @@ namespace einsums::python::testing {
  * All of the fields of the buffer can be modified. The only one with restrictions is
  * the data pointer, which can only be set on initialization or cleared to NULL later.
  */
-struct EINSUMS_EXPORT BadBuffer {
+struct EINSUMS_PY_EXPORT BadBuffer {
   private:
     void               *_ptr{nullptr};   /// Where the data is stored.
     size_t              _itemsize{0};    /// How big an item is.
