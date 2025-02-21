@@ -7,6 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
@@ -14,7 +15,6 @@
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/HashFunctions.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
-#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 #include <string>
 
@@ -47,22 +47,70 @@ namespace tensor_base {
 template <typename T, size_t rank, typename TensorType>
 struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recursive_mutex>, AlgebraOptimizedTensor {
   public:
+    /**
+     * @typedef map_type
+     *
+     * @brief The data type used to hold the subtensors.
+     */
     using map_type = typename std::unordered_map<std::array<int, rank>, TensorType, einsums::hashes::container_hash<std::array<int, rank>>>;
+
+    /**
+     * @property Rank
+     *
+     * @brief The rank of the tensor.
+     */
     constexpr static size_t Rank = rank;
 
   protected:
+    /**
+     * @property _tile_offsets
+     *
+     * @brief A list containing the positions along the axes that each tile starts.
+     */
+    /**
+     * @property _tile_sizes
+     *
+     * @brief A list of the lengths of the tiles along the axes.
+     */
     std::array<std::vector<int>, Rank> _tile_offsets, _tile_sizes;
 
+    /**
+     * @property _tiles
+     *
+     * @brief The map containing the tiles.
+     */
     map_type _tiles;
 
+    /**
+     * @property _dims
+     *
+     * @brief The overall dimensions of the tensor.
+     */
     Dim<Rank> _dims;
 
+    /**
+     * @property _size
+     *
+     * @brief The total number of elements in the tensor, including the ignored zeros.
+     */
+    /**
+     * @property _grid_size
+     *
+     * @brief The number of possible tile positions within the grid.
+     */
     size_t _size, _grid_size;
 
+    /**
+     * @property _name
+     *
+     * @brief The name of the tensor.
+     */
     std::string _name{"(unnamed)"};
 
     /**
      * Add a tile using the underlying type's preferred method. Also gives it a name.
+     *
+     * @param pos The position in the grid to place the tile.
      */
     virtual void add_tile(std::array<int, Rank> pos) = 0;
 
@@ -70,7 +118,18 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     friend struct TiledTensorBase;
 
   public:
-    using ValueType  = T;
+    /**
+     * @typedef ValueType
+     *
+     * @brief Represents the type of data stored in this tensor.
+     */
+    using ValueType = T;
+
+    /**
+     * @typedef StoredType
+     *
+     * @brief The types of tensor this collected tensor stores.
+     */
     using StoredType = TensorType;
 
     /**
@@ -119,6 +178,12 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         }
     }
 
+    /**
+     * @brief Create a new empty tiled tensor with the given grid.
+     *
+     * @param name The name of the tensor.
+     * @param sizes The grids to apply.
+     */
     TiledTensor(std::string name, std::array<std::vector<int>, Rank> const &sizes)
         : _name(name), _tile_offsets(), _tile_sizes(sizes), _tiles(), _size(0), _dims{} {
         _size = 1;
@@ -451,6 +516,12 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         return subscript_tensor(out, array_ind);
     }
 
+    /**
+     * Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
+     *
+     * @param index The index to evaluate.
+     * @return The value at the position.
+     */
     template <typename Container>
         requires requires {
             requires !std::is_integral_v<Container>;
@@ -488,6 +559,12 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         }
     }
 
+    /**
+     * Indexes into the tensor. If the index points to a tile that is not initialized, it will create the tile and return a value for it.
+     *
+     * @param index The index to evaluate.
+     * @return A reference to the position.
+     */
     template <typename Container>
         requires requires {
             requires !std::is_integral_v<Container>;
@@ -581,6 +658,11 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         }
     }
 
+    /**
+     * @brief Copy assignment.
+     *
+     * @param copy The tensor to copy.
+     */
     TiledTensor<T, Rank, TensorType> &operator=(TiledTensor<T, Rank, TensorType> const &copy) {
         zero();
         _tile_sizes   = copy._tile_sizes;
@@ -598,6 +680,11 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         return *this;
     }
 
+    /**
+     * @brief Copy assignment from a different kind of tiled tensor.
+     *
+     * @param copy The tensor to copy.
+     */
     template <TiledTensorConcept TensorOther>
         requires(SameUnderlyingAndRank<TiledTensor<T, Rank, TensorType>, TensorOther>)
     TiledTensor<T, Rank, TensorType> &operator=(TensorOther const &copy) {
@@ -617,11 +704,21 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         return *this;
     }
 
+    /**
+     * @brief Set all occupied tensors with the given value.
+     *
+     * @param value The value to fill the tensors with.
+     */
     TiledTensor &operator=(T value) {
         set_all(value);
         return *this;
     }
 
+    /**
+     * @brief Add a scalar to every tensor.
+     *
+     * @param value The value to add.
+     */
     TiledTensor &operator+=(T value) {
         if (value == T{0}) {
             return *this;
@@ -650,6 +747,11 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         return *this;
     }
 
+    /**
+     * @brief Subtract a scalar from every tensor.
+     *
+     * @param value The value to subtract.
+     */
     TiledTensor &operator-=(T value) {
         if (value == T{0}) {
             return *this;
@@ -678,6 +780,11 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         return *this;
     }
 
+    /**
+     * @brief Multiply every tensor by a scalar.
+     *
+     * @param value The value to multiply.
+     */
     TiledTensor &operator*=(T value) {
         if (value == T{0}) {
             zero();
@@ -689,6 +796,11 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         return *this;
     }
 
+    /**
+     * @brief Divide every tensor by a scalar.
+     *
+     * @param value The value to divide by.
+     */
     TiledTensor &operator/=(T value) {
         for (auto &tile : _tiles) {
             tile.second /= value;
@@ -696,6 +808,11 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         return *this;
     }
 
+    /**
+     * @brief Perform in-place addition between two tensors.
+     *
+     * @param other The tensor to add to this one.
+     */
     TiledTensor &operator+=(TiledTensor const &other) {
         if (_tile_sizes != other._tile_sizes) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Tiled tensors do not have the same layouts.");
@@ -713,6 +830,11 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         return *this;
     }
 
+    /**
+     * @brief Perform in-place subtraction between two tensors.
+     *
+     * @param other The tensor to subtract from this one.
+     */
     TiledTensor &operator-=(TiledTensor const &other) {
         if (_tile_sizes != other._tile_sizes) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Tiled tensors do not have the same layouts.");
@@ -731,6 +853,11 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         return *this;
     }
 
+    /**
+     * @brief Perform in-place multiplication between two tensors.
+     *
+     * @param other The tensor to multiply this one by.
+     */
     TiledTensor &operator*=(TiledTensor const &other) {
         if (_tile_sizes != other._tile_sizes) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Tiled tensors do not have the same layouts.");
@@ -747,6 +874,14 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         return *this;
     }
 
+    /**
+     * @brief Perform in-place division between two tensors.
+     *
+     * If a block is zero in the divisor, then the corresponding block will also be zeroed in the output,
+     * rather than setting it to NaN or infinity.
+     *
+     * @param other The tensor to division this one by.
+     */
     TiledTensor &operator/=(TiledTensor const &other) {
         if (_tile_sizes != other._tile_sizes) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Tiled tensors do not have the same layouts.");
@@ -831,14 +966,22 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      */
     size_t num_filled() const { return _tiles.size(); }
 
+    /**
+     * @brief Indicates whether the tensor sees all of the underlying elements, or could if all blocks were filled.
+     */
     virtual bool full_view_of_underlying() const { return true; }
 
     /**
-     * @brief Get the dimensions.
+     * @brief Get the dimension along a given axis.
+     *
+     * @param d The axis to query.
      */
-    virtual size_t dim(int d) const { return _dims.at(d); }
+    size_t dim(int d) const { return _dims.at(d); }
 
-    virtual Dim<Rank> dims() const { return _dims; }
+    /**
+     * @brief Get the dimensions
+     */
+    Dim<Rank> dims() const { return _dims; }
 
     /**
      * Check to see if the given tile has zero size.
@@ -879,7 +1022,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     }
 
     /**
-     * Convert.
+     * Convert to the underlying tensor type.
      */
     operator TensorType() const {
         TensorType out(_dims);
@@ -934,6 +1077,11 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
 template <typename T, size_t Rank>
 struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Tensor<T, Rank>>, tensor_base::CoreTensor {
   protected:
+    /**
+     * @brief Construct a new tile in the set of tiles at the given position.
+     *
+     * @param pos The position of the tile to create.
+     */
     void add_tile(std::array<int, Rank> pos) override {
         std::string tile_name = this->_name + " - (";
         Dim<Rank>   dims{};
@@ -955,19 +1103,61 @@ struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Ten
   public:
     TiledTensor() = default;
 
+    /**
+     * @brief Create a new tiled tensor with the given name and grid specification.
+     *
+     * The sizes should be collections of integers. There should either be only one collection, or there should be
+     * as many collections as the rank of the tensor. If there are as many collections as the rank of the tensor,
+     * then each collection will be used to split up the respective axis as a grid. If there is only one collection, then
+     * it will be applied to all of the axes, making a square tensor whose diagonal tiles are square as well. Obviously,
+     * if the tensor is only one-dimensional, these two behaviors are the same.
+     *
+     * @param name The name of the tensor.
+     * @param sizes The grids for the axes. There must either only be one, or the number must be the same as the rank.
+     */
     template <typename... Sizes>
     TiledTensor(std::string name, Sizes... sizes) : tensor_base::TiledTensor<T, Rank, Tensor<T, Rank>>(name, sizes...) {}
 
+    /**
+     * @brief Create a new tiled tensor with the given name and grid specification.
+     *
+     * The grid passed to this constructor will be applied to all of the axes equally. The resulting tensor will
+     * be square, and all of the diagonal tiles will also be square.
+     *
+     * @param name The name for the tensor.
+     * @param init The grid for the tensor.
+     */
     TiledTensor(std::string name, std::initializer_list<int> init) : tensor_base::TiledTensor<T, Rank, Tensor<T, Rank>>(name, init) {}
 
+    /**
+     * @brief Copy constructor.
+     *
+     * @param other The tensor to copy.
+     */
     TiledTensor(TiledTensor<T, Rank> const &other) : tensor_base::TiledTensor<T, Rank, Tensor<T, Rank>>(other) {}
 
+    /**
+     * @brief Copy cast constructor.
+     *
+     * This constructor copies data from a tiled tensor that is not just a TiledTensor. This includes
+     * TiledTensorView, TiledDeviceTensor, and others.
+     *
+     * @param other The tensor to copy.
+     */
     template <TiledTensorConcept OtherTensor>
         requires(SameUnderlyingAndRank<TiledTensor<T, Rank>, OtherTensor>)
     TiledTensor(OtherTensor const &other) : tensor_base::TiledTensor<T, Rank, Tensor<T, Rank>>(other) {}
 
     ~TiledTensor() = default;
 
+    /**
+     * @brief Copy assignment.
+     *
+     * This copies the data from the other tensor into this one. The other tensor should be
+     * some sort of tiled tensor as well.
+     *
+     * @param copy The tensor to copy.
+     */
     template <TiledTensorConcept TensorOther>
         requires(SameUnderlyingAndRank<TiledTensor<T, Rank>, TensorOther>)
     TiledTensor<T, Rank> &operator=(TensorOther const &copy) {
@@ -986,8 +1176,6 @@ struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Ten
 
         return *this;
     }
-
-    size_t dim(int d) const override { return this->_dims[d]; }
 };
 
 /**
@@ -998,40 +1186,91 @@ struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Ten
 template <typename T, size_t Rank>
 struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums::TensorView<T, Rank>>, tensor_base::CoreTensor {
   private:
+    /**
+     * @property _full_view_of_underlying
+     *
+     * @brief Indicates whether this view can see all of the elements in the base tensor.
+     */
     bool _full_view_of_underlying{false};
 
-    void add_tile(std::array<int, Rank> pos) override {
-        EINSUMS_THROW_EXCEPTION(std::logic_error, "Can't add a tile to a TiledTensorView!");
-    }
+    /**
+     * @brief Tries to add a tile to the tensor, but it can't.
+     *
+     * As of the current version, modification of the underlying structure of a TiledTensorView is
+     * not allowed. This is because currently, TiledTensorViews are kind of scuffed in that
+     * their structure is desynchronized from the tensor they view. This may change in the future.
+     */
+    void add_tile(std::array<int, Rank>) override { EINSUMS_THROW_EXCEPTION(std::logic_error, "Can't add a tile to a TiledTensorView!"); }
 
   public:
+    /**
+     * @typedef underlying_type
+     *
+     * @brief Represents the kind of tensor this object views.
+     */
     using underlying_type = TiledTensor<T, Rank>;
 
     TiledTensorView() = default;
 
+    /**
+     * @brief Create an empty view with the given name and grid specification.
+     *
+     * The sizes should be collections of integers. There should either be only one collection, or there should be
+     * as many collections as the rank of the tensor. If there are as many collections as the rank of the tensor,
+     * then each collection will be used to split up the respective axis as a grid. If there is only one collection, then
+     * it will be applied to all of the axes, making a square tensor whose diagonal tiles are square as well. Obviously,
+     * if the tensor is only one-dimensional, these two behaviors are the same.
+     *
+     * @param name The name of the tensor.
+     * @param sizes The grids for the axes. There must either only be one, or the number must be the same as the rank.
+     */
     template <typename... Sizes>
     TiledTensorView(std::string name, Sizes... sizes) : tensor_base::TiledTensor<T, Rank, einsums::TensorView<T, Rank>>(name, sizes...) {}
 
+    /**
+     * @brief Copy constructor.
+     *
+     * On exit, the structure of the copied tensor is copied. This means that the new tensor will view the same tensor
+     * as the tensor being copied. Modifications to one will modify the other.
+     *
+     * @param other The tensor view to copy.
+     */
     TiledTensorView(TiledTensorView<T, Rank> const &other) = default;
 
     ~TiledTensorView() = default;
 
+    /**
+     * @brief Checks to see if the view sees all of the data in the tensor.
+     */
     [[nodiscard]] bool full_view_of_underlying() const override { return _full_view_of_underlying; }
 
+    /**
+     * @brief Add a tile to the view.
+     *
+     * This does not add a tile to the viewed tensor, only to the view.
+     */
     void insert_tile(std::array<int, Rank> pos, einsums::TensorView<T, Rank> &&view) {
         std::lock_guard lock(*this);
         this->_tiles.emplace(pos, std::move(view));
     }
-
-    size_t dim(int d) const override { return this->_dims[d]; }
 };
 
 #ifdef EINSUMS_COMPUTE_CODE
 template <typename T, size_t Rank>
 struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsums::DeviceTensor<T, Rank>>, tensor_base::DeviceTensorBase {
   private:
+    /**
+     * @property _mode
+     *
+     * @brief The storage mode to use for the subtensors.
+     */
     detail::HostToDeviceMode _mode{detail::DEV_ONLY};
 
+    /**
+     * @brief Create a new uninitialized tensor at the given position.
+     *
+     * @param pos The position to put the new tensor.
+     */
     void add_tile(std::array<int, Rank> pos) override {
         std::lock_guard(*this);
         std::string tile_name = this->_name + " - (";
@@ -1054,18 +1293,55 @@ struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsum
   public:
     TiledDeviceTensor() = default;
 
+    /**
+     * @brief Create a new tiled tensor with the given name, storage mode, and grid specification.
+     *
+     * The sizes should be collections of integers. There should either be only one collection, or there should be
+     * as many collections as the rank of the tensor. If there are as many collections as the rank of the tensor,
+     * then each collection will be used to split up the respective axis as a grid. If there is only one collection, then
+     * it will be applied to all of the axes, making a square tensor whose diagonal tiles are square as well. Obviously,
+     * if the tensor is only one-dimensional, these two behaviors are the same.
+     *
+     * @param name The name of the tensor.
+     * @param mode The storage mode for the tensors.
+     * @param sizes The grids for the axes. There must either only be one, or the number must be the same as the rank.
+     */
     template <typename... Sizes>
         requires(!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
     TiledDeviceTensor(std::string name, detail::HostToDeviceMode mode, Sizes... sizes)
         : _mode{mode}, tensor_base::TiledTensor<T, Rank, einsums::DeviceTensor<T, Rank>>(name, sizes...) {}
 
+    /**
+     * @brief Create a new tiled tensor with the given name and grid specification.
+     *
+     * The sizes should be collections of integers. There should either be only one collection, or there should be
+     * as many collections as the rank of the tensor. If there are as many collections as the rank of the tensor,
+     * then each collection will be used to split up the respective axis as a grid. If there is only one collection, then
+     * it will be applied to all of the axes, making a square tensor whose diagonal tiles are square as well. Obviously,
+     * if the tensor is only one-dimensional, these two behaviors are the same.
+     *
+     * @param name The name of the tensor.
+     * @param sizes The grids for the axes. There must either only be one, or the number must be the same as the rank.
+     */
     template <typename... Sizes>
         requires(!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
     TiledDeviceTensor(std::string name, Sizes... sizes)
         : tensor_base::TiledTensor<T, Rank, einsums::DeviceTensor<T, Rank>>(name, sizes...) {}
 
+    /**
+     * @brief Copy constructor.
+     *
+     * @param other The tensor to copy.
+     */
     TiledDeviceTensor(TiledDeviceTensor<T, Rank> const &other) = default;
 
+    /**
+     * @brief Copy the data from another tiled tensor into this one.
+     *
+     * The parameter should be some type of tiled tensor or tiled tensor view.
+     *
+     * @param other The tensor to copy.
+     */
     template <RankTiledTensor<Rank, T> OtherType>
     TiledDeviceTensor(OtherType const &other) : tensor_base::TiledTensor<T, Rank, einsums::DeviceTensor<T, Rank>>(other) {}
 
@@ -1124,18 +1400,39 @@ struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsum
         return subscript_tensor(out, array_ind);
     }
 
+    /**
+     * @brief Indexes into the tensor.
+     *
+     * If the appropriate tile does not exist, this will return zero.
+     *
+     * @param index The index for the subscript.
+     */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
     auto operator()(std::array<int_type, Rank> const &index) const -> T {
         return std::apply(*this, index);
     }
 
+    /**
+     * @brief Indexes into the tensor.
+     *
+     * If the appropriate tile does not exist, it will be created, zeroed, and the value returned.
+     *
+     * @param index The index to use for the subscript.
+     */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
     auto operator()(std::array<int_type, Rank> const &index) -> HostDevReference<T> {
         return std::apply(*this, index);
     }
 
+    /**
+     * @brief Copy assignment.
+     *
+     * Copies the data from another tiled tensor into this one.
+     *
+     * @param copy The tensor to copy.
+     */
     template <TiledTensorConcept TensorOther>
         requires(SameUnderlyingAndRank<TiledDeviceTensor<T, Rank>, TensorOther>)
     TiledDeviceTensor<T, Rank> &operator=(TensorOther const &copy) {
@@ -1155,32 +1452,83 @@ struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsum
         return *this;
     }
 
+    /**
+     * @brief Cast to normal tensor.
+     */
     operator einsums::Tensor<T, Rank>() const { return (einsums::Tensor<T, Rank>)(einsums::DeviceTensor<T, Rank>)*this; }
-
-    size_t dim(int d) const override { return this->_dims[d]; }
 };
 
 template <typename T, size_t Rank>
 struct TiledDeviceTensorView final : public tensor_base::TiledTensor<T, Rank, DeviceTensorView<T, Rank>>, tensor_base::DeviceTensorBase {
   private:
-    bool                     _full_view_of_underlying{false};
+    /**
+     * @property _full_view_of_underlying
+     *
+     * @brief Indicates whether the view can see all of the elements of the underlying tensor.
+     */
+    bool _full_view_of_underlying{false};
+
+    /**
+     * @property _mode
+     *
+     * @brief The storage mode of the tiles.
+     */
     detail::HostToDeviceMode _mode{detail::DEV_ONLY};
 
+    /**
+     * @brief Tries to add a tile to the tensor, but it can't.
+     *
+     * As of the current version, modification of the underlying structure of a TiledTensorView is
+     * not allowed. This is because currently, TiledTensorViews are kind of scuffed in that
+     * their structure is desynchronized from the tensor they view. This may change in the future.
+     */
     void add_tile(std::array<int, Rank> pos) override {
         EINSUMS_THROW_EXCEPTION(std::logic_error, "Can't add a tile to a TiledDeviceTensorView!");
     }
 
   public:
-    using underlying_type   = TiledDeviceTensor<T, Rank>;
+    /**
+     * @typedef underlying_type
+     *
+     * @brief The type of tensor this object views.
+     */
+    using underlying_type = TiledDeviceTensor<T, Rank>;
+
     TiledDeviceTensorView() = default;
 
+    /**
+     * @brief Construct a new tensor view with the given name, storage mode, and grid specification.
+     *
+     * The sizes should be collections of integers. There should either be only one collection, or there should be
+     * as many collections as the rank of the tensor. If there are as many collections as the rank of the tensor,
+     * then each collection will be used to split up the respective axis as a grid. If there is only one collection, then
+     * it will be applied to all of the axes, making a square tensor whose diagonal tiles are square as well. Obviously,
+     * if the tensor is only one-dimensional, these two behaviors are the same.
+     *
+     * @param name The name of the tensor.
+     * @param mode The storage mode for the tensors.
+     * @param sizes The grids for the axes. There must either only be one, or the number must be the same as the rank.
+     */
     template <typename... Sizes>
         requires(!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
     TiledDeviceTensorView(std::string name, detail::HostToDeviceMode mode, Sizes... sizes)
         : _mode{mode}, tensor_base::TiledTensor<T, Rank, DeviceTensorView<T, Rank>>(name, sizes...) {}
 
+    /**
+     * @brief Copy constructor.
+     *
+     * Only the internal structure is truly copied. The views contained in this tensor view will still point to the
+     * same place as the copied tensor, meaning updates to one will update the other.
+     *
+     * @param other The tensor view to copy.
+     */
     TiledDeviceTensorView(TiledDeviceTensorView<T, Rank> const &other) = default;
 
+    /**
+     * @brief Create a copy of the core tiled tensor on the GPU.
+     *
+     * @param other The tensor to copy.
+     */
     TiledDeviceTensorView(TiledTensor<T, Rank> &other)
         : tensor_base::TiledTensor<T, Rank, DeviceTensorView<T, Rank>>(other.name(), other.tile_sizes()) {
         for (auto &tile : other.tiles()) {
@@ -1190,8 +1538,17 @@ struct TiledDeviceTensorView final : public tensor_base::TiledTensor<T, Rank, De
 
     ~TiledDeviceTensorView() = default;
 
+    /**
+     * @brief Indicates whether the view can see all of the data of the original tensor.
+     */
     [[nodiscard]] bool full_view_of_underlying() const override { return _full_view_of_underlying; }
 
+    /**
+     * @brief Add a tile to the structure of this tensor.
+     *
+     * @param pos The position to put the view.
+     * @param view The view to add to the tensor.
+     */
     void insert_tile(std::array<int, Rank> pos, DeviceTensorView<T, Rank> &&view) {
         std::lock_guard(*this);
         this->_tiles[pos].emplace(pos, std::move(view));
@@ -1250,19 +1607,29 @@ struct TiledDeviceTensorView final : public tensor_base::TiledTensor<T, Rank, De
         return subscript_tensor(out, array_ind);
     }
 
+    /**
+     * Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
+     *
+     * @param index The index to evaluate.
+     * @return The value at the position.
+     */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
     auto operator()(std::array<int_type, Rank> const &index) const -> T {
         return std::apply(*this, index);
     }
 
+    /**
+     * Indexes into the tensor. If the index points to a tile that is not initialized, it will create the tile and return a value for it.
+     *
+     * @param index The index to evaluate.
+     * @return A reference to the position.
+     */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
     auto operator()(std::array<int_type, Rank> const &index) -> HostDevReference<T> {
         return std::apply(*this, index);
     }
-
-    size_t dim(int d) const override { return this->_dims[d]; }
 };
 
 TENSOR_EXPORT(TiledDeviceTensor)
