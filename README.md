@@ -81,11 +81,11 @@ J matrix, and axpy for the G matrix; BLAS with a for loop to permute the two-ele
 and axpy for the G matrix; Einsums without permuting the two-electron integrals, using the generic algorithm for the K matrix; and
 Einsums with a permutation of the two-electron integrals, using a selected algorithm for the K matrix.
 
-![einsum Performance](/images/Performance.png)
+![einsum Performance](/docs/sphinx/_static/index-images/Performance.png)
 
 The following shows the difference in overall performance as the number of orbitals increases.
 
-![einsums Growth](/images/Performance_comp.png)
+![einsums Growth](/docs/sphinx/_static/index-images/Performance_comp.png)
 
 These timings were computed on a system with  an Intel Core i7-13700K with 32 GB of DDR5 RAM and an
 AMD Radeon 7900X graphics card running Debian 12, kernel version 6.1.
