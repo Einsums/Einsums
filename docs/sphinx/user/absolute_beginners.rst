@@ -278,15 +278,15 @@ and ranges can also be passed for slicing.
     auto A = create_random_tensor("A", 3, 3);
 
     // Get the first two rows of the tensor.
-    TensorView<double, 2> View1 = A(Range{0, 1}, All);
+    TensorView View1 = A(Range{0, 1}, All);    // TensorView<double, 2>
 
     // Get the last row of the tensor.
-    TensorView<double, 1> View2 = A(2);
+    TensorView View2 = A(2);    // TensorView<double, 1>
     // Get the last column of the tensor.
-    TensorView<double, 1> View3 = A(All, 2);
+    TensorView View3 = A(All, 2);    // TensorView<double, 1>
 
     // Get a 2x2 block from the tensor.
-    TensorView<double, 2> View4 = A(Range{1, 2}, Range{0, 1});
+    TensorView View4 = A(Range{1, 2}, Range{0, 1});    // TensorView<double, 2>
 
 Shape and size of a Tensor
 --------------------------
@@ -361,13 +361,13 @@ and it permutes the input tensor, scales it, scales the output tensor, then adds
 
     auto A = create_random_tensor("A", 3, 4, 5);
     auto B = create_random_tensor("B", 5, 4, 3);
-    Tensor<double, 3> C{"C", 5, 4, 3};
+    Tensor C{"C", 5, 4, 3};
 
     // Copy B into C for testing.
     C = B;
 
     tensor_algebra::permute(1, index::Indices{index::i, index::j, index::k}, &C,
-                          0.5, index::Indices{index::k, index::j, index:: i}, A);
+                          0.5, index::Indices{index::k, index::j, index::i}, A);
 
     for(size_t i = 0; i <5; i++) {
         for(size_t j = 0; j < 4; j++) {
@@ -386,13 +386,13 @@ Most procedures provided by LAPACK and BLAS are available to use with tensors. H
 
     using namespace einsums;
 
-    Tensor<double, 2> A = create_random_tensor("A", 10, 10);
-    Tensor<double, 2> B = create_random_tensor("B", 10, 10);
-    Tensor<double, 2> C = create_random_tensor("C", 10, 10);
+    Tensor A = create_random_tensor("A", 10, 10);
+    Tensor B = create_random_tensor("B", 10, 10);
+    Tensor C = create_random_tensor("C", 10, 10);
 
-    Tensor<double, 1> u = create_random_tensor("u", 10);
-    Tensor<double, 1> v = create_random_tensor("v", 10);
-    Tensor<std::complex<double>, 1> evals{"evals", 10};
+    Tensor u = create_random_tensor("u", 10);
+    Tensor v = create_random_tensor("v", 10);
+    Tensor<std::complex<double>> evals{"evals", 10};
 
     // gemm is available. Whether to transpose the inputs is
     // passed as template parameters.
@@ -422,8 +422,8 @@ Here's an example for something like :math:`C_{ijk} = A_{ik}B_{kj}`.
     auto C = create_random_tensor("C", 10, 10, 10);
 
     tensor_algebra::einsum(index::Indices{index::i, index::j, index::k}, &C, 
-        index::Indices{index::i, index::k},
-        A, index::Indices{index::k, index::j}, B);
+                           index::Indices{index::i, index::k}, A,
+                           index::Indices{index::k, index::j}, B);
 
 If we do something that can become a BLAS call, then it will normally become a BLAS call. Currently, index permutations are not
 performed, so calls can only be optimized when the indices exactly match the pattern for a BLAS call. This will change in the future,
