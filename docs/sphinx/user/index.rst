@@ -162,22 +162,19 @@ building the individual matrices. The build time for the G matrix is not include
 .. image:: ../_static/index-images/Performance.png
     :alt: Breakdown of timings between various methods for contracting tensors.
 
-As we can see, Einsums actually outperforms the BLAS package that it is based on. However, it doesn't come anywhere close to raw loops in C or FORTRAN,
-which is expected. Modern FORTRAN is optimized for matrix and vector operations, so it would make sense for it to be fast. As for C, it lacks the overhead
-of doing calculations in C++. But this also means it lacks the extensibility needed to perform general tensor contractions with a simple interface.
-We can also show that this performance comparison is rather stable with respect to the sizes of the tensors.
+As we can see, Einsums is a bit slower than raw BLAS, but still has comparable performance to a bare loop in C. 
 
 .. image:: ../_static/index-images/Performance_comp.png
     :alt: Comparison of timings based on tensor size.
 
-In the above image, we can see that Einsums stays below BLAS, but above C and FORTRAN. The Einsums timings are highlighted using lines connecting the data points.
-Since it can be hard to see the values on the left side of the graph, an alternative view can be made. For this, the timings were divided by the time needed for the
-normal for loops in C, then the natural logarithm of the result was taken. Error bars are given to show the uncertainty of the orderings when applicable.
+In the above image, we can see how Einsums compares to the alternatives for various sizes of the input tensors. It seems to grow in a similar fashion
+to the alternatives.
 
 .. image:: ../_static/index-images/norm_performance.png
     :alt: Rescaled comparisons of timings based on tensor size.
 
-As can be seen in these plots, the complexity of all of these operations seems to be similar. We would expect it to be about quartic.
+Since the previous graph is difficult to read for small sizes of the tensors, this provides a comparison that is normalized to the BLAS timings.
+Error bars are provided to show that the lower end is dominated by noise, and so the ordering might not be trustworthy.
 
 
 ============================

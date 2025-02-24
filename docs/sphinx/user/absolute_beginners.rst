@@ -91,22 +91,8 @@ Setting up a program
 ====================
 
 To create a program using Einsums, you must initialize the library before you do anything with Einsums,
-and finalize it after you finish using Einsums.
-
-.. code:: C++
-
-    int main(int argc, char **argv) {
-        einsums::initialize(argc, argv);
-
-        // Your code here.
-
-        einsums::finalize();
-
-        return 0;
-    }
-
-In some cases, you may also need to wrap your code in OpenMP directives in order to improve performance. This is
-to avoid having to reinitialize the OpenMP environment every time Einsums needs to make a parallel call.
+and finalize it after you finish using Einsums. Make sure you wrap your code in OpenMP directives,
+otherwise the threading environment won't be set up properly.
 
 .. code:: C++
 

@@ -3,8 +3,8 @@
 
 #include <cstdio>
 #include <cstring>
-#include <vector>
 #include <random>
+#include <vector>
 
 using namespace std;
 using namespace einsums::blas;
@@ -40,8 +40,8 @@ void create_K_sorted(double *K, double const *D, double const *TEI, double *sort
     gemv('N', norbs * norbs, norbs * norbs, -1.0, sorted_TEI, norbs * norbs, D, 1, 0.0, K, 1);
 }
 
-void create_G(double *G, const double *J, const double *K, size_t norbs) {
-    memcpy((void *) G, (const void *) J, norbs * norbs * sizeof(double));
+void create_G(double *G, double const *J, double const *K, size_t norbs) {
+    memcpy((void *)G, (void const *)J, norbs * norbs * sizeof(double));
     axpy(norbs * norbs, 1.0, K, 1, G, 1);
 }
 
@@ -134,100 +134,105 @@ void parse_args(int argc, char **argv, int *norbs, int *trials) {
     }
 }
 
-template<class Generator>
+template <class Generator>
 void fill_random(std::vector<double> &buffer, Generator &generator) {
     std::uniform_real_distribution random_gen(-1.0, 1.0);
-    #pragma omp parallel for
-    for(size_t i = 0; i < buffer.size(); i++){
+#pragma omp parallel for
+    for (size_t i = 0; i < buffer.size(); i++) {
         buffer[i] = random_gen(generator);
     }
 }
 
 int main(int argc, char **argv) {
-    einsums::initialize(argc, argv);
-    // Initialize random number generator.
-    std::default_random_engine engine(clock());
+#pragma omp parallel
+    {
+#pragma omp single
+        {
+            einsums::initialize(argc, argv);
+            // Initialize random number generator.
+            std::default_random_engine engine(clock());
 
-    int norbs, trials;
+            int norbs, trials;
 
-    parse_args(argc, argv, &norbs, &trials);
+            parse_args(argc, argv, &norbs, &trials);
 
-    printf("Running %d trials with %d orbitals.\n", trials, norbs);
+            printf("Running %d trials with %d orbitals.\n", trials, norbs);
 
-    std::vector<double> times_J(trials), times_K(trials), times_G(trials), times_tot(trials);
+            std::vector<double> times_J(trials), times_K(trials), times_G(trials), times_tot(trials);
 
-    std::vector<double> J(norbs * norbs), K(norbs * norbs), G(norbs * norbs), D(norbs * norbs), TEI(norbs * norbs * norbs *norbs);
+            std::vector<double> J(norbs * norbs), K(norbs * norbs), G(norbs * norbs), D(norbs * norbs), TEI(norbs * norbs * norbs * norbs);
 
-    fill_random(D, engine);
-    fill_random(TEI, engine);
+            fill_random(D, engine);
+            fill_random(TEI, engine);
 
+            // Calculate the times.
+            for (int i = 0; i < trials; i++) {
+                clock_t start = clock();
 
-    // Calculate the times.
-    for (int i = 0; i < trials; i++) {
-        clock_t start = clock();
+                create_J(J.data(), D.data(), TEI.data(), norbs);
 
-        create_J(J.data(), D.data(), TEI.data(), norbs);
+                clock_t J_time = clock();
 
-        clock_t J_time = clock();
+                create_K(K.data(), D.data(), TEI.data(), norbs);
 
-        create_K(K.data(), D.data(), TEI.data(), norbs);
+                clock_t K_time = clock();
 
-        clock_t K_time = clock();
+                create_G(G.data(), J.data(), K.data(), norbs);
 
-        create_G(G.data(), J.data(), K.data(), norbs);
+                clock_t G_time = clock();
 
-        clock_t G_time = clock();
+                times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
+                times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
+                times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
+                times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+            }
 
-        times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
-        times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
-        times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
-        times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+            // Print the timing info.
+            double J_mean   = mean(times_J);
+            double K_mean   = mean(times_K);
+            double G_mean   = mean(times_G);
+            double tot_mean = mean(times_tot);
+            printf("einsums times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, "
+                   "stdev %lg s\n",
+                   J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
+                   stdev(times_tot, tot_mean));
+
+            std::vector<double> TEI_sorted(norbs * norbs * norbs * norbs);
+
+            // Calculate the linear algebra times.
+            for (int i = 0; i < trials; i++) {
+                clock_t start = clock();
+
+                create_J(J.data(), D.data(), TEI.data(), norbs);
+
+                clock_t J_time = clock();
+
+                create_K_sorted(K.data(), D.data(), TEI.data(), TEI_sorted.data(), norbs);
+
+                clock_t K_time = clock();
+
+                create_G(G.data(), J.data(), K.data(), norbs);
+
+                clock_t G_time = clock();
+
+                times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
+                times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
+                times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
+                times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+            }
+
+            // Print the timing info.
+            J_mean   = mean(times_J);
+            K_mean   = mean(times_K);
+            G_mean   = mean(times_G);
+            tot_mean = mean(times_tot);
+            printf("sorted times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, stdev "
+                   "%lg s\n",
+                   J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
+                   stdev(times_tot, tot_mean));
+
+            einsums::finalize();
+        }
     }
-
-    // Print the timing info.
-    double J_mean   = mean(times_J);
-    double K_mean   = mean(times_K);
-    double G_mean   = mean(times_G);
-    double tot_mean = mean(times_tot);
-    printf(
-        "einsums times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, stdev %lg s\n",
-        J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
-        stdev(times_tot, tot_mean));
-
-    std::vector<double> TEI_sorted(norbs * norbs * norbs * norbs);
-
-    // Calculate the linear algebra times.
-    for (int i = 0; i < trials; i++) {
-        clock_t start = clock();
-
-        create_J(J.data(), D.data(), TEI.data(), norbs);
-
-        clock_t J_time = clock();
-
-        create_K_sorted(K.data(), D.data(), TEI.data(), TEI_sorted.data(), norbs);
-
-        clock_t K_time = clock();
-
-        create_G(G.data(), J.data(), K.data(), norbs);
-
-        clock_t G_time = clock();
-
-        times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
-        times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
-        times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
-        times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
-    }
-
-    // Print the timing info.
-    J_mean   = mean(times_J);
-    K_mean   = mean(times_K);
-    G_mean   = mean(times_G);
-    tot_mean = mean(times_tot);
-    printf("sorted times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, stdev %lg s\n",
-           J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
-           stdev(times_tot, tot_mean));
-
-    einsums::finalize();
-
     return 0;
 }
