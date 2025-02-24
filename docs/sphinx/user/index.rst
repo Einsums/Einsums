@@ -36,7 +36,7 @@ details are found in the reference. Follow the links below to find more informat
 Design Goals
 ============
 
-The overall goal of Einsums is to allow scientists and mathematicians to write highly parallellized
+The overall goal of Einsums is to allow scientists and mathematicians to write highly parallelized
 code without needing to become a wizard in high-performance computing. Another goal is to have an
 interface that mimics mathematical notation as closely as possible, so users don't necessarily
 need to think about how to transform their equations into code. As an example, one might construct
@@ -50,11 +50,11 @@ This would become the following code using Einsums.
 
 .. code:: C++
 
-    Tensor<double, 2> ricci_tensor{"R", 4, 4}, metric_tensor{"g", 4, 4};
+    Tensor ricci_tensor{"R", 4, 4}, metric_tensor{"g", 4, 4};
     double ricci_curvature;
     // Initializations of all of these.
 
-    Tensor<double, 2> einstein_tensor{"G", 4, 4};
+    Tensor einstein_tensor{"G", 4, 4};
     einstein_tensor = ricci_tensor - 0.5 * ricci_curvature * metric_tensor;
 
 Another example for a more general contraction is the coupled-cluster singles and doubles energy expression.
@@ -78,29 +78,29 @@ This becomes the following code.
     int n_occ; // The number of occupied orbitals. 
     int n_orbs; // The number of orbitals.
     int n_virt = n_orbs - n_occ; // The number of virtual orbitals.
-    Tensor<double, 2> F{"F", n_orbs, n_orbs}; // The Fock matrix.
-    Tensor<double, 4> TEI{"G", n_orbs, n_orbs, n_orbs, n_orbs}; // The electron repulsion integrals.
-    Tensor<double, 2> t1_amps{"T1", n_occ, n_virt};
-    Tensor<double, 4> t2_amps{"T2", n_occ, n_occ, n_virt, n_virt};
+    Tensor F{"F", n_orbs, n_orbs}; // The Fock matrix.
+    Tensor TEI{"G", n_orbs, n_orbs, n_orbs, n_orbs}; // The electron repulsion integrals.
+    Tensor t1_amps{"T1", n_occ, n_virt};
+    Tensor t2_amps{"T2", n_occ, n_occ, n_virt, n_virt};
     // Populate these values.
 
     double E_ccsd = E_hf;
 
     // Defining an intermediate.
-    Tensor<double, 4> tau2{"tau2", n_occ, n_occ, n_virt, n_virt};
+    Tensor tau2{"tau2", n_occ, n_occ, n_virt, n_virt};
     tau2 = t2_amps;
     einsum(0.25, index::Indices{index::i, index::j, index::a, index::b}, &tau2, 0.5, index::Indices{index::i, index::a}, 
            t1_amps, index::Indices{index::j, index::b}, t1_amps);
 
     // Compute the antisymmetrized two-electron integrals.
-    Tensor<double, 4> TEI_antisym = TEI;
+    Tensor TEI_antisym = TEI;
     permute(1.0, index::Indices{index::p, index::q, index::r, index::s}, &TEI_antisym, -1.0, index::Indices{index::p, index::q, index::s, index::r} TEI);
 
     // Computing each term.
-    TensorView<double, 2> Fia = F(Range{0, n_occ}, Range{n_occ, n_orbs});
+    TensorView Fia = F(Range{0, n_occ}, Range{n_occ, n_orbs});
     einsum(1.0, index::Indices{}, &E_ccsd, 1.0, index::Indices{index::i, index::a}, Fia, index::Indices{index::i, index::a}, t1_amps);
 
-    TensorView<double, 4> TEI_ijab = TEI_antisym(Range{0, n_occ}, Range{0, n_occ}, Range{n_occ, n_orbs}, Range{n_occ, n_orbs});
+    TensorView TEI_ijab = TEI_antisym(Range{0, n_occ}, Range{0, n_occ}, Range{n_occ, n_orbs}, Range{n_occ, n_orbs});
     einsum(1.0, index::Indices{}, &E_ccsd, 1.0, index::Indices{index::i, index::j, index::a, index::b}, TEI_ijab, index::Indices{index::i, index::j, index::a, index::b}, tau2);
 
 ===================
@@ -187,7 +187,7 @@ As of right now, Einsums is capable of the following:
 * Generalized transpositions of the form :math:`C_{ijk\cdots} = \alpha C_{ijk\cdots} + \beta A_{abc\cdots}`.
 * Linear algebra on tensors using BLAS and LAPACK as a backend.
 * Taking advantage of tensor layout. If the tensor is block diagonal or has blocks of zeros, the :cpp:class:`BlockTensor` and :cpp:class:`TiledTensor`
-  classes can parallellize certain operations.
+  classes can parallelize certain operations.
 * Mapping operations over all of a tensor's indices.
 * Limited interaction with Python.
     * A form of the ``einsum`` call works in Python. All Einsums functions exposed to Python can also consume NumPy arrays.
