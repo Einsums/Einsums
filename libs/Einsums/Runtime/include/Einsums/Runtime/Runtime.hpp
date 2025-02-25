@@ -30,20 +30,25 @@ struct EINSUMS_EXPORT invalid_runtime_state : std::runtime_error {
     using std::runtime_error::runtime_error;
 };
 
+/**
+ * @enum RuntimeState
+ *
+ * @brief Holds the possible states for the runtime.
+ */
 enum class RuntimeState : std::int8_t {
-    Invalid        = -1,
-    Initialized    = 0,
-    PreStartup     = 1,
-    Startup        = 2,
-    PreMain        = 3,
-    Starting       = 4,
-    Running        = 5,
-    PreShutdown    = 6,
-    Shutdown       = 7,
-    Stopping       = 8,
-    Terminating    = 9,
-    Stopped        = 10,
-    LastValidState = Stopped,
+    Invalid        = -1,      /**< The state is invalid. */
+    Initialized    = 0,       /**< The runtime has been initialized. */
+    PreStartup     = 1,       /**< The runtime is running the pre-startup functions. */
+    Startup        = 2,       /**< The runtime is running the startup functions. */
+    PreMain        = 3,       /**< The runtime is preparing to run the main function. */
+    Starting       = 4,       /**< The runtime is starting the main function. */
+    Running        = 5,       /**< The main function is running. */
+    PreShutdown    = 6,       /**< The pre-shutdown functions are running. */
+    Shutdown       = 7,       /**< The shutdown functions are running. */
+    Stopping       = 8,       /**< The runtime is stopping. */
+    Terminating    = 9,       /**< The runtime is terminating. */
+    Stopped        = 10,      /**< The runtime has stopped. */
+    LastValidState = Stopped, /**< Indicates the last valid state. Anything past this is considered invalid. */
 };
 
 namespace detail {
@@ -148,11 +153,19 @@ EINSUMS_EXPORT void on_abort(int signal) noexcept;
 EINSUMS_EXPORT void set_signal_handlers();
 } // namespace detail
 
-/// The function \a get_runtime returns a reference to the (thread
-/// specific) runtime instance.
+/**
+ * @brief Returns a reference to the current Runtime structure
+ */
 EINSUMS_EXPORT detail::Runtime &runtime();
+
+/**
+ * @brief Returns a pointer to the current Runtime structure.
+ */
 EINSUMS_EXPORT detail::Runtime *&runtime_ptr();
 
+/**
+ * @brief Gets a reference to the current runtime configuration structure.
+ */
 EINSUMS_EXPORT RuntimeConfiguration &runtime_config();
 
 ///////////////////////////////////////////////////////////////////////////
@@ -168,6 +181,7 @@ EINSUMS_EXPORT bool is_running();
 
 } // namespace einsums
 
+#ifndef DOXYGEN
 template <>
 struct fmt::formatter<einsums::RuntimeState> : formatter<string_view> {
     template <typename FormatContext>
@@ -216,3 +230,4 @@ struct fmt::formatter<einsums::RuntimeState> : formatter<string_view> {
         return formatter<string_view>::format(name, ctx);
     }
 };
+#endif

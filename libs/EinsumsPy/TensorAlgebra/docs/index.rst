@@ -8,7 +8,7 @@
 EinsumsPy TensorAlgebra
 =======================
 
-TODO: High-level description of the module.
+This module contains the definitions for handling tensor algebra with Python tensors.
 
 See the :ref:`API reference <modules_EinsumsPy_TensorAlgebra_api>` of this module for more
 details.

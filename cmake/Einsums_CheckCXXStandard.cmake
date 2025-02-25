@@ -9,6 +9,7 @@
 einsums_option(
   EINSUMS_WITH_CXX_STANDARD STRING "C++ standard to use for compiling einsums (default: 20)" "20"
   ADVANCED
+  CATEGORY "Generic"
 )
 
 if(EINSUMS_WITH_CXX_STANDARD LESS 20)

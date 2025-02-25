@@ -40,7 +40,7 @@ struct ThreadIdFormatterFlag : spdlog::custom_flag_formatter {
 struct ParentThreadIdFormatterFlag : spdlog::custom_flag_formatter {
     void format(spdlog::details::log_msg const &msg, std::tm const &tm_time, spdlog::memory_buf_t &dest) override {
 #if defined(EINSUMS_WINDOWS)
-        // TODO: There is a way to get the parent pid on Windows. Just don't want to do it now.
+        /// @todo There is a way to get the parent pid on Windows. Just don't want to do it now.
         spdlog_format_thread_id(0, msg, tm_time, dest);
 #else
         spdlog_format_thread_id(getppid(), msg, tm_time, dest);

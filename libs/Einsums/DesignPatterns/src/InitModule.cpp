@@ -27,12 +27,12 @@ init_Einsums_DesignPatterns detail::initialize_module_Einsums_DesignPatterns;
 
 void initialize_Einsums_DesignPatterns() {
     EINSUMS_LOG_TRACE("initializing module");
-    // TODO: Fill in.
+    /// @todo Fill in.
 }
 
 void finalize_Einsums_DesignPatterns() {
     EINSUMS_LOG_TRACE("finalizing module");
-    // TODO: Fill in.
+    /// @todo Fill in.
 }
 
 }

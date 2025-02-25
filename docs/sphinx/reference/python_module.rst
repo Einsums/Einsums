@@ -10,10 +10,6 @@
 Einsums Python Module
 *********************
 
-.. sectionauthor:: Connor Briggs
-
-.. codeauthor:: Connor Briggs
-
 This is the reference documentation for the Einsums Python module. It contains many sub-modules as well.
 
 .. py:module:: einsums

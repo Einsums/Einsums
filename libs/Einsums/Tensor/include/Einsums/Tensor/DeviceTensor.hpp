@@ -4,7 +4,7 @@
 
 #include <Einsums/Config.hpp>
 
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/DesignPatterns/Lockable.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
@@ -27,6 +27,7 @@
 
 namespace einsums {
 
+#ifndef DOXYGEN
 template <typename T, size_t Rank>
 struct DeviceTensorView;
 
@@ -35,6 +36,7 @@ struct DeviceTensor;
 
 template <typename T, size_t Rank>
 struct BlockDeviceTensor;
+#endif
 
 /**
  * @class HostDevReference
@@ -43,7 +45,7 @@ struct BlockDeviceTensor;
  * This class provides some functionality of a reference, but the data may actually be stored on the device.
  * Data is copied back and forth with each call.
  *
- * @note It is best to avoid needing this class, as a whole bunch of small memory transfers is very slow.
+ * @note It is best to avoid using this class, as a whole bunch of small memory transfers is very slow.
  */
 template <typename T>
 class HostDevReference {
@@ -269,9 +271,37 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
                       einsums::tensor_base::AlgebraOptimizedTensor,
                       design_pats::Lockable<std::recursive_mutex> {
   public:
-    using dev_datatype           = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
-    using host_datatype          = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
-    using ValueType              = T;
+    /**
+     * @typedef dev_datatype
+     *
+     * @brief The type of data used by the GPU.
+     *
+     * For real data types, this is the same as on the host. For complex data types, the appropriate
+     * HIP data type needs to be used.
+     */
+    using dev_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
+
+    /**
+     * @typedef host_datatype
+     *
+     * @brief The type of data used by the CPU.
+     *
+     * This is the same as the ValueType.
+     */
+    using host_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
+
+    /**
+     * @typedef ValueType
+     *
+     * @brief The type of data stored by the tensor.
+     */
+    using ValueType = T;
+
+    /**
+     * @property Rank
+     *
+     * @brief The rank of the tensor.
+     */
     constexpr static size_t Rank = rank;
 
     /**
@@ -295,7 +325,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * Constructs a new DeviceTensor object using the information provided in \p name and \p dims .
      *
      * @code
-     * auto A = DeviceTensor("A", 3, 3);
+     * auto A = DeviceTensor("A", detail::DEV_ONLY, 3, 3);
      * @endcode
      *
      * The newly constructed DeviceTensor is NOT zeroed out for you. If you start having NaN issues
@@ -303,6 +333,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
      * @param name Name of the new tensor.
+     * @param mode The storage mode of the tensor.
      * @param dims The dimensions of each rank of the tensor.
      */
     template <typename... Dims>
@@ -368,6 +399,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @brief Construct a new DeviceTensor object using the dimensions given by Dim object.
      *
      * @param dims The dimensions of the new tensor in Dim form.
+     * @param mode The storage mode of the tensor.
      */
     explicit DeviceTensor(Dim<rank> dims, detail::HostToDeviceMode mode = detail::DEV_ONLY);
 
@@ -450,6 +482,20 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
         }
     auto gpu_data(MultiIndex... index) -> dev_datatype *;
 
+    /**
+     * Returns a pointer into the tensor at the given location.
+     *
+     * @code
+     * auto A = DeviceTensor("A", 3, 3, 3); // Creates a rank-3 tensor of 27 elements
+     *
+     * double* A_pointer = A.data(1, 2, 3); // Returns the pointer to element (1, 2, 3) in A.
+     * @endcode
+     *
+     *
+     * @tparam MultiIndex The datatypes of the passed parameters. Must be castable to
+     * @param index The explicit desired index into the tensor. Must be castable to std::int64_t.
+     * @return A pointer into the tensor at the requested location.
+     */
     template <typename... MultiIndex>
         requires requires {
             requires NoneOfType<AllT, MultiIndex...>;
@@ -500,6 +546,20 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
         }
     auto data(MultiIndex... index) -> host_datatype *;
 
+    /**
+     * Returns a pointer into the tensor at the given location.
+     *
+     * @code
+     * auto A = DeviceTensor("A", 3, 3, 3); // Creates a rank-3 tensor of 27 elements
+     *
+     * double* A_pointer = A.data(1, 2, 3); // Returns the pointer to element (1, 2, 3) in A.
+     * @endcode
+     *
+     *
+     * @tparam MultiIndex The datatypes of the passed parameters. Must be castable to
+     * @param index The explicit desired index into the tensor. Must be castable to std::int64_t.
+     * @return A pointer into the tensor at the requested location.
+     */
     template <typename... MultiIndex>
         requires requires {
             requires NoneOfType<AllT, MultiIndex...>;
@@ -536,17 +596,39 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
     void write(T *data);
 
     /**
-     * Assignments
+     * @brief Copy the data from one tensor to this one.
+     *
+     * @param other The tensor with the data to copy.
+     *
+     * @return A reference to the calling tensor.
      */
     DeviceTensor<T, rank> &assign(DeviceTensor<T, rank> const &other);
+
+    /**
+     * @copydoc DeviceTensor::assign()
+     */
     DeviceTensor<T, rank> &assign(Tensor<T, rank> const &other);
 
+    /**
+     * @brief Initialize the tensor, copying properties and data from another to this one.
+     *
+     * @param other The tensor to copy and to use as a template for the dimensions and other things.
+     * @param mode The storage mode of the tensor.
+     *
+     * @return A reference to the calling tensor.
+     */
     DeviceTensor<T, rank> &init(DeviceTensor<T, rank> const &other, einsums::detail::HostToDeviceMode mode = einsums::detail::UNKNOWN);
 
+    /**
+     * @copydoc DeviceTensor::assign()
+     */
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
     DeviceTensor<T, rank> &assign(DeviceTensor<TOther, rank> const &other);
 
+    /**
+     * @copydoc DeviceTensor::assign()
+     */
     template <typename TOther>
     DeviceTensor<T, rank> &assign(DeviceTensorView<TOther, rank> const &other);
 
@@ -558,7 +640,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
      * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
-     * @return const T&
+     * @return The value at that index.
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
@@ -572,18 +654,38 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
      * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
-     * @return const T&
+     * @return A wrapper around the value at that index that manages data transfer to the GPU.
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
     auto operator()(MultiIndex &&...index) -> HostDevReference<T>;
 
+    /**
+     * @brief Subscripts into the tensor.
+     *
+     * This version works when all elements are explicit values into the tensor.
+     * It does not work with the All or Range tags.
+     *
+     * @tparam int_type Datatype of the indices. Must be castable to std::int64_t.
+     * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
+     * @return The value at that index.
+     */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
     auto operator()(std::array<int_type, Rank> const &index) const -> T {
         return std::apply(*this, index);
     }
 
+    /**
+     * @brief Subscripts into the tensor.
+     *
+     * This version works when all elements are explicit values into the tensor.
+     * It does not work with the All or Range tags.
+     *
+     * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
+     * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
+     * @return A wrapper around the value at that index that manages data transfer to the GPU.
+     */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
     auto operator()(std::array<int_type, Rank> const &index) -> HostDevReference<T> {
@@ -638,26 +740,80 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @brief Operate and assign every element with a scalar.
      */
     DeviceTensor<T, rank> &add_assign(T const &other);
+
+    /**
+     * @copydoc DeviceTensor::add_assign(T const &)
+     */
     DeviceTensor<T, rank> &mult_assign(T const &other);
+
+    /**
+     * @copydoc DeviceTensor::add_assign(T const &)
+     */
     DeviceTensor<T, rank> &sub_assign(T const &other);
+
+    /**
+     * @copydoc DeviceTensor::add_assign(T const &)
+     */
     DeviceTensor<T, rank> &div_assign(T const &other);
 
+    /**
+     * @copydoc DeviceTensor::add_assign(T const &)
+     */
     DeviceTensor<T, rank> &operator*=(T const &other) { return this->mult_assign(other); }
+
+    /**
+     * @copydoc DeviceTensor::add_assign(T const &)
+     */
     DeviceTensor<T, rank> &operator+=(T const &other) { return this->add_assign(other); }
+
+    /**
+     * @copydoc DeviceTensor::add_assign(T const &)
+     */
     DeviceTensor<T, rank> &operator-=(T const &other) { return this->sub_assign(other); }
+
+    /**
+     * @copydoc DeviceTensor::add_assign(T const &)
+     */
     DeviceTensor<T, rank> &operator/=(T const &other) { return this->div_assign(other); }
 
     /**
      * @brief Operate and assign two tensors element-wise.
      */
     DeviceTensor<T, rank> &add_assign(DeviceTensor<T, rank> const &other);
+
+    /**
+     * @copydoc DeviceTensor::add_assign(DeviceTensor<T, rank> const &)
+     */
     DeviceTensor<T, rank> &mult_assign(DeviceTensor<T, rank> const &other);
+
+    /**
+     * @copydoc DeviceTensor::add_assign(DeviceTensor<T, rank> const &)
+     */
     DeviceTensor<T, rank> &sub_assign(DeviceTensor<T, rank> const &other);
+
+    /**
+     * @copydoc DeviceTensor::add_assign(DeviceTensor<T, rank> const &)
+     */
     DeviceTensor<T, rank> &div_assign(DeviceTensor<T, rank> const &other);
 
+    /**
+     * @copydoc DeviceTensor::add_assign(DeviceTensor<T, rank> const &)
+     */
     DeviceTensor<T, rank> &operator*=(DeviceTensor<T, rank> const &other) { return this->mult_assign(other); }
+
+    /**
+     * @copydoc DeviceTensor::add_assign(DeviceTensor<T, rank> const &)
+     */
     DeviceTensor<T, rank> &operator+=(DeviceTensor<T, rank> const &other) { return this->add_assign(other); }
+
+    /**
+     * @copydoc DeviceTensor::add_assign(DeviceTensor<T, rank> const &)
+     */
     DeviceTensor<T, rank> &operator-=(DeviceTensor<T, rank> const &other) { return this->sub_assign(other); }
+
+    /**
+     * @copydoc DeviceTensor::add_assign(DeviceTensor<T, rank> const &)
+     */
     DeviceTensor<T, rank> &operator/=(DeviceTensor<T, rank> const &other) { return this->div_assign(other); }
 
     /**
@@ -831,9 +987,37 @@ template <typename T>
 struct DeviceTensor<T, 0>
     : public einsums::tensor_base::DeviceTensorBase, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
   public:
+    /**
+     * @typedef dev_datatype
+     *
+     * @brief The type of data used by the GPU.
+     *
+     * For real data types, this is the same as on the host. For complex data types, the appropriate
+     * HIP data type needs to be used.
+     */
     using dev_datatype           = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
+
+    /**
+     * @typedef host_datatype
+     *
+     * @brief The type of data used by the CPU.
+     *
+     * This is the same as the ValueType.
+     */
     using host_datatype          = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
+
+    /**
+     * @typedef ValueType
+     *
+     * @brief The type of data stored by the tensor.
+     */
     using ValueType              = T;
+
+    /**
+     * @property Rank
+     *
+     * @brief The rank of the tensor.
+     */
     constexpr static size_t Rank = 0;
 
     /**
@@ -925,18 +1109,50 @@ struct DeviceTensor<T, 0>
         }
     }
 
+    /**
+     * @brief Get the pointer to the data stored on the GPU.
+     *
+     * @return The pointer to the data on the GPU.
+     */
     auto               gpu_data() -> dev_datatype               *{ return _data; }
+
+    /**
+     * @copydoc DeviceTensor::gpu_data
+     */
     [[nodiscard]] auto gpu_data() const -> dev_datatype const * { return _data; }
 
+    /**
+     * @brief Get the pointer to the data available to the CPU.
+     *
+     * @return The pointer to the data on the CPU.
+     */
     auto               data() -> host_datatype               *{ return _host_data; }
+
+    /**
+     * @copydoc DeviceTensor::data()
+     */
     [[nodiscard]] auto data() const -> host_datatype const * { return _host_data; }
 
+    /**
+     * @brief Copy the data from one zero-rank tensor to another.
+     *
+     * @param other The value to copy.
+     *
+     * @return A reference to the current tensor.
+     */
     auto operator=(DeviceTensor<T, 0> const &other) -> DeviceTensor<T, 0> & {
         hip_catch(hipMemcpyAsync((void *)_data, (void const *)other.gpu_data(), sizeof(T), hipMemcpyDeviceToDevice, gpu::get_stream()));
         gpu::stream_wait();
         return *this;
     }
 
+    /**
+     * @brief Copy a scalar to the tensor.
+     *
+     * @param other The value to copy.
+     *
+     * @return A reference to the current tensor.
+     */
     auto operator=(T const &other) -> DeviceTensor<T, 0> & {
         if (_mode == detail::MAPPED || _mode == detail::PINNED) {
             *_host_data = other;
@@ -949,6 +1165,13 @@ struct DeviceTensor<T, 0>
         return *this;
     }
 
+    /**
+     * @brief Operate and assign with a value.
+     *
+     * @param other The value to operate with.
+     *
+     * @return A reference to the current tensor.
+     */
     auto operator+=(T const &other) -> DeviceTensor<T, 0> & {
         if (_mode == detail::MAPPED || _mode == detail::PINNED) {
             *_host_data += other;
@@ -965,6 +1188,9 @@ struct DeviceTensor<T, 0>
         return *this;
     }
 
+    /**
+     * @copydoc DeviceTensor::operator+=()
+     */
     auto operator-=(T const &other) -> DeviceTensor<T, 0> & {
         if (_mode == detail::MAPPED || _mode == detail::PINNED) {
             *_host_data -= other;
@@ -981,6 +1207,9 @@ struct DeviceTensor<T, 0>
         return *this;
     }
 
+    /**
+     * @copydoc DeviceTensor::operator+=()
+     */
     auto operator*=(T const &other) -> DeviceTensor<T, 0> & {
         if (_mode == detail::MAPPED || _mode == detail::PINNED) {
             *_host_data *= other;
@@ -996,7 +1225,10 @@ struct DeviceTensor<T, 0>
         }
         return *this;
     }
-
+    
+    /**
+     * @copydoc DeviceTensor::operator+=()
+     */
     auto operator/=(T const &other) -> DeviceTensor<T, 0> & {
         if (_mode == detail::MAPPED || _mode == detail::PINNED) {
             *_host_data /= other;
@@ -1013,6 +1245,11 @@ struct DeviceTensor<T, 0>
         return *this;
     }
 
+    /**
+     * @brief Get the scalar value of the tensor.
+     *
+     * @return The scalar value stored in the tensor.
+     */
     operator T() const {
         T out;
         if (_mode == detail::MAPPED || _mode == detail::PINNED) {
@@ -1026,13 +1263,39 @@ struct DeviceTensor<T, 0>
         }
     }
 
+    /**
+     * @brief Get the name of the tensor.
+     *
+     * @return The name of the tensor.
+     */
     [[nodiscard]] auto name() const -> std::string const & { return _name; }
+
+    /**
+     * @brief Set the name of the tensor.
+     *
+     * @param name The new name of the tensor.
+     */
     void               set_name(std::string const &name) { _name = name; }
 
-    [[nodiscard]] auto dim(int) const -> size_t { return 1; }
+    /**
+     * @brief Get the dimension along a given axis. The argument is ignored.
+     *
+     * @param axis Ignored. The dimension is always 1.
+     *
+     * @return The value 1.
+     */
+    [[nodiscard]] auto dim(int axis) const -> size_t { return 1; }
 
+    /**
+     * @brief Get the dimensions of the tensor. This is always an empty array.
+     */
     [[nodiscard]] auto dims() const -> Dim<0> { return Dim<0>{}; }
 
+    /**
+     * @brief Check if the tensor contains contiguous data.
+     *
+     * @return True, since this tensor stores contiguous data.
+     */
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return true; }
 
     /**
@@ -1122,17 +1385,62 @@ struct DeviceTensor<T, 0>
     friend struct einsums::DeviceTensor;
 };
 
+/**
+ * @struct DeviceTensorView
+ *
+ * @brief Holds a view of a DeviceTensor.
+ *
+ * This class allows for a view based at an offset and with different dimensions to be mapped
+ * back onto a DeviceTensor.
+ */
 template <typename T, size_t rank>
 struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
                           design_pats::Lockable<std::recursive_mutex>,
                           tensor_base::AlgebraOptimizedTensor {
   public:
-    using dev_datatype           = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
-    using host_datatype          = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
-    using ValueType              = T;
+    /**
+     * @typedef dev_datatype
+     *
+     * @brief The type of data used by the GPU.
+     *
+     * For real data types, this is the same as on the host. For complex data types, the appropriate
+     * HIP data type needs to be used.
+     */
+    using dev_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
+
+    /**
+     * @typedef host_datatype
+     *
+     * @brief The type of data used by the CPU.
+     *
+     * This is the same as the ValueType.
+     */
+    using host_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
+
+    /**
+     * @typedef ValueType
+     *
+     * @brief The type of data stored by the tensor.
+     */
+    using ValueType = T;
+
+    /**
+     * @property Rank
+     *
+     * @brief The rank of the tensor.
+     */
     constexpr static size_t Rank = rank;
+
+    /**
+     * @typedef underlying_type
+     *
+     * @brief The type of tensor that this view views.
+     */
     using underlying_type        = einsums::DeviceTensor<T, rank>;
 
+    /**
+     * Deleted default constructor.
+     */
     DeviceTensorView() = delete;
 
     /**
@@ -1205,23 +1513,55 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
         hip_catch(hipHostGetDevicePointer((void **)&_data, _host_data, 0));
     }
 
+    /**
+     * @brief Copy the data from a pointer to memory into this view.
+     *
+     * This is an advanced method. Only use if you know what you are doing.
+     *
+     * @param other A pointer to the data to copy. The data needs to have the same size as the view.
+     *
+     * @return A reference to this tensor.
+     */
     DeviceTensorView<T, rank> &assign(T const *other);
 
+    /**
+     * @brief Copy the data from some tensor into this view.
+     *
+     * @param other The tensor to copy.
+     *
+     * @return A reference to this tensor.
+     */
     template <template <typename, size_t> typename AType>
         requires DeviceRankTensor<AType<T, rank>, rank, T>
     DeviceTensorView<T, rank> &assign(AType<T, rank> const &other);
 
+    /**
+     * @brief Set every value in the tensor to the one passed to this method.
+     *
+     * @param value The value to fill the tensor with.
+     */
     void set_all(T const &value);
 
+    /**
+     * @brief Set every value in the tensor to zero.
+     */
     void zero() { set_all(T{0.0}); }
 
     /**
      * @brief Copy as much data as is needed from the host pointer to the device.
+     *
+     * @param other A pointer to the data to copy.
+     *
+     * @return A reference to the current tensor.
      */
     auto operator=(T const *other) -> DeviceTensorView &;
 
     /**
      * @brief Copy data from another tensor.
+     *
+     * @param other The tensor to copy.
+     *
+     * @return A reference to the current tensor.
      */
     template <template <typename, size_t> typename AType>
         requires DeviceRankTensor<AType<T, rank>, rank, T>
@@ -1229,20 +1569,43 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Copy data from another tensor.
+     *
+     * @param other The other tensor to copy.
+     *
+     * @return A reference to the current tensor.
      */
     auto operator=(DeviceTensorView<T, rank> const &other) -> DeviceTensorView &;
 
     /**
      * @brief Fill the view with a value.
+     *
+     * @param fill_value The value to fill the view with.
+     *
+     * @return A reference to the current tensor.
      */
     auto operator=(T const &fill_value) -> DeviceTensorView & {
         this->set_all(fill_value);
         return *this;
     }
 
+    /**
+     * @brief Operate each element in the view with a scalar.
+     */
     DeviceTensorView<T, rank> &mult_assign(T const &value);
+
+    /**
+     * @copydoc DeviceTensorView::mult_assign()
+     */
     DeviceTensorView<T, rank> &div_assign(T const &value);
+
+    /**
+     * @copydoc DeviceTensorView::mult_assign()
+     */
     DeviceTensorView<T, rank> &add_assign(T const &value);
+
+    /**
+     * @copydoc DeviceTensorView::mult_assign()
+     */
     DeviceTensorView<T, rank> &sub_assign(T const &value);
 
     /**
@@ -1321,10 +1684,21 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Get a value from the view.
+     *
+     * @param index The index to pull from.
+     *
+     * @return The value at the requested index.
      */
     template <typename... MultiIndex>
     auto operator()(MultiIndex &&...index) const -> T;
 
+    /**
+     * @brief Get a value from the view.
+     *
+     * @param index The index to pull from.
+     *
+     * @return The value at the requested index.
+     */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
     auto operator()(std::array<int_type, Rank> const &index) const -> T {
@@ -1404,6 +1778,9 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      */
     size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + rank, 1, std::multiplies<>{}); }
 
+    /**
+     * @brief Copy the data into an in-core tensor.
+     */
     operator einsums::Tensor<T, rank>() const {
         einsums::DeviceTensor<T, rank> temp(*this);
 
@@ -1454,6 +1831,14 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      */
     bool _full_view_of_underlying{false};
 
+    /**
+     * @property _free_dev_data
+     *
+     * @brief Flag telling whether this view needs to free its data upon deletion.
+     *
+     * This is normally false, but when a device view is made of a core tensor, then this
+     * will be true, so that the buffers for the core tensor are freed.
+     */
     bool _free_dev_data{false};
 
     /**
@@ -1483,7 +1868,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
     friend struct ::einsums::DeviceTensor;
 };
 
-#ifdef __cpp_deduction_guides
+#if !defined(DOXYGEN) && defined(__cpp_deduction_guides)
 template <typename... Args>
     requires(!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
 DeviceTensor(std::string const &, Args...) -> DeviceTensor<double, sizeof...(Args)>;
@@ -1516,9 +1901,11 @@ DeviceTensorView(std::string, DeviceTensor<T, OtherRank> &, Dim<Rank> const &, A
 #include "Einsums/Tensor/Backends/DeviceTensor.hpp"
 #include "Einsums/Tensor/Backends/DeviceTensorView.hpp"
 
+#ifndef DOXYGEN
 namespace einsums {
 TENSOR_EXPORT_RANK(DeviceTensor, 0)
 TENSOR_EXPORT(DeviceTensor)
 TENSOR_EXPORT(DeviceTensorView)
 } // namespace einsums
+#endif
 #endif

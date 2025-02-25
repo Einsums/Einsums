@@ -21,7 +21,14 @@ public:
     init_Einsums_BLAS();
 };
 
+/**
+ * @brief Initialize the BLAS runtime.
+ */
 EINSUMS_EXPORT void initialize_Einsums_BLAS();
+
+/**
+ * @brief Finalize the BLAS runtime.
+ */
 EINSUMS_EXPORT void finalize_Einsums_BLAS();
 
 namespace detail {

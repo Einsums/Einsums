@@ -15,34 +15,35 @@ Einsums's Documentation
    :hidden:
 
    User Guide <user/index>
-   API Reference <libs/overview>
+   API Reference </libs/overview>
    Building from source <building/index>
 
 **Version**: |release|
 
 **Useful links**:
-`Source Repository <https://github.com/Einsums/Einsums>`_ |
+`Source Repository <https://github.com/Einsums/Einsums>`_ |
 `Issue Tracker <https://github.com/Einsums/Einsums/issues>`_
 
 
-Einsums provides compile-time contraction pattern analysis to determine optimal tensor
+Einsums provides compile-time contraction pattern analysis to determine the optimal tensor
 operation to perform. Einsums is a package for scientific computing in C++. It is a C++
 library that provides a multidimensional tensor object and an assortment of functions
-for fast operations on tensors, including mathematical, shape manipulation, sorting,
-I/O, discrete Fourier transforms, basic linear algebra, and tensor algebra.
+for fast operations on tensors, including mathematical functions, shape manipulation, tensor permutations,
+I/O, discrete Fourier transforms, basic linear algebra, and tensor algebra. It also provides
+an interface to Python.
 
 As a short example, the following call to :code:`einsum` will optimize at compile-time to a BLAS
 dgemm call:
 
-.. code-block::
+.. code-block:: C++
 
    using einsums;                        // Provides Tensor, create_tensor, and create_random_tensor
    using einsums::tensor_algebra;        // Provides einsum
    using einsums::index;                 // Provides i, j, k, Indices
 
-   Tensor<2> A = create_random_tensor("A", 7, 7);
-   Tensor<2> B = create_random_tensor("B", 7, 7);
-   Tensor<2> C = create_tensor("C", 7, 7);
+   Tensor A = create_random_tensor("A", 7, 7);
+   Tensor B = create_random_tensor("B", 7, 7);
+   Tensor C = create_tensor("C", 7, 7);
 
    einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
 
@@ -102,7 +103,7 @@ dgemm call:
 
       +++
 
-      .. button-ref:: libs/overview
+      .. button-ref:: /libs/overview
          :expand:
          :color: primary
          :click-parent:

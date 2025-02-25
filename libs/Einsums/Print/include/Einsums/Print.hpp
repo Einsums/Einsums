@@ -190,11 +190,31 @@ using fmt::color;
 using fmt::emphasis;
 using fmt::fg;
 
+#ifdef DOXYGEN
+/**
+ * Prints something to standard output. A new line is emmitted after the print is done.
+ */
+template<typename... Ts>
+void println(Ts... args) {
+    ;
+}
+
+/**
+ * Prints something to a file pointer or output stream. A new line is emmitted after the print is done.
+ */
+template<typename OutType, typename... Ts>
+void fprintln(OutType out, Ts... args) {
+    ;
+}
+#endif
+
+#ifndef DOXYGEN
 template <typename... Ts>
 void println(std::string_view const &f, Ts const... ts) {
     std::string const s = fmt::format(fmt::runtime(f), ts...);
     detail::println(s);
 }
+
 
 template <typename... Ts>
 void println(fmt::text_style const &style, std::string_view const &format, Ts const... ts) {
@@ -270,7 +290,11 @@ inline void fprintln(std::ostream &fp, fmt::text_style const &style, std::string
 inline void fprintln(std::ostream &fp) {
     detail::fprintln(fp, "\n");
 }
+#endif
 
+/**
+ * Calls println to generate an error message, then aborts.
+ */
 template <typename... Ts>
 void println_abort(std::string_view const &format, Ts const... ts) {
     std::string message = std::string("ERROR: ") + format.data();
@@ -283,6 +307,9 @@ void println_abort(std::string_view const &format, Ts const... ts) {
     std::abort();
 }
 
+/**
+ * Calls println to generate a warning message.
+ */
 template <typename... Ts>
 void println_warn(std::string_view const &format, Ts const... ts) {
     std::string message = std::string("WARNING: ") + format.data();
@@ -293,6 +320,9 @@ void println_warn(std::string_view const &format, Ts const... ts) {
 #endif
 }
 
+/**
+ * Calls fprintln to generate an error message, then aborts.
+ */
 template <typename... Ts>
 void fprintln_abort(std::FILE *fp, std::string_view const &format, Ts const... ts) {
     std::string message = std::string("ERROR: ") + format.data();
@@ -301,12 +331,16 @@ void fprintln_abort(std::FILE *fp, std::string_view const &format, Ts const... t
     std::abort();
 }
 
+/**
+ * Calls fprintln to generate a warning message.
+ */
 template <typename... Ts>
 void fprintln_warn(std::FILE *fp, std::string_view const &format, Ts const... ts) {
     std::string message = std::string("WARNING: ") + format.data();
     fprintln(fp, message, ts...);
 }
 
+#ifndef DOXYGEN
 template <typename... Ts>
 void fprintln_abort(std::ostream &os, std::string_view const &format, Ts const... ts) {
     std::string message = std::string("ERROR: ") + format.data();
@@ -320,6 +354,7 @@ void fprintln_warn(std::ostream &os, std::string_view const &format, Ts const...
     std::string message = std::string("WARNING: ") + format.data();
     fprintln(os, bg(color::yellow) | fg(color::black), message, ts...);
 }
+#endif
 
 } // namespace einsums
 

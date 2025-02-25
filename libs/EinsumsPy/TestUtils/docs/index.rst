@@ -8,7 +8,7 @@
 EinsumsPy TestUtils
 ===================
 
-TODO: High-level description of the module.
+This module contains utilities for testing Python interface code.
 
 See the :ref:`API reference <modules_EinsumsPy_TestUtils_api>` of this module for more
 details.

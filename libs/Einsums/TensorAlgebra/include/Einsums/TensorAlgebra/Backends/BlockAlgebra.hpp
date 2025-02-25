@@ -14,7 +14,7 @@
 #    include <Einsums/GPUStreams/GPUStreams.hpp>
 #endif
 
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 
 #include <tuple>

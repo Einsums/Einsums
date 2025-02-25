@@ -8,7 +8,7 @@
 EinsumsPy Core
 ==============
 
-TODO: High-level description of the module.
+This module exports many basic Einsums functions to Python.
 
 See the :ref:`API reference <modules_EinsumsPy_Core_api>` of this module for more
 details.

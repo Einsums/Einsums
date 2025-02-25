@@ -113,6 +113,19 @@ Miscellaneous
 
 * Indents are four spaces. Do not use tabs.
 * Lines should be at most 140 columns long.
+* Avoid using the function call operator on a tensor inside a large loop. This is slow. Here are some options, in order of what should be tried.
+
+  * Using :code:`tensor.data()[index]` to directly index a tensor. 
+    This is fast, but can only be used on certain kinds of tensors, so be careful. It can be used when iterating over
+    a tensor's elements in order. If you are skipping around, it is better to use something else for better readability.
+  * Using :cpp:func:`sentinel_to_sentinels` and :code:`tensor.data()[index]`. This should be faster than subscripting tensors,
+    but be careful, since it can only be used on certain kinds of tensors. As the previous method, it can be used when iterating
+    over a tensor's elements in order. It is still readable even when skipping around, but it will only work on :cpp:class:`Tensor`s
+    and :cpp:class:`TensorView`s.
+  * Using :cpp:func:`sentinel_to_indices` and :cpp:func:`subscript_tensor`. This will make the choice between 
+    the :code:`subscript` method and the function call syntax, using the :code:`subscript` method as the primary
+    and the function call syntax as a fallback. This is the most general way, and it should be preferred unless
+    you can ensure specificity in the kinds of tensors you are being passed.
 
 Some constructions need to have serious thought before they are used. Before any code
 with these constructions is accepted, their use will need to be justified.

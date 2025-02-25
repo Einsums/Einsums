@@ -13,8 +13,20 @@
 
 namespace einsums {
 
+/**
+ * @struct from_string_impl
+ *
+ * @brief Converts a string to a value.
+ */
 template <typename T, typename Enable = void>
 struct from_string_impl {
+
+    /**
+     * @brief Performs the string conversion.
+     *
+     * @param value The string to read.
+     * @param target The output variable.
+     */
     template <typename Char>
     static void call(std::basic_string<Char> const &value, T &target) {
         std::basic_istringstream<Char> stream(value);
@@ -23,6 +35,16 @@ struct from_string_impl {
     }
 };
 
+/**
+ * @brief Check if the value is within the range of the requested type.
+ *
+ * @tparam T The type to check. This determines the maximum and minimum values.
+ * @tparam U The type of the input.
+ * @param value The value to check.
+ * @return Casts the value into the new type.
+ *
+ * @throws std::out_of_range Throws this if the value is outside of the representable range of the check type.
+ */
 template <typename T, typename U>
 T check_out_of_range(U const &value) {
     U const max = (std::numeric_limits<T>::max)();
@@ -39,6 +61,15 @@ T check_out_of_range(U const &value) {
     return static_cast<T>(value);
 }
 
+/**
+ * @brief Checks to see if all the characters in the string past a certain point are all whitespace.
+ *
+ * @tparam Char The kind of character.
+ * @param s The string to check.
+ * @param pos The position to start checking from.
+ *
+ * @throws std::invalid_argument Throws if there are non-whitespace characters after the requested position.
+ */
 template <typename Char>
 void check_only_whitespace(std::basic_string<Char> const &s, std::size_t pos) {
     auto i = s.begin();
@@ -50,6 +81,7 @@ void check_only_whitespace(std::basic_string<Char> const &s, std::size_t pos) {
     }
 }
 
+#ifndef DOXYGEN
 template <typename T>
 struct from_string_impl<T, std::enable_if_t<std::is_integral_v<T>>> {
     template <typename Char>
@@ -129,7 +161,18 @@ struct from_string_impl<T, std::enable_if_t<std::is_floating_point_v<T>>> {
         check_only_whitespace(value, pos);
     }
 };
+#endif
 
+/**
+ * @brief Converts a string to a value.
+ *
+ * @tparam T The type to convert to.
+ * @tparam Char The kind of character.
+ * @param v The string to convert.
+ *
+ * @return The value represented by the input string.
+ * @throw bad_lexical_cast Throws if the string could not be converted.
+ */
 template <typename T, typename Char>
 T from_string(std::basic_string<Char> const &v) {
     T target;
@@ -141,6 +184,17 @@ T from_string(std::basic_string<Char> const &v) {
     return target;
 }
 
+/**
+ * @brief Converts a string to a value.
+ *
+ * @tparam T The type to convert to.
+ * @tparam Char The kind of character.
+ * @tparam U The type of the default value.
+ * @param v The string to convert.
+ * @param default_value The default value if the string could not be converted.
+ *
+ * @return The value represented by the string, orthe default value if the string could not be converted.
+ */
 template <typename T, typename U, typename Char>
 T from_string(std::basic_string<Char> const &v, U &&default_value) {
     T target;
@@ -152,6 +206,7 @@ T from_string(std::basic_string<Char> const &v, U &&default_value) {
     }
 }
 
+#ifndef DOXYGEN
 template <typename T>
 T from_string(std::string const &v) {
     T target;
@@ -173,5 +228,6 @@ T from_string(std::string const &v, U &&default_value) {
         return std::forward<U>(default_value);
     }
 }
+#endif
 
 } // namespace einsums

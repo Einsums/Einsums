@@ -1,8 +1,8 @@
-
+..
     Copyright (c) The Einsums Developers. All rights reserved.
     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-.. _modules_Print:
+.. _modules_Einsums_Print:
 
 =====
 Print
@@ -11,12 +11,14 @@ Print
 This module contains overloads for :code:`fmt::println` that work with Tensors, as well as a few special symbols for
 other tasks.
 
-See the :ref:`API reference <modules_Print_api>` of this module for more
+See the :ref:`API reference <modules_Einsums_Print_api>` of this module for more
 details.
 
 --------------
 Public Symbols
 --------------
+
+There are a few symbols that may be useful to users.
 
 .. cpp:class:: template<std::integral IntType> print::ordinal
 

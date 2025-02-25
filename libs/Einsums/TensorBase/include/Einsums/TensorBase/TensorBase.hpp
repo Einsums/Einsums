@@ -101,9 +101,11 @@ struct TiledTensorNoExtra {
 
 };
 
+#ifndef DOXYGEN
 // Large class. See TiledTensor.hpp for code.
 template <typename T, size_t Rank, typename TensorType>
 struct TiledTensor;
+#endif
 
 /**
  * @struct BlockTensorNoExtra

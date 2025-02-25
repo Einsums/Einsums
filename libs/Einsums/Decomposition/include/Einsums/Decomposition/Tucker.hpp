@@ -81,7 +81,7 @@ auto initialize_tucker(std::vector<TTensor> &folds, std::vector<size_t> &ranks) 
         if (folds[i].dim(0) < rank) {
             // i is an std::integral_constant the "()" obtains the underlying value.
             println_warn("dimension {} size {} is less than the requested decomposition rank {}", i(), folds[i].dim(0), rank);
-            // TODO: Need to pad U up to rank
+            /// @todo Need to pad U up to rank
         }
 
         // Need to save the factors

@@ -165,6 +165,7 @@ EINSUMS_HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *u
     }
 }
 
+#ifndef DOXYGEN
 template <size_t num_unique_inds, typename stride_int1, typename stride_int2>
 void sentinel_to_indices(size_t sentinel, std::array<stride_int1, num_unique_inds> const &unique_strides,
                          std::array<stride_int2, num_unique_inds> &out_inds) {
@@ -211,7 +212,11 @@ EINSUMS_HOSTDEV void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, 
 
     sentinel_to_indices_mult_imp(ordinal, index, std::forward<Rest>(rest)...);
 }
+#endif
 
+/**
+ * @brief Implementation details for the sentinel_to_indices function with multiple output lists.
+ */
 template <typename Stride, typename Indices, typename... Rest>
 void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, Stride const &strides, Indices &indices, Rest&&... rest) {
     indices[index] = strides[index] * ordinal;
@@ -245,6 +250,7 @@ EINSUMS_HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *i
     }
 }
 
+#ifndef DOXYGEN
 template <size_t num_indices, typename StorageType, typename... StridesInds>
     requires(sizeof...(StridesInds) % 2 == 0)
 void sentinel_to_indices(size_t sentinel, std::array<size_t, num_indices> const &index_strides, StridesInds&&... strides_inds) {
@@ -295,7 +301,11 @@ EINSUMS_HOSTDEV void sentinel_to_sentinels_mult_imp(size_t ordinal, size_t index
 
     sentinel_to_sentinels_mult_imp(ordinal, index, std::forward<Rest>(rest)...);
 }
+#endif
 
+/**
+ * @brief Implementation details for the sentinel_to_sentinels function.
+ */
 template <typename Stride, typename Sentinel, typename... Rest>
 void sentinel_to_sentinels_mult_imp(size_t ordinal, size_t index, Stride const &strides, Sentinel &sentinel, Rest &&...rest) {
     sentinel += strides[index] * ordinal;
@@ -303,12 +313,17 @@ void sentinel_to_sentinels_mult_imp(size_t ordinal, size_t index, Stride const &
     sentinel_to_sentinels_mult_imp(ordinal, index, std::forward<Rest>(rest)...);
 }
 
+#ifndef DOXYGEN
 EINSUMS_HOSTDEV inline void sentinel_to_sentinels_zero_imp() {
 }
 
 template <typename Extra>
 EINSUMS_HOSTDEV void sentinel_to_sentinels_zero_imp(Extra &&extra) = delete;
+#endif
 
+/**
+ * @brief Implementation details for the sentinel_to_sentinels function. This clears the outputs.
+ */
 template <typename Stride, typename Sentinel, typename... Rest>
 EINSUMS_HOSTDEV void sentinel_to_sentinels_zero_imp(Stride &&strides, Sentinel &sentinel, Rest &&...rest) {
     sentinel = 0;
@@ -339,6 +354,7 @@ EINSUMS_HOSTDEV inline void sentinel_to_sentinels(size_t sentinel, size_t const 
     }
 }
 
+#ifndef DOXYGEN
 template <size_t num_indices, typename StorageType, typename... StridesInds>
     requires(sizeof...(StridesInds) % 2 == 0)
 void sentinel_to_sentinels(size_t sentinel, std::array<int64_t, num_indices> const &index_strides, StridesInds &&...strides_inds) {
@@ -369,6 +385,7 @@ void sentinel_to_sentinels(size_t sentinel, StorageType const &index_strides, St
         sentinel_to_sentinels_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
     }
 }
+#endif
 
 /**
  * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
@@ -385,6 +402,9 @@ EINSUMS_HOSTDEV inline size_t indices_to_sentinel(size_t const *unique_strides, 
     return out;
 }
 
+/**
+ * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
+ */
 template <size_t num_unique_inds>
 inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides,
                                   std::array<size_t, num_unique_inds> const       &inds) {
@@ -398,6 +418,9 @@ inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> cons
     return out;
 }
 
+/**
+ * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
+ */
 template <size_t num_unique_inds>
 inline size_t indices_to_sentinel(std::array<size_t, num_unique_inds> const &unique_strides,
                                   std::array<size_t, num_unique_inds> const &inds) {
@@ -413,6 +436,9 @@ inline size_t indices_to_sentinel(std::array<size_t, num_unique_inds> const &uni
 
 namespace detail {
 
+/**
+ * @brief Implementation detail for indices_to_sentinel.
+ */
 template <size_t index, size_t num_unique_inds, typename FirstIndex, typename... MultiIndex>
     requires(std::is_integral_v<std::decay_t<MultiIndex>> && ... && std::is_integral_v<std::decay_t<FirstIndex>>)
 constexpr inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides, FirstIndex &&first_index,
@@ -428,6 +454,9 @@ constexpr inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_
 }
 } // namespace detail
 
+/**
+ * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
+ */
 template <size_t num_unique_inds, typename... MultiIndex>
     requires(std::is_integral_v<std::decay_t<MultiIndex>> && ...)
 constexpr inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides,
@@ -436,6 +465,9 @@ constexpr inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_
     return detail::indices_to_sentinel<0>(unique_strides, std::forward<MultiIndex>(indices)...);
 }
 
+/**
+ * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
+ */
 template <typename StorageType1, typename StorageType2>
     requires(!std::is_integral_v<StorageType1> && !std::is_integral_v<StorageType2>)
 inline size_t indices_to_sentinel(StorageType1 const &unique_strides, StorageType2 const &inds) {
@@ -450,6 +482,9 @@ inline size_t indices_to_sentinel(StorageType1 const &unique_strides, StorageTyp
 
 namespace detail {
 
+/**
+ * @brief Implementation details for indices_to_sentinel_negative_check.
+ */
 template <size_t index, size_t num_unique_inds, typename FirstIndex, typename... MultiIndex>
     requires requires { requires(std::is_integral_v<std::decay_t<MultiIndex>> && ... && std::is_integral_v<std::decay_t<FirstIndex>>); }
 inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_unique_inds> const &unique_strides,
@@ -482,6 +517,13 @@ inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_un
 }
 } // namespace detail
 
+/**
+ * @brief Converts indices to a sentinel. Checks for negative numbers and converts them.
+ *
+ * When checking for negative numbers, it will add the appropriate dimension to bring the index into
+ * the range for that dimension. Can not be used on GPU since it throws errors. Also, running all those if-statements
+ * would be very slow.
+ */
 template <size_t num_unique_inds, typename... MultiIndex>
     requires(std::is_integral_v<std::decay_t<MultiIndex>> && ...)
 inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_unique_inds> const &unique_strides,
@@ -530,6 +572,13 @@ inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_stri
     return out;
 }
 
+/**
+ * @brief Compute the strides for turning a sentinel into a list of indices.
+ *
+ * @param dims The list of dimensions.
+ * @param out The calculated strides.
+ * @return The size calculated from the dimensions. Can be safely ignored.
+ */
 EINSUMS_EXPORT size_t dims_to_strides(std::vector<size_t> const &dims, std::vector<size_t> &out);
 
 /**
@@ -554,6 +603,9 @@ constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::a
 
 namespace detail {
 
+/**
+ * @brief Implementation details for dims_to_strides.
+ */
 template<ptrdiff_t index, size_t Dims, typename arr_type2, typename... TupleDims>
 requires requires {
     requires sizeof...(TupleDims) == Dims;

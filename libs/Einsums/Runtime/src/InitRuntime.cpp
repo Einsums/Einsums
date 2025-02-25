@@ -85,7 +85,7 @@ int run(std::function<int()> const &f, Runtime &rt, InitParams const &params) {
 
 int run(std::function<int()> const &f, std::vector<std::string> const &argv, InitParams const &params, bool blocking) {
     EINSUMS_LOG_INFO("Running common initialization routines...");
-    // TODO: Add a check to ensure the runtime hasn't already been initialized
+    /// @todo Add a check to ensure the runtime hasn't already been initialized
 
     // Command line arguments for Einsums will be prefixed with --einsums:
     // For example, "--einsums:verbose=1" will be translated to verbose=1
@@ -165,7 +165,7 @@ int start(std::function<int(int, char **)> f, std::vector<std::string> &argv, In
          *BADCODE                                                                             BADCODE
          *BADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODE
          */
-        // TODO: Fix bad code.
+        /// @todo Fix bad code.
         copy_argv[i] = const_cast<char *>(argv[i].c_str());
     }
 
@@ -230,7 +230,7 @@ void initialize(std::function<int(int, char **)> f, std::vector<std::string> &ar
          *BADCODE                                                                             BADCODE
          *BADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODE
          */
-        // TODO: Fix bad code.
+        /// @todo Fix bad code.
         copy_argv[i] = const_cast<char *>(argv[i].c_str());
     }
 
