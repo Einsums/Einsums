@@ -46,10 +46,10 @@ If you are using CMake use can use the :code:`find_package` function. Then with 
 For example, in your CMakeLists.txt file you can have lines similar to the following:
 
 .. parsed-literal::
-    find_package(Einsums \ |release| \ CONFIG)
+    find_package(Einsums \ |version| \ CONFIG)
 
     add_executable(sample main.cpp)
-    target_link_libraries(samples Einsums::einsums)
+    target_link_libraries(samples Einsums::Einsums)
 
 Then in your main.cpp you can have something like
 
@@ -282,7 +282,7 @@ the second gives all dimensions in a container. To get the size of a tensor, use
 
 .. code:: C++
 
-    Tensor<double, 3> A{"A", 3, 4, 5};
+    TensorA{"A", 3, 4, 5};
 
     assert(A.size() == 3 * 4 * 5);
     assert(A.dim(0) == 3);
@@ -303,14 +303,14 @@ so further operations can cause undefined behavior. The underlying data is not m
 
 .. code:: C++
 
-    Tensor<double, 3> A{"A", 3, 4, 5};
-    Tensor<double, 3> B{A, 2, 3, 10}; // Reshape A to have new dimensions.
-                                      // A is no longer valid after this call.
+    Tensor A{"A", 3, 4, 5};
+    Tensor B{A, 2, 3, 10}; // Reshape A to have new dimensions.
+                           // A is no longer valid after this call.
 
-    Tensor<double, 2> C{B, 10, -1}; // Reshape B to have a new rank and
-                                    // new dimensions. The -1 will be replaced with a
-                                    // number - 6 in this case - so that the size
-                                    // of the input and output are the same.
+    Tensor C{B, 10, -1};   // Reshape B to have a new rank and
+                           // new dimensions. The -1 will be replaced with a
+                           // number - 6 in this case - so that the size
+                           // of the input and output are the same.
 
 A negative index will be treated as a wildcard, and the constructor will figure out what it should be instead to make the
 sizes correct.
@@ -322,11 +322,11 @@ This can be used to convert a 1D tensor into a 2D tensor.
 
 .. code:: C++
 
-    Tensor<double, 1> A{"A", 30};
-    Tensor<double, 2> B{A, -1, 10}; // Make A into a 2D tensor.
-                                    // The -1 will be replaced with a
-                                    // number - 3 in this case - so that
-                                    // the size of the output matches the input.
+    Tensor A{"A", 30};
+    Tensor B{A, -1, 10}; // Make A into a 2D tensor.
+                         // The -1 will be replaced with a
+                         // number - 3 in this case - so that
+                         // the size of the output matches the input.
 
 
 More advanced Tensor operations
