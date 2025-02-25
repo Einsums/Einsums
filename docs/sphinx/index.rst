@@ -41,9 +41,9 @@ dgemm call:
    using einsums::tensor_algebra;        // Provides einsum
    using einsums::index;                 // Provides i, j, k, Indices
 
-   Tensor<2> A = create_random_tensor("A", 7, 7);
-   Tensor<2> B = create_random_tensor("B", 7, 7);
-   Tensor<2> C = create_tensor("C", 7, 7);
+   Tensor A = create_random_tensor("A", 7, 7);
+   Tensor B = create_random_tensor("B", 7, 7);
+   Tensor C = create_tensor("C", 7, 7);
 
    einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
 
