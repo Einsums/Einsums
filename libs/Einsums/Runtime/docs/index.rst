@@ -4,9 +4,9 @@
 
 .. _modules_Einsums_Runtime:
 
-===============
-Einsums Runtime
-===============
+=======
+Runtime
+=======
 
 This module contains several runtime utilities.
 

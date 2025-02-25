@@ -4,9 +4,9 @@
 
 .. _modules_Einsums_DesignPatterns:
 
-======================
-Einsums DesignPatterns
-======================
+==============
+DesignPatterns
+==============
 
 This module contains macros and classes for using design patterns simply and easily. This is an internal API, though
 some advanced programmers may find them useful.

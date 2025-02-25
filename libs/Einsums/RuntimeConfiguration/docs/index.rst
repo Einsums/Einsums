@@ -4,9 +4,9 @@
 
 .. _modules_Einsums_RuntimeConfiguration:
 
-============================
-Einsums RuntimeConfiguration
-============================
+====================
+RuntimeConfiguration
+====================
 
 This module contains facilities for runtime configuration. It is considered to be an internal
 module. No symbols will be useful to users.

@@ -4,9 +4,9 @@
 
 .. _modules_Einsums_FFT:
 
-===========
-Einsums FFT
-===========
+===
+FFT
+===
 
 This module contains wrappers for performing the fast Fourier transform.
 
