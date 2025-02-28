@@ -11,10 +11,10 @@
 Einsums/Runtime/Detail/InitLogging.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/Runtime/Detail/InitLogging.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/Runtime/Detail/InitLogging.hpp
-   :project: Runtime
+   :project: Einsums

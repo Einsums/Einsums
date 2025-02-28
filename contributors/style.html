@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Feb 12, 2025"/>
+    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
   </head>
   
   
@@ -443,6 +443,21 @@ This is a complicated return type. Use the <code class="docutils literal notrans
 <ul class="simple">
 <li><p>Indents are four spaces. Do not use tabs.</p></li>
 <li><p>Lines should be at most 140 columns long.</p></li>
+<li><p>Avoid using the function call operator on a tensor inside a large loop. This is slow. Here are some options, in order of what should be tried.</p>
+<ul>
+<li><p>Using <code class="code docutils literal notranslate"><span class="pre">tensor.data()[index]</span></code> to directly index a tensor.
+This is fast, but can only be used on certain kinds of tensors, so be careful. It can be used when iterating over
+a tensor’s elements in order. If you are skipping around, it is better to use something else for better readability.</p></li>
+<li><p>Using <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">sentinel_to_sentinels</span></code> and <code class="code docutils literal notranslate"><span class="pre">tensor.data()[index]</span></code>. This should be faster than subscripting tensors,
+but be careful, since it can only be used on certain kinds of tensors. As the previous method, it can be used when iterating
+over a tensor’s elements in order. It is still readable even when skipping around, but it will only work on :cpp:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>Tensor`s
+and :cpp:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>TensorView`s.</p></li>
+<li><p>Using <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">sentinel_to_indices</span></code> and <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">subscript_tensor</span></code>. This will make the choice between
+the <code class="code docutils literal notranslate"><span class="pre">subscript</span></code> method and the function call syntax, using the <code class="code docutils literal notranslate"><span class="pre">subscript</span></code> method as the primary
+and the function call syntax as a fallback. This is the most general way, and it should be preferred unless
+you can ensure specificity in the kinds of tensors you are being passed.</p></li>
+</ul>
+</li>
 </ul>
 <p>Some constructions need to have serious thought before they are used. Before any code
 with these constructions is accepted, their use will need to be justified.</p>

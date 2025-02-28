@@ -11,10 +11,10 @@
 Einsums/Runtime/ShutdownFunction.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/Runtime/ShutdownFunction.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/Runtime/ShutdownFunction.hpp
-   :project: Runtime
+   :project: Einsums

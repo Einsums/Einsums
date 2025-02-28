@@ -11,10 +11,10 @@
 Einsums/LinearAlgebra/BlockTensor.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/LinearAlgebra/BlockTensor.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/LinearAlgebra/BlockTensor.hpp
-   :project: LinearAlgebra
+   :project: Einsums

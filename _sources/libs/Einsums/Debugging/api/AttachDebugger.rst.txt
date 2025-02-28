@@ -11,10 +11,10 @@
 Einsums/Debugging/AttachDebugger.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/Debugging/AttachDebugger.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/Debugging/AttachDebugger.hpp
-   :project: Debugging
+   :project: Einsums

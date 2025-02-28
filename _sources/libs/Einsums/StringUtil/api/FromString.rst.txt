@@ -11,10 +11,10 @@
 Einsums/StringUtil/FromString.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/StringUtil/FromString.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/StringUtil/FromString.hpp
-   :project: StringUtil
+   :project: Einsums

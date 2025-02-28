@@ -11,10 +11,10 @@
 Einsums/Runtime/StartupFunction.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/Runtime/StartupFunction.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/Runtime/StartupFunction.hpp
-   :project: Runtime
+   :project: Einsums

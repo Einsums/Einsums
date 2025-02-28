@@ -11,10 +11,10 @@
 Einsums/GPUStreams/InitModule.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/GPUStreams/InitModule.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/GPUStreams/InitModule.hpp
-   :project: GPUStreams
+   :project: Einsums

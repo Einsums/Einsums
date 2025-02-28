@@ -1,8 +1,8 @@
-
+..
     Copyright (c) The Einsums Developers. All rights reserved.
     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-.. _modules_TensorAlgebra:
+.. _modules_Einsums_TensorAlgebra:
 
 =============
 TensorAlgebra
@@ -10,7 +10,7 @@ TensorAlgebra
 
 Contains tensor contractions.
 
-See the :ref:`API reference <modules_TensorAlgebra_api>` of this module for more
+See the :ref:`API reference <modules_Einsums_TensorAlgebra_api>` of this module for more
 details.
 
 ----------
@@ -24,8 +24,8 @@ Public API
     time, as well as the ranks of the tensors. The :code:`C` tensor may also be a scalar if the index tuple is empty.
     The tensor parameters may be any combination of smart pointers. Also, the prefactors may be left off. If the first
     prefactor is left off, it will default to zero. If the second is left off, it will default to one. Most combinations
-    of kinds of tensors are accepted. However, for best results, avoid using :cpp:class:`FunctionTensor<T, Rank>`,
-    :cpp:class:`RuntimeTensor<T, Rank>`, or :cpp:class:`ArithmeticTensor`, as these can't be used with LAPACK or BLAS calls.
+    of kinds of tensors are accepted. However, for best results, avoid using :cpp:class:`FunctionTensor`,
+    :cpp:class:`RuntimeTensor`, or :cpp:class:`ArithmeticTensor`, as these can't be used with LAPACK or BLAS calls.
 
     This function will analyze the indices that it is given to determine if it can be turned into a BLAS call.
     As of the current version, it will not perform any major transpositions to force it into a BLAS call. The
@@ -43,6 +43,12 @@ Public API
     though obviously the orders can be different. The prefactors allow you to do something like
     :math:`C_{abc\cdots} = \alpha C_{abc\cdots} + \beta A_{cba\cdots}`, where the original value of the output tensor is
     scaled and added back into the output.
+
+    .. note::
+
+        This function uses HPTT to perform the tensor transpositions. However, HPTT does not work with :cpp:class:`TensorView`s.
+        You may see slowdowns if you use this with :cpp:class:`TensorView`s, though we are trying to improve this. The best bet
+        will probably be to copy the tensor view to a :cpp:class:`Tensor` first, then permute the elements.
 
 .. cpp:function:: template<typename... Args> sort(Args &&... args)
 

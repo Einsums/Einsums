@@ -1,0 +1,20 @@
+
+.. 
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. _modules_Einsums_Einsums/Errors/Error.hpp_api:
+
+-------------------------------------------------------------------------------
+Einsums/Errors/Error.hpp
+-------------------------------------------------------------------------------
+
+Defined in header Einsums/Errors/Error.hpp.
+
+See :ref:`modules_overview` for a list of names and headers that are part of the public
+|einsums| API.
+
+.. autodoxygenfile:: Einsums/Errors/Error.hpp
+   :project: Einsums

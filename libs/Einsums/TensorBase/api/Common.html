@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Feb 12, 2025"/>
+    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
   </head>
   
   
@@ -274,9 +274,9 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="TensorBase.html">Einsums/TensorBase/TensorBase.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HashFunctions.html">Einsums/TensorBase/HashFunctions.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="IndexUtilities.html">Einsums/TensorBase/IndexUtilities.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TensorBase.html">Einsums/TensorBase/TensorBase.hpp</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TensorBase/Common.hpp</a></li>
 </ul>
 </div>
@@ -337,7 +337,7 @@
                   
   <section id="einsums-tensorbase-common-hpp">
 <span id="modules-einsums-einsums-tensorbase-common-hpp-api"></span><h1>Einsums/TensorBase/Common.hpp<a class="headerlink" href="#einsums-tensorbase-common-hpp" title="Permalink to this heading">#</a></h1>
-<p>Defined in header .</p>
+<p>Defined in header Einsums/TensorBase/Common.hpp.</p>
 <p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
 <em>Einsums</em> API.</p>
 <div class="breathe-sectiondef docutils container">
@@ -345,45 +345,24 @@
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.DEFINE_STRUCT">
 <span class="target" id="_common_8hpp_1a4c18c2311abfaec37aa839eaa569c48a"></span><span class="sig-name descname"><span class="n"><span class="pre">DEFINE_STRUCT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Name</span></span>, <span class="n"><span class="pre">UnderlyingType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DEFINE_STRUCT" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Convenience macro for creating a type derived from a std::array. </p>
+</dd></dl>
 
 </div>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv47einsums">
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums13DEFINE_STRUCTE3DimNSt9ptrdiff_tE">
-<span id="_CPPv3N7einsums13DEFINE_STRUCTE3DimNSt9ptrdiff_tE"></span><span id="_CPPv2N7einsums13DEFINE_STRUCTE3DimNSt9ptrdiff_tE"></span><span id="einsums::DEFINE_STRUCT__Dim.std::ptrdiff_t"></span><span class="target" id="_common_8hpp_1acbba74742a4ebfe9102b40db246db810"></span><span class="sig-name descname"><span class="n"><span class="pre">DEFINE_STRUCT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Dim</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums13DEFINE_STRUCTE3DimNSt9ptrdiff_tE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums13DEFINE_STRUCTE6StrideNSt6size_tE">
-<span id="_CPPv3N7einsums13DEFINE_STRUCTE6StrideNSt6size_tE"></span><span id="_CPPv2N7einsums13DEFINE_STRUCTE6StrideNSt6size_tE"></span><span id="einsums::DEFINE_STRUCT__Stride.std::s"></span><span class="target" id="_common_8hpp_1a3bfe5eb7fc7ae93a990c070077b64f45"></span><span class="sig-name descname"><span class="n"><span class="pre">DEFINE_STRUCT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Stride</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums13DEFINE_STRUCTE6StrideNSt6size_tE" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums13DEFINE_STRUCTE6OffsetNSt6size_tE">
-<span id="_CPPv3N7einsums13DEFINE_STRUCTE6OffsetNSt6size_tE"></span><span id="_CPPv2N7einsums13DEFINE_STRUCTE6OffsetNSt6size_tE"></span><span id="einsums::DEFINE_STRUCT__Offset.std::s"></span><span class="target" id="_common_8hpp_1a9aaddc1f1647147bb384435808e5deb8"></span><span class="sig-name descname"><span class="n"><span class="pre">DEFINE_STRUCT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Offset</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums13DEFINE_STRUCTE6OffsetNSt6size_tE" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums13DEFINE_STRUCTE5CountNSt6size_tE">
-<span id="_CPPv3N7einsums13DEFINE_STRUCTE5CountNSt6size_tE"></span><span id="_CPPv2N7einsums13DEFINE_STRUCTE5CountNSt6size_tE"></span><span id="einsums::DEFINE_STRUCT__Count.std::s"></span><span class="target" id="_common_8hpp_1a386f5e34fe1854fa6bf553781fc06034"></span><span class="sig-name descname"><span class="n"><span class="pre">DEFINE_STRUCT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Count</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums13DEFINE_STRUCTE5CountNSt6size_tE" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums13DEFINE_STRUCTE5ChunkNSt9ptrdiff_tE">
-<span id="_CPPv3N7einsums13DEFINE_STRUCTE5ChunkNSt9ptrdiff_tE"></span><span id="_CPPv2N7einsums13DEFINE_STRUCTE5ChunkNSt9ptrdiff_tE"></span><span id="einsums::DEFINE_STRUCT__Chunk.std::ptrdiff_t"></span><span class="target" id="_common_8hpp_1a985b41b7077406ef02348d09a8794723"></span><span class="sig-name descname"><span class="n"><span class="pre">DEFINE_STRUCT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Chunk</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums13DEFINE_STRUCTE5ChunkNSt9ptrdiff_tE" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-</div>
+</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3AllE">
-<span id="_CPPv3N7einsums3AllE"></span><span id="_CPPv2N7einsums3AllE"></span><span id="einsums::All__AllT"></span><span class="target" id="_common_8hpp_1a595ffa036774625ab9599ce803bf9486"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums4AllTE" title="einsums::AllT"><span class="n"><span class="pre">AllT</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">All</span></span></span><a class="headerlink" href="#_CPPv4N7einsums3AllE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums3AllE"></span><span id="_CPPv2N7einsums3AllE"></span><span id="einsums::All__AllT"></span><span class="target" id="namespaceeinsums_1a595ffa036774625ab9599ce803bf9486"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums4AllTE" title="einsums::AllT"><span class="n"><span class="pre">AllT</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">All</span></span></span><a class="headerlink" href="#_CPPv4N7einsums3AllE" title="Permalink to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -391,6 +370,74 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums4AllTE">
 <span id="_CPPv3N7einsums4AllTE"></span><span id="_CPPv2N7einsums4AllTE"></span><span id="einsums::AllT"></span><span class="target" id="structeinsums_1_1_all_t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AllT</span></span></span><a class="headerlink" href="#_CPPv4N7einsums4AllTE" title="Permalink to this definition">#</a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt6size_tEEN7einsums5ChunkE">
+<span id="_CPPv3I_NSt6size_tEEN7einsums5ChunkE"></span><span id="_CPPv2I_NSt6size_tEEN7einsums5ChunkE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_chunk"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Chunk</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt6size_tEEN7einsums5ChunkE" title="einsums::Chunk::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_NSt6size_tEEN7einsums5ChunkE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Common.hpp&gt;</em></div>
+<p>Holds a list of chunks in an array. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums5Chunk5ChunkEDp4Args">
+<span id="_CPPv3IDpEN7einsums5Chunk5ChunkEDp4Args"></span><span id="_CPPv2IDpEN7einsums5Chunk5ChunkEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_chunk_1a41e056f6e2d97a6d8b72efffb3d37537"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Chunk</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums5Chunk5ChunkEDp4Args" title="einsums::Chunk::Chunk::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums5Chunk5ChunkEDp4Args" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Aggregate constructor. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt6size_tEEN7einsums5CountE">
+<span id="_CPPv3I_NSt6size_tEEN7einsums5CountE"></span><span id="_CPPv2I_NSt6size_tEEN7einsums5CountE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_count"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Count</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt6size_tEEN7einsums5CountE" title="einsums::Count::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_NSt6size_tEEN7einsums5CountE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Common.hpp&gt;</em></div>
+<p>Holds a list of counts in an array. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums5Count5CountEDp4Args">
+<span id="_CPPv3IDpEN7einsums5Count5CountEDp4Args"></span><span id="_CPPv2IDpEN7einsums5Count5CountEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_count_1ac04a0258f7a5dd2ef866047be8f92d4d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Count</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums5Count5CountEDp4Args" title="einsums::Count::Count::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums5Count5CountEDp4Args" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Aggregate constructor. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt6size_tEEN7einsums3DimE">
+<span id="_CPPv3I_NSt6size_tEEN7einsums3DimE"></span><span id="_CPPv2I_NSt6size_tEEN7einsums3DimE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_dim"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dim</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="einsums::Dim::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Common.hpp&gt;</em></div>
+<p>Holds a list of dimensions in an array. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums3Dim3DimEDp4Args">
+<span id="_CPPv3IDpEN7einsums3Dim3DimEDp4Args"></span><span id="_CPPv2IDpEN7einsums3Dim3DimEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_dim_1a51452b5670a345c50aac9da919c47428"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dim</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums3Dim3DimEDp4Args" title="einsums::Dim::Dim::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums3Dim3DimEDp4Args" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Aggregate constructor. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt6size_tEEN7einsums6OffsetE">
+<span id="_CPPv3I_NSt6size_tEEN7einsums6OffsetE"></span><span id="_CPPv2I_NSt6size_tEEN7einsums6OffsetE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_offset"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Offset</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt6size_tEEN7einsums6OffsetE" title="einsums::Offset::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_NSt6size_tEEN7einsums6OffsetE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Common.hpp&gt;</em></div>
+<p>Holds a list of offsets in an array. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums6Offset6OffsetEDp4Args">
+<span id="_CPPv3IDpEN7einsums6Offset6OffsetEDp4Args"></span><span id="_CPPv2IDpEN7einsums6Offset6OffsetEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_offset_1ad9f7bfc8b1a110e14767820a1713f674"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Offset</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums6Offset6OffsetEDp4Args" title="einsums::Offset::Offset::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums6Offset6OffsetEDp4Args" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Aggregate constructor. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
 
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5RangeE">
@@ -404,6 +451,23 @@
 <dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums5Range5RangeEDp4Args">
 <span id="_CPPv3IDpEN7einsums5Range5RangeEDp4Args"></span><span id="_CPPv2IDpEN7einsums5Range5RangeEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_range_1a70ee1690e5f188f9fe028647edcf17f7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Range</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums5Range5RangeEDp4Args" title="einsums::Range::Range::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums5Range5RangeEDp4Args" title="Permalink to this definition">#</a><br /></dt>
 <dd><p>Initialize a range. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt6size_tEEN7einsums6StrideE">
+<span id="_CPPv3I_NSt6size_tEEN7einsums6StrideE"></span><span id="_CPPv2I_NSt6size_tEEN7einsums6StrideE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_stride"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stride</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt6size_tEEN7einsums6StrideE" title="einsums::Stride::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_NSt6size_tEEN7einsums6StrideE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Common.hpp&gt;</em></div>
+<p>Holds a list of strides in an array. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums6Stride6StrideEDp4Args">
+<span id="_CPPv3IDpEN7einsums6Stride6StrideEDp4Args"></span><span id="_CPPv2IDpEN7einsums6Stride6StrideEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_stride_1a1c8c840dbb7d16648584ec53d4489b0c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stride</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums6Stride6StrideEDp4Args" title="einsums::Stride::Stride::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums6Stride6StrideEDp4Args" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Aggregate constructor. </p>
 </dd></dl>
 
 </div>

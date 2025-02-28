@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/TensorAlgebra/Permute.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/TensorAlgebra/api/Permute';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="TensorAlgebra.html">Einsums/TensorAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TensorAlgebra_TensorAlgebra.html">Einsums/TensorAlgebra/TensorAlgebra.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TensorAlgebra/Permute.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Index.html">Einsums/TensorAlgebra/Detail/Index.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Utilities.html">Einsums/TensorAlgebra/Detail/Utilities.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dispatch.html">Einsums/TensorAlgebra/Backends/Dispatch.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Unfold.html">Einsums/TensorAlgebra/Backends/Unfold.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TileAlgebra.html">Einsums/TensorAlgebra/Backends/TileAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BaseAlgebra.html">Einsums/TensorAlgebra/Backends/BaseAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPUTensorAlgebra.html">Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BlockAlgebra.html">Einsums/TensorAlgebra/Backends/BlockAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KhatriRao.html">Einsums/TensorAlgebra/Backends/KhatriRao.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GenericAlgorithm.html">Einsums/TensorAlgebra/Backends/GenericAlgorithm.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BlockTileAlgebra.html">Einsums/TensorAlgebra/Backends/BlockTileAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ElementTransform.html">Einsums/TensorAlgebra/Backends/ElementTransform.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DevicePermute.html">Einsums/TensorAlgebra/Backends/DevicePermute.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/TensorAlgebra/Permute.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-tensoralgebra-permute-hpp">
+<span id="modules-einsums-einsums-tensoralgebra-permute-hpp-api"></span><h1>Einsums/TensorAlgebra/Permute.hpp<a class="headerlink" href="#einsums-tensoralgebra-permute-hpp" title="Permalink to this heading">#</a></h1>
+<p>Defined in header Einsums/TensorAlgebra/Permute.hpp.</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd></dd></dl>
+
+</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebraE">
+<span id="_CPPv3N7einsums14tensor_algebraE"></span><span id="_CPPv2N7einsums14tensor_algebraE"></span><span id="einsums::tensor_algebra"></span><span class="target" id="namespaceeinsums_1_1tensor__algebra"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tensor_algebra</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_17CoreTensorConcept_17CoreTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType">
+<span id="_CPPv3I_17CoreTensorConcept_17CoreTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType"></span><span id="_CPPv2I_17CoreTensorConcept_17CoreTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">CoreTensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">CoreTensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">CIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">AIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_permute_8hpp_1a7a76eb48b477169b85813ee56a0fe7b6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">permute</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_17CoreTensorConcept_17CoreTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">UC_prefactor</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_17CoreTensorConcept_17CoreTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::CIndices"><span class="n"><span class="pre">CIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_indices</span></span>, <a class="reference internal" href="#_CPPv4I_17CoreTensorConcept_17CoreTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span>, <a class="reference internal" href="#_CPPv4I_17CoreTensorConcept_17CoreTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">UA_prefactor</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_17CoreTensorConcept_17CoreTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::AIndices"><span class="n"><span class="pre">AIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A_indices</span></span>, <a class="reference internal" href="#_CPPv4I_17CoreTensorConcept_17CoreTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_17CoreTensorConcept_17CoreTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_16NotASmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP7ObjectCRKNSt5tupleIDp8AIndicesEERK7ObjectA">
+<span id="_CPPv3I_16NotASmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteERKNSt5tupleIDp8CIndicesEEP7ObjectCRKNSt5tupleIDp8AIndicesEERK7ObjectA"></span><span id="_CPPv2I_16NotASmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteERKNSt5tupleIDp8CIndicesEEP7ObjectCRKNSt5tupleIDp8AIndicesEERK7ObjectA"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">NotASmartPointer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">NotASmartPointer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectC</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">CIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">AIndices</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_permute_8hpp_1ae8ea95f1391d979b3fb5f7aa97bcc57e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">permute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_16NotASmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP7ObjectCRKNSt5tupleIDp8AIndicesEERK7ObjectA" title="einsums::tensor_algebra::permute::CIndices"><span class="n"><span class="pre">CIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_indices</span></span>, <a class="reference internal" href="#_CPPv4I_16NotASmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP7ObjectCRKNSt5tupleIDp8AIndicesEERK7ObjectA" title="einsums::tensor_algebra::permute::ObjectC"><span class="n"><span class="pre">ObjectC</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_16NotASmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP7ObjectCRKNSt5tupleIDp8AIndicesEERK7ObjectA" title="einsums::tensor_algebra::permute::AIndices"><span class="n"><span class="pre">AIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A_indices</span></span>, <a class="reference internal" href="#_CPPv4I_16NotASmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP7ObjectCRKNSt5tupleIDp8AIndicesEERK7ObjectA" title="einsums::tensor_algebra::permute::ObjectA"><span class="n"><span class="pre">ObjectA</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_16NotASmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP7ObjectCRKNSt5tupleIDp8AIndicesEERK7ObjectA" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_12SmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA">
+<span id="_CPPv3I_12SmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteERKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA"></span><span id="_CPPv2I_12SmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteERKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">SmartPointer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SmartPointerA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">SmartPointer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SmartPointerC</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">CIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">AIndices</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_permute_8hpp_1ac953272c4b8fb7598de3b2d97b4135bd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">permute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_12SmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA" title="einsums::tensor_algebra::permute::CIndices"><span class="n"><span class="pre">CIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_indices</span></span>, <a class="reference internal" href="#_CPPv4I_12SmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA" title="einsums::tensor_algebra::permute::SmartPointerC"><span class="n"><span class="pre">SmartPointerC</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_12SmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA" title="einsums::tensor_algebra::permute::AIndices"><span class="n"><span class="pre">AIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A_indices</span></span>, <a class="reference internal" href="#_CPPv4I_12SmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA" title="einsums::tensor_algebra::permute::SmartPointerA"><span class="n"><span class="pre">SmartPointerA</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_12SmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_12SmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP8PointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA">
+<span id="_CPPv3I_12SmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteERKNSt5tupleIDp8CIndicesEEP8PointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA"></span><span id="_CPPv2I_12SmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteERKNSt5tupleIDp8CIndicesEEP8PointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">SmartPointer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SmartPointerA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">NotASmartPointer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PointerC</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">CIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">AIndices</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_permute_8hpp_1a960aee2c6c62d34186752eed9e963761"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">permute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_12SmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP8PointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA" title="einsums::tensor_algebra::permute::CIndices"><span class="n"><span class="pre">CIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_indices</span></span>, <a class="reference internal" href="#_CPPv4I_12SmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP8PointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA" title="einsums::tensor_algebra::permute::PointerC"><span class="n"><span class="pre">PointerC</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_12SmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP8PointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA" title="einsums::tensor_algebra::permute::AIndices"><span class="n"><span class="pre">AIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A_indices</span></span>, <a class="reference internal" href="#_CPPv4I_12SmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP8PointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA" title="einsums::tensor_algebra::permute::SmartPointerA"><span class="n"><span class="pre">SmartPointerA</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_12SmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP8PointerCRKNSt5tupleIDp8AIndicesEERK13SmartPointerA" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_16NotASmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK7ObjectA">
+<span id="_CPPv3I_16NotASmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteERKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK7ObjectA"></span><span id="_CPPv2I_16NotASmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteERKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK7ObjectA"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">NotASmartPointer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">SmartPointer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SmartPointerC</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">CIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">AIndices</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_permute_8hpp_1a9acb6efcffd2602c48a99518131985c5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">permute</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_16NotASmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK7ObjectA" title="einsums::tensor_algebra::permute::CIndices"><span class="n"><span class="pre">CIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_indices</span></span>, <a class="reference internal" href="#_CPPv4I_16NotASmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK7ObjectA" title="einsums::tensor_algebra::permute::SmartPointerC"><span class="n"><span class="pre">SmartPointerC</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_16NotASmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK7ObjectA" title="einsums::tensor_algebra::permute::AIndices"><span class="n"><span class="pre">AIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A_indices</span></span>, <a class="reference internal" href="#_CPPv4I_16NotASmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK7ObjectA" title="einsums::tensor_algebra::permute::ObjectA"><span class="n"><span class="pre">ObjectA</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_16NotASmartPointer_12SmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP13SmartPointerCRKNSt5tupleIDp8AIndicesEERK7ObjectA" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_18BlockTensorConcept_18BlockTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType">
+<span id="_CPPv3I_18BlockTensorConcept_18BlockTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType"></span><span id="_CPPv2I_18BlockTensorConcept_18BlockTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">BlockTensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">BlockTensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">CIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">AIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_permute_8hpp_1a289cf953f88a1f3eb23282b7536da630"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">permute</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_18BlockTensorConcept_18BlockTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">UC_prefactor</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_18BlockTensorConcept_18BlockTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::CIndices"><span class="n"><span class="pre">CIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_indices</span></span>, <a class="reference internal" href="#_CPPv4I_18BlockTensorConcept_18BlockTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span>, <a class="reference internal" href="#_CPPv4I_18BlockTensorConcept_18BlockTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">UA_prefactor</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_18BlockTensorConcept_18BlockTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::AIndices"><span class="n"><span class="pre">AIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A_indices</span></span>, <a class="reference internal" href="#_CPPv4I_18BlockTensorConcept_18BlockTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="einsums::tensor_algebra::permute::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_18BlockTensorConcept_18BlockTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_13TensorConcept_13TensorConceptDpDpDpDpEN7einsums14tensor_algebra24get_grid_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE">
+<span id="_CPPv3I0_13TensorConcept_13TensorConceptDpDpDpDpEN7einsums14tensor_algebra24get_grid_ranges_for_manyERK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE"></span><span id="_CPPv2I0_13TensorConcept_13TensorConceptDpDpDpDpEN7einsums14tensor_algebra24get_grid_ranges_for_manyERK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">CIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">AIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">BIndices</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">AllUniqueIndices</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_permute_8hpp_1a232572da666cf9b655d7c87c0399b6ea"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_grid_ranges_for_many</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_13TensorConcept_13TensorConceptDpDpDpDpEN7einsums14tensor_algebra24get_grid_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::tensor_algebra::get_grid_ranges_for_many::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_13TensorConcept_13TensorConceptDpDpDpDpEN7einsums14tensor_algebra24get_grid_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::tensor_algebra::get_grid_ranges_for_many::CIndices"><span class="n"><span class="pre">CIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C_indices</span></span>, <a class="reference internal" href="#_CPPv4I0_13TensorConcept_13TensorConceptDpDpDpDpEN7einsums14tensor_algebra24get_grid_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::tensor_algebra::get_grid_ranges_for_many::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_13TensorConcept_13TensorConceptDpDpDpDpEN7einsums14tensor_algebra24get_grid_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::tensor_algebra::get_grid_ranges_for_many::AIndices"><span class="n"><span class="pre">AIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A_indices</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_13TensorConcept_13TensorConceptDpDpDpDpEN7einsums14tensor_algebra24get_grid_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="einsums::tensor_algebra::get_grid_ranges_for_many::AllUniqueIndices"><span class="n"><span class="pre">AllUniqueIndices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">All_unique_indices</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_13TensorConcept_13TensorConceptDpDpDpDpEN7einsums14tensor_algebra24get_grid_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Finds the tile grid dimensions for the requested indices. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>C</strong> – The C tensor. </p></li>
+<li><p><strong>C_indices</strong> – The indices for the C tensor. </p></li>
+<li><p><strong>A</strong> – The A tensor. </p></li>
+<li><p><strong>A_indices</strong> – The indices for the A tensor. </p></li>
+<li><p><strong>All_unique_indices</strong> – The list of all indices with duplicates removed. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums14tensor_algebra4sortEDTcl7permutespclNSt7forwardI4ArgsEE4argsEEEDpRR4Args">
+<span id="_CPPv3IDpEN7einsums14tensor_algebra4sortEDpRR4Args"></span><span id="_CPPv2IDpEN7einsums14tensor_algebra4sortEDpRR4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_permute_8hpp_1abdccb4a553f9b1c7bd8f8876910a73e2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="DevicePermute.html#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_tDpDp00EN7einsums14tensor_algebra7permuteENSt11enable_if_tIXaaeqsZ8CIndicessZ8AIndicesaaeqsZ8CIndices5CRankaaeqsZ8AIndices5ARankNSt15is_arithmetic_vI1UEEEEEK1URKNSt5tupleIDp8CIndicesEEP5CTypeI1T5CRankEK1URKNSt5tupleIDp8AIndicesEERK5ATypeI1T5ARankE" title="einsums::tensor_algebra::permute"><span class="n"><span class="pre">permute</span></span></a><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">forward</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums14tensor_algebra4sortEDTcl7permutespclNSt7forwardI4ArgsEE4argsEEEDpRR4Args" title="einsums::tensor_algebra::sort::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums14tensor_algebra4sortEDTcl7permutespclNSt7forwardI4ArgsEE4argsEEEDpRR4Args" title="einsums::tensor_algebra::sort::args"><span class="n"><span class="pre">args</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sort</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums14tensor_algebra4sortEDTcl7permutespclNSt7forwardI4ArgsEE4argsEEEDpRR4Args" title="einsums::tensor_algebra::sort::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums14tensor_algebra4sortEDTcl7permutespclNSt7forwardI4ArgsEE4argsEEEDpRR4Args" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

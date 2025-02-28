@@ -47,15 +47,16 @@
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/Errors/docs/index';</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="Einsums FFT" href="../../FFT/docs/index.html" />
-    <link rel="prev" title="Einsums DesignPatterns" href="../../DesignPatterns/docs/index.html" />
+    <link rel="next" title="FFT" href="../../FFT/docs/index.html" />
+    <link rel="prev" title="DesignPatterns" href="../../DesignPatterns/docs/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Feb 12, 2025"/>
+    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
   </head>
   
   
@@ -139,14 +140,14 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../../../../user/index.html">
     User Guide
   </a>
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../overview.html">
     API Reference
   </a>
@@ -202,6 +203,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -228,14 +233,14 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../../../../user/index.html">
     User Guide
   </a>
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../overview.html">
     API Reference
   </a>
@@ -275,39 +280,90 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Modules</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/absolute_beginners.html">Einsums: the absolute basics for beginners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/python.html">Einsums in Python</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User's Reference</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../modules.html">Einsums modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Decomposition/docs/index.html">Decomposition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../DesignPatterns/docs/index.html">Einsums DesignPatterns</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Errors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../FFT/docs/index.html">Einsums FFT</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../GPUStreams/docs/index.html">GPUStreams</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Logging/docs/index.html">Einsums Logging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Runtime/docs/index.html">Einsums Runtime</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../RuntimeConfiguration/docs/index.html">Einsums RuntimeConfiguration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../overview.html">Overview</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../index.html">Einsums</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../../modules.html">Einsums modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Decomposition/docs/index.html">Decomposition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../DesignPatterns/docs/index.html">DesignPatterns</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">Errors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../GPUStreams/docs/index.html">GPUStreams</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Logging/docs/index.html">Einsums Logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../RuntimeConfiguration/docs/index.html">RuntimeConfiguration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
 </ul>
 </details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../todo.html">Einsums Library TODO</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../EinsumsPy/index.html">EinsumsPy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../EinsumsPy/modules.html">EinsumsPy modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/Core/docs/index.html">EinsumsPy Core</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/Errors/docs/index.html">EinsumsPy Errors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/GPU/docs/index.html">EinsumsPy GPU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/Tensor/docs/index.html">EinsumsPy Tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/TensorAlgebra/docs/index.html">EinsumsPy TensorAlgebra</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/TestUtils/docs/index.html">EinsumsPy TestUtils</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../EinsumsPy/todo.html">EinsumsPy Library TODO</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../EinsumsExperimental/index.html">EinsumsExperimental</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../EinsumsExperimental/modules.html">EinsumsExperimental modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsExperimental/Graph/docs/index.html">EinsumsExperimental Graph</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../EinsumsExperimental/todo.html">EinsumsExperimental Library TODO</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../reference/python_module.html">Einsums Python Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/einsums.core.html">Einsums Core Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.tensor_algebra.html">Einsums Python Tensor Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.gpu_view.html">Einsums Python GPU Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.runtimetensor.html">Einsums Python Runtime Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/einsums.utils.html">Einsums Utilities Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/einsums.gpu_except.html">HIP Exceptions in Python</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Extras</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">Einsums license</a></li>
 </ul>
 </div>
 </nav></div>
@@ -349,7 +405,13 @@
       </a>
     </li>
     
+    <li class="breadcrumb-item"><a href="../../../../user/index.html" class="nav-link">Einsums user guide</a></li>
+    
+    
     <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Overview</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Einsums</a></li>
     
     
     <li class="breadcrumb-item"><a href="../../modules.html" class="nav-link">Einsums modules</a></li>
@@ -371,16 +433,164 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <blockquote>
-<div><p>Copyright (c) The Einsums Developers. All rights reserved.
-Licensed under the MIT License. See LICENSE.txt in the project root for license information.</p>
-</div></blockquote>
-<section id="errors">
-<span id="modules-errors"></span><h1>Errors<a class="headerlink" href="#errors" title="Permalink to this heading">#</a></h1>
-<p>This module contains symbols used for error handling. This included exception classes and macros for throwing
+  <section id="errors">
+<span id="modules-einsums-errors"></span><h1>Errors<a class="headerlink" href="#errors" title="Permalink to this heading">#</a></h1>
+<p>This module contains symbols used for error handling. This includes exception classes, and macros for throwing
 exceptions with location information.</p>
-<p>See the <span class="xref std std-ref">API reference</span> of this module for more
+<p>See the <a class="reference internal" href="../api/full_api.html#modules-einsums-errors-api"><span class="std std-ref">API reference</span></a> of this module for more
 details.</p>
+<section id="error-reference">
+<h2>Error Reference<a class="headerlink" href="#error-reference" title="Permalink to this heading">#</a></h2>
+<p>If all goes well, Einsums should never throw an error. Of course, this is wishful thinking. A reference as to
+what each kind of error means is provided for users who wish to debug their code, or at least be able to handle
+the errors as they come up. For the most part, the kinds of errors thrown by a function should be documented, though
+this is still a work in progress.</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0_iE10CodedError">
+<span id="_CPPv3I0_iE10CodedError"></span><span id="_CPPv2I0_iE10CodedError"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ErrorClass</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ErrorCode</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CodedError</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_iE10CodedError" title="CodedError::ErrorClass"><span class="n"><span class="pre">ErrorClass</span></span></a><a class="headerlink" href="#_CPPv4I0_iE10CodedError" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This is a wrapper for an error. It acts just like an error of type <code class="code docutils literal notranslate"><span class="pre">ErrorClass</span></code>, but it comes with an extra
+integer error code. This way, a function can throw multiple errors of the same class, but they can be separated if
+needed by specifying the error code. These errors can then be caught either as an error of type <code class="code docutils literal notranslate"><span class="pre">ErrorClass</span></code>,
+or you can specify which error you want to handle as <code class="code docutils literal notranslate"><span class="pre">CodedError&lt;ErrorClass,</span> <span class="pre">ErrorCode&gt;</span></code>.</p>
+<p>As an example, in some specializations of the <code class="code docutils literal notranslate"><span class="pre">gemm</span></code> call, multiple <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">tensor_compat_error`s</span> <span class="pre">can</span> <span class="pre">be</span>
+<span class="pre">thrown.</span> <span class="pre">For</span> <span class="pre">the</span> <span class="pre">:cpp:class:`TiledTensor</span></code> version, for instance, a <a class="reference internal" href="#_CPPv419tensor_compat_error" title="tensor_compat_error"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">tensor_compat_error</span></code></a> can be thrown if
+either the output tensor’s grid doesn’t match what the input tensors require, or if the inner input tensor dimension’s
+grid doesn’t match what is required. If you wanted to catch both of these at once, you can use something like the following.</p>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="n">TiledTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">;</span>
+<span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">gemm</span><span class="o">&lt;</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="p">(</span><span class="n">tensor_compat_error</span><span class="w"> </span><span class="o">&amp;</span><span class="n">exc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Handle both errors.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Or you can handle each individually, like here.</p>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">gemm</span><span class="o">&lt;</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="p">(</span><span class="n">CodedError</span><span class="o">&lt;</span><span class="n">tensor_compat_error</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">exc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Output doesn&#39;t have a compatible grid, so fix that.</span>
+<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="p">(</span><span class="n">CodedError</span><span class="o">&lt;</span><span class="n">tensor_compat_error</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">exc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Input doesn&#39;t have a compatible grid, so fix that.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ErrorClass</strong> – The kind of error the object wraps.</p></li>
+<li><p><strong>ErrorCode</strong> – The identifier for the error.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv415dimension_error">
+<span id="_CPPv315dimension_error"></span><span id="_CPPv215dimension_error"></span><span id="dimension_error"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dimension_error</span></span></span><a class="headerlink" href="#_CPPv415dimension_error" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Indicates that the dimensions of some tensor arguments are not compatible with the given operation.
+For instance, you can only take the determinant of a square matrix, so passing in a matrix that is not
+square to <a class="reference internal" href="../../LinearAlgebra/docs/index.html#_CPPv4I_13MatrixConceptE3detN5AType9ValueTypeERK5AType" title="det"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">det</span></code></a> will result in this error.</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv419tensor_compat_error">
+<span id="_CPPv319tensor_compat_error"></span><span id="_CPPv219tensor_compat_error"></span><span id="tensor_compat_error"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tensor_compat_error</span></span></span><a class="headerlink" href="#_CPPv419tensor_compat_error" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Indicates that two or more tensors are not compatible with each other for the requested operation.
+For instance, matrix multiplication is only allowed for matrices of certain dimensions, where for some
+natural numbers <span class="math notranslate nohighlight">\(n, m, k\)</span>, the only allowed contraction is of the form
+<span class="math notranslate nohighlight">\(n\times k, k\times m \rightarrow n\times m\)</span>. If you were to pass a 3-by-2 matrix as the first
+matrix argument, a 1-by-4 matrix as the second matrix argument, and a 3-by-5 matrix as the third matrix
+argument to <a class="reference internal" href="../../LinearAlgebra/docs/index.html#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemm1URK5ATypeRK5BType1UP5CType" title="gemm"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">gemm</span></code></a>, this error will be thrown because the inner dimensions of the input arguments
+don’t match (<span class="math notranslate nohighlight">\(2 \ne 1\)</span>), and the outer dimensions of the input matrices and the dimensions of the output
+matrix don’t match either (<span class="math notranslate nohighlight">\(3 = 3\)</span>, but <span class="math notranslate nohighlight">\(4 \ne 5\)</span>).</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv418num_argument_error">
+<span id="_CPPv318num_argument_error"></span><span id="_CPPv218num_argument_error"></span><span id="num_argument_error"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_argument_error</span></span></span><a class="headerlink" href="#_CPPv418num_argument_error" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Indicates that a function that can receive a variable number of arguments did not receive the right number
+of arguments. This is especially used in the <a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0E13RuntimeTensor" title="RuntimeTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">RuntimeTensor</span></code></a> subscript functions, where the
+number of indices needed is not known at compile time, so compile-time checks can’t be made. This
+exception has two specializations for too many and not enough arguments. They will be discussed further below.
+This exception is also thrown when a function takes an array of values that are treated as individual
+arguments, but the array is too small or too big.</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv415not_enough_args">
+<span id="_CPPv315not_enough_args"></span><span id="_CPPv215not_enough_args"></span><span id="not_enough_args"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">not_enough_args</span></span></span><a class="headerlink" href="#_CPPv415not_enough_args" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Indicates that a function that can receive a variable number of arguments did not receive enough arguments to work.</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv413too_many_args">
+<span id="_CPPv313too_many_args"></span><span id="_CPPv213too_many_args"></span><span id="too_many_args"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">too_many_args</span></span></span><a class="headerlink" href="#_CPPv413too_many_args" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Indicates that a function that can receive a variable number of arguments received too many arguments to work.</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv413access_denied">
+<span id="_CPPv313access_denied"></span><span id="_CPPv213access_denied"></span><span id="access_denied"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">access_denied</span></span></span><a class="headerlink" href="#_CPPv413access_denied" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This exception is mosly only thrown by the HDF5 compatibility code. In that case, it is thrown when an illegal
+action is attempted on a file object, such as writing read-only data, or accessing a file without the required
+permissions.</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv410todo_error">
+<span id="_CPPv310todo_error"></span><span id="_CPPv210todo_error"></span><span id="todo_error"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">todo_error</span></span></span><a class="headerlink" href="#_CPPv410todo_error" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This exception, along with the <a class="reference internal" href="#_CPPv415not_implemented" title="not_implemented"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">not_implemented</span></code></a> exception, indicates that the action you requested
+is not yet implemented. If you get this error, come tell us
+<a href="#id1"><span class="problematic" id="id2">`on our discussion page&lt;https://github.com/Einsums/Einsums/discussions&gt;`_</span></a>, and we will try to focus some energy
+to filling it out. If you are an experienced C++ programmer, we would appreciate your assistance if you think you
+have a solution.</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv415not_implemented">
+<span id="_CPPv315not_implemented"></span><span id="_CPPv215not_implemented"></span><span id="not_implemented"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">not_implemented</span></span></span><a class="headerlink" href="#_CPPv415not_implemented" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This exception indicates that an action you requested is not implemented. This may be because the feature
+is not yet ready, or it may be that the specific combination of parameters is not acceptable. The message
+provided should give more information. If you absolutely need that set of features, come tell us
+<a href="#id3"><span class="problematic" id="id4">`on our discussion page&lt;https://github.com/Einsums/Einsums/discussions&gt;`_</span></a>, and we will try to work it out.
+If you are an experienced C++ programmer, we would appreciate your assistance if you think you have a solution.</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv49bad_logic">
+<span id="_CPPv39bad_logic"></span><span id="_CPPv29bad_logic"></span><span id="bad_logic"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bad_logic</span></span></span><a class="headerlink" href="#_CPPv49bad_logic" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This means the same thing as <code class="code docutils literal notranslate"><span class="pre">std::logic_error</span></code>. However, since <code class="code docutils literal notranslate"><span class="pre">std::logic_error</span></code> is the base class
+for so many errors, this specialization is provided so that you can catch specific exceptions by reference, and not
+have it match to all exceptions derived from <code class="code docutils literal notranslate"><span class="pre">std::logic_error</span></code>.</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv419uninitialized_error">
+<span id="_CPPv319uninitialized_error"></span><span id="_CPPv219uninitialized_error"></span><span id="uninitialized_error"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">uninitialized_error</span></span></span><a class="headerlink" href="#_CPPv419uninitialized_error" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Indicates that the code is handling uninitialized data. This is usually thrown when Einsums was not initialized.</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv412system_error">
+<span id="_CPPv312system_error"></span><span id="_CPPv212system_error"></span><span id="system_error"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">system_error</span></span></span><a class="headerlink" href="#_CPPv412system_error" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Indicates that an error occured when making a system call, or some sort of system utility failed. For instance,
+it can be thrown when trying to find a file that doesn’t exist.</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv410enum_error">
+<span id="_CPPv310enum_error"></span><span id="_CPPv210enum_error"></span><span id="enum_error"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enum_error</span></span></span><a class="headerlink" href="#_CPPv410enum_error" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Indicates that an invalid enum value was passed to a function.</p>
+</dd></dl>
+
+<p>This module also contains exception classes for every HIP, hipBLAS, and hipSOLVER status code. To get the name of a HIP
+exception, take the <code class="code docutils literal notranslate"><span class="pre">hip</span></code> off of the beginning of the status code. For instance <code class="code docutils literal notranslate"><span class="pre">hipSuccess</span></code>
+becomes <code class="code docutils literal notranslate"><span class="pre">Success</span></code>. To get the hipBLAS or hipSOLVER exception, remove the <code class="code docutils literal notranslate"><span class="pre">HIPBLAS_STATUS</span></code> or
+<code class="code docutils literal notranslate"><span class="pre">HIPSOLVER_STATUS</span></code>, then convert the <code class="code docutils literal notranslate"><span class="pre">UPPERCASE_WITH_UNDERSCORES</span></code> into <code class="code docutils literal notranslate"><span class="pre">CamelCase</span></code> and
+put either <code class="code docutils literal notranslate"><span class="pre">blas</span></code> or <code class="code docutils literal notranslate"><span class="pre">solver</span></code> at the beginning. For instance <code class="code docutils literal notranslate"><span class="pre">HIP_BLAS_STATUS_SUCCESS</span></code>
+becomes <code class="code docutils literal notranslate"><span class="pre">blasSuccess</span></code>. Since there are so many of these, they will not be documented here. The documentation
+can be found in the <a class="reference internal" href="../api/full_api.html#modules-einsums-errors-api"><span class="std std-ref">API reference</span></a>.</p>
+</section>
 </section>
 
 
@@ -399,7 +609,7 @@ details.</p>
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Einsums DesignPatterns</p>
+        <p class="prev-next-title">DesignPatterns</p>
       </div>
     </a>
     <a class="right-next"
@@ -407,7 +617,7 @@ details.</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Einsums FFT</p>
+        <p class="prev-next-title">FFT</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -417,6 +627,24 @@ details.</p>
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-reference">Error Reference</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

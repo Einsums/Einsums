@@ -11,10 +11,10 @@
 Einsums/Concepts/SmartPointer.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/Concepts/SmartPointer.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/Concepts/SmartPointer.hpp
-   :project: Concepts
+   :project: Einsums

@@ -1,0 +1,1183 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/Tensor/BlockTensor.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/Tensor/api/BlockTensor';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="DeviceTensor.html">Einsums/Tensor/DeviceTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TensorForward.html">Einsums/Tensor/TensorForward.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DiskTensor.html">Einsums/Tensor/DiskTensor.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Tensor/BlockTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TiledTensor.html">Einsums/Tensor/TiledTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="H5.html">Einsums/Tensor/H5.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArithmeticTensor.html">Einsums/Tensor/ArithmeticTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FunctionTensor.html">Einsums/Tensor/FunctionTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tensor.html">Einsums/Tensor/Tensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RuntimeTensor.html">Einsums/Tensor/RuntimeTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Backends_DeviceTensor.html">Einsums/Tensor/Backends/DeviceTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DeviceTensorView.html">Einsums/Tensor/Backends/DeviceTensorView.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/Tensor/BlockTensor.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-tensor-blocktensor-hpp">
+<span id="modules-einsums-einsums-tensor-blocktensor-hpp-api"></span><h1>Einsums/Tensor/BlockTensor.hpp<a class="headerlink" href="#einsums-tensor-blocktensor-hpp" title="Permalink to this heading">#</a></h1>
+<p>Defined in header Einsums/Tensor/BlockTensor.hpp.</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd></dd></dl>
+
+</p>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0_6size_tEN7einsums11BlockTensorE">
+<span id="_CPPv3I0_6size_tEN7einsums11BlockTensorE"></span><span id="_CPPv2I0_6size_tEN7einsums11BlockTensorE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_block_tensor"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums11tensor_baseE" title="einsums::tensor_base"><span class="n"><span class="pre">tensor_base</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor"><span class="n"><span class="pre">BlockTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums11BlockTensorE" title="einsums::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums11BlockTensorE" title="einsums::BlockTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="Tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums11BlockTensorE" title="einsums::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums11BlockTensorE" title="einsums::BlockTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums11tensor_baseE" title="einsums::tensor_base"><span class="n"><span class="pre">tensor_base</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../TensorBase/api/TensorBase.html#_CPPv4N7einsums11tensor_base10CoreTensorE" title="einsums::tensor_base::CoreTensor"><span class="n"><span class="pre">CoreTensor</span></span></a><a class="headerlink" href="#_CPPv4I0_6size_tEN7einsums11BlockTensorE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;BlockTensor.hpp&gt;</em></div>
+<p>Represents a block-diagonal tensor in core memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> – The type of data stored in the tensor. </p></li>
+<li><p><strong>Rank</strong> – The rank of the tensor. </p></li>
+</ul>
+</dd>
+</dl>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11BlockTensor11BlockTensorEv">
+<span id="_CPPv3N7einsums11BlockTensor11BlockTensorEv"></span><span id="_CPPv2N7einsums11BlockTensor11BlockTensorEv"></span><span id="einsums::BlockTensor::BlockTensor"></span><span class="target" id="structeinsums_1_1_block_tensor_1a006d5eeb65af0ba6c8fae88ac632040a"></span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums11BlockTensor11BlockTensorEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object. Default constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11BlockTensor11BlockTensorERK11BlockTensor">
+<span id="_CPPv3N7einsums11BlockTensor11BlockTensorERK11BlockTensor"></span><span id="_CPPv2N7einsums11BlockTensor11BlockTensorERK11BlockTensor"></span><span id="einsums::BlockTensor::BlockTensor__BlockTensorCR"></span><span class="target" id="structeinsums_1_1_block_tensor_1a9475429f672d6ffd22e87a279a669b98"></span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums11BlockTensor11BlockTensorERK11BlockTensor" title="einsums::BlockTensor::BlockTensor"><span class="n"><span class="pre">BlockTensor</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums11BlockTensor11BlockTensorERK11BlockTensor" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object. Default copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11BlockTensorD0Ev">
+<span id="_CPPv3N7einsums11BlockTensorD0Ev"></span><span id="_CPPv2N7einsums11BlockTensorD0Ev"></span><span id="einsums::BlockTensor::~BlockTensor"></span><span class="target" id="structeinsums_1_1_block_tensor_1a50c0440ef83e9c32f1b204e0c307554d"></span><span class="sig-name descname"><span class="n"><span class="pre">~BlockTensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums11BlockTensorD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Destroy the <a class="reference internal" href="#structeinsums_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums11BlockTensor11BlockTensorENSt6stringEDp4Dims">
+<span id="_CPPv3IDpEN7einsums11BlockTensor11BlockTensorENSt6stringEDp4Dims"></span><span id="_CPPv2IDpEN7einsums11BlockTensor11BlockTensorENSt6stringEDp4Dims"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Dims</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_block_tensor_1a8b30f6e6216455a6d91fe0690d2aa1c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums11BlockTensor11BlockTensorENSt6stringEDp4Dims" title="einsums::BlockTensor::BlockTensor::Dims"><span class="n"><span class="pre">Dims</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">block_dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums11BlockTensor11BlockTensorENSt6stringEDp4Dims" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object with the given name and dimensions. </p>
+<p>Constructs a new <a class="reference internal" href="#structeinsums_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object using the information provided in <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> .</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BlockTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The newly constructed <a class="reference internal" href="#structeinsums_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> is NOT zeroed out for you. If you start having NaN issues in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Dims</strong> – Variadic template arguments for the dimensions. Must be castable to size_t. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> – Name of the new tensor. </p></li>
+<li><p><strong>block_dims</strong> – The size of each block. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums11BlockTensor11BlockTensorENSt6stringERK8ArrayArg">
+<span id="_CPPv3I0EN7einsums11BlockTensor11BlockTensorENSt6stringERK8ArrayArg"></span><span id="_CPPv2I0EN7einsums11BlockTensor11BlockTensorENSt6stringERK8ArrayArg"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ArrayArg</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_block_tensor_1a02bbed5621f24cd30eb3d251f294c1a0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums11BlockTensor11BlockTensorENSt6stringERK8ArrayArg" title="einsums::BlockTensor::BlockTensor::ArrayArg"><span class="n"><span class="pre">ArrayArg</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">block_dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums11BlockTensor11BlockTensorENSt6stringERK8ArrayArg" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object with the given name and dimensions. </p>
+<p>Constructs a new <a class="reference internal" href="#structeinsums_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object using the information provided in <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> .</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BlockTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The newly constructed <a class="reference internal" href="#structeinsums_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> is NOT zeroed out for you. If you start having NaN issues in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Dims</strong> – Variadic template arguments for the dimensions. Must be castable to size_t. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> – Name of the new tensor. </p></li>
+<li><p><strong>block_dims</strong> – The size of each block. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_tEN7einsums11BlockTensor11BlockTensorE3DimI4DimsE">
+<span id="_CPPv3I_6size_tEN7einsums11BlockTensor11BlockTensorE3DimI4DimsE"></span><span id="_CPPv2I_6size_tEN7einsums11BlockTensor11BlockTensorE3DimI4DimsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dims</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_block_tensor_1a8d45671a154f511dada059f4adbc9ab1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="einsums::Dim"><span class="n"><span class="pre">Dim</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_6size_tEN7einsums11BlockTensor11BlockTensorE3DimI4DimsE" title="einsums::BlockTensor::BlockTensor::Dims"><span class="n"><span class="pre">Dims</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">block_dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_tEN7einsums11BlockTensor11BlockTensorE3DimI4DimsE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object using the dimensions given by <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_dim"><span class="std std-ref">Dim</span></a> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>block_dims</strong> – The dimensions of the new tensor in <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_dim"><span class="std std-ref">Dim</span></a> form. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_baseE">
+<span id="_CPPv3N7einsums11tensor_baseE"></span><span id="_CPPv2N7einsums11tensor_baseE"></span><span id="einsums::tensor_base"></span><span class="target" id="namespaceeinsums_1_1tensor__base"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tensor_base</span></span></span><a class="headerlink" href="#_CPPv4N7einsums11tensor_baseE" title="Permalink to this definition">#</a><br /></dt>
+<dd><dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE">
+<span id="_CPPv3I0_6size_t0EN7einsums11tensor_base11BlockTensorE"></span><span id="_CPPv2I0_6size_t0EN7einsums11tensor_base11BlockTensorE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums11tensor_baseE" title="einsums::tensor_base"><span class="n"><span class="pre">tensor_base</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../TensorBase/api/TensorBase.html#_CPPv4N7einsums11tensor_base18BlockTensorNoExtraE" title="einsums::tensor_base::BlockTensorNoExtra"><span class="n"><span class="pre">BlockTensorNoExtra</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../DesignPatterns/api/Lockable.html#_CPPv4N7einsums11design_patsE" title="einsums::design_pats"><span class="n"><span class="pre">design_pats</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../DesignPatterns/api/Lockable.html#_CPPv4I0EN7einsums11design_pats8LockableE" title="einsums::design_pats::Lockable"><span class="n"><span class="pre">Lockable</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">recursive_mutex</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums11tensor_baseE" title="einsums::tensor_base"><span class="n"><span class="pre">tensor_base</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../TensorBase/api/TensorBase.html#_CPPv4N7einsums11tensor_base22AlgebraOptimizedTensorE" title="einsums::tensor_base::AlgebraOptimizedTensor"><span class="n"><span class="pre">AlgebraOptimizedTensor</span></span></a><a class="headerlink" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;BlockTensor.hpp&gt;</em></div>
+<p>Represents a block-diagonal tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> – The data type stored in this tensor. </p></li>
+<li><p><strong>Rank</strong> – The rank of the tensor </p></li>
+<li><p><strong>TensorType</strong> – The underlying type for the tensors. </p></li>
+</ul>
+</dd>
+</dl>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-constructors">Constructors</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor11BlockTensorEv">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor11BlockTensorEv"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor11BlockTensorEv"></span><span id="einsums::tensor_base::BlockTensor::BlockTensor"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ab3b384b938db821a2872871413c065a6"></span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor11BlockTensorEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor11BlockTensorERK11BlockTensor">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor11BlockTensorERK11BlockTensor"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor11BlockTensorERK11BlockTensor"></span><span id="einsums::tensor_base::BlockTensor::BlockTensor__BlockTensorCR"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ab13c1324afb8a7db5b803f0d46fe900c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums11tensor_base11BlockTensor11BlockTensorERK11BlockTensor" title="einsums::tensor_base::BlockTensor::BlockTensor"><span class="n"><span class="pre">BlockTensor</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor11BlockTensorERK11BlockTensor" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Copy constructs a new <a class="reference internal" href="#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_DpNSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringEDp4Dims">
+<span id="_CPPv3I_DpNSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringEDp4Dims"></span><span id="_CPPv2I_DpNSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringEDp4Dims"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">convertible_to</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dims</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1aa8a34596c8bc811b482c003a3c556ec0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4I_DpNSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringEDp4Dims" title="einsums::tensor_base::BlockTensor::BlockTensor::Dims"><span class="n"><span class="pre">Dims</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">block_dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_DpNSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringEDp4Dims" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Constructs a new <a class="reference internal" href="#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object using the information provided in <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> . The values in <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> must be castable to size_t.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BlockTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The newly constructed <a class="reference internal" href="Tensor.html#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> is NOT zeroed out for you. If you start having NaN issues in your code try calling <a class="reference internal" href="#structeinsums_1_1tensor__base_1_1_block_tensor_1a73a6c2de8c4bf2dea25a09fcfec41724"><span class="std std-ref">BlockTensor.zero()</span></a> or zero(BlockTensor) to see if that resolves it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Dims</strong> – Variadic template arguments for the dimensions. Must be castable to size_t. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> – Name of the new tensor. </p></li>
+<li><p><strong>block_dims</strong> – The size of each block. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringERK8ArrayArg">
+<span id="_CPPv3I0EN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringERK8ArrayArg"></span><span id="_CPPv2I0EN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringERK8ArrayArg"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ArrayArg</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1af584e93437ca6ab29b811b05ba91f4e5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringERK8ArrayArg" title="einsums::tensor_base::BlockTensor::BlockTensor::ArrayArg"><span class="n"><span class="pre">ArrayArg</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">block_dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringERK8ArrayArg" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Constructs a new <a class="reference internal" href="#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object using the information provided in <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> . The values in <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> need to be castable to size_t.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BlockTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span>
+</pre></div>
+</div>
+<p>The newly constructed <a class="reference internal" href="Tensor.html#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> is NOT zeroed out for you. If you start having NaN issues in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ArrayArg</strong> – A container type that stores the dimensions. For instance, std::array or <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_dim"><span class="std std-ref">einsums::Dim</span></a>. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> – Name of the new tensor. </p></li>
+<li><p><strong>block_dims</strong> – The size of each block. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringENSt16initializer_listI7IntTypeEE">
+<span id="_CPPv3I_NSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringENSt16initializer_listI7IntTypeEE"></span><span id="_CPPv2I_NSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringENSt16initializer_listI7IntTypeEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">convertible_to</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IntType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a66597c055f5bfbfdada639f39363760e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringENSt16initializer_listI7IntTypeEE" title="einsums::tensor_base::BlockTensor::BlockTensor::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">block_dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_NSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt6stringENSt16initializer_listI7IntTypeEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Constructs a new <a class="reference internal" href="#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object using the information provided in <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> . The values in <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> need to be castable to size_t.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BlockTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span>
+</pre></div>
+</div>
+<p>The newly constructed <a class="reference internal" href="Tensor.html#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> is NOT zeroed out for you. If you start having NaN issues in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IntType</strong> – The type of the size values. This should be determined automatically. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> – Name of the new tensor. </p></li>
+<li><p><strong>block_dims</strong> – The size of each block. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums11tensor_base11BlockTensor11BlockTensorERK8ArrayArg">
+<span id="_CPPv3I0EN7einsums11tensor_base11BlockTensor11BlockTensorERK8ArrayArg"></span><span id="_CPPv2I0EN7einsums11tensor_base11BlockTensor11BlockTensorERK8ArrayArg"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ArrayArg</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a98eda69724f005b94f936d0f839881e6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums11tensor_base11BlockTensor11BlockTensorERK8ArrayArg" title="einsums::tensor_base::BlockTensor::BlockTensor::ArrayArg"><span class="n"><span class="pre">ArrayArg</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">block_dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums11tensor_base11BlockTensor11BlockTensorERK8ArrayArg" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Constructs a new <a class="reference internal" href="#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object using the information provided in <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> . The values in <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> need to be castable to size_t.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BlockTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span>
+</pre></div>
+</div>
+<p>The newly constructed <a class="reference internal" href="Tensor.html#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> is NOT zeroed out for you. If you start having NaN issues in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ArrayArg</strong> – A container type that stores the dimensions. For instance, std::array or <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_dim"><span class="std std-ref">einsums::Dim</span></a>. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>block_dims</strong> – The size of each block. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt16initializer_listI7IntTypeEE">
+<span id="_CPPv3I_NSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt16initializer_listI7IntTypeEE"></span><span id="_CPPv2I_NSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt16initializer_listI7IntTypeEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">convertible_to</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IntType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a7313b811fabc02529cf19270fa8cfe65"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockTensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt16initializer_listI7IntTypeEE" title="einsums::tensor_base::BlockTensor::BlockTensor::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">block_dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_NSt14convertible_toI6size_tEEEN7einsums11tensor_base11BlockTensor11BlockTensorENSt16initializer_listI7IntTypeEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Constructs a new <a class="reference internal" href="#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object using the information provided in <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> . The values in <code class="docutils literal notranslate"><span class="pre">block_dims</span></code> need to be castable to size_t.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BlockTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span>
+</pre></div>
+</div>
+<p>The newly constructed <a class="reference internal" href="Tensor.html#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> is NOT zeroed out for you. If you start having NaN issues in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ArrayArg</strong> – A container type that stores the dimensions. For instance, std::array or <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_dim"><span class="std std-ref">einsums::Dim</span></a>. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>block_dims</strong> – The size of each block. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensorD0Ev">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensorD0Ev"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensorD0Ev"></span><span id="einsums::tensor_base::BlockTensor::~BlockTensor"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a72535148b4536ced15733f8a0c4c58c0"></span><span class="sig-name descname"><span class="n"><span class="pre">~BlockTensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensorD0Ev" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Destroy the <a class="reference internal" href="#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a> object. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor10StoredTypeE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor10StoredTypeE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor10StoredTypeE"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ae98547c3219cb66ab24466156292e11e"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StoredType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor10StoredTypeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>The kind of tensor that is used by this structured tensor to store data. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor9ValueTypeE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor9ValueTypeE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor9ValueTypeE"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a7d9b0e27681c53318d314b3ede62091b"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor9ValueTypeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>The type of data stored in the tensor. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor8block_ofE6size_t">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor8block_ofE6size_t"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor8block_ofE6size_t"></span><span id="einsums::tensor_base::BlockTensor::block_of__sC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a3d4061181651bf0c0525337160c821c7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block_of</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor8block_ofE6size_t" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Find the block which can be indexed by the given <code class="docutils literal notranslate"><span class="pre">index</span></code>. </p>
+<p>This finds the block for which the <code class="docutils literal notranslate"><span class="pre">index</span></code> is within its range. Since these tensors are always square/hypercubic, the index is valid for all axes. This index should be greater than or equal to zero and less than the dimension of the tensor along any axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> – The index to test. </p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">out_of_range</span></span></span> – Throws this when the index it outside of the tensor. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The index of the block containing the given index. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor4zeroEv">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor4zeroEv"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor4zeroEv"></span><span id="einsums::tensor_base::BlockTensor::zero"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a73a6c2de8c4bf2dea25a09fcfec41724"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">zero</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor4zeroEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Zeroes out the tensor data. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor7set_allE1T">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor7set_allE1T"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor7set_allE1T"></span><span id="einsums::tensor_base::BlockTensor::set_all__T"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a4edce90118fb5f7cc84d368a3493415f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_all</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor7set_allE1T" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Set the all entries in the blocks to the given value. </p>
+<p>This does not set the value in the unoccupied blocks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – Value to set the elements to. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor5blockEi">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor5blockEi"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor5blockEi"></span><span id="einsums::tensor_base::BlockTensor::block__iC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a3027ab54bd7eda24b00ee6f8218c5a7b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">block</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor5blockEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the selected block with an integer ID. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> – The index of the block in the list of blocks. </p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">out_of_range</span></span></span> – if <code class="docutils literal notranslate"><span class="pre">id</span></code> is outside of the list of blocks. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The block requested. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor5blockEi">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor5blockEi"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor5blockEi"></span><span id="einsums::tensor_base::BlockTensor::block__i"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1adfac209bc6b3510ec7b821474e7ef2b4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">block</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor5blockEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the selected block with an integer ID.    </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> – The index of the block in the list of blocks. </p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">out_of_range</span></span></span> – if <code class="docutils literal notranslate"><span class="pre">id</span></code> is outside of the list of blocks.    </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The block requested. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor5blockERKNSt6stringE">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor5blockERKNSt6stringE"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor5blockERKNSt6stringE"></span><span id="einsums::tensor_base::BlockTensor::block__ssCRC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ad6fbfaa3335469f48d8d1d7380dbd556"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">block</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor5blockERKNSt6stringE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the first block with the given name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the block to find. </p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">out_of_range</span></span></span> – if no block with the given name is contained in this tensor. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The requested block. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor5blockERKNSt6stringE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor5blockERKNSt6stringE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor5blockERKNSt6stringE"></span><span id="einsums::tensor_base::BlockTensor::block__ssCR"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a36e989f77cfd22045ca569d24d5c8e1f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">block</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor5blockERKNSt6stringE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the first block with the given name.    </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the block to find. </p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">out_of_range</span></span></span> – if no block with the given name is contained in this tensor.    </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The requested block. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor10push_blockE10TensorType">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor10push_blockE10TensorType"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor10push_blockE10TensorType"></span><span id="einsums::tensor_base::BlockTensor::push_block__TensorType"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1af5329ac9b050d7c1c4b19294b73db45b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_block</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor10push_blockE10TensorType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Add a block to the end of the list of blocks. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – The tensor to push. </p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/api/Error.html#_CPPv4N7einsums15dimension_errorE" title="einsums::dimension_error"><span class="n">dimension_error</span></a></span></span> – if the tensor being pushed is not square. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor12insert_blockEi10TensorType">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor12insert_blockEi10TensorType"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor12insert_blockEi10TensorType"></span><span id="einsums::tensor_base::BlockTensor::insert_block__i.TensorType"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ac10a3ecdf72fea05faa262f5a0029806"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">insert_block</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor12insert_blockEi10TensorType" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Add a block to the specified position in the list of blocks. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> – The position to insert at. </p></li>
+<li><p><strong>value</strong> – The tensor to insert. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/api/Error.html#_CPPv4N7einsums15dimension_errorE" title="einsums::dimension_error"><span class="n">dimension_error</span></a></span></span> – if the tensor being pushed is not square. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums11tensor_base11BlockTensor4dataEP1TDp10MultiIndex">
+<span id="_CPPv3IDpEN7einsums11tensor_base11BlockTensor4dataEDp10MultiIndex"></span><span id="_CPPv2IDpEN7einsums11tensor_base11BlockTensor4dataEDp10MultiIndex"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">MultiIndex</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1aa099dc7df377fba2350675b12d50e657"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums11tensor_base11BlockTensor4dataEP1TDp10MultiIndex" title="einsums::tensor_base::BlockTensor::data::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums11tensor_base11BlockTensor4dataEP1TDp10MultiIndex" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Returns a pointer into the tensor at the given location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>MultiIndex</strong> – The datatypes of the passed parameters. Must be castable to </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>index</strong> – The explicit desired index into the tensor. Must be castable to std::int64_t. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A pointer into the tensor at the requested location, or nullptr if it is outside of the blocks. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpENK7einsums11tensor_base11BlockTensorclERK1TDp10MultiIndex">
+<span id="_CPPv3IDpENK7einsums11tensor_base11BlockTensorclEDp10MultiIndex"></span><span id="_CPPv2IDpENK7einsums11tensor_base11BlockTensorclEDp10MultiIndex"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">MultiIndex</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1abe09ee239de898a323cc3626ecf42399"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpENK7einsums11tensor_base11BlockTensorclERK1TDp10MultiIndex" title="einsums::tensor_base::BlockTensor::operator()::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IDpENK7einsums11tensor_base11BlockTensorclERK1TDp10MultiIndex" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Subscripts into the tensor. </p>
+<p>This version works when all elements are explicit values into the tensor. It does not work with the All or <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_range"><span class="std std-ref">Range</span></a> tags.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>MultiIndex</strong> – Datatype of the indices. Must be castable to std::int64_t. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>index</strong> – The explicit desired index into the tensor. Elements must be castable to std::int64_t. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>const T&amp; </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums11tensor_base11BlockTensorclER1TDp10MultiIndex">
+<span id="_CPPv3IDpEN7einsums11tensor_base11BlockTensorclEDp10MultiIndex"></span><span id="_CPPv2IDpEN7einsums11tensor_base11BlockTensorclEDp10MultiIndex"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">MultiIndex</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a6dcdadd3b04e32dd3a54cf7c49105b30"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums11tensor_base11BlockTensorclER1TDp10MultiIndex" title="einsums::tensor_base::BlockTensor::operator()::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums11tensor_base11BlockTensorclER1TDp10MultiIndex" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Rank&gt;::operator(MultiIndex… index) const </p>
+<p>Rank&gt;::operator(MultiIndex… index) const </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums11tensor_base11BlockTensorclER1TRK9Container">
+<span id="_CPPv3I0EN7einsums11tensor_base11BlockTensorclERK9Container"></span><span id="_CPPv2I0EN7einsums11tensor_base11BlockTensorclERK9Container"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a6078440a1d025298d71ef4b79aeb7cb3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums11tensor_base11BlockTensorclER1TRK9Container" title="einsums::tensor_base::BlockTensor::operator()::Container"><span class="n"><span class="pre">Container</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums11tensor_base11BlockTensorclER1TRK9Container" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Subscripts into the tensor. </p>
+<p>This version works when all elements are explicit values into the tensor. It does not work with the All or <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_range"><span class="std std-ref">Range</span></a> tags.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Container</strong> – A container type, such as std::array. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>index</strong> – The explicit desired index into the tensor. Elements must be castable to std::int64_t. </p>
+</dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/api/Error.html#_CPPv4N7einsums15not_enough_argsE" title="einsums::not_enough_args"><span class="n">not_enough_args</span></a></span></span> – Throws this if the container doesn’t have enough indices. </p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/api/Error.html#_CPPv4N7einsums13too_many_argsE" title="einsums::too_many_args"><span class="n">too_many_args</span></a></span></span> – Throws this if the container has too many indices. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>T&amp; A reference to the value at that index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK7einsums11tensor_base11BlockTensorclERK1TRK9Container">
+<span id="_CPPv3I0ENK7einsums11tensor_base11BlockTensorclERK9Container"></span><span id="_CPPv2I0ENK7einsums11tensor_base11BlockTensorclERK9Container"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a3873b54aeeb1f235d98ffe4b9440bf46"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK7einsums11tensor_base11BlockTensorclERK1TRK9Container" title="einsums::tensor_base::BlockTensor::operator()::Container"><span class="n"><span class="pre">Container</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK7einsums11tensor_base11BlockTensorclERK1TRK9Container" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Rank&gt;<a class="reference internal" href="#structeinsums_1_1tensor__base_1_1_block_tensor_1a6078440a1d025298d71ef4b79aeb7cb3"><span class="std std-ref">operator()(Container const &amp;index)</span></a></p>
+<p>Rank&gt;<a class="reference internal" href="#structeinsums_1_1tensor__base_1_1_block_tensor_1a6078440a1d025298d71ef4b79aeb7cb3"><span class="std std-ref">operator()(Container const &amp;index)</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensorixE6size_t">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensorixE6size_t"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensorixE6size_t"></span><span id="einsums::tensor_base::BlockTensor::subscript-operator__sC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1aaa09f70e02a20eebb95716086db52446"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensorixE6size_t" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the block with the given index. Equivalent to block(index) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensorixE6size_t">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensorixE6size_t"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensorixE6size_t"></span><span id="einsums::tensor_base::BlockTensor::subscript-operator__s"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a35da154bfa0cce538a51795184987f96"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensorixE6size_t" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the block with the given index. Equivalent to block(index)    </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensorixERKNSt6stringE">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensorixERKNSt6stringE"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensorixERKNSt6stringE"></span><span id="einsums::tensor_base::BlockTensor::subscript-operator__ssCRC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1aa1d16c27896c584ecc207e48b15b5242"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensorixERKNSt6stringE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the block with the given index. Equivalent to block(index)    </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensorixERKNSt6stringE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensorixERKNSt6stringE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensorixERKNSt6stringE"></span><span id="einsums::tensor_base::BlockTensor::subscript-operator__ssCR"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a93e4611ed8485751972f0545ce286a73"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensorixERKNSt6stringE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the block with the given index. Equivalent to block(index)    </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensoraSERK11BlockTensorI1T4Rank10TensorTypeE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensoraSERK11BlockTensorI1T4Rank10TensorTypeE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensoraSERK11BlockTensorI1T4Rank10TensorTypeE"></span><span id="einsums::tensor_base::BlockTensor::assign-operator__BlockTensor:T.Rank.TensorType:CR"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ad416992977fb58e4e92eb52885081428"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor"><span class="n"><span class="pre">BlockTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums11tensor_base11BlockTensor4RankE" title="einsums::tensor_base::BlockTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor"><span class="n"><span class="pre">BlockTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums11tensor_base11BlockTensor4RankE" title="einsums::tensor_base::BlockTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensoraSERK11BlockTensorI1T4Rank10TensorTypeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Copy assignment. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums11tensor_base11BlockTensoraSER11BlockTensorI1T4Rank10TensorTypeERK11BlockTensorI6TOther4Rank10TensorTypeE">
+<span id="_CPPv3I0EN7einsums11tensor_base11BlockTensoraSERK11BlockTensorI6TOther4Rank10TensorTypeE"></span><span id="_CPPv2I0EN7einsums11tensor_base11BlockTensoraSERK11BlockTensorI6TOther4Rank10TensorTypeE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TOther</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ad5226110d3cc2d324c17f83f2d36376f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor"><span class="n"><span class="pre">BlockTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums11tensor_base11BlockTensor4RankE" title="einsums::tensor_base::BlockTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor"><span class="n"><span class="pre">BlockTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums11tensor_base11BlockTensoraSER11BlockTensorI1T4Rank10TensorTypeERK11BlockTensorI6TOther4Rank10TensorTypeE" title="einsums::tensor_base::BlockTensor::operator=::TOther"><span class="n"><span class="pre">TOther</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums11tensor_base11BlockTensor4RankE" title="einsums::tensor_base::BlockTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums11tensor_base11BlockTensoraSER11BlockTensorI1T4Rank10TensorTypeERK11BlockTensorI6TOther4Rank10TensorTypeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Copy assignment with a cast. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensorcv10TensorTypeEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensorcv10TensorTypeEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensorcv10TensorTypeEv"></span><span id="einsums::tensor_base::BlockTensor::castto-TensorType-operatorC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a2295bd42855e0747b21f978371c9eea1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensorcv10TensorTypeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Convert block tensor into a normal tensor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensorcv10TensorTypeEv">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensorcv10TensorTypeEv"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensorcv10TensorTypeEv"></span><span id="einsums::tensor_base::BlockTensor::castto-TensorType-operator"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ac72a313b062a2153f9daf32cfe5da64c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensorcv10TensorTypeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Rank&gt;::operatorTensorType() const </p>
+<p>Rank&gt;::operatorTensorType() const </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor10num_blocksEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor10num_blocksEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor10num_blocksEv"></span><span id="einsums::tensor_base::BlockTensor::num_blocksC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ab6c1e4e2c5caea8fcd2e7d41ba361633"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_blocks</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor10num_blocksEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the number of blocks. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor10block_dimsEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor10block_dimsEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor10block_dimsEv"></span><span id="einsums::tensor_base::BlockTensor::block_dimsC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a3776513eec32de01db2e98e819f70a7c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block_dims</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor10block_dimsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the dimensions of each block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor6rangesEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor6rangesEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor6rangesEv"></span><span id="einsums::tensor_base::BlockTensor::rangesC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a964762d8fe7674f4dfb4a4d7641fc701"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4N7einsums5RangeE" title="einsums::Range"><span class="n"><span class="pre">Range</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ranges</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor6rangesEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return a list containing the ranges for each block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor11block_rangeEi">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor11block_rangeEi"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor11block_rangeEi"></span><span id="einsums::tensor_base::BlockTensor::block_range__iC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ae9961d4d5ee79b75f74e2cd50a93cb4b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4N7einsums5RangeE" title="einsums::Range"><span class="n"><span class="pre">Range</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block_range</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor11block_rangeEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the range for a given block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor10block_dimsE6size_t">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor10block_dimsE6size_t"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor10block_dimsE6size_t"></span><span id="einsums::tensor_base::BlockTensor::block_dims__sC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a60884f73b11f98e22844389090fba3f4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="einsums::Dim"><span class="n"><span class="pre">Dim</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N7einsums11tensor_base11BlockTensor4RankE" title="einsums::tensor_base::BlockTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block_dims</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">block</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor10block_dimsE6size_t" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the dimensions of the given block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor9block_dimE6size_ti">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor9block_dimE6size_ti"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor9block_dimE6size_ti"></span><span id="einsums::tensor_base::BlockTensor::block_dim__s.iC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ac02c2d956db8a0d8239e4b6bce301fc4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block_dim</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">block</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ind</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor9block_dimE6size_ti" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the dimension of a block on a given axis. </p>
+<p>Because the tensors are assumed to be square, changing the second parameter should not affect the output. The second parameter is not ignored. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor10block_dimsERKNSt6stringE">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor10block_dimsERKNSt6stringE"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor10block_dimsERKNSt6stringE"></span><span id="einsums::tensor_base::BlockTensor::block_dims__ssCRC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a648bad3e9f2c8605edeafdd140c3b21d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="einsums::Dim"><span class="n"><span class="pre">Dim</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N7einsums11tensor_base11BlockTensor4RankE" title="einsums::tensor_base::BlockTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block_dims</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor10block_dimsERKNSt6stringE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the dimensions of a given block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor9block_dimERKNSt6stringEi">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor9block_dimERKNSt6stringEi"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor9block_dimERKNSt6stringEi"></span><span id="einsums::tensor_base::BlockTensor::block_dim__ssCR.iC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a486e767587494ac7aac82d791e1bf18e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block_dim</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ind</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor9block_dimERKNSt6stringEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the dimension of a block on a given axis. </p>
+<p>Because the tensors are assumed to be square, changing the second parameter should not affect the output. The second parameter is not ignored. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor4dimsEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor4dimsEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor4dimsEv"></span><span id="einsums::tensor_base::BlockTensor::dimsC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1afe3ef6d601628c9c49b8302c043cd969"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="einsums::Dim"><span class="n"><span class="pre">Dim</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N7einsums11tensor_base11BlockTensor4RankE" title="einsums::tensor_base::BlockTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dims</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor4dimsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the dimensions of this tensor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor3dimEi">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor3dimEi"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor3dimEi"></span><span id="einsums::tensor_base::BlockTensor::dim__iC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ad7167a7037eac947fe902f92614e1216"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dim</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor3dimEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the dimension of this tensor along an axis. </p>
+<p>Because the tensor is square, the argument is ignored. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor3dimEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor3dimEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor3dimEv"></span><span id="einsums::tensor_base::BlockTensor::dimC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1aad1bd7f34af796e3e17295b8244f32cf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dim</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor3dimEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the dimension of this tensor along the first axis. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor11vector_dimsEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor11vector_dimsEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor11vector_dimsEv"></span><span id="einsums::tensor_base::BlockTensor::vector_dimsC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a98575804190eefaf61daea80c379e3c5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vector_dims</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor11vector_dimsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the dimensions of each of the blocks. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor11vector_dataEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor11vector_dataEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor11vector_dataEv"></span><span id="einsums::tensor_base::BlockTensor::vector_dataC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a207bdb4dd5b426710ddece2d5939c369"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">vector_data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor11vector_dataEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Returns the list of tensors. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor11vector_dataEv">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor11vector_dataEv"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor11vector_dataEv"></span><span id="einsums::tensor_base::BlockTensor::vector_data"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a72bb948e84876a417dd8e5603d8e93ed"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">vector_data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor11vector_dataEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Returns the list of tensors.    </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor4nameEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor4nameEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor4nameEv"></span><span id="einsums::tensor_base::BlockTensor::nameC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1af77ee7290e4952a8a745ccf466dd4962"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor4nameEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Gets the name of the tensor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor8set_nameERKNSt6stringE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor8set_nameERKNSt6stringE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor8set_nameERKNSt6stringE"></span><span id="einsums::tensor_base::BlockTensor::set_name__ssCR"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a4260c907c6bb9928fe6942868fe51136"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_name</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor8set_nameERKNSt6stringE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Sets the name of the tensor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor4nameEi">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor4nameEi"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor4nameEi"></span><span id="einsums::tensor_base::BlockTensor::name__iC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ad12060cb2db62d6f4547fb606caa6476"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor4nameEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Gets the name of a block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor8set_nameEiRKNSt6stringE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor8set_nameEiRKNSt6stringE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor8set_nameEiRKNSt6stringE"></span><span id="einsums::tensor_base::BlockTensor::set_name__i.ssCR"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a99c189a99c358aaf0b2d6b714f0acd8d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_name</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor8set_nameEiRKNSt6stringE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Sets the name of a block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor7stridesEi">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor7stridesEi"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor7stridesEi"></span><span id="einsums::tensor_base::BlockTensor::strides__iC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a5aa9177a755bd4189f387a4c6bf51c79"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">strides</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor7stridesEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Returns the strides of a given block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor4sizeEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor4sizeEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor4sizeEv"></span><span id="einsums::tensor_base::BlockTensor::sizeC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1adb4324fe48544883f0c7dcdfbbd6f3db"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor4sizeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Returns the size of the tensor. That is, the product of the dimensions. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor23full_view_of_underlyingEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor23full_view_of_underlyingEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor23full_view_of_underlyingEv"></span><span id="einsums::tensor_base::BlockTensor::full_view_of_underlyingC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a56ba96a41f2333028a4da2a812491d4d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">full_view_of_underlying</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor23full_view_of_underlyingEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Returns true if all of the elements are viewed by this tensor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor4lockEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor4lockEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor4lockEv"></span><span id="einsums::tensor_base::BlockTensor::lockC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1abf330d10624c37601a794bc11b665dbb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor4lockEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Lock the tensor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor6unlockEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor6unlockEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor6unlockEv"></span><span id="einsums::tensor_base::BlockTensor::unlockC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a6e87f1d02deb765b1c597eade2c14773"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">unlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor6unlockEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Unlock the tensor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor8try_lockEv">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor8try_lockEv"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor8try_lockEv"></span><span id="einsums::tensor_base::BlockTensor::try_lockC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a77b9b29a4d4d8d87b363e890574468d1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">try_lock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor8try_lockEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Try to lock the tensor, returning true if successful. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor4lockEi">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor4lockEi"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor4lockEi"></span><span id="einsums::tensor_base::BlockTensor::lock__iC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a48541b827193320aa2d498592f80159c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lock</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">block</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor4lockEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Lock a specific block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor8try_lockEi">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor8try_lockEi"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor8try_lockEi"></span><span id="einsums::tensor_base::BlockTensor::try_lock__iC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a78a7bf7998133d12b2276bfe86f177e0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">try_lock</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">block</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor8try_lockEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Try to lock a specific block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base11BlockTensor6unlockEi">
+<span id="_CPPv3NK7einsums11tensor_base11BlockTensor6unlockEi"></span><span id="_CPPv2NK7einsums11tensor_base11BlockTensor6unlockEi"></span><span id="einsums::tensor_base::BlockTensor::unlock__iC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a2b180e8d16ffa769a19b820f3b06afe3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">unlock</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">block</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base11BlockTensor6unlockEi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Unlock a specific block. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor4RankE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor4RankE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor4RankE"></span><span id="einsums::tensor_base::BlockTensor::Rank__s"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ab749532872adc93636749804a5840f7b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::rank"><span class="n"><span class="pre">rank</span></span></a><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>The rank of the tensor. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor11update_dimsEv">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor11update_dimsEv"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor11update_dimsEv"></span><span id="einsums::tensor_base::BlockTensor::update_dims"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a933b39d553b27caf117751e2b0d6d82a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_dims</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor11update_dimsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Go through the blocks of the tensor and make sure that the tensor’s dimensions matches the sum of the dimensions of the blocks. Also make sure that the stored dimensions match the actual dimensions. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor5_nameE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor5_nameE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor5_nameE"></span><span id="einsums::tensor_base::BlockTensor::_name__ss"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ad9705e30a1b7666566012fe20bc13f93"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_name</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="s"><span class="pre">&quot;(Unnamed)&quot;</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor5_nameE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This is the name of the tensor used for printing. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor4_dimE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor4_dimE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor4_dimE"></span><span id="einsums::tensor_base::BlockTensor::_dim__s"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a9911d0580f21435a77e5f02b57db5159"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_dim</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor4_dimE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This is the dimension of the tensor along one axis. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor7_blocksE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor7_blocksE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor7_blocksE"></span><span id="einsums::tensor_base::BlockTensor::_blocks__std::vector:TensorType:"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ac9ee8326f67e8ecf86b2a4042277ad19"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_blocks</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor7_blocksE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This stores the blocks of the tensor. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor7_rangesE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor7_rangesE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor7_rangesE"></span><span id="einsums::tensor_base::BlockTensor::_ranges__std::vector:Range:"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a2db2cf1fc022765544742662daf37ec4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4N7einsums5RangeE" title="einsums::Range"><span class="n"><span class="pre">Range</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_ranges</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor7_rangesE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This stores the starting and ending indices for each of the blocks in relation to the whole tensor. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor5_dimsE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor5_dimsE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor5_dimsE"></span><span id="einsums::tensor_base::BlockTensor::_dims__std::vector:s:"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a2cadaedaa513d752f834cb66f5f4d10d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_dims</span></span></span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor5_dimsE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This stores the dimensions of each of the blocks along an axis. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor11_zero_valueE">
+<span id="_CPPv3N7einsums11tensor_base11BlockTensor11_zero_valueE"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor11_zero_valueE"></span><span id="einsums::tensor_base::BlockTensor::_zero_value__T"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1a1861fd76dd5ef31488887e1c4a4eaebc"></span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_zero_value</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0.0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor11_zero_valueE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>This holds the value outside of the blocks of the tensor. </p>
+<p>This value is updated to be zero whenever it is accessed, meaning it essentially cannot be changed. However, if it is changed, it won’t be reset until the next time it is returned. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl>
+<dt class="sig sig-object cpp">
+<em class="property"><span class="pre">friend</span> <span class="pre">struct</span></em> <span class="pre">BlockTensor</span></dt>
+</dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

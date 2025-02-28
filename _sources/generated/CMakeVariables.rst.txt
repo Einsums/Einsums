@@ -1,0 +1,261 @@
+.. 
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+..
+   This file has been automatically generated using the CMake tool.
+   Do not edit manually.
+
+.. _cmake_variables:
+
+|cmake| options
+===============
+
+When configuring |einsums|, you can set a variety of options to allow CMake to
+generate your specific makefiles/project files. A list of the most important
+|cmake| options can be found in :ref:`important_cmake_options`, while this section
+includes the comprehensive list.
+
+.. _configure:
+
+Variables that influence how |einsums| is built
+-------------------------------------------
+
+The options are split into these categories:
+
+* :ref:`Generic options <Generic>`
+* :ref:`Build Targets options <Build_Targets>`
+* :ref:`Profiling options <Profiling>`
+* :ref:`Debugging options <Debugging>`
+
+.. _Generic:
+
+Generic options
+---------------
+
+* :option:`EINSUMS_FFT_LIBRARY:STRING`
+* :option:`EINSUMS_WITH_CXX_STANDARD:STRING`
+
+.. option:: EINSUMS_FFT_LIBRARY:STRING
+
+   FFT library
+
+.. option:: EINSUMS_WITH_CXX_STANDARD:STRING
+
+   C++ standard to use for compiling einsums (default: 20)
+
+.. _Build_Targets:
+
+Build Targets options
+---------------------
+
+* :option:`BUILD_SHARED_LIBS:BOOL`
+* :option:`EINSUMS_WITH_BINARY_DIR:PATH`
+* :option:`EINSUMS_WITH_COMPILE_ONLY_TESTS:BOOL`
+* :option:`EINSUMS_WITH_CUDA:BOOL`
+* :option:`EINSUMS_WITH_DOCUMENTATION:BOOL`
+* :option:`EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS:STRING`
+* :option:`EINSUMS_WITH_EXAMPLES:BOOL`
+* :option:`EINSUMS_WITH_EXECUTABLE_PREFIX:STRING`
+* :option:`EINSUMS_WITH_FAIL_COMPILE_TESTS:BOOL`
+* :option:`EINSUMS_WITH_FULL_RPATH:BOOL`
+* :option:`EINSUMS_WITH_HIDDEN_VISIBILITY:BOOL`
+* :option:`EINSUMS_WITH_HIP:BOOL`
+* :option:`EINSUMS_WITH_MALLOC:STRING`
+* :option:`EINSUMS_WITH_PRECOMPILED_HEADERS:BOOL`
+* :option:`EINSUMS_WITH_TESTS:BOOL`
+* :option:`EINSUMS_WITH_TESTS_BENCHMARKS:BOOL`
+* :option:`EINSUMS_WITH_TESTS_EXAMPLES:BOOL`
+* :option:`EINSUMS_WITH_TESTS_EXTERNAL_BUILD:BOOL`
+* :option:`EINSUMS_WITH_TESTS_HEADERS:BOOL`
+* :option:`EINSUMS_WITH_TESTS_REGRESSIONS:BOOL`
+* :option:`EINSUMS_WITH_TESTS_UNIT:BOOL`
+* :option:`EINSUMS_WITH_UNITY_BUILD:BOOL`
+
+.. option:: BUILD_SHARED_LIBS:BOOL
+
+   Build using shared libraries (default: ON)
+
+.. option:: EINSUMS_WITH_BINARY_DIR:PATH
+
+   Root directory for libraries and executables for the build. This does not affect the installed location of libraries and executables.
+
+.. option:: EINSUMS_WITH_COMPILE_ONLY_TESTS:BOOL
+
+   Create build system support for compile time only tests (default: ON)
+
+.. option:: EINSUMS_WITH_CUDA:BOOL
+
+   Enable support for CUDA (default: OFF)
+
+.. option:: EINSUMS_WITH_DOCUMENTATION:BOOL
+
+   Build the Einsums documentation (default OFF).
+
+.. option:: EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS:STRING
+
+   List of documentation output formats to generate. Valid options are html. Multiple values can be separated with semicolons. (default html).
+
+.. option:: EINSUMS_WITH_EXAMPLES:BOOL
+
+   Build examples (default: ON)
+
+.. option:: EINSUMS_WITH_EXECUTABLE_PREFIX:STRING
+
+   Sets a string to be prepended to executable names (default: none).
+
+.. option:: EINSUMS_WITH_FAIL_COMPILE_TESTS:BOOL
+
+   Create build system support for fail compile tests (default: ON)
+
+.. option:: EINSUMS_WITH_FULL_RPATH:BOOL
+
+   Build and link libraries and executables with full RPATHs (default: ON)
+
+.. option:: EINSUMS_WITH_HIDDEN_VISIBILITY:BOOL
+
+   Use -fvisibility=hidden for builds on platforms which support it (default: ON)
+
+.. option:: EINSUMS_WITH_HIP:BOOL
+
+   Enable support for HIP (default: OFF)
+
+.. option:: EINSUMS_WITH_MALLOC:STRING
+
+   Define which allocator should be linked in. Options are: system and mimalloc. (default: system)
+
+.. option:: EINSUMS_WITH_PRECOMPILED_HEADERS:BOOL
+
+   Enabled precompiled headers for certain build targets (experimental) (default: OFF)
+
+.. option:: EINSUMS_WITH_TESTS:BOOL
+
+   Build tests (default: ON)
+
+.. option:: EINSUMS_WITH_TESTS_BENCHMARKS:BOOL
+
+   Build benchmark tests (default: ON)
+
+.. option:: EINSUMS_WITH_TESTS_EXAMPLES:BOOL
+
+   Add examples as tests (default: ON)
+
+.. option:: EINSUMS_WITH_TESTS_EXTERNAL_BUILD:BOOL
+
+   Build external CMake build tests (default: ON)
+
+.. option:: EINSUMS_WITH_TESTS_HEADERS:BOOL
+
+   Build header tests (default: ON)
+
+.. option:: EINSUMS_WITH_TESTS_REGRESSIONS:BOOL
+
+   Build regression tests (default: ON)
+
+.. option:: EINSUMS_WITH_TESTS_UNIT:BOOL
+
+   Build unit tests (default: ON)
+
+.. option:: EINSUMS_WITH_UNITY_BUILD:BOOL
+
+   Enable unity build for certain build targets (default: OFF)
+
+.. _Profiling:
+
+Profiling options
+-----------------
+
+* :option:`EINSUMS_WITH_ITTNOTIFY:BOOL`
+
+.. option:: EINSUMS_WITH_ITTNOTIFY:BOOL
+
+   Enable Amplifier (ITT) instrumentation support.
+
+.. _Debugging:
+
+Debugging options
+-----------------
+
+* :option:`EINSUMS_WITH_BACKTRACES:BOOL`
+* :option:`EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES:BOOL`
+* :option:`EINSUMS_WITH_COMPILER_WARNINGS:BOOL`
+* :option:`EINSUMS_WITH_COMPILER_WARNINGS_AS_ERROR:BOOL`
+* :option:`EINSUMS_WITH_COVERAGE:BOOL`
+* :option:`EINSUMS_WITH_DEPRECATION_WARNINGS:BOOL`
+* :option:`EINSUMS_WITH_SANITIZERS:STRING`
+* :option:`EINSUMS_WITH_TESTS_VALGRIND:BOOL`
+* :option:`EINSUMS_WITH_TESTS_VALGRIND_OPTIONS:STRING`
+* :option:`EINSUMS_WITH_THREAD_BACKTRACE_DEPTH:STRING`
+* :option:`EINSUMS_WITH_VALGRIND:BOOL`
+
+.. option:: EINSUMS_WITH_BACKTRACES:BOOL
+
+   Attach backtraces to einsums exceptions (default: ON)
+
+.. option:: EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES:BOOL
+
+   Verify that no modules are cross-referenced from a different module category (default: OFF)
+
+.. option:: EINSUMS_WITH_COMPILER_WARNINGS:BOOL
+
+   Enable compiler warnings (default: ON)
+
+.. option:: EINSUMS_WITH_COMPILER_WARNINGS_AS_ERROR:BOOL
+
+   Turn compiler warnings into error (default: OFF)
+
+.. option:: EINSUMS_WITH_COVERAGE:BOOL
+
+   Enable code coverage generation
+
+.. option:: EINSUMS_WITH_DEPRECATION_WARNINGS:BOOL
+
+   Enable warnings for deprecated facilities. (default: ON)
+
+.. option:: EINSUMS_WITH_SANITIZERS:STRING
+
+   Configure with sanitizer instrumentation support.
+
+.. option:: EINSUMS_WITH_TESTS_VALGRIND:BOOL
+
+   Run selected tests with valgrind.
+
+.. option:: EINSUMS_WITH_TESTS_VALGRIND_OPTIONS:STRING
+
+   Use these options when running tests under valgrind.
+
+.. option:: EINSUMS_WITH_THREAD_BACKTRACE_DEPTH:STRING
+
+   Thread stack back trace depth being captured (default: 20)
+
+.. option:: EINSUMS_WITH_VALGRIND:BOOL
+
+   Enable Valgrind instrumentation support.
+
+
+
+.. _cmake_additional_tools:
+
+Additional tools and libraries used by |einsums|
+--------------------------------------------
+
+Here is a list of additional libraries and tools that are either optionally
+supported by the build system or are optionally required for certain examples or
+tests. These libraries and tools can be detected by the |einsums| build system.
+
+Each of the tools or libraries listed here will be automatically detected if
+they are installed in some standard location. If a tool or library is installed
+in a different location, you can specify its base directory by appending
+``_ROOT`` to the variable name as listed below. For instance, to configure a
+custom directory for ``Amplifier``, specify ``Amplifier_ROOT=/custom/amplifier/root``.
+
+.. option:: Amplifier_ROOT:PATH
+
+   Specifies where to look for one of the tools of the Intel Parallel Studio
+   product, either Intel Amplifier or Intel Inspector. This should be
+   set if the CMake variable ``EINSUMS_USE_ITT_NOTIFY`` is set to ``ON``. Enabling
+   ITT support in |einsums| will integrate any application with the mentioned Intel
+   tools, which customizes the generated information for your application and
+   improves the generated diagnostics.

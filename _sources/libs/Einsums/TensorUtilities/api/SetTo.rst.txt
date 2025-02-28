@@ -11,10 +11,10 @@
 Einsums/TensorUtilities/Detail/SetTo.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/TensorUtilities/Detail/SetTo.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/TensorUtilities/Detail/SetTo.hpp
-   :project: TensorUtilities
+   :project: Einsums

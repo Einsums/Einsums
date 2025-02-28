@@ -1,0 +1,565 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/TensorAlgebra/Detail/Utilities.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/TensorAlgebra/api/Utilities';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="TensorAlgebra.html">Einsums/TensorAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TensorAlgebra_TensorAlgebra.html">Einsums/TensorAlgebra/TensorAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Permute.html">Einsums/TensorAlgebra/Permute.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Index.html">Einsums/TensorAlgebra/Detail/Index.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TensorAlgebra/Detail/Utilities.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dispatch.html">Einsums/TensorAlgebra/Backends/Dispatch.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Unfold.html">Einsums/TensorAlgebra/Backends/Unfold.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TileAlgebra.html">Einsums/TensorAlgebra/Backends/TileAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BaseAlgebra.html">Einsums/TensorAlgebra/Backends/BaseAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPUTensorAlgebra.html">Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BlockAlgebra.html">Einsums/TensorAlgebra/Backends/BlockAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KhatriRao.html">Einsums/TensorAlgebra/Backends/KhatriRao.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GenericAlgorithm.html">Einsums/TensorAlgebra/Backends/GenericAlgorithm.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BlockTileAlgebra.html">Einsums/TensorAlgebra/Backends/BlockTileAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ElementTransform.html">Einsums/TensorAlgebra/Backends/ElementTransform.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DevicePermute.html">Einsums/TensorAlgebra/Backends/DevicePermute.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/TensorAlgebra/Detail/Utilities.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-tensoralgebra-detail-utilities-hpp">
+<span id="modules-einsums-einsums-tensoralgebra-detail-utilities-hpp-api"></span><h1>Einsums/TensorAlgebra/Detail/Utilities.hpp<a class="headerlink" href="#einsums-tensoralgebra-detail-utilities-hpp" title="Permalink to this heading">#</a></h1>
+<p>Defined in header Einsums/TensorAlgebra/Detail/Utilities.hpp.</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd></dd></dl>
+
+</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebraE">
+<span id="_CPPv3N7einsums14tensor_algebraE"></span><span id="_CPPv2N7einsums14tensor_algebraE"></span><span id="einsums::tensor_algebra"></span><span class="target" id="namespaceeinsums_1_1tensor__algebra"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tensor_algebra</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-typedefs">Typedefs</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN7einsums14tensor_algebra10IntersectTE">
+<span id="_CPPv3I00EN7einsums14tensor_algebra10IntersectTE"></span><span id="_CPPv2I00EN7einsums14tensor_algebra10IntersectTE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">S1</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">S2</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_utilities_8hpp_1a05f27445437fe95e2780521acff56187"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IntersectT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7einsums14tensor_algebra9IntersectE" title="einsums::tensor_algebra::Intersect"><span class="n"><span class="pre">Intersect</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums14tensor_algebra10IntersectTE" title="einsums::tensor_algebra::IntersectT::S1"><span class="n"><span class="pre">S1</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7einsums14tensor_algebra10IntersectTE" title="einsums::tensor_algebra::IntersectT::S2"><span class="n"><span class="pre">S2</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><a class="headerlink" href="#_CPPv4I00EN7einsums14tensor_algebra10IntersectTE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Gives the result of an intersection operation. <div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#structeinsums_1_1tensor__algebra_1_1_intersect"><span class="std std-ref">Intersect</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN7einsums14tensor_algebra11DifferenceTE">
+<span id="_CPPv3I00EN7einsums14tensor_algebra11DifferenceTE"></span><span id="_CPPv2I00EN7einsums14tensor_algebra11DifferenceTE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">S1</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">S2</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_utilities_8hpp_1a5a87c54879c15eb79df56addbba3db60"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DifferenceT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7einsums14tensor_algebra10DifferenceE" title="einsums::tensor_algebra::Difference"><span class="n"><span class="pre">Difference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums14tensor_algebra11DifferenceTE" title="einsums::tensor_algebra::DifferenceT::S1"><span class="n"><span class="pre">S1</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7einsums14tensor_algebra11DifferenceTE" title="einsums::tensor_algebra::DifferenceT::S2"><span class="n"><span class="pre">S2</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><a class="headerlink" href="#_CPPv4I00EN7einsums14tensor_algebra11DifferenceTE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>The result of a difference operation. <div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#structeinsums_1_1tensor__algebra_1_1_difference"><span class="std std-ref">Difference</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums14tensor_algebra7UniqueTE">
+<span id="_CPPv3I0EN7einsums14tensor_algebra7UniqueTE"></span><span id="_CPPv2I0EN7einsums14tensor_algebra7UniqueTE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_utilities_8hpp_1a9624bc8862212345ed75c3b0758897a2"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UniqueT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">Filter</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums14tensor_algebra7UniqueTE" title="einsums::tensor_algebra::UniqueT::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums14tensor_algebra7UniqueTE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums14tensor_algebra8CUniqueTE">
+<span id="_CPPv3I0EN7einsums14tensor_algebra8CUniqueTE"></span><span id="_CPPv2I0EN7einsums14tensor_algebra8CUniqueTE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_utilities_8hpp_1a4daa1c1e7b7fe0e3c1d4475f18c9c76f"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CUniqueT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums14tensor_algebra7CUniqueE" title="einsums::tensor_algebra::CUnique"><span class="n"><span class="pre">CUnique</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums14tensor_algebra8CUniqueTE" title="einsums::tensor_algebra::CUniqueT::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums14tensor_algebra8CUniqueTE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Same as UniqueT, but it decays away all cvref modifiers on the tuple. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_tDpEN7einsums14tensor_algebra13order_indicesEDaRKNSt5tupleIDp4ArgsEERKNSt5arrayI6size_t4RankEE">
+<span id="_CPPv3I_6size_tDpEN7einsums14tensor_algebra13order_indicesERKNSt5tupleIDp4ArgsEERKNSt5arrayI6size_t4RankEE"></span><span id="_CPPv2I_6size_tDpEN7einsums14tensor_algebra13order_indicesERKNSt5tupleIDp4ArgsEERKNSt5arrayI6size_t4RankEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_utilities_8hpp_1a8b9cd24b3760ff0c9a238f6717da3d3d"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">order_indices</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_6size_tDpEN7einsums14tensor_algebra13order_indicesEDaRKNSt5tupleIDp4ArgsEERKNSt5arrayI6size_t4RankEE" title="einsums::tensor_algebra::order_indices::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">combination</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_tDpEN7einsums14tensor_algebra13order_indicesEDaRKNSt5tupleIDp4ArgsEERKNSt5arrayI6size_t4RankEE" title="einsums::tensor_algebra::order_indices::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">order</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_6size_tDpEN7einsums14tensor_algebra13order_indicesEDaRKNSt5tupleIDp4ArgsEERKNSt5arrayI6size_t4RankEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Swap around the indices to the desired order. For instance, if we have a list of indices <code class="docutils literal notranslate"><span class="pre">{a,b,c}</span></code> and we want to reverse it, we would give the order <code class="docutils literal notranslate"><span class="pre">{2,</span> <span class="pre">1,</span> <span class="pre">0}</span></code>. There is no requirement that all the orders be different, so if we were to pass <code class="docutils literal notranslate"><span class="pre">{1,</span> <span class="pre">1,</span> <span class="pre">0}</span></code> instead, we would get <code class="docutils literal notranslate"><span class="pre">{b,b,a}</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combination</strong> – The indices to reorder. </p></li>
+<li><p><strong>order</strong> – The array containing the new order. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums14tensor_algebra7CUniqueE">
+<span id="_CPPv3I0EN7einsums14tensor_algebra7CUniqueE"></span><span id="_CPPv2I0EN7einsums14tensor_algebra7CUniqueE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__algebra_1_1_c_unique"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CUnique</span></span></span><a class="headerlink" href="#_CPPv4I0EN7einsums14tensor_algebra7CUniqueE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Utilities.hpp&gt;</em></div>
+<p>Looks for a unique type in a tuple, but decays away all cvref modifiers on the tuple. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra7CUnique4typeE">
+<span id="_CPPv3N7einsums14tensor_algebra7CUnique4typeE"></span><span id="_CPPv2N7einsums14tensor_algebra7CUnique4typeE"></span><span class="target" id="structeinsums_1_1tensor__algebra_1_1_c_unique_1ac194c3e6139e403109d63c1bc8d4654c"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums14tensor_algebra7UniqueTE" title="einsums::tensor_algebra::UniqueT"><span class="n"><span class="pre">UniqueT</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">decay_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums14tensor_algebra7CUniqueE" title="einsums::tensor_algebra::CUnique::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra7CUnique4typeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Holds the result of this operation </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN7einsums14tensor_algebra10DifferenceE">
+<span id="_CPPv3I00EN7einsums14tensor_algebra10DifferenceE"></span><span id="_CPPv2I00EN7einsums14tensor_algebra10DifferenceE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">S1</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">S2</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__algebra_1_1_difference"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Difference</span></span></span><a class="headerlink" href="#_CPPv4I00EN7einsums14tensor_algebra10DifferenceE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Utilities.hpp&gt;</em></div>
+<p>Find the elements in <code class="docutils literal notranslate"><span class="pre">S1</span></code> that are not in <code class="docutils literal notranslate"><span class="pre">S2</span></code> . </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra10Difference4typeE">
+<span id="_CPPv3N7einsums14tensor_algebra10Difference4typeE"></span><span id="_CPPv2N7einsums14tensor_algebra10Difference4typeE"></span><span class="target" id="structeinsums_1_1tensor__algebra_1_1_difference_1aa39d137072ad952d6ec892468438dda1"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I_DpNSt6size_tEEN7einsums14tensor_algebra10Difference15make_differenceEDaNSt14index_sequenceIDp7IndicesEE" title="einsums::tensor_algebra::Difference::make_difference"><span class="n"><span class="pre">make_difference</span></span></a><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">make_index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple_size</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums14tensor_algebra10DifferenceE" title="einsums::tensor_algebra::Difference::S1"><span class="n"><span class="pre">S1</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra10Difference4typeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Holds the result of this operation. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_DpNSt6size_tEEN7einsums14tensor_algebra10Difference15make_differenceEDaNSt14index_sequenceIDp7IndicesEE">
+<span id="_CPPv3I_DpNSt6size_tEEN7einsums14tensor_algebra10Difference15make_differenceENSt14index_sequenceIDp7IndicesEE"></span><span id="_CPPv2I_DpNSt6size_tEEN7einsums14tensor_algebra10Difference15make_differenceENSt14index_sequenceIDp7IndicesEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Indices</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__algebra_1_1_difference_1a9747ebd589d6c43946f590973c8747c3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">make_difference</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_DpNSt6size_tEEN7einsums14tensor_algebra10Difference15make_differenceEDaNSt14index_sequenceIDp7IndicesEE" title="einsums::tensor_algebra::Difference::make_difference::Indices"><span class="n"><span class="pre">Indices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_DpNSt6size_tEEN7einsums14tensor_algebra10Difference15make_differenceEDaNSt14index_sequenceIDp7IndicesEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Make the compiler perform the difference operation. The return type of this function is the desired result. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN7einsums14tensor_algebra9IntersectE">
+<span id="_CPPv3I00EN7einsums14tensor_algebra9IntersectE"></span><span id="_CPPv2I00EN7einsums14tensor_algebra9IntersectE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">S1</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">S2</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__algebra_1_1_intersect"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Intersect</span></span></span><a class="headerlink" href="#_CPPv4I00EN7einsums14tensor_algebra9IntersectE" title="Permalink to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Utilities.hpp&gt;</em></div>
+<p>Find the intersection between two tuples. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14tensor_algebra9Intersect4typeE">
+<span id="_CPPv3N7einsums14tensor_algebra9Intersect4typeE"></span><span id="_CPPv2N7einsums14tensor_algebra9Intersect4typeE"></span><span class="target" id="structeinsums_1_1tensor__algebra_1_1_intersect_1ae7dd1935cf8630bd27f73828f2fffa98"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I_DpNSt6size_tEEN7einsums14tensor_algebra9Intersect17make_intersectionEDaNSt14index_sequenceIDp7IndicesEE" title="einsums::tensor_algebra::Intersect::make_intersection"><span class="n"><span class="pre">make_intersection</span></span></a><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">make_index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple_size</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums14tensor_algebra9IntersectE" title="einsums::tensor_algebra::Intersect::S1"><span class="n"><span class="pre">S1</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N7einsums14tensor_algebra9Intersect4typeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Holds the result of this operation. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_DpNSt6size_tEEN7einsums14tensor_algebra9Intersect17make_intersectionEDaNSt14index_sequenceIDp7IndicesEE">
+<span id="_CPPv3I_DpNSt6size_tEEN7einsums14tensor_algebra9Intersect17make_intersectionENSt14index_sequenceIDp7IndicesEE"></span><span id="_CPPv2I_DpNSt6size_tEEN7einsums14tensor_algebra9Intersect17make_intersectionENSt14index_sequenceIDp7IndicesEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Indices</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__algebra_1_1_intersect_1aa27223f100133666857f1dfdbc09da47"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">make_intersection</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_DpNSt6size_tEEN7einsums14tensor_algebra9Intersect17make_intersectionEDaNSt14index_sequenceIDp7IndicesEE" title="einsums::tensor_algebra::Intersect::make_intersection::Indices"><span class="n"><span class="pre">Indices</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_DpNSt6size_tEEN7einsums14tensor_algebra9Intersect17make_intersectionEDaNSt14index_sequenceIDp7IndicesEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Make the compiler perform the difference operation. The return type of this function is the desired result. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

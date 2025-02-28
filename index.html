@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Feb 12, 2025"/>
+    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
   </head>
   
   
@@ -305,22 +305,23 @@
 </div>
 <p><strong>Version</strong>: 1.0.0-trunk</p>
 <p><strong>Useful links</strong>:
-<a class="reference external" href="https://github.com/Einsums/Einsums">Source Repository</a> |
+<a class="reference external" href="https://github.com/Einsums/Einsums">Source Repository</a> |
 <a class="reference external" href="https://github.com/Einsums/Einsums/issues">Issue Tracker</a></p>
-<p>Einsums provides compile-time contraction pattern analysis to determine optimal tensor
+<p>Einsums provides compile-time contraction pattern analysis to determine the optimal tensor
 operation to perform. Einsums is a package for scientific computing in C++. It is a C++
 library that provides a multidimensional tensor object and an assortment of functions
-for fast operations on tensors, including mathematical, shape manipulation, sorting,
-I/O, discrete Fourier transforms, basic linear algebra, and tensor algebra.</p>
+for fast operations on tensors, including mathematical functions, shape manipulation, tensor permutations,
+I/O, discrete Fourier transforms, basic linear algebra, and tensor algebra. It also provides
+an interface to Python.</p>
 <p>As a short example, the following call to <code class="code docutils literal notranslate"><span class="pre">einsum</span></code> will optimize at compile-time to a BLAS
 dgemm call:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">einsums</span><span class="p">;</span><span class="w">                        </span><span class="c1">// Provides Tensor, create_tensor, and create_random_tensor</span>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">einsums</span><span class="p">;</span><span class="w">                        </span><span class="c1">// Provides Tensor, create_tensor, and create_random_tensor</span>
 <span class="k">using</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">tensor_algebra</span><span class="p">;</span><span class="w">        </span><span class="c1">// Provides einsum</span>
 <span class="k">using</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">index</span><span class="p">;</span><span class="w">                 </span><span class="c1">// Provides i, j, k, Indices</span>
 
-<span class="n">Tensor</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
-<span class="n">Tensor</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;C&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;C&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
 
 <span class="n">einsum</span><span class="p">(</span><span class="n">Indices</span><span class="p">{</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">},</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">Indices</span><span class="p">{</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">},</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">Indices</span><span class="p">{</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">},</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
 </pre></div>

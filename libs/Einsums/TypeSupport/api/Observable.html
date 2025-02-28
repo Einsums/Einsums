@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Feb 12, 2025"/>
+    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
   </head>
   
   
@@ -274,15 +274,14 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="CountOfType.html">Einsums/TypeSupport/CountOfType.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tuple.html">Einsums/TypeSupport/Tuple.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Arguments.html">Einsums/TypeSupport/Arguments.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GPUCast.html">Einsums/TypeSupport/GPUCast.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="StringLiteral.html">Einsums/TypeSupport/StringLiteral.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TypeName.html">Einsums/TypeSupport/TypeName.hpp</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TypeSupport/Observable.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AreAllConvertible.html">Einsums/TypeSupport/AreAllConvertible.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GPUComplex.html">Einsums/TypeSupport/GPUComplex.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AreAllConvertible.html">Einsums/TypeSupport/AreAllConvertible.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TypeSupport/Observable.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPUCast.html">Einsums/TypeSupport/GPUCast.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TypeName.html">Einsums/TypeSupport/TypeName.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Arguments.html">Einsums/TypeSupport/Arguments.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StringLiteral.html">Einsums/TypeSupport/StringLiteral.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CountOfType.html">Einsums/TypeSupport/CountOfType.hpp</a></li>
 </ul>
 </div>
 </nav></div>
@@ -342,51 +341,113 @@
                   
   <section id="einsums-typesupport-observable-hpp">
 <span id="modules-einsums-einsums-typesupport-observable-hpp-api"></span><h1>Einsums/TypeSupport/Observable.hpp<a class="headerlink" href="#einsums-typesupport-observable-hpp" title="Permalink to this heading">#</a></h1>
-<p>Defined in header .</p>
+<p>Defined in header Einsums/TypeSupport/Observable.hpp.</p>
 <p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
 <em>Einsums</em> API.</p>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv47einsums">
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
-<dd><dl class="cpp struct">
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd></dd></dl>
+
+</p>
+<dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums10ObservableE">
 <span id="_CPPv3I0EN7einsums10ObservableE"></span><span id="_CPPv2I0EN7einsums10ObservableE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_observable"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Observable</span></span></span><a class="headerlink" href="#_CPPv4I0EN7einsums10ObservableE" title="Permalink to this definition">#</a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><div class="docutils container">
+<em>#include &lt;Observable.hpp&gt;</em></div>
+<p>Implementation of the Subject part of the <a class="reference internal" href="#structeinsums_1_1_observable"><span class="std std-ref">Observable</span></a> pattern from the Gang of Four. </p>
+<p>Here is an example of the use of this class.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">thread_observer</span><span class="p">(</span><span class="n">Observable</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">observable</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">observable</span><span class="p">.</span><span class="n">wait_for_change</span><span class="p">();</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">new_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">observable</span><span class="p">;</span><span class="w"> </span><span class="c1">// Use casting operator to get the value</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Thread observer detected change: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">new_value</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Observable</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">observable</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// Initialize with 0</span>
+
+<span class="w">    </span><span class="c1">// Register a callback observer</span>
+<span class="w">    </span><span class="n">observable</span><span class="p">.</span><span class="n">add_observer</span><span class="p">([](</span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Callback observer detected change: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">});</span>
+
+<span class="w">    </span><span class="c1">// Launch a thread-based observer</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">observer_thread</span><span class="p">(</span><span class="n">thread_observer</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">observable</span><span class="p">));</span>
+
+<span class="w">    </span><span class="c1">// Simulate changes in the variable</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+<span class="w">        </span><span class="n">observable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="c1">// Use assignment operator</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">observer_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10Observable10ObservableE1T">
 <span id="_CPPv3N7einsums10Observable10ObservableE1T"></span><span id="_CPPv2N7einsums10Observable10ObservableE1T"></span><span id="einsums::Observable::Observable__T"></span><span class="target" id="structeinsums_1_1_observable_1ae1fe728d26b02ce248ae241d956bfda7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Observable</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums10ObservableE" title="einsums::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">initial_value</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums10ObservableE" title="einsums::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums10Observable10ObservableE1T" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Constructor. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>initial_value</strong> – The initial value of the observable. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10ObservableaSERK1T">
 <span id="_CPPv3N7einsums10ObservableaSERK1T"></span><span id="_CPPv2N7einsums10ObservableaSERK1T"></span><span id="einsums::Observable::assign-operator__TCR"></span><span class="target" id="structeinsums_1_1_observable_1a90ef05199a8cdcfcea38d1d3216d7548"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums10ObservableE" title="einsums::Observable"><span class="n"><span class="pre">Observable</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums10ObservableE" title="einsums::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums10ObservableaSERK1T" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Assignment operator for setting the value. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – The value to assign to the observable. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums10Observablecv1TEv">
 <span id="_CPPv3NK7einsums10Observablecv1TEv"></span><span id="_CPPv2NK7einsums10Observablecv1TEv"></span><span id="einsums::Observable::castto-T-operatorC"></span><span class="target" id="structeinsums_1_1_observable_1ac2b1f4cfc5ec56cd46f51e45f1608a68"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums10ObservableE" title="einsums::Observable::T"><span class="n"><span class="pre">T</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums10Observablecv1TEv" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Casting operator for retrievign the value. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10Observable9set_valueERK1T">
 <span id="_CPPv3N7einsums10Observable9set_valueERK1T"></span><span id="_CPPv2N7einsums10Observable9set_valueERK1T"></span><span id="einsums::Observable::set_value__TCR"></span><span class="target" id="structeinsums_1_1_observable_1aacc092e3b20ffbd2fda394ec913f9a40"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_value</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums10ObservableE" title="einsums::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums10Observable9set_valueERK1T" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Explicit value assignment. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – The value to assign to the observable. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums10Observable9get_valueEv">
 <span id="_CPPv3NK7einsums10Observable9get_valueEv"></span><span id="_CPPv2NK7einsums10Observable9get_valueEv"></span><span id="einsums::Observable::get_valueC"></span><span class="target" id="structeinsums_1_1_observable_1ae24e14dbd85b4d13aca942f18baca94e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums10ObservableE" title="einsums::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_value</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums10Observable9get_valueEv" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Explicit getter. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10Observable15wait_for_changeEv">
 <span id="_CPPv3N7einsums10Observable15wait_for_changeEv"></span><span id="_CPPv2N7einsums10Observable15wait_for_changeEv"></span><span id="einsums::Observable::wait_for_change"></span><span class="target" id="structeinsums_1_1_observable_1a916ecdf950dcb76d68358a74b4b7896b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wait_for_change</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums10Observable15wait_for_changeEv" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Wait for the value to change. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10Observable12add_observerENSt8functionIFvRK1TEEE">
 <span id="_CPPv3N7einsums10Observable12add_observerENSt8functionIFvRK1TEEE"></span><span id="_CPPv2N7einsums10Observable12add_observerENSt8functionIFvRK1TEEE"></span><span class="target" id="structeinsums_1_1_observable_1ab70f8b656f3c48372dcf136a3c5878ed"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_observer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums10ObservableE" title="einsums::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">observer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums10Observable12add_observerENSt8functionIFvRK1TEEE" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Register an observer callback. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -394,7 +455,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10Observable16notify_observersERK1T">
 <span id="_CPPv3N7einsums10Observable16notify_observersERK1T"></span><span id="_CPPv2N7einsums10Observable16notify_observersERK1T"></span><span id="einsums::Observable::notify_observers__TCR"></span><span class="target" id="structeinsums_1_1_observable_1ad2a0cdac5aec8cec7b23b967a233bfc0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">notify_observers</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums10ObservableE" title="einsums::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums10Observable16notify_observersERK1T" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Notify all of the observers that observe this observable. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -402,7 +464,8 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10Observable6_valueE">
 <span id="_CPPv3N7einsums10Observable6_valueE"></span><span id="_CPPv2N7einsums10Observable6_valueE"></span><span id="einsums::Observable::_value__T"></span><span class="target" id="structeinsums_1_1_observable_1aa888823209830a75518a2c42efb06556"></span><a class="reference internal" href="#_CPPv4I0EN7einsums10ObservableE" title="einsums::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_value</span></span></span><a class="headerlink" href="#_CPPv4N7einsums10Observable6_valueE" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>The internal state of the observable. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10Observable6_mutexE">
@@ -412,22 +475,26 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10Observable3_cvE">
 <span id="_CPPv3N7einsums10Observable3_cvE"></span><span id="_CPPv2N7einsums10Observable3_cvE"></span><span id="einsums::Observable::_cv__std::condition_variable"></span><span class="target" id="structeinsums_1_1_observable_1a5d2a182e9b1d83a4cd27b17e58b06d57"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">condition_variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_cv</span></span></span><a class="headerlink" href="#_CPPv4N7einsums10Observable3_cvE" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>For thread-safe value access. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10Observable14_value_changedE">
 <span id="_CPPv3N7einsums10Observable14_value_changedE"></span><span id="_CPPv2N7einsums10Observable14_value_changedE"></span><span id="einsums::Observable::_value_changed__b"></span><span class="target" id="structeinsums_1_1_observable_1a376047603d1f2b425a92e31c34fc34c0"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_value_changed</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N7einsums10Observable14_value_changedE" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>For thread synchronization. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10Observable10_observersE">
 <span id="_CPPv3N7einsums10Observable10_observersE"></span><span id="_CPPv2N7einsums10Observable10_observersE"></span><span class="target" id="structeinsums_1_1_observable_1a64d4ad09407b98a896991b7c426a2a87"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums10ObservableE" title="einsums::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_observers</span></span></span><a class="headerlink" href="#_CPPv4N7einsums10Observable10_observersE" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Flag indicating value change. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10Observable15_observer_mutexE">
 <span id="_CPPv3N7einsums10Observable15_observer_mutexE"></span><span id="_CPPv2N7einsums10Observable15_observer_mutexE"></span><span id="einsums::Observable::_observer_mutex__std::mutex"></span><span class="target" id="structeinsums_1_1_observable_1adfbe509632bd8b448cde54d2119f52da"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_observer_mutex</span></span></span><a class="headerlink" href="#_CPPv4N7einsums10Observable15_observer_mutexE" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>List of observers. </p>
+</dd></dl>
 
 </div>
 </dd></dl>

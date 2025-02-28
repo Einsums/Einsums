@@ -8,8 +8,6 @@
 Einsums in Python
 *****************
 
-.. sectionauthor:: Connor Briggs
-
 As mentioned in the introduction, Einsums is compatible with Python.
 Here, we will describe the basics for setting up a computation in Python, as well as some
 useful functions.

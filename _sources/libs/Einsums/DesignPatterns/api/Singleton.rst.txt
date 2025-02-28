@@ -11,10 +11,10 @@
 Einsums/DesignPatterns/Singleton.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/DesignPatterns/Singleton.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/DesignPatterns/Singleton.hpp
-   :project: DesignPatterns
+   :project: Einsums

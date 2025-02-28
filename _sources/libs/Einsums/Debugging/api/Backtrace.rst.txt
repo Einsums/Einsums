@@ -11,10 +11,10 @@
 Einsums/Debugging/Backtrace.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/Debugging/Backtrace.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/Debugging/Backtrace.hpp
-   :project: Debugging
+   :project: Einsums

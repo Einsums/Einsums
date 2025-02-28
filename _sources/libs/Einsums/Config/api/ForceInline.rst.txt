@@ -11,10 +11,10 @@
 Einsums/Config/ForceInline.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/Config/ForceInline.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/Config/ForceInline.hpp
-   :project: Config
+   :project: Einsums

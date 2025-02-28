@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Feb 12, 2025"/>
+    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
   </head>
   
   
@@ -275,15 +275,15 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="CreateRandomDefinite.html">Einsums/TensorUtilities/CreateRandomDefinite.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Diagonal.html">Einsums/TensorUtilities/Diagonal.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RMSD.html">Einsums/TensorUtilities/RMSD.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CreateIncrementedTensor.html">Einsums/TensorUtilities/CreateIncrementedTensor.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TensorUtilities/CreateZeroTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CreateRandomTensor.html">Einsums/TensorUtilities/CreateRandomTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CreateIdentity.html">Einsums/TensorUtilities/CreateIdentity.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CreateRandomSemidefinite.html">Einsums/TensorUtilities/CreateRandomSemidefinite.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ARange.html">Einsums/TensorUtilities/ARange.hpp</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TensorUtilities/CreateZeroTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RMSD.html">Einsums/TensorUtilities/RMSD.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Diagonal.html">Einsums/TensorUtilities/Diagonal.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CreateTensorLike.html">Einsums/TensorUtilities/CreateTensorLike.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CreateIncrementedTensor.html">Einsums/TensorUtilities/CreateIncrementedTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CreateRandomTensor.html">Einsums/TensorUtilities/CreateRandomTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ARange.html">Einsums/TensorUtilities/ARange.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SetTo.html">Einsums/TensorUtilities/Detail/SetTo.hpp</a></li>
 </ul>
 </div>
@@ -344,18 +344,42 @@
                   
   <section id="einsums-tensorutilities-createzerotensor-hpp">
 <span id="modules-einsums-einsums-tensorutilities-createzerotensor-hpp-api"></span><h1>Einsums/TensorUtilities/CreateZeroTensor.hpp<a class="headerlink" href="#einsums-tensorutilities-createzerotensor-hpp" title="Permalink to this heading">#</a></h1>
-<p>Defined in header .</p>
+<p>Defined in header Einsums/TensorUtilities/CreateZeroTensor.hpp.</p>
 <p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
 <em>Einsums</em> API.</p>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv47einsums">
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd></dd></dl>
+
+</p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums18create_zero_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex">
-<span id="_CPPv3I0DpEN7einsums18create_zero_tensorERKNSt6stringEDp10MultiIndex"></span><span id="_CPPv2I0DpEN7einsums18create_zero_tensorERKNSt6stringEDp10MultiIndex"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">MultiIndex</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_create_zero_tensor_8hpp_1a48669769e44adc1b171d4a09b2c3a7c1"></span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_zero_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_zero_tensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_zero_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_zero_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_zero_tensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_zero_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_zero_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN7einsums18create_zero_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="Permalink to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3I0DpEN7einsums18create_zero_tensorERKNSt6stringEDp10MultiIndex"></span><span id="_CPPv2I0DpEN7einsums18create_zero_tensorERKNSt6stringEDp10MultiIndex"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">MultiIndex</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a48669769e44adc1b171d4a09b2c3a7c1"></span><a class="reference internal" href="../../Tensor/api/Tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_zero_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_zero_tensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_zero_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_zero_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_zero_tensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_zero_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_zero_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN7einsums18create_zero_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Create a tensor and zero its data. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> – The type to be stored by the tensor. </p></li>
+<li><p><strong>MultiIndex</strong> – The types fo the indices. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> – The name of the new tensor. </p></li>
+<li><p><strong>index</strong> – The dimensions for the new tensor. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new tensor whose elements have been zeroed. </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </dd></dl>

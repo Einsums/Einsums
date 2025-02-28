@@ -11,10 +11,10 @@
 Einsums/TensorBase/HashFunctions.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/TensorBase/HashFunctions.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/TensorBase/HashFunctions.hpp
-   :project: TensorBase
+   :project: Einsums

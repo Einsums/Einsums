@@ -1,0 +1,20 @@
+
+.. 
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. _modules_Einsums_Einsums/Tensor/DeviceTensor.hpp_api:
+
+-------------------------------------------------------------------------------
+Einsums/Tensor/DeviceTensor.hpp
+-------------------------------------------------------------------------------
+
+Defined in header Einsums/Tensor/DeviceTensor.hpp.
+
+See :ref:`modules_overview` for a list of names and headers that are part of the public
+|einsums| API.
+
+.. autodoxygenfile:: Einsums/Tensor/DeviceTensor.hpp
+   :project: Einsums

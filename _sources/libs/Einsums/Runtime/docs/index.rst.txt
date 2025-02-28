@@ -4,9 +4,9 @@
 
 .. _modules_Einsums_Runtime:
 
-===============
-Einsums Runtime
-===============
+=======
+Runtime
+=======
 
 This module contains several runtime utilities.
 
@@ -19,25 +19,17 @@ Public API
 
 .. cpp:function:: int initialize(std::function<int(int, char **)> f, int argc, char const *const *argv, InitParams const &params = InitParams());
 .. cpp:function:: int initialize(std::function<int()> f, int argc, char const *const *argv, InitParams const &params = InitParams());
-.. cpp:function:: int initialize(std::nullptr_t, int argc, char const *const *argv, InitParams const &params = InitParams());
+.. cpp:function:: int initialize(std::nullptr_t f, int argc, char const *const *argv, InitParams const &params = InitParams());
 
-    Initializes the Einsums framework. It must be called early on otherwise other things may not work.
+    Initializes the Einsums framework. It must be called early on otherwise other things may not work. It then executes the
+    function that is passed as if it were :code:`main`, passing any command arguments not consumed by Einsums.
+    The initialization parameters are passed on to the initialization function.
 
-.. cpp:function:: void finalize(const char *file_name)
-.. cpp:function:: void finalize(const std::string &file_name)
-.. cpp:function:: void finalize(FILE *file_pointer)
+    :param f: The function to call. If it is the null pointer, then no function will be called, and the initialization routine will exit once finished.
+    :param argc: The number of arguments as passed to :code:`main`.
+    :param argv: The vector of arguments as passed to :code:`main`.
+    :param params: Extra parameters to pass on to the initialization routine.
 
-    Tear down the state of the Einsums library and print timing information to the specified file.
-    In the prototypes with strings, the string specifies the file name and path, relative to the
-    current directory. In the prototype with the file pointer, this will print the information to
-    the file pointer. It must be a writable or appendable file pointer.
+.. cpp:function:: void finalize()
 
-.. cpp:function:: void finalize(std::ostream &out)
-
-    Tear down the state of the Einsums library and put timing information in the given output
-    stream. This may be any output stream, including file and string streams.
-
-.. cpp:function:: void finalize(bool timer_report = false)
-
-    Tear down the state of the Einsums library. If passed :code:`true`, then the timing report
-    will be printed to standard output.
+    Mark that the Einsums library may be torn down.

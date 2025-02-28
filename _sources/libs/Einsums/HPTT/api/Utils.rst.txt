@@ -11,10 +11,10 @@
 Einsums/HPTT/Utils.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/HPTT/Utils.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/HPTT/Utils.hpp
-   :project: HPTT
+   :project: Einsums

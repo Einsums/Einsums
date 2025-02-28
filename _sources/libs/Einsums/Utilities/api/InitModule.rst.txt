@@ -11,10 +11,10 @@
 Einsums/Utilities/InitModule.hpp
 -------------------------------------------------------------------------------
 
-Defined in header .
+Defined in header Einsums/Utilities/InitModule.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: Einsums/Utilities/InitModule.hpp
-   :project: Utilities
+   :project: Einsums

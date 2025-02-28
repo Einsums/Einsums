@@ -51,11 +51,11 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Compiler selection and customizing a build" href="compilers_and_options.html" />
-    <link rel="prev" title="Utilities" href="../libs/Einsums/Utilities/docs/index.html" />
+    <link rel="prev" title="Einsums license" href="../license.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Feb 12, 2025"/>
+    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
   </head>
   
   
@@ -342,8 +342,8 @@
 <span id="id1"></span><h1>Building from source<a class="headerlink" href="#building-from-source" title="Permalink to this heading">#</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you are only trying to install Einsums, we recommend using binaries -
-Installation for details on that.</p>
+<p>If you are only trying to install Einsums, we recommend using binaries.
+See <a class="reference internal" href="../user/absolute_beginners.html#installing"><span class="std std-ref">Installation Instructions</span></a> for details on that.</p>
 </div>
 <p>Building Einsums from source requires setting up system-level dependencies
 (compilers, BLAS/LAPACK libraries, etc.) first, and then invoking a build. The
@@ -361,9 +361,9 @@ other system-level dependencies to build it on your system.</p>
 <p>If you are using Conda, you can skip the steps in this section - with the
 exception of installing the Apple Developer Tools for macOS. All other
 dependencies will be installed automatically by the
-<code class="docutils literal notranslate"><span class="pre">mamba</span> <span class="pre">env</span> <span class="pre">create</span> <span class="pre">-f</span> <span class="pre">devtools</span> <span class="pre">environment.yml</span></code> command.</p>
+<code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span> <span class="pre">-f</span> <span class="pre">devtools</span> <span class="pre">environment.yml</span></code> command.</p>
 <p>If you don’t have a conda installation yet, we recommend using
-<a class="reference external" href="https://github.com/conda-forge/miniforge#mambaforge">Mambaforge</a>; any conda flavor will work though.</p>
+<a class="reference external" href="https://github.com/conda-forge/miniforge#condaforge">Condaforge</a>; any conda flavor will work though.</p>
 </div>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
@@ -380,7 +380,7 @@ is the Einsums default; other variants include Apple Accelerate,
 BLAS and LAPACK.</p></li>
 <li><p>CMake</p></li>
 </ul>
-<p>The following is also required, but will be downloaded if not given:</p>
+<p>The following are also required, but will be downloaded if not given:</p>
 <ul class="simple">
 <li><p>fmtlib &gt;= 11</p></li>
 <li><p>Catch2 &gt;= 3</p></li>
@@ -392,7 +392,7 @@ BLAS and LAPACK.</p></li>
 <ul class="simple">
 <li><p>For the Fourier Transform abilities, you will need either <a class="reference external" href="https://www.fftw.org">FFTW3</a>
 or MKL.</p></li>
-<li><p>HIP for GPU support.</p></li>
+<li><p>HIP for GPU support. If using an Nvidia platform, CUDA is also required.</p></li>
 <li><p>LibreTT for high-performance GPU tensor transposes.</p></li>
 <li><p>pybind11 for the Python extension module.</p></li>
 </ul>
@@ -432,7 +432,7 @@ the Einsums repository.:</p>
 <span class="n">cd</span><span class="w"> </span><span class="n">Einsums</span>
 </pre></div>
 </div>
-<p>Then you want to do the following:</p>
+<p>Then you will want to do the following:</p>
 <ol class="arabic simple">
 <li><p>Create a dedicated development environment (conda environment),</p></li>
 <li><p>Install all needed dependencies (<em>build</em>, and also <em>test</em>, and <em>doc</em>
@@ -440,9 +440,9 @@ dependencies.</p></li>
 <li><p>Build Einsums.</p></li>
 </ol>
 <p>To create an <code class="docutils literal notranslate"><span class="pre">einsums-dev</span></code> development environment with every required and
-optional dependency installed, run:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="n">create</span><span class="w"> </span><span class="o">-</span><span class="n">f</span><span class="w"> </span><span class="n">devtools</span><span class="o">/</span><span class="n">conda</span><span class="o">-</span><span class="n">envs</span><span class="o">/</span><span class="n">environment</span><span class="p">.</span><span class="n">yml</span>
-<span class="n">mamba</span><span class="w"> </span><span class="n">activate</span><span class="w"> </span><span class="n">einsums</span><span class="o">-</span><span class="n">dev</span>
+optional dependency installed, except for HIP, run:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="n">create</span><span class="w"> </span><span class="o">-</span><span class="n">f</span><span class="w"> </span><span class="n">devtools</span><span class="o">/</span><span class="n">conda</span><span class="o">-</span><span class="n">envs</span><span class="o">/</span><span class="n">environment</span><span class="p">.</span><span class="n">yml</span>
+<span class="n">conda</span><span class="w"> </span><span class="n">activate</span><span class="w"> </span><span class="n">einsums</span><span class="o">-</span><span class="n">dev</span>
 </pre></div>
 </div>
 <p>To build Einsums in an activated development environment, run:</p>
@@ -453,7 +453,7 @@ optional dependency installed, run:</p>
 </pre></div>
 </div>
 <p>This will build Einsums inside the <code class="docutils literal notranslate"><span class="pre">build</span></code> directory. You can then run tests
-(<code class="docutils literal notranslate"><span class="pre">ctest</span></code>), or take other development steps like build the html documentation
+(<code class="docutils literal notranslate"><span class="pre">ctest</span></code> and <code class="docutils literal notranslate"><span class="pre">pytest</span></code>), or take other development steps like build the html documentation
 or running benchmarks.</p>
 </section>
 <section id="customizing-builds">
@@ -477,12 +477,12 @@ or running benchmarks.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../libs/Einsums/Utilities/docs/index.html"
+       href="../license.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Utilities</p>
+        <p class="prev-next-title">Einsums license</p>
       </div>
     </a>
     <a class="right-next"
