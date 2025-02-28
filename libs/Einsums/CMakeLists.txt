@@ -17,7 +17,6 @@ set(_Einsums_modules
   Config
   Debugging
   Decomposition
-  DesignPatterns
   Errors
   FFT
   GPUStreams

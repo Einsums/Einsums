@@ -6,7 +6,7 @@
 #pragma once
 
 #include <Einsums/Config/ExportDefinitions.hpp>
-#include <Einsums/DesignPatterns/Singleton.hpp>
+#include <Einsums/TypeSupport/Singleton.hpp>
 
 #include <cstdint>
 #include <list>
