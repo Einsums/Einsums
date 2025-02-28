@@ -14,14 +14,35 @@
 
 namespace einsums {
 
-/// Normal strings cannot be used as template parameters, but this can.
-/// This is needed for the parameters names in the NamedTuples.
+/**
+ * @struct StringLiteral
+ *
+ * Normal strings cannot be used as template parameters, but this can.
+ * This is needed for the parameters' names in the NamedTuples.
+ *
+ * @tparam N The size of the string including the null terminator.
+ */
 template <size_t N>
 struct StringLiteral {
+    /**
+     * @brief Constructs a new string literal out of the list of characters.
+     *
+     * @param chars The characters for the string.
+     */
     constexpr StringLiteral(auto const... chars) : _arr{chars..., '\0'} {}
 
+    /**
+     * @brief Constructs a new string literal out of the list of characters.
+     *
+     * @param arr The characters for the string.
+     */
     constexpr StringLiteral(std::array<char, N> const &arr) : _arr(arr) {}
 
+    /**
+     * @brief Constructs a new stringn literal out of a string.
+     *
+     * @param str The string to use for the construction
+     */
     constexpr StringLiteral(char const (&str)[N]) { std::copy_n(str, N, std::data(_arr)); }
 
     /// Returns the value as a string
@@ -30,9 +51,20 @@ struct StringLiteral {
     /// Returns the value as a string
     constexpr std::string_view string_view() const { return std::string_view(std::data(_arr), N - 1); }
 
+    /**
+     * @property _arr
+     *
+     * @brief The array containing the string data.
+     */
     std::array<char, N> _arr{};
 };
 
+/**
+ * @brief Direct equality comparison between two string literals.
+ *
+ * @param _first The first string.
+ * @param _second The second string
+ */
 template <size_t N1, size_t N2>
 constexpr bool operator==(StringLiteral<N1> const &_first, StringLiteral<N2> const &_second) {
     if constexpr (N1 != N2) {
@@ -41,6 +73,12 @@ constexpr bool operator==(StringLiteral<N1> const &_first, StringLiteral<N2> con
     return _first.string_view() == _second.string_view();
 }
 
+/**
+ * @brief Direct inequality comparison between two string literals.
+ *
+ * @param _first The first string.
+ * @param _second The second string
+ */
 template <size_t N1, size_t N2>
 constexpr bool operator!=(StringLiteral<N1> const &_first, StringLiteral<N2> const &_second) {
     return !(_first == _second);
@@ -48,6 +86,7 @@ constexpr bool operator!=(StringLiteral<N1> const &_first, StringLiteral<N2> con
 
 } // namespace einsums
 
+#ifndef DOXYGEN
 template <size_t N>
 struct fmt::formatter<einsums::StringLiteral<N>> {
     // Parse the format specification, if needed.
@@ -63,3 +102,4 @@ struct fmt::formatter<einsums::StringLiteral<N>> {
         return fmt::format_to(ctx.out(), "{}", sl.string_view());
     }
 };
+#endif

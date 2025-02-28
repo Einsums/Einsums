@@ -6,8 +6,8 @@
 #pragma once
 
 #include <Einsums/Concepts/SubscriptChooser.hpp>
-#include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 
 namespace einsums {
 

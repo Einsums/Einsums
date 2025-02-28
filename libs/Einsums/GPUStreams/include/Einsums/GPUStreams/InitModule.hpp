@@ -21,7 +21,14 @@ public:
     init_Einsums_GPUStreams();
 };
 
+/**
+ * @brief Set up the GPU, as well as the various streams for threading.
+ */
 EINSUMS_HOST EINSUMS_EXPORT void initialize_Einsums_GPUStreams();
+
+/**
+ * @brief Free data related to the GPU.
+ */
 EINSUMS_HOST EINSUMS_EXPORT void finalize_Einsums_GPUStreams();
 
 namespace detail {

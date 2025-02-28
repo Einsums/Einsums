@@ -2,7 +2,7 @@
     Copyright (c) The Einsums Developers. All rights reserved.
     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-.. _modules_Concepts:
+.. _modules_Einsums_Concepts:
 
 ========
 Concepts
@@ -10,9 +10,9 @@ Concepts
 
 This module contains a bunch of concepts to help with compile-time decision making. These are considered
 to be internal utilities. However, some concepts define requirements for tensors. Those requirements
-will be listed here.
+will be listed here, in case a user wants to create their own Einsums-compatible data types.
 
-See the :ref:`API reference <modules_Concepts_api>` of this module for more
+See the :ref:`API reference <modules_Einsums_Concepts_api>` of this module for more
 details.
 
 

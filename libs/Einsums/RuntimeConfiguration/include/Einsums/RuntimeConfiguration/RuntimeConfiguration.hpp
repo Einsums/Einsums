@@ -123,6 +123,8 @@ struct EINSUMS_EXPORT Einsums {
 } // namespace detail
 
 /**
+ * @struct RuntimeConfiguration
+ *
  * Handles the current configuration state of the running instance.
  *
  * Currently, defaults are handled in pre_initialize. Eventually,
@@ -133,11 +135,32 @@ struct EINSUMS_EXPORT Einsums {
  * from Runtime::config() or from runtime_config() functions.
  */
 struct EINSUMS_EXPORT RuntimeConfiguration {
+    /**
+     * @property system
+     *
+     * @todo Document.
+     */
     detail::System  system;
+
+    /**
+     * @property einsums
+     *
+     * @todo Document.
+     */
     detail::Einsums einsums;
 
+    /**
+     * @property original
+     *
+     * @todo Document.
+     */
     std::vector<std::string> original;
 
+    /**
+     * @property argument_parser
+     *
+     * @brief Holds the parser used to parse the arguments passed to Einsums.
+     */
     std::unique_ptr<argparse::ArgumentParser> argument_parser;
 
     /**

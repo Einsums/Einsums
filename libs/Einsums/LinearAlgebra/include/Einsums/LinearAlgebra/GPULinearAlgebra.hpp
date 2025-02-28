@@ -3,7 +3,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Complex.hpp>
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
 #include <Einsums/Tensor/DeviceTensor.hpp>
@@ -394,7 +394,7 @@ void scale(T const *alpha, AType *A) {
 
     using dev_datatype = typename AType::dev_datatype;
 
-    // TODO: Compatibility with views.
+    /// @todo Compatibility with views.
     gpu::scal(A->size(), (dev_datatype *)alpha, A->gpu_data(), 1);
     stream_wait();
 }

@@ -8,7 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLAS.hpp>
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/LinearAlgebra/Unoptimized.hpp>

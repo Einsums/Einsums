@@ -65,7 +65,7 @@ struct LabelBase {};
         }                                                                                                                                  \
     };
 
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#if !defined(DOXYGEN)
 MAKE_INDEX(A); // NOLINT
 MAKE_INDEX(a); // NOLINT
 MAKE_INDEX(B); // NOLINT
@@ -179,7 +179,7 @@ namespace einsums {
 
 namespace index {
 
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#if !defined(DOXYGEN)
 constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
 #endif
 

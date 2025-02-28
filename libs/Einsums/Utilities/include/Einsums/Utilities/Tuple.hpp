@@ -54,40 +54,103 @@ constexpr inline std::array<std::remove_cv_t<NewT>, N> convert_array_impl(std::a
 
 } // namespace detail
 
+/**
+ * @brief Creates a tuple consisting of copies of the passed value.
+ *
+ * @tparam N The number of copies to make.
+ * @tparam T The type of the input.
+ * @param value The value to copy.
+ * @return A tuple consisting of copies of the passed value.
+ */
 template <size_t N, typename T>
 constexpr auto create_tuple(T const &value) {
     return detail::create_tuple(value, std::make_index_sequence<N>());
 }
 
+/**
+ * @brief Converts an array into a tuple with the same representation.
+ *
+ * @tparam N The number of elements in the array.
+ * @tparam T The array type, such as std::array or std::vector.
+ * @param arr The array to copy.
+ * @return A tuple whose elements match the passed array.
+ */
 template <size_t N, typename T>
 constexpr auto create_tuple_from_array(T const &arr) {
     return detail::create_tuple_from_array(arr, std::make_index_sequence<N>());
 }
 
+/**
+ * @brief Slices an array.
+ *
+ * This function takes an array and returns a new one whose elements are the first several elements of the input.
+ *
+ * @tparam NewN The number of elements to extract.
+ * @tparam T The datatype stored by the array.
+ * @tparam OldN The size of the input array.
+ * @param old_array The array to slice.
+ * @return An array containing the first several elements of the input array.
+ */
 template <size_t NewN, typename T, size_t OldN>
     requires(OldN >= NewN)
 constexpr std::array<T, NewN> slice_array(std::array<T, OldN> const &old_array) {
     return detail::slice_array_impl<NewN>(old_array, std::make_index_sequence<NewN>());
 }
 
+/**
+ * @brief Slices an array.
+ *
+ * This function takes an array and returns a new one whose elements are the first several elements of the input.
+ *
+ * @tparam NewN The number of elements to extract.
+ * @tparam T The datatype stored by the array.
+ * @tparam OldN The size of the input array.
+ * @param old_array The array to slice.
+ * @return An array containing the first several elements of the input array.
+ */
 template <size_t NewN, typename T, size_t OldN>
     requires(OldN >= NewN)
 constexpr std::array<T, NewN> slice_array(std::array<T, OldN> &&old_array) {
     return detail::slice_array_impl<NewN>(std::move(old_array), std::make_index_sequence<NewN>());
 }
 
+/**
+ * @brief Converts a tuple whose elements can all be converted to the same type into an array.
+ *
+ * @tparam T The datatype of the array.
+ * @tparam TupleTypes The types of the tuple's elements.
+ * @param tuple The tuple to cast.
+ * @return An array whose elements are cast from the input tuple's elements.
+ */
 template <typename T, typename... TupleTypes>
     requires(std::is_convertible_v<TupleTypes, T> && ...)
 constexpr inline std::array<T, sizeof...(TupleTypes)> create_array_from_tuple(std::tuple<TupleTypes...> const &tuple) {
     return detail::create_array_from_tuple_impl<T>(tuple, std::make_index_sequence<sizeof...(TupleTypes)>());
 }
 
+/**
+ * @brief Converts a tuple whose elements can all be converted to the same type into an array.
+ *
+ * @tparam T The datatype of the array.
+ * @tparam TupleTypes The types of the tuple's elements.
+ * @param tuple The tuple to cast.
+ * @return An array whose elements are cast from the input tuple's elements.
+ */
 template <typename T, typename... TupleTypes>
     requires(std::is_convertible_v<TupleTypes, T> && ...)
 constexpr inline std::array<T, sizeof...(TupleTypes)> create_array_from_tuple(std::tuple<TupleTypes...> &&tuple) {
     return detail::create_array_from_tuple_impl<T>(std::move(tuple), std::make_index_sequence<sizeof...(TupleTypes)>());
 }
 
+/**
+ * @brief Converts the elements of an array to a new type.
+ *
+ * @tparam NewT The new type to convert to.
+ * @tparam OldT The type of the elements in the input array.
+ * @tparam N The number of elements.
+ * @param arr The array to cast.
+ * @return A new array whose elements have been cast from the input array.
+ */
 template <typename NewT, typename OldT, size_t N>
     requires(std::is_convertible_v<OldT, NewT>)
 constexpr inline std::array<std::remove_cv_t<NewT>, N> convert_array(std::array<std::remove_cv_t<OldT>, N> const &arr) {

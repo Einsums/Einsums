@@ -89,13 +89,13 @@ void zdifft(Tensor<std::complex<double>, 1> const &a, Tensor<double, 1> *result)
 }
 
 void ccifft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 1> *result) {
-    // TODO: Add appropriate icheck_size(...);
+    /// @todo Add appropriate icheck_size(...);
     // backend::mkl::ccifft(a, result);
     backend::FFT_BACKEND::ccifft(a, result);
 }
 
 void zzifft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>, 1> *result) {
-    // TODO: Add appropriate icheck_size(...);
+    /// @todo Add appropriate icheck_size(...);
     // backend::mkl::zzifft(a, result);
     backend::FFT_BACKEND::zzifft(a, result);
 }

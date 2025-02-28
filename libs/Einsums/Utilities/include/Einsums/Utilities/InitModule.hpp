@@ -21,8 +21,10 @@ public:
     init_Einsums_Utilities();
 };
 
+/**
+ * @brief Initializes the random number generator.
+ */
 EINSUMS_EXPORT void initialize_Einsums_Utilities();
-EINSUMS_EXPORT void finalize_Einsums_Utilities();
 
 namespace detail {
 

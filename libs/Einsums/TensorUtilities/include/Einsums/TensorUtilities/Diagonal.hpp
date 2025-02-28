@@ -29,6 +29,14 @@ auto diagonal(Tensor<T, 1> const &v) -> Tensor<T, 2> {
     return result;
 }
 
+/**
+ * @brief Creates a diagonal matrix from a vector using a template.
+ *
+ * @tparam T The datatype of the underlying data.
+ * @param v The input vector.
+ * @param like The template to use. Its dimensions and name will be used for the new tensor.
+ * @return A new rank-2 tensor with the diagonal elements set to @p v .
+ */
 template <typename T>
 auto diagonal_like(Tensor<T, 1> const &v, Tensor<T, 2> const &like) -> Tensor<T, 2> {
     auto result = create_tensor_like(v.name(), like);

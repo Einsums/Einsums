@@ -48,6 +48,11 @@ consteval auto get_type_name_string_view() {
 
 } // namespace detail
 
+/**
+ * @brief Turns a type into a string representing its name.
+ *
+ * @return The string representation of the passed type.
+ */
 template <typename T>
 consteval auto type_name() {
     //static_assert(detail::get_type_name_string_view<int>() == "int", "Expected 'int', got something else.");

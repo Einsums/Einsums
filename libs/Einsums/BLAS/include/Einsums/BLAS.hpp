@@ -101,7 +101,7 @@ inline void gemm<std::complex<double>>(char transa, char transb, int_t m, int_t 
 }
 #endif
 
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#if !defined(DOXYGEN)
 namespace detail {
 void EINSUMS_EXPORT sgemv(char transa, int_t m, int_t n, float alpha, float const *a, int_t lda, float const *x, int_t incx, float beta,
                           float *y, int_t incy);
@@ -146,7 +146,7 @@ void EINSUMS_EXPORT zgemv(char transa, int_t m, int_t n, std::complex<double> al
 template <typename T>
 void gemv(char transa, int_t m, int_t n, T alpha, T const *a, int_t lda, T const *x, int_t incx, T beta, T *y, int_t incy);
 
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#if !defined(DOXYGEN)
 template <>
 inline void gemv<float>(char transa, int_t m, int_t n, float alpha, float const *a, int_t lda, float const *x, int_t incx, float beta,
                         float *y, int_t incy) {
