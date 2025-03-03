@@ -130,38 +130,38 @@ jobs:
           pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/src/tests" --cov="${{github.workspace}}/einsums" --cov-report=xml
 
 
-      # - name: Generate coverage information
-      #   working-directory: "${{github.workspace}}/build"
-      #   run: |
-      #     # export PROFILES=$(find . -name "*.profraw")
-      #     # export BINARIES=${PROFILES//.profraw/}
-      #     # echo "PROFILES=$PROFILES"
-      #     # echo "BINARIES=$BINARIES"
-      #     # llvm-profdata merge $PROFILES -o default.profdata
-      #     # ls
-      #     # llvm-cov export -format=lcov -instr-profile=default.profdata $BINARIES
-      #     # ls
-      #     lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
+      - name: Generate coverage information
+        working-directory: "${{github.workspace}}/build"
+        run: |
+          # export PROFILES=$(find . -name "*.profraw")
+          # export BINARIES=${PROFILES//.profraw/}
+          # echo "PROFILES=$PROFILES"
+          # echo "BINARIES=$BINARIES"
+          # llvm-profdata merge $PROFILES -o default.profdata
+          # ls
+          # llvm-cov export -format=lcov -instr-profile=default.profdata $BINARIES
+          # ls
+          lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
 
-      # - name: Upload C++ coverage to Codecov
-      #   uses: codecov/codecov-action@v4
-      #   with:
-      #     directory: "${{github.workspace}}/build"
-      #     working-directory: "${{github.workspace}}"
-      #     disable_search: true
-      #     file: ${{github.workspace}}/build/coverage.info
-      #     flags: cpp
-      #     token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload C++ coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: "${{github.workspace}}/build"
+          working-directory: "${{github.workspace}}"
+          disable_search: true
+          file: ${{github.workspace}}/build/coverage.info
+          flags: cpp
+          token: ${{ secrets.CODECOV_TOKEN }}
 
-      # - name: Upload Python coverage to Codecov
-      #   uses: codecov/codecov-action@v4
-      #   with:
-      #     directory: "${{github.workspace}}"
-      #     working-directory: "${{github.workspace}}"
-      #     disable_search: true
-      #     flags: python
-      #     file: ${{github.workspace}}/coverage.xml
-      #     token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload Python coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: "${{github.workspace}}"
+          working-directory: "${{github.workspace}}"
+          disable_search: true
+          flags: python
+          file: ${{github.workspace}}/coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Test (find_package) - consume installation
         working-directory: "${{github.workspace}}/src/testing/consume"
