@@ -7,7 +7,7 @@
 .. _user:
 
 ##################
-Einsums user guide
+Einsums User Guide
 ##################
 
 This guide is an overview and explains the important features;
@@ -24,6 +24,7 @@ details are found in the reference. Follow the links below to find more informat
     :caption: User's Reference
     :maxdepth: 1
 
+    index
     /libs/overview
     ../reference/python_module
 

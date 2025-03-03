@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
@@ -41,9 +41,9 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=42bda6d1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=9848765f"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
+    <meta name="docbuild:last-update" content="Mar 03, 2025"/>
   </head>
   
   
@@ -145,13 +145,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../libs/overview.html">
-    API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
   </a>
@@ -233,13 +226,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../user/index.html">
     User Guide
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../libs/overview.html">
-    API Reference
   </a>
 </li>
 
@@ -334,19 +320,19 @@
                 <article class="bd-article">
                   
   <section id="creating-module-skeletons">
-<span id="create-module-skeleton"></span><h1>Creating Module Skeletons<a class="headerlink" href="#creating-module-skeletons" title="Permalink to this heading">#</a></h1>
+<span id="create-module-skeleton"></span><h1>Creating Module Skeletons<a class="headerlink" href="#creating-module-skeletons" title="Link to this heading">#</a></h1>
 <p>In the <code class="docutils literal notranslate"><span class="pre">libs</span></code> directory, there is a Python package called <code class="docutils literal notranslate"><span class="pre">create_module_skeleton</span></code>. This package
 sets up a module skeleton to help you create new modules. This page will act as the documentation
 on how to call it and modify it.</p>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">#</a></h2>
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span><span class="w"> </span><span class="n">create_module_skeleton</span><span class="w"> </span><span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span><span class="w"> </span><span class="n">LIBRARY_NAME</span><span class="w"> </span><span class="n">MODULE_NAME</span>
 <span class="n">python3</span><span class="w"> </span><span class="n">create_module_skeleton</span><span class="w"> </span><span class="o">--</span><span class="n">reindex</span><span class="w"> </span><span class="p">[</span><span class="n">LIBRARIES</span><span class="p">,</span><span class="w"> </span><span class="p">...]</span>
 </pre></div>
 </div>
 </section>
 <section id="options">
-<h2>Options<a class="headerlink" href="#options" title="Permalink to this heading">#</a></h2>
+<h2>Options<a class="headerlink" href="#options" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">-h,</span> <span class="pre">--help</span></code>: Print a help message.</p>
 <p><code class="docutils literal notranslate"><span class="pre">--python</span></code>: If included, the new package will be set up as a Python extension module.</p>
 <p><code class="docutils literal notranslate"><span class="pre">--gpu</span></code>: If included, the new package will be set up as a GPU-enabled module.</p>
@@ -363,7 +349,7 @@ originally created.</p>
 <p><code class="docutils literal notranslate"><span class="pre">LIBRARIES</span></code>: A list of libraries to reindex.</p>
 </section>
 <section id="output-files">
-<h2>Output Files<a class="headerlink" href="#output-files" title="Permalink to this heading">#</a></h2>
+<h2>Output Files<a class="headerlink" href="#output-files" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">.is_python_lib</span></code>: If this file is present, the library is considered to be a Python extension module.
 It also contains options for updating the library’s tree. These options are as follows.</p>
 <ul class="simple">
@@ -415,7 +401,7 @@ that depends on a file called <code class="docutils literal notranslate"><span c
 can use the provided <code class="docutils literal notranslate"><span class="pre">set</span></code> lines. You can also add your own dependencies.</p>
 <p><code class="docutils literal notranslate"><span class="pre">MODULE/README.rst</span></code>: A module-level readme file for documentation.</p>
 <section id="input-files">
-<h3>Input Files<a class="headerlink" href="#input-files" title="Permalink to this heading">#</a></h3>
+<h3>Input Files<a class="headerlink" href="#input-files" title="Link to this heading">#</a></h3>
 <p>For users who just want to create modules, you don’t need anything further. The following is only
 for those who want to modify the template files used to generate the outputs above. All files are
 interpreted as Python f-strings. As such, any bracket needs to be escaped. The following variable names
@@ -511,7 +497,7 @@ is enabled.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

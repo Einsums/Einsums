@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
@@ -41,9 +41,9 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=42bda6d1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=9848765f"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
+    <meta name="docbuild:last-update" content="Mar 03, 2025"/>
   </head>
   
   
@@ -145,13 +145,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../libs/overview.html">
-    API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
   </a>
@@ -233,13 +226,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../user/index.html">
     User Guide
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../libs/overview.html">
-    API Reference
   </a>
 </li>
 
@@ -334,7 +320,7 @@
                 <article class="bd-article">
                   
   <section id="coding-style">
-<span id="code-style"></span><h1>Coding Style<a class="headerlink" href="#coding-style" title="Permalink to this heading">#</a></h1>
+<span id="code-style"></span><h1>Coding Style<a class="headerlink" href="#coding-style" title="Link to this heading">#</a></h1>
 <p>When contributing to the Einsums code base, we want to make sure our code fits to certain guidelines.
 The main purpose of these guidelines is to get contributors to think more deeply about their
 code, and to provide a single style to make our code more consistent to read. All files should begin
@@ -346,7 +332,7 @@ with the following statement.</p>
 </pre></div>
 </div>
 <section id="c-style">
-<h2>C++ Style<a class="headerlink" href="#c-style" title="Permalink to this heading">#</a></h2>
+<h2>C++ Style<a class="headerlink" href="#c-style" title="Link to this heading">#</a></h2>
 <p>To make code formatting easier, we have provided two files, <code class="docutils literal notranslate"><span class="pre">.clang-tidy</span></code> and <code class="docutils literal notranslate"><span class="pre">.clang-format</span></code>.
 These files can be used with the <code class="docutils literal notranslate"><span class="pre">clang-tidy</span></code> package to format C++ code, as well as to hint at
 possible errors in your code. One thing that may come up when using these is a strange warning about
@@ -358,9 +344,9 @@ which contains the following.</p>
 </pre></div>
 </div>
 <section id="coding-conventions">
-<h3>Coding Conventions<a class="headerlink" href="#coding-conventions" title="Permalink to this heading">#</a></h3>
+<h3>Coding Conventions<a class="headerlink" href="#coding-conventions" title="Link to this heading">#</a></h3>
 <section id="names">
-<h4>Names<a class="headerlink" href="#names" title="Permalink to this heading">#</a></h4>
+<h4>Names<a class="headerlink" href="#names" title="Link to this heading">#</a></h4>
 <p>Names should follow these conventions.</p>
 <ul class="simple">
 <li><p>Types, including classes, structs, enums, and typedefs should be in <code class="docutils literal notranslate"><span class="pre">PascalCase</span></code>.
@@ -416,7 +402,7 @@ This means that the “A” is capitalized, but the rest of the variable is in s
 </section>
 </section>
 <section id="order-of-things">
-<h3>Order of Things<a class="headerlink" href="#order-of-things" title="Permalink to this heading">#</a></h3>
+<h3>Order of Things<a class="headerlink" href="#order-of-things" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><em>cv</em> keywords should never come before the pointer or reference type they modify. As an example,</p>
 <ul>
@@ -439,7 +425,7 @@ This is a complicated return type. Use the <code class="docutils literal notrans
 </ul>
 </section>
 <section id="miscellaneous">
-<h3>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this heading">#</a></h3>
+<h3>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Indents are four spaces. Do not use tabs.</p></li>
 <li><p>Lines should be at most 140 columns long.</p></li>
@@ -481,7 +467,7 @@ is considered to be undefined behavior.</p></li>
 </section>
 </section>
 <section id="python-style">
-<h2>Python Style<a class="headerlink" href="#python-style" title="Permalink to this heading">#</a></h2>
+<h2>Python Style<a class="headerlink" href="#python-style" title="Link to this heading">#</a></h2>
 <p>The approach to Python style is to generally follow the standard Python style guidelines. Some things to keep in mind.</p>
 <ul class="simple">
 <li><p>Try to use type annotations when writing Python code. Some examples.</p>
@@ -580,7 +566,7 @@ and any reference to a tensor variable in a non-tensor variable should match the
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

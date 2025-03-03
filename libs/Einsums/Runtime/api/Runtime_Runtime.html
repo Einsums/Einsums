@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../../../" >
 
   <head>
     <meta charset="utf-8" />
@@ -41,9 +41,9 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=42bda6d1"></script>
-    <script src="../../../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/documentation_options.js?v=9848765f"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
+    <meta name="docbuild:last-update" content="Mar 03, 2025"/>
   </head>
   
   
@@ -145,13 +145,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../overview.html">
-    API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
   </a>
@@ -200,6 +193,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -229,13 +226,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../user/index.html">
     User Guide
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../overview.html">
-    API Reference
   </a>
 </li>
 
@@ -339,7 +329,7 @@
                 <article class="bd-article">
                   
   <section id="einsums-runtime-runtime-hpp">
-<span id="modules-einsums-einsums-runtime-runtime-hpp-api"></span><h1>Einsums/Runtime/Runtime.hpp<a class="headerlink" href="#einsums-runtime-runtime-hpp" title="Permalink to this heading">#</a></h1>
+<span id="modules-einsums-einsums-runtime-runtime-hpp-api"></span><h1>Einsums/Runtime/Runtime.hpp<a class="headerlink" href="#einsums-runtime-runtime-hpp" title="Link to this heading">#</a></h1>
 <p>Defined in header Einsums/Runtime/Runtime.hpp.</p>
 <p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
 <em>Einsums</em> API.</p>
@@ -356,84 +346,84 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-enums">Enums</p>
 <dl class="cpp enum-class">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeStateE">
-<span id="_CPPv3N7einsums12RuntimeStateE"></span><span id="_CPPv2N7einsums12RuntimeStateE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393c"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RuntimeState</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int8_t</span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeStateE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeStateE"></span><span id="_CPPv2N7einsums12RuntimeStateE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393c"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RuntimeState</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int8_t</span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeStateE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Holds the possible states for the runtime. </p>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState7InvalidE">
-<span id="_CPPv3N7einsums12RuntimeState7InvalidE"></span><span id="_CPPv2N7einsums12RuntimeState7InvalidE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca4bbb8f967da6d1a610596d7257179c2b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Invalid</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7InvalidE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState7InvalidE"></span><span id="_CPPv2N7einsums12RuntimeState7InvalidE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca4bbb8f967da6d1a610596d7257179c2b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Invalid</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7InvalidE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The state is invalid. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState11InitializedE">
-<span id="_CPPv3N7einsums12RuntimeState11InitializedE"></span><span id="_CPPv2N7einsums12RuntimeState11InitializedE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca59d87a4758a9d35fbaf6b204341bb399"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialized</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState11InitializedE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState11InitializedE"></span><span id="_CPPv2N7einsums12RuntimeState11InitializedE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca59d87a4758a9d35fbaf6b204341bb399"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialized</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState11InitializedE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The runtime has been initialized. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState10PreStartupE">
-<span id="_CPPv3N7einsums12RuntimeState10PreStartupE"></span><span id="_CPPv2N7einsums12RuntimeState10PreStartupE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393cac9ed8b908cb7412b7697a4dffb3861e5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreStartup</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState10PreStartupE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState10PreStartupE"></span><span id="_CPPv2N7einsums12RuntimeState10PreStartupE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393cac9ed8b908cb7412b7697a4dffb3861e5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreStartup</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState10PreStartupE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The runtime is running the pre-startup functions. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState7StartupE">
-<span id="_CPPv3N7einsums12RuntimeState7StartupE"></span><span id="_CPPv2N7einsums12RuntimeState7StartupE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca13e685964c2548aa748f7ea263bad4e5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Startup</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7StartupE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState7StartupE"></span><span id="_CPPv2N7einsums12RuntimeState7StartupE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca13e685964c2548aa748f7ea263bad4e5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Startup</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7StartupE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The runtime is running the startup functions. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState7PreMainE">
-<span id="_CPPv3N7einsums12RuntimeState7PreMainE"></span><span id="_CPPv2N7einsums12RuntimeState7PreMainE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca934b98b268b4cf502303d3663d6038ca"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreMain</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7PreMainE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState7PreMainE"></span><span id="_CPPv2N7einsums12RuntimeState7PreMainE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca934b98b268b4cf502303d3663d6038ca"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreMain</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7PreMainE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The runtime is preparing to run the main function. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState8StartingE">
-<span id="_CPPv3N7einsums12RuntimeState8StartingE"></span><span id="_CPPv2N7einsums12RuntimeState8StartingE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393cac2efe4bbd13e6cb0db293e72884273c0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Starting</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState8StartingE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState8StartingE"></span><span id="_CPPv2N7einsums12RuntimeState8StartingE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393cac2efe4bbd13e6cb0db293e72884273c0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Starting</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState8StartingE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The runtime is starting the main function. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState7RunningE">
-<span id="_CPPv3N7einsums12RuntimeState7RunningE"></span><span id="_CPPv2N7einsums12RuntimeState7RunningE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca5bda814c4aedb126839228f1a3d92f09"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Running</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7RunningE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState7RunningE"></span><span id="_CPPv2N7einsums12RuntimeState7RunningE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca5bda814c4aedb126839228f1a3d92f09"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Running</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7RunningE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The main function is running. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState11PreShutdownE">
-<span id="_CPPv3N7einsums12RuntimeState11PreShutdownE"></span><span id="_CPPv2N7einsums12RuntimeState11PreShutdownE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca3e1ed7de078f8f35e9e5499e7fecb604"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreShutdown</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState11PreShutdownE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState11PreShutdownE"></span><span id="_CPPv2N7einsums12RuntimeState11PreShutdownE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca3e1ed7de078f8f35e9e5499e7fecb604"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreShutdown</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState11PreShutdownE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The pre-shutdown functions are running. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState8ShutdownE">
-<span id="_CPPv3N7einsums12RuntimeState8ShutdownE"></span><span id="_CPPv2N7einsums12RuntimeState8ShutdownE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca1a4ebb180ba59b067782515ffee6e975"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Shutdown</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState8ShutdownE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState8ShutdownE"></span><span id="_CPPv2N7einsums12RuntimeState8ShutdownE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca1a4ebb180ba59b067782515ffee6e975"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Shutdown</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState8ShutdownE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The shutdown functions are running. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState8StoppingE">
-<span id="_CPPv3N7einsums12RuntimeState8StoppingE"></span><span id="_CPPv2N7einsums12RuntimeState8StoppingE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca7b7ecb39b9e110c2a31409a1672bad23"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stopping</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState8StoppingE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState8StoppingE"></span><span id="_CPPv2N7einsums12RuntimeState8StoppingE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca7b7ecb39b9e110c2a31409a1672bad23"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stopping</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState8StoppingE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The runtime is stopping. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState11TerminatingE">
-<span id="_CPPv3N7einsums12RuntimeState11TerminatingE"></span><span id="_CPPv2N7einsums12RuntimeState11TerminatingE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca720f84c3d4dcb9a556ac6adfd1e75b8c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Terminating</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState11TerminatingE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState11TerminatingE"></span><span id="_CPPv2N7einsums12RuntimeState11TerminatingE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca720f84c3d4dcb9a556ac6adfd1e75b8c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Terminating</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState11TerminatingE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The runtime is terminating. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState7StoppedE">
-<span id="_CPPv3N7einsums12RuntimeState7StoppedE"></span><span id="_CPPv2N7einsums12RuntimeState7StoppedE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393cac23e2b09ebe6bf4cb5e2a9abe85c0be2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stopped</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7StoppedE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState7StoppedE"></span><span id="_CPPv2N7einsums12RuntimeState7StoppedE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393cac23e2b09ebe6bf4cb5e2a9abe85c0be2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stopped</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState7StoppedE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The runtime has stopped. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12RuntimeState14LastValidStateE">
-<span id="_CPPv3N7einsums12RuntimeState14LastValidStateE"></span><span id="_CPPv2N7einsums12RuntimeState14LastValidStateE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca9ba39dbc874ad49c184ac5e1c1564ac3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LastValidState</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState14LastValidStateE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums12RuntimeState14LastValidStateE"></span><span id="_CPPv2N7einsums12RuntimeState14LastValidStateE"></span><span class="target" id="namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca9ba39dbc874ad49c184ac5e1c1564ac3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LastValidState</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12RuntimeState14LastValidStateE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Indicates the last valid state. Anything past this is considered invalid. </p>
 </dd></dl>
 
@@ -444,25 +434,25 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums7runtimeEv">
-<span id="_CPPv3N7einsums7runtimeEv"></span><span id="_CPPv2N7einsums7runtimeEv"></span><span id="einsums::runtime"></span><span class="target" id="namespaceeinsums_1a459dfa7c0a4b7b2401177430f3738c0e"></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Runtime</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">runtime</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7runtimeEv" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums7runtimeEv"></span><span id="_CPPv2N7einsums7runtimeEv"></span><span id="einsums::runtime"></span><span class="target" id="namespaceeinsums_1a459dfa7c0a4b7b2401177430f3738c0e"></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Runtime</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">runtime</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7runtimeEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Returns a reference to the current Runtime structure. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11runtime_ptrEv">
-<span id="_CPPv3N7einsums11runtime_ptrEv"></span><span id="_CPPv2N7einsums11runtime_ptrEv"></span><span id="einsums::runtime_ptr"></span><span class="target" id="namespaceeinsums_1a33216269e1b3507b00c79538b5692db9"></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Runtime</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">runtime_ptr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11runtime_ptrEv" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums11runtime_ptrEv"></span><span id="_CPPv2N7einsums11runtime_ptrEv"></span><span id="einsums::runtime_ptr"></span><span class="target" id="namespaceeinsums_1a33216269e1b3507b00c79538b5692db9"></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Runtime</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">runtime_ptr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11runtime_ptrEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Returns a pointer to the current Runtime structure. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums14runtime_configEv">
-<span id="_CPPv3N7einsums14runtime_configEv"></span><span id="_CPPv2N7einsums14runtime_configEv"></span><span id="einsums::runtime_config"></span><span class="target" id="namespaceeinsums_1acd9c21d35677bbbe6c171ca8e117bc55"></span><a class="reference internal" href="../../RuntimeConfiguration/api/RuntimeConfiguration.html#_CPPv4N7einsums20RuntimeConfigurationE" title="einsums::RuntimeConfiguration"><span class="n"><span class="pre">RuntimeConfiguration</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">runtime_config</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums14runtime_configEv" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums14runtime_configEv"></span><span id="_CPPv2N7einsums14runtime_configEv"></span><span id="einsums::runtime_config"></span><span class="target" id="namespaceeinsums_1acd9c21d35677bbbe6c171ca8e117bc55"></span><a class="reference internal" href="../../RuntimeConfiguration/api/RuntimeConfiguration.html#_CPPv4N7einsums20RuntimeConfigurationE" title="einsums::RuntimeConfiguration"><span class="n"><span class="pre">RuntimeConfiguration</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">runtime_config</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums14runtime_configEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Gets a reference to the current runtime configuration structure. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10is_runningEv">
-<span id="_CPPv3N7einsums10is_runningEv"></span><span id="_CPPv2N7einsums10is_runningEv"></span><span id="einsums::is_running"></span><span class="target" id="namespaceeinsums_1a30c109c68fa68db7cc88b9ee5fd9d3ef"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_running</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums10is_runningEv" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums10is_runningEv"></span><span id="_CPPv2N7einsums10is_runningEv"></span><span id="einsums::is_running"></span><span class="target" id="namespaceeinsums_1a30c109c68fa68db7cc88b9ee5fd9d3ef"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_running</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums10is_runningEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Test whether the runtime system is currently running. </p>
 <p>This function returns whether the runtime system is currently running or not, e.g. whether the current state of the runtime system is <em><a class="reference internal" href="#namespaceeinsums_1a5ec3f07d14ddbd42605d994cef62393ca5bda814c4aedb126839228f1a3d92f09"><span class="std std-ref">einsums::RuntimeState::Running</span></a></em></p>
 <div class="admonition note">
@@ -474,7 +464,7 @@
 </div>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums21invalid_runtime_stateE">
-<span id="_CPPv3N7einsums21invalid_runtime_stateE"></span><span id="_CPPv2N7einsums21invalid_runtime_stateE"></span><span id="einsums::invalid_runtime_state"></span><span class="target" id="structeinsums_1_1invalid__runtime__state"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">invalid_runtime_state</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">runtime_error</span></span><a class="headerlink" href="#_CPPv4N7einsums21invalid_runtime_stateE" title="Permalink to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums21invalid_runtime_stateE"></span><span id="_CPPv2N7einsums21invalid_runtime_stateE"></span><span id="einsums::invalid_runtime_state"></span><span class="target" id="structeinsums_1_1invalid__runtime__state"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">invalid_runtime_state</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">runtime_error</span></span><a class="headerlink" href="#_CPPv4N7einsums21invalid_runtime_stateE" title="Link to this definition">#</a><br /></dt>
 <dd><div class="docutils container">
 <em>#include &lt;Runtime.hpp&gt;</em></div>
 <p>Indicates that the code is handling data that is uninitialized. </p>
@@ -500,6 +490,47 @@
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv47einsums"><code class="docutils literal notranslate"><span class="pre">einsums</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeStateE"><code class="docutils literal notranslate"><span class="pre">RuntimeState</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState7InvalidE"><code class="docutils literal notranslate"><span class="pre">Invalid</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState11InitializedE"><code class="docutils literal notranslate"><span class="pre">Initialized</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState10PreStartupE"><code class="docutils literal notranslate"><span class="pre">PreStartup</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState7StartupE"><code class="docutils literal notranslate"><span class="pre">Startup</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState7PreMainE"><code class="docutils literal notranslate"><span class="pre">PreMain</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState8StartingE"><code class="docutils literal notranslate"><span class="pre">Starting</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState7RunningE"><code class="docutils literal notranslate"><span class="pre">Running</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState11PreShutdownE"><code class="docutils literal notranslate"><span class="pre">PreShutdown</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState8ShutdownE"><code class="docutils literal notranslate"><span class="pre">Shutdown</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState8StoppingE"><code class="docutils literal notranslate"><span class="pre">Stopping</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState11TerminatingE"><code class="docutils literal notranslate"><span class="pre">Terminating</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState7StoppedE"><code class="docutils literal notranslate"><span class="pre">Stopped</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12RuntimeState14LastValidStateE"><code class="docutils literal notranslate"><span class="pre">LastValidState</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7runtimeEv"><code class="docutils literal notranslate"><span class="pre">runtime()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums11runtime_ptrEv"><code class="docutils literal notranslate"><span class="pre">runtime_ptr()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums14runtime_configEv"><code class="docutils literal notranslate"><span class="pre">runtime_config()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums10is_runningEv"><code class="docutils literal notranslate"><span class="pre">is_running()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums21invalid_runtime_stateE"><code class="docutils literal notranslate"><span class="pre">einsums::invalid_runtime_state</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
@@ -533,7 +564,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

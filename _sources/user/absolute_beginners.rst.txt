@@ -5,7 +5,7 @@
     ----------------------------------------------------------------------------------------------
 
 ******************************************
-Einsums: the absolute basics for beginners
+Einsums: The Absolute Basics for Beginners
 ******************************************
 
 .. sectionauthor:: Justin M. Turney

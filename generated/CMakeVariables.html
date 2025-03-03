@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
@@ -41,9 +41,9 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=42bda6d1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/documentation_options.js?v=9848765f"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Feb 28, 2025"/>
+    <meta name="docbuild:last-update" content="Mar 03, 2025"/>
   </head>
   
   
@@ -140,13 +140,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../user/index.html">
     User Guide
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../libs/overview.html">
-    API Reference
   </a>
 </li>
 
@@ -240,13 +233,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../libs/overview.html">
-    API Reference
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
   </a>
@@ -327,13 +313,13 @@
                 <article class="bd-article">
                   
   <section id="cmake-options">
-<span id="cmake-variables"></span><h1>CMake options<a class="headerlink" href="#cmake-options" title="Permalink to this heading">#</a></h1>
+<span id="cmake-variables"></span><h1>CMake options<a class="headerlink" href="#cmake-options" title="Link to this heading">#</a></h1>
 <p>When configuring <em>Einsums</em>, you can set a variety of options to allow CMake to
 generate your specific makefiles/project files. A list of the most important
 CMake options can be found in <span class="xref std std-ref">important_cmake_options</span>, while this section
 includes the comprehensive list.</p>
 <section id="variables-that-influence-how-einsums-is-built">
-<span id="configure"></span><h2>Variables that influence how <em>Einsums</em> is built<a class="headerlink" href="#variables-that-influence-how-einsums-is-built" title="Permalink to this heading">#</a></h2>
+<span id="configure"></span><h2>Variables that influence how <em>Einsums</em> is built<a class="headerlink" href="#variables-that-influence-how-einsums-is-built" title="Link to this heading">#</a></h2>
 <p>The options are split into these categories:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#generic"><span class="std std-ref">Generic options</span></a></p></li>
@@ -343,26 +329,26 @@ includes the comprehensive list.</p>
 </ul>
 </section>
 <section id="generic-options">
-<span id="generic"></span><h2>Generic options<a class="headerlink" href="#generic-options" title="Permalink to this heading">#</a></h2>
+<span id="generic"></span><h2>Generic options<a class="headerlink" href="#generic-options" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_FFT_LIBRARY-STRING"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_FFT_LIBRARY:STRING</span></code></a></p></li>
 <li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_CXX_STANDARD-STRING"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_CXX_STANDARD:STRING</span></code></a></p></li>
 </ul>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_FFT_LIBRARY-STRING">
-<span class="sig-name descname"><span class="pre">EINSUMS_FFT_LIBRARY:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_FFT_LIBRARY-STRING" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_FFT_LIBRARY:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_FFT_LIBRARY-STRING" title="Link to this definition">#</a></dt>
 <dd><p>FFT library</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_CXX_STANDARD-STRING">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_CXX_STANDARD:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_CXX_STANDARD-STRING" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_CXX_STANDARD:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_CXX_STANDARD-STRING" title="Link to this definition">#</a></dt>
 <dd><p>C++ standard to use for compiling einsums (default: 20)</p>
 </dd></dl>
 
 </section>
 <section id="build-targets-options">
-<span id="build-targets"></span><h2>Build Targets options<a class="headerlink" href="#build-targets-options" title="Permalink to this heading">#</a></h2>
+<span id="build-targets"></span><h2>Build Targets options<a class="headerlink" href="#build-targets-options" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#cmdoption-arg-BUILD_SHARED_LIBS-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">BUILD_SHARED_LIBS:BOOL</span></code></a></p></li>
 <li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_BINARY_DIR-PATH"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_BINARY_DIR:PATH</span></code></a></p></li>
@@ -389,151 +375,151 @@ includes the comprehensive list.</p>
 </ul>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-BUILD_SHARED_LIBS-BOOL">
-<span class="sig-name descname"><span class="pre">BUILD_SHARED_LIBS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-BUILD_SHARED_LIBS-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">BUILD_SHARED_LIBS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-BUILD_SHARED_LIBS-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Build using shared libraries (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_BINARY_DIR-PATH">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_BINARY_DIR:PATH</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_BINARY_DIR-PATH" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_BINARY_DIR:PATH</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_BINARY_DIR-PATH" title="Link to this definition">#</a></dt>
 <dd><p>Root directory for libraries and executables for the build. This does not affect the installed location of libraries and executables.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_COMPILE_ONLY_TESTS-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_COMPILE_ONLY_TESTS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_COMPILE_ONLY_TESTS-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_COMPILE_ONLY_TESTS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_COMPILE_ONLY_TESTS-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Create build system support for compile time only tests (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_CUDA-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_CUDA:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_CUDA-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_CUDA:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_CUDA-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Enable support for CUDA (default: OFF)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_DOCUMENTATION-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_DOCUMENTATION:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_DOCUMENTATION-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_DOCUMENTATION:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_DOCUMENTATION-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Build the Einsums documentation (default OFF).</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS-STRING">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS-STRING" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS-STRING" title="Link to this definition">#</a></dt>
 <dd><p>List of documentation output formats to generate. Valid options are html. Multiple values can be separated with semicolons. (default html).</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_EXAMPLES-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_EXAMPLES:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_EXAMPLES-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_EXAMPLES:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_EXAMPLES-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Build examples (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_EXECUTABLE_PREFIX-STRING">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_EXECUTABLE_PREFIX:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_EXECUTABLE_PREFIX-STRING" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_EXECUTABLE_PREFIX:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_EXECUTABLE_PREFIX-STRING" title="Link to this definition">#</a></dt>
 <dd><p>Sets a string to be prepended to executable names (default: none).</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_FAIL_COMPILE_TESTS-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_FAIL_COMPILE_TESTS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_FAIL_COMPILE_TESTS-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_FAIL_COMPILE_TESTS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_FAIL_COMPILE_TESTS-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Create build system support for fail compile tests (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_FULL_RPATH-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_FULL_RPATH:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_FULL_RPATH-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_FULL_RPATH:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_FULL_RPATH-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Build and link libraries and executables with full RPATHs (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_HIDDEN_VISIBILITY-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_HIDDEN_VISIBILITY:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_HIDDEN_VISIBILITY-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_HIDDEN_VISIBILITY:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_HIDDEN_VISIBILITY-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Use -fvisibility=hidden for builds on platforms which support it (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_HIP-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_HIP:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_HIP-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_HIP:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_HIP-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Enable support for HIP (default: OFF)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_MALLOC-STRING">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_MALLOC:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_MALLOC-STRING" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_MALLOC:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_MALLOC-STRING" title="Link to this definition">#</a></dt>
 <dd><p>Define which allocator should be linked in. Options are: system and mimalloc. (default: system)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_PRECOMPILED_HEADERS-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_PRECOMPILED_HEADERS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_PRECOMPILED_HEADERS-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_PRECOMPILED_HEADERS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_PRECOMPILED_HEADERS-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Enabled precompiled headers for certain build targets (experimental) (default: OFF)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_TESTS-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Build tests (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_TESTS_BENCHMARKS-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_BENCHMARKS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_BENCHMARKS-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_BENCHMARKS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_BENCHMARKS-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Build benchmark tests (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_TESTS_EXAMPLES-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_EXAMPLES:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_EXAMPLES-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_EXAMPLES:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_EXAMPLES-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Add examples as tests (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_TESTS_EXTERNAL_BUILD-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_EXTERNAL_BUILD:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_EXTERNAL_BUILD-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_EXTERNAL_BUILD:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_EXTERNAL_BUILD-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Build external CMake build tests (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_TESTS_HEADERS-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_HEADERS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_HEADERS-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_HEADERS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_HEADERS-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Build header tests (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_TESTS_REGRESSIONS-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_REGRESSIONS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_REGRESSIONS-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_REGRESSIONS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_REGRESSIONS-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Build regression tests (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_TESTS_UNIT-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_UNIT:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_UNIT-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_UNIT:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_UNIT-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Build unit tests (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_UNITY_BUILD-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_UNITY_BUILD:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_UNITY_BUILD-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_UNITY_BUILD:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_UNITY_BUILD-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Enable unity build for certain build targets (default: OFF)</p>
 </dd></dl>
 
 </section>
 <section id="profiling-options">
-<span id="profiling"></span><h2>Profiling options<a class="headerlink" href="#profiling-options" title="Permalink to this heading">#</a></h2>
+<span id="profiling"></span><h2>Profiling options<a class="headerlink" href="#profiling-options" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_ITTNOTIFY-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_ITTNOTIFY:BOOL</span></code></a></p></li>
 </ul>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_ITTNOTIFY-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_ITTNOTIFY:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_ITTNOTIFY-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_ITTNOTIFY:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_ITTNOTIFY-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Enable Amplifier (ITT) instrumentation support.</p>
 </dd></dl>
 
 </section>
 <section id="debugging-options">
-<span id="debugging"></span><h2>Debugging options<a class="headerlink" href="#debugging-options" title="Permalink to this heading">#</a></h2>
+<span id="debugging"></span><h2>Debugging options<a class="headerlink" href="#debugging-options" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_BACKTRACES-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_BACKTRACES:BOOL</span></code></a></p></li>
 <li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES:BOOL</span></code></a></p></li>
@@ -549,73 +535,73 @@ includes the comprehensive list.</p>
 </ul>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_BACKTRACES-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_BACKTRACES:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_BACKTRACES-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_BACKTRACES:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_BACKTRACES-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Attach backtraces to einsums exceptions (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Verify that no modules are cross-referenced from a different module category (default: OFF)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_COMPILER_WARNINGS-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_COMPILER_WARNINGS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_COMPILER_WARNINGS-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_COMPILER_WARNINGS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_COMPILER_WARNINGS-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Enable compiler warnings (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_COMPILER_WARNINGS_AS_ERROR-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_COMPILER_WARNINGS_AS_ERROR:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_COMPILER_WARNINGS_AS_ERROR-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_COMPILER_WARNINGS_AS_ERROR:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_COMPILER_WARNINGS_AS_ERROR-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Turn compiler warnings into error (default: OFF)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_COVERAGE-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_COVERAGE:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_COVERAGE-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_COVERAGE:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_COVERAGE-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Enable code coverage generation</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_DEPRECATION_WARNINGS-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_DEPRECATION_WARNINGS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_DEPRECATION_WARNINGS-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_DEPRECATION_WARNINGS:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_DEPRECATION_WARNINGS-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Enable warnings for deprecated facilities. (default: ON)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_SANITIZERS-STRING">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_SANITIZERS:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_SANITIZERS-STRING" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_SANITIZERS:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_SANITIZERS-STRING" title="Link to this definition">#</a></dt>
 <dd><p>Configure with sanitizer instrumentation support.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_TESTS_VALGRIND-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_VALGRIND:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_VALGRIND-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_VALGRIND:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_VALGRIND-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Run selected tests with valgrind.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_TESTS_VALGRIND_OPTIONS-STRING">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_VALGRIND_OPTIONS:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_VALGRIND_OPTIONS-STRING" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TESTS_VALGRIND_OPTIONS:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TESTS_VALGRIND_OPTIONS-STRING" title="Link to this definition">#</a></dt>
 <dd><p>Use these options when running tests under valgrind.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_THREAD_BACKTRACE_DEPTH-STRING">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_THREAD_BACKTRACE_DEPTH:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_THREAD_BACKTRACE_DEPTH-STRING" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_THREAD_BACKTRACE_DEPTH:STRING</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_THREAD_BACKTRACE_DEPTH-STRING" title="Link to this definition">#</a></dt>
 <dd><p>Thread stack back trace depth being captured (default: 20)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_VALGRIND-BOOL">
-<span class="sig-name descname"><span class="pre">EINSUMS_WITH_VALGRIND:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_VALGRIND-BOOL" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_VALGRIND:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_VALGRIND-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Enable Valgrind instrumentation support.</p>
 </dd></dl>
 
 </section>
 <section id="additional-tools-and-libraries-used-by-einsums">
-<span id="cmake-additional-tools"></span><h2>Additional tools and libraries used by <em>Einsums</em><a class="headerlink" href="#additional-tools-and-libraries-used-by-einsums" title="Permalink to this heading">#</a></h2>
+<span id="cmake-additional-tools"></span><h2>Additional tools and libraries used by <em>Einsums</em><a class="headerlink" href="#additional-tools-and-libraries-used-by-einsums" title="Link to this heading">#</a></h2>
 <p>Here is a list of additional libraries and tools that are either optionally
 supported by the build system or are optionally required for certain examples or
 tests. These libraries and tools can be detected by the <em>Einsums</em> build system.</p>
@@ -626,7 +612,7 @@ in a different location, you can specify its base directory by appending
 custom directory for <code class="docutils literal notranslate"><span class="pre">Amplifier</span></code>, specify <code class="docutils literal notranslate"><span class="pre">Amplifier_ROOT=/custom/amplifier/root</span></code>.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-Amplifier_ROOT-PATH">
-<span class="sig-name descname"><span class="pre">Amplifier_ROOT:PATH</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-Amplifier_ROOT-PATH" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">Amplifier_ROOT:PATH</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-Amplifier_ROOT-PATH" title="Link to this definition">#</a></dt>
 <dd><p>Specifies where to look for one of the tools of the Intel Parallel Studio
 product, either Intel Amplifier or Intel Inspector. This should be
 set if the CMake variable <code class="docutils literal notranslate"><span class="pre">EINSUMS_USE_ITT_NOTIFY</span></code> is set to <code class="docutils literal notranslate"><span class="pre">ON</span></code>. Enabling
@@ -710,7 +696,7 @@ improves the generated diagnostics.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>
