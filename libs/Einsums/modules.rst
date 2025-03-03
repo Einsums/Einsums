@@ -5,7 +5,7 @@
 .. _Einsums_modules:
 
 ===============
-Einsums modules
+Einsums Modules
 ===============
 
 .. toctree::

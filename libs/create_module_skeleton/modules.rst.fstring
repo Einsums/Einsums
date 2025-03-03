@@ -5,7 +5,7 @@
 .. _{lib_name}_modules:
 
 {section_head}
-{lib_name} modules
+{lib_name} Modules
 {section_head}
 
 .. toctree::
