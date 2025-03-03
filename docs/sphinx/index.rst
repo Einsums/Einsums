@@ -15,7 +15,6 @@ Einsums's Documentation
    :hidden:
 
    User Guide <user/index>
-   API Reference </libs/overview>
    Building from source <building/index>
 
 **Version**: |release|
