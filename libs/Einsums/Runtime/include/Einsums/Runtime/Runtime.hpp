@@ -17,7 +17,7 @@
 #include <mutex>
 #include <string_view>
 
-#include "Einsums/DesignPatterns/Lockable.hpp"
+#include "Einsums/TypeSupport/Lockable.hpp"
 
 namespace einsums {
 

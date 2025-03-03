@@ -36,15 +36,7 @@ void export_Core(py::module_ &mod) {
         .def("empty", [](GlobalConfigMap &self) { return self.empty(); })
         .def("size", [](GlobalConfigMap &self) { return self.size(); })
         .def("max_size", [](GlobalConfigMap &self) { return self.max_size(); })
-        .def("clear", [](GlobalConfigMap &self) { self.clear(); })
-        .def("erase", [](GlobalConfigMap &self, std::string const &str) { return self.erase(str); })
-        .def("at_string", [](GlobalConfigMap &self, std::string const &str) { return self.at_string(str); })
-        .def("at_int", [](GlobalConfigMap &self, std::string const &str) { return self.at_int(str); })
-        .def("at_double", [](GlobalConfigMap &self, std::string const &str) { return self.at_double(str); })
         .def("get_string", [](GlobalConfigMap &self, std::string const &str) { return self.get_string(str); })
         .def("get_int", [](GlobalConfigMap &self, std::string const &str) { return self.get_int(str); })
-        .def("get_double", [](GlobalConfigMap &self, std::string const &str) { return self.get_double(str); })
-        .def("set_string", [](GlobalConfigMap &self, std::string const &str, std::string &val) { self.get_string(str) = val; })
-        .def("set_int", [](GlobalConfigMap &self, std::string const &str, std::int64_t val) { self.get_int(str) = val; })
-        .def("set_double", [](GlobalConfigMap &self, std::string const &str, double val) { self.get_double(str) = val; });
+        .def("get_double", [](GlobalConfigMap &self, std::string const &str) { return self.get_double(str); });
 }

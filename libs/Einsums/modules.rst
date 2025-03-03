@@ -19,7 +19,6 @@ Einsums Modules
     /libs/Einsums/Config/docs/index.rst
     /libs/Einsums/Debugging/docs/index.rst
     /libs/Einsums/Decomposition/docs/index.rst
-    /libs/Einsums/DesignPatterns/docs/index.rst
     /libs/Einsums/Errors/docs/index.rst
     /libs/Einsums/FFT/docs/index.rst
     /libs/Einsums/GPUStreams/docs/index.rst

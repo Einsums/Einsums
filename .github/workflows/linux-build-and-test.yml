@@ -30,6 +30,9 @@ jobs:
         build_type: [ RelWithDebInfo ]
         variant: [ default ]
         include:
+          - compiler: default
+            cmake_extra: >
+              -DEINSUMS_WITH_COVERAGE=ON
           - compiler: intel
             blas: mkl
             build_type: RelWithDebInfo
@@ -129,7 +132,6 @@ jobs:
             -S "$GITHUB_WORKSPACE/src" \
             -B "$GITHUB_WORKSPACE/build" \
             -D EINSUMS_BUILD_PYTHON=ON \
-            -D EINSUMS_WITH_COVERAGE=OFF \
             -D CMAKE_C_COMPILER_LAUNCHER=ccache \
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -D CMAKE_BUILD_TYPE=${{ matrix.build_type }} \
@@ -161,7 +163,7 @@ jobs:
         working-directory: "${{github.workspace}}/build"
         run: |
           export NOTES=$(find . -name "*.gcno")
-          export SOURCES=${NOTES/.gcno/}
+          export SOURCES=${NOTES//.gcno/}
           echo "NOTES=$NOTES"
           echo "SOURCES=$SOURCES"
           gcov $SOURCES || echo "returned $?"
@@ -185,7 +187,7 @@ jobs:
           working-directory: "${{github.workspace}}"
           disable_search: true
           flags: python
-          file: ${{github.workspace}}/coverage.xml
+          file: ${{github.workspace}}/installed/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Test (find_package) - consume installation

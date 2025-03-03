@@ -5,7 +5,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/TensorConcepts.hpp>
-#include <Einsums/DesignPatterns/Lockable.hpp>
+#include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>

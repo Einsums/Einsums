@@ -8,6 +8,7 @@
 #include <condition_variable>
 #include <functional>
 #include <iostream>
+#include <list>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -54,12 +55,13 @@ namespace einsums {
  */
 template <typename T>
 struct Observable {
+  public:
     /**
      * @brief Constructor.
      *
      * @param initial_value The initial value of the observable.
      */
-    Observable(T initial_value = T{}) : _value(std::move(initial_value)) {}
+    Observable(T initial_value = T{}) : _state(std::move(initial_value)) {}
 
     /**
      * @brief Assignment operator for setting the value
@@ -84,8 +86,8 @@ struct Observable {
     void set_value(T const &value) {
         {
             std::lock_guard<std::mutex> lock(_mutex);
-            if (_value != value) {
-                _value         = value;
+            if (_state != value) {
+                _state         = value;
                 _value_changed = true;
                 notify_observers(value); // Notify registered observers
             }
@@ -96,9 +98,9 @@ struct Observable {
     /**
      * @brief Explicit getter.
      */
-    T get_value() const {
+    const T &get_value() const {
         std::lock_guard<std::mutex> lock(_mutex);
-        return _value;
+        return _state;
     }
 
     /**
@@ -113,12 +115,26 @@ struct Observable {
     /**
      * @brief Register an observer callback.
      */
-    void add_observer(std::function<void(T const &)> observer) {
+    void attach(std::function<void(T const &)> observer) {
         std::lock_guard<std::mutex> lock(_observer_mutex);
         _observers.push_back(std::move(observer));
     }
 
-  private:
+    /**
+     * @brief Remove an observer callback.
+     */
+    void detach(std::function<void(T const &)> const &observer) {
+        std::lock_guard<std::mutex> lock(_observer_mutex);
+
+        _observers.remove_if([&observer](auto const &elem) { return observer.target() == elem.target(); });
+    }
+
+    /**
+     * @brief Check to see if the observable has recently changed.
+     */
+    bool changed() const { return _value_changed; }
+
+  protected:
     /**
      * @brief Notify all of the observers that observe this observable.
      */
@@ -130,17 +146,17 @@ struct Observable {
     }
 
     /**
-     * @property _value
+     * @property _state
      *
      * @brief The internal state of the observable.
      */
-    T                       _value;
+    T                       _state;
     mutable std::mutex      _mutex;                 /// For thread-safe value access
     std::condition_variable _cv;                    /// For thread synchronization
     bool                    _value_changed = false; /// Flag indicating value change
 
-    std::vector<std::function<void(T const &)>> _observers;      /// List of observers
-    std::mutex                                  _observer_mutex; /// Protects the observer list
+    std::list<std::function<void(T const &)>> _observers;      /// List of observers
+    std::mutex                                _observer_mutex; /// Protects the observer list
 };
 
 } // namespace einsums
