@@ -113,6 +113,10 @@ jobs:
         run: |
           cmake --build "${{ github.workspace }}/build" --config Release --target install
 
+      - name: Test (CTest) - Unit Tests
+        working-directory: "${{ github.workspace }}/build"
+        run: ctest --rerun-failed --output-on-failure
+
       - name: Test (Pytest) - unit tests
         working-directory: "${{github.workspace}}/installed"
         run: |
@@ -125,14 +129,11 @@ jobs:
           pytest "${{github.workspace}}/src/tests/test_import.py"
           pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/src/tests" --cov="${{github.workspace}}/einsums" --cov-report=xml
 
-      - name: Test (CTest) - Unit Tests
-        working-directory: "${{ github.workspace }}/build"
-        run: ctest --rerun-failed --output-on-failure
-
 
       - name: Generate coverage information
         working-directory: "${{github.workspace}}/build"
         run: |
+          find . -iname "*gcno*"
           export NOTES=$(find . -name "*.gcno")
           export SOURCES=${NOTES/.gcno/}
           echo "NOTES=$NOTES"
