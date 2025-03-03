@@ -5,18 +5,16 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _modules_Einsums_DesignPatterns_api:
+.. _modules_Einsums_Einsums/TypeSupport/Lockable.hpp_api:
 
 -------------------------------------------------------------------------------
-Einsums
+Einsums/TypeSupport/Lockable.hpp
 -------------------------------------------------------------------------------
+
+Defined in header Einsums/TypeSupport/Lockable.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
-
-.. toctree::
-   :maxdepth: 1
-
-   /libs/Einsums/DesignPatterns/api/Lockable.rst
-   /libs/Einsums/DesignPatterns/api/Singleton.rst
+.. autodoxygenfile:: Einsums/TypeSupport/Lockable.hpp
+   :project: Einsums

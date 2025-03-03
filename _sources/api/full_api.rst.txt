@@ -33,7 +33,6 @@ refer to the full documentation below.
    /libs/Einsums/Config/api/full_api.rst
    /libs/Einsums/Debugging/api/full_api.rst
    /libs/Einsums/Decomposition/api/full_api.rst
-   /libs/Einsums/DesignPatterns/api/full_api.rst
    /libs/Einsums/Errors/api/full_api.rst
    /libs/Einsums/FFT/api/full_api.rst
    /libs/Einsums/GPUStreams/api/full_api.rst
