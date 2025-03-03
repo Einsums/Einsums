@@ -148,7 +148,7 @@ jobs:
           working-directory: "${{github.workspace}}"
           disable_search: true
           file: ${{github.workspace}}/build/coverage.info
-          flags: cpp
+          flags: cpp,Mac
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload Python coverage to Codecov
@@ -157,8 +157,8 @@ jobs:
           directory: "${{github.workspace}}"
           working-directory: "${{github.workspace}}"
           disable_search: true
-          flags: python
-          file: ${{github.workspace}}/coverage.xml
+          flags: python,Mac
+          file: ${{github.workspace}}/installed/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Test (find_package) - consume installation
