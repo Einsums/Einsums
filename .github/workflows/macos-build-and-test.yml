@@ -148,7 +148,7 @@ jobs:
           working-directory: "${{github.workspace}}"
           disable_search: true
           file: ${{github.workspace}}/build/coverage.info
-          flags: cpp,Mac
+          flags: cpp
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload Python coverage to Codecov
@@ -157,7 +157,7 @@ jobs:
           directory: "${{github.workspace}}"
           working-directory: "${{github.workspace}}"
           disable_search: true
-          flags: python,Mac
+          flags: python
           file: ${{github.workspace}}/installed/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
