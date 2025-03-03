@@ -136,8 +136,9 @@ jobs:
           export PROFILES=$(find . -name "*.profraw")
           echo "PROFILES=$PROFILES"
           llvm-profdata merge $PROFILES -o default.profdata
-          echo "default.profdata exists: $(test -e default.profdata)"
-          llvm-cov export -format=lcov -instr-profile default.profdata
+          test -e default.profdata
+          echo "default.profdata exists: $?"
+          llvm-cov export -format=lcov -instr-profile=default.profdata
           ls
           lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
 
