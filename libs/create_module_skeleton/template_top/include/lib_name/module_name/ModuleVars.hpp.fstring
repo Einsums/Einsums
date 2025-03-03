@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <Einsums/DesignPatterns/Singleton.hpp>
-#include <Einsums/DesignPatterns/Lockable.hpp>
+#include <Einsums/TypeSupport/Singleton.hpp>
+#include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/Config.hpp>
 
 namespace einsums {{

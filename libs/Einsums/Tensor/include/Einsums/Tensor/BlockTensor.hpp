@@ -18,7 +18,7 @@
 #include <functional>
 #include <string>
 
-#include "Einsums/DesignPatterns/Lockable.hpp"
+#include "Einsums/TypeSupport/Lockable.hpp"
 
 /// @todo
 #ifdef EINSUMS_COMPUTE_CODE

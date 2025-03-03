@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include "Einsums/DesignPatterns/Lockable.hpp"
+#include "Einsums/TypeSupport/Lockable.hpp"
 
 namespace einsums {
 
