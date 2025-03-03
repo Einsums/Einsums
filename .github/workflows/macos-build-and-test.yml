@@ -134,10 +134,12 @@ jobs:
         working-directory: "${{github.workspace}}/build"
         run: |
           export PROFILES=$(find . -name "*.profraw")
+          export BINARIES=${PROFILES/.profraw/}
           echo "PROFILES=$PROFILES"
+          echo "BINARIES=$BINARIES"
           llvm-profdata merge $PROFILES -o default.profdata
           ls
-          llvm-cov export -format=lcov -instr-profile=default.profdata
+          llvm-cov export -format=lcov -instr-profile=default.profdata $BINARIES
           ls
           lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
 
