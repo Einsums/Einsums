@@ -134,7 +134,7 @@ jobs:
         working-directory: "${{github.workspace}}/build"
         run: |
           export PROFILES=$(find . -name "*.profraw")
-          export BINARIES=$(find . -name "libE*") $(find . -name "*_test*")
+          export BINARIES="$(find . -name "libE*") $(find . -name "*_test*")"
           echo "PROFILES=$PROFILES"
           echo "BINARIES=$BINARIES"
           llvm-profdata merge $PROFILES -o default.profdata
