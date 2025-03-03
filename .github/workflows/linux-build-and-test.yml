@@ -30,6 +30,9 @@ jobs:
         build_type: [ RelWithDebInfo ]
         variant: [ default ]
         include:
+          - compiler: default
+            cmake_extra: >
+              -DEINSUMS_WITH_COVERAGE=ON
           - compiler: intel
             blas: mkl
             build_type: RelWithDebInfo
@@ -129,7 +132,6 @@ jobs:
             -S "$GITHUB_WORKSPACE/src" \
             -B "$GITHUB_WORKSPACE/build" \
             -D EINSUMS_BUILD_PYTHON=ON \
-            -D EINSUMS_WITH_COVERAGE=OFF \
             -D CMAKE_C_COMPILER_LAUNCHER=ccache \
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -D CMAKE_BUILD_TYPE=${{ matrix.build_type }} \
