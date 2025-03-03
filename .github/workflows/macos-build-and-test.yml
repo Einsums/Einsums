@@ -133,7 +133,7 @@ jobs:
       - name: Generate coverage information
         working-directory: "${{github.workspace}}/build"
         run: |
-          find . -iname "*gcno*"
+          find . -iname "*cno*"
           export NOTES=$(find . -name "*.gcno")
           export SOURCES=${NOTES/.gcno/}
           echo "NOTES=$NOTES"
