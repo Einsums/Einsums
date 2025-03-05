@@ -1125,6 +1125,9 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     explicit TensorView(T const *data, Dim<Rank> const &dims) : _dims(dims), _full_view_of_underlying{true}, _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _strides);
         dims_to_strides(dims, _index_strides);
+        _source_dims = dims;
+        _offsets.fill(0);
+        _offset_ordinal = 0;
     }
 
     /**
@@ -1136,6 +1139,9 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     explicit TensorView(T *data, Dim<Rank> const &dims) : _dims(dims), _full_view_of_underlying{true}, _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _strides);
         dims_to_strides(dims, _index_strides);
+        _source_dims = dims;
+        _offsets.fill(0);
+        _offset_ordinal = 0;
     }
 
     /**
@@ -1149,6 +1155,18 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         : _dims(dims), _strides(strides), _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _index_strides);
         _full_view_of_underlying = (strides == _index_strides);
+        _source_dims = dims;
+        _offsets.fill(0);
+        _offset_ordinal = 0;
+        if (!_full_view_of_underlying) { // Fuses Indices if Rank < OtherRank (as OtherRank is not known)
+            size_t size = dims_to_strides(dims, _strides);
+            size_t current_stride = 1;
+            for (int i = dims.size() - 1; i >= 1; i--) {
+                _source_dims[i] = strides[i - 1] / current_stride;
+                current_stride *= _source_dims[i];
+            }
+            _source_dims[0] = size / current_stride;
+        }
     }
 
     /**
@@ -1162,6 +1180,18 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         : _dims(dims), _strides(strides), _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _index_strides);
         _full_view_of_underlying = (strides == _index_strides);
+        _source_dims = dims;
+        _offsets.fill(0);
+        _offset_ordinal = 0;
+        if (!_full_view_of_underlying) { // Fuses Indices if Rank < OtherRank (as OtherRank is not known)
+            size_t size = dims_to_strides(dims, _strides);
+            size_t current_stride = 1;
+            for (int i = dims.size() - 1; i >= 1; i--) {
+                _source_dims[i] = strides[i - 1] / current_stride;
+                current_stride *= _source_dims[i];
+            }
+            _source_dims[0] = size / current_stride;
+        }
     }
 
     /**
@@ -1181,7 +1211,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
             sentinel_to_sentinels(item, _index_strides, _strides, new_item);
 
-            this->_data[new_item] = other[item];
+            this->_data[new_item + _offset_ordinal] = other[item];
         }
 
         return *this;
@@ -1206,7 +1236,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
             sentinel_to_sentinels(item, _index_strides, _strides, out_item, other._strides, in_item);
 
-            this->_data[out_item] = other.data()[in_item];
+            this->_data[out_item + _offset_ordinal] = other.data()[in_item];
         }
 
         return *this;
@@ -1236,7 +1266,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
                 sentinel_to_sentinels(item, _index_strides, _strides, out_item);
 
-                this->_data[out_item] = other.data()[item];
+                this->_data[out_item + _offset_ordinal] = other.data()[item];
             }
         } else {
             EINSUMS_OMP_PARALLEL_FOR
@@ -1245,7 +1275,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
                 sentinel_to_sentinels(item, _index_strides, _strides, out_item, other._strides, in_item);
 
-                this->_data[out_item] = other.data()[in_item];
+                this->_data[out_item + _offset_ordinal] = other.data()[in_item];
             }
         }
 
@@ -1264,7 +1294,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
             sentinel_to_sentinels(item, _index_strides, _strides, out_item);
 
-            this->_data[out_item] = fill_value;
+            this->_data[out_item + _offset_ordinal] = fill_value;
         }
         return *this;
     }
@@ -1275,7 +1305,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 #    endif
 #    define OPERATOR(OP)                                                                                                                   \
         auto operator OP(const T &value)->TensorView & {                                                                                   \
-            size_t elements = this->size();                                                                                                \
+            size_t elements = this->size();                                                                                          \
                                                                                                                                            \
             EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
             for (size_t item = 0; item < elements; item++) {                                                                               \
@@ -1283,7 +1313,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
                                                                                                                                            \
                 sentinel_to_sentinels(item, _index_strides, _strides, out_item);                                                           \
                                                                                                                                            \
-                this->_data[out_item] OP value;                                                                                            \
+                this->_data[out_item + _offset_ordinal] OP value;                                                                                            \
             }                                                                                                                              \
                                                                                                                                            \
             return *this;                                                                                                                  \
@@ -1300,12 +1330,28 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Get a pointer to the data.
      */
-    T *data() { return _data; }
+    T *data() { 
+        auto offset_data = &_data[_offset_ordinal];
+        return offset_data; 
+    }
 
     /**
      * @copydoc TensorView<T,Rank>::data()
      */
-    T const *data() const { return static_cast<T const *>(_data); }
+    T const *data() const { 
+        auto offset_data = &_data[_offset_ordinal];
+        return static_cast<T const *>(offset_data); 
+    }
+
+    /**
+     * Get a pointer to the data without the offset included.
+     */
+    T *full_data() { return _data; }
+
+    /**
+     * @copydoc TensorView<T,Rank>::data()
+     */
+    T const *full_data() const { return static_cast<T const *>(_data); }
 
     /**
      * Get a pointer to the data at a certain index in the tensor.
@@ -1317,7 +1363,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         auto index_list = std::array{static_cast<ptrdiff_t>(index)...};
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index_list);
-        return &_data[ordinal];
+        return &_data[ordinal + _offset_ordinal];
     }
 
     /**
@@ -1325,7 +1371,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     auto data_array(std::array<size_t, Rank> const &index_list) const -> T * {
         size_t ordinal = indices_to_sentinel(_strides, index_list);
-        return &_data[ordinal];
+        return &_data[ordinal + _offset_ordinal];
     }
 
     /**
@@ -1336,7 +1382,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         static_assert(sizeof...(MultiIndex) == Rank);
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, std::forward<MultiIndex>(index)...);
-        return _data[ordinal];
+        return _data[ordinal + _offset_ordinal];
     }
 
     /**
@@ -1347,7 +1393,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         static_assert(sizeof...(MultiIndex) == Rank);
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, std::forward<MultiIndex>(index)...);
-        return _data[ordinal];
+        return _data[ordinal + _offset_ordinal];
     }
 
     /**
@@ -1358,7 +1404,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     auto subscript(MultiIndex &&...index) const -> T const & {
         static_assert(sizeof...(MultiIndex) == Rank);
         size_t ordinal = indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
-        return _data[ordinal];
+        return _data[ordinal + _offset_ordinal];
     }
 
     /**
@@ -1370,14 +1416,14 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         static_assert(sizeof...(MultiIndex) == Rank);
 
         size_t ordinal = indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
-        return _data[ordinal];
+        return _data[ordinal + _offset_ordinal];
     }
 
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
     auto subscript(std::array<int_type, Rank> const &index) const -> T const & {
         size_t ordinal = indices_to_sentinel(_strides, index);
-        return _data[ordinal];
+        return _data[ordinal + _offset_ordinal];
     }
 
     /**
@@ -1387,7 +1433,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         requires(std::is_integral_v<int_type>)
     auto subscript(std::array<int_type, Rank> const &index) -> T & {
         size_t ordinal = indices_to_sentinel(_strides, index);
-        return _data[ordinal];
+        return _data[ordinal + _offset_ordinal];
     }
 
     /**
@@ -1409,7 +1455,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         }
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
-        return _data[ordinal];
+        return _data[ordinal + _offset_ordinal];
     }
 
     /**
@@ -1431,7 +1477,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         }
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
-        return _data[ordinal];
+        return _data[ordinal + _offset_ordinal];
     }
 
     /**
@@ -1444,9 +1490,23 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     }
 
     /**
+     * Get the dimension of the original tensor along a given axis.
+     */
+    size_t source_dim(int d) const {
+        if (d < 0)
+            d += Rank;
+        return _source_dims[d];
+    }
+
+    /**
      * Get the dimensions of the view.
      */
     Dim<Rank> dims() const { return _dims; }
+
+    /**
+     * Get the dimensions of the original tensor.
+     */
+    Dim<Rank> source_dims() const { return _source_dims; }
 
     /**
      * Get the name of the view.
@@ -1471,6 +1531,20 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * Get the strides of the tensor.
      */
     Stride<Rank> strides() const noexcept { return _strides; }
+
+    /**
+     * Get the offset of the view along a given axis.
+     */
+    size_t offset(int d) const noexcept {
+        if (d < 0)
+            d += Rank;
+        return _offsets[d];
+    }
+
+    /**
+     * Get the offsets of the tensor.
+     */
+    Offset<Rank> offsets() const noexcept { return _offsets; }
 
     /**
      * Flatten the view.
@@ -1514,6 +1588,9 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
         dims_to_strides(_dims, _index_strides);
         dims_to_strides(_dims, _strides);
+        _source_dims = _dims;
+        _offsets.fill(0);
+        _offset_ordinal = 0;
 
         // At this time we'll assume we have full view of the underlying tensor since we were only provided
         // pointer.
@@ -1534,6 +1611,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
         Stride<Rank>      default_strides{};
         Offset<OtherRank> default_offsets{};
+        Offset<OtherRank> temp_offsets{};
         Stride<Rank>      error_strides{};
         error_strides[0] = -1;
 
@@ -1598,11 +1676,44 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         default_offsets.fill(0);
 
         // Use default_* unless the caller provides one to use.
-        _strides                         = arguments::get(default_strides, args...);
-        Offset<OtherRank> const &offsets = arguments::get(default_offsets, args...);
+        _strides = arguments::get(default_strides, args...);
+        temp_offsets = arguments::get(default_offsets, args...);
+        size_t ordinal = indices_to_sentinel(other._strides, temp_offsets);
+
+        // Find source dimensions
+        if constexpr (std::is_same_v<TensorType, TensorView<T, Rank>>) {
+            _source_dims    = other._source_dims;
+            _offsets        = temp_offsets;
+            _offset_ordinal = ordinal;
+            ordinal         = 0;
+        } else if constexpr (std::is_same_v<TensorType, Tensor<T, Rank>>) {
+            _source_dims    = other._dims;
+            _offsets        = temp_offsets;
+            _offset_ordinal = ordinal;
+            ordinal         = 0;
+        } else {
+            // In different Ranks, source dimensions can be deduced from the strides.
+            size_t current_stride = 1;
+            size_t tensor_index = OtherRank - 1;
+            for (int i = Rank - 1; i >= 0; i--) {
+                _source_dims[i] = 0;
+                current_stride = _strides[i];
+                while (tensor_index >= i && _source_dims[i] == 0) {
+                    if (other._strides[tensor_index] != current_stride) {
+                        _source_dims[i] = other._dims[tensor_index];
+                        _offsets[i] = temp_offsets[tensor_index];
+                    }
+                    tensor_index--;
+                }
+                if (_source_dims[i] == 0) {
+                    EINSUMS_THROW_EXCEPTION(bad_logic, "Unable to deduce source dimensions. Stride does not follow source tensor dimensions.");
+                }
+            }
+            _offset_ordinal = indices_to_sentinel(_strides, _offsets);
+            ordinal -= _offset_ordinal;
+        }
 
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
-        size_t ordinal = indices_to_sentinel(other._strides, offsets);
         _data          = &(other._data[ordinal]);
 
         // Calculate the index strides.
@@ -1621,7 +1732,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      *
      * The dimensions of the view.
      */
-    Dim<Rank> _dims;
+    Dim<Rank> _dims, _source_dims;
 
     /**
      * @var _strides
@@ -1636,7 +1747,19 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * dimensions of the tensor being viewed.
      */
     Stride<Rank> _strides, _index_strides;
-    // Offset<Rank> _offsets;
+
+    /**
+     * @var _offsets
+     *
+     * These are offsets used to access data from a midpoint in the tensor.
+     */
+    /**
+     * @var _offset_ordinal
+     *
+     * This is the value at which the offset is currently set. Found by multiplying the offsets by the strides.
+     */
+    Offset<Rank> _offsets;
+    size_t       _offset_ordinal{0};
 
     /**
      * @var _full_view_of_underlying
