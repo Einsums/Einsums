@@ -229,11 +229,4 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     }
 }
 
-template <typename... Args>
-[[deprecated("The name sort is confusing, since we are not sorting values. Please use permute instead. This function will be removed in "
-             "the future.")]]
-inline auto sort(Args &&...args) -> decltype(permute(std ::forward<Args>(args)...)) {
-    return permute(std ::forward<Args>(args)...);
-}
-
 } // namespace einsums::tensor_algebra

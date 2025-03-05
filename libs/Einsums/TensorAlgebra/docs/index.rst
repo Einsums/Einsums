@@ -56,7 +56,7 @@ Public API
 
     .. deprecated:: 1.0.0
 
-        The name "sort" is confusing, since we are not sorting values, just permuting. As such,
+        The name "sort" is confusing since we are not sorting values, just permuting. As such,
         we will be removing this in the future.
 
     .. versionremoved:: 1.1.0
