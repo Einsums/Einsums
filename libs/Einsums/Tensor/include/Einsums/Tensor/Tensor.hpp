@@ -1366,7 +1366,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 #    endif
 #    define OPERATOR(OP)                                                                                                                   \
         auto operator OP(const T &value)->TensorView & {                                                                                   \
-            size_t elements = this->size();                                                                                                \
+            size_t elements = this->size();                                                                                          \
                                                                                                                                            \
             EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
             for (size_t item = 0; item < elements; item++) {                                                                               \
@@ -1844,11 +1844,14 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      *
      * The dimensions of the view.
      */
+<<<<<<< HEAD
     /**
      * @var _source_dims
      *
      * The dimensions of the source tensor.
      */
+=======
+>>>>>>> 4c7befce (FEAT: Extended the use of HPTT to SubTensors following my recent pull request on the HPTT repository. Changes to HPTT are outlined with that commit. Below are changes specific to Einsums. The changes provide a significant computational speedup of the permute function.)
     Dim<Rank> _dims, _source_dims;
 
     /**

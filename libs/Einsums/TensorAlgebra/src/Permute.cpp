@@ -79,6 +79,7 @@ void permute(int const *perm, int const dim, std::complex<double> const alpha, s
     plan->execute();
 }
 
+<<<<<<< HEAD
 void permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, int const *outerSizeA, 
              int const innerStrideA, float const beta, float *B, int const *offsetB,  int const *outerSizeB, int const innerStrideB) {
     auto plan =
@@ -113,6 +114,8 @@ void permute(int const *perm, int const dim, std::complex<double> const alpha, s
     plan->execute();
 }
 
+=======
+>>>>>>> 4c7befce (FEAT: Extended the use of HPTT to SubTensors following my recent pull request on the HPTT repository. Changes to HPTT are outlined with that commit. Below are changes specific to Einsums. The changes provide a significant computational speedup of the permute function.)
 } // namespace einsums::tensor_algebra::detail
 
 #endif
