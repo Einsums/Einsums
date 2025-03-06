@@ -120,7 +120,9 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
     run(f, *rt, params);
 
     // pointer to runtime is stored in TLS
-    [[maybe_unused]] Runtime *p = rt.release();
+    Runtime *p = rt.release();
+
+    detail::register_free_pointer([p]() { delete p; });
 
     return 0;
 }

@@ -52,4 +52,18 @@ EINSUMS_EXPORT void register_pre_shutdown_function(ShutdownFunctionType f);
 /// \see    \a einsums::register_pre_shutdown_function()
 EINSUMS_EXPORT void register_shutdown_function(ShutdownFunctionType f);
 
+namespace detail {
+
+/**
+ * @brief Registers a pointer to be freed at program exit.
+ *
+ * There are certain cases where a pointer can't necessarily be freed when it is no longer in use by the main thread.
+ * This function makes the shutdown routine aware of these pointers so that they can be freed.
+ *
+ * @param f The function that deletes the pointer.
+ */
+EINSUMS_EXPORT void register_free_pointer(std::function<void()> f);
+
+} // namespace detail
+
 } // namespace einsums

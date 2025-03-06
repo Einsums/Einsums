@@ -16,6 +16,17 @@
 #include <cstdlib>
 
 namespace einsums {
+
+    namespace detail {
+
+        static std::list<std::function<void()>> __deleters{};
+        
+        void register_free_pointer(std::function<void()> f) {
+            __deleters.push_back(f);
+        }
+        
+        }
+
 int finalize() {
     auto &rt = runtime();
     rt.call_shutdown_functions(true);
@@ -37,8 +48,14 @@ int finalize() {
     // This would cause a dependency error.
     profile::finalize();
 
+    // Free lost pointers.
+    for(auto fn : detail::__deleters) {
+        fn();
+    }
+
     EINSUMS_LOG_INFO("einsums shutdown completed");
 
     return EXIT_SUCCESS;
 }
+
 } // namespace einsums
