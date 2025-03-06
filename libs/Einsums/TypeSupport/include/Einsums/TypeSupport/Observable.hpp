@@ -120,7 +120,7 @@ struct Observable {
     void wait_for_change() {
         size_t                       check_changed = _value_changed;
         std::unique_lock<std::mutex> lock(_mutex);
-        _cv.wait(lock, [this]() { return _value_changed == check_changed; });
+        _cv.wait(lock, [this, check_changed]() { return _value_changed == check_changed; });
     }
 
     /**
