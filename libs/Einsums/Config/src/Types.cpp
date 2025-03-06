@@ -31,6 +31,9 @@ std::int64_t GlobalConfigMap::get_int(std::string const &key) const {
 double GlobalConfigMap::get_double(std::string const &key) const {
     return double_map_->get_value().at(key);
 }
+bool GlobalConfigMap::get_bool(std::string const &key) const {
+    return bool_map_->get_value().at(key);
+}
 
 std::shared_ptr<ConfigMap<std::string>> GlobalConfigMap::get_string_map() {
     return str_map_;
@@ -41,8 +44,11 @@ std::shared_ptr<ConfigMap<std::int64_t>> GlobalConfigMap::get_int_map() {
 std::shared_ptr<ConfigMap<double>> GlobalConfigMap::get_double_map() {
     return double_map_;
 }
+std::shared_ptr<ConfigMap<bool>> GlobalConfigMap::get_bool_map() {
+    return bool_map_;
+}
 
-size_t einsums::hashes::insensitive_hash<std::string>::operator()(std::string const &str) const noexcept{
+size_t einsums::hashes::insensitive_hash<std::string>::operator()(std::string const &str) const noexcept {
     size_t hash = 0;
 
     // Calculate the mask. If size_t is N bytes, mask for the top N bits.
@@ -52,7 +58,7 @@ size_t einsums::hashes::insensitive_hash<std::string>::operator()(std::string co
 
     for (char ch : str) {
         char upper = std::toupper(ch);
-        if(upper == '-') { // Convert dashes to underscores.
+        if (upper == '-') { // Convert dashes to underscores.
             upper = '_';
         }
 

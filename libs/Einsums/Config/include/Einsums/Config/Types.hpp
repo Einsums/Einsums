@@ -34,8 +34,8 @@ struct insensitive_hash {
         constexpr size_t mask = (((size_t)1 << sizeof(size_t)) - 1) << (7 * sizeof(size_t));
 
         for (auto ch : str) {
-            decltype(ch)   upper = std::toupper(ch);
-            if(upper == '-') { // Convert dashes to underscores.
+            decltype(ch) upper = std::toupper(ch);
+            if (upper == '-') { // Convert dashes to underscores.
                 upper = '_';
             }
             uint8_t const *bytes = reinterpret_cast<uint8_t const *>(std::addressof(upper));
@@ -212,6 +212,15 @@ class EINSUMS_EXPORT GlobalConfigMap {
     double get_double(std::string const &key) const;
 
     /**
+     * @brief Get the boolean flag stored at the given key.
+     *
+     * Throws an error if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
+    bool get_bool(std::string const &key) const;
+
+    /**
      * @brief Returns the map containing string options.
      */
     std::shared_ptr<ConfigMap<std::string>> get_string_map();
@@ -225,6 +234,11 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * @brief Returns the map containing floating point options.
      */
     std::shared_ptr<ConfigMap<double>> get_double_map();
+
+    /**
+     * @brief Returns the map containing boolean flags.
+     */
+    std::shared_ptr<ConfigMap<bool>> get_bool_map();
 
     /**
      * @brief Attach an observer to the global configuration map.
@@ -259,6 +273,12 @@ class EINSUMS_EXPORT GlobalConfigMap {
                           T>) {
             double_map_->attach(obs);
         }
+
+        if constexpr (std::is_convertible_v<std::function<void(std::unordered_map<std::string, bool, hashes::insensitive_hash<std::string>,
+                                                                                  detail::insensitive_equals<std::string>> const &)>,
+                                            T>) {
+            bool_map_->attach(obs);
+        }
     }
 
     /**
@@ -288,6 +308,12 @@ class EINSUMS_EXPORT GlobalConfigMap {
                           T>) {
             double_map_->detach(obs);
         }
+
+        if constexpr (std::is_convertible_v<std::function<void(std::unordered_map<std::string, bool, hashes::insensitive_hash<std::string>,
+                                                                                  detail::insensitive_equals<std::string>> const &)>,
+                                            T>) {
+            bool_map_->detach(obs);
+        }
     }
 
   private:
@@ -313,6 +339,13 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * @brief Holds the floating-point valued options.
      */
     std::shared_ptr<ConfigMap<double>> double_map_;
+
+    /**
+     * @property bool_map_
+     *
+     * @brief Holds the Boolean flag options.
+     */
+    std::shared_ptr<ConfigMap<bool>> bool_map_;
 };
 
 } // namespace einsums
