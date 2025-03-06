@@ -31,14 +31,26 @@ struct TimerDetail {
     // Number of times the timer has been called
     size_t total_calls{0};
 
-    std::shared_ptr<TimerDetail>                        parent{nullptr};
-    std::map<std::string, std::shared_ptr<TimerDetail>> children{};
-    std::vector<std::string>                            order{};
+    TimerDetail                         *parent{nullptr};
+    std::map<std::string, TimerDetail *> children{};
+    std::vector<std::string>             order{};
 
     time_point start_time;
+
+    TimerDetail() = default;
+
+    ~TimerDetail() {
+        name.clear();
+        order.clear();
+
+        for (auto it = children.begin(); it != children.end(); it++) {
+            delete it->second;
+        }
+        children.clear();
+    }
 };
 
-std::shared_ptr<TimerDetail> current_timer{nullptr};
+TimerDetail                 *current_timer{nullptr};
 std::shared_ptr<TimerDetail> root{nullptr};
 
 } // namespace detail
@@ -47,8 +59,8 @@ namespace detail {
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 
-void print_timer_info(std::shared_ptr<TimerDetail> timer, std::FILE *fp) { // NOLINT
-    if (timer != root) {
+void print_timer_info(TimerDetail const *timer, std::FILE *fp) { // NOLINT
+    if (timer != root.get()) {
         std::string buffer;
         if (timer->total_calls != 0) {
             buffer = fmt::format("{:>5} : {:>5} calls : {:>5} per call", duration_cast<milliseconds>(timer->total_time), timer->total_calls,
@@ -70,7 +82,7 @@ void print_timer_info(std::shared_ptr<TimerDetail> timer, std::FILE *fp) { // NO
         print::indent();
 
         for (auto &child : timer->order) {
-            print_timer_info(timer->children[child], fp);
+            print_timer_info(timer->children.at(child), fp);
         }
 
         print::deindent();
@@ -86,7 +98,7 @@ void initialize() {
     root->name        = "Total Run Time";
     root->total_calls = 1;
 
-    current_timer = root;
+    current_timer = root.get();
 
     // Determine timer overhead
     for (size_t i = 0; i < 1000; i++) {
@@ -97,15 +109,15 @@ void initialize() {
 
 void finalize() {
     using namespace detail;
-    assert(root == current_timer);
+    assert(root.get() == current_timer);
     root.reset();
-    current_timer.reset();
+    current_timer = nullptr;
 }
 
 void report(std::string const &fname, bool append) {
     std::FILE *fp = std::fopen(fname.c_str(), append ? "w+" : "w");
 
-    detail::print_timer_info(detail::root, fp);
+    detail::print_timer_info(detail::root.get(), fp);
 
     std::fflush(fp);
     std::fclose(fp);
@@ -132,7 +144,7 @@ void push(std::string name) {
         }
 
         if (current_timer->children.contains(name) == false) {
-            current_timer->children[name]         = std::make_shared<TimerDetail>();
+            current_timer->children[name]         = new TimerDetail();
             current_timer->children[name]->name   = name;
             current_timer->children[name]->parent = current_timer;
             current_timer->order.push_back(name);

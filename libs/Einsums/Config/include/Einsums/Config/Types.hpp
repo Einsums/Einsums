@@ -100,7 +100,7 @@ struct insensitive_equals {
 template <typename Value>
 class ConfigMap
     : public std::enable_shared_from_this<ConfigMap<Value>>,
-      public Observable<
+      public design_pats::Observable<
           std::unordered_map<std::string, Value, hashes::insensitive_hash<std::string>, detail::insensitive_equals<std::string>>> {
   private:
     /**
@@ -129,7 +129,7 @@ class ConfigMap
      * from this class.
      */
     ConfigMap(PrivateType)
-        : Observable<
+        : design_pats::Observable<
               std::unordered_map<std::string, Value, hashes::insensitive_hash<std::string>, detail::insensitive_equals<std::string>>>() {}
 
     /**

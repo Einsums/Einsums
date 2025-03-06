@@ -7,7 +7,8 @@ namespace einsums {
 EINSUMS_SINGLETON_IMPL(GlobalConfigMap)
 
 GlobalConfigMap::GlobalConfigMap()
-    : str_map_{ConfigMap<std::string>::create()}, int_map_{ConfigMap<std::int64_t>::create()}, double_map_{ConfigMap<double>::create()} {
+    : str_map_{ConfigMap<std::string>::create()}, int_map_{ConfigMap<std::int64_t>::create()}, double_map_{ConfigMap<double>::create()},
+      bool_map_{ConfigMap<bool>::create()} {
 }
 
 bool GlobalConfigMap::empty() const noexcept {

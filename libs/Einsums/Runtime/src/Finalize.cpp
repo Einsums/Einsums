@@ -23,13 +23,18 @@ int finalize() {
     rt.call_shutdown_functions(false);
     EINSUMS_LOG_INFO("ran shutdown functions");
 
-    detail::Profiler const &prof = rt.config().einsums.profiler;
-    if (prof.generate_report) {
-        profile::report(prof.filename, prof.append);
+    auto &global_config = GlobalConfigMap::get_singleton();
+
+    if (global_config.get_bool("profiler-report")) {
+        profile::report(global_config.get_string("profiler-filename"), global_config.get_bool("profiler-append"));
     }
 
     // this function destroys the runtime.
+    auto *rt_ptr = runtime_ptr();
     rt.deinit_global_data();
+
+    // Free the current runtime.
+    delete rt_ptr;
 
     // This is the only explicit finalization routine. This is because the runtime depends on the
     // profiler. If the profiler used the normal finalization, then it would also depend on the runtime.
