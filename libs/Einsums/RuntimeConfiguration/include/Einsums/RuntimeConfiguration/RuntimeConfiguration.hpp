@@ -73,12 +73,6 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
 
     RuntimeConfiguration() = delete;
 
-    RuntimeConfiguration(RuntimeConfiguration const &) = delete;
-
-    RuntimeConfiguration(RuntimeConfiguration &&) = default;
-
-    ~RuntimeConfiguration() = default;
-
   private:
     /**
      * Currently sets reasonable defaults for the development of Einsums.

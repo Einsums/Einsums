@@ -162,7 +162,11 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
             .store_into(global_bools["diagnostics-on-terminate"]);
 
         argument_parser->add_argument("--einsums:log-level")
+        #ifdef EINSUMS_DEBUG
             .default_value<std::int64_t>(2)
+        #else
+            .default_value<std::int64_t>(3)
+        #endif
             .help("set log level")
             .choices(0, 1, 2, 3, 4)
             .store_into(global_ints["log-level"]);

@@ -30,11 +30,7 @@ int finalize() {
     }
 
     // this function destroys the runtime.
-    auto *rt_ptr = runtime_ptr();
     rt.deinit_global_data();
-
-    // Free the current runtime.
-    delete rt_ptr;
 
     // This is the only explicit finalization routine. This is because the runtime depends on the
     // profiler. If the profiler used the normal finalization, then it would also depend on the runtime.
