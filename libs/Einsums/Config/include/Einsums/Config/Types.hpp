@@ -18,6 +18,71 @@
 
 namespace einsums {
 
+namespace hashes {
+
+template <typename str_type>
+struct insensitive_hash {
+  public:
+    constexpr insensitive_hash() = default;
+
+    size_t operator()(str_type const &str) const {
+        size_t hash = 0;
+
+        // Calculate the mask. If size_t is N bytes, mask for the top N bits.
+        // The first part creates a Mersenne value with the appropriate number of bits.
+        // The second shifts it to the top.
+        constexpr size_t mask = (((size_t)1 << sizeof(size_t)) - 1) << (7 * sizeof(size_t));
+
+        for (auto ch : str) {
+            decltype(ch)   upper = std::toupper(ch);
+            uint8_t const *bytes = reinterpret_cast<uint8_t const *>(std::addressof(upper));
+
+            for (int i = 0; i < sizeof(std::decay_t<decltype(ch)>); i++) {
+                hash <<= sizeof(size_t); // Shift left a number of bits equal to the number of bytes in size_t.
+                hash += bytes[i];
+
+                if ((hash & mask) != (size_t)0) {
+                    hash ^= mask >> (6 * sizeof(size_t));
+                    hash &= ~mask;
+                }
+            }
+        }
+        return hash;
+    }
+};
+
+template <>
+struct insensitive_hash<std::string> {
+  public:
+    constexpr insensitive_hash() = default;
+
+    size_t operator()(std::string const &str) const noexcept;
+};
+
+} // namespace hashes
+
+namespace detail {
+
+template <typename str_type>
+struct insensitive_equals {
+    constexpr insensitive_equals() = default;
+
+    bool operator()(str_type const &a, str_type const &b) const {
+        if (a.size() != b.size()) {
+            return false;
+        }
+
+        for (size_t i = 0; i < a.size(); i++) {
+            if (std::toupper(a[i]) != std::toupper(b[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+} // namespace detail
+
 /**
  * @class ConfigMap
  *
@@ -30,7 +95,10 @@ namespace einsums {
  * @tparam Value The type of data to be associated with each key.
  */
 template <typename Value>
-class ConfigMap : public std::enable_shared_from_this<ConfigMap<Value>>, public Observable<std::unordered_map<std::string, Value>> {
+class ConfigMap
+    : public std::enable_shared_from_this<ConfigMap<Value>>,
+      public Observable<
+          std::unordered_map<std::string, Value, hashes::insensitive_hash<std::string>, detail::insensitive_equals<std::string>>> {
   private:
     /**
      * @class PrivateType
@@ -50,13 +118,16 @@ class ConfigMap : public std::enable_shared_from_this<ConfigMap<Value>>, public 
      *
      * @brief Represents the type used to hold the option map.
      */
-    using MappingType = std::unordered_map<std::string, Value>;
+    using MappingType =
+        std::unordered_map<std::string, Value, hashes::insensitive_hash<std::string>, detail::insensitive_equals<std::string>>;
 
     /**
      * Public constructor that can only be accessed in private contexts. Used to make shared pointers
      * from this class.
      */
-    ConfigMap(PrivateType) : Observable<std::unordered_map<std::string, Value>>() {}
+    ConfigMap(PrivateType)
+        : Observable<
+              std::unordered_map<std::string, Value, hashes::insensitive_hash<std::string>, detail::insensitive_equals<std::string>>>() {}
 
     /**
      * @brief Create a shared pointer from this class.
@@ -165,15 +236,24 @@ class EINSUMS_EXPORT GlobalConfigMap {
      */
     template <typename T>
     void attach(T &obs) {
-        if constexpr (std::is_convertible_v<std::function<void(std::unordered_map<std::string, std::string> const &)>, T>) {
+        if constexpr (std::is_convertible_v<
+                          std::function<void(std::unordered_map<std::string, std::string, hashes::insensitive_hash<std::string>,
+                                                                detail::insensitive_equals<std::string>> const &)>,
+                          T>) {
             str_map_->attach(obs);
         }
 
-        if constexpr (std::is_convertible_v<std::function<void(std::unordered_map<std::string, std::int64_t> const &)>, T>) {
+        if constexpr (std::is_convertible_v<
+                          std::function<void(std::unordered_map<std::string, std::int64_t, hashes::insensitive_hash<std::string>,
+                                                                detail::insensitive_equals<std::string>> const &)>,
+                          T>) {
             int_map_->attach(obs);
         }
 
-        if constexpr (std::is_convertible_v<std::function<void(std::unordered_map<std::string, double> const &)>, T>) {
+        if constexpr (std::is_convertible_v<
+                          std::function<void(std::unordered_map<std::string, double, hashes::insensitive_hash<std::string>,
+                                                                detail::insensitive_equals<std::string>> const &)>,
+                          T>) {
             double_map_->attach(obs);
         }
     }
@@ -185,15 +265,24 @@ class EINSUMS_EXPORT GlobalConfigMap {
      */
     template <typename T>
     void detach(T &obs) {
-        if constexpr (std::is_convertible_v<std::function<void(std::unordered_map<std::string, std::string> const &)>, T>) {
+        if constexpr (std::is_convertible_v<
+                          std::function<void(std::unordered_map<std::string, std::string, hashes::insensitive_hash<std::string>,
+                                                                detail::insensitive_equals<std::string>> const &)>,
+                          T>) {
             str_map_->detach(obs);
         }
 
-        if constexpr (std::is_convertible_v<std::function<void(std::unordered_map<std::string, std::int64_t> const &)>, T>) {
+        if constexpr (std::is_convertible_v<
+                          std::function<void(std::unordered_map<std::string, std::int64_t, hashes::insensitive_hash<std::string>,
+                                                                detail::insensitive_equals<std::string>> const &)>,
+                          T>) {
             int_map_->detach(obs);
         }
 
-        if constexpr (std::is_convertible_v<std::function<void(std::unordered_map<std::string, double> const &)>, T>) {
+        if constexpr (std::is_convertible_v<
+                          std::function<void(std::unordered_map<std::string, double, hashes::insensitive_hash<std::string>,
+                                                                detail::insensitive_equals<std::string>> const &)>,
+                          T>) {
             double_map_->detach(obs);
         }
     }
@@ -226,12 +315,15 @@ class EINSUMS_EXPORT GlobalConfigMap {
 } // namespace einsums
 
 template <class Value>
-bool operator==(std::unordered_map<std::string, Value> const &lhs, einsums::ConfigMap<Value> const &rhs) {
+bool operator==(std::unordered_map<std::string, Value, einsums::hashes::insensitive_hash<std::string>,
+                                   einsums::detail::insensitive_equals<std::string>> const &lhs,
+                einsums::ConfigMap<Value> const                                            &rhs) {
     return lhs == rhs.get_value();
 }
 
 template <class Value>
-bool operator==(einsums::ConfigMap<Value> const &lhs, std::unordered_map<std::string, Value> const &rhs) {
+bool operator==(einsums::ConfigMap<Value> const &lhs, std::unordered_map<std::string, Value, einsums::hashes::insensitive_hash<std::string>,
+                                                                         einsums::detail::insensitive_equals<std::string>> const &rhs) {
     return lhs.get_value() == rhs;
 }
 

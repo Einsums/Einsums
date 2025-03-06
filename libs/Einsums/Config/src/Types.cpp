@@ -42,4 +42,26 @@ std::shared_ptr<ConfigMap<double>> GlobalConfigMap::get_double_map() {
     return double_map_;
 }
 
+size_t einsums::hashes::insensitive_hash<std::string>::operator()(std::string const &str) const noexcept{
+    size_t hash = 0;
+
+    // Calculate the mask. If size_t is N bytes, mask for the top N bits.
+    // The first part creates a Mersenne value with the appropriate number of bits.
+    // The second shifts it to the top.
+    constexpr size_t mask = (((size_t)1 << sizeof(size_t)) - 1) << (7 * sizeof(size_t));
+
+    for (char ch : str) {
+        char upper = std::toupper(ch);
+
+        hash <<= sizeof(size_t); // Shift left a number of bits equal to the number of bytes in size_t.
+        hash += (uint8_t)upper;
+
+        if ((hash & mask) != (size_t)0) {
+            hash ^= mask >> (6 * sizeof(size_t));
+            hash &= ~mask;
+        }
+    }
+    return hash;
+}
+
 } // namespace einsums
