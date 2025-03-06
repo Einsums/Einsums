@@ -35,6 +35,9 @@ struct insensitive_hash {
 
         for (auto ch : str) {
             decltype(ch)   upper = std::toupper(ch);
+            if(upper == '-') { // Convert dashes to underscores.
+                upper = '_';
+            }
             uint8_t const *bytes = reinterpret_cast<uint8_t const *>(std::addressof(upper));
 
             for (int i = 0; i < sizeof(std::decay_t<decltype(ch)>); i++) {

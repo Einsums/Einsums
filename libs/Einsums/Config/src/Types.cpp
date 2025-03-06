@@ -52,6 +52,9 @@ size_t einsums::hashes::insensitive_hash<std::string>::operator()(std::string co
 
     for (char ch : str) {
         char upper = std::toupper(ch);
+        if(upper == '-') { // Convert dashes to underscores.
+            upper = '_';
+        }
 
         hash <<= sizeof(size_t); // Shift left a number of bits equal to the number of bytes in size_t.
         hash += (uint8_t)upper;
