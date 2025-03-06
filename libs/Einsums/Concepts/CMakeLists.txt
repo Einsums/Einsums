@@ -6,7 +6,7 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(ConceptsHeaders Einsums/Concepts/Complex.hpp Einsums/Concepts/File.hpp
-                    Einsums/Concepts/SmartPointer.hpp Einsums/Concepts/Tensor.hpp
+                    Einsums/Concepts/SmartPointer.hpp Einsums/Concepts/TensorConcepts.hpp
                     Einsums/Concepts/SubscriptChooser.hpp
 )
 

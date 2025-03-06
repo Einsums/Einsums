@@ -8,7 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Complex.hpp>
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 

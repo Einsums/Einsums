@@ -10,7 +10,7 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/SmartPointer.hpp>
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/LinearAlgebra/BlockTensor.hpp>
 #include <Einsums/LinearAlgebra/TiledTensor.hpp>
@@ -226,7 +226,9 @@ void syev(AType *A, WType *W) {
 /**
  * @brief Compute the general eigendecomposition of a matrix.
  *
- * Can only be used to compute both left and right eigen vectors or neither.
+ * Can only be used to compute both left and right eigenvectors or neither.
+ *
+ * @todo I think it would be neat if we had a way to choose.
  */
 template <bool ComputeLeftRightEigenvectors = true, MatrixConcept AType, VectorConcept WType>
     requires requires {
@@ -569,7 +571,7 @@ void invert(TensorType *A) {
     }
 }
 
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#if !defined(DOXYGEN)
 template <SmartPointer SmartPtr>
 void invert(SmartPtr *A) {
     LabeledSection0();
@@ -907,7 +909,7 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
 
     size_t n = A.dim(0);
 
-    /// TODO: Break this off into a separate schur function
+    //// @todo Break this off into a separate schur function
     // Compute Schur Decomposition of A
     Tensor<T, 2>             R = A; // R is a copy of A
     Tensor<T, 2>             wr("Schur Real Buffer", n, n);
@@ -930,7 +932,7 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
     return X;
 }
 
-// TODO: Bring this back
+/// @todo Bring this back
 // ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)
 
 template <MatrixConcept AType>

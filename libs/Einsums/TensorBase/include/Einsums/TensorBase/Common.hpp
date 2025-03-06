@@ -14,6 +14,11 @@
 
 namespace einsums {
 
+/**
+ * @def DEFINE_STRUCT
+ *
+ * @brief Convenience macro for creating a type derived from a std::array.
+ */
 #define DEFINE_STRUCT(Name, UnderlyingType)                                                                                                \
     template <std::size_t Rank>                                                                                                            \
     struct Name : std::array<std::int64_t, Rank> {                                                                                         \
@@ -22,13 +27,94 @@ namespace einsums {
         }                                                                                                                                  \
     };                                                                                                                                     \
     template <typename... Args>                                                                                                            \
-    Name(Args... args)->Name<sizeof...(Args)> /**/
+    Name(Args... args)->Name<sizeof...(Args)>
 
-DEFINE_STRUCT(Dim, std::ptrdiff_t);
-DEFINE_STRUCT(Stride, std::size_t);
-DEFINE_STRUCT(Offset, std::size_t);
-DEFINE_STRUCT(Count, std::size_t);
-DEFINE_STRUCT(Chunk, std::ptrdiff_t);
+/**
+ * @struct Dim
+ *
+ * @brief Holds a list of dimensions in an array.
+ */
+template <std ::size_t Rank>
+struct Dim : std ::array<std ::int64_t, Rank> {
+    /**
+     * @brief Aggregate constructor.
+     */
+    template <typename... Args>
+    constexpr explicit Dim(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
+};
+
+/**
+ * @struct Stride
+ *
+ * @brief Holds a list of strides in an array.
+ */
+template <std ::size_t Rank>
+struct Stride : std ::array<std ::int64_t, Rank> {
+    /**
+     * @brief Aggregate constructor.
+     */
+    template <typename... Args>
+    constexpr explicit Stride(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
+};
+
+/**
+ * @struct Offset
+ *
+ * @brief Holds a list of offsets in an array.
+ */
+template <std ::size_t Rank>
+struct Offset : std ::array<std ::int64_t, Rank> {
+    /**
+     * @brief Aggregate constructor.
+     */
+    template <typename... Args>
+    constexpr explicit Offset(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
+};
+
+/**
+ * @struct Count
+ *
+ * @brief Holds a list of counts in an array.
+ */
+template <std ::size_t Rank>
+struct Count : std ::array<std ::int64_t, Rank> {
+    /**
+     * @brief Aggregate constructor.
+     */
+    template <typename... Args>
+    constexpr explicit Count(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
+};
+
+/**
+ * @struct Chunk
+ *
+ * @brief Holds a list of chunks in an array.
+ */
+template <std ::size_t Rank>
+struct Chunk : std ::array<std ::int64_t, Rank> {
+    /**
+     * @brief Aggregate constructor.
+     */
+    template <typename... Args>
+    constexpr explicit Chunk(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
+};
+
+#ifndef DOXYGEN
+template <typename... Args>
+Dim(Args... args) -> Dim<sizeof...(Args)>;
+
+template <typename... Args>
+Stride(Args... args) -> Stride<sizeof...(Args)>;
+
+template <typename... Args>
+Offset(Args... args) -> Offset<sizeof...(Args)>;
+
+template <typename... Args>
+Count(Args... args) -> Count<sizeof...(Args)>;
+
+template <typename... Args>
+Chunk(Args... args) -> Chunk<sizeof...(Args)>;
+#endif
 
 /**
  * @struct Range

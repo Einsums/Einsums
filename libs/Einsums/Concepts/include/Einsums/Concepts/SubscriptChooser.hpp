@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <type_traits>
 
 namespace einsums {
@@ -23,7 +23,7 @@ inline auto subscript_tensor(TensorType &&tensor, MultiArgs &&...args)
     -> decltype(tensor.subscript(std::forward<MultiArgs>(args)...)) {
     return tensor.subscript(std::forward<MultiArgs>(args)...);
 }
-
+#ifndef DOXYGEN
 template <RankTensorConcept TensorType, typename... MultiArgs>
     requires requires {
         requires std::remove_cvref_t<TensorType>::Rank == sizeof...(MultiArgs);
@@ -53,5 +53,6 @@ template <RankTensorConcept TensorType, typename ContainerType>
 inline auto subscript_tensor(TensorType &&tensor, ContainerType const &args) -> decltype(tensor(args)) {
     return tensor(args);
 }
+#endif
 
 } // namespace einsums

@@ -147,3 +147,11 @@ def configure_module_docs(output_base, lib_name, **kwargs):
                 **kwargs,
             )
         )
+    
+    if not os.path.exists(os.path.join(output_base, lib_name, "todo.rst")) :
+        with open(os.path.join(base, "todo.rst.fstring"), "r") as inp, open(os.path.join(output_base, lib_name, "todo.rst"), "w+") as outp :
+            outp.write(inp.read().format(lib_name = lib_name, section_head="".join("=" for i in f"{lib_name} Library TODO"), **kwargs))
+    
+    if not os.path.exists(os.path.join(output_base, lib_name, "index.rst")) :
+        with open(os.path.join(base, "index.rst.fstring"), "r") as inp, open(os.path.join(output_base, lib_name, "index.rst"), "w+") as outp :
+            outp.write(inp.read().format(lib_name = lib_name, section_head="".join("=" for i in lib_name), **kwargs))

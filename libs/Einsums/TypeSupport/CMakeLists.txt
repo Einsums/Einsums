@@ -11,8 +11,9 @@ set(TypeSupportHeaders
     Einsums/TypeSupport/CountOfType.hpp
     Einsums/TypeSupport/Observable.hpp
     Einsums/TypeSupport/StringLiteral.hpp
-    Einsums/TypeSupport/Tuple.hpp
     Einsums/TypeSupport/TypeName.hpp
+    Einsums/TypeSupport/Lockable.hpp
+    Einsums/TypeSupport/Singleton.hpp
 )
 
 set(TypeSupportSources)

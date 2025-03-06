@@ -8,7 +8,7 @@
 EinsumsPy Errors
 ================
 
-TODO: High-level description of the module.
+This module exports exception classes to Python.
 
 See the :ref:`API reference <modules_EinsumsPy_Errors_api>` of this module for more
 details.

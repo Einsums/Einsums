@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Print.hpp>
@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include "Einsums/DesignPatterns/Lockable.hpp"
+#include "Einsums/TypeSupport/Lockable.hpp"
 
 namespace einsums {
 
@@ -34,7 +34,18 @@ namespace einsums {
 template <typename T, size_t rank>
 struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<std::recursive_mutex> {
 
+    /**
+     * @typedef ValueType
+     *
+     * @brief The type of data stored by this tensor.
+     */
     using ValueType              = T;
+
+    /**
+     * @property Rank
+     *
+     * @brief The rank of this tensor.
+     */
     constexpr static size_t Rank = rank;
 
     /**
@@ -100,7 +111,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      * @param name The name for the tensor.
      * @param dims The dimensions of the tensor.
      */
-    template <typename... Dims, typename = std::enable_if_t<are_all_convertible_v<size_t, Dims...>::value>>
+    template <typename... Dims, typename = std::enable_if_t<are_all_convertible<size_t, Dims...>::value>>
     explicit DiskTensor(h5::fd_t &file, std::string name, Dims... dims)
         : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
@@ -223,8 +234,16 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      */
     size_t stride(int d) const { return _strides[d]; }
 
+    /**
+     * @brief Get the array of strides for this tensor.
+     */
     Stride<Rank> strides() const { return _strides; }
 
+    /**
+     * @brief Returns whether this tensor is viewing the entirety of the data.
+     *
+     * For this kind of tensor, this will always return true.
+     */
     constexpr bool full_view_of_underlying() { return true; }
 
     /// This creates a Disk object with its Rank being equal to the number of All{} parameters
@@ -387,9 +406,27 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
  */
 template <typename T, size_t ViewRank, size_t rank>
 struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recursive_mutex> {
+    /**
+     * @typedef ValueType
+     *
+     * @brief Holds the type of data stored by this tensor.
+     */
     using ValueType              = T;
+
+    /**
+     * @property Rank
+     *
+     * @brief The rank of the view.
+     */
     constexpr static size_t Rank = ViewRank;
+
+    /**
+     * @typedef underlying_type
+     *
+     * @brief Holds the tensor type that this object views. It will be a DiskTensor in this case.
+     */
     using underlying_type = einsums::DiskTensor<T, rank>;
+    
     /**
      * Construct a view of a tensor with the given dimensions, counts, strides, and offsets.
      */

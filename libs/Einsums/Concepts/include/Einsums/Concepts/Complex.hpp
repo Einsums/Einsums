@@ -5,15 +5,12 @@
 
 #pragma once
 
-#include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 
 #include <complex>
 #include <type_traits>
 
 namespace einsums {
-
-template <typename>
-inline constexpr bool IsComplexV = false;
 
 /**
  * @var IsComplexV
@@ -21,6 +18,12 @@ inline constexpr bool IsComplexV = false;
  * @brief Tests whether a type is a complex type.
  *
  * @tparam T The type to test.
+ */
+template <typename>
+inline constexpr bool IsComplexV = false;
+
+/**
+ * @copydoc IsComplexV
  */
 template <typename T>
 inline constexpr bool IsComplexV<std::complex<T>> = std::is_floating_point_v<T>;

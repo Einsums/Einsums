@@ -22,6 +22,7 @@ namespace einsums {
 template <typename To, typename From>
 struct HipCast {};
 
+#ifndef DOXYGEN
 template <>
 struct HipCast<float, float> {
     /**
@@ -212,5 +213,6 @@ template <>
 struct HipCast<hipDoubleComplex, hipDoubleComplex> {
     __host__ __device__ static inline hipDoubleComplex cast(hipDoubleComplex from) { return from; }
 };
+#endif
 
 } // namespace einsums

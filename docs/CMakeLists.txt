@@ -83,7 +83,7 @@ foreach(_cat ${EINSUMS_OPTION_CATEGORIES})
   endforeach()
 endforeach()
 
-set(SPHINX_CMAKE_VARIABLES_RST_DEST "${CMAKE_CURRENT_BINARY_DIR}/generated/CMakeVariables.rst")
+set(SPHINX_CMAKE_VARIABLES_RST_DEST "${CMAKE_CURRENT_BINARY_DIR}/sphinx/generated/CMakeVariables.rst")
 configure_file(
   "${PROJECT_SOURCE_DIR}/cmake/templates/CMakeVariables.rst.in" ${SPHINX_CMAKE_VARIABLES_RST_DEST}
   @ONLY
@@ -140,8 +140,9 @@ file(
 
 list(APPEND sphinx_libs_source_files "index.rst" "overview.rst")
 
-foreach(lib ${EINSUMS_LIBS})
-  list(APPEND sphinx_libs_source_files "${lib}/modules.rst")
+foreach(lib IN LISTS EINSUMS_LIBS PYTHON_LIBS)
+  file(GLOB _sphinx_sources RELATIVE "${PROJECT_SOURCE_DIR}/libs" "${PROJECT_SOURCE_DIR}/libs/${lib}/*.rst")
+  list(APPEND sphinx_libs_source_files ${_sphinx_sources})
 endforeach()
 
 foreach(sphinx_source_file ${sphinx_libs_source_files})

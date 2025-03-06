@@ -43,6 +43,7 @@ enum HostToDeviceMode { UNKNOWN, DEV_ONLY, MAPPED, PINNED };
 
 } // namespace detail
 
+#ifndef DOXYGEN
 // Forward declarations of tensors.
 template <typename T, size_t Rank>
 struct Tensor;
@@ -81,6 +82,7 @@ struct RuntimeTensorView;
 
 template <typename T>
 using VectorData = std::vector<T>;
+#endif
 
 } // namespace einsums
 
