@@ -69,7 +69,7 @@ EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type) {
 
     try {
         auto &global_config = GlobalConfigMap::get_singleton();
-        attach = global_config.get_bool("attach-debugger");
+        attach = global_config.get_bool("attach-debugger", true);
     } catch(...) {
         attach = true;
     }

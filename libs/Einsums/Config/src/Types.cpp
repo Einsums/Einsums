@@ -23,17 +23,33 @@ size_t GlobalConfigMap::max_size() const noexcept {
     return str_map_->get_value().max_size() + int_map_->get_value().max_size() + double_map_->get_value().max_size();
 }
 
-std::string const &GlobalConfigMap::get_string(std::string const &key) const {
-    return str_map_->get_value().at(key);
+std::string const &GlobalConfigMap::get_string(std::string const &key, std::string const &dephault) const {
+    if (str_map_->get_value().contains(key)) {
+        return str_map_->get_value().at(key);
+    } else {
+        return dephault;
+    }
 }
-std::int64_t GlobalConfigMap::get_int(std::string const &key) const {
-    return int_map_->get_value().at(key);
+std::int64_t GlobalConfigMap::get_int(std::string const &key, std::int64_t dephault) const {
+    if (int_map_->get_value().contains(key)) {
+        return int_map_->get_value().at(key);
+    } else {
+        return dephault;
+    }
 }
-double GlobalConfigMap::get_double(std::string const &key) const {
-    return double_map_->get_value().at(key);
+double GlobalConfigMap::get_double(std::string const &key, double dephault) const {
+    if (double_map_->get_value().contains(key)) {
+        return double_map_->get_value().at(key);
+    } else {
+        return dephault;
+    }
 }
-bool GlobalConfigMap::get_bool(std::string const &key) const {
-    return bool_map_->get_value().at(key);
+bool GlobalConfigMap::get_bool(std::string const &key, bool dephault) const {
+    if (bool_map_->get_value().contains(key)) {
+        return bool_map_->get_value().at(key);
+    } else {
+        return dephault;
+    }
 }
 
 std::shared_ptr<ConfigMap<std::string>> GlobalConfigMap::get_string_map() {
