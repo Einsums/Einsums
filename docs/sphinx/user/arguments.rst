@@ -19,7 +19,8 @@ Basic Arguments
 
 .. option:: --einsums:log-level <level>
 
-    Set the level to see in the logger. Lower values provide more information.
+    Set the level to see in the logger. Lower values provide more information. By default, it is set to 
+    3 for the release build and 2 for the debug build.
 
     * 0: Tracing messages. Very verbose.
     * 1: Debugging messages.
