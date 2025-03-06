@@ -39,6 +39,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
+                printf("%d, %d, %d, %e, %e, %e", i, j, ij, A(i, j), C(i, j), C(j, i));
                 if (i == 0 || j == 0)
                     REQUIRE(C(i, j) == A(i, j));
                 else
