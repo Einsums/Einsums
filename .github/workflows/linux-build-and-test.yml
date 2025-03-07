@@ -157,6 +157,7 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
           pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/src" --cov="${{github.workspace}}/src/einsums" --cov-report=xml
+          find . -name "*.gcno"
 
       - name: Generate coverage information
         if: ${{ contains(matrix.compiler, 'default') }}
@@ -167,7 +168,6 @@ jobs:
           echo "NOTES=$NOTES"
           echo "SOURCES=$SOURCES"
           gcov $SOURCES || echo "returned $?"
-          ls
           lcov --capture --directory . --no-external --output-file coverage.info --exclude \*/_deps/\*
 
       - name: Upload C++ coverage to Codecov
@@ -175,20 +175,20 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           directory: "${{github.workspace}}/build"
-          working-directory: "${{github.workspace}}"
+          working-directory: "${{github.workspace}}/src"
           disable_search: true
           files: ${{github.workspace}}/build/coverage.info
-          flags: cpp
+          flags: cpp,linux
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload Python coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          directory: "${{github.workspace}}"
-          working-directory: "${{github.workspace}}"
+          directory: "${{github.workspace}}/installed"
+          working-directory: "${{github.workspace}}/src"
           disable_search: true
-          flags: python
-          file: ${{github.workspace}}/installed/coverage.xml
+          flags: python,linux
+          files: ${{github.workspace}}/installed/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Test (find_package) - consume installation
