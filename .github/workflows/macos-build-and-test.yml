@@ -126,9 +126,13 @@ jobs:
             export PYTHONPATH="$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib"
           fi
           mkdir "${{github.workspace}}/backup"
-          mv "${{github.workspace}}/src/einsums" "${{github.workspace}}/backup"
+          mv "${{github.workspace}}/src/einsums" "${{github.workspace}}/backup/einsums"
+          ls "${{github.workspace}}/src"
+          ls "${{github.workspace}}/backup"
           pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/src" --cov="${{github.workspace}}/installed/lib" --cov-report=xml
-          mv "${{github.workspace}}/backup/einsums" "${{github.workspace}}/src"
+          mv "${{github.workspace}}/backup/einsums" "${{github.workspace}}/src/einsums"
+          ls "${{github.workspace}}/src"
+          ls "${{github.workspace}}/backup"
 
 
       - name: Generate coverage information
@@ -142,17 +146,17 @@ jobs:
           llvm-cov export -format=lcov -ignore-filename-regex="_deps|einsums-env" -instr-profile=default.profdata $BINARIES > coverage.info
 
       - name: Upload C++ coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           directory: "${{github.workspace}}/src"
           working-directory: "${{github.workspace}}/src"
           disable_search: true
-          file: ${{github.workspace}}/build/coverage.info
+          files: ${{github.workspace}}/build/coverage.info
           flags: cpp,mac
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload Python coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           directory: "${{github.workspace}}"
           working-directory: "${{github.workspace}}"
