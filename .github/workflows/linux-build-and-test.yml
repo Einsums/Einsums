@@ -156,38 +156,41 @@ jobs:
           else
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
-          pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/src/tests" --cov="${{github.workspace}}/src/einsums" --cov-report=xml
+          mkdir "${{github.workspace}}/backup"
+          mv "${{github.workspace}}/src/einsums" "${{github.workspace}}/backup/einsums"
+          pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/installed/lib" --cov="${{github.workspace}}/src" --cov-report=xml
 
       - name: Generate coverage information
         if: ${{ contains(matrix.compiler, 'default') }}
         working-directory: "${{github.workspace}}/build"
         run: |
           export NOTES=$(find . -name "*.gcno")
-          export SOURCES=${NOTES//.gcno/}
+          export SOURCES=$(for i in ${NOTES//.gcno/}; do echo "../src/$i"; done)
           echo "NOTES=$NOTES"
           echo "SOURCES=$SOURCES"
-          gcov $SOURCES || echo "returned $?"
-          lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/_deps/\* --exclude \*/einsums-env/\*
+          gcov -r $SOURCES || echo "returned $?"
+          lcov --capture --directory . --output-file coverage.info --exclude \*/_deps/\* --exclude /usr/\* --exclude \*/einsums-env/\*
 
       - name: Upload C++ coverage to Codecov
         if: ${{ contains(matrix.compiler, 'default') }}
         uses: codecov/codecov-action@v5
         with:
-          directory: "${{github.workspace}}/build"
-          working-directory: "${{github.workspace}}"
+          directory: "${{github.workspace}}/src"
+          working-directory: "${{github.workspace}}/src"
           disable_search: true
           files: ${{github.workspace}}/build/coverage.info
-          flags: cpp
+          flags: cpp,linux
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload Python coverage to Codecov
-        uses: codecov/codecov-action@v4
+        if: ${{ contains(matrix.compiler, 'default') }}
+        uses: codecov/codecov-action@v5
         with:
-          directory: "${{github.workspace}}"
-          working-directory: "${{github.workspace}}"
+          directory: "${{github.workspace}}/installed"
+          working-directory: "${{github.workspace}}/installed"
           disable_search: true
-          flags: python
-          file: ${{github.workspace}}/installed/coverage.xml
+          flags: python,linux
+          files: ${{github.workspace}}/installed/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Test (find_package) - consume installation
