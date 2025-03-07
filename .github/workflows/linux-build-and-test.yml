@@ -168,7 +168,7 @@ jobs:
           echo "SOURCES=$SOURCES"
           gcov $SOURCES || echo "returned $?"
           ls
-          lcov --capture --directory . --path ${{github.workspace}} --no-external --output-file coverage.info --exclude \*/_deps/\*
+          lcov --capture --directory . --no-external --output-file coverage.info --exclude \*/_deps/\*
 
       - name: Upload C++ coverage to Codecov
         if: ${{ contains(matrix.compiler, 'default') }}
