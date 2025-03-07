@@ -121,12 +121,11 @@ jobs:
         working-directory: "${{github.workspace}}/installed"
         run: |
           if [[ "${{runner.os}}" == "Windows" ]]; then
-            export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
+            export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;${{github.workspace}}/src;$CONDA_PREFIX/lib"
           else
-            export PYTHONPATH="$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib"
+            export PYTHONPATH="$PYTHONPATH:${{github.workspace}}/installed/lib:${{github.workspace}}/src:$CONDA_PREFIX/lib"
           fi
           mkdir "${{github.workspace}}/backup"
-          ls "${{github.workspace}}/installed/lib"
           mv "${{github.workspace}}/src/einsums" "${{github.workspace}}/backup/einsums"
           pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/src" --cov="${{github.workspace}}/installed/lib" --cov-report=xml
           
