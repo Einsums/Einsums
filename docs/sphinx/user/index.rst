@@ -19,6 +19,7 @@ details are found in the reference. Follow the links below to find more informat
 
     absolute_beginners
     python
+    arguments
 
 .. toctree::
     :caption: User's Reference

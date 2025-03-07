@@ -86,17 +86,20 @@ void RuntimeConfiguration::pre_initialize() {
         // clang-format on
     };
 
-    // For now set the values to their default values.
-    system.pid               = getpid();
-    system.executable_prefix = detail::get_executable_prefix();
-    einsums.master_yaml_path = detail::get_executable_prefix();
-    einsums.log.level        = 3;
-    einsums.log.destination  = "cerr";
-    // einsums.log.format               = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [host:%j] [pid:%P] [tid:%t] [%s:%#/%!] %v";
-    einsums.log.format = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%-8l%$] [%s:%#/%!] %v";
+    /*
+     * Acquire locks for the different maps.
+     */
+    auto            &global_config  = GlobalConfigMap::get_singleton();
+    auto            &global_strings = global_config.get_string_map()->get_value();
+    auto            &global_ints    = global_config.get_int_map()->get_value();
+    auto            &global_doubles = global_config.get_double_map()->get_value();
+    auto            &global_bools   = global_config.get_bool_map()->get_value();
+    std::scoped_lock lock{*global_config.get_string_map(), *global_config.get_int_map(), *global_config.get_double_map(),
+                          *global_config.get_bool_map()};
 
-    einsums.profiler.filename = "profile.txt";
-    einsums.profiler.append   = true;
+    // For now set the values to their default values.
+    global_strings["executable-prefix"] = detail::get_executable_prefix();
+    global_ints["pid"]                  = getpid();
 }
 
 RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[],
@@ -122,7 +125,8 @@ RuntimeConfiguration::RuntimeConfiguration(std::vector<std::string> const       
     parse_command_line(user_command_line);
 }
 
-void RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line) {
+std::vector<std::string>
+RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line) {
     EINSUMS_LOG_INFO("Configuring command line parser and parsing user provided command line");
 
     // Imperative that pre_initialize is called first as it is responsible for setting
@@ -130,54 +134,65 @@ void RuntimeConfiguration::parse_command_line(std::function<void(argparse::Argum
     // There should be a mechanism that allows the user to change the program name.
     argument_parser.reset(new argparse::ArgumentParser("einsums"));
 
-    einsums.install_signal_handlers = true;
-    argument_parser->add_argument("--einsums:no-install-signal-handlers")
-        .default_value(false)
-        .implicit_value(true)
-        .help("do not install signal handlers")
-        .action([&](auto const &) { einsums.install_signal_handlers = false; });
+    /*
+     * Acquire locks for the different maps.
+     */
+    auto &global_config  = GlobalConfigMap::get_singleton();
+    auto &global_strings = global_config.get_string_map()->get_value();
+    auto &global_ints    = global_config.get_int_map()->get_value();
+    auto &global_doubles = global_config.get_double_map()->get_value();
+    auto &global_bools   = global_config.get_bool_map()->get_value();
+    {
+        std::scoped_lock lock{*global_config.get_string_map(), *global_config.get_int_map(), *global_config.get_double_map(),
+                              *global_config.get_bool_map()};
 
-    einsums.attach_debugger = true;
-    argument_parser->add_argument("--einsums:no-attach-debugger")
-        .default_value(false)
-        .implicit_value(true)
-        .help("do not provide mechanism to attach debugger on detected errors")
-        .action([&](auto const &) { einsums.attach_debugger = false; });
+        argument_parser->add_argument("--einsums:no-install-signal-handlers")
+            .flag()
+            .help("do not install signal handlers")
+            .store_into(global_bools["install-signal-handlers"]);
 
-    einsums.diagnostics_on_terminate = true;
-    argument_parser->add_argument("--einsums:no-diagnostics-on-terminate")
-        .default_value(false)
-        .implicit_value(true)
-        .help("do not print additional diagnostic information on termination")
-        .action([&](auto const &) { einsums.diagnostics_on_terminate = false; });
+        argument_parser->add_argument("--einsums:no-attach-debugger")
+            .flag()
+            .help("do not provide mechanism to attach debugger on detected errors")
+            .store_into(global_bools["attach-debugger"]);
 
-    argument_parser->add_argument("--einsums:log-level")
-        .default_value(einsums.log.level)
-        .help("set log level")
-        .choices(0, 1, 2, 3, 4)
-        .store_into(einsums.log.level);
-    argument_parser->add_argument("--einsums:log-destination")
-        .default_value(einsums.log.destination)
-        .help("set log destination")
-        .choices("cerr", "cout")
-        .store_into(einsums.log.destination);
-    argument_parser->add_argument("--einsums:log-format").default_value(einsums.log.format).store_into(einsums.log.format);
+        argument_parser->add_argument("--einsums:no-diagnostics-on-terminate")
+            .flag()
+            .help("do not print additional diagnostic information on termination")
+            .store_into(global_bools["diagnostics-on-terminate"]);
 
-    einsums.profiler.generate_report = true;
-    argument_parser->add_argument("--einsums:no-profiler-report")
-        .default_value(false)
-        .implicit_value(true)
-        .help("generate profiling report")
-        .action([&](auto const &) { einsums.profiler.generate_report = false; });
+        argument_parser->add_argument("--einsums:log-level")
+        #ifdef EINSUMS_DEBUG
+            .default_value<std::int64_t>(2)
+        #else
+            .default_value<std::int64_t>(3)
+        #endif
+            .help("set log level")
+            .choices(0, 1, 2, 3, 4)
+            .store_into(global_ints["log-level"]);
+        argument_parser->add_argument("--einsums:log-destination")
+            .default_value("cerr")
+            .help("set log destination")
+            .choices("cerr", "cout")
+            .store_into(global_strings["log-destination"]);
+        argument_parser->add_argument("--einsums:log-format")
+            .default_value("[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%-8l%$] [%s:%#/%!] %v")
+            .store_into(global_strings["log-format"]);
 
-    argument_parser->add_argument("--einsums:profiler-filename")
-        .default_value(einsums.profiler.filename)
-        .help("filename of the profiling report")
-        .store_into(einsums.profiler.filename);
-    argument_parser->add_argument("--einsums:profiler-append")
-        .default_value(einsums.profiler.append)
-        .help("append to an existing file")
-        .store_into(einsums.profiler.append);
+        argument_parser->add_argument("--einsums:no-profiler-report")
+            .flag()
+            .help("generate profiling report")
+            .store_into(global_bools["profiler-report"]);
+
+        argument_parser->add_argument("--einsums:profiler-filename")
+            .default_value("profile.txt")
+            .help("filename of the profiling report")
+            .store_into(global_strings["profiler-filename"]);
+        argument_parser->add_argument("--einsums:profiler-append")
+            .default_value(true)
+            .help("append to an existing file")
+            .store_into(global_bools["profiler-append"]);
+    }
 
     // Allow the user to inject their own command line options
     if (user_command_line) {
@@ -186,7 +201,7 @@ void RuntimeConfiguration::parse_command_line(std::function<void(argparse::Argum
     }
 
     try {
-        argument_parser->parse_known_args(original);
+        return argument_parser->parse_known_args(original);
     } catch (std::exception const &err) {
         std::cerr << err.what() << std::endl;
         std::cerr << argument_parser;

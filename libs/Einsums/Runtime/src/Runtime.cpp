@@ -65,7 +65,16 @@ EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type) {
 
 #else
 [[noreturn]] EINSUMS_EXPORT void termination_handler(int signum) {
-    if (signum != SIGINT && runtime_config().einsums.attach_debugger) {
+    bool attach = true;
+
+    try {
+        auto &global_config = GlobalConfigMap::get_singleton();
+        attach = global_config.get_bool("attach-debugger", true);
+    } catch(...) {
+        attach = true;
+    }
+
+    if (signum != SIGINT && attach) {
         util::attach_debugger();
     }
 
