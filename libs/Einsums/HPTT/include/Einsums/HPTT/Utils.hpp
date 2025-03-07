@@ -175,6 +175,7 @@ std::uint64_t factorial(std::uint8_t n);
 /**
  * Reorders parameters to swap between row-major and column-major forms.
  */
-void accountForRowMajor(int const *sizeA, int const *outerSizeA, int const *outerSizeB, int const *perm, int *tmpSizeA, int *tmpOuterSizeA,
-                        int *tmpouterSizeB, int *tmpPerm, int const dim, bool const useRowMajor);
+void accountForRowMajor(int const *sizeA, int const *outerSizeA, int const *outerSizeB, const int *offsetA, const int *offsetB, int const *perm,
+                        int *tmpSizeA, int *tmpOuterSizeA, int *tmpouterSizeB, int *tmpOffsetA, int *tmpOffsetB, int *tmpPerm, int const dim, 
+                        bool const useRowMajor);
 } // namespace hptt

@@ -44,6 +44,40 @@ void permute(int const *perm, int const dim, std::complex<double> const alpha, s
     plan->execute();
 }
 
+void permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, int const *outerSizeA,
+             float const beta, float *B, int const *offsetB,  int const *outerSizeB) {
+    auto plan =
+        hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE, omp_get_max_threads(),
+                          nullptr, true);
+    plan->execute();
+}
+
+void permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA, int const *outerSizeA,
+             double const beta, double *B, int const *offsetB,  int const *outerSizeB) {
+    auto plan =
+        hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE, omp_get_max_threads(),
+                          nullptr, true);
+    plan->execute();
+}
+
+void permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
+             int const *offsetA, int const *outerSizeA, std::complex<float> const beta, std::complex<float> *B, int const *offsetB,
+             int const *outerSizeB) {
+    auto plan =
+        hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE, omp_get_max_threads(),
+                          nullptr, true);
+    plan->execute();
+}
+
+void permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
+             int const *offsetA, int const *outerSizeA, std::complex<double> const beta, std::complex<double> *B, int const *offsetB,
+             int const *outerSizeB) {
+    auto plan =
+        hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE, omp_get_max_threads(),
+                          nullptr, true);
+    plan->execute();
+}
+
 } // namespace einsums::tensor_algebra::detail
 
 #endif

@@ -33,6 +33,16 @@ void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> 
                             std::complex<float> const beta, std::complex<float> *B);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
                             int const *sizeA, std::complex<double> const beta, std::complex<double> *B);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, 
+                            int const *outerSizeA, float const beta, float *B, int const *offsetB,  int const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA,
+                            int const *outerSizeA, double const beta, double *B, int const *offsetB,  int const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
+                            int const *offsetA, int const *outerSizeA, std::complex<float> const beta, std::complex<float> *B,
+                            int const *offsetB, int const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
+                            int const *offsetA, int const *outerSizeA, std::complex<double> const beta, std::complex<double> *B,
+                            int const *offsetB, int const *outerSizeB);
 
 } // namespace detail
 #endif
@@ -73,9 +83,11 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         *C = T{0.0};
     }
 
-    // HPTT interface currently only works for full Tensors and not TensorViews
+    // HPTT interface currently only works for full Tensors and TensorViews if strides are 1
 #if !defined(EINSUMS_WINDOWS)
     if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
+        // Note that if einsums::permute supports strides > 1 (i.e. for each stride[i] = k * stride[i+1] * size[i], k > 1),
+        // then we cannot use HPTT. As far as I can tell, permute overlooks this case anyhow.
         std::array<int, ARank> perms{};
         std::array<int, ARank> size{};
 
@@ -85,6 +97,35 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         }
 
         detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
+    } else if constexpr ((std::is_same_v<CType, Tensor<T, CRank>> || std::is_same_v<CType, TensorView<T, CRank>>)
+                         && (std::is_same_v<AType, TensorView<T, ARank>> || std::is_same_v<AType, Tensor<T, ARank>>)) {
+        // Note that if einsums::permute supports strides > 1 (i.e. for each stride[i] = k * stride[i+1] * size[i], k > 1),
+        // then we cannot use HPTT. As far as I can tell, permute overlooks this case anyhow.
+        std::array<int, ARank> perms{};
+        std::array<int, ARank> size{};
+        std::array<int, ARank> outerSizeA{};
+        std::array<int, ARank> offsetA{};
+        std::array<int, ARank> outerSizeC{};
+        std::array<int, ARank> offsetC{};
+
+        for (int i0 = 0; i0 < ARank; i0++) {
+            perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            size[i0]  = A.dim(i0);
+            outerSizeA[i0] = (std::is_same_v<AType, TensorView<T, ARank>>) ? A.source_dim(i0) : A.dim(i0);
+            offsetA[i0] = (std::is_same_v<AType, TensorView<T, ARank>>) ? A.offset(i0) : 0;
+            outerSizeC[i0] = (std::is_same_v<CType, TensorView<T, CRank>>) ? C->source_dim(i0) : 0;
+            offsetC[i0] = (std::is_same_v<CType, TensorView<T, CRank>>) ? C->offset(i0) : 0;
+        }
+
+
+        if constexpr (std::is_same_v<CType, Tensor<T, CRank>>) {
+            for (int i0 = 0; i0 < ARank; i0++) {
+                outerSizeC[i0] = A.dim(perms[i0]);
+            }
+        }
+
+        detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
+                        C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data());
     } else
 #endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {

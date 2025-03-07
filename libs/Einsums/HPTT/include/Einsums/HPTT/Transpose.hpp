@@ -67,11 +67,19 @@ class Transpose {
      *                       * This parameter may be NULL, indicating that the outer-size is equal to sizeA.
      *                       * If outerSizeA is not NULL, outerSizeA[i] >= sizeA[i] for all 0 <= i < dim must hold.
      *                       * This option enables HPTT to operate on sub-tensors.
+     * \param[in] offsetA dim-dimensional array that stores the offsets in each dimension of A
+     *                       * This parameter may be NULL, indicating that the offset is zero.
+     *                       * If offsetA is not NULL, outerSizeA[i] >= offsetA[i] + sizeA[i] >= 0 for all 0 <= i < dim must hold.
+     *                       * This option enables HPTT to operate on intermediate sub-tensors.
      * \param[in] beta scaling factor for B
      * \param[inout] B Pointer to the raw-data of the output tensor B
      * \param[in] outerSizeB dim-dimensional array that stores the outer-sizes of each dimension of B.
      *                       * This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).
      *                       * If outerSizeA is not NULL, outerSizeB[i] >= perm(sizeA)[i] for all 0 <= i < dim must hold.
+     * \param[in] offsetB dim-dimensional array that stores the offsets in each dimension of B
+     *                       * This parameter may be NULL, indicating that the offset is zero.
+     *                       * If offsetB is not NULL, outerSizeB[i] >= offsetB[i] + sizeB[i] >= 0 for all 0 <= i < dim must hold.
+     *                       * This option enables HPTT to operate on intermediate sub-tensors.
      *                       * This option enables HPTT to operate on sub-tensors.
      * \param[in] selectionMethod Determines if auto-tuning should be used. See hptt::SelectionMethod for details.
      *                            ATTENTION: If you enable auto-tuning (e.g., hptt::MEASURE)
@@ -87,9 +95,9 @@ class Transpose {
      *            Column-Major: indices are stored from left to right (leftmost = stride-1 index)
      *            Row-Major: indices are stored from right to left (right = stride-1 index)
      */
-    Transpose(int const *sizeA, int const *perm, int const *outerSizeA, int const *outerSizeB, int const dim, floatType const *A,
-              floatType const alpha, floatType *B, floatType const beta, SelectionMethod const selectionMethod, int const numThreads,
-              int const *threadIds = nullptr, bool const useRowMajor = false);
+    Transpose(int const *sizeA, int const *perm, int const *outerSizeA, int const *outerSizeB, const int *offsetA, const int *offsetB,
+              int const dim, floatType const *A, floatType const alpha, floatType *B, floatType const beta, 
+              SelectionMethod const selectionMethod, int const numThreads, int const *threadIds = nullptr, bool const useRowMajor = false);
 
     /**
      * Copy construct a Transpose object.
@@ -256,7 +264,8 @@ class Transpose {
     void                  createPlans(std::vector<std::shared_ptr<Plan>> &plans) const;
     std::shared_ptr<Plan> selectPlan(std::vector<std::shared_ptr<Plan>> const &plans);
     void                  fuseIndices();
-    void                  skipIndices(int const *_sizeA, int const *_perm, int const *_outerSizeA, int const *_outerSizeB, int const dim);
+    void                  skipIndices(int const *_sizeA, int const *_perm, int const *_outerSizeA, int const *_outerSizeB, const int *_offsetA, 
+                                      const int *_offsetB, int const dim);
     void                  computeLeadingDimensions();
     double                loopCostHeuristic(std::vector<int> const &loopOrder) const;
     double                parallelismCostHeuristic(std::vector<int> const &loopOrder) const;
@@ -274,7 +283,8 @@ class Transpose {
                       std::list<int> &primeFactors, float const minBalancing, std::vector<int> const &loopsAllowed) const;
     float getLoadBalance(std::vector<int> const &parallelismStrategy) const;
     float estimateExecutionTime(std::shared_ptr<Plan> const plan); // execute just a few iterations and extrapolate the result
-    void  verifyParameter(int const *size, int const *perm, int const *outerSizeA, int const *outerSizeB, int const dim) const;
+    void  verifyParameter(int const *size, int const *perm, int const *outerSizeA, int const *outerSizeB, const int* offsetA, 
+                          const int* offsetB, int const dim) const;
     void  getBestParallelismStrategy(std::vector<int> &bestParallelismStrategy) const;
     void  getBestLoopOrder(std::vector<int> &loopOrder) const; // innermost loop idx is stored at dim_-1
     void  getLoopOrders(std::vector<std::vector<int>> &loopOrders) const;
@@ -297,6 +307,8 @@ class Transpose {
     std::vector<int>    perm_;       //!< permutation
     std::vector<size_t> outerSizeA_; //!< outer sizes of A
     std::vector<size_t> outerSizeB_; //!< outer sizes of B
+    std::vector<size_t> offsetA_;    //!< offsets of A
+    std::vector<size_t> offsetB_;    //!< offsets of B
     std::vector<size_t> lda_;        //!< strides for all dimensions of A (first dimension has a stride of 1)
     std::vector<size_t> ldb_;        //!< strides for all dimensions of B (first dimension has a stride of 1)
     std::vector<int>    threadIds_;  //!< OpenMP threadIds of the threads involed in the transposition
