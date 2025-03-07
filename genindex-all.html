@@ -52,7 +52,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0.0" />
-    <meta name="docbuild:last-update" content="Mar 03, 2025"/>
+    <meta name="docbuild:last-update" content="Mar 07, 2025"/>
   </head>
   
   
@@ -509,6 +509,8 @@
 </li>
       <li><a href="libs/Einsums/Errors/docs/index.html#_CPPv4I0_iE10CodedError">CodedError (C++ class)</a>
 </li>
+      <li><a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv422cOffsetTensorTransposePKiKiKCfbPKCfPKiPKiPKiKCfPCfPKiPKiKiKi">cOffsetTensorTranspose (C++ function)</a>
+</li>
       <li>
     command line option
 
@@ -657,6 +659,8 @@
       <li><a href="libs/Einsums/Tensor/docs/index.html#_CPPv4I0_6size_tE10DiskTensor">DiskTensor (C++ class)</a>
 </li>
       <li><a href="libs/Einsums/Tensor/docs/index.html#_CPPv4I0_6size_t_6size_tE8DiskView">DiskView (C++ class)</a>
+</li>
+      <li><a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv422dOffsetTensorTransposePKiKiKdPKdPKiPKiPKiKdPdPKiPKiKiKi">dOffsetTensorTranspose (C++ function)</a>
 </li>
       <li><a href="libs/Einsums/LinearAlgebra/docs/index.html#_CPPv4I_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType">dot (C++ function)</a>, <a href="libs/Einsums/LinearAlgebra/docs/index.html#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType">[1]</a>
 </li>
@@ -2188,8 +2192,6 @@
 </li>
       <li><a href="libs/EinsumsPy/GPU/api/PyGPUView.html#_CPPv4N7einsums6python9PyGPUView10_host_dataE">einsums::python::PyGPUView::_host_data (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="libs/EinsumsPy/GPU/api/PyGPUView.html#_CPPv4N7einsums6python9PyGPUView9_itemsizeE">einsums::python::PyGPUView::_itemsize (C++ member)</a>
 </li>
       <li><a href="libs/EinsumsPy/GPU/api/PyGPUView.html#_CPPv4N7einsums6python9PyGPUView5_modeE">einsums::python::PyGPUView::_mode (C++ member)</a>
@@ -2198,6 +2200,8 @@
 </li>
       <li><a href="libs/EinsumsPy/GPU/api/PyGPUView.html#_CPPv4N7einsums6python9PyGPUView5_rankE">einsums::python::PyGPUView::_rank (C++ member)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="libs/EinsumsPy/GPU/api/PyGPUView.html#_CPPv4N7einsums6python9PyGPUView8_stridesE">einsums::python::PyGPUView::_strides (C++ member)</a>
 </li>
       <li><a href="libs/EinsumsPy/GPU/api/PyGPUView.html#_CPPv4N7einsums6python9PyGPUView8dev_dataEv">einsums::python::PyGPUView::dev_data (C++ function)</a>, <a href="libs/EinsumsPy/GPU/api/PyGPUView.html#_CPPv4NK7einsums6python9PyGPUView8dev_dataEv">[1]</a>
@@ -3172,6 +3176,12 @@
 </li>
       <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4N7einsums10TensorView5_nameE">einsums::TensorView::_name (C++ member)</a>
 </li>
+      <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4N7einsums10TensorView15_offset_ordinalE">einsums::TensorView::_offset_ordinal (C++ member)</a>
+</li>
+      <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4N7einsums10TensorView8_offsetsE">einsums::TensorView::_offsets (C++ member)</a>
+</li>
+      <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4N7einsums10TensorView12_source_dimsE">einsums::TensorView::_source_dims (C++ member)</a>
+</li>
       <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4N7einsums10TensorView8_stridesE">einsums::TensorView::_strides (C++ member)</a>
 </li>
       <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4I_13TensorConceptDpEN7einsums10TensorView21common_initializationEvR10TensorTypeDpRR4Args">einsums::TensorView::common_initialization (C++ function)</a>, <a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4N7einsums10TensorView21common_initializationEPK1T">[1]</a>
@@ -3184,9 +3194,15 @@
 </li>
       <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4NK7einsums10TensorView4dimsEv">einsums::TensorView::dims (C++ function)</a>
 </li>
+      <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4N7einsums10TensorView9full_dataEv">einsums::TensorView::full_data (C++ function)</a>, <a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4NK7einsums10TensorView9full_dataEv">[1]</a>
+</li>
       <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4NK7einsums10TensorView23full_view_of_underlyingEv">einsums::TensorView::full_view_of_underlying (C++ function)</a>
 </li>
       <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4NK7einsums10TensorView4nameEv">einsums::TensorView::name (C++ function)</a>
+</li>
+      <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4NK7einsums10TensorView6offsetEi">einsums::TensorView::offset (C++ function)</a>
+</li>
+      <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4NK7einsums10TensorView7offsetsEv">einsums::TensorView::offsets (C++ function)</a>
 </li>
       <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4I0EN7einsums10TensorViewclER1TRK9Container">einsums::TensorView::operator() (C++ function)</a>, <a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4I0ENK7einsums10TensorViewclERK1TRK9Container">[1]</a>, <a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4IDpEN7einsums10TensorViewclER1TDpRR10MultiIndex">[2]</a>, <a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4IDpENK7einsums10TensorViewclERK1TDpRR10MultiIndex">[3]</a>
 </li>
@@ -3197,6 +3213,10 @@
       <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4N7einsums10TensorView8set_nameERKNSt6stringE">einsums::TensorView::set_name (C++ function)</a>
 </li>
       <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4NK7einsums10TensorView4sizeEv">einsums::TensorView::size (C++ function)</a>
+</li>
+      <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4NK7einsums10TensorView10source_dimEi">einsums::TensorView::source_dim (C++ function)</a>
+</li>
+      <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4NK7einsums10TensorView11source_dimsEv">einsums::TensorView::source_dims (C++ function)</a>
 </li>
       <li><a href="libs/Einsums/Tensor/api/Tensor.html#_CPPv4NK7einsums10TensorView6strideEi">einsums::TensorView::stride (C++ function)</a>
 </li>
@@ -3905,7 +3925,7 @@
 </li>
       <li><a href="libs/Einsums/HPTT/api/ComputeNode.html#_CPPv44hptt">hptt (C++ type)</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv44hptt">[1]</a>, <a href="libs/Einsums/HPTT/api/HPTTTypes.html#_CPPv44hptt">[2]</a>, <a href="libs/Einsums/HPTT/api/Plan.html#_CPPv44hptt">[3]</a>, <a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv44hptt">[4]</a>, <a href="libs/Einsums/HPTT/api/Utils.html#_CPPv44hptt">[5]</a>
 </li>
-      <li><a href="libs/Einsums/HPTT/api/Utils.html#_CPPv4N4hptt18accountForRowMajorEPKiPKiPKiPKiPiPiPiPiKiKb">hptt::accountForRowMajor (C++ function)</a>
+      <li><a href="libs/Einsums/HPTT/api/Utils.html#_CPPv4N4hptt18accountForRowMajorEPKiPKiPKiPKiPKiPKiPiPiPiPiPiPiKiKb">hptt::accountForRowMajor (C++ function)</a>
 </li>
       <li><a href="libs/Einsums/HPTT/api/ComputeNode.html#_CPPv4N4hptt11ComputeNodeE">hptt::ComputeNode (C++ class)</a>
 </li>
@@ -3915,11 +3935,17 @@
 </li>
       <li><a href="libs/Einsums/HPTT/api/ComputeNode.html#_CPPv4N4hptt11ComputeNode3incE">hptt::ComputeNode::inc (C++ member)</a>
 </li>
+      <li><a href="libs/Einsums/HPTT/api/ComputeNode.html#_CPPv4N4hptt11ComputeNode6indexAE">hptt::ComputeNode::indexA (C++ member)</a>
+</li>
+      <li><a href="libs/Einsums/HPTT/api/ComputeNode.html#_CPPv4N4hptt11ComputeNode6indexBE">hptt::ComputeNode::indexB (C++ member)</a>
+</li>
       <li><a href="libs/Einsums/HPTT/api/ComputeNode.html#_CPPv4N4hptt11ComputeNode3ldaE">hptt::ComputeNode::lda (C++ member)</a>
 </li>
       <li><a href="libs/Einsums/HPTT/api/ComputeNode.html#_CPPv4N4hptt11ComputeNode3ldbE">hptt::ComputeNode::ldb (C++ member)</a>
 </li>
       <li><a href="libs/Einsums/HPTT/api/ComputeNode.html#_CPPv4N4hptt11ComputeNode4nextE">hptt::ComputeNode::next (C++ member)</a>
+</li>
+      <li><a href="libs/Einsums/HPTT/api/ComputeNode.html#_CPPv4N4hptt11ComputeNode9offDiffABE">hptt::ComputeNode::offDiffAB (C++ member)</a>
 </li>
       <li><a href="libs/Einsums/HPTT/api/ComputeNode.html#_CPPv4N4hptt11ComputeNode5startE">hptt::ComputeNode::start (C++ member)</a>
 </li>
@@ -3927,7 +3953,7 @@
 </li>
       <li><a href="libs/Einsums/HPTT/api/Utils.html#_CPPv4I0EN4hptt4conjE9floatType9floatType">hptt::conj (C++ function)</a>, <a href="libs/Einsums/HPTT/api/Utils.html#_CPPv4IEN4hptt4conjEdd">[1]</a>, <a href="libs/Einsums/HPTT/api/Utils.html#_CPPv4IEN4hptt4conjEff">[2]</a>
 </li>
-      <li><a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiK15SelectionMethodKiPKiKb">hptt::create_plan (C++ function)</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiKiKiPKiKb">[1]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiK15SelectionMethodKiPKiKb">[2]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiKiKiPKiKb">[3]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiK15SelectionMethodKiPKiKb">[4]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiKiKiPKiKb">[5]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiK15SelectionMethodKiPKiKb">[6]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiKiKiPKiKb">[7]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiK12FloatComplexPK12FloatComplexRKNSt6vectorIiEERKNSt6vectorIiEEK12FloatComplexP12FloatComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[8]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiK13DoubleComplexPK13DoubleComplexRKNSt6vectorIiEERKNSt6vectorIiEEK13DoubleComplexP13DoubleComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[9]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiKdPKdRKNSt6vectorIiEERKNSt6vectorIiEEKdPdRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[10]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiKfPKfRKNSt6vectorIiEERKNSt6vectorIiEEKfPfRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[11]</a>
+      <li><a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiK15SelectionMethodKiPKiKb">hptt::create_plan (C++ function)</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiK12FloatComplexP12FloatComplexPKiKiKiPKiKb">[1]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiPKiK12FloatComplexP12FloatComplexPKiPKiK15SelectionMethodKiPKiKb">[2]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK12FloatComplexPK12FloatComplexPKiPKiPKiK12FloatComplexP12FloatComplexPKiPKiKiKiPKiKb">[3]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiK15SelectionMethodKiPKiKb">[4]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiK13DoubleComplexP13DoubleComplexPKiKiKiPKiKb">[5]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiPKiK13DoubleComplexP13DoubleComplexPKiPKiK15SelectionMethodKiPKiKb">[6]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiK13DoubleComplexPK13DoubleComplexPKiPKiPKiK13DoubleComplexP13DoubleComplexPKiPKiKiKiPKiKb">[7]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiK15SelectionMethodKiPKiKb">[8]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiKiKiPKiKb">[9]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKdPKdPKiPKiKdPdPKiPKiK15SelectionMethodKiPKiKb">[10]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKdPKdPKiPKiPKiKdPdPKiPKiKiKiPKiKb">[11]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiK15SelectionMethodKiPKiKb">[12]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKfPKfPKiPKiKfPfPKiKiKiPKiKb">[13]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKfPKfPKiPKiPKiKfPfPKiPKiK15SelectionMethodKiPKiKb">[14]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planEPKiKiKfPKfPKiPKiPKiKfPfPKiPKiKiKiPKiKb">[15]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiK12FloatComplexPK12FloatComplexRKNSt6vectorIiEERKNSt6vectorIiEEK12FloatComplexP12FloatComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[16]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiK12FloatComplexPK12FloatComplexRKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEK12FloatComplexP12FloatComplexRKNSt6vectorIiEERKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[17]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiK13DoubleComplexPK13DoubleComplexRKNSt6vectorIiEERKNSt6vectorIiEEK13DoubleComplexP13DoubleComplexRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[18]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiK13DoubleComplexPK13DoubleComplexRKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEK13DoubleComplexP13DoubleComplexRKNSt6vectorIiEERKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[19]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiKdPKdRKNSt6vectorIiEERKNSt6vectorIiEEKdPdRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[20]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiKdPKdRKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEKdPdRKNSt6vectorIiEERKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[21]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiKfPKfRKNSt6vectorIiEERKNSt6vectorIiEEKfPfRKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[22]</a>, <a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv4N4hptt11create_planERKNSt6vectorIiEEKiKfPKfRKNSt6vectorIiEERKNSt6vectorIiEERKNSt6vectorIiEEKfPfRKNSt6vectorIiEERKNSt6vectorIiEEK15SelectionMethodKiRKNSt6vectorIiEEKb">[23]</a>
 </li>
       <li><a href="libs/Einsums/HPTT/api/HPTTTypes.html#_CPPv4N4hptt13DoubleComplexE">hptt::DoubleComplex (C++ type)</a>
 </li>
@@ -4009,10 +4035,10 @@
 </li>
       <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose4dim_E">hptt::Transpose::dim_ (C++ member)</a>
 </li>
-      <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose21estimateExecutionTimeEKNSt10shared_ptrI4PlanEE">hptt::Transpose::estimateExecutionTime (C++ function)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose21estimateExecutionTimeEKNSt10shared_ptrI4PlanEE">hptt::Transpose::estimateExecutionTime (C++ function)</a>
+</li>
       <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose7executeEv">hptt::Transpose::execute (C++ function)</a>
 </li>
       <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4I_b_b_bEN4hptt9Transpose14execute_expertEvv">hptt::Transpose::execute_expert (C++ function)</a>
@@ -4071,6 +4097,10 @@
 </li>
       <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose11numThreads_E">hptt::Transpose::numThreads_ (C++ member)</a>
 </li>
+      <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose8offsetA_E">hptt::Transpose::offsetA_ (C++ member)</a>
+</li>
+      <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose8offsetB_E">hptt::Transpose::offsetB_ (C++ member)</a>
+</li>
       <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose11outerSizeA_E">hptt::Transpose::outerSizeA_ (C++ member)</a>
 </li>
       <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose11outerSizeB_E">hptt::Transpose::outerSizeB_ (C++ member)</a>
@@ -4115,13 +4145,13 @@
 </li>
       <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose6sizeA_E">hptt::Transpose::sizeA_ (C++ member)</a>
 </li>
-      <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose11skipIndicesEPKiPKiPKiPKiKi">hptt::Transpose::skipIndices (C++ function)</a>
+      <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose11skipIndicesEPKiPKiPKiPKiPKiPKiKi">hptt::Transpose::skipIndices (C++ function)</a>
 </li>
       <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose10threadIds_E">hptt::Transpose::threadIds_ (C++ member)</a>
 </li>
-      <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose9TransposeEPKiPKiPKiPKiKiPK9floatTypeK9floatTypeP9floatTypeK9floatTypeK15SelectionMethodKiPKiKb">hptt::Transpose::Transpose (C++ function)</a>, <a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose9TransposeERK9Transpose">[1]</a>
+      <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose9TransposeEPKiPKiPKiPKiPKiPKiKiPK9floatTypeK9floatTypeP9floatTypeK9floatTypeK15SelectionMethodKiPKiKb">hptt::Transpose::Transpose (C++ function)</a>, <a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9Transpose9TransposeERK9Transpose">[1]</a>
 </li>
-      <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4NK4hptt9Transpose15verifyParameterEPKiPKiPKiPKiKi">hptt::Transpose::verifyParameter (C++ function)</a>
+      <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4NK4hptt9Transpose15verifyParameterEPKiPKiPKiPKiPKiPKiKi">hptt::Transpose::verifyParameter (C++ function)</a>
 </li>
       <li><a href="libs/Einsums/HPTT/api/Transpose.html#_CPPv4N4hptt9TransposeD0Ev">hptt::Transpose::~Transpose (C++ function)</a>
 </li>
@@ -4356,6 +4386,8 @@
         <li><a href="reference/einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.size">(einsums.core.RuntimeTensorX method)</a>
 </li>
       </ul></li>
+      <li><a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv422sOffsetTensorTransposePKiKiKfPKfPKiPKiPKiKfPfPKiPKiKiKi">sOffsetTensorTranspose (C++ function)</a>
+</li>
       <li><a href="reference/einsums.gpu_except.html#einsums.gpu_except.solverAllocFailed">solverAllocFailed</a>
 </li>
       <li><a href="reference/einsums.gpu_except.html#einsums.gpu_except.solverArchMismatch">solverArchMismatch</a>
@@ -4370,10 +4402,10 @@
 </li>
       <li><a href="reference/einsums.gpu_except.html#einsums.gpu_except.solverInvalidEnum">solverInvalidEnum</a>
 </li>
-      <li><a href="reference/einsums.gpu_except.html#einsums.gpu_except.solverInvalidValue">solverInvalidValue</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/einsums.gpu_except.html#einsums.gpu_except.solverInvalidValue">solverInvalidValue</a>
+</li>
       <li><a href="reference/einsums.gpu_except.html#einsums.gpu_except.solverMappingError">solverMappingError</a>
 </li>
       <li><a href="reference/einsums.gpu_except.html#einsums.gpu_except.solverNotInitialized">solverNotInitialized</a>
@@ -4550,6 +4582,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv422zOffsetTensorTransposePKiKiKCdbPKCdPKiPKiPKiKCdPCdPKiPKiKiKi">zOffsetTensorTranspose (C++ function)</a>
+</li>
       <li><a href="libs/Einsums/HPTT/api/HPTT.html#_CPPv416zTensorTransposePKiKiKCdbPKCdPKiPKiKCdPCdPKiKiKi">zTensorTranspose (C++ function)</a>
 </li>
   </ul></td>
