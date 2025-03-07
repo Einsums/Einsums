@@ -144,8 +144,8 @@ jobs:
       - name: Upload C++ coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          directory: "${{github.workspace}}/build"
-          working-directory: "${{github.workspace}}/src"
+          directory: "${{github.workspace}}/src"
+          working-directory: "${{github.workspace}}/build"
           disable_search: true
           file: ${{github.workspace}}/build/coverage.info
           flags: cpp,mac
@@ -154,8 +154,8 @@ jobs:
       - name: Upload Python coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          directory: "${{github.workspace}}/installed"
-          working-directory: "${{github.workspace}}/src"
+          directory: "${{github.workspace}}/src"
+          working-directory: "${{github.workspace}}/installed"
           disable_search: true
           flags: python,mac
           files: ${{github.workspace}}/installed/coverage.xml

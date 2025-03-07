@@ -174,18 +174,19 @@ jobs:
         if: ${{ contains(matrix.compiler, 'default') }}
         uses: codecov/codecov-action@v5
         with:
-          directory: "${{github.workspace}}/build"
-          working-directory: "${{github.workspace}}/src"
+          directory: "${{github.workspace}}/src"
+          working-directory: "${{github.workspace}}/build"
           disable_search: true
           files: ${{github.workspace}}/build/coverage.info
           flags: cpp,linux
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload Python coverage to Codecov
+        if: ${{ contains(matrix.compiler, 'default') }}
         uses: codecov/codecov-action@v4
         with:
-          directory: "${{github.workspace}}/installed"
-          working-directory: "${{github.workspace}}/src"
+          directory: "${{github.workspace}}/src"
+          working-directory: "${{github.workspace}}/installed"
           disable_search: true
           flags: python,linux
           files: ${{github.workspace}}/installed/coverage.xml
