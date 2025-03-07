@@ -154,8 +154,8 @@ jobs:
       - name: Upload Python coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          directory: "${{github.workspace}}/src"
-          working-directory: "${{github.workspace}}/src"
+          directory: "${{github.workspace}}"
+          working-directory: "${{github.workspace}}"
           disable_search: true
           flags: python,mac
           files: ${{github.workspace}}/installed/coverage.xml
