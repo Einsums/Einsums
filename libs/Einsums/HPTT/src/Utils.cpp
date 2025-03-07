@@ -373,8 +373,9 @@ uint64_t factorial(uint8_t n) {
     }
 }
 
-void accountForRowMajor(int const *sizeA, int const *outerSizeA, int const *outerSizeB, int const *perm, int *tmpSizeA, int *tmpOuterSizeA,
-                        int *tmpOuterSizeB, int *tmpPerm, int const dim, bool const useRowMajor) {
+void accountForRowMajor(int const *sizeA, int const *outerSizeA, int const *outerSizeB, const int *offsetA, const int *offsetB, 
+                        int const *perm, int *tmpSizeA, int *tmpOuterSizeA, int *tmpOuterSizeB, int *tmpOffsetA, int *tmpOffsetB, 
+                        int *tmpPerm, int const dim, bool const useRowMajor) {
     for (int i = 0; i < dim; ++i) {
         int idx = i;
         if (useRowMajor) {
@@ -392,6 +393,14 @@ void accountForRowMajor(int const *sizeA, int const *outerSizeA, int const *oute
             tmpOuterSizeB[i] = sizeA[perm[idx]];
         else
             tmpOuterSizeB[i] = outerSizeB[idx];
+        if( offsetA == nullptr )
+            tmpOffsetA[i] = 0;
+        else
+            tmpOffsetA[i] = offsetA[idx];
+        if( offsetB == nullptr )
+            tmpOffsetB[i] = 0;
+        else
+            tmpOffsetB[i] = offsetB[idx];
     }
 }
 
