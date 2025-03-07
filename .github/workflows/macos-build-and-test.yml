@@ -126,9 +126,9 @@ jobs:
             export PYTHONPATH="$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib"
           fi
           mkdir "${{github.workspace}}/backup"
-          mv -r "${{github.workspace}}/src/einsums" "$${{github.workspace}}/backup"
+          mv "${{github.workspace}}/src/einsums" "$${{github.workspace}}/backup"
           pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/installed/lib" --cov="${{github.workspace}}/src/tests" --cov-report=xml
-          mv -r "${{github.workspace}}/backup/einsums" "${{github.workspace}}/src/einsums"
+          mv "${{github.workspace}}/backup/einsums" "${{github.workspace}}/src/einsums"
 
 
       - name: Generate coverage information
