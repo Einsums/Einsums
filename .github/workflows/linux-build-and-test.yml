@@ -168,14 +168,14 @@ jobs:
           echo "NOTES=$NOTES"
           echo "SOURCES=$SOURCES"
           gcov -r $SOURCES || echo "returned $?"
-          lcov --capture --directory . --no-external --output-file coverage.info --exclude \*/_deps/\*
+          lcov --capture --directory . --no-external --include ${{github.workspace}}/src --output-file coverage.info --exclude \*/_deps/\*
 
       - name: Upload C++ coverage to Codecov
         if: ${{ contains(matrix.compiler, 'default') }}
         uses: codecov/codecov-action@v5
         with:
           directory: "${{github.workspace}}/src"
-          working-directory: "${{github.workspace}}/build"
+          working-directory: "${{github.workspace}}/src"
           disable_search: true
           files: ${{github.workspace}}/build/coverage.info
           flags: cpp,linux
@@ -186,7 +186,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           directory: "${{github.workspace}}/src"
-          working-directory: "${{github.workspace}}/installed"
+          working-directory: "${{github.workspace}}/src"
           disable_search: true
           flags: python,linux
           files: ${{github.workspace}}/installed/coverage.xml
