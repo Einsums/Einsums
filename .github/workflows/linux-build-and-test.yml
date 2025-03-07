@@ -164,10 +164,10 @@ jobs:
         working-directory: "${{github.workspace}}/build"
         run: |
           export NOTES=$(find . -name "*.gcno")
-          export SOURCES=${NOTES//.gcno/}
+          export SOURCES=$(for i in ${NOTES//.gcno/}; do echo "../src/$i"; done)
           echo "NOTES=$NOTES"
           echo "SOURCES=$SOURCES"
-          gcov $SOURCES || echo "returned $?"
+          gcov -r $SOURCES || echo "returned $?"
           lcov --capture --directory . --no-external --output-file coverage.info --exclude \*/_deps/\*
 
       - name: Upload C++ coverage to Codecov
