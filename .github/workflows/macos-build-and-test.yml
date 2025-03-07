@@ -128,7 +128,7 @@ jobs:
           mkdir "${{github.workspace}}/backup"
           mv "${{github.workspace}}/src/einsums" "${{github.workspace}}/backup"
           pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/installed/lib" --cov="${{github.workspace}}/src" --cov-report=xml
-          mv "${{github.workspace}}/backup/einsums" "${{github.workspace}}/src/einsums"
+          mv "${{github.workspace}}/backup/einsums" "${{github.workspace}}/src"
 
 
       - name: Generate coverage information
