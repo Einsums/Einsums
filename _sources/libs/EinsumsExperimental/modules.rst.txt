@@ -5,7 +5,7 @@
 .. _EinsumsExperimental_modules:
 
 ===========================
-EinsumsExperimental modules
+EinsumsExperimental Modules
 ===========================
 
 .. toctree::
