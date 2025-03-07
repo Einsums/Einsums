@@ -158,7 +158,7 @@ jobs:
           fi
           mkdir "${{github.workspace}}/backup"
           mv "${{github.workspace}}/src/einsums" "${{github.workspace}}/backup/einsums"
-          pytest "${{github.workspace}}/src" --cov="${{github.workspace}}/installed/lib" --cov="${{github.workspace}}/src" --cov-report=xml
+          pytest "${{github.workspace}}/src" --cov="${{github.workspace}}/installed/lib" --cov="${{github.workspace}}" --cov-report=xml
 
       - name: Generate coverage information
         if: ${{ contains(matrix.compiler, 'default') }}
