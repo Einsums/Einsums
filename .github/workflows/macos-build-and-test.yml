@@ -139,6 +139,7 @@ jobs:
           echo "BINARIES=$BINARIES"
           llvm-profdata merge $PROFILES -o default.profdata
           llvm-cov export -format=lcov -ignore-filename-regex="Users|_deps|einsums-env" -instr-profile=default.profdata $BINARIES > coverage.info
+          cat coverage.info
 
       - name: Upload C++ coverage to Codecov
         uses: codecov/codecov-action@v4
