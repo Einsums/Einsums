@@ -186,8 +186,8 @@ jobs:
         if: ${{ contains(matrix.compiler, 'default') }}
         uses: codecov/codecov-action@v5
         with:
-          directory: "${{github.workspace}}"
-          working-directory: "${{github.workspace}}"
+          directory: "${{github.workspace}}/src"
+          working-directory: "${{github.workspace}}/src"
           disable_search: true
           flags: python,linux
           files: ${{github.workspace}}/installed/coverage.xml
