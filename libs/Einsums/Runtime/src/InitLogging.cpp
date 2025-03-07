@@ -63,24 +63,25 @@ struct HostnameFormatterFlag : spdlog::custom_flag_formatter {
 };
 
 void init_logging(RuntimeConfiguration &config) {
+    auto &global_config = GlobalConfigMap::get_singleton();
     // Set log destination
     auto &sinks = get_einsums_logger().sinks();
     sinks.clear();
-    sinks.push_back(get_spdlog_sink(config.einsums.log.destination));
+    sinks.push_back(get_spdlog_sink(global_config.get_string("log-destination")));
 
     // Set log pattern
     auto formatter = std::make_unique<spdlog::pattern_formatter>();
     formatter->add_flag<ThreadIdFormatterFlag>('k');
     formatter->add_flag<ParentThreadIdFormatterFlag>('q');
     formatter->add_flag<HostnameFormatterFlag>('j');
-    formatter->set_pattern(config.einsums.log.format);
+    formatter->set_pattern(global_config.get_string("log-format"));
     get_einsums_logger().set_formatter(std::move(formatter));
 
     // Set log level
-    get_einsums_logger().set_level(static_cast<spdlog::level::level_enum>(config.einsums.log.level));
+    get_einsums_logger().set_level(static_cast<spdlog::level::level_enum>(global_config.get_int("log-level")));
 
     EINSUMS_LOG_INFO("logging submodule has been initialized");
-    EINSUMS_LOG_INFO("log level: {} (0=TRACE,1=DEBUG,2=INFO,3=WARN,4=ERROR,5=CRITICAL)", config.einsums.log.level);
+    EINSUMS_LOG_INFO("log level: {} (0=TRACE,1=DEBUG,2=INFO,3=WARN,4=ERROR,5=CRITICAL)", global_config.get_int("log-level"));
     // EINSUMS_LOG_DEBUG("test debug");
     // EINSUMS_LOG_TRACE("test trace");
     // EINSUMS_LOG_INFO("test info");

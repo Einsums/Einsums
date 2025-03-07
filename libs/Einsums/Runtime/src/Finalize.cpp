@@ -16,6 +16,17 @@
 #include <cstdlib>
 
 namespace einsums {
+
+    namespace detail {
+
+        static std::list<std::function<void()>> __deleters{};
+        
+        void register_free_pointer(std::function<void()> f) {
+            __deleters.push_back(f);
+        }
+        
+        }
+
 int finalize() {
     auto &rt = runtime();
     rt.call_shutdown_functions(true);
@@ -23,9 +34,10 @@ int finalize() {
     rt.call_shutdown_functions(false);
     EINSUMS_LOG_INFO("ran shutdown functions");
 
-    detail::Profiler const &prof = rt.config().einsums.profiler;
-    if (prof.generate_report) {
-        profile::report(prof.filename, prof.append);
+    auto &global_config = GlobalConfigMap::get_singleton();
+
+    if (global_config.get_bool("profiler-report")) {
+        profile::report(global_config.get_string("profiler-filename"), global_config.get_bool("profiler-append"));
     }
 
     // this function destroys the runtime.
@@ -36,8 +48,14 @@ int finalize() {
     // This would cause a dependency error.
     profile::finalize();
 
+    // Free lost pointers.
+    for(auto fn : detail::__deleters) {
+        fn();
+    }
+
     EINSUMS_LOG_INFO("einsums shutdown completed");
 
     return EXIT_SUCCESS;
 }
+
 } // namespace einsums

@@ -15,6 +15,8 @@
 
 namespace einsums {
 
+namespace design_pats {
+
 /**
  * @struct Observable
  *
@@ -79,37 +81,46 @@ struct Observable {
     operator T() const { return get_value(); }
 
     /**
-     * @brief Explicit value assignment.
-     *
-     * @param value The value to assign to the observable.
-     */
-    void set_value(T const &value) {
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
-            if (_state != value) {
-                _state         = value;
-                _value_changed = true;
-                notify_observers(value); // Notify registered observers
-            }
-        }
-        _cv.notify_all(); // Notify threads waiting on value change
-    }
-
-    /**
      * @brief Explicit getter.
      */
-    const T &get_value() const {
+    T const &get_value() const {
         std::lock_guard<std::mutex> lock(_mutex);
         return _state;
     }
 
     /**
+     * @brief Get a lock that updates internal values as well as the state.
+     */
+    T &get_value() { return _state; }
+
+    /**
+     * @brief Lock the state.
+     */
+    void lock() { _mutex.lock(); }
+
+    /**
+     * @brief Unlock the state.
+     *
+     * This will automatically notify observers when done if no arguments are passed.
+     * If false is passed, then it will not notify the observers.
+     */
+    void unlock(bool notify = true) {
+        _mutex.unlock();
+
+        if (notify) {
+            notify_observers();
+        }
+    }
+
+    bool try_lock() { return _mutex.try_lock(); }
+
+    /**
      * @brief Wait for the value to change.
      */
     void wait_for_change() {
+        size_t                       check_changed = _value_changed;
         std::unique_lock<std::mutex> lock(_mutex);
-        _cv.wait(lock, [this]() { return _value_changed; });
-        _value_changed = false; // Reset the change flag after notification
+        _cv.wait(lock, [this, check_changed]() { return _value_changed == check_changed; });
     }
 
     /**
@@ -138,10 +149,15 @@ struct Observable {
     /**
      * @brief Notify all of the observers that observe this observable.
      */
-    void notify_observers(T const &value) {
+    void notify_observers() {
+        // Notify things that are waiting for changes.
+        _mutex.lock();
+        _value_changed++;
+        _mutex.unlock();
+
         std::lock_guard<std::mutex> lock(_observer_mutex);
         for (auto const &observer : _observers) {
-            observer(value); // Call each registered observer with the new value
+            observer(*this); // Call each registered observer with the new values
         }
     }
 
@@ -151,12 +167,12 @@ struct Observable {
      * @brief The internal state of the observable.
      */
     T                       _state;
-    mutable std::mutex      _mutex;                 /// For thread-safe value access
-    std::condition_variable _cv;                    /// For thread synchronization
-    bool                    _value_changed = false; /// Flag indicating value change
+    mutable std::mutex      _mutex{};           /// For thread-safe value access
+    std::condition_variable _cv{};              /// For thread synchronization
+    size_t                  _value_changed = 0; /// Counter indicating how many times the value has changed.
 
-    std::list<std::function<void(T const &)>> _observers;      /// List of observers
-    std::mutex                                _observer_mutex; /// Protects the observer list
+    std::list<std::function<void(T const &)>> _observers{};      /// List of observers
+    std::mutex                                _observer_mutex{}; /// Protects the observer list
 };
-
+} // namespace design_pats
 } // namespace einsums

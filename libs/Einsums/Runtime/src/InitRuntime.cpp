@@ -95,7 +95,9 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
     // Before this line logging does not work.
     init_logging(config);
 
-    if (config.einsums.install_signal_handlers) {
+    auto &global_config = GlobalConfigMap::get_singleton();
+
+    if (global_config.get_bool("install-signal-handlers")) {
         EINSUMS_LOG_TRACE("Installing signal handlers...");
         set_signal_handlers();
     }
@@ -118,7 +120,9 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
     run(f, *rt, params);
 
     // pointer to runtime is stored in TLS
-    [[maybe_unused]] Runtime *p = rt.release();
+    Runtime *p = rt.release();
+
+    detail::register_free_pointer([p]() { delete p; });
 
     return 0;
 }
