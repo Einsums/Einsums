@@ -605,7 +605,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{i, j}, &C, Indices{i, j}, A);
+        permute(Indices{i, j}, &C, Indices{i, j}, A);
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -616,7 +616,7 @@ TEST_CASE("GPU sort2") {
         DeviceTensorView A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
         DeviceTensorView C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
-        sort(Indices{j, i}, &C_view, Indices{i, j}, A_view);
+        permute(Indices{j, i}, &C_view, Indices{i, j}, A_view);
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -646,7 +646,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(1.0, Indices{i, j}, &C0, 1.0, Indices{i, j}, A);
+        permute(1.0, Indices{i, j}, &C0, 1.0, Indices{i, j}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -661,7 +661,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(2.0, Indices{i, j}, &C0, 0.5, Indices{i, j}, A);
+        permute(2.0, Indices{i, j}, &C0, 0.5, Indices{i, j}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -680,7 +680,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{j, i}, &C, Indices{i, j}, A);
+        permute(Indices{j, i}, &C, Indices{i, j}, A);
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -701,7 +701,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{k, j, i}, &B, Indices{i, j, k}, A);
+        permute(Indices{k, j, i}, &B, Indices{i, j, k}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -711,7 +711,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{i, k, j}, &B, Indices{i, j, k}, A);
+        permute(Indices{i, k, j}, &B, Indices{i, j, k}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -721,7 +721,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{j, k, i}, &B, Indices{i, j, k}, A);
+        permute(Indices{j, k, i}, &B, Indices{i, j, k}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -731,7 +731,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{i, j, k}, &B, Indices{k, j, i}, A);
+        permute(Indices{i, j, k}, &B, Indices{k, j, i}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -756,7 +756,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(0.0, Indices{i, l, k, j}, &B, 0.5, Indices{k, j, l, i}, A);
+        permute(0.0, Indices{i, l, k, j}, &B, 0.5, Indices{k, j, l, i}, A);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
@@ -784,7 +784,7 @@ TEST_CASE("GPU sort2") {
     //         }
     //     }
 
-    //     sort(Indices{i, k, l, m, j}, &B, Indices{j, k, l, m, i}, A);
+    //     permute(Indices{i, k, l, m, j}, &B, Indices{j, k, l, m, i}, A);
     //     for (int i = 0; i < 3; i++) {
     //         for (int j = 0; j < 3; j++) {
     //             for (int k = 0; k < 3; k++) {
@@ -808,7 +808,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{j, i}, &B, Indices{i, j}, A);
+        permute(Indices{j, i}, &B, Indices{i, j}, A);
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
                 REQUIRE_THAT((double)B(j, i), Catch::Matchers::WithinRel((double)A(i, j), 0.00001));
@@ -828,7 +828,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{j, k, i}, &B, Indices{i, j, k}, A);
+        permute(Indices{j, k, i}, &B, Indices{i, j, k}, A);
         for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
                 for (int k = 0; k < A.dim(2); k++, ij++) {
