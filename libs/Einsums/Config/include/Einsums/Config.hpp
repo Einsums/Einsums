@@ -8,6 +8,7 @@
 #include <Einsums/Config/Alias.hpp>
 #include <Einsums/Config/BranchHints.hpp>
 #include <Einsums/Config/CompilerSpecific.hpp>
+#include <Einsums/Config/Debug.hpp>
 #include <Einsums/Config/Defines.hpp>
 #include <Einsums/Config/ExportDefinitions.hpp>
 #include <Einsums/Config/ForceInline.hpp>

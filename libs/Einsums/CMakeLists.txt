@@ -36,6 +36,7 @@ set(_Einsums_modules
   TensorUtilities
   TypeSupport
   Utilities
+        Version
   )
 # cmake-format: on
 
