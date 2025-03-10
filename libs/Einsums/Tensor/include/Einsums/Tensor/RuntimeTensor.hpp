@@ -100,6 +100,21 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
     }
 
     /**
+     * @brief Create a new runtime tensor with the given name and dimensions using an initializer list.
+     *
+     * @param name the new name of the tensor.
+     * @param dims The dimensions of the tensor as an initializer list.
+     */
+    RuntimeTensor(std::string name, std::initializer_list<size_t> dims) : RuntimeTensor(name, std::vector<size_t>(dims)) {}
+
+    /**
+     * @brief Create a new runtime tensor with the given dimensions using an initializer list.
+     *
+     * @param dims The dimensions of the tensor as an initializer list.
+     */
+    explicit RuntimeTensor(std::initializer_list<size_t> dims) : RuntimeTensor(std::vector<size_t>(dims)) {}
+
+    /**
      * @brief Copy a tensor into a runtime tensor.
      *
      * The data from the tensor will be copied, not mapped. If you want to alias the data, use a RuntimeTensorView instead.

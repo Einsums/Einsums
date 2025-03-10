@@ -74,6 +74,11 @@ TEST_CASE("Runtime Tensor Assignment") {
             }
         }
     }
+
+    // initializer list constructors
+    REQUIRE_NOTHROW(RuntimeTensor<double>("test_tensor", {}));
+    REQUIRE_NOTHROW(RuntimeTensor<double>("test_tensor", {3, 4, 5}));
+    REQUIRE_NOTHROW(RuntimeTensor<double>({3, 4, 5}));
 }
 
 TEST_CASE("Runtime Tensor View Creation") {
