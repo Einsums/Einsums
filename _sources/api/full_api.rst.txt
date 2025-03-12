@@ -52,6 +52,7 @@ refer to the full documentation below.
    /libs/Einsums/TensorUtilities/api/full_api.rst
    /libs/Einsums/TypeSupport/api/full_api.rst
    /libs/Einsums/Utilities/api/full_api.rst
+   /libs/Einsums/Version/api/full_api.rst
 
 
 .. _libs_unmodularized:

@@ -25,4 +25,5 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
    /libs/Einsums/Config/api/CompilerSpecific.rst
    /libs/Einsums/Config/api/Namespace.rst
    /libs/Einsums/Config/api/Types.rst
+   /libs/Einsums/Config/api/Debug.rst
    /libs/Einsums/Config/api/Alias.rst
