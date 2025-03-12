@@ -14,6 +14,7 @@
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 #include <Einsums/Utilities/Random.hpp>
+#include <Einsums/Version.hpp>
 
 #include <csignal>
 #include <cstdlib>
@@ -89,13 +90,15 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
 
     // Command line arguments for Einsums will be prefixed with --einsums:
     // For example, "--einsums:verbose=1" will be translated to verbose=1
-    std::unordered_map<std::string, std::string> cmdline;
-    RuntimeConfiguration                         config(argv);
+    RuntimeConfiguration config(argv);
 
     // Before this line logging does not work.
     init_logging(config);
 
     auto &global_config = GlobalConfigMap::get_singleton();
+
+    // Report build settings.
+    EINSUMS_LOG_INFO("Starting Einsums: {}", build_string());
 
     if (global_config.get_bool("install-signal-handlers")) {
         EINSUMS_LOG_TRACE("Installing signal handlers...");

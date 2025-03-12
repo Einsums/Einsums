@@ -3,18 +3,22 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(AssertionHeaders Einsums/Assert.hpp Einsums/Assertion/EvaluateAssert.hpp)
+set(VersionHeaders Einsums/Version.hpp)
 
-set(AssertionSources Assertion.cpp)
+set(VersionSources Version.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
-  Einsums Assertion
-  SOURCES ${AssertionSources}
-  HEADERS ${AssertionHeaders}
-  DEPENDENCIES
-        MODULE_DEPENDENCIES Einsums_Config Einsums_Debugging Einsums_Preprocessor Einsums_Version
-  CMAKE_SUBDIRS examples tests
+        Einsums Version
+        SOURCES ${VersionSources}
+        HEADERS ${VersionHeaders}
+        DEPENDENCIES
+        MODULE_DEPENDENCIES Einsums_Config
+        CMAKE_SUBDIRS examples tests
+        BASE_LIBNAME Einsums
 )
+
+

@@ -38,3 +38,4 @@ Einsums Modules
     /libs/Einsums/TensorUtilities/docs/index.rst
     /libs/Einsums/TypeSupport/docs/index.rst
     /libs/Einsums/Utilities/docs/index.rst
+    /libs/Einsums/Version/docs/index.rst

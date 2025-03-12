@@ -7,6 +7,7 @@
 
 #include <Einsums/Assert.hpp>
 #include <Einsums/Debugging/Backtrace.hpp>
+#include <Einsums/Version.hpp>
 
 #include <iostream>
 
@@ -20,7 +21,7 @@ auto get_handler() -> assertion_handler_type & {
 } // namespace
 
 void default_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg) {
-    std::cerr << loc.function_name() << ":" << loc.line() << " : Assertion '" << expr << "' failed";
+    std::cerr << complete_version() << "\n" << loc.function_name() << ":" << loc.line() << " : Assertion '" << expr << "' failed";
     if (!msg.empty()) {
         std::cerr << " (" << msg << ")\n";
     } else {

@@ -32,6 +32,7 @@ einsums_add_module(
     Einsums_RuntimeConfiguration
     Einsums_Errors
     Einsums_Logging
+        Einsums_Version
   CMAKE_SUBDIRS examples tests
   # BASE_LIBNAME Einsums
 )
