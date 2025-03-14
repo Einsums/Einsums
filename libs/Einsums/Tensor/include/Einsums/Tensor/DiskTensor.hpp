@@ -253,11 +253,11 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     auto operator()(MultiIndex... index)
         -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank> {
         // Get positions of All
-        auto all_positions = get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
+        auto all_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
             arguments::positions_of_type<AllT, MultiIndex...>());
-        auto index_positions = get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(
+        auto index_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(
             arguments::positions_of_type<size_t, MultiIndex...>());
-        auto range_positions = get_array_from_tuple<std::array<int, count_of_type<Range, MultiIndex...>()>>(
+        auto range_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<Range, MultiIndex...>()>>(
             arguments::positions_of_type<Range, MultiIndex...>());
 
         auto const &indices = std::forward_as_tuple(index...);
@@ -306,11 +306,11 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     auto operator()(MultiIndex... index) const
         -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank> const {
         // Get positions of All
-        auto all_positions = get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
+        auto all_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
             arguments::positions_of_type<AllT, MultiIndex...>());
-        auto index_positions = get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(
+        auto index_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(
             arguments::positions_of_type<size_t, MultiIndex...>());
-        auto range_positions = get_array_from_tuple<std::array<int, count_of_type<Range, MultiIndex...>()>>(
+        auto range_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<Range, MultiIndex...>()>>(
             arguments::positions_of_type<Range, MultiIndex...>());
 
         auto const &indices = std::forward_as_tuple(index...);

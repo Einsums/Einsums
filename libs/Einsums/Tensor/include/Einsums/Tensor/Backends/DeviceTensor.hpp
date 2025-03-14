@@ -802,7 +802,7 @@ auto DeviceTensor<T, rank>::operator()(MultiIndex... index) const -> DeviceTenso
     Offset<rank> offset{};
     Stride<rank> stride = _strides;
 
-    auto ranges = get_array_from_tuple<std::array<Range, rank>>(std::forward_as_tuple(index...));
+    auto ranges = arguments::get_array_from_tuple<std::array<Range, rank>>(std::forward_as_tuple(index...));
 
     for (int r = 0; r < rank; r++) {
         auto range = ranges[r];
