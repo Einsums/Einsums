@@ -299,7 +299,7 @@ struct FunctionTensor : public CoreTensor {
         Offset<Rank>          offset{};
         std::array<int, Rank> index_template;
 
-        auto ranges = get_array_from_tuple<std::array<Range, Rank>>(std::forward_as_tuple(index...));
+        auto ranges = arguments::get_array_from_tuple<std::array<Range, Rank>>(std::forward_as_tuple(index...));
 
         for (int r = 0; r < Rank; r++) {
             auto range = ranges[r];
