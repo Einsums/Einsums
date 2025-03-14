@@ -21,6 +21,7 @@ Einsums Modules
     /libs/Einsums/Decomposition/docs/index.rst
     /libs/Einsums/Errors/docs/index.rst
     /libs/Einsums/FFT/docs/index.rst
+    /libs/Einsums/GPUMemory/docs/index.rst
     /libs/Einsums/GPUStreams/docs/index.rst
     /libs/Einsums/HPTT/docs/index.rst
     /libs/Einsums/Iterator/docs/index.rst

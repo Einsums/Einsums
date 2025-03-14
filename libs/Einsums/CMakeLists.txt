@@ -19,6 +19,7 @@ set(_Einsums_modules
   Decomposition
   Errors
   FFT
+  GPUMemory
   GPUStreams
   HPTT
   Iterator
