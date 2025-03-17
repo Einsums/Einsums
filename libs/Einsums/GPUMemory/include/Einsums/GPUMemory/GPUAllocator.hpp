@@ -5,13 +5,20 @@
 
 #pragma once
 
+#include <Einsums/Errors/Error.hpp>
+#include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/GPUMemory/ModuleVars.hpp>
+
 #include <complex>
 #include <hip/hip_common.h>
 #include <hip/hip_complex.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
+#include <mutex>
+#include <source_location>
 #include <type_traits>
-#include <Einsums/Errors/Error.hpp>
+
+#include "Einsums/StringUtil/MemoryString.hpp"
 
 namespace einsums {
 
@@ -38,16 +45,31 @@ struct GPUAllocator {
     pointer allocate(size_t n) {
         pointer out;
 
+        auto &vars = detail::Einsums_GPUMemory_vars::get_singleton();
+
+        if (!vars.try_allocate(n * sizeof(T))) {
+            EINSUMS_THROW_EXCEPTION(std::bad_alloc, "Could not allocate enough memory on the GPU device. Requested {} bytes.",
+                                    n * sizeof(T));
+        }
+
         hip_catch(hipMalloc((void **)&out, n * sizeof(T)));
 
         return out;
     }
 
-    void deallocate(pointer p, size_t n) { hip_catch(hipFree(static_cast<void *>(p))); }
+    void deallocate(pointer p, size_t n) {
+        auto &vars = detail::Einsums_GPUMemory_vars::get_singleton();
+
+        vars.deallocate(n * sizeof(T));
+
+        hip_catch(hipFree(static_cast<void *>(p)));
+    }
 
     void construct(pointer xp, T const &value) {
         hip_catch(hipMemcpy((void *)xp, (void const *)&value, sizeof(value), hipMemcpyHostToDevice));
     }
+
+    size_type max_size() const { return detail::Einsums_GPUMemory_vars::get_singleton().get_max_size(); }
 };
 
 template <typename T>
@@ -81,8 +103,8 @@ struct MappedAllocator {
         delete[] p;
     }
 
-    template<typename... Args>
-    void construct(pointer xp, Args&&... args) {
+    template <typename... Args>
+    void construct(pointer xp, Args &&...args) {
         *xp = T(std::forward<Args>(args)...);
     }
 };

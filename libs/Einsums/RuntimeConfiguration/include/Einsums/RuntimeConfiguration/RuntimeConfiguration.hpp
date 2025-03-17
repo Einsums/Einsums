@@ -26,6 +26,8 @@ namespace detail {
 
 } // namespace detail
 
+EINSUMS_EXPORT void register_arguments(std::function<void(argparse::ArgumentParser &)> const &);
+
 /**
  * @struct RuntimeConfiguration
  *

@@ -87,6 +87,16 @@ struct insensitive_equals {
 } // namespace detail
 
 /**
+ * @typedef config_mapping_type
+ *
+ * @brief The type of map that underlies the ConfigMap class.
+ *
+ * @tparam T The value type of the map.
+ */
+template<typename T>
+using config_mapping_type = std::unordered_map<std::string, T, hashes::insensitive_hash<std::string>, detail::insensitive_equals<std::string>>;
+
+/**
  * @class ConfigMap
  *
  * @brief Holds a mapping of string keys to configuration values.

@@ -31,6 +31,10 @@
 
 namespace einsums {
 namespace detail {
+
+EINSUMS_EXPORT std::list<std::function<void(argparse::ArgumentParser &)>> argument_functions;
+
+
 std::string get_executable_filename() {
     std::string r;
 
@@ -65,6 +69,10 @@ std::string get_executable_prefix() {
     return prefix;
 }
 } // namespace detail
+
+void register_arguments(std::function<void(argparse::ArgumentParser &)> const &func) {
+    detail::argument_functions.push_back(func);
+}
 
 void RuntimeConfiguration::pre_initialize() {
     EINSUMS_LOG_INFO("Setting default configuration values");
@@ -132,7 +140,11 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
     // Imperative that pre_initialize is called first as it is responsible for setting
     // default values. This is done in the constructor.
     // There should be a mechanism that allows the user to change the program name.
-    argument_parser.reset(new argparse::ArgumentParser("einsums"));
+    if(original[0].length() > 0) {
+        argument_parser.reset(new argparse::ArgumentParser(original[0]));
+    } else {
+        argument_parser.reset(new argparse::ArgumentParser("einsums"));
+    }
 
     /*
      * Acquire locks for the different maps.
@@ -161,12 +173,13 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
             .help("do not print additional diagnostic information on termination")
             .store_into(global_bools["diagnostics-on-terminate"]);
 
-        argument_parser->add_argument("--einsums:log-level")
-        #ifdef EINSUMS_DEBUG
+        argument_parser
+            ->add_argument("--einsums:log-level")
+#ifdef EINSUMS_DEBUG
             .default_value<std::int64_t>(2)
-        #else
+#else
             .default_value<std::int64_t>(3)
-        #endif
+#endif
             .help("set log level")
             .choices(0, 1, 2, 3, 4)
             .store_into(global_ints["log-level"]);
@@ -192,6 +205,11 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
             .default_value(true)
             .help("append to an existing file")
             .store_into(global_bools["profiler-append"]);
+    }
+
+    // Inject module-specific command lines.
+    for(auto &func : detail::argument_functions) {
+        func(*argument_parser);
     }
 
     // Allow the user to inject their own command line options
