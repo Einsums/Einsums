@@ -1,3 +1,8 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #pragma once
 
 #include <Einsums/Config.hpp>
@@ -41,17 +46,17 @@ struct DivisionOp {};
 
 template <typename T, typename... MultiIndex>
     requires(std::is_arithmetic_v<T>)
-inline T compute_arithmetic(T scalar, MultiIndex... inds) {
+T compute_arithmetic(T scalar, MultiIndex... inds) {
     return scalar;
 }
 
 template <typename T1, template <typename, size_t> typename TensorType, typename T, size_t Rank, typename... MultiIndex>
-inline T compute_arithmetic(TensorType<T, Rank> const *tensor, MultiIndex... inds) {
+T compute_arithmetic(TensorType<T, Rank> const *tensor, MultiIndex... inds) {
     return (*tensor)(inds...);
 }
 
 template <typename T, typename Op, typename Left, typename Right, typename... MultiIndex>
-inline T compute_arithmetic(std::tuple<Op, Left, Right> const *input, MultiIndex... inds) {
+T compute_arithmetic(std::tuple<Op, Left, Right> const *input, MultiIndex... inds) {
     if constexpr (std::is_same_v<Op, AdditionOp>) {
         return compute_arithmetic<T>(std::get<1>(*input), inds...) + compute_arithmetic<T>(std::get<2>(*input), inds...);
     } else if constexpr (std::is_same_v<Op, SubtractionOp>) {
@@ -64,7 +69,7 @@ inline T compute_arithmetic(std::tuple<Op, Left, Right> const *input, MultiIndex
 }
 
 template <typename T, typename Operand, typename... MultiIndex>
-inline T compute_arithmetic(std::tuple<SubtractionOp, Operand> const *input, MultiIndex... inds) {
+T compute_arithmetic(std::tuple<SubtractionOp, Operand> const *input, MultiIndex... inds) {
     return -compute_arithmetic<T>(std::get<1>(*input), inds...);
 }
 
@@ -180,6 +185,11 @@ struct ArithmeticTensor : tensor_base::CoreTensor {
      * @param new_name The new name of the tensor.
      */
     void set_name(std::string const &new_name) { _name = new_name; }
+
+    /**
+     * Indicates that the tensor is contiguous.
+     */
+    bool full_view_of_underlying() const noexcept { return false; }
 };
 
 } // namespace einsums
