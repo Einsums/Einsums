@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -47,7 +47,7 @@
 #    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS
 // other warnings you want to deactivate...
 
-#elif defined(__GNUC__) || defined(__clang__)
+#elif defined(__clang__)
 #    define EINSUMS_DO_PRAGMA(X)                 _Pragma(#X)
 #    define EINSUMS_DISABLE_WARNING_PUSH         EINSUMS_DO_PRAGMA(GCC diagnostic push)
 #    define EINSUMS_DISABLE_WARNING_POP          EINSUMS_DO_PRAGMA(GCC diagnostic pop)
@@ -55,6 +55,15 @@
 #    define EINSUMS_DISABLE_WARNING(warningName) EINSUMS_DO_PRAGMA(EINSUMS_DISABLE_WARNING_0(warningName))
 
 #    define EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE EINSUMS_DISABLE_WARNING(-Wreturn-type-c-linkage)
+#    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS EINSUMS_DISABLE_WARNING(-Wdeprecated-declarations)
+// other warnings you want to deactivate...
+#elif defined(__GNUC__)
+#    define EINSUMS_DO_PRAGMA(X)                 _Pragma(#X)
+#    define EINSUMS_DISABLE_WARNING_PUSH         EINSUMS_DO_PRAGMA(GCC diagnostic push)
+#    define EINSUMS_DISABLE_WARNING_POP          EINSUMS_DO_PRAGMA(GCC diagnostic pop)
+#    define EINSUMS_DISABLE_WARNING(warningName) EINSUMS_DO_PRAGMA(GCC diagnostic ignored #warningName)
+
+#    define EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
 #    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS EINSUMS_DISABLE_WARNING(-Wdeprecated-declarations)
 // other warnings you want to deactivate...
 
