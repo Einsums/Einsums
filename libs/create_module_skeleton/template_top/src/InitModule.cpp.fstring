@@ -6,6 +6,7 @@
 #include <{lib_name}/{module_name}/InitModule.hpp>
 #include <Einsums/Runtime.hpp>
 #include <Einsums/Logging.hpp>
+#include "argparse/argparse.hpp"
 
 namespace einsums {{
     
@@ -19,11 +20,16 @@ namespace einsums {{
 init_{lib_name}_{module_name}::init_{lib_name}_{module_name}() {{
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
+    einsums::register_arguments(einsums::add_{lib_name}_{module_name}_arguments);
     einsums::register_startup_function(einsums::initialize_{lib_name}_{module_name});
     einsums::register_shutdown_function(einsums::finalize_{lib_name}_{module_name});
 }}
 
 init_{lib_name}_{module_name} detail::initialize_module_{lib_name}_{module_name};
+
+EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments(argparse::ArgumentParser &) {
+    /// @todo Fill in.
+}
 
 void initialize_{lib_name}_{module_name}() {{
     EINSUMS_LOG_TRACE("initializing {lib_name}/{module_name}");

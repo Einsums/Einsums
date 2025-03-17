@@ -43,6 +43,6 @@ foreach(test ${{{module_name}Tests}})
   )
 
   einsums_add_unit_test(
-    "Modules.{lib_name}.{module_name}" ${{test}} ${{${{TestName}}_${{TestExtension}}_PARAMETERS}}
+    "Modules.{lib_name}.{module_name}" ${{TestName}} ${{${{TestName}}_${{TestExtension}}_PARAMETERS}}
   )
 endforeach()

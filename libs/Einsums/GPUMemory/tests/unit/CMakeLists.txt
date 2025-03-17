@@ -12,14 +12,13 @@
 # set(Example1_cpp_FLAGS DEPENDENCIES SomeOtherGreatLibrary) set(Example2_hip_PARAMETERS THREADS 1)
 
 # Name of test file. Include .cpp, .hip, etc. extension.
-set(StringUtilTests MemoryString.cpp)
+set(GPUMemoryTests)
 
-foreach(test ${StringUtilTests})
+foreach(test ${GPUMemoryTests})
   # Extract base name of test Example1.cpp -> Example1, Example.2.hip -> Example
   get_filename_component(TestName ${test} NAME_WE)
   # Extract extension of the test Example1.cpp -> .cpp, Example.2.hip -> .2.hip
   get_filename_component(Extension ${test} EXT)
-  message("Test name ${TestName}")
 
   # Remove the leading dot and replace any periods with underscores
   string(SUBSTRING ${Extension} 1 -1 EXT_NO_DOT) # Remove the leading dot
@@ -44,6 +43,6 @@ foreach(test ${StringUtilTests})
   )
 
   einsums_add_unit_test(
-    "Modules.Einsums.StringUtil" ${TestName} ${${TestName}_${TestExtension}_PARAMETERS}
+    "Modules.Einsums.GPUMemory" ${test} ${${TestName}_${TestExtension}_PARAMETERS}
   )
 endforeach()
