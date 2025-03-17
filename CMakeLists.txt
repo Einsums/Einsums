@@ -42,8 +42,8 @@ endif()
 # ##################################################################################################
 set(EINSUMS_VERSION_MAJOR 1)
 set(EINSUMS_VERSION_MINOR 0)
-set(EINSUMS_VERSION_PATCH 0)
-set(EINSUMS_VERSION_DATE "20250303")
+set(EINSUMS_VERSION_PATCH 1)
+set(EINSUMS_VERSION_DATE "20250317")
 set(EINSUMS_VERSION_TAG "")
 
 set(EINSUMS_VERSION "${EINSUMS_VERSION_MAJOR}.${EINSUMS_VERSION_MINOR}.${EINSUMS_VERSION_PATCH}")
