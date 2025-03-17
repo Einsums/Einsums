@@ -12,7 +12,7 @@
 # set(Example1_cpp_FLAGS DEPENDENCIES SomeOtherGreatLibrary) set(Example2_hip_PARAMETERS THREADS 1)
 
 # Name of test file. Include .cpp, .hip, etc. extension.
-set(GPUMemoryTests)
+set(GPUMemoryTests.hip)
 
 foreach(test ${GPUMemoryTests})
   # Extract base name of test Example1.cpp -> Example1, Example.2.hip -> Example
@@ -43,6 +43,6 @@ foreach(test ${GPUMemoryTests})
   )
 
   einsums_add_unit_test(
-    "Modules.Einsums.GPUMemory" ${test} ${${TestName}_${TestExtension}_PARAMETERS}
+    "Modules.Einsums.GPUMemory" ${TestName} ${${TestName}_${TestExtension}_PARAMETERS}
   )
 endforeach()

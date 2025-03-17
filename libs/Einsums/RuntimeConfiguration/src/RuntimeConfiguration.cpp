@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#include "Einsums/TypeSupport/Lockable.hpp"
+
 #if defined(EINSUMS_WINDOWS)
 #    include <process.h>
 #elif defined(EINSUMS_HAVE_UNISTD_H)
@@ -32,8 +34,17 @@
 namespace einsums {
 namespace detail {
 
-EINSUMS_EXPORT std::list<std::function<void(argparse::ArgumentParser &)>> argument_functions;
+struct EINSUMS_EXPORT ArgumentList final : design_pats::Lockable<std::mutex> {
+    EINSUMS_SINGLETON_DEF(ArgumentList)
 
+  public:
+    std::list<std::function<void(argparse::ArgumentParser &)>> argument_functions{};
+
+  private:
+    explicit ArgumentList() = default;
+};
+
+EINSUMS_SINGLETON_IMPL(ArgumentList)
 
 std::string get_executable_filename() {
     std::string r;
@@ -70,8 +81,11 @@ std::string get_executable_prefix() {
 }
 } // namespace detail
 
-void register_arguments(std::function<void(argparse::ArgumentParser &)> const &func) {
-    detail::argument_functions.push_back(func);
+void register_arguments(std::function<void(argparse::ArgumentParser &)> func) {
+    auto &argument_list = detail::ArgumentList::get_singleton();
+    auto  lock          = std::lock_guard(argument_list);
+
+    argument_list.argument_functions.push_back(func);
 }
 
 void RuntimeConfiguration::pre_initialize() {
@@ -140,7 +154,7 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
     // Imperative that pre_initialize is called first as it is responsible for setting
     // default values. This is done in the constructor.
     // There should be a mechanism that allows the user to change the program name.
-    if(original[0].length() > 0) {
+    if (original[0].length() > 0) {
         argument_parser.reset(new argparse::ArgumentParser(original[0]));
     } else {
         argument_parser.reset(new argparse::ArgumentParser("einsums"));
@@ -207,9 +221,15 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
             .store_into(global_bools["profiler-append"]);
     }
 
-    // Inject module-specific command lines.
-    for(auto &func : detail::argument_functions) {
-        func(*argument_parser);
+    {
+        auto &argument_list = detail::ArgumentList::get_singleton();
+
+        auto lock = std::lock_guard(argument_list);
+
+        // Inject module-specific command lines.
+        for (auto &func : argument_list.argument_functions) {
+            func(*argument_parser);
+        }
     }
 
     // Allow the user to inject their own command line options
