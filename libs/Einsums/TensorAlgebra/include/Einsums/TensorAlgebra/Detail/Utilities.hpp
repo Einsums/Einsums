@@ -7,6 +7,7 @@
 
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/TensorBase/Common.hpp>
+#include <Einsums/TypeSupport/Arguments.hpp>
 
 #include <tuple>
 
@@ -17,7 +18,7 @@ namespace detail {
 
 template <size_t Rank, typename... Args, std::size_t... I>
 auto order_indices(std::tuple<Args...> const &combination, std::array<size_t, Rank> const &order, std::index_sequence<I...> /*seq*/) {
-    return std::tuple{get_from_tuple<size_t>(combination, order[I])...};
+    return std::tuple{arguments::get_from_tuple<size_t>(combination, order[I])...};
 }
 
 } // namespace detail
