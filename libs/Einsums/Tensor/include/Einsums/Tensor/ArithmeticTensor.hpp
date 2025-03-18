@@ -7,6 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
 
 #include <cstddef>
@@ -44,8 +45,8 @@ struct MultiplicationOp {};
  */
 struct DivisionOp {};
 
-template <typename T, typename... MultiIndex>
-    requires(std::is_arithmetic_v<T>)
+template <CanBeComplex T, typename... MultiIndex>
+// requires requires { IsComplex<T> || !IsComplex<T>; }
 T compute_arithmetic(T scalar, MultiIndex... inds) {
     return scalar;
 }
