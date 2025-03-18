@@ -69,7 +69,7 @@ struct GPUAllocator {
         hip_catch(hipMemcpy((void *)xp, (void const *)&value, sizeof(value), hipMemcpyHostToDevice));
     }
 
-    size_type max_size() const { return detail::Einsums_GPUMemory_vars::get_singleton().get_max_size(); }
+    size_type max_size() const { return detail::Einsums_GPUMemory_vars::get_singleton().get_max_size() / sizeof(T); }
 };
 
 template <typename T>

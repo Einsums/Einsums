@@ -13,6 +13,7 @@ set(_Einsums_modules
   BLAS
   BLASBase
   BLASVendor
+  BufferAllocator
   Concepts
   Config
   Debugging

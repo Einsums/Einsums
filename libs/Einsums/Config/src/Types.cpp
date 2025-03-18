@@ -90,4 +90,52 @@ size_t einsums::hashes::insensitive_hash<std::string>::operator()(std::string co
     return hash;
 }
 
+void GlobalConfigMap::lock() {
+    str_map_->lock();
+    int_map_->lock();
+    double_map_->lock();
+    bool_map_->lock();
+}
+
+bool GlobalConfigMap::try_lock() {
+    bool res = str_map_->try_lock();
+
+    if (!res) {
+        return false;
+    }
+
+    res = int_map_->try_lock();
+
+    if (!res) {
+        str_map_->unlock();
+        return false;
+    }
+
+    res = double_map_->try_lock();
+
+    if (!res) {
+        str_map_->unlock();
+        int_map_->unlock();
+        return false;
+    }
+
+    res = bool_map_->try_lock();
+
+    if (!res) {
+        str_map_->unlock();
+        int_map_->unlock();
+        double_map_->unlock();
+        return false;
+    }
+
+    return true;
+}
+
+void GlobalConfigMap::unlock(bool notify) {
+    str_map_->unlock(notify);
+    int_map_->unlock(notify);
+    double_map_->unlock(notify);
+    bool_map_->unlock(notify);
+}
+
 } // namespace einsums

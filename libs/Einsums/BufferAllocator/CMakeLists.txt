@@ -3,23 +3,22 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-{gpu_head}
-list(APPEND CMAKE_MODULE_PATH "${{CMAKE_CURRENT_SOURCE_DIR}}/cmake")
 
-set({module_name}Headers {lib_name}/{module_name}/InitModule.hpp {lib_name}/{module_name}/ModuleVars.hpp)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set({module_name}Sources {export_source} InitModule.cpp /ModuleVars.cpp)
+set(BufferAllocatorHeaders Einsums/BufferAllocator/InitModule.hpp Einsums/BufferAllocator/ModuleVars.hpp Einsums/BufferAllocator/BufferAllocator.hpp)
+
+set(BufferAllocatorSources InitModule.cpp ModuleVars.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
-  {lib_symb} {module_name}
-  SOURCES ${{{module_name}Sources}}
-  HEADERS ${{{module_name}Headers}}
-  DEPENDENCIES {export_depends}
+  Einsums BufferAllocator
+  SOURCES ${BufferAllocatorSources}
+  HEADERS ${BufferAllocatorHeaders}
+  DEPENDENCIES 
   MODULE_DEPENDENCIES Einsums_Runtime Einsums_Logging Einsums_TypeSupport Einsums_Config
   CMAKE_SUBDIRS examples tests
-  BASE_LIBNAME {lib_name}
+  BASE_LIBNAME Einsums
 )
 
-{python_footer}
-{gpu_foot}
+
