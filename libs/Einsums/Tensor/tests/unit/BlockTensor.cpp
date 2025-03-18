@@ -1,20 +1,19 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
-#include <H5Fpublic.h>
-#include <catch2/catch_all.hpp>
-#include <type_traits>
+#include <Einsums/Tensor.hpp>
+#include <Einsums/TensorUtilities.hpp>
 
-#include "einsums.hpp"
+#include <Einsums/Testing.hpp>
 
-TEST_CASE("Block Tensor creation", "[tensor][block-tensor]") {
+TEMPLATE_TEST_CASE("Block Tensor creation", "[tensor][block-tensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
-    BlockTensor<double, 2> A("A", 3, 3);
-    BlockTensor<double, 2> B("B", 3, 3);
-    BlockTensor<double, 2> C;
+    BlockTensor<TestType, 2> A("A", 3, 3);
+    BlockTensor<TestType, 2> B("B", 3, 3);
+    BlockTensor<TestType, 2> C;
 
     REQUIRE((A.dim(0) == 6 && A.dim(1) == 6));
     REQUIRE((B.dim(0) == 6 && B.dim(1) == 6));
@@ -24,41 +23,41 @@ TEST_CASE("Block Tensor creation", "[tensor][block-tensor]") {
 
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
-            CHECK(A(i, j) == 0.0);
-            CHECK(B(i, j) == 0.0);
+            CHECK(A(i, j) == TestType(0.0));
+            CHECK(B(i, j) == TestType(0.0));
         }
     }
 
     // Set A and B to identity
-    A(0, 0) = 1.0;
-    A(1, 1) = 1.0;
-    A(2, 2) = 1.0;
-    A(3, 3) = 1.0;
-    A(4, 4) = 1.0;
-    A(5, 5) = 1.0;
+    A(0, 0) = TestType(1.0);
+    A(1, 1) = TestType(1.0);
+    A(2, 2) = TestType(1.0);
+    A(3, 3) = TestType(1.0);
+    A(4, 4) = TestType(1.0);
+    A(5, 5) = TestType(1.0);
 
-    B(0, 0) = 1.0;
-    B(1, 1) = 1.0;
-    B(2, 2) = 1.0;
-    B(3, 3) = 1.0;
-    B(4, 4) = 1.0;
-    B(5, 5) = 1.0;
+    B(0, 0) = TestType(1.0);
+    B(1, 1) = TestType(1.0);
+    B(2, 2) = TestType(1.0);
+    B(3, 3) = TestType(1.0);
+    B(4, 4) = TestType(1.0);
+    B(5, 5) = TestType(1.0);
 
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(A(i, j) == 1.0);
-                CHECK(B(i, j) == 1.0);
+                CHECK(A(i, j) == TestType(1.0));
+                CHECK(B(i, j) == TestType(1.0));
             } else {
-                CHECK(A(i, j) == 0.0);
-                CHECK(B(i, j) == 0.0);
+                CHECK(A(i, j) == TestType(0.0));
+                CHECK(B(i, j) == TestType(0.0));
             }
         }
     }
 
     // Set up C using a different method.
-    C.push_block(Tensor<double, 2>("block2", 3, 3));
-    C.insert_block(0, Tensor<double, 2>("block1", 3, 3));
+    C.push_block(Tensor<TestType, 2>("block2", 3, 3));
+    C.insert_block(0, Tensor<TestType, 2>("block1", 3, 3));
     C.set_name("C");
     C.zero();
 
@@ -68,9 +67,9 @@ TEST_CASE("Block Tensor creation", "[tensor][block-tensor]") {
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(C(i, j) == 1.0);
+                CHECK(C(i, j) == TestType(1.0));
             } else {
-                CHECK(C(i, j) == 0.0);
+                CHECK(C(i, j) == TestType(0.0));
             }
         }
     }
@@ -79,26 +78,26 @@ TEST_CASE("Block Tensor creation", "[tensor][block-tensor]") {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (i == j) {
-                CHECK(A[0](i, j) == 1.0);
-                CHECK(B[0](i, j) == 1.0);
-                CHECK(A[1](i, j) == 1.0);
-                CHECK(B[1](i, j) == 1.0);
-                CHECK(C["block1"](i, j) == 1.0);
-                CHECK(C["block2"](i, j) == 1.0);
+                CHECK(A[0](i, j) == TestType(1.0));
+                CHECK(B[0](i, j) == TestType(1.0));
+                CHECK(A[1](i, j) == TestType(1.0));
+                CHECK(B[1](i, j) == TestType(1.0));
+                CHECK(C["block1"](i, j) == TestType(1.0));
+                CHECK(C["block2"](i, j) == TestType(1.0));
             } else {
-                CHECK(A[0](i, j) == 0.0);
-                CHECK(B[0](i, j) == 0.0);
-                CHECK(A[1](i, j) == 0.0);
-                CHECK(B[1](i, j) == 0.0);
-                CHECK(C["block1"](i, j) == 0.0);
-                CHECK(C["block2"](i, j) == 0.0);
+                CHECK(A[0](i, j) == TestType(0.0));
+                CHECK(B[0](i, j) == TestType(0.0));
+                CHECK(A[1](i, j) == TestType(0.0));
+                CHECK(B[1](i, j) == TestType(0.0));
+                CHECK(C["block1"](i, j) == TestType(0.0));
+                CHECK(C["block2"](i, j) == TestType(0.0));
             }
         }
     }
 
     CHECK_THROWS(C["block3"]);
 
-    A.set_all(2.0);
+    A.set_all(TestType(2.0));
 
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
@@ -108,51 +107,51 @@ TEST_CASE("Block Tensor creation", "[tensor][block-tensor]") {
                 REQUIRE(A.block_of(i) != A.block_of(j));
             }
             if (A.block_of(i) == A.block_of(j)) {
-                CHECK(A(i, j) == 2.0);
+                CHECK(A(i, j) == TestType(2.0));
             } else {
-                CHECK(A(i, j) == 0.0);
+                CHECK(A(i, j) == TestType(0.0));
             }
         }
     }
 }
 
-TEST_CASE("Block Tensor operations", "[tensor][block-tensor]") {
+TEMPLATE_TEST_CASE("Block Tensor operations", "[tensor][block-tensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
-    BlockTensor<double, 2> A("A", 3, 3);
-    BlockTensor<double, 2> B("B", 3, 3);
+    BlockTensor<TestType, 2> A("A", 3, 3);
+    BlockTensor<TestType, 2> B("B", 3, 3);
 
     A.zero();
     B.zero();
 
     // Set A and B to identity
-    A(0, 0) = 1.0;
-    A(1, 1) = 1.0;
-    A(2, 2) = 1.0;
-    A(3, 3) = 1.0;
-    A(4, 4) = 1.0;
-    A(5, 5) = 1.0;
+    A(0, 0) = TestType(1.0);
+    A(1, 1) = TestType(1.0);
+    A(2, 2) = TestType(1.0);
+    A(3, 3) = TestType(1.0);
+    A(4, 4) = TestType(1.0);
+    A(5, 5) = TestType(1.0);
 
-    B(0, 0) = 1.0;
-    B(1, 1) = 1.0;
-    B(2, 2) = 1.0;
-    B(3, 3) = 1.0;
-    B(4, 4) = 1.0;
-    B(5, 5) = 1.0;
+    B(0, 0) = TestType(1.0);
+    B(1, 1) = TestType(1.0);
+    B(2, 2) = TestType(1.0);
+    B(3, 3) = TestType(1.0);
+    B(4, 4) = TestType(1.0);
+    B(5, 5) = TestType(1.0);
 
-    A *= 2;
-    A += 2;
-    A /= 2;
-    A -= 2;
+    A *= TestType(2);
+    A += TestType(2);
+    A /= TestType(2);
+    A -= TestType(2);
 
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(A(i, j) == 0.0);
+                CHECK(A(i, j) == TestType(0.0));
             } else if (A.block_of(i) == A.block_of(j)) {
-                CHECK(A(i, j) == -1.0);
+                CHECK(A(i, j) == TestType(-1.0));
             } else {
-                CHECK(A(i, j) == 0.0);
+                CHECK(A(i, j) == TestType(0.0));
             }
         }
     }
@@ -165,23 +164,23 @@ TEST_CASE("Block Tensor operations", "[tensor][block-tensor]") {
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(A(i, j) == 1.0);
-                CHECK(B(i, j) == 0.0);
+                CHECK(A(i, j) == TestType(1.0));
+                CHECK(B(i, j) == TestType(0.0));
             } else if (A.block_of(i) == A.block_of(j)) {
-                CHECK(A(i, j) == -1.0);
-                CHECK(B(i, j) == 1.0);
+                CHECK(A(i, j) == TestType(-1.0));
+                CHECK(B(i, j) == TestType(1.0));
             } else {
-                CHECK(A(i, j) == 0.0);
-                CHECK(B(i, j) == 0.0);
+                CHECK(A(i, j) == TestType(0.0));
+                CHECK(B(i, j) == TestType(0.0));
             }
         }
     }
 }
 
-TEST_CASE("Block Tensor Info", "[tensor][block-tensor]") {
+TEMPLATE_TEST_CASE("Block Tensor Info", "[tensor][block-tensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
-    BlockTensor<double, 2> A("A", 3, 3);
+    BlockTensor<TestType, 2> A("A", 3, 3);
 
     for (int i = 0; i < 6; i++) {
         CHECK(A.block_of(i) == i / 3);
