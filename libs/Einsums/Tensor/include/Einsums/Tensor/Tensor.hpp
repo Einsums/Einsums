@@ -1204,7 +1204,6 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         : _dims(dims), _strides(strides), _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _index_strides);
         _full_view_of_underlying = (strides == _index_strides);
-<<<<<<< HEAD
         _source_dims = dims;                                            // Must have size Rank
         _offsets.fill(0);                                               // No offset given, taken to be zero
         _offset_ordinal = 0;                                            // Follows
@@ -1215,13 +1214,6 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             }
         }
         if (!_full_view_of_underlying) { // Fuses Indices if Rank < OtherRank (as OtherRank is not known)
-=======
-        _source_dims             = dims;
-        _offsets.fill(0);
-        _offset_ordinal = 0;
-        if (!_full_view_of_underlying) { // Fuses Indices if Rank < OtherRank (as OtherRank is not known)
-            size_t size           = dims_to_strides(dims, _strides);
->>>>>>> Einsums-Master/main
             size_t current_stride = 1;
             for (int i = Rank - 1; i >= 1; i--) {
                 _source_dims[i] = _strides[i - 1] / current_stride;
@@ -1252,10 +1244,6 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             }
         }
         if (!_full_view_of_underlying) { // Fuses Indices if Rank < OtherRank (as OtherRank is not known)
-<<<<<<< HEAD
-=======
-            size_t size           = dims_to_strides(dims, _strides);
->>>>>>> Einsums-Master/main
             size_t current_stride = 1;
             for (int i = dims.size() - 1; i >= 1; i--) {
                 _source_dims[i] = strides[i - 1] / current_stride;
