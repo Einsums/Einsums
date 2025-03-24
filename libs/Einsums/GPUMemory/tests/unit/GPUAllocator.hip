@@ -8,9 +8,11 @@ using namespace einsums::gpu;
 
 TEST_CASE("Test allocator") {
     SECTION("Device only") {
+        auto &config = GlobalConfigMap::get_singleton();
+
         auto alloc = GPUAllocator<double>();
 
-        auto *ptr = alloc.allocate(10);
+        auto ptr = alloc.allocate(10);
 
         hipPointerAttribute_t attribs;
 
@@ -21,10 +23,10 @@ TEST_CASE("Test allocator") {
         alloc.deallocate(ptr, 10);
     }
 
-    SECTION("Device only") {
-        auto alloc = MapAllocator<double>();
+    SECTION("Mapped") {
+        auto alloc = MappedAllocator<double>();
 
-        auto *ptr = alloc.allocate(10);
+        auto ptr = alloc.allocate(10);
 
         hipPointerAttribute_t attribs;
 

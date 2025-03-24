@@ -18,6 +18,7 @@
 #include <source_location>
 #include <type_traits>
 
+#include "Einsums/GPUMemory/GPUPointer.hpp"
 #include "Einsums/StringUtil/MemoryString.hpp"
 
 namespace einsums {
@@ -32,29 +33,30 @@ struct GPUAllocator {
      *
      * @brief The data type stored on the device. This is only different if T is complex.
      */
-    using dev_datatype       = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipFloatComplex,
-                                                  std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
-    using pointer            = dev_datatype *;
-    using const_pointer      = dev_datatype const *;
-    using void_pointer       = void *;
-    using const_void_pointer = void const *;
+    using dev_datatype = std::conditional_t<
+        std::is_same_v<std::remove_cv_t<T>, std::complex<float>>, hipFloatComplex,
+        std::conditional_t<std::is_same_v<std::remove_cv_t<T>, std::complex<double>>, hipDoubleComplex, std::remove_cv_t<T>>>;
+    using pointer            = GPUPointer<T>;
+    using const_pointer      = GPUPointer<T const>;
+    using void_pointer       = GPUPointer<void>;
+    using const_void_pointer = GPUPointer<void const>;
     using value_type         = dev_datatype;
     using size_type          = size_t;
     using difference_type    = ptrdiff_t;
 
     pointer allocate(size_t n) {
-        pointer out;
+        dev_datatype *out;
 
         auto &vars = detail::Einsums_GPUMemory_vars::get_singleton();
 
         if (!vars.try_allocate(n * sizeof(T))) {
-            EINSUMS_THROW_EXCEPTION(std::bad_alloc, "Could not allocate enough memory on the GPU device. Requested {} bytes.",
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not allocate enough memory on the GPU device. Requested {} bytes.",
                                     n * sizeof(T));
         }
 
         hip_catch(hipMalloc((void **)&out, n * sizeof(T)));
 
-        return out;
+        return pointer(out);
     }
 
     void deallocate(pointer p, size_t n) {
@@ -62,11 +64,15 @@ struct GPUAllocator {
 
         vars.deallocate(n * sizeof(T));
 
-        hip_catch(hipFree(static_cast<void *>(p)));
+        hip_catch(hipFree((void *)p));
     }
 
     void construct(pointer xp, T const &value) {
         hip_catch(hipMemcpy((void *)xp, (void const *)&value, sizeof(value), hipMemcpyHostToDevice));
+    }
+
+    void destroy(pointer xp) {
+        ; // Do nothing.
     }
 
     size_type max_size() const { return detail::Einsums_GPUMemory_vars::get_singleton().get_max_size() / sizeof(T); }
@@ -80,8 +86,9 @@ struct MappedAllocator {
      *
      * @brief The data type stored on the device. This is only different if T is complex.
      */
-    using dev_datatype       = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipFloatComplex,
-                                                  std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = std::conditional_t<
+        std::is_same_v<std::remove_cv_t<T>, std::complex<float>>, hipFloatComplex,
+        std::conditional_t<std::is_same_v<std::remove_cv_t<T>, std::complex<double>>, hipDoubleComplex, std::remove_cv_t<T>>>;
     using pointer            = T *;
     using const_pointer      = T const *;
     using void_pointer       = void *;

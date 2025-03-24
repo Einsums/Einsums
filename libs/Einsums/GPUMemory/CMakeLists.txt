@@ -6,7 +6,7 @@
 if(EINSUMS_WITH_GPU_SUPPORT)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(GPUMemoryHeaders Einsums/GPUMemory/GPUAllocator.hpp Einsums/GPUMemory/InitModule.hpp Einsums/GPUMemory/ModuleVars.hpp)
+set(GPUMemoryHeaders Einsums/GPUMemory/GPUAllocator.hpp Einsums/GPUMemory/InitModule.hpp Einsums/GPUMemory/ModuleVars.hpp Einsums/GPUMemory/GPUPointer.hpp)
 
 set(GPUMemorySources InitModule.cpp ModuleVars.cpp)
 
