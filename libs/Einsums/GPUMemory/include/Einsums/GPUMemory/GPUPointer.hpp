@@ -176,6 +176,7 @@ struct GPUPointer final {
     friend void std::swap(GPUPointer<U> &, GPUPointer<U> &);
 };
 
+#ifndef DOXYGEN
 template <typename T>
 struct GPUPointer<T const> final {
   public:
@@ -308,6 +309,7 @@ struct GPUPointer<T const> final {
     template <typename U>
     friend void std::swap(GPUPointer<U const> &, GPUPointer<U const> &);
 };
+#endif
 
 } // namespace gpu
 
