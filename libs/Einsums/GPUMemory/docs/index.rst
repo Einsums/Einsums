@@ -8,9 +8,7 @@
 Einsums GPUMemory
 =================
 
-.. todo::
-    
-    High-level description of the module.
+Contains allocators for GPU-related memory.
 
 See the :ref:`API reference <modules_Einsums_GPUMemory_api>` of this module for more
 details.

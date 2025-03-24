@@ -15,10 +15,10 @@ static void check_requirements() {
 
 #ifndef WINDOWS
 
-template struct EINSUMS_EXPORT BufferAllocator<float>;
-template struct EINSUMS_EXPORT BufferAllocator<double>;
-template struct EINSUMS_EXPORT BufferAllocator<std::complex<float>>;
-template struct EINSUMS_EXPORT BufferAllocator<std::complex<double>>;
+template struct BufferAllocator<float>;
+template struct BufferAllocator<double>;
+template struct BufferAllocator<std::complex<float>>;
+template struct BufferAllocator<std::complex<double>>;
 
 #endif
 
