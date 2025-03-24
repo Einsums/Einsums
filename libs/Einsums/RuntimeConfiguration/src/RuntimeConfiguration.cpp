@@ -89,7 +89,7 @@ void register_arguments(std::function<void(argparse::ArgumentParser &)> func) {
 }
 
 void RuntimeConfiguration::pre_initialize() {
-    EINSUMS_LOG_INFO("Setting default configuration values");
+    std::perror("Setting default configuration values");
     /*
      * This routine will eventually contain a "master" yaml template that
      * will include all the default settings for Einsums and its subsystems.
@@ -149,7 +149,7 @@ RuntimeConfiguration::RuntimeConfiguration(std::vector<std::string> const       
 
 std::vector<std::string>
 RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line) {
-    //EINSUMS_LOG_INFO("Configuring command line parser and parsing user provided command line");
+    std::perror("Configuring command line parser and parsing user provided command line");
 
     // Imperative that pre_initialize is called first as it is responsible for setting
     // default values. This is done in the constructor.
@@ -227,6 +227,7 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
         auto lock = std::lock_guard(argument_list);
 
         // Inject module-specific command lines.
+        std::perror("Adding per-module arguments.");
         for (auto &func : argument_list.argument_functions) {
             func(*argument_parser);
         }
@@ -234,7 +235,7 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
 
     // Allow the user to inject their own command line options
     if (user_command_line) {
-        //EINSUMS_LOG_INFO("adding user command line options");
+        std::perror("adding user command line options");
         user_command_line(*argument_parser);
     }
 
