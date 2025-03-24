@@ -239,10 +239,10 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
     }
 
     try {
-        std::perror("Parsing arguments.");
+        std::perror("Parsing arguments.\n");
         global_config.lock();
         auto out = argument_parser->parse_known_args(original);
-        std::perror("Updating observers.");
+        std::perror("Updating observers.\n");
         global_config.unlock();
         return out;
     } catch (std::exception const &err) {

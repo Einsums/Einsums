@@ -20,6 +20,7 @@ namespace einsums {
  */
 
 init_Einsums_BufferAllocator::init_Einsums_BufferAllocator() {
+    std::perror("Adding functions.\n");
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
     einsums::register_arguments(einsums::add_Einsums_BufferAllocator_arguments);
