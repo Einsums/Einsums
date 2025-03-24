@@ -30,6 +30,7 @@ init_Einsums_BufferAllocator::init_Einsums_BufferAllocator() {
 init_Einsums_BufferAllocator detail::initialize_module_Einsums_BufferAllocator;
 
 EINSUMS_EXPORT void add_Einsums_BufferAllocator_arguments(argparse::ArgumentParser &parser) {
+    std::printf("Adding arguments.\n");
     auto &global_config = GlobalConfigMap::get_singleton();
     auto &global_string = global_config.get_string_map()->get_value();
 
