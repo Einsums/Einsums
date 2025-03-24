@@ -190,9 +190,9 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
         argument_parser
             ->add_argument("--einsums:log-level")
 #ifdef EINSUMS_DEBUG
-            .default_value<std::int64_t>(2)
+            .default_value<std::int64_t>(SPDLOG_LEVEL_DEBUG)
 #else
-            .default_value<std::int64_t>(3)
+            .default_value<std::int64_t>(SPDLOG_LEVEL_INFO)
 #endif
             .help("set log level")
             .choices(0, 1, 2, 3, 4)
