@@ -5,13 +5,14 @@
 
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
 #include <Einsums/StringUtil/MemoryString.hpp>
+#include <Einsums/Logging.hpp>
 
 namespace einsums::detail {
 
 EINSUMS_SINGLETON_IMPL(Einsums_BufferAllocator_vars)
 
 void Einsums_BufferAllocator_vars::update_max_size(config_mapping_type<std::string> const &options) {
-    printf("Updating buffer size.\n");
+    EINSUMS_LOG_DEBUG("Updating buffer size.\n");
     auto       &singleton = get_singleton();
     auto        lock      = std::lock_guard(singleton);
     auto const &value     = options.at("buffer-size");
