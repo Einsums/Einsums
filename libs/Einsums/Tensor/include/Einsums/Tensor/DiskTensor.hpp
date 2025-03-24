@@ -274,7 +274,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         for (auto [i, value] : enumerate(index_positions)) {
             // printf("i, value: %d %d\n", i, value);
-            offsets[value] = get_from_tuple<size_t>(indices, value);
+            offsets[value] = arguments::get_from_tuple<size_t>(indices, value);
         }
         for (auto [i, value] : enumerate(all_positions)) {
             // println("here");
@@ -283,8 +283,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             // dims_all[i] = _dims[value];
         }
         for (auto [i, value] : enumerate(range_positions)) {
-            offsets[value] = get_from_tuple<Range>(indices, value)[0];
-            counts[value]  = get_from_tuple<Range>(indices, value)[1] - get_from_tuple<Range>(indices, value)[0];
+            offsets[value] = arguments::get_from_tuple<Range>(indices, value)[0];
+            counts[value]  = arguments::get_from_tuple<Range>(indices, value)[1] - arguments::get_from_tuple<Range>(indices, value)[0];
         }
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
@@ -327,7 +327,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         for (auto [i, value] : enumerate(index_positions)) {
             // printf("i, value: %d %d\n", i, value);
-            offsets[value] = get_from_tuple<size_t>(indices, value);
+            offsets[value] = arguments::get_from_tuple<size_t>(indices, value);
         }
         for (auto [i, value] : enumerate(all_positions)) {
             // println("here");
@@ -336,8 +336,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             // dims_all[i] = _dims[value];
         }
         for (auto [i, value] : enumerate(range_positions)) {
-            offsets[value] = get_from_tuple<Range>(indices, value)[0];
-            counts[value]  = get_from_tuple<Range>(indices, value)[1] - get_from_tuple<Range>(indices, value)[0];
+            offsets[value] = arguments::get_from_tuple<Range>(indices, value)[0];
+            counts[value]  = arguments::get_from_tuple<Range>(indices, value)[1] - arguments::get_from_tuple<Range>(indices, value)[0];
         }
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all

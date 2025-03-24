@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-set(TensorTests TensorView)
+set(TensorTests ArithmeticTensor BlockTensor TensorView)
 
 foreach(test ${TensorTests})
   set(sources ${test}.cpp)
@@ -13,8 +13,7 @@ foreach(test ${TensorTests})
   einsums_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
-    FOLDER ${folder_name}
-          NOINSTALL
+          FOLDER ${folder_name} NOINSTALL
   )
 
   einsums_add_unit_test("Modules.Tensor" ${test})
