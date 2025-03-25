@@ -335,22 +335,22 @@ void swap(einsums::gpu::GPUPointer<T> &a, einsums::gpu::GPUPointer<T> &b) {
 }
 
 template <typename T>
-einsums::gpu::GPUPointer<T> memcpy(einsums::gpu::GPUPointer<T> &dest, T const *src, size_t count) {
-    einsums::hip_catch(hipMemcpy((void *)dest, src, count, hipMemcpyHostToDevice));
+einsums::gpu::GPUPointer<T> memcpy(einsums::gpu::GPUPointer<T> &dest, T const *src, size_t bytes) {
+    einsums::hip_catch(hipMemcpy((void *)dest, src, bytes, hipMemcpyHostToDevice));
 
     return dest;
 }
 
 template <typename T>
-T *memcpy(T *dest, einsums::gpu::GPUPointer<T const> const &src, size_t count) {
-    einsums::hip_catch(hipMemcpy(static_cast<void *>(dest), (void *const)src, count, hipMemcpyDeviceToHost));
+T *memcpy(T *dest, einsums::gpu::GPUPointer<T const> const &src, size_t bytes) {
+    einsums::hip_catch(hipMemcpy(static_cast<void *>(dest), (void *const)src, bytes, hipMemcpyDeviceToHost));
 
     return dest;
 }
 
 template <typename T>
-einsums::gpu::GPUPointer<T> memcpy(einsums::gpu::GPUPointer<T> &dest, einsums::gpu::GPUPointer<T const> const &src, size_t count) {
-    einsums::hip_catch(hipMemcpy((void *)dest, (void const *)src, count, hipMemcpyDeviceToDevice));
+einsums::gpu::GPUPointer<T> memcpy(einsums::gpu::GPUPointer<T> &dest, einsums::gpu::GPUPointer<T const> const &src, size_t bytes) {
+    einsums::hip_catch(hipMemcpy((void *)dest, (void const *)src, bytes, hipMemcpyDeviceToDevice));
 
     return dest;
 }
