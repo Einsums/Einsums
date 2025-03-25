@@ -21,3 +21,4 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
    /libs/Einsums/StringUtil/api/FromString.rst
    /libs/Einsums/StringUtil/api/Trim.rst
    /libs/Einsums/StringUtil/api/BadLexicalCast.rst
+   /libs/Einsums/StringUtil/api/MemoryString.rst

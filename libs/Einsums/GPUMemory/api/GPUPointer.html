@@ -1,0 +1,813 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/GPUMemory/GPUPointer.hpp &#8212; Einsums 1.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=e37360c5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../_static/documentation_options.js?v=9848765f"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/GPUMemory/api/GPUPointer';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+    <meta name="docbuild:last-update" content="Mar 25, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="InitModule.html">Einsums/GPUMemory/InitModule.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ModuleVars.html">Einsums/GPUMemory/ModuleVars.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/GPUMemory/GPUPointer.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPUAllocator.html">Einsums/GPUMemory/GPUAllocator.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/GPUMemory/GPUPointer.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-gpumemory-gpupointer-hpp">
+<span id="modules-einsums-einsums-gpumemory-gpupointer-hpp-api"></span><h1>Einsums/GPUMemory/GPUPointer.hpp<a class="headerlink" href="#einsums-gpumemory-gpupointer-hpp" title="Link to this heading">#</a></h1>
+<p>Defined in header Einsums/GPUMemory/GPUPointer.hpp.</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EeqbRKNSt9nullptr_tERKN7einsums3gpu10GPUPointerI1TEE">
+<span id="_CPPv3I0EeqRKNSt9nullptr_tERKN7einsums3gpu10GPUPointerI1TEE"></span><span id="_CPPv2I0EeqRKNSt9nullptr_tERKN7einsums3gpu10GPUPointerI1TEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_g_p_u_pointer_8hpp_1aef0f3a8efcb1b2c45700e4410c33adc7"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">nullptr_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">first</span></span>, <a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GPUAllocator.html#_CPPv4N7einsums3gpuE" title="einsums::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EeqbRKNSt9nullptr_tERKN7einsums3gpu10GPUPointerI1TEE" title="operator==::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">second</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EeqbRKNSt9nullptr_tERKN7einsums3gpu10GPUPointerI1TEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EplbRR9ptrdiff_tRKN7einsums3gpu10GPUPointerI1TEE">
+<span id="_CPPv3I0EplRR9ptrdiff_tRKN7einsums3gpu10GPUPointerI1TEE"></span><span id="_CPPv2I0EplRR9ptrdiff_tRKN7einsums3gpu10GPUPointerI1TEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_g_p_u_pointer_8hpp_1a5804ce181c2cccc536c1c97e1766f1af"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">offset</span></span>, <a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GPUAllocator.html#_CPPv4N7einsums3gpuE" title="einsums::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EplbRR9ptrdiff_tRKN7einsums3gpu10GPUPointerI1TEE" title="operator+::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EplbRR9ptrdiff_tRKN7einsums3gpu10GPUPointerI1TEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd></dd></dl>
+
+</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpuE">
+<span id="_CPPv3N7einsums3gpuE"></span><span id="_CPPv2N7einsums3gpuE"></span><span id="einsums::gpu"></span><span class="target" id="namespaceeinsums_1_1gpu"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gpu</span></span></span><br /></dt>
+<dd><dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums3gpu10GPUPointerE">
+<span id="_CPPv3I0EN7einsums3gpu10GPUPointerE"></span><span id="_CPPv2I0EN7einsums3gpu10GPUPointerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPUPointer</span></span></span><a class="headerlink" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;GPUPointer.hpp&gt;</em></div>
+<p>A pointer to memory on the GPU. </p>
+<p>This is used to wrap up certain operations. Unfortunately, it can not be used as a normal fancy pointer since the <code class="docutils literal notranslate"><span class="pre">addressof</span></code> operation does not make sense for its references, which actually handle the data transfers. However, for the majority of use cases, it can be used as a fancy pointer. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer12dev_datatypeE">
+<span id="_CPPv3N7einsums3gpu10GPUPointer12dev_datatypeE"></span><span id="_CPPv2N7einsums3gpu10GPUPointer12dev_datatypeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a16a1a4e47b3cd452ed44b1624b52a261"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dev_datatype</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_void_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_same_v</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_cvref_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">complex</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">hipFloatComplex</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_same_v</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_cvref_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">complex</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">hipDoubleComplex</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_cvref_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer12dev_datatypeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The type of data used by the GPU. </p>
+<p>For real data types, this is the same as on the host. For complex data types, the appropriate HIP data type needs to be used. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer15difference_typeE">
+<span id="_CPPv3N7einsums3gpu10GPUPointer15difference_typeE"></span><span id="_CPPv2N7einsums3gpu10GPUPointer15difference_typeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1acfd0a31d5b4f475f9fa0b16f89286a2f"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">difference_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">ptrdiff_t</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer15difference_typeE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer10value_typeE">
+<span id="_CPPv3N7einsums3gpu10GPUPointer10value_typeE"></span><span id="_CPPv2N7einsums3gpu10GPUPointer10value_typeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a113615086b54416f8b0d81b97c5c0b94"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer10value_typeE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer12element_typeE">
+<span id="_CPPv3N7einsums3gpu10GPUPointer12element_typeE"></span><span id="_CPPv2N7einsums3gpu10GPUPointer12element_typeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1ade7ebb72e2d305314602bf5be0758d00"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">element_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer12dev_datatypeE" title="einsums::gpu::GPUPointer::dev_datatype"><span class="n"><span class="pre">dev_datatype</span></span></a><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer12element_typeE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer7pointerE">
+<span id="_CPPv3N7einsums3gpu10GPUPointer7pointerE"></span><span id="_CPPv2N7einsums3gpu10GPUPointer7pointerE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a9c5535040687ae12d7b3f75913301082"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer9referenceE">
+<span id="_CPPv3N7einsums3gpu10GPUPointer9referenceE"></span><span id="_CPPv2N7einsums3gpu10GPUPointer9referenceE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a1c0f0e2da90467c183f322bf39cdeb8a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reference</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&amp;</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer9referenceE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer17iterator_categoryE">
+<span id="_CPPv3N7einsums3gpu10GPUPointer17iterator_categoryE"></span><span id="_CPPv2N7einsums3gpu10GPUPointer17iterator_categoryE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1abd804093cf8d4c9a4c4a1b07d5fcfd6d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iterator_category</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">contiguous_iterator_tag</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer17iterator_categoryE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums3gpu10GPUPointer6rebindE">
+<span id="_CPPv3I0EN7einsums3gpu10GPUPointer6rebindE"></span><span id="_CPPv2I0EN7einsums3gpu10GPUPointer6rebindE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a936af26daa05094059f4d336cfc81a6a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rebind</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointer6rebindE" title="einsums::gpu::GPUPointer::rebind::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums3gpu10GPUPointer6rebindE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer10GPUPointerEv">
+<span id="_CPPv3N7einsums3gpu10GPUPointer10GPUPointerEv"></span><span id="_CPPv2N7einsums3gpu10GPUPointer10GPUPointerEv"></span><span id="einsums::gpu::GPUPointer::GPUPointerCE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a0cfba995b6e7a1813a917fc28cb5f9c6"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPUPointer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1TE">
+<span id="_CPPv3N7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1TE"></span><span id="_CPPv2N7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1TE"></span><span id="einsums::gpu::GPUPointer::GPUPointer__GPUPointer:T:CRCE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a10dacb7b34234c92582acec148cdbc7c"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPUPointer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1TE" title="einsums::gpu::GPUPointer::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1TE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer10GPUPointerERR10GPUPointerI1TE">
+<span id="_CPPv3N7einsums3gpu10GPUPointer10GPUPointerERR10GPUPointerI1TE"></span><span id="_CPPv2N7einsums3gpu10GPUPointer10GPUPointerERR10GPUPointerI1TE"></span><span id="einsums::gpu::GPUPointer::GPUPointer__GPUPointer:T:RRCE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a8595df5ebf6d3e588c3f45c50902f7c9"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPUPointer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerERR10GPUPointerI1TE" title="einsums::gpu::GPUPointer::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerERR10GPUPointerI1TE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1UE">
+<span id="_CPPv3I0EN7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1UE"></span><span id="_CPPv2I0EN7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1UE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1acef9940199ad514eece8b8d9e5fc5351"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPUPointer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1UE" title="einsums::gpu::GPUPointer::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1UE" title="einsums::gpu::GPUPointer::GPUPointer::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1UE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer10GPUPointerEP12dev_datatype">
+<span id="_CPPv3N7einsums3gpu10GPUPointer10GPUPointerEP12dev_datatype"></span><span id="_CPPv2N7einsums3gpu10GPUPointer10GPUPointerEP12dev_datatype"></span><span id="einsums::gpu::GPUPointer::GPUPointer__dev_datatypePCE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1adc5f6f4d3543bf8a2941615360387c0f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPUPointer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer12dev_datatypeE" title="einsums::gpu::GPUPointer::dev_datatype"><span class="n"><span class="pre">dev_datatype</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerEP12dev_datatype" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer10GPUPointerENSt9nullptr_tE">
+<span id="_CPPv3N7einsums3gpu10GPUPointer10GPUPointerENSt9nullptr_tE"></span><span id="_CPPv2N7einsums3gpu10GPUPointer10GPUPointerENSt9nullptr_tE"></span><span id="einsums::gpu::GPUPointer::GPUPointer__std::nullptr_tCE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1aeff9991182018fc5c0f585f9d56d3af2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPUPointer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">nullptr_t</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerENSt9nullptr_tE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointerD0Ev">
+<span id="_CPPv3N7einsums3gpu10GPUPointerD0Ev"></span><span id="_CPPv2N7einsums3gpu10GPUPointerD0Ev"></span><span id="einsums::gpu::GPUPointer::~GPUPointerCE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a53462f4a85fb29316eec3492034d7964"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~GPUPointer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointerD0Ev" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointeraSENSt9nullptr_tE">
+<span id="_CPPv3N7einsums3gpu10GPUPointeraSENSt9nullptr_tE"></span><span id="_CPPv2N7einsums3gpu10GPUPointeraSENSt9nullptr_tE"></span><span id="einsums::gpu::GPUPointer::assign-operator__std::nullptr_t"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1adf9ddc58566e823d0136c4741091e43e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">nullptr_t</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointeraSENSt9nullptr_tE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointeraSERK10GPUPointerI1TE">
+<span id="_CPPv3N7einsums3gpu10GPUPointeraSERK10GPUPointerI1TE"></span><span id="_CPPv2N7einsums3gpu10GPUPointeraSERK10GPUPointerI1TE"></span><span id="einsums::gpu::GPUPointer::assign-operator__GPUPointer:T:CR"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a6f896e59ba88d207a1bf14c8c3d06b9e"></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointeraSERK10GPUPointerI1TE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointeraSERR10GPUPointerI1TE">
+<span id="_CPPv3N7einsums3gpu10GPUPointeraSERR10GPUPointerI1TE"></span><span id="_CPPv2N7einsums3gpu10GPUPointeraSERR10GPUPointerI1TE"></span><span id="einsums::gpu::GPUPointer::assign-operator__GPUPointer:T:RR"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a9d297947ef29936a188896cc4515334a"></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointeraSERR10GPUPointerI1TE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERK10GPUPointerI1UE">
+<span id="_CPPv3I0EN7einsums3gpu10GPUPointeraSERK10GPUPointerI1UE"></span><span id="_CPPv2I0EN7einsums3gpu10GPUPointeraSERK10GPUPointerI1UE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a92058ee02951619d92c757d98be1f799"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERK10GPUPointerI1UE" title="einsums::gpu::GPUPointer::operator=::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERK10GPUPointerI1UE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERR10GPUPointerI1UE">
+<span id="_CPPv3I0EN7einsums3gpu10GPUPointeraSERR10GPUPointerI1UE"></span><span id="_CPPv2I0EN7einsums3gpu10GPUPointeraSERR10GPUPointerI1UE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1adf04c7ab9fe962e3af3c462e45261a65"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERR10GPUPointerI1UE" title="einsums::gpu::GPUPointer::operator=::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERR10GPUPointerI1UE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERK10GPUPointerIK1UE">
+<span id="_CPPv3I0EN7einsums3gpu10GPUPointeraSERK10GPUPointerIK1UE"></span><span id="_CPPv2I0EN7einsums3gpu10GPUPointeraSERK10GPUPointerIK1UE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a2beaf22cccaecadbb029f29d35e8068b"></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERK10GPUPointerIK1UE" title="einsums::gpu::GPUPointer::operator=::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERK10GPUPointerIK1UE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERR10GPUPointerIK1UE">
+<span id="_CPPv3I0EN7einsums3gpu10GPUPointeraSERR10GPUPointerIK1UE"></span><span id="_CPPv2I0EN7einsums3gpu10GPUPointeraSERR10GPUPointerIK1UE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a07ce8d806768029a46751d7e47330187"></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERR10GPUPointerIK1UE" title="einsums::gpu::GPUPointer::operator=::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERR10GPUPointerIK1UE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu10GPUPointereqERK10GPUPointerI1TE">
+<span id="_CPPv3NK7einsums3gpu10GPUPointereqERK10GPUPointerI1TE"></span><span id="_CPPv2NK7einsums3gpu10GPUPointereqERK10GPUPointerI1TE"></span><span id="einsums::gpu::GPUPointer::eq-operator__GPUPointer:T:CRC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1ab62227185edb72c2bbdd2d4b4d23e1f4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu10GPUPointereqERK10GPUPointerI1TE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK7einsums3gpu10GPUPointereqEbRK10GPUPointerI1UE">
+<span id="_CPPv3I0ENK7einsums3gpu10GPUPointereqERK10GPUPointerI1UE"></span><span id="_CPPv2I0ENK7einsums3gpu10GPUPointereqERK10GPUPointerI1UE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1ac9c7df5f483ea111a19f64a4f17ee268"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENK7einsums3gpu10GPUPointereqEbRK10GPUPointerI1UE" title="einsums::gpu::GPUPointer::operator==::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK7einsums3gpu10GPUPointereqEbRK10GPUPointerI1UE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu10GPUPointereqENSt9nullptr_tE">
+<span id="_CPPv3NK7einsums3gpu10GPUPointereqENSt9nullptr_tE"></span><span id="_CPPv2NK7einsums3gpu10GPUPointereqENSt9nullptr_tE"></span><span id="einsums::gpu::GPUPointer::eq-operator__std::nullptr_tC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1acd9769062cd65100f7b2ceaf80b0cf58"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">nullptr_t</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu10GPUPointereqENSt9nullptr_tE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK7einsums3gpu10GPUPointereqEbPK1U">
+<span id="_CPPv3I0ENK7einsums3gpu10GPUPointereqEPK1U"></span><span id="_CPPv2I0ENK7einsums3gpu10GPUPointereqEPK1U"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a70d4fcf51791195733ac718905af37fc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK7einsums3gpu10GPUPointereqEbPK1U" title="einsums::gpu::GPUPointer::operator==::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK7einsums3gpu10GPUPointereqEbPK1U" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointermlEv">
+<span id="_CPPv3N7einsums3gpu10GPUPointermlEv"></span><span id="_CPPv2N7einsums3gpu10GPUPointermlEv"></span><span id="einsums::gpu::GPUPointer::mul-operator"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1afeb8e36da97e13a8a7d5cb7e67100321"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer9referenceE" title="einsums::gpu::GPUPointer::reference"><span class="n"><span class="pre">reference</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointermlEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointerptEv">
+<span id="_CPPv3N7einsums3gpu10GPUPointerptEv"></span><span id="_CPPv2N7einsums3gpu10GPUPointerptEv"></span><span id="einsums::gpu::GPUPointer::pointer-operator"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a48777ae0649fd63c73b832f2cd0ff7f3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-&gt;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointerptEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointerppEv">
+<span id="_CPPv3N7einsums3gpu10GPUPointerppEv"></span><span id="_CPPv2N7einsums3gpu10GPUPointerppEv"></span><span id="einsums::gpu::GPUPointer::inc-operator"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1acba2f730729f8a84197244087e1ac8d1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE" title="einsums::gpu::GPUPointer::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointerppEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointerppEi">
+<span id="_CPPv3N7einsums3gpu10GPUPointerppEi"></span><span id="_CPPv2N7einsums3gpu10GPUPointerppEi"></span><span id="einsums::gpu::GPUPointer::inc-operator__i"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a0683fb76b0eeb65cbd5a509b614286a5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE" title="einsums::gpu::GPUPointer::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointerppEi" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointermmEv">
+<span id="_CPPv3N7einsums3gpu10GPUPointermmEv"></span><span id="_CPPv2N7einsums3gpu10GPUPointermmEv"></span><span id="einsums::gpu::GPUPointer::dec-operator"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1adbbd71eabd822533fd625c5a89ccec61"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE" title="einsums::gpu::GPUPointer::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">--</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointermmEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointermmEi">
+<span id="_CPPv3N7einsums3gpu10GPUPointermmEi"></span><span id="_CPPv2N7einsums3gpu10GPUPointermmEi"></span><span id="einsums::gpu::GPUPointer::dec-operator__i"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a629e4fc9f00ebfdfd0320c84943bb9f7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE" title="einsums::gpu::GPUPointer::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">--</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointermmEi" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointerpLERR15difference_type">
+<span id="_CPPv3N7einsums3gpu10GPUPointerpLERR15difference_type"></span><span id="_CPPv2N7einsums3gpu10GPUPointerpLERR15difference_type"></span><span id="einsums::gpu::GPUPointer::add-assign-operator__difference_typeRR"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a21bd42fd3b4e6032c399139e0727951f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE" title="einsums::gpu::GPUPointer::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer15difference_typeE" title="einsums::gpu::GPUPointer::difference_type"><span class="n"><span class="pre">difference_type</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointerpLERR15difference_type" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointermIERR15difference_type">
+<span id="_CPPv3N7einsums3gpu10GPUPointermIERR15difference_type"></span><span id="_CPPv2N7einsums3gpu10GPUPointermIERR15difference_type"></span><span id="einsums::gpu::GPUPointer::sub-assign-operator__difference_typeRR"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a6aa2204d51c5bbcc19827a15022724a2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE" title="einsums::gpu::GPUPointer::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer15difference_typeE" title="einsums::gpu::GPUPointer::difference_type"><span class="n"><span class="pre">difference_type</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointermIERR15difference_type" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu10GPUPointerplERR15difference_type">
+<span id="_CPPv3NK7einsums3gpu10GPUPointerplERR15difference_type"></span><span id="_CPPv2NK7einsums3gpu10GPUPointerplERR15difference_type"></span><span id="einsums::gpu::GPUPointer::add-operator__difference_typeRRC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a40ef7d4e774bc738a8873a51b17b48e8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE" title="einsums::gpu::GPUPointer::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer15difference_typeE" title="einsums::gpu::GPUPointer::difference_type"><span class="n"><span class="pre">difference_type</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu10GPUPointerplERR15difference_type" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu10GPUPointermiERR15difference_type">
+<span id="_CPPv3NK7einsums3gpu10GPUPointermiERR15difference_type"></span><span id="_CPPv2NK7einsums3gpu10GPUPointermiERR15difference_type"></span><span id="einsums::gpu::GPUPointer::sub-operator__difference_typeRRC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1aa265f39b4e5b2fefa1b86a7c462774b2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE" title="einsums::gpu::GPUPointer::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer15difference_typeE" title="einsums::gpu::GPUPointer::difference_type"><span class="n"><span class="pre">difference_type</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu10GPUPointermiERR15difference_type" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu10GPUPointermiERK10GPUPointerI1TE">
+<span id="_CPPv3NK7einsums3gpu10GPUPointermiERK10GPUPointerI1TE"></span><span id="_CPPv2NK7einsums3gpu10GPUPointermiERK10GPUPointerI1TE"></span><span id="einsums::gpu::GPUPointer::sub-operator__GPUPointer:T:CRC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1aca6bc98f8a5dbb6b15cdfa3cbb9b7aab"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE" title="einsums::gpu::GPUPointer::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu10GPUPointermiERK10GPUPointerI1TE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointerixERR15difference_type">
+<span id="_CPPv3N7einsums3gpu10GPUPointerixERR15difference_type"></span><span id="_CPPv2N7einsums3gpu10GPUPointerixERR15difference_type"></span><span id="einsums::gpu::GPUPointer::subscript-operator__difference_typeRR"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1ab645e0e8a593e3e13ee26c151d50ac2b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer9referenceE" title="einsums::gpu::GPUPointer::reference"><span class="n"><span class="pre">reference</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer15difference_typeE" title="einsums::gpu::GPUPointer::difference_type"><span class="n"><span class="pre">difference_type</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointerixERR15difference_type" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu10GPUPointerltERK10GPUPointerI1TE">
+<span id="_CPPv3NK7einsums3gpu10GPUPointerltERK10GPUPointerI1TE"></span><span id="_CPPv2NK7einsums3gpu10GPUPointerltERK10GPUPointerI1TE"></span><span id="einsums::gpu::GPUPointer::lt-operator__GPUPointer:T:CRC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a8e27ae190202abf4788bb5548afb7be8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">&lt;</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu10GPUPointerltERK10GPUPointerI1TE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu10GPUPointergtERK10GPUPointerI1TE">
+<span id="_CPPv3NK7einsums3gpu10GPUPointergtERK10GPUPointerI1TE"></span><span id="_CPPv2NK7einsums3gpu10GPUPointergtERK10GPUPointerI1TE"></span><span id="einsums::gpu::GPUPointer::gt-operator__GPUPointer:T:CRC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a6d55bb512d57bca69226d5c1066077a8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">&gt;</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu10GPUPointergtERK10GPUPointerI1TE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu10GPUPointerleERK10GPUPointerI1TE">
+<span id="_CPPv3NK7einsums3gpu10GPUPointerleERK10GPUPointerI1TE"></span><span id="_CPPv2NK7einsums3gpu10GPUPointerleERK10GPUPointerI1TE"></span><span id="einsums::gpu::GPUPointer::lte-operator__GPUPointer:T:CRC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a3e49823cc60980789348d432abdf6d36"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">&lt;=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu10GPUPointerleERK10GPUPointerI1TE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu10GPUPointergeERK10GPUPointerI1TE">
+<span id="_CPPv3NK7einsums3gpu10GPUPointergeERK10GPUPointerI1TE"></span><span id="_CPPv2NK7einsums3gpu10GPUPointergeERK10GPUPointerI1TE"></span><span id="einsums::gpu::GPUPointer::gte-operator__GPUPointer:T:CRC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a52e9d779db8c8d4c8b70b480958334a6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">&gt;=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu10GPUPointergeERK10GPUPointerI1TE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointercvP1TEv">
+<span id="_CPPv3N7einsums3gpu10GPUPointercvP1TEv"></span><span id="_CPPv2N7einsums3gpu10GPUPointercvP1TEv"></span><span id="einsums::gpu::GPUPointer::castto-TP-operatorCE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1ac0f74f85c6e2fbed2bee2d83b90ddd95"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointercvP1TEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu10GPUPointercvPK1TEv">
+<span id="_CPPv3NK7einsums3gpu10GPUPointercvPK1TEv"></span><span id="_CPPv2NK7einsums3gpu10GPUPointercvPK1TEv"></span><span id="einsums::gpu::GPUPointer::castto-TCP-operatorCCE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a1549f35a78b1c5ab52a3ac1c8aec56dc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu10GPUPointercvPK1TEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums3gpu10GPUPointercvP1UEv">
+<span id="_CPPv3I0EN7einsums3gpu10GPUPointercvP1UEv"></span><span id="_CPPv2I0EN7einsums3gpu10GPUPointercvP1UEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a49021f0c5bf7ecbb3b40b2881d090911"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointercvP1UEv" title="einsums::gpu::GPUPointer::operator U*::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums3gpu10GPUPointercvP1UEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer10pointer_toER12element_type">
+<span id="_CPPv3N7einsums3gpu10GPUPointer10pointer_toER12element_type"></span><span id="_CPPv2N7einsums3gpu10GPUPointer10pointer_toER12element_type"></span><span id="einsums::gpu::GPUPointer::pointer_to__element_typeR"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a32a172ad16f3c0c93ab6ac78308a3a25"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE" title="einsums::gpu::GPUPointer::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer_to</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer12element_typeE" title="einsums::gpu::GPUPointer::element_type"><span class="n"><span class="pre">element_type</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer10pointer_toER12element_type" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu10GPUPointer8gpu_ptr_E">
+<span id="_CPPv3N7einsums3gpu10GPUPointer8gpu_ptr_E"></span><span id="_CPPv2N7einsums3gpu10GPUPointer8gpu_ptr_E"></span><span id="einsums::gpu::GPUPointer::gpu_ptr___dev_datatypeP"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1a811bbcc0e85567a737bea4faa0e1bc36"></span><a class="reference internal" href="#_CPPv4N7einsums3gpu10GPUPointer12dev_datatypeE" title="einsums::gpu::GPUPointer::dev_datatype"><span class="n"><span class="pre">dev_datatype</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_ptr_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">nullptr</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu10GPUPointer8gpu_ptr_E" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums3gpu10GPUPointerSt4swapEvR10GPUPointerI1UER10GPUPointerI1UE">
+<span id="_CPPv3I0EN7einsums3gpu10GPUPointerSt4swapER10GPUPointerI1UER10GPUPointerI1UE"></span><span id="_CPPv2I0EN7einsums3gpu10GPUPointerSt4swapER10GPUPointerI1UER10GPUPointerI1UE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_pointer_1abaea55fd53590a438f9bad355ad2464f"></span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">swap</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerSt4swapEvR10GPUPointerI1UER10GPUPointerI1UE" title="einsums::gpu::GPUPointer::std::swap::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&amp;</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerSt4swapEvR10GPUPointerI1UER10GPUPointerI1UE" title="einsums::gpu::GPUPointer::std::swap::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums3gpu10GPUPointerSt4swapEvR10GPUPointerI1UER10GPUPointerI1UE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4St">
+<span id="_CPPv3St"></span><span id="_CPPv2St"></span><span id="std"></span><span class="target" id="namespacestd"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">std</span></span></span><a class="headerlink" href="#_CPPv4St" title="Link to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENSt4swapEvRN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEE">
+<span id="_CPPv3I0ENSt4swapERN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEE"></span><span id="_CPPv2I0ENSt4swapERN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_g_p_u_pointer_8hpp_1ab1bf392f448876fb3105696e5b9e1517"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">swap</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GPUAllocator.html#_CPPv4N7einsums3gpuE" title="einsums::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENSt4swapEvRN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEE" title="std::swap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GPUAllocator.html#_CPPv4N7einsums3gpuE" title="einsums::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENSt4swapEvRN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEE" title="std::swap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0ENSt4swapEvRN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEEPK1T6size_t">
+<span id="_CPPv3I0ENSt6memcpyERN7einsums3gpu10GPUPointerI1TEEPK1T6size_t"></span><span id="_CPPv2I0ENSt6memcpyERN7einsums3gpu10GPUPointerI1TEEPK1T6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_g_p_u_pointer_8hpp_1a94484030536f692cb3091b7ecb73bdf8"></span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GPUAllocator.html#_CPPv4N7einsums3gpuE" title="einsums::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEEPK1T6size_t" title="std::memcpy::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memcpy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GPUAllocator.html#_CPPv4N7einsums3gpuE" title="einsums::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEEPK1T6size_t" title="std::memcpy::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dest</span></span>, <a class="reference internal" href="#_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEEPK1T6size_t" title="std::memcpy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">src</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEEPK1T6size_t" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENSt6memcpyEP1TP1TRKN7einsums3gpu10GPUPointerIK1TEE6size_t">
+<span id="_CPPv3I0ENSt6memcpyEP1TRKN7einsums3gpu10GPUPointerIK1TEE6size_t"></span><span id="_CPPv2I0ENSt6memcpyEP1TRKN7einsums3gpu10GPUPointerIK1TEE6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_g_p_u_pointer_8hpp_1ae3ad342e4b4d8044f454276c71d007b9"></span><a class="reference internal" href="#_CPPv4I0ENSt6memcpyEP1TP1TRKN7einsums3gpu10GPUPointerIK1TEE6size_t" title="std::memcpy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">memcpy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENSt6memcpyEP1TP1TRKN7einsums3gpu10GPUPointerIK1TEE6size_t" title="std::memcpy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dest</span></span>, <a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GPUAllocator.html#_CPPv4N7einsums3gpuE" title="einsums::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENSt6memcpyEP1TP1TRKN7einsums3gpu10GPUPointerIK1TEE6size_t" title="std::memcpy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">src</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0ENSt6memcpyEP1TP1TRKN7einsums3gpu10GPUPointerIK1TEE6size_t" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEERKN7einsums3gpu10GPUPointerIK1TEE6size_t">
+<span id="_CPPv3I0ENSt6memcpyERN7einsums3gpu10GPUPointerI1TEERKN7einsums3gpu10GPUPointerIK1TEE6size_t"></span><span id="_CPPv2I0ENSt6memcpyERN7einsums3gpu10GPUPointerI1TEERKN7einsums3gpu10GPUPointerIK1TEE6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_g_p_u_pointer_8hpp_1af84fe5c1ac428f0bd8963c65d6708fc7"></span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GPUAllocator.html#_CPPv4N7einsums3gpuE" title="einsums::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEERKN7einsums3gpu10GPUPointerIK1TEE6size_t" title="std::memcpy::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memcpy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GPUAllocator.html#_CPPv4N7einsums3gpuE" title="einsums::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEERKN7einsums3gpu10GPUPointerIK1TEE6size_t" title="std::memcpy::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dest</span></span>, <a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GPUAllocator.html#_CPPv4N7einsums3gpuE" title="einsums::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEERKN7einsums3gpu10GPUPointerIK1TEE6size_t" title="std::memcpy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">src</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEERKN7einsums3gpu10GPUPointerIK1TEE6size_t" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EeqbRKNSt9nullptr_tERKN7einsums3gpu10GPUPointerI1TEE"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EplbRR9ptrdiff_tRKN7einsums3gpu10GPUPointerI1TEE"><code class="docutils literal notranslate"><span class="pre">operator+()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv47einsums"><code class="docutils literal notranslate"><span class="pre">einsums</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpuE"><code class="docutils literal notranslate"><span class="pre">einsums::gpu</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums3gpu10GPUPointerE"><code class="docutils literal notranslate"><span class="pre">einsums::gpu::GPUPointer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer12dev_datatypeE"><code class="docutils literal notranslate"><span class="pre">dev_datatype</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer15difference_typeE"><code class="docutils literal notranslate"><span class="pre">difference_type</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer10value_typeE"><code class="docutils literal notranslate"><span class="pre">value_type</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer12element_typeE"><code class="docutils literal notranslate"><span class="pre">element_type</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer7pointerE"><code class="docutils literal notranslate"><span class="pre">pointer</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer9referenceE"><code class="docutils literal notranslate"><span class="pre">reference</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer17iterator_categoryE"><code class="docutils literal notranslate"><span class="pre">iterator_category</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums3gpu10GPUPointer6rebindE"><code class="docutils literal notranslate"><span class="pre">rebind</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerEv"><code class="docutils literal notranslate"><span class="pre">GPUPointer()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1TE"><code class="docutils literal notranslate"><span class="pre">GPUPointer()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerERR10GPUPointerI1TE"><code class="docutils literal notranslate"><span class="pre">GPUPointer()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums3gpu10GPUPointer10GPUPointerERK10GPUPointerI1UE"><code class="docutils literal notranslate"><span class="pre">GPUPointer()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerEP12dev_datatype"><code class="docutils literal notranslate"><span class="pre">GPUPointer()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer10GPUPointerENSt9nullptr_tE"><code class="docutils literal notranslate"><span class="pre">GPUPointer()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointerD0Ev"><code class="docutils literal notranslate"><span class="pre">~GPUPointer()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointeraSENSt9nullptr_tE"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointeraSERK10GPUPointerI1TE"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointeraSERR10GPUPointerI1TE"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERK10GPUPointerI1UE"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERR10GPUPointerI1UE"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERK10GPUPointerIK1UE"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums3gpu10GPUPointeraSER10GPUPointerI1TERR10GPUPointerIK1UE"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu10GPUPointereqERK10GPUPointerI1TE"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENK7einsums3gpu10GPUPointereqEbRK10GPUPointerI1UE"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu10GPUPointereqENSt9nullptr_tE"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENK7einsums3gpu10GPUPointereqEbPK1U"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointermlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointerptEv"><code class="docutils literal notranslate"><span class="pre">operator-&gt;()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointerppEv"><code class="docutils literal notranslate"><span class="pre">operator++()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointerppEi"><code class="docutils literal notranslate"><span class="pre">operator++()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointermmEv"><code class="docutils literal notranslate"><span class="pre">operator--()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointermmEi"><code class="docutils literal notranslate"><span class="pre">operator--()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointerpLERR15difference_type"><code class="docutils literal notranslate"><span class="pre">operator+=()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointermIERR15difference_type"><code class="docutils literal notranslate"><span class="pre">operator-=()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu10GPUPointerplERR15difference_type"><code class="docutils literal notranslate"><span class="pre">operator+()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu10GPUPointermiERR15difference_type"><code class="docutils literal notranslate"><span class="pre">operator-()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu10GPUPointermiERK10GPUPointerI1TE"><code class="docutils literal notranslate"><span class="pre">operator-()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointerixERR15difference_type"><code class="docutils literal notranslate"><span class="pre">operator[]()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu10GPUPointerltERK10GPUPointerI1TE"><code class="docutils literal notranslate"><span class="pre">operator&lt;()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu10GPUPointergtERK10GPUPointerI1TE"><code class="docutils literal notranslate"><span class="pre">operator&gt;()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu10GPUPointerleERK10GPUPointerI1TE"><code class="docutils literal notranslate"><span class="pre">operator&lt;=()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu10GPUPointergeERK10GPUPointerI1TE"><code class="docutils literal notranslate"><span class="pre">operator&gt;=()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointercvP1TEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">T*()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu10GPUPointercvPK1TEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">T</span> <span class="pre">const</span> <span class="pre">*()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums3gpu10GPUPointercvP1UEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">U*()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer10pointer_toER12element_type"><code class="docutils literal notranslate"><span class="pre">pointer_to()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu10GPUPointer8gpu_ptr_E"><code class="docutils literal notranslate"><span class="pre">gpu_ptr_</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums3gpu10GPUPointerSt4swapEvR10GPUPointerI1UER10GPUPointerI1UE"><code class="docutils literal notranslate"><span class="pre">std::swap</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4St"><code class="docutils literal notranslate"><span class="pre">std</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENSt4swapEvRN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEE"><code class="docutils literal notranslate"><span class="pre">swap()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEEPK1T6size_t"><code class="docutils literal notranslate"><span class="pre">memcpy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENSt6memcpyEP1TP1TRKN7einsums3gpu10GPUPointerIK1TEE6size_t"><code class="docutils literal notranslate"><span class="pre">memcpy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENSt6memcpyEN7einsums3gpu10GPUPointerI1TEERN7einsums3gpu10GPUPointerI1TEERKN7einsums3gpu10GPUPointerIK1TEE6size_t"><code class="docutils literal notranslate"><span class="pre">memcpy()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

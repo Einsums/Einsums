@@ -29,12 +29,14 @@ refer to the full documentation below.
    /libs/Einsums/BLAS/api/full_api.rst
    /libs/Einsums/BLASBase/api/full_api.rst
    /libs/Einsums/BLASVendor/api/full_api.rst
+   /libs/Einsums/BufferAllocator/api/full_api.rst
    /libs/Einsums/Concepts/api/full_api.rst
    /libs/Einsums/Config/api/full_api.rst
    /libs/Einsums/Debugging/api/full_api.rst
    /libs/Einsums/Decomposition/api/full_api.rst
    /libs/Einsums/Errors/api/full_api.rst
    /libs/Einsums/FFT/api/full_api.rst
+   /libs/Einsums/GPUMemory/api/full_api.rst
    /libs/Einsums/GPUStreams/api/full_api.rst
    /libs/Einsums/HPTT/api/full_api.rst
    /libs/Einsums/Iterator/api/full_api.rst
