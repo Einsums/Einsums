@@ -173,17 +173,20 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
                               *global_config.get_bool_map()};
 
         argument_parser->add_argument("--einsums:no-install-signal-handlers")
-            .flag()
+            .default_value(true)
+            .implicit_value(false)
             .help("do not install signal handlers")
             .store_into(global_bools["install-signal-handlers"]);
 
         argument_parser->add_argument("--einsums:no-attach-debugger")
-            .flag()
+        .default_value(true)
+        .implicit_value(false)
             .help("do not provide mechanism to attach debugger on detected errors")
             .store_into(global_bools["attach-debugger"]);
 
         argument_parser->add_argument("--einsums:no-diagnostics-on-terminate")
-            .flag()
+        .default_value(true)
+        .implicit_value(false)
             .help("do not print additional diagnostic information on termination")
             .store_into(global_bools["diagnostics-on-terminate"]);
 
@@ -207,7 +210,8 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
             .store_into(global_strings["log-format"]);
 
         argument_parser->add_argument("--einsums:no-profiler-report")
-            .flag()
+        .default_value(true)
+        .implicit_value(false)
             .help("generate profiling report")
             .store_into(global_bools["profiler-report"]);
 
@@ -215,8 +219,9 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
             .default_value("profile.txt")
             .help("filename of the profiling report")
             .store_into(global_strings["profiler-filename"]);
-        argument_parser->add_argument("--einsums:profiler-append")
+        argument_parser->add_argument("--einsums:no-profiler-append")
             .default_value(true)
+            .implicit_value(false)
             .help("append to an existing file")
             .store_into(global_bools["profiler-append"]);
     }
