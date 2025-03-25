@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-set(TensorTests ArithmeticTensor BlockTensor TensorView)
+set(TensorTests ArithmeticTensor BlockTensor TensorView RuntimeTensors)
 
 foreach(test ${TensorTests})
   set(sources ${test}.cpp)

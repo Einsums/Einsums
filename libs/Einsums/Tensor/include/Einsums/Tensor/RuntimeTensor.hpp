@@ -757,6 +757,26 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 #    undef OPERATOR
 #endif
 
+    template <size_t Rank>
+    operator TensorView<T, Rank>() {
+        if (rank() != Rank) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensor into a rank-{} TensorView!", rank(), Rank);
+        }
+        Dim<Rank> dims(_dims.begin(), _dims.end());
+        Dim<Rank> strides(_strides.begin(), _strides.end());
+        return TensorView<T, Rank>(_data, dims, strides);
+    }
+
+    template <size_t Rank>
+    operator TensorView<T, Rank>() const {
+        if (rank() != Rank) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensor into a rank-{} TensorView!", rank(), Rank);
+        }
+        Dim<Rank> dims(_dims.begin(), _dims.end());
+        Dim<Rank> strides(_strides.begin(), _strides.end());
+        return TensorView<T, Rank>(const_cast<T const *>(_data), dims, strides);
+    }
+
     /**
      * @brief Get the length of the tensor along a given axis.
      *
@@ -1855,6 +1875,26 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
 
 #    undef OPERATOR
 #endif
+
+    template <size_t Rank>
+    operator TensorView<T, Rank>() {
+        if (rank() != Rank) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(), Rank);
+        }
+        Dim<Rank> dims(_dims.begin(), _dims.end());
+        Dim<Rank> strides(_strides.begin(), _strides.end());
+        return TensorView<T, Rank>(_data, dims, strides);
+    }
+
+    template <size_t Rank>
+    operator TensorView<T, Rank>() const {
+        if (rank() != Rank) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(), Rank);
+        }
+        Dim<Rank> dims(_dims.begin(), _dims.end());
+        Dim<Rank> strides(_strides.begin(), _strides.end());
+        return TensorView<T, Rank>(const_cast<T const *>(_data), dims, strides);
+    }
 
     /**
      * @brief Get the length of the tensor along the given axis.
