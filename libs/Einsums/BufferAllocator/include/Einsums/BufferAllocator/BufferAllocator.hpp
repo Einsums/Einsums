@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/BufferAllocator/InitModule.hpp>
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>

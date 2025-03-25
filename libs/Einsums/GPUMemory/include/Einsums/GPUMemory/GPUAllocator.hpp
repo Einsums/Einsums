@@ -7,6 +7,7 @@
 
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/GPUMemory/InitModule.hpp>
 #include <Einsums/GPUMemory/ModuleVars.hpp>
 
 #include <complex>

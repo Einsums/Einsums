@@ -17,15 +17,7 @@
 
 namespace einsums {
 
-/**
- * @class init_Einsums_GPUMemory
- *
- * Auto-generated class. The constructor registers the initialization and finalization functions.
- */
-class EINSUMS_EXPORT init_Einsums_GPUMemory {
-public:
-    init_Einsums_GPUMemory();
-};
+EINSUMS_EXPORT int init_Einsums_GPUMemory();
 
 EINSUMS_EXPORT void add_Einsums_GPUMemory_arguments(argparse::ArgumentParser &);
 EINSUMS_EXPORT void initialize_Einsums_GPUMemory();
@@ -33,7 +25,7 @@ EINSUMS_EXPORT void finalize_Einsums_GPUMemory();
 
 namespace detail {
 
-extern EINSUMS_EXPORT init_Einsums_GPUMemory initialize_module_Einsums_GPUMemory;
+static int initialize_module_Einsums_GPUMemory = init_Einsums_GPUMemory();
 
 }
 

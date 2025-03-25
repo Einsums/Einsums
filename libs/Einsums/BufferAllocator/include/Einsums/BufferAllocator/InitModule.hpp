@@ -6,7 +6,7 @@
 #pragma once
 
 #include <Einsums/Config.hpp>
-#include "argparse/argparse.hpp"
+#include <argparse/argparse.hpp>
 
 /*
  * Exported definitions for initialization. If the module does not need to be initialized,
@@ -17,15 +17,7 @@
 
 namespace einsums {
 
-/**
- * @class init_Einsums_BufferAllocator
- *
- * Auto-generated class. The constructor registers the initialization and finalization functions.
- */
-class EINSUMS_EXPORT init_Einsums_BufferAllocator {
-public:
-    init_Einsums_BufferAllocator();
-};
+EINSUMS_EXPORT int init_Einsums_BufferAllocator();
 
 EINSUMS_EXPORT void add_Einsums_BufferAllocator_arguments(argparse::ArgumentParser &);
 EINSUMS_EXPORT void initialize_Einsums_BufferAllocator();
@@ -33,7 +25,7 @@ EINSUMS_EXPORT void finalize_Einsums_BufferAllocator();
 
 namespace detail {
 
-extern EINSUMS_EXPORT init_Einsums_BufferAllocator initialize_module_Einsums_BufferAllocator;
+static int initialize_module_Einsums_BufferAllocator = init_Einsums_BufferAllocator();
 
 }
 

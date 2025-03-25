@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Einsums/Errors/Error.hpp>
+#include <Einsums/GPUMemory/InitModule.hpp>
 
 #include <hip/hip_common.h>
 #include <hip/hip_complex.h>

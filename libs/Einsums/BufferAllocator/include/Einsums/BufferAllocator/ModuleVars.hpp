@@ -7,12 +7,12 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/BufferAllocator/InitModule.hpp>
+#include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/TypeSupport/Singleton.hpp>
 
 #include <source_location>
-
-#include "Einsums/Errors/ThrowException.hpp"
 
 namespace einsums {
 namespace detail {

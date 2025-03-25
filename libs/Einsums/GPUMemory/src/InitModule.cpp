@@ -20,12 +20,19 @@ namespace einsums {
  * aren't being used otherwise.
  */
 
-init_Einsums_GPUMemory::init_Einsums_GPUMemory() {
+int init_Einsums_GPUMemory() {
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
-    einsums::register_arguments(einsums::add_Einsums_GPUMemory_arguments);
-    einsums::register_startup_function(einsums::initialize_Einsums_GPUMemory);
-    einsums::register_shutdown_function(einsums::finalize_Einsums_GPUMemory);
+    static bool is_initialized = false;
+
+    if (!is_initialized) {
+        einsums::register_arguments(einsums::add_Einsums_GPUMemory_arguments);
+        einsums::register_startup_function(einsums::initialize_Einsums_GPUMemory);
+        einsums::register_shutdown_function(einsums::finalize_Einsums_GPUMemory);
+        is_initialized = true;
+    }
+
+    return 0;
 }
 
 namespace detail {
@@ -41,7 +48,7 @@ void add_Einsums_GPUMemory_arguments(argparse::ArgumentParser &parser) {
         .help("Total size of buffers allocated on the GPU for tensor contractions. Up to four buffers may be allocated, whose total will "
               "add to this size.")
         .store_into(global_string["gpu-buffer-size"]);
-    
+
     global_config.attach(gpu::detail::Einsums_GPUMemory_vars::update_max_size);
 }
 
