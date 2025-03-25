@@ -51,11 +51,14 @@
 #    define EINSUMS_DO_PRAGMA(X)                 _Pragma(#X)
 #    define EINSUMS_DISABLE_WARNING_PUSH         EINSUMS_DO_PRAGMA(GCC diagnostic push)
 #    define EINSUMS_DISABLE_WARNING_POP          EINSUMS_DO_PRAGMA(GCC diagnostic pop)
-#    define EINSUMS_DISABLE_WARNING_0(warning) EINSUMS_DO_PRAGMA(#warning)
-#    define EINSUMS_DISABLE_WARNING(warningName)  EINSUMS_DISABLE_WARNING_0(GCC diagnostic ignored warningName)
-
+#    define EINSUMS_DISABLE_WARNING(warningName)  EINSUMS_DO_PRAGMA(GCC diagnostic ignored #warningName)
+#ifndef __clang__
+#    define EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
+#    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS EINSUMS_DISABLE_WARNING(-Wdeprecated-declarations)
+#else
 #    define EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE EINSUMS_DISABLE_WARNING(-Wreturn-type-c-linkage)
 #    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS EINSUMS_DISABLE_WARNING(-Wdeprecated-declarations)// other warnings you want to deactivate...
+#endif
 
 #else
 #    define EINSUMS_DISABLE_WARNING_PUSH
