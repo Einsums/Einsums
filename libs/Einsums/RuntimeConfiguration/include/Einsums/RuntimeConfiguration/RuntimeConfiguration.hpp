@@ -22,9 +22,9 @@
 
 namespace einsums {
 
-namespace detail {
+namespace detail {} // namespace detail
 
-} // namespace detail
+EINSUMS_EXPORT void register_arguments(std::function<void(argparse::ArgumentParser &)>);
 
 /**
  * @struct RuntimeConfiguration

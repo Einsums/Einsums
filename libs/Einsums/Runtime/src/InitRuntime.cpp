@@ -85,7 +85,7 @@ int run(std::function<int()> const &f, Runtime &rt, InitParams const &params) {
 }
 
 int run(std::function<int()> const &f, std::vector<std::string> const &argv, InitParams const &params, bool blocking) {
-    EINSUMS_LOG_INFO("Running common initialization routines...");
+    //EINSUMS_LOG_INFO("Running common initialization routines...");
     /// @todo Add a check to ensure the runtime hasn't already been initialized
 
     // Command line arguments for Einsums will be prefixed with --einsums:

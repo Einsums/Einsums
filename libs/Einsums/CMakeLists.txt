@@ -13,12 +13,14 @@ set(_Einsums_modules
   BLAS
   BLASBase
   BLASVendor
+  BufferAllocator
   Concepts
   Config
   Debugging
   Decomposition
   Errors
   FFT
+  GPUMemory
   GPUStreams
   HPTT
   Iterator
@@ -36,7 +38,7 @@ set(_Einsums_modules
   TensorUtilities
   TypeSupport
   Utilities
-        Version
+  Version
   )
 # cmake-format: on
 

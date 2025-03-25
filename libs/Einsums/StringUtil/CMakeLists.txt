@@ -6,10 +6,10 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(StringUtilHeaders Einsums/StringUtil/BadLexicalCast.hpp Einsums/StringUtil/FromString.hpp
-                      Einsums/StringUtil/Trim.hpp
+                      Einsums/StringUtil/Trim.hpp Einsums/StringUtil/MemoryString.hpp
 )
 
-set(StringUtilSources)
+set(StringUtilSources MemoryString.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
@@ -17,6 +17,6 @@ einsums_add_module(
   SOURCES ${StringUtilSources}
   HEADERS ${StringUtilHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES Einsums_Config
+  MODULE_DEPENDENCIES Einsums_Config Einsums_Errors
   CMAKE_SUBDIRS examples tests
 )

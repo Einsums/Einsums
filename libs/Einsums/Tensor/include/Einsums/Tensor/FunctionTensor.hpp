@@ -1,5 +1,12 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
+
 #pragma once
 
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
@@ -9,8 +16,6 @@
 #include <Einsums/TypeSupport/TypeName.hpp>
 
 #include <type_traits>
-
-#include "Einsums/Concepts/TensorConcepts.hpp"
 
 namespace einsums {
 

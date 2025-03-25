@@ -87,6 +87,17 @@ struct insensitive_equals {
 } // namespace detail
 
 /**
+ * @typedef config_mapping_type
+ *
+ * @brief The type of map that underlies the ConfigMap class.
+ *
+ * @tparam T The value type of the map.
+ */
+template <typename T>
+using config_mapping_type =
+    std::unordered_map<std::string, T, hashes::insensitive_hash<std::string>, detail::insensitive_equals<std::string>>;
+
+/**
  * @class ConfigMap
  *
  * @brief Holds a mapping of string keys to configuration values.
@@ -250,37 +261,30 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * The observer should be an object derived from ConfigObserver. The template parameter
      * on the ConfigObserver class
      * determines which map or maps the observer will be attached to. The template parameter can
-     * be either @c std::string , @c std::int64_t , or @c double . If the observer derives from
+     * be either @c std::string , @c std::int64_t , @c bool or @c double . If the observer derives from
      * multiple of these observers, it will be attached to each map that it is able to.
      *
      * @param obs The observer to attach.
      */
-    template <typename T>
+    template <typename T, bool string_requirement = requires(T obs, config_mapping_type<std::string> map) { obs(map); },
+              bool int_requirement    = requires(T obs, config_mapping_type<std::int64_t> map) { obs(map); },
+              bool double_requirement = requires(T obs, config_mapping_type<double> map) { obs(map); },
+              bool bool_requirement   = requires(T obs, config_mapping_type<bool> map) { obs(map); }>
     void attach(T &obs) {
-        if constexpr (std::is_convertible_v<
-                          std::function<void(std::unordered_map<std::string, std::string, hashes::insensitive_hash<std::string>,
-                                                                detail::insensitive_equals<std::string>> const &)>,
-                          T>) {
+
+        if constexpr (string_requirement) {
             str_map_->attach(obs);
         }
 
-        if constexpr (std::is_convertible_v<
-                          std::function<void(std::unordered_map<std::string, std::int64_t, hashes::insensitive_hash<std::string>,
-                                                                detail::insensitive_equals<std::string>> const &)>,
-                          T>) {
+        if constexpr (int_requirement) {
             int_map_->attach(obs);
         }
 
-        if constexpr (std::is_convertible_v<
-                          std::function<void(std::unordered_map<std::string, double, hashes::insensitive_hash<std::string>,
-                                                                detail::insensitive_equals<std::string>> const &)>,
-                          T>) {
+        if constexpr (double_requirement) {
             double_map_->attach(obs);
         }
 
-        if constexpr (std::is_convertible_v<std::function<void(std::unordered_map<std::string, bool, hashes::insensitive_hash<std::string>,
-                                                                                  detail::insensitive_equals<std::string>> const &)>,
-                                            T>) {
+        if constexpr (bool_requirement) {
             bool_map_->attach(obs);
         }
     }
@@ -290,35 +294,33 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *
      * @param obs The observer to remove.
      */
-    template <typename T>
+    template <typename T, bool string_requirement = requires(T obs, config_mapping_type<std::string> map) { obs(map); },
+              bool int_requirement    = requires(T obs, config_mapping_type<std::int64_t> map) { obs(map); },
+              bool double_requirement = requires(T obs, config_mapping_type<double> map) { obs(map); },
+              bool bool_requirement   = requires(T obs, config_mapping_type<bool> map) { obs(map); }>
     void detach(T &obs) {
-        if constexpr (std::is_convertible_v<
-                          std::function<void(std::unordered_map<std::string, std::string, hashes::insensitive_hash<std::string>,
-                                                                detail::insensitive_equals<std::string>> const &)>,
-                          T>) {
+        if constexpr (string_requirement) {
             str_map_->detach(obs);
         }
 
-        if constexpr (std::is_convertible_v<
-                          std::function<void(std::unordered_map<std::string, std::int64_t, hashes::insensitive_hash<std::string>,
-                                                                detail::insensitive_equals<std::string>> const &)>,
-                          T>) {
+        if constexpr (int_requirement) {
             int_map_->detach(obs);
         }
 
-        if constexpr (std::is_convertible_v<
-                          std::function<void(std::unordered_map<std::string, double, hashes::insensitive_hash<std::string>,
-                                                                detail::insensitive_equals<std::string>> const &)>,
-                          T>) {
+        if constexpr (double_requirement) {
             double_map_->detach(obs);
         }
 
-        if constexpr (std::is_convertible_v<std::function<void(std::unordered_map<std::string, bool, hashes::insensitive_hash<std::string>,
-                                                                                  detail::insensitive_equals<std::string>> const &)>,
-                                            T>) {
+        if constexpr (bool_requirement) {
             bool_map_->detach(obs);
         }
     }
+
+    void lock();
+
+    bool try_lock();
+
+    void unlock(bool notify = true);
 
   private:
     explicit GlobalConfigMap();

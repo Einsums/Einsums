@@ -3,22 +3,22 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/Runtime.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateZeroTensor.hpp>
 
-#include "Einsums/Runtime.hpp"
-
-#include <Einsums/Testing.hpp>
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
 
-template<typename T>
-__global__ void sample_func(T *out, const T *in, int elements) {
-    int id = threadIdx.x;
+#include <Einsums/Testing.hpp>
+
+template <typename T>
+__global__ void sample_func(T *out, T const *in, int elements) {
+    int id   = threadIdx.x;
     int size = blockDim.x;
 
-    for(int element = id; element < elements; element += size) {
+    for (int element = id; element < elements; element += size) {
         out[element] += in[element];
     }
 }

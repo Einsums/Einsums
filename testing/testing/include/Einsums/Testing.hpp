@@ -9,14 +9,14 @@
 
 #include <Einsums/Concepts/Complex.hpp>
 
-#include "catch2/matchers/catch_matchers_floating_point.hpp"
-#include "catch2/matchers/catch_matchers_templated.hpp"
-
 #if defined(EINSUMS_WINDOWS)
 #    define CATCH_CONFIG_WINDOWS_SEH
 #endif
-#include <catch2/catch_all.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
+#include <catch2/matchers/catch_matchers_templated.hpp>
 #include <type_traits>
+
+#include <catch2/catch_all.hpp>
 
 namespace einsums {
 
@@ -97,7 +97,8 @@ class WithinRelMatcher : public Catch::Matchers::MatcherGenericBase {
 
     std::string describe() const override {
         if constexpr (IsComplexV<std::remove_cvref_t<TestType>>) {
-            return "and " + Catch::StringMaker<RemoveComplexT<std::remove_cvref_t<TestType>>>::convert(target_.real()) + ((target_.imag() < 0) ? "-" : "+") +
+            return "and " + Catch::StringMaker<RemoveComplexT<std::remove_cvref_t<TestType>>>::convert(target_.real()) +
+                   ((target_.imag() < 0) ? "-" : "+") +
                    Catch::StringMaker<RemoveComplexT<std::remove_cvref_t<TestType>>>::convert(std::abs(target_.imag())) + "i are within " +
                    Catch::StringMaker<double>::convert(eps_ * 100) + "% of each other";
         } else {
