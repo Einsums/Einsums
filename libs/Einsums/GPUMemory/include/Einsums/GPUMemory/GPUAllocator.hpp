@@ -46,7 +46,7 @@ struct GPUAllocator {
     using difference_type    = ptrdiff_t;
 
     pointer allocate(size_t n) {
-        dev_datatype *out;
+        T *out;
 
         auto &vars = detail::Einsums_GPUMemory_vars::get_singleton();
 

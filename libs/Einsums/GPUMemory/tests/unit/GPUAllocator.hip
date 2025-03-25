@@ -1,6 +1,7 @@
 
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/GPUMemory/GPUAllocator.hpp>
+#include <Einsums/Utilities/Random.hpp>
 
 #include <Einsums/Testing.hpp>
 
@@ -67,7 +68,7 @@ TEMPLATE_TEST_CASE("Test memcpy", "[gpu][memory]", double, std::complex<double>)
 
     std::memcpy(gpu_ptr1, transfer.data(), transfer.size() * sizeof(TestType));
 
-    std::fill(transfer, 0.0);
+    std::fill(transfer.begin(), transfer.end(), 0.0);
 
     std::memcpy(transfer.data(), gpu_ptr1, transfer.size() * sizeof(TestType));
 
@@ -75,7 +76,7 @@ TEMPLATE_TEST_CASE("Test memcpy", "[gpu][memory]", double, std::complex<double>)
         REQUIRE(transfer[i] == test[i]);
     }
 
-    std::fill(transfer, 0.0);
+    std::fill(transfer.begin(), transfer.end(), 0.0);
 
     std::memcpy(gpu_ptr2, gpu_ptr1, transfer.size() * sizeof(TestType));
 
