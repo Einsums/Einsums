@@ -762,9 +762,13 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         if (rank() != Rank) {
             EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensor into a rank-{} TensorView!", rank(), Rank);
         }
-        Dim<Rank> dims(_dims.begin(), _dims.end());
-        Dim<Rank> strides(_strides.begin(), _strides.end());
-        return TensorView<T, Rank>(_data, dims, strides);
+        Dim<Rank>    dims;
+        Stride<Rank> strides;
+        for (int i = 0; i < Rank; i++) {
+            dims[i]    = _dims[i];
+            strides[i] = _strides[i];
+        }
+        return TensorView<T, Rank>(_data.data(), dims, strides);
     }
 
     template <size_t Rank>
@@ -772,9 +776,13 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         if (rank() != Rank) {
             EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensor into a rank-{} TensorView!", rank(), Rank);
         }
-        Dim<Rank> dims(_dims.begin(), _dims.end());
-        Dim<Rank> strides(_strides.begin(), _strides.end());
-        return TensorView<T, Rank>(const_cast<T const *>(_data), dims, strides);
+        Dim<Rank>    dims;
+        Stride<Rank> strides;
+        for (int i = 0; i < Rank; i++) {
+            dims[i]    = _dims[i];
+            strides[i] = _strides[i];
+        }
+        return TensorView<T, Rank>(const_cast<T const *>(_data.data()), dims, strides);
     }
 
     /**
@@ -1879,20 +1887,30 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
     template <size_t Rank>
     operator TensorView<T, Rank>() {
         if (rank() != Rank) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(), Rank);
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(),
+                                    Rank);
         }
-        Dim<Rank> dims(_dims.begin(), _dims.end());
-        Dim<Rank> strides(_strides.begin(), _strides.end());
+        Dim<Rank>    dims;
+        Stride<Rank> strides;
+        for (int i = 0; i < Rank; i++) {
+            dims[i]    = _dims[i];
+            strides[i] = _strides[i];
+        }
         return TensorView<T, Rank>(_data, dims, strides);
     }
 
     template <size_t Rank>
     operator TensorView<T, Rank>() const {
         if (rank() != Rank) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(), Rank);
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(),
+                                    Rank);
         }
-        Dim<Rank> dims(_dims.begin(), _dims.end());
-        Dim<Rank> strides(_strides.begin(), _strides.end());
+        Dim<Rank>    dims;
+        Stride<Rank> strides;
+        for (int i = 0; i < Rank; i++) {
+            dims[i]    = _dims[i];
+            strides[i] = _strides[i];
+        }
         return TensorView<T, Rank>(const_cast<T const *>(_data), dims, strides);
     }
 
