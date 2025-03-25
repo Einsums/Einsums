@@ -136,8 +136,6 @@ int run_impl(std::function<int()> f, std::vector<std::string> const &argv, InitP
         pass_argv = &dummy_argv;
     }
 
-    std::perror("Check 1");
-
     // register default handlers
     [[maybe_unused]] auto signal_handler = std::signal(SIGABRT, on_abort);
     [[maybe_unused]] auto exit_result    = std::atexit(on_exit);

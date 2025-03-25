@@ -56,7 +56,10 @@ std::string get_executable_filename() {
     }
     r = exe_path;
 #elif defined(__linux) || defined(linux) || defined(__linux__)
-    r = std::filesystem::canonical("/proc/self/exe").string();
+    r     = std::filesystem::canonical("/proc/self/exe").string();
+    errno = 0; // errno seems to be set by the previous call. However, since the call does not throw an exception,
+    // and the specification for the call requires it to throw an exception when it encounters an error,
+    // it can be assumed that the error is actually not important.
 #elif defined(__APPLE__)
     char          exe_path[PATH_MAX + 1];
     std::uint32_t len = sizeof(exe_path) / sizeof(exe_path[0]);
@@ -89,7 +92,6 @@ void register_arguments(std::function<void(argparse::ArgumentParser &)> func) {
 }
 
 void RuntimeConfiguration::pre_initialize() {
-    std::perror("Setting default configuration values");
     /*
      * This routine will eventually contain a "master" yaml template that
      * will include all the default settings for Einsums and its subsystems.
@@ -149,8 +151,6 @@ RuntimeConfiguration::RuntimeConfiguration(std::vector<std::string> const       
 
 std::vector<std::string>
 RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line) {
-    std::perror("Configuring command line parser and parsing user provided command line");
-
     // Imperative that pre_initialize is called first as it is responsible for setting
     // default values. This is done in the constructor.
     // There should be a mechanism that allows the user to change the program name.
@@ -179,14 +179,14 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
             .store_into(global_bools["install-signal-handlers"]);
 
         argument_parser->add_argument("--einsums:no-attach-debugger")
-        .default_value(true)
-        .implicit_value(false)
+            .default_value(true)
+            .implicit_value(false)
             .help("do not provide mechanism to attach debugger on detected errors")
             .store_into(global_bools["attach-debugger"]);
 
         argument_parser->add_argument("--einsums:no-diagnostics-on-terminate")
-        .default_value(true)
-        .implicit_value(false)
+            .default_value(true)
+            .implicit_value(false)
             .help("do not print additional diagnostic information on termination")
             .store_into(global_bools["diagnostics-on-terminate"]);
 
@@ -210,8 +210,8 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
             .store_into(global_strings["log-format"]);
 
         argument_parser->add_argument("--einsums:no-profiler-report")
-        .default_value(true)
-        .implicit_value(false)
+            .default_value(true)
+            .implicit_value(false)
             .help("generate profiling report")
             .store_into(global_bools["profiler-report"]);
 
@@ -232,7 +232,6 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
         auto lock = std::lock_guard(argument_list);
 
         // Inject module-specific command lines.
-        std::perror("Adding per-module arguments.");
         for (auto &func : argument_list.argument_functions) {
             func(*argument_parser);
         }
@@ -240,15 +239,12 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
 
     // Allow the user to inject their own command line options
     if (user_command_line) {
-        std::perror("adding user command line options");
         user_command_line(*argument_parser);
     }
 
     try {
-        std::perror("Parsing arguments.\n");
         global_config.lock();
         auto out = argument_parser->parse_known_args(original);
-        std::perror("Updating observers.\n");
         global_config.unlock();
         return out;
     } catch (std::exception const &err) {

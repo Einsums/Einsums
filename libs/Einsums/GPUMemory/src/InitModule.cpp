@@ -35,10 +35,6 @@ int init_Einsums_GPUMemory() {
     return 0;
 }
 
-namespace detail {
-init_Einsums_GPUMemory initialize_module_Einsums_GPUMemory;
-}
-
 void add_Einsums_GPUMemory_arguments(argparse::ArgumentParser &parser) {
     auto &global_config = GlobalConfigMap::get_singleton();
     auto &global_string = global_config.get_string_map()->get_value();
