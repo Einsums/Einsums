@@ -8,12 +8,11 @@
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/RuntimeConfiguration/RuntimeConfiguration.hpp>
+#include <Einsums/TypeSupport/Lockable.hpp>
 
 #include <filesystem>
 #include <string>
 #include <vector>
-
-#include "Einsums/TypeSupport/Lockable.hpp"
 
 #if defined(EINSUMS_WINDOWS)
 #    include <process.h>

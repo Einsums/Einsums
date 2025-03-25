@@ -3,13 +3,13 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/GPUMemory/GPUAllocator.hpp>
 #include <Einsums/GPUMemory/InitModule.hpp>
+#include <Einsums/GPUMemory/ModuleVars.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Runtime.hpp>
 
-#include "Einsums/GPUMemory/GPUAllocator.hpp"
-#include "Einsums/GPUMemory/ModuleVars.hpp"
-#include "argparse/argparse.hpp"
+#include <argparse/argparse.hpp>
 
 namespace einsums {
 

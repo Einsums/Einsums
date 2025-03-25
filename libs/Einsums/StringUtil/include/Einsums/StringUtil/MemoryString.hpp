@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "Einsums/Config/ExportDefinitions.hpp"
+#include <Einsums/Config/ExportDefinitions.hpp>
 namespace einsums {
 namespace string_util {
 

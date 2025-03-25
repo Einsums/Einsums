@@ -18,7 +18,7 @@ namespace einsums {{
  * Logging will not be available by the time the initialization routines are run.
  */
 
-int init_{lib_name}_{module_name}() {{
+int setup_{lib_name}_{module_name}() {{
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
     // If you don't need a function, you may remove its respective line from the
@@ -35,8 +35,6 @@ int init_{lib_name}_{module_name}() {{
 
     return 0;
 }}
-
-init_{lib_name}_{module_name} detail::initialize_module_{lib_name}_{module_name};
 
 EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments(argparse::ArgumentParser &parser) {{
     /** @todo Fill in.

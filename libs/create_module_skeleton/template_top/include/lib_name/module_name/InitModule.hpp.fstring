@@ -22,7 +22,7 @@
 
 namespace einsums {{
 
-EINSUMS_EXPORT int init_{lib_name}_{module_name}();
+EINSUMS_EXPORT int setup_{lib_name}_{module_name}();
 
 EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments(argparse::ArgumentParser &);
 EINSUMS_EXPORT void initialize_{lib_name}_{module_name}();
@@ -30,7 +30,7 @@ EINSUMS_EXPORT void finalize_{lib_name}_{module_name}();
 
 namespace detail {{
 
-static int initialize_module_{lib_name}_{module_name} = init_{lib_name}_{module_name}();
+static int initialize_module_{lib_name}_{module_name} = setup_{lib_name}_{module_name}();
 
 }}
 

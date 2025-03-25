@@ -7,6 +7,8 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Concepts/File.hpp>
+
 #include <fmt/color.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
@@ -18,8 +20,6 @@
 #include <cstring>
 #include <iostream>
 #include <string_view>
-
-#include "Einsums/Concepts/File.hpp"
 
 namespace einsums {
 namespace print {
@@ -194,7 +194,7 @@ using fmt::fg;
 /**
  * Prints something to standard output. A new line is emmitted after the print is done.
  */
-template<typename... Ts>
+template <typename... Ts>
 void println(Ts... args) {
     ;
 }
@@ -202,7 +202,7 @@ void println(Ts... args) {
 /**
  * Prints something to a file pointer or output stream. A new line is emmitted after the print is done.
  */
-template<typename OutType, typename... Ts>
+template <typename OutType, typename... Ts>
 void fprintln(OutType out, Ts... args) {
     ;
 }
@@ -214,7 +214,6 @@ void println(std::string_view const &f, Ts const... ts) {
     std::string const s = fmt::format(fmt::runtime(f), ts...);
     detail::println(s);
 }
-
 
 template <typename... Ts>
 void println(fmt::text_style const &style, std::string_view const &format, Ts const... ts) {

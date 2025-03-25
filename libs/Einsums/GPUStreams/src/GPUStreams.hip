@@ -1,9 +1,16 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
+
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
 #include <Einsums/GPUStreams/InitModule.hpp>
 #include <Einsums/Runtime.hpp>
+#include <Einsums/Runtime/ShutdownFunction.hpp>
 
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
@@ -13,7 +20,6 @@
 #include <mutex>
 #include <omp.h>
 #include <vector>
-#include "Einsums/Runtime/ShutdownFunction.hpp"
 
 namespace einsums {
 namespace gpu {
@@ -25,8 +31,8 @@ std::vector<hipStream_t>       default_streams;
 std::vector<bool>              skip_waits;
 std::recursive_mutex           wait_mutex;
 } // namespace detail
-}
-}
+} // namespace gpu
+} // namespace einsums
 
 einsums::init_Einsums_GPUStreams::init_Einsums_GPUStreams() {
     // Auto-generated code. Do not touch if you are unsure of what you are doing.

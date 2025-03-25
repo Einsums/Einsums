@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 
@@ -14,8 +15,6 @@
 #include <tuple>
 #include <type_traits>
 #include <vector>
-
-#include "Einsums/Config/CompilerSpecific.hpp"
 
 namespace einsums {
 
@@ -171,7 +170,7 @@ void sentinel_to_indices(size_t sentinel, std::array<stride_int1, num_unique_ind
                          std::array<stride_int2, num_unique_inds> &out_inds) {
     size_t hold = sentinel;
 
-#pragma unroll
+#    pragma unroll
     for (ptrdiff_t i = 0; i < num_unique_inds; i++) {
         if (unique_strides[i] != 0) {
             out_inds[i] = hold / unique_strides[i];
@@ -207,7 +206,7 @@ template <typename Extra>
 EINSUMS_HOSTDEV void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, Extra &&extra) = delete;
 
 template <typename... Rest>
-EINSUMS_HOSTDEV void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, size_t const *strides, size_t *indices, Rest&&... rest) {
+EINSUMS_HOSTDEV void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, size_t const *strides, size_t *indices, Rest &&...rest) {
     indices[index] = strides[index] * ordinal;
 
     sentinel_to_indices_mult_imp(ordinal, index, std::forward<Rest>(rest)...);
@@ -218,7 +217,7 @@ EINSUMS_HOSTDEV void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, 
  * @brief Implementation details for the sentinel_to_indices function with multiple output lists.
  */
 template <typename Stride, typename Indices, typename... Rest>
-void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, Stride const &strides, Indices &indices, Rest&&... rest) {
+void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, Stride const &strides, Indices &indices, Rest &&...rest) {
     indices[index] = strides[index] * ordinal;
 
     sentinel_to_indices_mult_imp(ordinal, index, std::forward<Rest>(rest)...);
@@ -233,7 +232,7 @@ void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, Stride const &st
  */
 template <size_t num_indices, typename StorageType, typename... StridesInds>
     requires(sizeof...(StridesInds) % 2 == 0)
-EINSUMS_HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *index_strides, StridesInds&&... strides_inds) {
+EINSUMS_HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *index_strides, StridesInds &&...strides_inds) {
     size_t hold = sentinel;
 
 #pragma unroll
@@ -253,10 +252,10 @@ EINSUMS_HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *i
 #ifndef DOXYGEN
 template <size_t num_indices, typename StorageType, typename... StridesInds>
     requires(sizeof...(StridesInds) % 2 == 0)
-void sentinel_to_indices(size_t sentinel, std::array<size_t, num_indices> const &index_strides, StridesInds&&... strides_inds) {
+void sentinel_to_indices(size_t sentinel, std::array<size_t, num_indices> const &index_strides, StridesInds &&...strides_inds) {
     size_t hold = sentinel;
 
-#pragma unroll
+#    pragma unroll
     for (ptrdiff_t i = 0; i < num_indices; i++) {
         size_t ordinal;
         if (index_strides[i] != 0) {
@@ -272,7 +271,7 @@ void sentinel_to_indices(size_t sentinel, std::array<size_t, num_indices> const 
 
 template <typename StorageType, typename... StridesInds>
     requires(sizeof...(StridesInds) % 2 == 0)
-void sentinel_to_indices(size_t sentinel, StorageType const &index_strides, StridesInds&&... strides_inds) {
+void sentinel_to_indices(size_t sentinel, StorageType const &index_strides, StridesInds &&...strides_inds) {
     size_t hold = sentinel;
 
     for (ptrdiff_t i = 0; i < index_strides.size(); i++) {
@@ -362,7 +361,7 @@ void sentinel_to_sentinels(size_t sentinel, std::array<int64_t, num_indices> con
 
     sentinel_to_sentinels_zero_imp(std::forward<StridesInds>(strides_inds)...);
 
-#pragma unroll
+#    pragma unroll
     for (ptrdiff_t i = 0; i < num_indices; i++) {
         size_t ordinal = hold / index_strides[i];
         hold %= index_strides[i];
@@ -606,11 +605,11 @@ namespace detail {
 /**
  * @brief Implementation details for dims_to_strides.
  */
-template<ptrdiff_t index, size_t Dims, typename arr_type2, typename... TupleDims>
-requires requires {
-    requires sizeof...(TupleDims) == Dims;
-    requires std::is_integral_v<arr_type2>;
-}
+template <ptrdiff_t index, size_t Dims, typename arr_type2, typename... TupleDims>
+    requires requires {
+        requires sizeof...(TupleDims) == Dims;
+        requires std::is_integral_v<arr_type2>;
+    }
 constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out) {
     if constexpr (index < 0 || index >= sizeof...(TupleDims)) {
         return 1;
@@ -623,7 +622,7 @@ constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::arra
     }
 }
 
-}
+} // namespace detail
 
 /**
  * @brief Compute the strides for turning a sentinel into a list of indices.
@@ -633,12 +632,12 @@ constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::arra
  * @return The size calculated from the dimensions. Can be safely ignored.
  */
 template <typename arr_type2, size_t Dims, typename... TupleDims>
-requires requires {
-    requires sizeof...(TupleDims) == Dims;
-    requires std::is_integral_v<arr_type2>;
-}
+    requires requires {
+        requires sizeof...(TupleDims) == Dims;
+        requires std::is_integral_v<arr_type2>;
+    }
 constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out) {
-    
+
     return detail::dims_to_strides<0>(dims, out);
 }
 

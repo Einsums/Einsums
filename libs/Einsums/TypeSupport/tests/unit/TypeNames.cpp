@@ -1,5 +1,12 @@
-#include "Einsums/TypeSupport/TypeName.hpp"
-#include "catch2/catch_test_macros.hpp"
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
+
+#include <Einsums/TypeSupport/TypeName.hpp>
+
+#include <catch2/catch_test_macros.hpp>
 
 #include <Einsums/Testing.hpp>
 

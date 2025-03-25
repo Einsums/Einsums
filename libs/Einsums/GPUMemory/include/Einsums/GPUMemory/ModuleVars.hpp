@@ -7,10 +7,9 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/StringUtil/MemoryString.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/TypeSupport/Singleton.hpp>
-
-#include "Einsums/StringUtil/MemoryString.hpp"
 
 namespace einsums {
 namespace gpu {

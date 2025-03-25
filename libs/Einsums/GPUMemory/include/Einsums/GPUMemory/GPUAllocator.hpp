@@ -19,8 +19,8 @@
 #include <source_location>
 #include <type_traits>
 
-#include "Einsums/GPUMemory/GPUPointer.hpp"
-#include "Einsums/StringUtil/MemoryString.hpp"
+#include <Einsums/GPUMemory/GPUPointer.hpp>
+#include <Einsums/StringUtil/MemoryString.hpp>
 
 namespace einsums {
 

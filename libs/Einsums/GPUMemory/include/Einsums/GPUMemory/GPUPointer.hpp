@@ -24,6 +24,7 @@ namespace gpu {
  *
  * This is used to wrap up certain operations. Unfortunately, it can not be used as a normal fancy pointer since
  * the @c addressof operation does not make sense for its references, which actually handle the data transfers.
+ * However, for the majority of use cases, it can be used as a fancy pointer.
  */
 template <typename T>
 struct GPUPointer final {
@@ -178,6 +179,9 @@ struct GPUPointer final {
 };
 
 #ifndef DOXYGEN
+/*
+ * Const specialization of the pointers.
+ */
 template <typename T>
 struct GPUPointer<T const> final {
   public:
