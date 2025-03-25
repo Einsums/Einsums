@@ -1,6 +1,10 @@
-#include <Einsums/Errors/Error.hpp>
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
 
-#include "Einsums/Errors/ThrowException.hpp"
+#include <Einsums/Errors/Error.hpp>
+#include <Einsums/Errors/ThrowException.hpp>
 
 #include <Einsums/Testing.hpp>
 
@@ -73,10 +77,10 @@ TEST_CASE("Test catching 4", "[error]") {
         INFO("Throwing...");
 
         auto x = vec.at(1);
-    } catch(std::out_of_range const &e) {
+    } catch (std::out_of_range const &e) {
         INFO("Caught exception!");
         REQUIRE(true);
-    } catch(...){
+    } catch (...) {
         INFO("Caught the exception but not in the correct handler!");
     }
 

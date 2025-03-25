@@ -14,14 +14,19 @@
  * aren't being used otherwise.
  */
 namespace einsums {
-init_Einsums_BLAS::init_Einsums_BLAS() {
+int setup_Einsums_BLAS() {
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
-    einsums::register_startup_function(einsums::initialize_Einsums_BLAS);
-    einsums::register_shutdown_function(einsums::finalize_Einsums_BLAS);
-}
+    static bool is_initialized = false;
 
-init_Einsums_BLAS detail::initialize_module_Einsums_BLAS;
+    if(!is_initialized) {
+        einsums::register_startup_function(einsums::initialize_Einsums_BLAS);
+        einsums::register_shutdown_function(einsums::finalize_Einsums_BLAS);
+        is_initialized = true;
+    }
+
+    return 0;
+}
 
 void initialize_Einsums_BLAS() {
     blas::vendor::initialize();

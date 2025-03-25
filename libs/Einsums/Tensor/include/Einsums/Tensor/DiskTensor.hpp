@@ -16,10 +16,9 @@
 #include <Einsums/TypeSupport/AreAllConvertible.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
+#include <Einsums/TypeSupport/Lockable.hpp>
 
 #include <string>
-
-#include "Einsums/TypeSupport/Lockable.hpp"
 
 namespace einsums {
 
@@ -39,7 +38,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      *
      * @brief The type of data stored by this tensor.
      */
-    using ValueType              = T;
+    using ValueType = T;
 
     /**
      * @property Rank
@@ -411,7 +410,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      *
      * @brief Holds the type of data stored by this tensor.
      */
-    using ValueType              = T;
+    using ValueType = T;
 
     /**
      * @property Rank
@@ -426,7 +425,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      * @brief Holds the tensor type that this object views. It will be a DiskTensor in this case.
      */
     using underlying_type = einsums::DiskTensor<T, rank>;
-    
+
     /**
      * Construct a view of a tensor with the given dimensions, counts, strides, and offsets.
      */

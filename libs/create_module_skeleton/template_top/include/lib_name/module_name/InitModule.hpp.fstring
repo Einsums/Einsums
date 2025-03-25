@@ -6,32 +6,31 @@
 #pragma once
 
 #include <Einsums/Config.hpp>
+#include <argparse/argparse.hpp>
 
 /*
  * Exported definitions for initialization. If the module does not need to be initialized,
  * this header can be safely deleted. Just make sure to remove the reference in CMakeLists.txt,
  * as well as the initialization source file and the reference to Einsums_Runtime, if no other
  * symbols from this are being used.
+ *
+ * If this module does need to be initialized, make sure this header is referenced at least somewhere
+ * in your public code. If it is not, then the initialization routines will not occur. Feel free
+ * to change the namespaces of these functions. Just remember to also change the namespaces in the
+ * corresponding code files.
  */
 
 namespace einsums {{
 
-/**
- * @class init_{lib_name}_{module_name}
- *
- * Auto-generated class. The constructor registers the initialization and finalization functions.
- */
-class EINSUMS_EXPORT init_{lib_name}_{module_name} {{
-public:
-    init_{lib_name}_{module_name}();
-}};
+EINSUMS_EXPORT int setup_{lib_name}_{module_name}();
 
+EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments(argparse::ArgumentParser &);
 EINSUMS_EXPORT void initialize_{lib_name}_{module_name}();
 EINSUMS_EXPORT void finalize_{lib_name}_{module_name}();
 
 namespace detail {{
 
-extern EINSUMS_EXPORT init_{lib_name}_{module_name} initialize_module_{lib_name}_{module_name};
+static int initialize_module_{lib_name}_{module_name} = setup_{lib_name}_{module_name}();
 
 }}
 

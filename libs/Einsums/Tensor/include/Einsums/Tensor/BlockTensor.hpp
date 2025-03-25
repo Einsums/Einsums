@@ -11,22 +11,20 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Concepts/SubscriptChooser.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
-
-#include <concepts>
-#include <functional>
-#include <string>
-
-#include "Einsums/TypeSupport/Lockable.hpp"
 
 /// @todo
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/Tensor/DeviceTensor.hpp>
 #endif
-#include <Einsums/Concepts/SubscriptChooser.hpp>
-#include <Einsums/Concepts/TensorConcepts.hpp>
-#include <Einsums/Tensor/Tensor.hpp>
+
+#include <concepts>
+#include <functional>
+#include <string>
 
 namespace einsums {
 namespace tensor_base {

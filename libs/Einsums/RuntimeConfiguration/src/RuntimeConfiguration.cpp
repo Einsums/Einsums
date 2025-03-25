@@ -8,6 +8,7 @@
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/RuntimeConfiguration/RuntimeConfiguration.hpp>
+#include <Einsums/TypeSupport/Lockable.hpp>
 
 #include <filesystem>
 #include <string>
@@ -31,6 +32,19 @@
 
 namespace einsums {
 namespace detail {
+
+struct EINSUMS_EXPORT ArgumentList final : design_pats::Lockable<std::mutex> {
+    EINSUMS_SINGLETON_DEF(ArgumentList)
+
+  public:
+    std::list<std::function<void(argparse::ArgumentParser &)>> argument_functions{};
+
+  private:
+    explicit ArgumentList() = default;
+};
+
+EINSUMS_SINGLETON_IMPL(ArgumentList)
+
 std::string get_executable_filename() {
     std::string r;
 
@@ -41,7 +55,10 @@ std::string get_executable_filename() {
     }
     r = exe_path;
 #elif defined(__linux) || defined(linux) || defined(__linux__)
-    r = std::filesystem::canonical("/proc/self/exe").string();
+    r     = std::filesystem::canonical("/proc/self/exe").string();
+    errno = 0; // errno seems to be set by the previous call. However, since the call does not throw an exception,
+    // and the specification for the call requires it to throw an exception when it encounters an error,
+    // it can be assumed that the error is actually not important.
 #elif defined(__APPLE__)
     char          exe_path[PATH_MAX + 1];
     std::uint32_t len = sizeof(exe_path) / sizeof(exe_path[0]);
@@ -66,8 +83,14 @@ std::string get_executable_prefix() {
 }
 } // namespace detail
 
+void register_arguments(std::function<void(argparse::ArgumentParser &)> func) {
+    auto &argument_list = detail::ArgumentList::get_singleton();
+    auto  lock          = std::lock_guard(argument_list);
+
+    argument_list.argument_functions.push_back(func);
+}
+
 void RuntimeConfiguration::pre_initialize() {
-    EINSUMS_LOG_INFO("Setting default configuration values");
     /*
      * This routine will eventually contain a "master" yaml template that
      * will include all the default settings for Einsums and its subsystems.
@@ -127,12 +150,14 @@ RuntimeConfiguration::RuntimeConfiguration(std::vector<std::string> const       
 
 std::vector<std::string>
 RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line) {
-    EINSUMS_LOG_INFO("Configuring command line parser and parsing user provided command line");
-
     // Imperative that pre_initialize is called first as it is responsible for setting
     // default values. This is done in the constructor.
     // There should be a mechanism that allows the user to change the program name.
-    argument_parser.reset(new argparse::ArgumentParser("einsums"));
+    if (original[0].length() > 0) {
+        argument_parser.reset(new argparse::ArgumentParser(original[0]));
+    } else {
+        argument_parser.reset(new argparse::ArgumentParser("einsums"));
+    }
 
     /*
      * Acquire locks for the different maps.
@@ -147,26 +172,30 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
                               *global_config.get_bool_map()};
 
         argument_parser->add_argument("--einsums:no-install-signal-handlers")
-            .flag()
+            .default_value(true)
+            .implicit_value(false)
             .help("do not install signal handlers")
             .store_into(global_bools["install-signal-handlers"]);
 
         argument_parser->add_argument("--einsums:no-attach-debugger")
-            .flag()
+            .default_value(true)
+            .implicit_value(false)
             .help("do not provide mechanism to attach debugger on detected errors")
             .store_into(global_bools["attach-debugger"]);
 
         argument_parser->add_argument("--einsums:no-diagnostics-on-terminate")
-            .flag()
+            .default_value(true)
+            .implicit_value(false)
             .help("do not print additional diagnostic information on termination")
             .store_into(global_bools["diagnostics-on-terminate"]);
 
-        argument_parser->add_argument("--einsums:log-level")
-        #ifdef EINSUMS_DEBUG
-            .default_value<std::int64_t>(2)
-        #else
-            .default_value<std::int64_t>(3)
-        #endif
+        argument_parser
+            ->add_argument("--einsums:log-level")
+#ifdef EINSUMS_DEBUG
+            .default_value<std::int64_t>(SPDLOG_LEVEL_DEBUG)
+#else
+            .default_value<std::int64_t>(SPDLOG_LEVEL_INFO)
+#endif
             .help("set log level")
             .choices(0, 1, 2, 3, 4)
             .store_into(global_ints["log-level"]);
@@ -180,7 +209,8 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
             .store_into(global_strings["log-format"]);
 
         argument_parser->add_argument("--einsums:no-profiler-report")
-            .flag()
+            .default_value(true)
+            .implicit_value(false)
             .help("generate profiling report")
             .store_into(global_bools["profiler-report"]);
 
@@ -188,20 +218,34 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
             .default_value("profile.txt")
             .help("filename of the profiling report")
             .store_into(global_strings["profiler-filename"]);
-        argument_parser->add_argument("--einsums:profiler-append")
+        argument_parser->add_argument("--einsums:no-profiler-append")
             .default_value(true)
+            .implicit_value(false)
             .help("append to an existing file")
             .store_into(global_bools["profiler-append"]);
     }
 
+    {
+        auto &argument_list = detail::ArgumentList::get_singleton();
+
+        auto lock = std::lock_guard(argument_list);
+
+        // Inject module-specific command lines.
+        for (auto &func : argument_list.argument_functions) {
+            func(*argument_parser);
+        }
+    }
+
     // Allow the user to inject their own command line options
     if (user_command_line) {
-        EINSUMS_LOG_INFO("adding user command line options");
         user_command_line(*argument_parser);
     }
 
     try {
-        return argument_parser->parse_known_args(original);
+        global_config.lock();
+        auto out = argument_parser->parse_known_args(original);
+        global_config.unlock();
+        return out;
     } catch (std::exception const &err) {
         std::cerr << err.what() << std::endl;
         std::cerr << argument_parser;

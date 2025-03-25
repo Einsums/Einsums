@@ -1,3 +1,8 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #ifndef BACKENDS_DEVICE_TENSOR_HPP
 #define BACKENDS_DEVICE_TENSOR_HPP
 
@@ -5,6 +10,7 @@
 // It depends on functions in this file, and tests break if it is included first.
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Tensor/DeviceTensor.hpp>
+#include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TypeSupport/GPUCast.hpp>
 #include <Einsums/TypeSupport/GPUComplex.hpp>
 
@@ -13,8 +19,6 @@
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
-
-#include "Einsums/TensorBase/IndexUtilities.hpp"
 
 namespace einsums {
 
