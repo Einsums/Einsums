@@ -457,6 +457,34 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     }
 
     /**
+     * Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
+     *
+     * @param index The index to evaluate.
+     * @return The value at the position.
+     */
+    template <std::integral... MultiIndex>
+        requires(sizeof...(MultiIndex) == rank)
+    T at(MultiIndex... index) const {
+        auto coords = tile_of(index...);
+
+        auto array_ind = std::array<int64_t, rank>{static_cast<int64_t>(index)...};
+
+        // Find the index in the tile.
+        for (int i = 0; i < rank; i++) {
+            if (array_ind[i] < 0) {
+                array_ind[i] += _dims[i];
+            }
+            array_ind[i] -= _tile_offsets[i].at(coords[i]);
+        }
+
+        if (has_tile(coords)) {
+            return subscript_tensor(tile(coords), array_ind);
+        } else {
+            return T{0.0};
+        }
+    }
+
+    /**
      * Indexes into the tensor. If the index points to a tile that is not initialized, it will create the tile and return a value for it.
      *
      * @param index The index to evaluate.
@@ -496,6 +524,49 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
             requires !std::is_same_v<ContainerType, Range>;
         }
     T operator()(ContainerType const &index) const {
+        if (index.size() < rank) {
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(std::out_of_range, "Not enough indices passed to Tensor!");
+        } else if (index.size() > rank) {
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(std::out_of_range, "Too many indices passed to Tensor!");
+        }
+        auto coords = tile_of(index);
+
+        std::array<std::int64_t, rank> array_ind;
+
+        for (size_t i = 0; i < rank; i++) {
+            array_ind[i] = index[i];
+        }
+
+        // Find the index in the tile.
+        for (int i = 0; i < rank; i++) {
+            if (array_ind[i] < 0) {
+                array_ind[i] += _dims[i];
+            }
+            array_ind[i] -= _tile_offsets[i].at(coords[i]);
+        }
+
+        if (has_tile(coords)) {
+            return subscript_tensor(tile(coords), array_ind);
+        } else {
+            return T{0.0};
+        }
+    }
+
+    /**
+     * Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
+     *
+     * @param index The index to evaluate.
+     * @return The value at the position.
+     */
+    template <typename ContainerType>
+        requires requires {
+            requires !std::is_integral_v<ContainerType>;
+            requires !std::is_same_v<ContainerType, Dim<rank>>;
+            requires !std::is_same_v<ContainerType, Stride<rank>>;
+            requires !std::is_same_v<ContainerType, Offset<rank>>;
+            requires !std::is_same_v<ContainerType, Range>;
+        }
+    T at(ContainerType const &index) const {
         if (index.size() < rank) {
             [[unlikely]] EINSUMS_THROW_EXCEPTION(std::out_of_range, "Not enough indices passed to Tensor!");
         } else if (index.size() > rank) {
