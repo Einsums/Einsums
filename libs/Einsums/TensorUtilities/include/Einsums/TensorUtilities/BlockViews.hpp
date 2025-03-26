@@ -197,7 +197,7 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
     return out;
 }
 
-#ifdef EINSUMS_COMPUTE_CODE
+#if defined(EINSUMS_COMPUTE_CODE) && !defined(DOXYGEN)
 
 /**
  * @brief Create a view of a block tensor where each member has a different view.
