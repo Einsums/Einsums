@@ -12,6 +12,24 @@
 
 namespace einsums {
 
+/**
+ * @brief Create a view of a block tensor where each member has a different view.
+ *
+ * This function takes in a vector of ranges and applies the ranges to each dimension of each block. For instance:
+
+ * @code
+ * BlockTensor<double, 2> tensor("tensor", 5, 5);
+ * apply_view(tensor, std::vector<Range>{Range{0, 3}, Range{1, 4}});
+ * @endcode
+ * 
+ * This will create a view where the first block has been restricted to the top-left 3x3 block and the second has
+ * been restricted to the middle 3x3 block.
+ *
+ * @param tensor The tensor to view.
+ * @param spec A vector of ranges that will be passed to the internal tensors to construct the view.
+ *
+ * @return A TiledTensorView that contains the resulting views.
+ */
 template <CoreBlockTensorConcept TensorType>
 auto apply_view(TensorType const &tensor, std::vector<Range> const &spec) {
     if (spec.size() > tensor.num_blocks()) {
@@ -47,6 +65,24 @@ auto apply_view(TensorType const &tensor, std::vector<Range> const &spec) {
     return out;
 }
 
+/**
+ * @brief Create a view of a block tensor where each member has a different view.
+ *
+ * This function takes in several vectors of ranges and applies the ranges to the respective dimension of each block. For instance:
+
+ * @code
+ * BlockTensor<double, 2> tensor("tensor", 5, 5);
+ * apply_view(tensor, std::vector<Range>{Range{0, 3}, Range{1, 4}}, std::vector<Range>{Range{1, 4}, Range{0, 3}});
+ * @endcode
+ * 
+ * This will create a view where the first block has been restricted to the first three rows and middle three columns,
+ * and the second block has been restricted to the middle three rows and the first three columns.
+ *
+ * @param tensor The tensor to view.
+ * @param spec Several vectors of ranges that will be passed to the internal tensors to construct the view.
+ *
+ * @return A TiledTensorView that contains the resulting views.
+ */
 template <CoreBlockTensorConcept TensorType, typename... ViewSpec>
     requires requires {
         requires sizeof...(ViewSpec) == TensorType::Rank;
@@ -94,6 +130,27 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
     return out;
 }
 
+/**
+ * @brief Create a view of a tiled tensor where each member has a different view.
+ *
+ * This function takes in several vectors of ranges and applies the ranges to the respective dimension of each tile. For instance:
+
+ * @code
+ * TiledTensor<double, 2> tensor("tensor", std::array{5, 5});
+ * apply_view(tensor, std::vector<Range>{Range{0, 3}, Range{1, 4}}, std::vector<Range>{Range{1, 4}, Range{0, 3}});
+ * @endcode
+ * 
+ * This will create a view where:
+ * - The (0,0) tile is restricted to the first three rows and middle three columns.
+ * - The (0,1) tile is restricted to the top left 3x3 block.
+ * - The (1,0) tile is restricted to the middle 3x3 block.
+ * - The (1,1) tile is restricted to the middle three columns and first three rows.
+ *
+ * @param tensor The tensor to view.
+ * @param spec Several vectors of ranges that will be passed to the internal tensors to construct the view.
+ *
+ * @return A TiledTensorView that contains the resulting views.
+ */
 template <CoreTiledTensorConcept TensorType, typename... ViewSpec>
     requires requires {
         requires sizeof...(ViewSpec) == TensorType::Rank;
