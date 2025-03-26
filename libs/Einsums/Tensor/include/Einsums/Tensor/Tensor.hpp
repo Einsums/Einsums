@@ -1348,6 +1348,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         return *this;
     }
 
+    void zero() { *this = T{0.0}; }
+
 #ifndef DOXYGEN
 #    if defined(OPERATOR)
 #        undef OPERATOR

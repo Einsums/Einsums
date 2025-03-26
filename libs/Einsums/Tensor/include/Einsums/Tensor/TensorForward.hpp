@@ -54,19 +54,28 @@ struct BlockTensor;
 template <typename T, size_t Rank>
 struct TiledTensor;
 
-#if defined(EINSUMS_COMPUTE_CODE)
+#    if defined(EINSUMS_COMPUTE_CODE)
 template <typename T, size_t Rank>
 struct DeviceTensor;
+
+template <typename T, size_t Rank>
+struct DeviceTensorView;
 
 template <typename T, size_t Rank>
 struct BlockDeviceTensor;
 
 template <typename T, size_t Rank>
 struct TiledDeviceTensor;
-#endif
+
+template <typename T, size_t Rank>
+struct TiledDeviceTensorView;
+#    endif
 
 template <typename T, size_t Rank>
 struct TensorView;
+
+template <typename T, size_t Rank>
+struct TiledTensorView;
 
 template <typename T, size_t ViewRank, size_t Rank>
 struct DiskView;
@@ -74,10 +83,10 @@ struct DiskView;
 template <typename T, size_t Rank>
 struct DiskTensor;
 
-template<typename T>
+template <typename T>
 struct RuntimeTensor;
 
-template<typename T>
+template <typename T>
 struct RuntimeTensorView;
 
 template <typename T>
@@ -96,7 +105,7 @@ using VectorData = std::vector<T>;
  * @param type The type held by that tensor.
  * @param rank The rank of the tensor.
  */
-#define TENSOR_EXPORT_TR(tensortype, type, rank) extern template class EINSUMS_EXPORT tensortype<type, rank>;
+#    define TENSOR_EXPORT_TR(tensortype, type, rank) extern template class EINSUMS_EXPORT tensortype<type, rank>;
 
 /**
  * @def TENSOR_EXPORT_RANK
@@ -107,11 +116,11 @@ using VectorData = std::vector<T>;
  * @param tensortype The type of tensor to declare.
  * @param rank The rank of the tensor.
  */
-#define TENSOR_EXPORT_RANK(tensortype, rank)                                                                                               \
-    TENSOR_EXPORT_TR(tensortype, float, rank)                                                                                              \
-    TENSOR_EXPORT_TR(tensortype, double, rank)                                                                                             \
-    TENSOR_EXPORT_TR(tensortype, std::complex<float>, rank)                                                                                \
-    TENSOR_EXPORT_TR(tensortype, std::complex<double>, rank)
+#    define TENSOR_EXPORT_RANK(tensortype, rank)                                                                                           \
+        TENSOR_EXPORT_TR(tensortype, float, rank)                                                                                          \
+        TENSOR_EXPORT_TR(tensortype, double, rank)                                                                                         \
+        TENSOR_EXPORT_TR(tensortype, std::complex<float>, rank)                                                                            \
+        TENSOR_EXPORT_TR(tensortype, std::complex<double>, rank)
 
 /**
  * @def TENSOR_EXPORT
@@ -121,11 +130,11 @@ using VectorData = std::vector<T>;
  *
  * @param tensortype The type of tensor to declare.
  */
-#define TENSOR_EXPORT(tensortype)                                                                                                          \
-    TENSOR_EXPORT_RANK(tensortype, 1)                                                                                                      \
-    TENSOR_EXPORT_RANK(tensortype, 2)                                                                                                      \
-    TENSOR_EXPORT_RANK(tensortype, 3)                                                                                                      \
-    TENSOR_EXPORT_RANK(tensortype, 4)
+#    define TENSOR_EXPORT(tensortype)                                                                                                      \
+        TENSOR_EXPORT_RANK(tensortype, 1)                                                                                                  \
+        TENSOR_EXPORT_RANK(tensortype, 2)                                                                                                  \
+        TENSOR_EXPORT_RANK(tensortype, 3)                                                                                                  \
+        TENSOR_EXPORT_RANK(tensortype, 4)
 
 /**
  * @def TENSOR_DEFINE_TR
@@ -136,7 +145,7 @@ using VectorData = std::vector<T>;
  * @param type The type held by that tensor.
  * @param rank The rank of the tensor.
  */
-#define TENSOR_DEFINE_TR(tensortype, type, rank) template class tensortype<type, rank>;
+#    define TENSOR_DEFINE_TR(tensortype, type, rank) template class tensortype<type, rank>;
 
 /**
  * @def TENSOR_DEFINE_RANK
@@ -147,11 +156,11 @@ using VectorData = std::vector<T>;
  * @param tensortype The type of tensor to define.
  * @param rank The rank of the tensor.
  */
-#define TENSOR_DEFINE_RANK(tensortype, rank)                                                                                               \
-    TENSOR_DEFINE_TR(tensortype, float, rank)                                                                                              \
-    TENSOR_DEFINE_TR(tensortype, double, rank)                                                                                             \
-    TENSOR_DEFINE_TR(tensortype, std::complex<float>, rank)                                                                                \
-    TENSOR_DEFINE_TR(tensortype, std::complex<double>, rank)
+#    define TENSOR_DEFINE_RANK(tensortype, rank)                                                                                           \
+        TENSOR_DEFINE_TR(tensortype, float, rank)                                                                                          \
+        TENSOR_DEFINE_TR(tensortype, double, rank)                                                                                         \
+        TENSOR_DEFINE_TR(tensortype, std::complex<float>, rank)                                                                            \
+        TENSOR_DEFINE_TR(tensortype, std::complex<double>, rank)
 
 /**
  * @def TENSOR_DEFINE
@@ -161,11 +170,11 @@ using VectorData = std::vector<T>;
  *
  * @param tensortype The type of tensor to define.
  */
-#define TENSOR_DEFINE(tensortype)                                                                                                          \
-    TENSOR_DEFINE_RANK(tensortype, 1)                                                                                                      \
-    TENSOR_DEFINE_RANK(tensortype, 2)                                                                                                      \
-    TENSOR_DEFINE_RANK(tensortype, 3)                                                                                                      \
-    TENSOR_DEFINE_RANK(tensortype, 4)
+#    define TENSOR_DEFINE(tensortype)                                                                                                      \
+        TENSOR_DEFINE_RANK(tensortype, 1)                                                                                                  \
+        TENSOR_DEFINE_RANK(tensortype, 2)                                                                                                  \
+        TENSOR_DEFINE_RANK(tensortype, 3)                                                                                                  \
+        TENSOR_DEFINE_RANK(tensortype, 4)
 
 /**
  * @def TENSOR_EXPORT_TR_DISK_VIEW
@@ -177,7 +186,8 @@ using VectorData = std::vector<T>;
  * @param view_rank The rank of the view.
  * @param rank The rank of the base tensor.
  */
-#define TENSOR_EXPORT_TR_DISK_VIEW(tensortype, type, view_rank, rank) extern template class EINSUMS_EXPORT tensortype<type, view_rank, rank>;
+#    define TENSOR_EXPORT_TR_DISK_VIEW(tensortype, type, view_rank, rank)                                                                  \
+        extern template class EINSUMS_EXPORT tensortype<type, view_rank, rank>;
 
 /**
  * @def TENSOR_EXPORT_RANK_DISK_VIEW
@@ -189,11 +199,11 @@ using VectorData = std::vector<T>;
  * @param view_rank The rank of the view.
  * @param rank The rank of the base tensor.
  */
-#define TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, view_rank, rank)                                                                          \
-    TENSOR_EXPORT_TR_DISK_VIEW(tensortype, float, view_rank, rank)                                                                         \
-    TENSOR_EXPORT_TR_DISK_VIEW(tensortype, double, view_rank, rank)                                                                        \
-    TENSOR_EXPORT_TR_DISK_VIEW(tensortype, std::complex<float>, view_rank, rank)                                                           \
-    TENSOR_EXPORT_TR_DISK_VIEW(tensortype, std::complex<double>, view_rank, rank)
+#    define TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, view_rank, rank)                                                                      \
+        TENSOR_EXPORT_TR_DISK_VIEW(tensortype, float, view_rank, rank)                                                                     \
+        TENSOR_EXPORT_TR_DISK_VIEW(tensortype, double, view_rank, rank)                                                                    \
+        TENSOR_EXPORT_TR_DISK_VIEW(tensortype, std::complex<float>, view_rank, rank)                                                       \
+        TENSOR_EXPORT_TR_DISK_VIEW(tensortype, std::complex<double>, view_rank, rank)
 
 /**
  * @def TENSOR_EXPORT_RANK2_DISK_VIEW
@@ -204,11 +214,11 @@ using VectorData = std::vector<T>;
  * @param tensortype The type of tensor to declare.
  * @param rank The rank of the base tensor.
  */
-#define TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, rank)                                                                                    \
-    TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, 1, rank)                                                                                      \
-    TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, 2, rank)                                                                                      \
-    TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, 3, rank)                                                                                      \
-    TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, 4, rank)
+#    define TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, rank)                                                                                \
+        TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, 1, rank)                                                                                  \
+        TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, 2, rank)                                                                                  \
+        TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, 3, rank)                                                                                  \
+        TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, 4, rank)
 
 /**
  * @def TENSOR_EXPORT_DISK_VIEW
@@ -218,11 +228,11 @@ using VectorData = std::vector<T>;
  *
  * @param tensortype The type of tensor to declare.
  */
-#define TENSOR_EXPORT_DISK_VIEW(tensortype)                                                                                                \
-    TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, 1)                                                                                           \
-    TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, 2)                                                                                           \
-    TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, 3)                                                                                           \
-    TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, 4)
+#    define TENSOR_EXPORT_DISK_VIEW(tensortype)                                                                                            \
+        TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, 1)                                                                                       \
+        TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, 2)                                                                                       \
+        TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, 3)                                                                                       \
+        TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, 4)
 
 /**
  * @def TENSOR_DEFINE_TR_DISK_VIEW
@@ -234,7 +244,7 @@ using VectorData = std::vector<T>;
  * @param view_rank The rank of the view
  * @param rank The rank of the tensor.
  */
-#define TENSOR_DEFINE_TR_DISK_VIEW(tensortype, type, view_rank, rank) template class tensortype<type, view_rank, rank>;
+#    define TENSOR_DEFINE_TR_DISK_VIEW(tensortype, type, view_rank, rank) template class tensortype<type, view_rank, rank>;
 
 /**
  * @def TENSOR_DEFINE_RANK_DISK_VIEW
@@ -246,11 +256,11 @@ using VectorData = std::vector<T>;
  * @param view_rank The rank of the view.
  * @param rank The rank of the base tensor.
  */
-#define TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, view_rank, rank)                                                                          \
-    TENSOR_DEFINE_TR_DISK_VIEW(tensortype, float, view_rank, rank)                                                                         \
-    TENSOR_DEFINE_TR_DISK_VIEW(tensortype, double, view_rank, rank)                                                                        \
-    TENSOR_DEFINE_TR_DISK_VIEW(tensortype, std::complex<float>, view_rank, rank)                                                           \
-    TENSOR_DEFINE_TR_DISK_VIEW(tensortype, std::complex<double>, view_rank, rank)
+#    define TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, view_rank, rank)                                                                      \
+        TENSOR_DEFINE_TR_DISK_VIEW(tensortype, float, view_rank, rank)                                                                     \
+        TENSOR_DEFINE_TR_DISK_VIEW(tensortype, double, view_rank, rank)                                                                    \
+        TENSOR_DEFINE_TR_DISK_VIEW(tensortype, std::complex<float>, view_rank, rank)                                                       \
+        TENSOR_DEFINE_TR_DISK_VIEW(tensortype, std::complex<double>, view_rank, rank)
 
 /**
  * @def TENSOR_DEFINE_RANK2_DISK_VIEW
@@ -261,11 +271,11 @@ using VectorData = std::vector<T>;
  * @param tensortype The type of tensor to define.
  * @param rank The rank of the base tensor.
  */
-#define TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, rank)                                                                                    \
-    TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, 1, rank)                                                                                      \
-    TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, 2, rank)                                                                                      \
-    TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, 3, rank)                                                                                      \
-    TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, 4, rank)
+#    define TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, rank)                                                                                \
+        TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, 1, rank)                                                                                  \
+        TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, 2, rank)                                                                                  \
+        TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, 3, rank)                                                                                  \
+        TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, 4, rank)
 
 /**
  * @def TENSOR_DEFINE_DISK_VIEW
@@ -275,27 +285,27 @@ using VectorData = std::vector<T>;
  *
  * @param tensortype The type of tensor to define.
  */
-#define TENSOR_DEFINE_DISK_VIEW(tensortype)                                                                                                \
-    TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, 1)                                                                                           \
-    TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, 2)                                                                                           \
-    TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, 3)                                                                                           \
-    TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, 4)
+#    define TENSOR_DEFINE_DISK_VIEW(tensortype)                                                                                            \
+        TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, 1)                                                                                       \
+        TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, 2)                                                                                       \
+        TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, 3)                                                                                       \
+        TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, 4)
 
 #else
 
-#define TENSOR_EXPORT_TR(tensortype, type, rank)
-#define TENSOR_EXPORT_RANK(tensortype, rank)
-#define TENSOR_EXPORT(tensortype)
-#define TENSOR_DEFINE_TR(tensortype, type, rank)
-#define TENSOR_DEFINE_RANK(tensortype, rank)
-#define TENSOR_DEFINE(tensortype)
-#define TENSOR_EXPORT_TR_DISK_VIEW(tensortype, type, view_rank, rank)
-#define TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, view_rank, rank)
-#define TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, rank)
-#define TENSOR_EXPORT_DISK_VIEW(tensortype)
-#define TENSOR_DEFINE_TR_DISK_VIEW(tensortype, type, view_rank, rank)
-#define TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, view_rank, rank)
-#define TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, rank)
-#define TENSOR_DEFINE_DISK_VIEW(tensortype)
+#    define TENSOR_EXPORT_TR(tensortype, type, rank)
+#    define TENSOR_EXPORT_RANK(tensortype, rank)
+#    define TENSOR_EXPORT(tensortype)
+#    define TENSOR_DEFINE_TR(tensortype, type, rank)
+#    define TENSOR_DEFINE_RANK(tensortype, rank)
+#    define TENSOR_DEFINE(tensortype)
+#    define TENSOR_EXPORT_TR_DISK_VIEW(tensortype, type, view_rank, rank)
+#    define TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, view_rank, rank)
+#    define TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, rank)
+#    define TENSOR_EXPORT_DISK_VIEW(tensortype)
+#    define TENSOR_DEFINE_TR_DISK_VIEW(tensortype, type, view_rank, rank)
+#    define TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, view_rank, rank)
+#    define TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, rank)
+#    define TENSOR_DEFINE_DISK_VIEW(tensortype)
 
 #endif

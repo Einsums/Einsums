@@ -1,0 +1,135 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
+#pragma once
+
+#include <iterator>
+namespace einsums {
+
+/**
+ * @concept Container
+ *
+ * Checks that a type satisfies the Container requirement.
+ */
+template <typename T>
+concept Container = requires(T a, T b, T const ca, T const cb, T &ra, T &rb, T const &rca, T const &rcb, T &&rra, T &&rrb) {
+    // Check that the types exist.
+    typename T::value_type;
+    typename T::reference;
+    typename T::const_reference;
+    typename T::iterator;
+    typename T::const_iterator;
+    typename T::difference_type;
+    typename T::size_type;
+
+    // Check the properties of the types.
+    requires std::forward_iterator<typename T::iterator>;
+    requires std::is_same_v<std::iter_value_t<typename T::iterator>, typename T::value_type>;
+    requires std::is_convertible_v<typename T::iterator, typename T::const_iterator>;
+    requires std::forward_iterator<typename T::const_iterator>;
+    requires std::is_same_v<std::iter_value_t<typename T::const_iterator>, typename T::value_type>;
+    requires std::is_integral_v<typename T::difference_type>;
+    requires std::is_signed_v<typename T::difference_type>;
+    requires std::is_integral_v<typename T::size_type>;
+    requires std::is_unsigned_v<typename T::size_type>;
+    requires sizeof(typename T::size_type) >= sizeof(typename T::difference_type);
+
+    // Expressions.
+    T();
+    T(a);
+    T(ca);
+    a = b;
+    a = ca;
+    ra = a;
+    ra = ca;
+    a.~T();
+    {a.begin()} -> std::same_as<typename T::iterator>;
+    {ca.begin()} -> std::same_as<typename T::const_iterator>;
+    {a.end()} -> std::same_as<typename T::iterator>;
+    {ca.end()} -> std::same_as<typename T::const_iterator>;
+    {a.cbegin()} -> std::same_as<typename T::const_iterator>;
+    {a.cend()} -> std::same_as<typename T::const_iterator>;
+    requires !std::random_access_iterator<typename T::iterator> || requires(typename T::iterator i, typename T::iterator j) {
+        {i <=> j} -> std::same_as<std::strong_ordering>;
+    };
+    requires !std::random_access_iterator<typename T::const_iterator> || requires(typename T::const_iterator ci, typename T::const_iterator cj) {
+        {ci <=> cj} -> std::same_as<std::strong_ordering>;
+    };
+    requires !std::random_access_iterator<typename T::iterator> || !std::random_access_iterator<typename T::const_iterator> || requires(typename T::iterator i, typename T::const_iterator cj) {
+        {i <=> cj} -> std::same_as<std::strong_ordering>;
+        {cj <=> i} -> std::same_as<std::strong_ordering>;
+    };
+
+    {a == b} -> std::same_as<bool>;
+    {a == cb} -> std::same_as<bool>;
+    {ca == b} -> std::same_as<bool>;
+    {ca == cb} -> std::same_as<bool>;
+    {a != b} -> std::same_as<bool>;
+    {a != cb} -> std::same_as<bool>;
+    {ca != b} -> std::same_as<bool>;
+    {ca != cb} -> std::same_as<bool>;
+
+    a.swap(b);
+    ra.swap(b);
+    a.swap(rb);
+    ra.swap(rb);
+    requires std::swappable<T>;
+
+    {a.size()} -> std::same_as<typename T::size_type>;
+    {ca.size()} -> std::same_as<typename T::size_type>;
+    {a.max_size()} -> std::same_as<typename T::size_type>;
+    {ca.max_size()} -> std::same_as<typename T::size_type>;
+
+    {a.empty()} -> std::same_as<bool>;
+    {ca.empty()} -> std::same_as<bool>;
+};
+
+/**
+ * @concept ContainerOrInitializer
+ *
+ * Checks that a type satisfies the Container requirement or is an inizializer list.
+ */
+ template <typename T>
+ concept ContainerOrInitializer = requires(T a, T b, T const ca, T const cb, T &ra, T &rb, T const &rca, T const &rcb, T &&rra, T &&rrb) {
+     // Check that the types exist.
+     typename T::value_type;
+     typename T::reference;
+     typename T::const_reference;
+     typename T::iterator;
+     typename T::const_iterator;
+     typename T::size_type;
+ 
+     // Check the properties of the types.
+     requires std::forward_iterator<typename T::iterator>;
+     requires std::is_same_v<std::iter_value_t<typename T::iterator>, typename T::value_type>;
+     requires std::is_convertible_v<typename T::iterator, typename T::const_iterator>;
+     requires std::forward_iterator<typename T::const_iterator>;
+     requires std::is_same_v<std::iter_value_t<typename T::const_iterator>, typename T::value_type>;
+     requires std::is_integral_v<typename T::size_type>;
+     requires std::is_unsigned_v<typename T::size_type>;
+ 
+     // Expressions.
+     T();
+     {a.begin()} -> std::same_as<typename T::iterator>;
+     {ca.begin()} -> std::same_as<typename T::const_iterator>;
+     {a.end()} -> std::same_as<typename T::iterator>;
+     {ca.end()} -> std::same_as<typename T::const_iterator>;
+     requires !std::random_access_iterator<typename T::iterator> || requires(typename T::iterator i, typename T::iterator j) {
+         {i <=> j} -> std::same_as<std::strong_ordering>;
+     };
+     requires !std::random_access_iterator<typename T::const_iterator> || requires(typename T::const_iterator ci, typename T::const_iterator cj) {
+         {ci <=> cj} -> std::same_as<std::strong_ordering>;
+     };
+     requires !std::random_access_iterator<typename T::iterator> || !std::random_access_iterator<typename T::const_iterator> || requires(typename T::iterator i, typename T::const_iterator cj) {
+         {i <=> cj} -> std::same_as<std::strong_ordering>;
+         {cj <=> i} -> std::same_as<std::strong_ordering>;
+     };
+ 
+     {a.size()} -> std::same_as<typename T::size_type>;
+     {ca.size()} -> std::same_as<typename T::size_type>;
+     {a.max_size()} -> std::same_as<typename T::size_type>;
+ };
+
+} // namespace einsums
