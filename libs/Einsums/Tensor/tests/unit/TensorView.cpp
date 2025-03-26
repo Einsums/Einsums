@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/Tensor/BlockTensor.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
@@ -47,6 +48,36 @@ TEMPLATE_TEST_CASE("Subset TensorView", "[tensor]", float, double, std::complex<
 
         for (size_t i = 0; i < size; i++) {
             REQUIRE(I_original(d1, d2, i) == I_view(i));
+        }
+    }
+}
+
+TEMPLATE_TEST_CASE("Block tensor views", "[tensor]", float, double, std::complex<float>, std::complex<double>) {
+    using namespace einsums;
+
+    BlockTensor<TestType, 2> test("Test", 3, 4, 5);
+
+    test[0] = create_random_tensor("1", 3, 3);
+    test[2] = create_random_tensor("2", 4, 4);
+    test[3] = create_random_tensor("3", 5, 5);
+
+    SECTION("non-const") {
+        auto test_view = (TiledTensorView<TestType, 2>)test;
+
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                REQUIRE(test(i, j) == test_view(i, j));
+            }
+        }
+    }
+
+    SECTION("const") {
+        auto const test_view = (TiledTensorView<TestType, 2> const)test;
+
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                REQUIRE(test(i, j) == test_view(i, j));
+            }
         }
     }
 }
