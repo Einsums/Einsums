@@ -51,16 +51,6 @@ concept Container = requires(T a, T b, T const ca, T const cb, T &ra, T &rb, T c
     {ca.end()} -> std::same_as<typename T::const_iterator>;
     {a.cbegin()} -> std::same_as<typename T::const_iterator>;
     {a.cend()} -> std::same_as<typename T::const_iterator>;
-    requires !std::random_access_iterator<typename T::iterator> || requires(typename T::iterator i, typename T::iterator j) {
-        {i <=> j} -> std::same_as<std::strong_ordering>;
-    };
-    requires !std::random_access_iterator<typename T::const_iterator> || requires(typename T::const_iterator ci, typename T::const_iterator cj) {
-        {ci <=> cj} -> std::same_as<std::strong_ordering>;
-    };
-    requires !std::random_access_iterator<typename T::iterator> || !std::random_access_iterator<typename T::const_iterator> || requires(typename T::iterator i, typename T::const_iterator cj) {
-        {i <=> cj} -> std::same_as<std::strong_ordering>;
-        {cj <=> i} -> std::same_as<std::strong_ordering>;
-    };
 
     {a == b} -> std::same_as<bool>;
     {a == cb} -> std::same_as<bool>;
