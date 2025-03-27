@@ -689,7 +689,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         auto operator OP(const TOther &b)->RuntimeTensor<T> & {                                                                            \
             size_t elements = _data.size();                                                                                                \
             auto  *data     = _data.data();                                                                                                \
-            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
+            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
             for (size_t i = 0; i < elements; i++) {                                                                                        \
                 if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
                     data[i] OP(T)(RemoveComplexT<T>) b;                                                                                    \
@@ -709,7 +709,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             T            *this_data = this->data();                                                                                        \
             const TOther *b_data    = b.data();                                                                                            \
             size_t        elements  = size();                                                                                              \
-            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
             for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                                   \
                 if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
                     this_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                         \
