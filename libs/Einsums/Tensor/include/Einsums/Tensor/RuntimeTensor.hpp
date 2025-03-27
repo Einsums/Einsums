@@ -687,19 +687,16 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 #    define OPERATOR(OP, NAME)                                                                                                             \
         template <typename TOther>                                                                                                         \
         auto operator OP(const TOther &b)->RuntimeTensor<T> & {                                                                            \
-            EINSUMS_OMP_PARALLEL {                                                                                                         \
-                auto tid       = omp_get_thread_num();                                                                                     \
-                auto chunksize = _data.size() / omp_get_num_threads();                                                                     \
-                auto begin     = _data.begin() + chunksize * tid;                                                                          \
-                auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                     \
-                EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                      \
-                    if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                    \
-                        (*i) OP(T)(RemoveComplexT<T>) b;                                                                                   \
-                    } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                           \
-                        (*i) OP(T) b.real();                                                                                               \
-                    } else {                                                                                                               \
-                        (*i) OP(T) b;                                                                                                      \
-                    }                                                                                                                      \
+            size_t elements = _data.size();                                                                                                \
+            auto  *data     = _data.data();                                                                                                \
+            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
+            for (size_t i = 0; i < elements; i++) {                                                                                        \
+                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
+                    data[i] OP(T)(RemoveComplexT<T>) b;                                                                                    \
+                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
+                    data[i] OP(T) b.real();                                                                                                \
+                } else {                                                                                                                   \
+                    data[i] OP(T) b;                                                                                                       \
                 }                                                                                                                          \
             }                                                                                                                              \
             return *this;                                                                                                                  \
