@@ -152,7 +152,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 
         _data.resize(size);
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
             size_t hold = sentinel, ord = 0;
             for (int i = 0; i < Rank; i++) {
@@ -511,7 +511,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             _data.resize(other.size());
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t i = 0; i < _data.size(); i++) {
             _data[i] = (T)other.data()[i];
         }
@@ -570,7 +570,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             _data.resize(other.size());
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
             _data[sentinel] = other.data()[sentinel];
         }
@@ -633,7 +633,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             _data.resize(other.size());
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
             _data[sentinel] = other.data()[sentinel];
         }
@@ -711,7 +711,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             }                                                                                                                              \
             T            *this_data = this->data();                                                                                        \
             const TOther *b_data    = b.data();                                                                                            \
-            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
             for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                     \
                 if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
                     this->_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                       \
@@ -734,7 +734,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
                 EINSUMS_THROW_EXCEPTION(dimension_error,                                                                                   \
                                         "Can not perform the operation with runtime tensor and view of different dimensions!");            \
             }                                                                                                                              \
-            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
             for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                     \
                 thread_local std::vector<size_t> index(rank());                                                                            \
                 sentinel_to_indices(sentinel, this->_strides, index);                                                                      \

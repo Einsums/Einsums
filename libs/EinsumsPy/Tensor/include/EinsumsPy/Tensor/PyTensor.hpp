@@ -75,14 +75,14 @@ class EINSUMS_EXPORT PyTensorIterator {
      *
      * @brief Holds the number of elements this iterator will need to cycle through.
      */
-    size_t               _curr_index, _elements;
+    size_t _curr_index, _elements;
 
     /**
      * @property _index_strides
      *
      * @brief Holds information to be able to turn _curr_index into a list of indices that can be passed to the underlying tensor.
      */
-    std::vector<size_t>  _index_strides;
+    std::vector<size_t> _index_strides;
 
     /**
      * @property _tensor
@@ -90,7 +90,7 @@ class EINSUMS_EXPORT PyTensorIterator {
      * @brief The tensor this iterator will iterate over.
      */
     RuntimeTensorView<T> _tensor;
-    
+
     /**
      * @property _stop
      *
@@ -101,10 +101,9 @@ class EINSUMS_EXPORT PyTensorIterator {
      *
      * @brief Indicates whether the iterator is a forward iterator or a reverse iterator.
      */
-    bool                 _stop{false}, _reverse{false};
+    bool _stop{false}, _reverse{false};
 
   public:
-
     /**
      * @brief Copy constructor with optional direction modification.
      *
@@ -760,7 +759,7 @@ class PyTensor : public RuntimeTensor<T> {
                 }                                                                                                                          \
             }                                                                                                                              \
         } else {                                                                                                                           \
-            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
             for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                               \
                 if constexpr (std::is_base_of_v<pybind11::object, TOther>) {                                                               \
                     this->_data[sentinel] OP pybind11::cast<T>((TOther)buffer_data[sentinel]);                                             \
@@ -919,7 +918,7 @@ class PyTensor : public RuntimeTensor<T> {
                         this->_data[sentinel] OP buffer_data[buffer_sent];                                                                 \
                     }                                                                                                                      \
                 } else {                                                                                                                   \
-                    EINSUMS_OMP_PARALLEL_FOR                                                                                               \
+                    EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                          \
                     for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                       \
                         this->_data[sentinel] OP buffer_data[sentinel];                                                                    \
                     }                                                                                                                      \
@@ -983,7 +982,7 @@ class PyTensor : public RuntimeTensor<T> {
 
     /**
      * @brief Check whether the tensor can see all of the data it stores.
-     * 
+     *
      * This function should return true for this kind of tensor.
      */
     bool full_view_of_underlying() const noexcept override { PYBIND11_OVERRIDE(bool, RuntimeTensor<T>, full_view_of_underlying); }
@@ -1198,7 +1197,6 @@ class PyTensorView : public RuntimeTensorView<T> {
     }
 
   public:
-
     /**
      * @brief Subscript into the tensor.
      *
@@ -1603,7 +1601,6 @@ class PyTensorView : public RuntimeTensorView<T> {
 #undef COPY_CAST_OP
 
   public:
-
     /**
      * @brief Copy the data from a buffer into the view.
      *
