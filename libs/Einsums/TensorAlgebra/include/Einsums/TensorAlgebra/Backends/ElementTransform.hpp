@@ -35,7 +35,7 @@ auto element_transform(CType *C, UnaryOperator unary_opt) -> void {
     Stride<Rank> index_strides;
     size_t       elements = dims_to_strides(C->dims(), index_strides);
 
-    // EINSUMS_OMP_PARALLEL_FOR
+    EINSUMS_OMP_PARALLEL_FOR
     for (size_t item = 0; item < elements; item++) {
         size_t offset;
         sentinel_to_sentinels(item, index_strides, C->strides(), offset);
@@ -91,7 +91,7 @@ auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &
     Stride<Rank> index_strides;
     size_t       elements = dims_to_strides(C->dims(), index_strides);
 
-    // EINSUMS_OMP_PARALLEL_FOR
+    EINSUMS_OMP_PARALLEL_FOR
     for (size_t item = 0; item < elements; item++) {
         thread_local std::array<int64_t, Rank> index;
 

@@ -1567,6 +1567,16 @@ DeviceTensor<T, rank>::operator Tensor<T, rank>() const {
     return out;
 }
 
+template <typename T, size_t rank>
+DeviceTensor<T, rank>::operator DeviceTensorView<T, rank>() {
+    return DeviceTensorView<T, rank>(*this, _dims);
+}
+
+template <typename T, size_t rank>
+DeviceTensor<T, rank>::operator DeviceTensorView<T, rank> const() const {
+    return DeviceTensorView<T, rank>(*this, _dims);
+}
+
 #endif
 
 } // namespace einsums

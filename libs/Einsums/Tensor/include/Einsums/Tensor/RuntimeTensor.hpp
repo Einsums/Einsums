@@ -152,7 +152,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 
         _data.resize(size);
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
             size_t hold = sentinel, ord = 0;
             for (int i = 0; i < Rank; i++) {
@@ -511,7 +511,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             _data.resize(other.size());
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t i = 0; i < _data.size(); i++) {
             _data[i] = (T)other.data()[i];
         }
@@ -570,7 +570,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             _data.resize(other.size());
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
             _data[sentinel] = other.data()[sentinel];
         }
@@ -633,7 +633,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             _data.resize(other.size());
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
             _data[sentinel] = other.data()[sentinel];
         }
@@ -687,18 +687,20 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 #    define OPERATOR(OP, NAME)                                                                                                             \
         template <typename TOther>                                                                                                         \
         auto operator OP(const TOther &b)->RuntimeTensor<T> & {                                                                            \
-            EINSUMS_OMP_PARALLEL {                                                                                                         \
-                auto tid       = omp_get_thread_num();                                                                                     \
-                auto chunksize = _data.size() / omp_get_num_threads();                                                                     \
-                auto begin     = _data.begin() + chunksize * tid;                                                                          \
-                auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                     \
-                EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                      \
+            size_t elements  = size();                                                                                                     \
+            T     *this_data = data();                                                                                                     \
+            if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                          \
+                EINSUMS_OMP_PARALLEL_FOR                                                                                                   \
+                for (size_t i = 0; i < elements; i++) {                                                                                    \
+                    this_data[i] OP(T) b.real();                                                                                           \
+                }                                                                                                                          \
+            } else {                                                                                                                       \
+                EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                              \
+                for (size_t i = 0; i < elements; i++) {                                                                                    \
                     if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                    \
-                        (*i) OP(T)(RemoveComplexT<T>) b;                                                                                   \
-                    } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                           \
-                        (*i) OP(T) b.real();                                                                                               \
+                        this_data[i] OP(T)(RemoveComplexT<T>) b;                                                                           \
                     } else {                                                                                                               \
-                        (*i) OP(T) b;                                                                                                      \
+                        this_data[i] OP(T) b;                                                                                              \
                     }                                                                                                                      \
                 }                                                                                                                          \
             }                                                                                                                              \
@@ -711,16 +713,23 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             }                                                                                                                              \
             T            *this_data = this->data();                                                                                        \
             const TOther *b_data    = b.data();                                                                                            \
-            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
-            for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                     \
-                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
-                    this->_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                       \
-                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
-                    this->_data[sentinel] OP(T) b_data[sentinel].real();                                                                   \
-                } else {                                                                                                                   \
-                    this->_data[sentinel] OP(T) b_data[sentinel];                                                                          \
+            size_t        elements  = size();                                                                                              \
+            if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                          \
+                EINSUMS_OMP_PARALLEL_FOR                                                                                                   \
+                for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                               \
+                    this_data[sentinel] OP(T) b_data[sentinel].real();                                                                     \
+                }                                                                                                                          \
+            } else {                                                                                                                       \
+                EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                              \
+                for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                               \
+                    if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                    \
+                        this_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                     \
+                    } else {                                                                                                               \
+                        this_data[sentinel] OP(T) b_data[sentinel];                                                                        \
+                    }                                                                                                                      \
                 }                                                                                                                          \
             }                                                                                                                              \
+                                                                                                                                           \
             return *this;                                                                                                                  \
         }                                                                                                                                  \
                                                                                                                                            \
@@ -734,8 +743,9 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
                 EINSUMS_THROW_EXCEPTION(dimension_error,                                                                                   \
                                         "Can not perform the operation with runtime tensor and view of different dimensions!");            \
             }                                                                                                                              \
+            size_t elements = size();                                                                                                      \
             EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
-            for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                     \
+            for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                                   \
                 thread_local std::vector<size_t> index(rank());                                                                            \
                 sentinel_to_indices(sentinel, this->_strides, index);                                                                      \
                 if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \

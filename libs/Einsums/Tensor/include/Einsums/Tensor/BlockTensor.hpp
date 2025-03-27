@@ -14,6 +14,8 @@
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
+#include <Einsums/Tensor/TensorForward.hpp>
+#include <Einsums/Tensor/TiledTensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
 
@@ -1152,7 +1154,43 @@ struct BlockTensor : public tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, 
     template <size_t Dims>
     explicit BlockTensor(Dim<Dims> block_dims) : tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>(block_dims) {}
 
-    // size_t dim(int d) const override { return detail::BlockTensorBase<T, Rank, Tensor>::dim(d); }
+    operator TiledTensorView<T, Rank>() {
+        std::array<std::vector<size_t>, Rank> block_dims;
+
+        for (int i = 0; i < Rank; i++) {
+            block_dims[i] = this->_dims;
+        }
+
+        TiledTensorView<T, Rank> out{"block view", block_dims};
+
+        std::array<int, Rank> index;
+
+        for (int i = 0; i < this->_blocks.size(); i++) {
+            index.fill(i);
+            out.insert_tile(index, TensorView<T, Rank>(this->_blocks[i], this->_blocks[i].dims()));
+        }
+
+        return out;
+    }
+
+    operator TiledTensorView<T, Rank> const() const {
+        std::array<std::vector<size_t>, Rank> block_dims;
+
+        for (int i = 0; i < Rank; i++) {
+            block_dims[i] = this->_dims;
+        }
+
+        TiledTensorView<T, Rank> out{"block view", block_dims};
+
+        std::array<int, Rank> index;
+
+        for (int i = 0; i < this->_blocks.size(); i++) {
+            index.fill(i);
+            out.insert_tile(index, TensorView<T, Rank>(this->_blocks[i], this->_blocks[i].dims()));
+        }
+
+        return out;
+    }
 };
 
 #ifdef EINSUMS_COMPUTE_CODE
@@ -1467,6 +1505,44 @@ struct BlockDeviceTensor : public tensor_base::BlockTensor<T, Rank, einsums::Dev
         }
 
         return subscript_tensor(this->_blocks.at(block), index_list);
+    }
+
+    operator TiledDeviceTensorView<T, Rank>() {
+        std::array<std::vector<size_t>, Rank> block_dims;
+
+        for (int i = 0; i < Rank; i++) {
+            block_dims[i] = this->_dims;
+        }
+
+        TiledDeviceTensorView<T, Rank> out("block view", block_dims);
+
+        std::array<int, Rank> index;
+
+        for (int i = 0; i < this->_blocks.size(); i++) {
+            index.fill(i);
+            out.insert_tile(index, DeviceTensorView<T, Rank>(this->_blocks[i], this->_blocks[i].dims()));
+        }
+
+        return out;
+    }
+
+    operator TiledDeviceTensorView<T, Rank> const() const {
+        std::array<std::vector<size_t>, Rank> block_dims;
+
+        for (int i = 0; i < Rank; i++) {
+            block_dims[i] = this->_dims;
+        }
+
+        TiledDeviceTensorView<T, Rank> out("block view", block_dims);
+
+        std::array<int, Rank> index;
+
+        for (int i = 0; i < this->_blocks.size(); i++) {
+            index.fill(i);
+            out.insert_tile(index, DeviceTensorView<T, Rank>(this->_blocks[i], this->_blocks[i].dims()));
+        }
+
+        return out;
     }
 };
 #endif

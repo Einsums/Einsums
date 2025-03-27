@@ -81,7 +81,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
         Stride<sizeof...(LinkDims)> link_index_strides;
         size_t                      link_elements = dims_to_strides(link_dims, link_index_strides);
 
-        //        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR
         for (size_t item = 0; item < target_elements; item++) {
             thread_local std::array<int64_t, sizeof...(TargetDims)> target_combination;
             sentinel_to_indices(item, target_index_strides, target_combination);

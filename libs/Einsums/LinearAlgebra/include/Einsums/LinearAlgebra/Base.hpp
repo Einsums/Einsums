@@ -435,7 +435,7 @@ void direct_product(typename AType::ValueType alpha, AType const &A, BType const
             C->data()[C_ord] = beta * C->data()[C_ord] + alpha * (A.data()[A_ord] * B.data()[B_ord]);
         }
     } else {
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t item = 0; item < elements; item++) {
             C->data()[item] = beta * C->data()[item] + alpha * (A.data()[item] * B.data()[item]);
         }
