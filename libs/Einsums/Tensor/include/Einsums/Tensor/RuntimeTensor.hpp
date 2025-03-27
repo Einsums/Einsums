@@ -687,9 +687,9 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 #    define OPERATOR(OP, NAME)                                                                                                             \
         template <typename TOther>                                                                                                         \
         auto operator OP(const TOther &b)->RuntimeTensor<T> & {                                                                            \
-            size_t elements = _data.size();                                                                                                \
-            auto  *data     = _data.data();                                                                                                \
-            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            size_t elements = size();                                                                                                      \
+            T     *data     = data();                                                                                                      \
+            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
             for (size_t i = 0; i < elements; i++) {                                                                                        \
                 if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
                     data[i] OP(T)(RemoveComplexT<T>) b;                                                                                    \
