@@ -720,7 +720,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
                     this_data[sentinel] OP(T) b_data[sentinel].real();                                                                     \
                 }                                                                                                                          \
             } else {                                                                                                                       \
-                EINSUMS_OMP_PARALLEL_FOR                                                                                                   \
+                EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                              \
                 for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                               \
                     if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                    \
                         this_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                     \
