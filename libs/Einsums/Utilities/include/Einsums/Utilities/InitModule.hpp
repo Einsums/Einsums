@@ -1,3 +1,8 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #pragma once
 
 #include <Einsums/Config.hpp>
@@ -11,15 +16,7 @@
 
 namespace einsums {
 
-/**
- * @class init_Einsums_Utilities
- *
- * Auto-generated class. The constructor registers the initialization and finalization functions.
- */
-class EINSUMS_EXPORT init_Einsums_Utilities {
-public:
-    init_Einsums_Utilities();
-};
+EINSUMS_EXPORT int init_Einsums_Utilities();
 
 /**
  * @brief Initializes the random number generator.
@@ -28,8 +25,8 @@ EINSUMS_EXPORT void initialize_Einsums_Utilities();
 
 namespace detail {
 
-extern EINSUMS_EXPORT init_Einsums_Utilities initialize_module_Einsums_Utilities;
+static int initialize_module_Einsums_Utilities = init_Einsums_Utilities();
 
 }
 
-}
+} // namespace einsums

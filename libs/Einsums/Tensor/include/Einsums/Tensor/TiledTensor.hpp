@@ -18,7 +18,7 @@
 
 #include <string>
 
-#include "Einsums/TypeSupport/Lockable.hpp"
+#include <Einsums/TypeSupport/Lockable.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/Tensor/DeviceTensor.hpp>

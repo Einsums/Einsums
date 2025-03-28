@@ -9,12 +9,11 @@
 
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/LinearAlgebra/Unoptimized.hpp>
 #include <Einsums/Print.hpp>
-
-#include "Einsums/Errors/Error.hpp"
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/LinearAlgebra/GPULinearAlgebra.hpp>
@@ -257,7 +256,8 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
 
 template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType>
     requires SameRank<AType, BType, CType>
-auto dot(AType const &A, BType const &B, CType const &C) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType> {
+auto dot(AType const &A, BType const &B, CType const &C)
+    -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType> {
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C.num_blocks() || B.num_blocks() != C.num_blocks()) {
         return dot(AType::StoredType(A), BType::StoredType(B), CType::StoredType(C));
     }

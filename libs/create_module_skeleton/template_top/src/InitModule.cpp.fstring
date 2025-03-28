@@ -5,7 +5,7 @@
 
 #include <{lib_name}/{module_name}/InitModule.hpp>
 #include <Einsums/Runtime.hpp>
-#include <Einsums/Logging.hpp>
+#include <argparse/argparse.hpp>
 
 namespace einsums {{
     
@@ -14,24 +14,91 @@ namespace einsums {{
  * file can be safely deleted. Make sure that if you do, you also remove its reference in the CMakeLists.txt,
  * as well as the initialization header for the module and the dependence on Einsums_Runtime, assuming these
  * aren't being used otherwise.
+ *
+ * Logging will not be available by the time the initialization routines are run.
  */
 
-init_{lib_name}_{module_name}::init_{lib_name}_{module_name}() {{
+int setup_{lib_name}_{module_name}() {{
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
-    einsums::register_startup_function(einsums::initialize_{lib_name}_{module_name});
-    einsums::register_shutdown_function(einsums::finalize_{lib_name}_{module_name});
+    // If you don't need a function, you may remove its respective line from the
+    // if statement below.
+    static bool is_initialized = false;
+
+    if(!is_initialized) {{
+        einsums::register_arguments(einsums::add_{lib_name}_{module_name}_arguments);
+        einsums::register_startup_function(einsums::initialize_{lib_name}_{module_name});
+        einsums::register_shutdown_function(einsums::finalize_{lib_name}_{module_name});
+
+        is_initialized = true;
+    }}
+
+    return 0;
 }}
 
-init_{lib_name}_{module_name} detail::initialize_module_{lib_name}_{module_name};
+EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments(argparse::ArgumentParser &parser) {{
+    /** @todo Fill in.
+     *
+     * If you are not using one of the following maps, you may remove references to it.
+     * The maps may not need to be locked before use, but it should still be done just in
+     * case.
+     */
+    auto &global_config = GlobalConfigMap::get_singleton();
+    auto &global_string = global_config.get_string_map()->get_value();
+    auto &global_double = global_config.get_double_map()->get_value();
+    auto &global_int = global_config.get_int_map()->get_value();
+    auto &global_bool = global_config.get_bool_map()->get_value();
+
+    auto lock = std::lock_guard(global_string, global_double, global_int, global_bool);
+
+    /* Examples:
+     * String argument: 
+     * parser.add_argument("--einsums:dummy-str")
+     *   .default_value("default value")
+     *   .help("Dummy string argument.")
+     *   .store_into(global_string["dummy-str"]);
+     *
+     * Double argument:
+     * parser.add_argument("--einsums:dummy-double")
+     *   .default_value(1.23)
+     *   .help("Dummy double argument.")
+     *   .store_into(global_double["dummy-double"]);
+     *
+     * Integer argument: Be careful! These are int64_t, not int, so
+     * literals need to be handled with care.
+     *
+     * parser.add_argument("--einsums:dummy-int")
+     *   .default_value<int64_t>(1)
+     *   .help("Dummy int argument.")
+     *   .store_into(global_int["dummy-int"]);
+     *
+     * parser.add_argument("--einsums:dummy-int2")
+     *   .default_value(1L)
+     *   .help("Dummy int argument, another way.")
+     *   .store_into(global_int["dummy-int2"]);
+     *
+     * Boolean argument:
+     * This one adds a flag that is normally false, but is set when provided.
+     * parser.add_argument("--einsums:dummy-bool")
+     *   .flag()
+     *   .help("Dummy int argument.")
+     *   .store_into(global_int["dummy-bool"]);
+     *
+     * This one adds a flag that is normally true, but is unset when provided.
+     * parser.add_argument("--einsums:no-dummy-bool2")
+     *   .default_value(true)
+     *   .implicit_value(false)
+     *   .help("Dummy int argument.")
+     *   .store_into(global_int["dummy-bool2"]);
+     */
+
+}}
 
 void initialize_{lib_name}_{module_name}() {{
-    EINSUMS_LOG_TRACE("initializing {lib_name}/{module_name}");
     /// @todo Fill in.
 }}
 
 void finalize_{lib_name}_{module_name}() {{
-    EINSUMS_LOG_TRACE("finalizing module {lib_name}/{module_name}");
     /// @todo Fill in.
 }}
 

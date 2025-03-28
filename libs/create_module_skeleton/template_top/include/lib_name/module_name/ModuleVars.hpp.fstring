@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <{lib_name}/{module_name}/InitModule.hpp>
 #include <Einsums/TypeSupport/Singleton.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/Config.hpp>

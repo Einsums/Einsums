@@ -57,7 +57,7 @@ set(EINSUMS_LIBS
 
 include(Einsums_CodeCoverage)
 set(einsums_libs_public_static SHARED)
-if (EINSUMS_WITH_COVERAGE)
+if (EINSUMS_WITH_COVERAGE OR NOT BUILD_SHARED_LIBS)
   set(einsums_libs_public_static STATIC)
 endif ()
 

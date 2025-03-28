@@ -1,9 +1,15 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
+#include <Einsums/Runtime.hpp>
+#include <Einsums/Runtime/ShutdownFunction.hpp>
+#include <Einsums/Runtime/StartupFunction.hpp>
 #include <Einsums/Utilities/InitModule.hpp>
 #include <Einsums/Utilities/Random.hpp>
-#include <Einsums/Runtime.hpp>
+
 #include <random>
-#include "Einsums/Runtime/ShutdownFunction.hpp"
-#include "Einsums/Runtime/StartupFunction.hpp"
 
 /*
  * Set up the internal state of the module. If the module does not need to be set up, then this
@@ -12,13 +18,17 @@
  * aren't being used otherwise.
  */
 
-einsums::init_Einsums_Utilities::init_Einsums_Utilities() {
+int init_Einsums_Utilities() {
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
-    einsums::register_pre_startup_function(einsums::initialize_Einsums_Utilities);
-}
+    static bool is_initialized = false;
 
-einsums::init_Einsums_Utilities einsums::detail::initialize_module_Einsums_Utilities;
+    if (!is_initialized) {
+        einsums::register_pre_startup_function(einsums::initialize_Einsums_Utilities);
+        is_initialized = true;
+    }
+    return 0;
+}
 
 void einsums::initialize_Einsums_Utilities() {
     einsums::random_engine = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());

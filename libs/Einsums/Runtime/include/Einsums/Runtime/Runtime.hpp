@@ -12,12 +12,11 @@
 #include <Einsums/Runtime/ShutdownFunction.hpp>
 #include <Einsums/Runtime/StartupFunction.hpp>
 #include <Einsums/RuntimeConfiguration/RuntimeConfiguration.hpp>
+#include <Einsums/TypeSupport/Lockable.hpp>
 
 #include <list>
 #include <mutex>
 #include <string_view>
-
-#include "Einsums/TypeSupport/Lockable.hpp"
 
 namespace einsums {
 
