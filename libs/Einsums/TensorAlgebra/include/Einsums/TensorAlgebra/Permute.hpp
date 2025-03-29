@@ -180,7 +180,6 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         Stride<ARank> index_strides;
         size_t elements = dims_to_strides(A.dims(), index_strides);
 
-        std::cout << "Permuting without HPTT" << std::endl;
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = 0; i < elements; i++) {
             thread_local std::array<int64_t, ARank> index;
