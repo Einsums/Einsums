@@ -783,7 +783,11 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         }
         Dim<Rank>    dims;
         Stride<Rank> strides;
+<<<<<<< HEAD
         for (int i = Rank - 1; i >= 0; i--) {
+=======
+        for (int i = Rank - 1; i < 0; i--) {
+>>>>>>> 139f51b5 (FIX: TensorViews created from Runtime Tensors are supplied in the wrong order - swapped around to be generated in reverse order.)
             dims[i]    = _dims[i];
             strides[i] = _strides[i];
         }
