@@ -78,6 +78,40 @@ void permute(int const *perm, int const dim, std::complex<double> const alpha, s
     plan->execute();
 }
 
+void permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, int const *outerSizeA, 
+             int const innerStrideA, float const beta, float *B, int const *offsetB,  int const *outerSizeB, int const innerStrideB) {
+    auto plan =
+        hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
+                          hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
+    plan->execute();
+}
+
+void permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA, int const *outerSizeA, 
+             int const innerStrideA, double const beta, double *B, int const *offsetB,  int const *outerSizeB, int const innerStrideB) {
+    auto plan =
+        hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
+                          hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
+    plan->execute();
+}
+
+void permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
+             int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<float> const beta, std::complex<float> *B, 
+             int const *offsetB, int const *outerSizeB, int const innerStrideB) {
+    auto plan =
+        hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
+                          hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
+    plan->execute();
+}
+
+void permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
+             int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<double> const beta, std::complex<double> *B, 
+             int const *offsetB, int const *outerSizeB, int const innerStrideB) {
+    auto plan =
+        hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
+                          hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
+    plan->execute();
+}
+
 } // namespace einsums::tensor_algebra::detail
 
 #endif

@@ -43,6 +43,18 @@ void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> 
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
                             int const *offsetA, int const *outerSizeA, std::complex<double> const beta, std::complex<double> *B,
                             int const *offsetB, int const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, 
+                            int const *outerSizeA, int const innerStrideA, float const beta, float *B, int const *offsetB, 
+                            int const *outerSizeB, int const innerStrideB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA,
+                            int const *outerSizeA, int const innerStrideA, double const beta, double *B, int const *offsetB, 
+                            int const *outerSizeB, int const innerStrideB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
+                            int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<float> const beta, 
+                            std::complex<float> *B, int const *offsetB, int const *outerSizeB, int const innerStrideB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
+                            int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<double> const beta, 
+                            std::complex<double> *B, int const *offsetB, int const *outerSizeB, int const innerStrideB);
 
 } // namespace detail
 #endif
@@ -84,10 +96,9 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     }
 
     // HPTT interface currently only works for full Tensors and TensorViews if strides are 1
+    
 #if !defined(EINSUMS_WINDOWS)
     if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
-        // Note that if einsums::permute supports strides > 1 (i.e. for each stride[i] = k * stride[i+1] * size[i], k > 1),
-        // then we cannot use HPTT. As far as I can tell, permute overlooks this case anyhow.
         std::array<int, ARank> perms{};
         std::array<int, ARank> size{};
 
@@ -104,6 +115,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         std::array<int, ARank> offsetA{};
         std::array<int, ARank> outerSizeC{};
         std::array<int, ARank> offsetC{};
+        int innerStrideA = A.stride(ARank - 1);
+        int innerStrideC = 1;
 
         for (int i0 = 0; i0 < ARank; i0++) {
             perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
@@ -118,18 +131,17 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             outerSizeC[i0] = A.dim(perms[i0]);
         }
 
-        std::cout << "Permuting with HPTT" << std::endl;
         detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
-                        C_prefactor, C->data(), offsetC.data(), outerSizeC.data());
+                        innerStrideA, C_prefactor, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
-        // Note that if einsums::permute supports strides > 1 (i.e. for each stride[i] = k * stride[i+1] * size[i], k > 1),
-        // then we cannot use HPTT. As far as I can tell, permute overlooks this case anyhow.
         std::array<int, ARank> perms{};
         std::array<int, ARank> size{};
         std::array<int, ARank> outerSizeA{};
         std::array<int, ARank> offsetA{};
         std::array<int, ARank> outerSizeC{};
         std::array<int, ARank> offsetC{};
+        int innerStrideA = 1;
+        int innerStrideC = C->stride(CRank - 1);
 
         for (int i0 = 0; i0 < ARank; i0++) {
             perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
@@ -140,9 +152,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             offsetC[i0] = C->offset(i0);
         }
 
-        std::cout << "Permuting with HPTT" << std::endl;
-        detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), offsetA.data(), outerSizeA.data(), 
-                        C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data());
+        detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), offsetA.data(), outerSizeA.data(),
+                        innerStrideA, C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
         std::array<int, ARank> perms{};
         std::array<int, ARank> size{};
@@ -150,6 +161,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         std::array<int, ARank> offsetA{};
         std::array<int, ARank> outerSizeC{};
         std::array<int, ARank> offsetC{};
+        int innerStrideA = A.stride(ARank - 1);
+        int innerStrideC = C->stride(CRank - 1);
 
         for (int i0 = 0; i0 < ARank; i0++) {
             perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
@@ -160,19 +173,16 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             offsetC[i0] = C->offset(i0);
         }
 
-        std::cout << "Permuting with HPTT" << std::endl;
         detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
-                        C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data());
+                        innerStrideA, C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else
 #endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
         linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
-        std::cout << "Permuting with LA::axpby" << std::endl;
     } else {
         Stride<ARank> index_strides;
         size_t elements = dims_to_strides(A.dims(), index_strides);
 
-        std::cout << "Permuting without HPTT" << std::endl;
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = 0; i < elements; i++) {
             thread_local std::array<int64_t, ARank> index;
