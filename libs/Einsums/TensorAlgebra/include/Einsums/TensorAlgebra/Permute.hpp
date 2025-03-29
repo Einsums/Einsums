@@ -106,7 +106,6 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
             size[i0]  = A.dim(i0);
         }
-        std::cout << "Permuting with HPTT" << std::endl;
         detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
     } else if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
         std::array<int, ARank> perms{};
