@@ -42,7 +42,7 @@ endif()
 # ##################################################################################################
 set(EINSUMS_VERSION_MAJOR 1)
 set(EINSUMS_VERSION_MINOR 0)
-set(EINSUMS_VERSION_PATCH 0)
+set(EINSUMS_VERSION_PATCH 1)
 string(TIMESTAMP EINSUMS_VERSION_DATE "%Y%m%d" UTC)
 set(EINSUMS_VERSION_TAG "-trunk")
 

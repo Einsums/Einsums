@@ -71,6 +71,7 @@ class Transpose {
      *                       * This parameter may be NULL, indicating that the offset is zero.
      *                       * If offsetA is not NULL, outerSizeA[i] >= offsetA[i] + sizeA[i] >= 0 for all 0 <= i < dim must hold.
      *                       * This option enables HPTT to operate on intermediate sub-tensors.
+     * \param[in] innerStrideA integer storing a non-unitary stride for the innermost dimension of A.
      * \param[in] beta scaling factor for B
      * \param[inout] B Pointer to the raw-data of the output tensor B
      * \param[in] outerSizeB dim-dimensional array that stores the outer-sizes of each dimension of B.
@@ -81,6 +82,7 @@ class Transpose {
      *                       * If offsetB is not NULL, outerSizeB[i] >= offsetB[i] + sizeB[i] >= 0 for all 0 <= i < dim must hold.
      *                       * This option enables HPTT to operate on intermediate sub-tensors.
      *                       * This option enables HPTT to operate on sub-tensors.
+     * \param[in] innerStrideB integer storing a non-unitary stride for the innermost dimension of B.
      * \param[in] selectionMethod Determines if auto-tuning should be used. See hptt::SelectionMethod for details.
      *                            ATTENTION: If you enable auto-tuning (e.g., hptt::MEASURE)
      *                            then the output data will be used during the
@@ -96,8 +98,9 @@ class Transpose {
      *            Row-Major: indices are stored from right to left (right = stride-1 index)
      */
     Transpose(int const *sizeA, int const *perm, int const *outerSizeA, int const *outerSizeB, const int *offsetA, const int *offsetB,
-              int const dim, floatType const *A, floatType const alpha, floatType *B, floatType const beta, 
-              SelectionMethod const selectionMethod, int const numThreads, int const *threadIds = nullptr, bool const useRowMajor = false);
+              const size_t innerStrideA, const size_t innerStrideB, int const dim, floatType const *A, floatType const alpha, 
+              floatType *B, floatType const beta, SelectionMethod const selectionMethod, int const numThreads, int const *threadIds = nullptr, 
+              bool const useRowMajor = false);
 
     /**
      * Copy construct a Transpose object.
@@ -284,7 +287,7 @@ class Transpose {
     float getLoadBalance(std::vector<int> const &parallelismStrategy) const;
     float estimateExecutionTime(std::shared_ptr<Plan> const plan); // execute just a few iterations and extrapolate the result
     void  verifyParameter(int const *size, int const *perm, int const *outerSizeA, int const *outerSizeB, const int* offsetA, 
-                          const int* offsetB, int const dim) const;
+                          const int* offsetB, const size_t innerStrideA, const size_t innerStrideB, int const dim) const;
     void  getBestParallelismStrategy(std::vector<int> &bestParallelismStrategy) const;
     void  getBestLoopOrder(std::vector<int> &loopOrder) const; // innermost loop idx is stored at dim_-1
     void  getLoopOrders(std::vector<std::vector<int>> &loopOrders) const;
@@ -309,6 +312,8 @@ class Transpose {
     std::vector<size_t> outerSizeB_; //!< outer sizes of B
     std::vector<size_t> offsetA_;    //!< offsets of A
     std::vector<size_t> offsetB_;    //!< offsets of B
+    size_t innerStrideA_;            //!< innerStride of A
+    size_t innerStrideB_;            //!< innerStride of B
     std::vector<size_t> lda_;        //!< strides for all dimensions of A (first dimension has a stride of 1)
     std::vector<size_t> ldb_;        //!< strides for all dimensions of B (first dimension has a stride of 1)
     std::vector<int>    threadIds_;  //!< OpenMP threadIds of the threads involed in the transposition
