@@ -764,7 +764,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         }
         Dim<Rank>    dims;
         Stride<Rank> strides;
-        for (int i = Rank - 1; i < 0; i--) {
+        for (int i = Rank - 1; i >= 0; i--) {
             dims[i]    = _dims[i];
             strides[i] = _strides[i];
         }
@@ -778,7 +778,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         }
         Dim<Rank>    dims;
         Stride<Rank> strides;
-        for (int i = Rank - 1; i < 0; i--) {
+        for (int i = Rank - 1; i >= 0; i--) {
             dims[i]    = _dims[i];
             strides[i] = _strides[i];
         }
@@ -1892,7 +1892,7 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         }
         Dim<Rank>    dims;
         Stride<Rank> strides;
-        for (int i = Rank - 1; i < 0; i--) {
+        for (int i = Rank - 1; i >= 0; i--) {
             dims[i]    = _dims[i];
             strides[i] = _strides[i];
         }
@@ -1907,7 +1907,7 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         }
         Dim<Rank>    dims;
         Stride<Rank> strides;
-        for (int i = Rank - 1; i < 0; i--) {
+        for (int i = Rank - 1; i >= 0; i--) {
             dims[i]    = _dims[i];
             strides[i] = _strides[i];
         }
