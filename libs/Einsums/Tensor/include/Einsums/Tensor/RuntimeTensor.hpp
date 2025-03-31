@@ -725,7 +725,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
                     this_data[sentinel] OP(T) b_data[sentinel].real();                                                                     \
                 }                                                                                                                          \
             } else {                                                                                                                       \
-                EINSUMS_OMP_PARALLEL_FOR                                                                                                   \
+                EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                              \
                 for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                               \
                     this_data[sentinel] OP(T) b_data[sentinel];                                                                            \
                 }                                                                                                                          \
