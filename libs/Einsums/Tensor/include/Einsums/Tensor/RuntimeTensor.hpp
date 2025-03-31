@@ -695,7 +695,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
                     this_data[i] OP(T)(RemoveComplexT<T>) b;                                                                               \
                 }                                                                                                                          \
             } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
-                EINSUMS_OMP_PARALLEL_FOR                                                                                                   \
+                EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                              \
                 for (size_t i = 0; i < elements; i++) {                                                                                    \
                     this_data[i] OP(T) b.real();                                                                                           \
                 }                                                                                                                          \
