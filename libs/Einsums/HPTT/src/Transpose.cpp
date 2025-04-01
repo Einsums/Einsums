@@ -1297,7 +1297,6 @@ void Transpose<floatType>::execute_expert() noexcept {
     int const numTasks   = masterPlan_->getNumTasks();
     int const numThreads = numThreads_;
     getStartEnd<spawnThreads>(numTasks, myStart, myEnd);
-    printf(" numTasks = %d, numThreads = %d, myStart = %d, myEnd = %d\n", numTasks, numThreads, myStart, myEnd);
 
     HPTT_DUPLICATE(
         spawnThreads,
@@ -1882,7 +1881,7 @@ void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int co
         }
     }
 
-//#ifdef DEBUG
+#ifdef DEBUG
     printVector(perm_, "perm");
     printVector(sizeA_, "sizeA");
     printVector(outerSizeA_, "outerSizeA");
@@ -1894,7 +1893,7 @@ void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int co
     printf("beta: %f\n", beta_);
     printf("innerStrideA: %lu\n",innerStrideA_);
     printf("innerStrideB: %lu\n",innerStrideB_);
-//#endif
+#endif
 }
 
 /**
@@ -1995,7 +1994,7 @@ void Transpose<floatType>::fuseIndices() {
         sizeA_.resize(dim_);
         perm_.resize(dim_);
 
-//#ifdef DEBUG
+#ifdef DEBUG
         printf("\nperm_new: ");
         for (int i = 0; i < dim_; ++i)
             printf("%d ", perm_[i]);
@@ -2015,7 +2014,7 @@ void Transpose<floatType>::fuseIndices() {
         for(int i=0;i < dim_ ; ++i)
             printf("%lu ",offsetB_[i]);
         printf("\n");
-//#endif
+#endif
     }
 }
 
@@ -2220,7 +2219,6 @@ void Transpose<floatType>::createPlans(std::vector<std::shared_ptr<Plan>> &plans
 
     int const posStride1A_inB = findPos(0, perm_);
     int const posStride1B_inA = perm_[0];
-    printf("Making plans\n");
 
     // combine the loopOrder and parallelismStrategies according to their
     // heuristics, search the space with a growing rectangle (from best to worst,
@@ -2240,7 +2238,6 @@ void Transpose<floatType>::createPlans(std::vector<std::shared_ptr<Plan>> &plans
 #ifdef _OPENMP
 #    pragma omp parallel for num_threads(numThreads_) if (numThreads_ > 1)
 #endif
-                printf("numTasks: %d, dims %d\n", numTasks, dim_);
                 for (int taskId = 0; taskId < numTasks; taskId++) {
                     ComputeNode *currentNode = plan->getRootNode(taskId);
 
@@ -2269,8 +2266,6 @@ void Transpose<floatType>::createPlans(std::vector<std::shared_ptr<Plan>> &plans
                         currentNode->lda = lda_[index];
                         currentNode->ldb = ldb_[findPos(index, perm_)];
                         currentNode->offDiffAB = (int)offsetA_[index] - (int)offsetB_[findPos(index, perm_)];
-
-                        printf("Loop/index: %d/%d, start: %d, end: %d, lda: %d, ldb: %d, offDiffAB: %d\n", l, index, currentNode->start, currentNode->end, currentNode->lda, currentNode->ldb, currentNode->offDiffAB);
 
                         if (perm_[0] != 0 || l != dim_ - 1) {
                             currentNode->next = new ComputeNode;
