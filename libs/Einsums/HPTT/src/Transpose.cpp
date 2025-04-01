@@ -1756,9 +1756,6 @@ void Transpose<floatType>::computeLeadingDimensions() {
     else
         for (int i = 1; i < dim_; ++i)
             ldb_[i] = outerSizeB_[i - 1] * ldb_[i - 1];
-
-    printVector(lda_, "lda");
-    printVector(ldb_, "ldb");
 }
 
 template <typename floatType>
