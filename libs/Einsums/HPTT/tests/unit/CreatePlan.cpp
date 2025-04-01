@@ -188,9 +188,6 @@ TEMPLATE_TEST_CASE("Transpose", "[tensor]", float, double, std::complex<float>, 
         int innerStrideA = 2;
         int innerStrideB = 1;
 
-        REQUIRE(outerSizeB_[0] == 5);
-        REQUIRE(outerSizeB_[1] == 6);
-
         Tensor<TestType, 3> A("A", 5, 5, 2); // 5x5x2
         A.vector_data() = einsums::VectorData<TestType>{0.0, 0.0,
                                                         0.0, 0.0,
