@@ -354,30 +354,30 @@ struct micro_kernel<float, betaIsZero, conjA> {
         // Load A
         float32x4_t rowA0, rowA1, rowA2, rowA3;
         if (innerStrideA == 1) {
-            float32x4_t rowA0 = vld1q_f32((A +0*lda));
-            float32x4_t rowA1 = vld1q_f32((A +1*lda));
-            float32x4_t rowA2 = vld1q_f32((A +2*lda));
-            float32x4_t rowA3 = vld1q_f32((A +3*lda));
+            rowA0 = vld1q_f32((A +0*lda));
+            rowA1 = vld1q_f32((A +1*lda));
+            rowA2 = vld1q_f32((A +2*lda));
+            rowA3 = vld1q_f32((A +3*lda));
         } else if (innerStrideA == 2) {
-            float32x4_t rowA0 = vld2q_f32((A +0*lda)).val[0];
-            float32x4_t rowA1 = vld2q_f32((A +1*lda)).val[0];
-            float32x4_t rowA2 = vld2q_f32((A +2*lda)).val[0];
-            float32x4_t rowA3 = vld2q_f32((A +3*lda)).val[0];
+            rowA0 = vld2q_f32((A +0*lda)).val[0];
+            rowA1 = vld2q_f32((A +1*lda)).val[0];
+            rowA2 = vld2q_f32((A +2*lda)).val[0];
+            rowA3 = vld2q_f32((A +3*lda)).val[0];
         } else if (innerStrideA == 3) {
-            float32x4_t rowA0 = vld3q_f32((A +0*lda)).val[0];
-            float32x4_t rowA1 = vld3q_f32((A +1*lda)).val[0];
-            float32x4_t rowA2 = vld3q_f32((A +2*lda)).val[0];
-            float32x4_t rowA3 = vld3q_f32((A +3*lda)).val[0];
+            rowA0 = vld3q_f32((A +0*lda)).val[0];
+            rowA1 = vld3q_f32((A +1*lda)).val[0];
+            rowA2 = vld3q_f32((A +2*lda)).val[0];
+            rowA3 = vld3q_f32((A +3*lda)).val[0];
         } else if (innerStrideA == 4) {
-            float32x4_t rowA0 = vld4q_f32((A +0*lda)).val[0];
-            float32x4_t rowA1 = vld4q_f32((A +1*lda)).val[0];
-            float32x4_t rowA2 = vld4q_f32((A +2*lda)).val[0];
-            float32x4_t rowA3 = vld4q_f32((A +3*lda)).val[0];
+            rowA0 = vld4q_f32((A +0*lda)).val[0];
+            rowA1 = vld4q_f32((A +1*lda)).val[0];
+            rowA2 = vld4q_f32((A +2*lda)).val[0];
+            rowA3 = vld4q_f32((A +3*lda)).val[0];
         } else {
-            float32x4_t rowA0 = vdupq_n_f32(0);
-            float32x4_t rowA1 = vdupq_n_f32(0);
-            float32x4_t rowA2 = vdupq_n_f32(0);
-            float32x4_t rowA3 = vdupq_n_f32(0);
+            rowA0 = vdupq_n_f32(0);
+            rowA1 = vdupq_n_f32(0);
+            rowA2 = vdupq_n_f32(0);
+            rowA3 = vdupq_n_f32(0);
 
             rowA0 = vld1q_lane_f32(A + 0 * lda + 0 * innerStrideA, rowA0, 0);
             rowA0 = vld1q_lane_f32(A + 0 * lda + 1 * innerStrideA, rowA0, 1);
@@ -417,30 +417,30 @@ struct micro_kernel<float, betaIsZero, conjA> {
         if (!betaIsZero) {
             float32x4_t rowB0, rowB1, rowB2, rowB3;
             if (innerStrideB == 1) {
-                float32x4_t rowB0 = vld1q_f32((B +0*ldb));
-                float32x4_t rowB1 = vld1q_f32((B +1*ldb));
-                float32x4_t rowB2 = vld1q_f32((B +2*ldb));
-                float32x4_t rowB3 = vld1q_f32((B +3*ldb));
+                rowB0 = vld1q_f32((B +0*ldb));
+                rowB1 = vld1q_f32((B +1*ldb));
+                rowB2 = vld1q_f32((B +2*ldb));
+                rowB3 = vld1q_f32((B +3*ldb));
             } else if (innerStrideB == 2) {
-                float32x4_t rowB0 = vld2q_f32((B +0*ldb)).val[0];
-                float32x4_t rowB1 = vld2q_f32((B +1*ldb)).val[0];
-                float32x4_t rowB2 = vld2q_f32((B +2*ldb)).val[0];
-                float32x4_t rowB3 = vld2q_f32((B +3*ldb)).val[0];
+                rowB0 = vld2q_f32((B +0*ldb)).val[0];
+                rowB1 = vld2q_f32((B +1*ldb)).val[0];
+                rowB2 = vld2q_f32((B +2*ldb)).val[0];
+                rowB3 = vld2q_f32((B +3*ldb)).val[0];
             } else if (innerStrideB == 3) {
-                float32x4_t rowB0 = vld3q_f32((B +0*ldb)).val[0];
-                float32x4_t rowB1 = vld3q_f32((B +1*ldb)).val[0];
-                float32x4_t rowB2 = vld3q_f32((B +2*ldb)).val[0];
-                float32x4_t rowB3 = vld3q_f32((B +3*ldb)).val[0];
+                rowB0 = vld3q_f32((B +0*ldb)).val[0];
+                rowB1 = vld3q_f32((B +1*ldb)).val[0];
+                rowB2 = vld3q_f32((B +2*ldb)).val[0];
+                rowB3 = vld3q_f32((B +3*ldb)).val[0];
             } else if (innerStrideB == 4) {
-                float32x4_t rowB0 = vld4q_f32((B +0*ldb)).val[0];
-                float32x4_t rowB1 = vld4q_f32((B +1*ldb)).val[0];
-                float32x4_t rowB2 = vld4q_f32((B +2*ldb)).val[0];
-                float32x4_t rowB3 = vld4q_f32((B +3*ldb)).val[0];
+                rowB0 = vld4q_f32((B +0*ldb)).val[0];
+                rowB1 = vld4q_f32((B +1*ldb)).val[0];
+                rowB2 = vld4q_f32((B +2*ldb)).val[0];
+                rowB3 = vld4q_f32((B +3*ldb)).val[0];
             } else {
-                float32x4_t rowB0 = vdupq_n_f32(0);
-                float32x4_t rowB1 = vdupq_n_f32(0);
-                float32x4_t rowB2 = vdupq_n_f32(0);
-                float32x4_t rowB3 = vdupq_n_f32(0);
+                rowB0 = vdupq_n_f32(0);
+                rowB1 = vdupq_n_f32(0);
+                rowB2 = vdupq_n_f32(0);
+                rowB3 = vdupq_n_f32(0);
 
                 rowB0 = vld1q_lane_f32(B + 0 * innerStrideB, rowB0, 0);
                 rowB0 = vld1q_lane_f32(B + 1 * innerStrideB, rowB0, 1);
