@@ -39,9 +39,7 @@ namespace einsums {
  * @tparam T The data type stored by the tensor.
  */
 template <typename T>
-struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
-                                      tensor_base::RuntimeTensorNoType,
-                                      design_pats::Lockable<std::recursive_mutex> {
+struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTensorNoType, design_pats::Lockable<std::recursive_mutex> {
   public:
     /**
      * @typedef Vector
@@ -152,7 +150,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 
         _data.resize(size);
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
             size_t hold = sentinel, ord = 0;
             for (int i = 0; i < Rank; i++) {
@@ -163,7 +161,8 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         }
     }
 
-    virtual ~RuntimeTensor() = default;
+    // HIP clang doesn't like it when this is defaulted.
+    virtual ~RuntimeTensor() {}
 
     /**
      * @brief Set all of the data in the tensor to zero.
@@ -291,7 +290,8 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
     T &operator()(Args... args) {
         if (sizeof...(Args) < rank()) {
             EINSUMS_THROW_EXCEPTION(todo_error,
-                                    "Not yet implemented: can not handle fewer integral indices than rank in (non-const) runtime tensor.");
+                                    "Not yet implemented: can not handle fewer integral indices than rank in (non-const) runtime"
+                                    "tensor.");
         } else if (sizeof...(Args) > rank()) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript operator!");
         }
@@ -913,7 +913,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 
     template <typename TOther>
     friend class RuntimeTensor;
-}; // namespace einsums
+};
 
 /**
  * @class RuntimeTensorView
@@ -921,10 +921,10 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
  * @brief Represents a view of a tensor whose properties can be determined at runtime but not compile time.
  */
 template <typename T>
-struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
-                                          public tensor_base::RuntimeTensorNoType,
-                                          public tensor_base::RuntimeTensorViewNoType,
-                                          public design_pats::Lockable<std::recursive_mutex> {
+struct RuntimeTensorView : public tensor_base::CoreTensor,
+                           public tensor_base::RuntimeTensorNoType,
+                           public tensor_base::RuntimeTensorViewNoType,
+                           public design_pats::Lockable<std::recursive_mutex> {
   public:
     /**
      * @typedef ValueType
@@ -1193,7 +1193,8 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         }
     }
 
-    virtual ~RuntimeTensorView() = default;
+    // HIP clang doesn't like it when this is defaulted.
+    virtual ~RuntimeTensorView() {}
 
     /**
      * @brief Set all the entries in the tensor to zero.
@@ -2232,15 +2233,17 @@ void println(AType const &A, einsums::TensorPrintOptions options = {}) {
     fprintln(std::cout, A, options);
 }
 
-// EINSUMS_EXPORT extern template class RuntimeTensor<float>;
-// EINSUMS_EXPORT extern template class RuntimeTensor<double>;
-// EINSUMS_EXPORT extern template class RuntimeTensor<std::complex<float>>;
-// EINSUMS_EXPORT extern template class RuntimeTensor<std::complex<double>>;
+#endif
 
-// EINSUMS_EXPORT extern template class RuntimeTensorView<float>;
-// EINSUMS_EXPORT extern template class RuntimeTensorView<double>;
-// EINSUMS_EXPORT extern template class RuntimeTensorView<std::complex<float>>;
-// EINSUMS_EXPORT extern template class RuntimeTensorView<std::complex<double>>;
+#if !defined(EINSUMS_WINDOWS) && !defined(DOXYGEN)
+extern template class EINSUMS_EXPORT RuntimeTensor<float>;
+extern template class EINSUMS_EXPORT RuntimeTensor<double>;
+extern template class EINSUMS_EXPORT RuntimeTensor<std::complex<float>>;
+extern template class EINSUMS_EXPORT RuntimeTensor<std::complex<double>>;
 
+extern template class EINSUMS_EXPORT RuntimeTensorView<float>;
+extern template class EINSUMS_EXPORT RuntimeTensorView<double>;
+extern template class EINSUMS_EXPORT RuntimeTensorView<std::complex<float>>;
+extern template class EINSUMS_EXPORT RuntimeTensorView<std::complex<double>>;
 #endif
 } // namespace einsums
