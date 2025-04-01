@@ -2240,6 +2240,7 @@ void Transpose<floatType>::createPlans(std::vector<std::shared_ptr<Plan>> &plans
 #ifdef _OPENMP
 #    pragma omp parallel for num_threads(numThreads_) if (numThreads_ > 1)
 #endif
+                printf("numTasks: %d, dims %d\n", numTasks, dim_);
                 for (int taskId = 0; taskId < numTasks; taskId++) {
                     ComputeNode *currentNode = plan->getRootNode(taskId);
 
@@ -2269,12 +2270,12 @@ void Transpose<floatType>::createPlans(std::vector<std::shared_ptr<Plan>> &plans
                         currentNode->ldb = ldb_[findPos(index, perm_)];
                         currentNode->offDiffAB = (int)offsetA_[index] - (int)offsetB_[findPos(index, perm_)];
 
+                        printf("Loop/index: %d/%d, start: %d, end: %d, lda: %d, ldb: %d, offDiffAB: %d\n", l, index, currentNode->start, currentNode->end, currentNode->lda, currentNode->ldb, currentNode->offDiffAB);
+
                         if (perm_[0] != 0 || l != dim_ - 1) {
                             currentNode->next = new ComputeNode;
                             currentNode       = currentNode->next;
                         }
-                        printf("index: %d, start: %d, end: %d, lda: %d, ldb: %d, offDiffAB: %d\n", index, std::min(sizeA_[index] + offsetB_[findPos(index, perm_)], commId * workPerThread * currentNode->inc + offsetB_[findPos(index, perm_)]), std::min(sizeA_[index] + offsetB_[findPos(index, perm_)], (commId + 1) * workPerThread * currentNode->inc + offsetB_[findPos(index, perm_)]), lda_[index], currentNode->ldb = ldb_[findPos(index, perm_)], (int)offsetA_[index] - (int)offsetB_[findPos(index, perm_)]);
-                        printf("index: %d, start: %d, end: %d, lda: %d, ldb: %d, offDiffAB: %d\n", index, currentNode->start, currentNode->end, currentNode->lda, currentNode->ldb, currentNode->offDiffAB);
                     }
 
                     // macro-kernel
