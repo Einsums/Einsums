@@ -1209,7 +1209,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         _offset_ordinal = 0;                                            // Follows
         // Check access is in increasing stride
         for (size_t i = 0; i < Rank - 1; i++) {
-            if (_strides[i] > _strides[i+1]) {
+            if (_strides[i] < _strides[i+1]) {
                 EINSUMS_THROW_EXCEPTION(dimension_error, "Strides must be in decreasing order - else unexpected permute behaviour will ensue");
             }
         }
@@ -1239,7 +1239,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         _offset_ordinal = 0;
         // Check access is in increasing stride
         for (size_t i = 0; i < Rank - 1; i++) {
-            if (strides[i] > strides[i+1]) {
+            if (_strides[i] < _strides[i+1]) {
                 EINSUMS_THROW_EXCEPTION(dimension_error, "Strides must be in decreasing order - Else unexpected permute behaviour will pursue");
             }
         }
@@ -1711,12 +1711,11 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
         static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
 
-        // set_mutex(other.get_mutex());
-
-        Stride<Rank>      default_strides{};
-        Offset<OtherRank> default_offsets{};
-        Offset<OtherRank> temp_offsets{};
-        Stride<Rank>      error_strides{};
+        // set_mutex(other.get_mutex()); 
+        Stride<Rank>        default_strides{};
+        Offset<OtherRank>   default_offsets{};
+        Offset<OtherRank>   temp_offsets{};
+        Stride<Rank>        error_strides{};
         error_strides[0] = -1;
 
         // Check to see if the user provided a dim of "-1" in one place. If found then the user requests that we compute this
@@ -1797,17 +1796,23 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             ordinal         = 0;
         } else {
             // In different Ranks, source dimensions can be deduced from the strides.
-            size_t current_stride = 1;
-            size_t tensor_index   = OtherRank - 1;
-            for (int i = Rank - 1; i >= 0; i--) {
-                _source_dims[i] = 0;
-                current_stride  = _strides[i];
-                while (tensor_index >= i && _source_dims[i] == 0) {
+            // In decreasing strides when matching the correct dimension is reached (dim[i] = 1 is neglected)
+            // Where dimenions less than the outermost are skipped these are incorporated into the dimension inner to it
+            // If there are no further inner strides, the inner stride is non-zero to account for missing dimensionality.
+            size_t current_stride       = 1;
+            size_t tensor_index         = 0;
+            size_t cumulative_stride    = 1;
+            for (int i = 0; i < Rank; i++) {
+                _source_dims[i]     = 0;
+                cumulative_stride   = 1;
+                current_stride      = _strides[i];
+                while (_source_dims[i] == 0) {
+                    cumulative_stride *= other._dims[tensor_index];
                     if (other._strides[tensor_index] == current_stride) {
-                        _source_dims[i] = other._dims[tensor_index];
+                        _source_dims[i] = cumulative_stride;
                         _offsets[i]     = temp_offsets[tensor_index];
                     }
-                    tensor_index--;
+                    tensor_index++;
                 }
                 if (_source_dims[i] == 0) {
                     EINSUMS_THROW_EXCEPTION(bad_logic,

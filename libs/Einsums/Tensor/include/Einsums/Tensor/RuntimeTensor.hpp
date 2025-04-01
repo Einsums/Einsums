@@ -123,7 +123,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
      */
     template <size_t Rank>
     RuntimeTensor(Tensor<T, Rank> const &copy) : _rank{Rank}, _dims(Rank), _strides(Rank), _name{copy.name()} {
-        for (int i = 0; i < Rank; i++) {
+        for (int i = Rank - 1; i >= 0; i--) {
             _dims[i]    = copy.dim(i);
             _strides[i] = copy.stride(i);
         }

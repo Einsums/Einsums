@@ -412,7 +412,7 @@ struct micro_kernel<float, betaIsZero, conjA> {
         rowA1 = vmulq_f32(t3.val[0], reg_alpha);
         rowA2 = vmulq_f32(t2.val[1], reg_alpha);
         rowA3 = vmulq_f32(t3.val[1], reg_alpha);
-
+        
         // Load B
         if (!betaIsZero) {
             float32x4_t rowB0, rowB1, rowB2, rowB3;
@@ -602,20 +602,24 @@ static INLINE void macro_kernel_scalar(const floatType * A, const size_t lda, in
 
     if (betaIsZero)
         for (int j = 0; j < blockingA; ++j)
-            for (int i = 0; i < blockingB; ++i)
+            for (int i = 0; i < blockingB; ++i) {
+                printf("B[%zu] = A[%zu] * %f = %f\n", i * innerStrideB + j * ldb, i * lda + j * innerStrideA, alpha, A[i * lda + j * innerStrideA] * alpha);
                 if (conjA)
                     B[(i * innerStrideB) + (j * ldb)] = alpha * conj(A[(i * lda) + (j * innerStrideA)]);
                 else
                     B[(i * innerStrideB) + (j * ldb)] = alpha * A[(i * lda) + (j * innerStrideA)];
+            }
     else
         for (int j = 0; j < blockingA; ++j)
-            for (int i = 0; i < blockingB; ++i)
+            for (int i = 0; i < blockingB; ++i) {
+                printf("B[%zu] = A[%zu] * %f + %f * %f = %f\n", i * innerStrideB + j * ldb, i * lda + j * innerStrideA, alpha, B[i * innerStrideB + j * ldb], beta, A[i * lda + j * innerStrideA] * alpha + B[i * innerStrideB + j * ldb] * beta);
                 if (conjA)
                     B[(i * innerStrideB) + (j * ldb)] = alpha * conj(A[(i * lda) + (j * innerStrideA)]) 
                                                       + beta * B[(i * innerStrideB) + (j * ldb)];
                 else
                     B[(i * innerStrideB) + (j * ldb)] = alpha * A[(i * lda) + (j * innerStrideA)] 
                                                       + beta * B[(i * innerStrideB) + (j * ldb)];
+            }
 }
 
 template <int blockingA, int blockingB, int betaIsZero, typename floatType, bool useStreamingStores_, bool conjA>
@@ -1295,6 +1299,7 @@ void Transpose<floatType>::execute_expert() noexcept {
     int const numTasks   = masterPlan_->getNumTasks();
     int const numThreads = numThreads_;
     getStartEnd<spawnThreads>(numTasks, myStart, myEnd);
+    printf(" numTasks = %d, numThreads = %d, myStart = %d, myEnd = %d\n", numTasks, numThreads, myStart, myEnd);
 
     HPTT_DUPLICATE(
         spawnThreads,
@@ -1754,6 +1759,9 @@ void Transpose<floatType>::computeLeadingDimensions() {
     else
         for (int i = 1; i < dim_; ++i)
             ldb_[i] = outerSizeB_[i - 1] * ldb_[i - 1];
+
+    printVector(lda_, "lda");
+    printVector(ldb_, "ldb");
 }
 
 template <typename floatType>
@@ -1876,16 +1884,19 @@ void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int co
         }
     }
 
-#ifdef DEBUG
+//#ifdef DEBUG
     printVector(perm_, "perm");
     printVector(sizeA_, "sizeA");
     printVector(outerSizeA_, "outerSizeA");
     printVector(outerSizeB_, "outerSizeB");
     printVector(offsetA_, "offsetA");
     printVector(offsetB_, "offsetB");
+    printf("dim: %d\n", dim_);
+    printf("alpha: %f\n", alpha_);
+    printf("beta: %f\n", beta_);
     printf("innerStrideA: %lu\n",innerStrideA_);
     printf("innerStrideB: %lu\n",innerStrideB_);
-#endif
+//#endif
 }
 
 /**
@@ -1904,9 +1915,12 @@ void Transpose<floatType>::fuseIndices() {
     for (int i = 0; i < dim_; ++i) {
         // merge indices if the two consecutive entries are identical
         int toMerge = i;
-        perm.push_back(perm_[i]);
+        perm.push_back(perm_[i]); 
+        /* By definition if size == outerSize, then no offsets are present. However,
+        *  by merging with the subsequent dimension the stride the offset depends upon
+        *  is lost. Therefore, the offset of the next offset must be zero too! */
         while (i + 1 < dim_ && perm_[i] + 1 == perm_[i + 1] && (sizeA_[perm_[i]] == outerSizeA_[perm_[i]]) &&
-               (sizeA_[perm_[i]] == outerSizeB_[i])) {
+               (sizeA_[perm_[i]] == outerSizeB_[i]) && (offsetA_[perm_[i + 1]] == 0) && (offsetB_[i + 1] == 0)) {
 #ifdef DEBUG
             fprintf(stderr, "[HPTT] MERGING indices %d and %d\n", perm_[i], perm_[i + 1]);
 #endif
@@ -1983,19 +1997,19 @@ void Transpose<floatType>::fuseIndices() {
         sizeA_.resize(dim_);
         perm_.resize(dim_);
 
-#ifdef DEBUG
+//#ifdef DEBUG
         printf("\nperm_new: ");
         for (int i = 0; i < dim_; ++i)
             printf("%d ", perm_[i]);
         printf("\nsizes_new: ");
         for (int i = 0; i < dim_; ++i)
-            printf("%d ", sizeA_[i]);
+            printf("%lu ", sizeA_[i]);
         printf("\nouterSizeA_new: ");
         for (int i = 0; i < dim_; ++i)
-            printf("%d ", outerSizeA_[i]);
+            printf("%lu ", outerSizeA_[i]);
         printf("\nouterSizeB_new: ");
         for (int i = 0; i < dim_; ++i)
-            printf("%d ", outerSizeB_[i]);
+            printf("%lu ", outerSizeB_[i]);
         printf("\noffsetA_new: ");
         for(int i=0;i < dim_ ; ++i)
             printf("%lu ",offsetA_[i]);
@@ -2003,7 +2017,7 @@ void Transpose<floatType>::fuseIndices() {
         for(int i=0;i < dim_ ; ++i)
             printf("%lu ",offsetB_[i]);
         printf("\n");
-#endif
+//#endif
     }
 }
 
@@ -2208,6 +2222,7 @@ void Transpose<floatType>::createPlans(std::vector<std::shared_ptr<Plan>> &plans
 
     int const posStride1A_inB = findPos(0, perm_);
     int const posStride1B_inA = perm_[0];
+    printf("Making plans\n");
 
     // combine the loopOrder and parallelismStrategies according to their
     // heuristics, search the space with a growing rectangle (from best to worst,
@@ -2260,6 +2275,8 @@ void Transpose<floatType>::createPlans(std::vector<std::shared_ptr<Plan>> &plans
                             currentNode->next = new ComputeNode;
                             currentNode       = currentNode->next;
                         }
+                        printf("index: %d, start: %d, end: %d, lda: %d, ldb: %d, offDiffAB: %d\n", index, std::min(sizeA_[index] + offsetB_[findPos(index, perm_)], commId * workPerThread * currentNode->inc + offsetB_[findPos(index, perm_)]), std::min(sizeA_[index] + offsetB_[findPos(index, perm_)], (commId + 1) * workPerThread * currentNode->inc + offsetB_[findPos(index, perm_)]), lda_[index], currentNode->ldb = ldb_[findPos(index, perm_)], (int)offsetA_[index] - (int)offsetB_[findPos(index, perm_)]);
+                        printf("index: %d, start: %d, end: %d, lda: %d, ldb: %d, offDiffAB: %d\n", index, currentNode->start, currentNode->end, currentNode->lda, currentNode->ldb, currentNode->offDiffAB);
                     }
 
                     // macro-kernel
