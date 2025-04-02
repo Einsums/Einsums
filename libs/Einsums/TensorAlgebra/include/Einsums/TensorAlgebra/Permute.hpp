@@ -72,7 +72,6 @@ template <CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices
     }
 void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
              std::tuple<AIndices...> const &A_indices, AType const &A) {
-    
     using T                = typename AType::ValueType;
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
@@ -100,8 +99,6 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
             size[i0]  = A.dim(i0);
         }
-        auto time_to_prepare = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-        
         detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
     } else if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
         std::array<int, ARank> perms{};
