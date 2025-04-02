@@ -5,22 +5,16 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _modules_Einsums_Concepts_api:
+.. _modules_Einsums_Einsums/TensorUtilities/BlockViews.hpp_api:
 
 -------------------------------------------------------------------------------
-Einsums
+Einsums/TensorUtilities/BlockViews.hpp
 -------------------------------------------------------------------------------
+
+Defined in header Einsums/TensorUtilities/BlockViews.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
-
-.. toctree::
-   :maxdepth: 1
-
-   /libs/Einsums/Concepts/api/SmartPointer.rst
-   /libs/Einsums/Concepts/api/TensorConcepts.rst
-   /libs/Einsums/Concepts/api/File.rst
-   /libs/Einsums/Concepts/api/NamedRequirements.rst
-   /libs/Einsums/Concepts/api/Complex.rst
-   /libs/Einsums/Concepts/api/SubscriptChooser.rst
+.. autodoxygenfile:: Einsums/TensorUtilities/BlockViews.hpp
+   :project: Einsums
