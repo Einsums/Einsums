@@ -3,7 +3,6 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
-
 #ifndef DEVICE_TENSOR_HPP
 #define DEVICE_TENSOR_HPP
 // We use this so that the implementation headers work on their own.
@@ -821,6 +820,10 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @copydoc DeviceTensor::add_assign(DeviceTensor<T, rank> const &)
      */
     DeviceTensor<T, rank> &operator/=(DeviceTensor<T, rank> const &other) { return this->div_assign(other); }
+
+    operator DeviceTensorView<T, rank>();
+
+    operator DeviceTensorView<T, rank> const() const;
 
     /**
      * @brief Get the dimension for the given rank.
