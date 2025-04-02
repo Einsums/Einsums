@@ -20,133 +20,97 @@
 namespace einsums::tensor_algebra::detail {
 
 void permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta, float *B) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, nullptr, beta, B, nullptr, hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 void permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta, double *B) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, nullptr, beta, B, nullptr, hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 void permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
           std::complex<float> const beta, std::complex<float> *B) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, nullptr, beta, B, nullptr, hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 void permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
           std::complex<double> const beta, std::complex<double> *B) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, nullptr, beta, B, nullptr, hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 void permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, int const *outerSizeA,
              float const beta, float *B, int const *offsetB,  int const *outerSizeB) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE, omp_get_max_threads(),
                           nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 void permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA, int const *outerSizeA,
              double const beta, double *B, int const *offsetB,  int const *outerSizeB) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE, omp_get_max_threads(),
                           nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 void permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
              int const *offsetA, int const *outerSizeA, std::complex<float> const beta, std::complex<float> *B, int const *offsetB,
              int const *outerSizeB) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE, omp_get_max_threads(),
                           nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 void permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
              int const *offsetA, int const *outerSizeA, std::complex<double> const beta, std::complex<double> *B, int const *offsetB,
              int const *outerSizeB) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE, omp_get_max_threads(),
                           nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 void permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, int const *outerSizeA, 
              int const innerStrideA, float const beta, float *B, int const *offsetB,  int const *outerSizeB, int const innerStrideB) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
                           hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 void permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA, int const *outerSizeA, 
              int const innerStrideA, double const beta, double *B, int const *offsetB,  int const *outerSizeB, int const innerStrideB) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
                           hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 void permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
              int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<float> const beta, std::complex<float> *B, 
              int const *offsetB, int const *outerSizeB, int const innerStrideB) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
                           hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 void permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
              int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<double> const beta, std::complex<double> *B, 
              int const *offsetB, int const *outerSizeB, int const innerStrideB) {
-    auto start = std::chrono::high_resolution_clock::now();
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
                           hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
-    auto time_to_execute = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    printf("Time to execute: %d\n", time_to_execute);
 }
 
 } // namespace einsums::tensor_algebra::detail
