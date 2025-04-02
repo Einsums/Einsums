@@ -920,7 +920,7 @@ class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
             if (C_prefactor == T{0.0}) {
                 std::memset(C_data, 0, C_info.shape[0] * C_info.strides[0]);
             } else if (C_prefactor != T{1.0}) {
-                EINSUMS_OMP_PARALLEL_FOR
+                EINSUMS_OMP_PARALLEL_FOR_SIMD
                 for (size_t i = 0; i < C_info.shape[0] * C_info.strides[0]; i++) {
                     C_data[i] *= C_prefactor;
                 }

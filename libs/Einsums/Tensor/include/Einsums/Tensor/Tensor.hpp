@@ -714,7 +714,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
 
         size_t size = this->size();
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t sentinel = 0; sentinel < size; sentinel++) {
             _data[sentinel] = other.data()[sentinel];
         }
@@ -1357,6 +1357,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         }
         return *this;
     }
+
+    void zero() { *this = T{0.0}; }
 
 #ifndef DOXYGEN
 #    if defined(OPERATOR)
