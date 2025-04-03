@@ -6,7 +6,7 @@
 #pragma once
 
 #include <Einsums/Config.hpp>
-
+#include <chrono>
 #include <Einsums/Concepts/SmartPointer.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/LinearAlgebra.hpp>
@@ -72,6 +72,7 @@ template <CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices
     }
 void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
              std::tuple<AIndices...> const &A_indices, AType const &A) {
+    auto start = std::chrono::high_resolution_clock::now();
     using T                = typename AType::ValueType;
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
@@ -96,6 +97,9 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     }
 
     // HPTT interface currently only works for full Tensors and TensorViews if strides are 1
+    auto middle = std::chrono::high_resolution_clock::now();
+    auto time_to_initialise = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
+    std::cout << "Time to initialise:" << time_to_initialise << std::endl;
 #if !defined(EINSUMS_WINDOWS)
     if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
         std::array<int, ARank> perms{};
@@ -105,6 +109,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
             size[i0]  = A.dim(i0);
         }
+        auto time_to_prepare = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - middle).count();
+        std::cout << "Time to prepare:" << time_to_prepare << std::endl;
         detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
     } else if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
         std::array<int, ARank> perms{};
@@ -128,6 +134,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         for (int i0 = 0; i0 < ARank; i0++) {
             outerSizeC[i0] = A.dim(perms[i0]);
         }
+        auto time_to_prepare = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - middle).count();
+        std::cout << "Time to prepare:" << time_to_prepare << std::endl;
         detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
                         innerStrideA, C_prefactor, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
@@ -148,6 +156,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             outerSizeC[i0] = C->source_dim(i0);
             offsetC[i0] = C->offset(i0);
         }
+        auto time_to_prepare = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - middle).count();
+        std::cout << "Time to prepare:" << time_to_prepare << std::endl;
         detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), offsetA.data(), outerSizeA.data(),
                         innerStrideA, C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
@@ -168,6 +178,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             outerSizeC[i0] = C->source_dim(i0);
             offsetC[i0] = C->offset(i0);
         }
+        auto time_to_prepare = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - middle).count();
+        std::cout << "Time to prepare:" << time_to_prepare << std::endl;
         detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
                         innerStrideA, C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else
