@@ -21,7 +21,8 @@ Einsums's Documentation
 
 **Useful links**:
 `Source Repository <https://github.com/Einsums/Einsums>`_ |
-`Issue Tracker <https://github.com/Einsums/Einsums/issues>`_
+`Issue Tracker <https://github.com/Einsums/Einsums/issues>`_ |
+`Discord <https://discord.gg/8GvtkyWZUv>`_
 
 
 Einsums provides compile-time contraction pattern analysis to determine the optimal tensor

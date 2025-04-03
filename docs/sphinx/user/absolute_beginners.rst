@@ -11,7 +11,7 @@ Einsums: The Absolute Basics for Beginners
 .. sectionauthor:: Justin M. Turney
 
 Welcome to the absolute beginner's guide to Einsums! If you have comments or
-suggestions, please do not hesitate to `reach out <https://github.com/Einsums/Einsums/discussions>`_!
+suggestions, please do not hesitate to `reach out <https://discord.gg/8GvtkyWZUv>`_!
 
 Welcome to Einsums!
 ===================
