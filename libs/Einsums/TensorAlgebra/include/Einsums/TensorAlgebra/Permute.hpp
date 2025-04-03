@@ -76,30 +76,47 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     using T                = typename AType::ValueType;
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
+    auto time_to_declare_rank = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
 
+    auto start_format = std::chrono::high_resolution_clock::now();
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices,
                                       UC_prefactor, C->name(), C_indices)
                         : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices));
+    auto time_to_format = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_format).count();
 
+    auto start_assign = std::chrono::high_resolution_clock::now();
     T const C_prefactor = UC_prefactor;
     T const A_prefactor = UA_prefactor;
+    auto time_to_assign = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_assign).count();
 
+    auto start_error = std::chrono::high_resolution_clock::now();
     // Error check:  If there are any remaining indices then we cannot perform a permute
     constexpr auto check = DifferenceT<std::tuple<AIndices...>, std::tuple<CIndices...>>();
     static_assert(std::tuple_size_v<decltype(check)> == 0);
+    auto time_to_error = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_error).count();
 
+    auto start_find = std::chrono::high_resolution_clock::now();
     auto target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
+    auto time_to_find = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_find).count();
 
+    auto start_preset = std::chrono::high_resolution_clock::now();
     // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
     if (C_prefactor == T{0.0}) {
         *C = T{0.0};
     }
+    auto time_to_preset = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_preset).count();
 
     // HPTT interface currently only works for full Tensors and TensorViews if strides are 1
     auto middle = std::chrono::high_resolution_clock::now();
     auto time_to_initialise = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    std::cout << "Time to initialise:" << time_to_initialise << std::endl;
+    std::cout << "Time to initialise (breakdown below):" << time_to_initialise << std::endl;
+    std::cout << "    Declare and assign Ranks:" << time_to_declare_rank << std::endl;
+    std::cout << "    Formatting:" << time_to_format << std::endl;
+    std::cout << "    Assign Prefactors:" << time_to_assign << std::endl;
+    std::cout << "    Error Check:" << time_to_error << std::endl;
+    std::cout << "    Find target position:" << time_to_find << std::endl;
+    std::cout << "    Preset tensor to zero:" << time_to_preset << std::endl;
 #if !defined(EINSUMS_WINDOWS)
     if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
         std::array<int, ARank> perms{};
