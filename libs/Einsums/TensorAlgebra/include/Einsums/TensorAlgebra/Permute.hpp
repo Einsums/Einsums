@@ -76,20 +76,29 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     using T                = typename AType::ValueType;
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
+    auto time_to_declare_rank = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
 
+    auto start_format = std::chrono::high_resolution_clock::now();
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices,
                                       UC_prefactor, C->name(), C_indices)
                         : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices));
+    auto time_to_format = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_format).count();
 
+    auto start_assign = std::chrono::high_resolution_clock::now();
     T const C_prefactor = UC_prefactor;
     T const A_prefactor = UA_prefactor;
+    auto time_to_assign = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_assign).count();
 
+    auto start_error = std::chrono::high_resolution_clock::now();
     // Error check:  If there are any remaining indices then we cannot perform a permute
     constexpr auto check = DifferenceT<std::tuple<AIndices...>, std::tuple<CIndices...>>();
     static_assert(std::tuple_size_v<decltype(check)> == 0);
+    auto time_to_error = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_error).count();
 
+    auto start_find = std::chrono::high_resolution_clock::now();
     auto target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
+    auto time_to_find = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_find).count();
 
 #if !defined(EINSUMS_WINDOWS)
     if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
