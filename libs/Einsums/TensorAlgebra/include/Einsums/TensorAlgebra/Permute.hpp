@@ -167,14 +167,14 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 
         detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
                         innerStrideA, C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
-    } else
+    } else 
 #endif    
-        // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
-        if (C_prefactor == T{0.0}) {
-            *C = T{0.0};
-        }
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-        linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
+            // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
+            if (C_prefactor == T{0.0}) {
+                *C = T{0.0};
+            }
+            linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
     } else {    
         // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
         if (C_prefactor == T{0.0}) {
