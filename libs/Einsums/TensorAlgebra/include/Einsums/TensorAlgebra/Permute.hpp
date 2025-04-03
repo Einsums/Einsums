@@ -122,7 +122,6 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         for (int i0 = 0; i0 < ARank; i0++) {
             outerSizeC[i0] = A.dim(perms[i0]);
         }
-
         detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
                         innerStrideA, C_prefactor, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
@@ -143,7 +142,6 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             outerSizeC[i0] = C->source_dim(i0);
             offsetC[i0] = C->offset(i0);
         }
-
         detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), offsetA.data(), outerSizeA.data(),
                         innerStrideA, C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
@@ -164,11 +162,10 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             outerSizeC[i0] = C->source_dim(i0);
             offsetC[i0] = C->offset(i0);
         }
-
         detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
                         innerStrideA, C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
-    } else 
-#endif    
+    } else
+#endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
             // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
             if (C_prefactor == T{0.0}) {
