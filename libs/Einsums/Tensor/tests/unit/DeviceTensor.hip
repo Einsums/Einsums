@@ -1,15 +1,17 @@
-#include <Einsums/Testing.hpp>
+#include <Einsums/Tensor/DeviceTensor.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
 
-#include <catch2/catch_all.hpp>
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
 #include <hip/hip_runtime_api.h>
 #include <type_traits>
 
+#include <Einsums/Testing.hpp>
+
 TEST_CASE("GPU Tensor Construction", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
+    // using namespace einsums::gpu::detail;
 
     // Test creation and access.
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 1, 1);
@@ -177,7 +179,7 @@ TEST_CASE("GPU Tensor Construction", "[gpu][tensor]") {
 TEST_CASE("GPU Set all", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
+    // using namespace einsums::gpu::detail;
 
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
@@ -217,7 +219,7 @@ TEST_CASE("GPU Set all", "[gpu][tensor]") {
 TEST_CASE("Check memory", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
+    // using namespace einsums::gpu::detail;
 
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
@@ -289,7 +291,7 @@ TEST_CASE("Check memory", "[gpu][tensor]") {
 TEST_CASE("Test reading and writing vectors", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
+    // using namespace einsums::gpu::detail;
 
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
@@ -341,7 +343,7 @@ TEST_CASE("Test reading and writing vectors", "[gpu][tensor]") {
 TEST_CASE("Test reading and writing arrays", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
+    // using namespace einsums::gpu::detail;
 
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
@@ -393,7 +395,7 @@ TEST_CASE("Test reading and writing arrays", "[gpu][tensor]") {
 TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
+    // using namespace einsums::gpu::detail;
 
     DeviceTensor<double, 2> A0("A0", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B0("B0", einsums::detail::MAPPED, 3, 3);
@@ -670,7 +672,7 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
 TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
+    // using namespace einsums::gpu::detail;
 
     DeviceTensor<double, 2> A0("A0", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B0("B0", einsums::detail::MAPPED, 3, 3);
@@ -1032,7 +1034,7 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
 TEST_CASE("Test device-host interfacing", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
+    // using namespace einsums::gpu::detail;
 
     Tensor<double, 2> host_tensor("Host", 3, 3);
 
@@ -1085,7 +1087,7 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::detail;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
+    // using namespace einsums::gpu::detail;
 
     DeviceTensor<double, 0> A("A", DEV_ONLY);
     DeviceTensor<double, 0> B("B", PINNED);

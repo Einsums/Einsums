@@ -3,11 +3,10 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include <H5Fpublic.h>
-#include <catch2/catch_all.hpp>
-#include <type_traits>
-
-#include "einsums.hpp"
+#include <Einsums/Tensor/TiledTensor.hpp>
+#include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/Testing.hpp>
+#include <Einsums/TensorAlgebra.hpp>
 
 TEST_CASE("TiledTensor creation", "[tensor]") {
     using namespace einsums;

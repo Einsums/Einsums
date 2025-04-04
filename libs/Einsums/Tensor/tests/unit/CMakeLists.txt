@@ -4,9 +4,9 @@
 #----------------------------------------------------------------------------------------------
 
 set(TensorTests ArithmeticTensor.cpp BlockTensor.cpp BlockDeviceTensor.hip RuntimeTensors.cpp TensorView.cpp DeviceTensor_extras.hip
-DeviceTensor.hip DeviceTensorView.hip DeviceTiledTensor.hip)
+DeviceTensor.hip DeviceTensorView.hip DeviceTiledTensor.hip FunctionTensor.cpp TiledTensor.cpp Tensor.cpp)
 
-foreach(test ${BufferAllocatorTests})
+foreach(test ${TensorTests})
   # Extract base name of test Example1.cpp -> Example1, Example.2.hip -> Example
   get_filename_component(TestName ${test} NAME_WE)
   # Extract extension of the test Example1.cpp -> .cpp, Example.2.hip -> .2.hip
@@ -35,6 +35,6 @@ foreach(test ${BufferAllocatorTests})
   )
 
   einsums_add_unit_test(
-    "Modules.Einsums.BufferAllocator" ${TestName} ${${TestName}_${TestExtension}_PARAMETERS}
+    "Modules.Tensor" ${TestName} ${${TestName}_${TestExtension}_PARAMETERS}
   )
 endforeach()

@@ -1,16 +1,6 @@
-
-#include "einsums/DeviceTensor.hpp"
-#include "einsums/LinearAlgebra.hpp"
-
-#include <catch2/catch_all.hpp>
-#include <hip/driver_types.h>
-#include <hip/hip_common.h>
-#include <hip/hip_runtime_api.h>
-#include <type_traits>
-
-#include "catch2/catch_test_macros.hpp"
-#include "einsums.hpp"
-#include "src/backends/linear_algebra/hipblas/hipblas.hpp"
+#include <Einsums/Testing.hpp>
+#include <Einsums/Tensor/DeviceTensor.hpp>
+#include <Einsums/LinearAlgebra.hpp>
 
 TEMPLATE_TEST_CASE("GPU Tensor GEMMs", "[gpu][linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;

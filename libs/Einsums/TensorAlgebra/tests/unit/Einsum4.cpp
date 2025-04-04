@@ -12,7 +12,7 @@ TEMPLATE_TEST_CASE("einsum4", "[tensor_algebra]", float, double) {
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
-    // timer::initialize();
+    // profile::initialize();
 
     SECTION("3x3 <- 3x5 * 5x3") {
         auto C0 = create_tensor<TestType>("C0", 3, 3);
@@ -105,6 +105,6 @@ TEMPLATE_TEST_CASE("einsum4", "[tensor_algebra]", float, double) {
         }
     }
 
-    // timer::report();
-    // timer::finalize();
+    // profile::report();
+    // profile::finalize();
 }
