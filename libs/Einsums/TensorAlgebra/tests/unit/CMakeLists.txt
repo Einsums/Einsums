@@ -3,59 +3,42 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-set(TensorAlgebraTests
-    Dot
-    Einsum1
-    Einsum2
-    Einsum3
-    Einsum4
-    Einsum5
-    Einsum6
-    Einsum7
-    Element
-    Hadamard
-    Indices
-    KhatriRao
-    MixedPrecision
-    OuterProduct
-    Sort
-    Transpose
-    UniquePointer
-)
+set(TensorAlgebraTests Dot.cpp DotGPU.hip Einsum1.cpp Einsum2.cpp Einsum3.cpp Einsum4.cpp Einsum5.cpp Einsum6.cpp Einsum7.cpp Element.cpp
+Hadamard.cpp Indices.cpp KhatriRao.cpp MixedPrecision.cpp OuterProduct.cpp Sort.cpp Transpose.cpp UniquePointer.cpp
+GPUTensorAlgebra.hip GPUTensorAlgebraTasks.hip QChemTests.cpp TensorAlgebraTasks.cpp)
+
+file(GLOB __data_files data/water_sto3g/*)
+file(COPY ${__data_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/data/water_sto3g)
 
 foreach(test ${TensorAlgebraTests})
-  set(sources ${test}.cpp)
+  # Extract base name of test Example1.cpp -> Example1, Example.2.hip -> Example
+  get_filename_component(TestName ${test} NAME_WE)
+  # Extract extension of the test Example1.cpp -> .cpp, Example.2.hip -> .2.hip
+  get_filename_component(Extension ${test} EXT)
 
-  source_group("Source Files" FILES ${sources})
+  # Remove the leading dot and replace any periods with underscores
+  string(SUBSTRING ${Extension} 1 -1 EXT_NO_DOT) # Remove the leading dot
+  string(REPLACE "." "_" TestExtension ${EXT_NO_DOT})
+
+  # Check if the cleaned extension is "cu" or "hip"
+  if(NOT EINSUMS_WITH_GPU_SUPPORT AND (TestExtension STREQUAL "cu" OR TestExtension STREQUAL "hip"))
+    # Skip this iteration
+    continue()
+  endif()
+
+  set(Sources ${test})
+
+  source_group("Source Files" FILES ${Sources})
 
   einsums_add_executable(
-    ${test}_test INTERNAL_FLAGS
-    SOURCES ${sources} ${${test}_FLAGS}
-    FOLDER ${folder_name}
-          NOINSTALL
+    ${TestName}_test
+    INTERNAL_FLAGS
+    SOURCES ${Sources}
+    ${${TestName}_${TestExtension}_FLAGS}
+    NOINSTALL
   )
 
-  einsums_add_unit_test("Modules.TensorAlgebra" ${test})
+  einsums_add_unit_test(
+    "Modules.TensorAlgebra" ${TestName} ${${TestName}_${TestExtension}_PARAMETERS}
+  )
 endforeach()
-
-if(EINSUMS_WITH_GPU_SUPPORT)
-  set(TensorAlgebraTests2 Dot)
-
-  foreach(test ${TensorAlgebraTests2})
-    set(sources ${test}.hip)
-
-    if(EINSUMS_WITH_CUDA)
-      set_source_files_properties(${test}.hip PROPERTIES LANGUAGE CUDA)
-    endif()
-
-    source_group("Source Files" FILES ${sources})
-
-    einsums_add_executable(
-      ${test}_gpu_test INTERNAL_FLAGS
-      SOURCES ${sources} ${${test}_FLAGS}
-      FOLDER ${folder_name}
-    )
-
-    einsums_add_unit_test("Modules.TensorAlgebra" ${test}_gpu)
-  endforeach()
-endif()

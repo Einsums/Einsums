@@ -13,6 +13,7 @@
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TypeSupport/GPUCast.hpp>
 #include <Einsums/TypeSupport/GPUComplex.hpp>
+#include <Einsums/Iterator/Enumerate.hpp>
 
 #include <cstring>
 #include <hip/driver_types.h>
@@ -200,7 +201,7 @@ DeviceTensor<T, rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
     // compute this dimensionality of this "0" index for them.
     int nfound{0};
     int location{-1};
-    for (auto [i, dim] : enumerate(_dims)) {
+    for (auto [i, dim] : einsums::enumerate(_dims)) {
         if (dim == -1) {
             nfound++;
             location = i;
@@ -213,7 +214,7 @@ DeviceTensor<T, rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
 
     if (nfound == 1) {
         size_t size{1};
-        for (auto [i, dim] : enumerate(_dims)) {
+        for (auto [i, dim] : einsums::enumerate(_dims)) {
             if (i != location)
                 size *= dim;
         }
@@ -343,10 +344,10 @@ __global__ void copy_to_tensor_conv(T *to_data, size_t const *index_strides, siz
         sentinel_to_indices<rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = indices_to_sentinel<rank>(inds, from_strides);
+        size_t from_ind = einsums::indices_to_sentinel<rank>(inds, (size_t const *) from_strides);
 
         // Map index combination onto the tensor.
-        size_t to_ind = indices_to_sentinel<rank>(inds, to_strides);
+        size_t to_ind = einsums::indices_to_sentinel<rank>(inds, (size_t const *) to_strides);
 
         // Do the copy.
         to_data[to_ind] = (T)from_data[from_ind];
@@ -546,7 +547,7 @@ DeviceTensor<T, rank>::dev_datatype *DeviceTensor<T, rank>::gpu_data(MultiIndex.
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
-    for (auto [i, _index] : enumerate(index_list)) {
+    for (auto [i, _index] : einsums::enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
@@ -568,7 +569,7 @@ const DeviceTensor<T, rank>::dev_datatype *DeviceTensor<T, rank>::gpu_data(Multi
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
-    for (auto [i, _index] : enumerate(index_list)) {
+    for (auto [i, _index] : einsums::enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
@@ -590,7 +591,7 @@ DeviceTensor<T, rank>::host_datatype *DeviceTensor<T, rank>::data(MultiIndex... 
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
-    for (auto [i, _index] : enumerate(index_list)) {
+    for (auto [i, _index] : einsums::enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
@@ -612,7 +613,7 @@ const DeviceTensor<T, rank>::host_datatype *DeviceTensor<T, rank>::data(MultiInd
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
-    for (auto [i, _index] : enumerate(index_list)) {
+    for (auto [i, _index] : einsums::enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }

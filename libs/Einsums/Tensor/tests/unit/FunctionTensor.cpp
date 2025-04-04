@@ -1,9 +1,9 @@
-#include "einsums/_Common.hpp"
+#include <Einsums/Tensor/FunctionTensor.hpp>
+#include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 
-#include "catch2/catch_all.hpp"
-#include "einsums.hpp"
+#include <Einsums/Testing.hpp>
 
-double prod(const std::array<int, 2> &vals) {
+double prod(std::array<ptrdiff_t, 2> const &vals) {
     return (vals[0] + 1) * (vals[1] + 1);
 }
 

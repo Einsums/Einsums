@@ -94,7 +94,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
 
         _size = 1;
         if constexpr (sizeof...(Sizes) == rank) {
-            auto size_tuple = std::make_tuple(std::forward<Sizes>(sizes)...);
+            auto size_tuple = std::make_tuple(sizes...);
             for_sequence<rank>([&](auto i) {
                 auto &size = std::get<i>(size_tuple);
 

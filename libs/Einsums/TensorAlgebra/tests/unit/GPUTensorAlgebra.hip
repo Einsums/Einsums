@@ -3,15 +3,12 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include "einsums/DeviceTensor.hpp"
-#include "einsums/LinearAlgebra.hpp"
-#include "einsums/Sort.hpp"
-#include "einsums/TensorAlgebra.hpp"
-#include "einsums/Utilities.hpp"
-
-#include <H5Fpublic.h>
-#include <catch2/catch_all.hpp>
-#include <complex>
+#include <Einsums/Testing.hpp>
+#include <Einsums/Tensor/DeviceTensor.hpp>
+#include <Einsums/TensorAlgebra.hpp>
+#include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
+#include <Einsums/TensorUtilities/CreateIdentity.hpp>
+#include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
 
 TEST_CASE("GPU Identity Tensor", "[tensor]") {
     using namespace einsums;
@@ -590,10 +587,10 @@ TEST_CASE("GPU einsum TensorView", "[tensor]") {
     }
 }
 
-TEST_CASE("GPU sort2") {
+TEST_CASE("GPU permute2") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     SECTION("Rank 2 - axpy") {
         DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 3};
@@ -605,7 +602,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{i, j}, &C, Indices{i, j}, A);
+        permute(Indices{i, j}, &C, Indices{i, j}, A);
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -616,7 +613,7 @@ TEST_CASE("GPU sort2") {
         DeviceTensorView A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
         DeviceTensorView C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
-        sort(Indices{j, i}, &C_view, Indices{i, j}, A_view);
+        permute(Indices{j, i}, &C_view, Indices{i, j}, A_view);
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -646,7 +643,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(1.0, Indices{i, j}, &C0, 1.0, Indices{i, j}, A);
+        permute(1.0, Indices{i, j}, &C0, 1.0, Indices{i, j}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -661,7 +658,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(2.0, Indices{i, j}, &C0, 0.5, Indices{i, j}, A);
+        permute(2.0, Indices{i, j}, &C0, 0.5, Indices{i, j}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -680,7 +677,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{j, i}, &C, Indices{i, j}, A);
+        permute(Indices{j, i}, &C, Indices{i, j}, A);
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -701,7 +698,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{k, j, i}, &B, Indices{i, j, k}, A);
+        permute(Indices{k, j, i}, &B, Indices{i, j, k}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -711,7 +708,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{i, k, j}, &B, Indices{i, j, k}, A);
+        permute(Indices{i, k, j}, &B, Indices{i, j, k}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -721,7 +718,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{j, k, i}, &B, Indices{i, j, k}, A);
+        permute(Indices{j, k, i}, &B, Indices{i, j, k}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -731,7 +728,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{i, j, k}, &B, Indices{k, j, i}, A);
+        permute(Indices{i, j, k}, &B, Indices{k, j, i}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -756,7 +753,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(0.0, Indices{i, l, k, j}, &B, 0.5, Indices{k, j, l, i}, A);
+        permute(0.0, Indices{i, l, k, j}, &B, 0.5, Indices{k, j, l, i}, A);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
@@ -784,7 +781,7 @@ TEST_CASE("GPU sort2") {
     //         }
     //     }
 
-    //     sort(Indices{i, k, l, m, j}, &B, Indices{j, k, l, m, i}, A);
+    //     permute(Indices{i, k, l, m, j}, &B, Indices{j, k, l, m, i}, A);
     //     for (int i = 0; i < 3; i++) {
     //         for (int j = 0; j < 3; j++) {
     //             for (int k = 0; k < 3; k++) {
@@ -808,7 +805,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{j, i}, &B, Indices{i, j}, A);
+        permute(Indices{j, i}, &B, Indices{i, j}, A);
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
                 REQUIRE_THAT((double)B(j, i), Catch::Matchers::WithinRel((double)A(i, j), 0.00001));
@@ -828,7 +825,7 @@ TEST_CASE("GPU sort2") {
             }
         }
 
-        sort(Indices{j, k, i}, &B, Indices{i, j, k}, A);
+        permute(Indices{j, k, i}, &B, Indices{i, j, k}, A);
         for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
                 for (int k = 0; k < A.dim(2); k++, ij++) {
@@ -842,7 +839,7 @@ TEST_CASE("GPU sort2") {
 TEST_CASE("GPU einsum2") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     SECTION("3x3 <- 3x5 * 5x3") {
         DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, 3, 3};
@@ -937,11 +934,11 @@ TEST_CASE("GPU einsum2") {
         C0.zero();
         C1.zero();
 
-        // timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
+        // profile::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
         REQUIRE_NOTHROW(einsum(Indices{i, k}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
-        // timer::pop();
+        // profile::pop();
 
-        // timer::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
+        // profile::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t k0 = 0; k0 < 5; k0++) {
                 double sum{0};
@@ -952,7 +949,7 @@ TEST_CASE("GPU einsum2") {
                 C1(i0, k0) = sum;
             }
         }
-        // timer::pop();
+        // profile::pop();
 
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
@@ -971,11 +968,11 @@ TEST_CASE("GPU einsum2") {
         C0.zero();
         C1.zero();
 
-        // timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
+        // profile::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
         REQUIRE_NOTHROW(einsum(Indices{i, l}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
-        // timer::pop();
+        // profile::pop();
 
-        // timer::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
+        // profile::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t k0 = 0; k0 < 5; k0++) {
                 for (size_t l0 = 0; l0 < 5; l0++) {
@@ -988,7 +985,7 @@ TEST_CASE("GPU einsum2") {
                 }
             }
         }
-        // timer::pop();
+        // profile::pop();
 
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
@@ -998,16 +995,16 @@ TEST_CASE("GPU einsum2") {
         }
     }
 
-    // timer::report();
-    // timer::finalize();
+    // profile::report();
+    // profile::finalize();
 }
 
 TEST_CASE("GPU einsum3") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
-    // timer::initialize();
+    // profile::initialize();
 
     SECTION("3x3 <- 3x5 * 5x3") {
         DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, 3, 3};
@@ -1106,16 +1103,16 @@ TEST_CASE("GPU einsum3") {
         }
     }
 
-    // timer::report();
-    // timer::finalize();
+    // profile::report();
+    // profile::finalize();
 }
 
 TEST_CASE("GPU einsum4") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
-    // timer::initialize();
+    // profile::initialize();
     SECTION("3x3x3x3 <- 3x3x3x3 * 3x3") {
         // This one is to represent a two-electron integral transformation
         DeviceTensor<double, 4> gMO0{"g0", einsums::detail::DEV_ONLY, 3, 3, 3, 3};
@@ -1177,14 +1174,14 @@ TEST_CASE("GPU einsum4") {
         }
     }
 
-    // timer::report();
-    // timer::finalize();
+    // profile::report();
+    // profile::finalize();
 }
 
 TEST_CASE("GPU IntegralTransformation") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     SECTION("R2 <- R3 * R3") {
         DeviceTensor<double, 2> W_mi{"W_mi", einsums::detail::DEV_ONLY, 4, 4};
@@ -1202,7 +1199,7 @@ TEST_CASE("GPU IntegralTransformation") {
 TEST_CASE("GPU Hadamard") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     size_t _i = 3, _j = 4, _k = 5;
 
@@ -1378,7 +1375,7 @@ TEST_CASE("GPU Hadamard") {
 TEST_CASE("GPU unique_ptr") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     SECTION("C") {
         auto                    C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
@@ -1510,7 +1507,7 @@ TEST_CASE("GPU unique_ptr") {
 TEST_CASE("GPU Transpose C", "[einsum]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     size_t _i = 3, _j = 4, _k = 5;
 
@@ -1665,7 +1662,7 @@ TEST_CASE("GPU Transpose C", "[einsum]") {
 TEST_CASE("GPU einsum_gemv") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     SECTION("check") {
         size_t _p = 7, _q = 7, _r = 7, _s = 7;
@@ -1695,7 +1692,7 @@ TEST_CASE("GPU einsum_gemv") {
 TEST_CASE("GPU TensorView einsum") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     // Test if everything passed to einsum is a TensorView.
     DeviceTensor     A = create_random_gpu_tensor("A", 3, 5);
@@ -1737,7 +1734,7 @@ TEST_CASE("GPU TensorView einsum") {
 TEST_CASE("GPU outer product") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     size_t _x{100}, _y{100};
 
@@ -1858,7 +1855,7 @@ TEST_CASE("GPU outer product") {
 TEST_CASE("GPU view outer product") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     SECTION("1 * 1 -> 2") {
         DeviceTensor A = create_random_gpu_tensor("A", 6);
@@ -1943,7 +1940,7 @@ TEST_CASE("GPU view outer product") {
 // TEST_CASE("element transform") {
 //     using namespace einsums;
 //     using namespace einsums::tensor_algebra;
-//     using namespace einsums::tensor_algebra::index;
+//     using namespace einsums::index;
 
 //     SECTION("tensor") {
 //         DeviceTensor A     = create_random_gpu_tensor("A", 32, 32, 32, 32);
@@ -1972,7 +1969,7 @@ TEST_CASE("GPU view outer product") {
 // TEST_CASE("element") {
 //     using namespace einsums;
 //     using namespace einsums::tensor_algebra;
-//     using namespace einsums::tensor_algebra::index;
+//     using namespace einsums::index;
 
 //     SECTION("1") {
 //         Tensor A     = create_random_tensor("A", 10, 10, 10, 10);
@@ -2030,7 +2027,7 @@ TEST_CASE("GPU view outer product") {
 // TEST_CASE("einsum element") {
 //     using namespace einsums;
 //     using namespace einsums::tensor_algebra;
-//     using namespace einsums::tensor_algebra::index;
+//     using namespace einsums::index;
 
 //     const int _i{50}, _j{50};
 
@@ -2103,7 +2100,7 @@ TEST_CASE("GPU view outer product") {
 TEST_CASE("GPU F12 - V term") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     // int nocc{5}, ncabs{116}, nobs{41};
     int          nocc{1}, ncabs{4}, nobs{2};
@@ -2141,7 +2138,7 @@ TEST_CASE("GPU F12 - V term") {
 
     result.set_all(0.0);
     result2.set_all(0.0);
-    timer::push("raw for loops");
+    profile::push("raw for loops");
     for (size_t _i = 0; _i < nocc; _i++) {
         for (size_t _j = 0; _j < nocc; _j++) {
             for (size_t _k = 0; _k < nocc; _k++) {
@@ -2159,7 +2156,7 @@ TEST_CASE("GPU F12 - V term") {
             }
         }
     }
-    timer::pop();
+    profile::pop();
 
     // println(result);
     // println(ijkl_1);
@@ -2188,7 +2185,7 @@ TEST_CASE("GPU F12 - V term") {
 TEST_CASE("GPU B_tilde") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     // int nocc{5}, ncabs{116}, nobs{41};
     int nocc{5}, ncabs{10}, nobs{10};
@@ -2229,7 +2226,7 @@ TEST_CASE("GPU B_tilde") {
 TEST_CASE("GPU Khatri-Rao") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     const int _I{8}, _M{4}, _r{16};
 
@@ -2291,7 +2288,7 @@ template <typename TC, typename TA, typename TB>
 void einsum_gpu_mixed_test() {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     const auto i_ = 10, j_ = 10, k_ = 10;
 
@@ -2347,7 +2344,7 @@ template <typename T>
 void dot_test() {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
     using namespace einsums::linear_algebra;
 
     size_t i_{10}, j_{10}, a_{10}, b_{10};
@@ -2439,7 +2436,7 @@ TEST_CASE("GPU dot") {
 TEST_CASE("GPU Dot TensorView and Tensor") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     const auto i_ = 10, j_ = 10, k_ = 10, l_ = 2;
 

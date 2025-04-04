@@ -3,13 +3,13 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include "einsums/DeviceTensor.hpp"
+#include <Einsums/Tensor/BlockTensor.hpp>
 
 #include <H5Fpublic.h>
-#include <catch2/catch_all.hpp>
 #include <type_traits>
+#include "Einsums/LinearAlgebra.hpp"
 
-#include "einsums.hpp"
+#include <Einsums/Testing.hpp>
 
 TEST_CASE("Block Device Tensor creation", "[tensor][block-tensor][gpu]") {
     using namespace einsums;
