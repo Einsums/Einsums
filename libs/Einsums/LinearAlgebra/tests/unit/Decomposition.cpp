@@ -5,18 +5,9 @@
 
 // CP test cases generate some massive intermediates that the auto einsum tests struggle with.
 // Undefine the tests and simply use the manual tests listed in this file.
-#undef EINSUMS_USE_CATCH2
-#undef EINSUMS_CONTINUOUSLY_TEST_EINSUM
-#undef EINSUMS_TEST_NANS
-
-#include "einsums/Decomposition.hpp"
-
-#include "einsums/LinearAlgebra.hpp"
-#include "einsums/Tensor.hpp"
-#include "einsums/TensorAlgebra.hpp"
-
-#include <catch2/catch_all.hpp>
-
+#include <Einsums/Tensor/Tensor.hpp>
+#include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/Testing.hpp>
 
 
 TEST_CASE("Lyapunov") {
@@ -34,7 +25,7 @@ TEST_CASE("Lyapunov") {
     Q.vector_data() = einsums::VectorData<double>{-0.05892104, 0.00000000, 0.00634896, 0.00000000, -0.02508491,
                                                   0.00000000,  0.00634896, 0.00000000, 0.00155829};
 
-    auto X = einsums::linear_algebra::solve_lyapunov(A, Q);
+    auto X = einsums::linear_algebra::solve_continuous_lyapunov(A, Q);
 
     auto Qtest = einsums::linear_algebra::gemm<false, false>(1.0, A, X);
     auto Q2    = einsums::linear_algebra::gemm<false, true>(1.0, X, A);

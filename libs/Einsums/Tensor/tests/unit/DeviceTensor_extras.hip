@@ -1,15 +1,11 @@
-#include "einsums/_Common.hpp"
+#include <Einsums/Testing.hpp>
+#include <Einsums/Tensor/DeviceTensor.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
 
-#include "einsums/DeviceTensor.hpp"
-#include "einsums/Tensor.hpp"
-
-#include <catch2/catch_all.hpp>
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
 #include <hip/hip_runtime_api.h>
 #include <type_traits>
-
-#include "catch2/catch_test_macros.hpp"
 
 TEST_CASE("HostDevReference Tests", "[gpu][utilities]") {
     using namespace einsums;

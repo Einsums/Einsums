@@ -20,6 +20,7 @@ set(linear_algebra_tests
     pow
     syev
     Scale
+    Decomposition
 )
 
 foreach(test ${linear_algebra_tests})
