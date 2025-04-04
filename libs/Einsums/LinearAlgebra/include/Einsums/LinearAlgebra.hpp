@@ -771,7 +771,7 @@ auto svd_dd(AType const &_A, Vectors job = Vectors::All)
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto truncated_svd(AType const &_A, size_t k)
-    -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<AType>, 1>, Tensor<typename AType::ValueType, 2>> {
+    -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>, Tensor<typename AType::ValueType, 2>> {
     using T = typename AType::ValueType;
     LabeledSection0();
 
