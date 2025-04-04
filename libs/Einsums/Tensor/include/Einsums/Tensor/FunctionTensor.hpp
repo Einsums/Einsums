@@ -263,8 +263,8 @@ struct FunctionTensor : public CoreTensor {
         int counter{0};
         for_sequence<sizeof...(MultiIndex)>([&](auto i) {
             // println("looking at {}", i);
-            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, std::int64_t>) {
-                auto tmp = static_cast<std::int64_t>(std::get<i>(indices));
+            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, ptrdiff_t>) {
+                auto tmp = static_cast<ptrdiff_t>(std::get<i>(indices));
                 if (tmp < 0)
                     tmp = _dims[i] + tmp;
                 index_template[i] = tmp;
@@ -454,7 +454,7 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
      * The template will contain negative values where indices need to be replaced. Non-negative values
      * will be left intact when being passed to the viewed tensor.
      */
-    std::array<int64_t, UnderlyingRank> _index_template;
+    std::array<ptrdiff_t, UnderlyingRank> _index_template;
 
     /**
      * @property _full_view
@@ -518,7 +518,7 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
      * where they have been explicitly specified.
      */
     FunctionTensorView(std::string name, tensor_base::FunctionTensor<T, UnderlyingRank> *func_tens, Offset<Rank> const &offsets,
-                       Dim<Rank> const &dims, std::array<int, UnderlyingRank> const &index_template)
+                       Dim<Rank> const &dims, std::array<ptrdiff_t, UnderlyingRank> const &index_template)
         : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template}, tensor_base::FunctionTensor<T, Rank>(name, dims) {
         if constexpr (Rank != UnderlyingRank) {
             _full_view = false;
