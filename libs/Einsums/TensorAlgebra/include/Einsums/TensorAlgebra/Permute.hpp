@@ -90,12 +90,6 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 
     auto target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
 
-    // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
-    if (C_prefactor == T{0.0}) {
-        *C = T{0.0};
-    }
-
-    // HPTT interface currently only works for full Tensors and TensorViews if strides are 1
 #if !defined(EINSUMS_WINDOWS)
     if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
         std::array<int, ARank> perms{};
@@ -173,8 +167,16 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     } else
 #endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-        linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
-    } else {
+            // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
+            if (C_prefactor == T{0.0}) {
+                *C = T{0.0};
+            }
+            linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
+    } else {    
+        // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
+        if (C_prefactor == T{0.0}) {
+            *C = T{0.0};
+        }
         Stride<ARank> index_strides;
         size_t elements = dims_to_strides(A.dims(), index_strides);
 
