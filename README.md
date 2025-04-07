@@ -5,6 +5,7 @@
 | **Status** | [![codecov](https://codecov.io/github/Einsums/Einsums/graph/badge.svg?token=Z8WA6CEGQA)](https://codecov.io/github/Einsums/Einsums) ![GitHub branch check runs](https://img.shields.io/github/check-runs/Einsums/Einsums/main) |
 | **Release** | ![GitHub Release](https://img.shields.io/github/v/release/Einsums/Einsums) ![GitHub commits since latest release](https://img.shields.io/github/commits-since/Einsums/Einsums/latest) |
 | **Documentation** | [![Documentation](https://img.shields.io/badge/docs-latest-green?style=flat)](https://einsums.github.io/Einsums/) |
+| **Connect With Us** | [![Discord](https://img.shields.io/discord/1357368862512906360?logo=discord&label=Discord)](https://discord.gg/8GvtkyWZUv) |
 
 Provides compile-time contraction pattern analysis to determine optimal operation to perform.
 
