@@ -79,6 +79,10 @@ void permute(int const *perm, int const dim, std::complex<double> const alpha, s
     plan->execute();
 }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 193e05e9 (FIX: TensorViews currently passed to permute to be combined using HPTT can have non-unitary interal strides across the source tensor. This commit enables non-unitary strides to be supplied to HPTT and be used to skip across a tensor's data. Untested optimisations for Linux ARM and AVX are included.)
 void permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, int const *outerSizeA, 
              int const innerStrideA, float const beta, float *B, int const *offsetB,  int const *outerSizeB, int const innerStrideB) {
     auto plan =
@@ -113,6 +117,11 @@ void permute(int const *perm, int const dim, std::complex<double> const alpha, s
     plan->execute();
 }
 
+<<<<<<< HEAD
+=======
+>>>>>>> 4c7befce (FEAT: Extended the use of HPTT to SubTensors following my recent pull request on the HPTT repository. Changes to HPTT are outlined with that commit. Below are changes specific to Einsums. The changes provide a significant computational speedup of the permute function.)
+=======
+>>>>>>> 193e05e9 (FIX: TensorViews currently passed to permute to be combined using HPTT can have non-unitary interal strides across the source tensor. This commit enables non-unitary strides to be supplied to HPTT and be used to skip across a tensor's data. Untested optimisations for Linux ARM and AVX are included.)
 } // namespace einsums::tensor_algebra::detail
 
 #endif
