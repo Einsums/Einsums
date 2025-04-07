@@ -1844,14 +1844,11 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      *
      * The dimensions of the view.
      */
-<<<<<<< HEAD
     /**
      * @var _source_dims
      *
      * The dimensions of the source tensor.
      */
-=======
->>>>>>> 4c7befce (FEAT: Extended the use of HPTT to SubTensors following my recent pull request on the HPTT repository. Changes to HPTT are outlined with that commit. Below are changes specific to Einsums. The changes provide a significant computational speedup of the permute function.)
     Dim<Rank> _dims, _source_dims;
 
     /**
