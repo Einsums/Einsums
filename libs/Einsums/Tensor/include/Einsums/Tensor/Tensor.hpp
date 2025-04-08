@@ -801,7 +801,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                  \
             const size_t elements = this->size();                                                                                          \
             T           *array    = this->data();                                                                                          \
-            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
+            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
             for (size_t i = 0; i < elements; i++) {                                                                                        \
                 array[i] OP b;                                                                                                             \
             }                                                                                                                              \
