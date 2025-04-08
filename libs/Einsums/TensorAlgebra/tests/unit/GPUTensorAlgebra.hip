@@ -1036,6 +1036,9 @@ TEST_CASE("GPU einsum3") {
         DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 3, 3};
         B = create_random_tensor("B", 3, 3);
 
+        auto A_host = (Tensor<double, 4>) A;
+        auto B_host = (Tensor<double, 2>) B;
+
         REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &gMO0, Indices{i, j, k, p}, A, Indices{p, l}, B));
 
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
@@ -1085,18 +1088,33 @@ TEST_CASE("GPU einsum3") {
             }
         }
 
+        println(A);
+
+        gMO0 = 2.0;
+        hip_catch(hipDeviceSynchronize());
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 auto vgMO0 = gMO0(i0, j0, All, All);
-                REQUIRE_NOTHROW(einsum(Indices{k, l}, &vgMO0, Indices{p, l}, A(i0, j0, All, All), Indices{p, k}, B));
+                auto vA = A(i0, j0, All, All);
+                println(vA);
+                einsum(Indices{k, l}, &vgMO0, Indices{p, l}, vA, Indices{p, k}, B);
             }
         }
+
+        println(gMO0);
+        println(gMO1);
 
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE_THAT((double)gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double)gMO1(i0, j0, k0, l0), 0.001));
+                        double a = gMO0(i0, j0, k0, l0);
+                        double b = gMO1(i0, j0, k0, l0);
+
+                        if(std::abs(a - b) / std::abs(a) > 0.001) {
+                            println("Failed at {} {} {} {}", i0, j0, k0, l0);
+                        }
+                        CHECK_THAT((double)gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double)gMO1(i0, j0, k0, l0), 0.001));
                     }
                 }
             }

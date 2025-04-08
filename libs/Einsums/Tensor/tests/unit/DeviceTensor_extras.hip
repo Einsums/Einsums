@@ -60,7 +60,7 @@ TEST_CASE("Index Combinations", "[gpu][utilities]") {
     }
 
     for (int i = 0; i < 9; i++) {
-        einsums::sentinel_to_indices(i, tensor.dims(), index);
+        einsums::sentinel_to_indices(i, tensor.strides(), index);
         CHECK(tensor(index[0], index[1]) == i);
     }
 }
