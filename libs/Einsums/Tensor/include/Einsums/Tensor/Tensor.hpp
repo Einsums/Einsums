@@ -11,7 +11,6 @@
 #include <Einsums/Concepts/File.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
-#include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/Logging.hpp>
@@ -22,6 +21,7 @@
 #include <Einsums/TensorBase/TensorBase.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
+#include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
 #include <Einsums/Utilities/Tuple.hpp>
 
@@ -737,7 +737,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < size; sentinel++) {
             thread_local std::array<size_t, Rank> index;
-            sentinel_to_indices(sentinel, index);
+            sentinel_to_indices(sentinel, _strides, index);
             _data[sentinel] = subscript_tensor(other, index);
         }
 
@@ -754,7 +754,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < size; sentinel++) {
             thread_local std::array<size_t, Rank> index;
-            sentinel_to_indices(sentinel, index);
+            sentinel_to_indices(sentinel, _strides, index);
             _data[sentinel] = other.subscript(index);
         }
 
@@ -799,14 +799,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
 #ifndef DOXYGEN
 #    define OPERATOR(OP)                                                                                                                   \
         auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                  \
-            EINSUMS_OMP_PARALLEL {                                                                                                         \
-                auto tid       = omp_get_thread_num();                                                                                     \
-                auto chunksize = _data.size() / omp_get_num_threads();                                                                     \
-                auto begin     = _data.begin() + chunksize * tid;                                                                          \
-                auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                     \
-                EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                      \
-                    (*i) OP b;                                                                                                             \
-                }                                                                                                                          \
+            const size_t elements = this->size();                                                                                          \
+            T           *array    = this->data();                                                                                          \
+            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
+            for (size_t i = 0; i < elements; i++) {                                                                                        \
+                array[i] OP b;                                                                                                             \
             }                                                                                                                              \
             return *this;                                                                                                                  \
         }                                                                                                                                  \
@@ -1204,11 +1201,11 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         : _dims(dims), _strides(strides), _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _index_strides);
         _full_view_of_underlying = (strides == _index_strides);
-        _source_dims = dims;
+        _source_dims             = dims;
         _offsets.fill(0);
         _offset_ordinal = 0;
         if (!_full_view_of_underlying) { // Fuses Indices if Rank < OtherRank (as OtherRank is not known)
-            size_t size = dims_to_strides(dims, _strides);
+            size_t size           = dims_to_strides(dims, _strides);
             size_t current_stride = 1;
             for (int i = dims.size() - 1; i >= 1; i--) {
                 _source_dims[i] = strides[i - 1] / current_stride;
@@ -1229,11 +1226,11 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         : _dims(dims), _strides(strides), _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _index_strides);
         _full_view_of_underlying = (strides == _index_strides);
-        _source_dims = dims;
+        _source_dims             = dims;
         _offsets.fill(0);
         _offset_ordinal = 0;
         if (!_full_view_of_underlying) { // Fuses Indices if Rank < OtherRank (as OtherRank is not known)
-            size_t size = dims_to_strides(dims, _strides);
+            size_t size           = dims_to_strides(dims, _strides);
             size_t current_stride = 1;
             for (int i = dims.size() - 1; i >= 1; i--) {
                 _source_dims[i] = strides[i - 1] / current_stride;
@@ -1354,7 +1351,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 #    endif
 #    define OPERATOR(OP)                                                                                                                   \
         auto operator OP(const T &value)->TensorView & {                                                                                   \
-            size_t elements = this->size();                                                                                          \
+            size_t elements = this->size();                                                                                                \
                                                                                                                                            \
             EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
             for (size_t item = 0; item < elements; item++) {                                                                               \
@@ -1362,7 +1359,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
                                                                                                                                            \
                 sentinel_to_sentinels(item, _index_strides, _strides, out_item);                                                           \
                                                                                                                                            \
-                this->_data[out_item + _offset_ordinal] OP value;                                                                                            \
+                this->_data[out_item + _offset_ordinal] OP value;                                                                          \
             }                                                                                                                              \
                                                                                                                                            \
             return *this;                                                                                                                  \
@@ -1379,17 +1376,17 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Get a pointer to the data.
      */
-    T *data() { 
+    T *data() {
         auto offset_data = &_data[_offset_ordinal];
-        return offset_data; 
+        return offset_data;
     }
 
     /**
      * @copydoc TensorView<T,Rank>::data()
      */
-    T const *data() const { 
+    T const *data() const {
         auto offset_data = &_data[_offset_ordinal];
-        return static_cast<T const *>(offset_data); 
+        return static_cast<T const *>(offset_data);
     }
 
     /**
@@ -1770,8 +1767,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         default_offsets.fill(0);
 
         // Use default_* unless the caller provides one to use.
-        _strides = arguments::get(default_strides, args...);
-        temp_offsets = arguments::get(default_offsets, args...);
+        _strides       = arguments::get(default_strides, args...);
+        temp_offsets   = arguments::get(default_offsets, args...);
         size_t ordinal = indices_to_sentinel(other._strides, temp_offsets);
 
         // Find source dimensions
@@ -1788,19 +1785,20 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         } else {
             // In different Ranks, source dimensions can be deduced from the strides.
             size_t current_stride = 1;
-            size_t tensor_index = OtherRank - 1;
+            size_t tensor_index   = OtherRank - 1;
             for (int i = Rank - 1; i >= 0; i--) {
                 _source_dims[i] = 0;
-                current_stride = _strides[i];
+                current_stride  = _strides[i];
                 while (tensor_index >= i && _source_dims[i] == 0) {
                     if (other._strides[tensor_index] != current_stride) {
                         _source_dims[i] = other._dims[tensor_index];
-                        _offsets[i] = temp_offsets[tensor_index];
+                        _offsets[i]     = temp_offsets[tensor_index];
                     }
                     tensor_index--;
                 }
                 if (_source_dims[i] == 0) {
-                    EINSUMS_THROW_EXCEPTION(bad_logic, "Unable to deduce source dimensions. Stride does not follow source tensor dimensions.");
+                    EINSUMS_THROW_EXCEPTION(bad_logic,
+                                            "Unable to deduce source dimensions. Stride does not follow source tensor dimensions.");
                 }
             }
             _offset_ordinal = indices_to_sentinel(_strides, _offsets);
@@ -1808,7 +1806,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         }
 
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
-        _data          = &(other._data[ordinal]);
+        _data = &(other._data[ordinal]);
 
         // Calculate the index strides.
         dims_to_strides(_dims, _index_strides);
