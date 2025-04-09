@@ -4,10 +4,14 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. include:: v1.1.0.rst
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
 
-.. include:: v1.0.2.rst
+==============
+vX.Y.Z Release
+==============
 
-.. include:: v1.0.1.rst
+What's New
+----------
 
-.. include:: v1.0.0.rst
+* Modules can add their own command line arguments
+* More constructors for `RuntimeTensors`

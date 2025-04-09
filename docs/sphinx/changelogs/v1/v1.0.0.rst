@@ -1,0 +1,38 @@
+.. 
+    ---------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
+
+==============
+v1.0.0 Release
+==============
+
+What's New
+----------
+
+* Arbitrary tensor views of pointers
+* Python support
+* Option and configuration maps
+* Better exception handling
+* Macros and base classes for common design patterns
+* Much more
+
+What's Changed
+--------------
+
+* The project has been restructured
+* `sort` is now `permute`
+* Several namespaces have been renamed
+
+What's Removed
+--------------
+
+* Temporarily removed Windows support
+
+Bug Fixes
+---------
+
+* Improved performance with some tensor contractions

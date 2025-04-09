@@ -1,0 +1,29 @@
+.. 
+    ---------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
+
+==============
+vX.Y.Z Release
+==============
+
+What's New
+----------
+
+* Views of block and tiled tensors has been made easier
+* :cpp:class:`TensorView`s can be made from :cpp:class:`RuntimeTensor`s and :cpp:class:`RuntimeTensorView`s
+  so that compile-time rank can be assigned to them
+* Buffer allocators for future projects. These allow users to limit the amount of memory used by Einsums.
+* Tensor permutations where the smallest stride is not 1
+
+What's Removed
+--------------
+
+* `sort` is no longer a valid alias for :cpp:func:`permute`
+
+Bug Fixes
+---------
+
