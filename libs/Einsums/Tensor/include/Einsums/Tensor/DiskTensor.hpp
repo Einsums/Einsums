@@ -16,10 +16,9 @@
 #include <Einsums/TypeSupport/AreAllConvertible.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
+#include <Einsums/TypeSupport/Lockable.hpp>
 
 #include <string>
-
-#include "Einsums/TypeSupport/Lockable.hpp"
 
 namespace einsums {
 
@@ -39,7 +38,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      *
      * @brief The type of data stored by this tensor.
      */
-    using ValueType              = T;
+    using ValueType = T;
 
     /**
      * @property Rank
@@ -253,11 +252,11 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     auto operator()(MultiIndex... index)
         -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank> {
         // Get positions of All
-        auto all_positions = get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
+        auto all_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
             arguments::positions_of_type<AllT, MultiIndex...>());
-        auto index_positions = get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(
+        auto index_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(
             arguments::positions_of_type<size_t, MultiIndex...>());
-        auto range_positions = get_array_from_tuple<std::array<int, count_of_type<Range, MultiIndex...>()>>(
+        auto range_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<Range, MultiIndex...>()>>(
             arguments::positions_of_type<Range, MultiIndex...>());
 
         auto const &indices = std::forward_as_tuple(index...);
@@ -274,7 +273,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         for (auto [i, value] : enumerate(index_positions)) {
             // printf("i, value: %d %d\n", i, value);
-            offsets[value] = get_from_tuple<size_t>(indices, value);
+            offsets[value] = arguments::get_from_tuple<size_t>(indices, value);
         }
         for (auto [i, value] : enumerate(all_positions)) {
             // println("here");
@@ -283,8 +282,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             // dims_all[i] = _dims[value];
         }
         for (auto [i, value] : enumerate(range_positions)) {
-            offsets[value] = get_from_tuple<Range>(indices, value)[0];
-            counts[value]  = get_from_tuple<Range>(indices, value)[1] - get_from_tuple<Range>(indices, value)[0];
+            offsets[value] = arguments::get_from_tuple<Range>(indices, value)[0];
+            counts[value]  = arguments::get_from_tuple<Range>(indices, value)[1] - arguments::get_from_tuple<Range>(indices, value)[0];
         }
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
@@ -306,11 +305,11 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     auto operator()(MultiIndex... index) const
         -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank> const {
         // Get positions of All
-        auto all_positions = get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
+        auto all_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
             arguments::positions_of_type<AllT, MultiIndex...>());
-        auto index_positions = get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(
+        auto index_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(
             arguments::positions_of_type<size_t, MultiIndex...>());
-        auto range_positions = get_array_from_tuple<std::array<int, count_of_type<Range, MultiIndex...>()>>(
+        auto range_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<Range, MultiIndex...>()>>(
             arguments::positions_of_type<Range, MultiIndex...>());
 
         auto const &indices = std::forward_as_tuple(index...);
@@ -327,7 +326,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         for (auto [i, value] : enumerate(index_positions)) {
             // printf("i, value: %d %d\n", i, value);
-            offsets[value] = get_from_tuple<size_t>(indices, value);
+            offsets[value] = arguments::get_from_tuple<size_t>(indices, value);
         }
         for (auto [i, value] : enumerate(all_positions)) {
             // println("here");
@@ -336,8 +335,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             // dims_all[i] = _dims[value];
         }
         for (auto [i, value] : enumerate(range_positions)) {
-            offsets[value] = get_from_tuple<Range>(indices, value)[0];
-            counts[value]  = get_from_tuple<Range>(indices, value)[1] - get_from_tuple<Range>(indices, value)[0];
+            offsets[value] = arguments::get_from_tuple<Range>(indices, value)[0];
+            counts[value]  = arguments::get_from_tuple<Range>(indices, value)[1] - arguments::get_from_tuple<Range>(indices, value)[0];
         }
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
@@ -411,7 +410,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      *
      * @brief Holds the type of data stored by this tensor.
      */
-    using ValueType              = T;
+    using ValueType = T;
 
     /**
      * @property Rank
@@ -426,7 +425,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      * @brief Holds the tensor type that this object views. It will be a DiskTensor in this case.
      */
     using underlying_type = einsums::DiskTensor<T, rank>;
-    
+
     /**
      * Construct a view of a tensor with the given dimensions, counts, strides, and offsets.
      */

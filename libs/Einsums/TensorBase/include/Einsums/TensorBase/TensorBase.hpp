@@ -62,7 +62,7 @@ struct DeviceTypedTensor {
  *
  * @brief Represents a tensor only available to the core.
  */
-struct CoreTensor {
+struct EINSUMS_EXPORT CoreTensor {
 
 };
 
@@ -72,7 +72,7 @@ struct CoreTensor {
  *
  * @brief Represents a tensor available to graphics hardware.
  */
-struct DeviceTensorBase {
+struct EINSUMS_EXPORT DeviceTensorBase {
 
 };
 #endif
@@ -82,7 +82,7 @@ struct DeviceTensorBase {
  *
  * @brief Represents a tensor stored on disk.
  */
-struct DiskTensor {
+struct EINSUMS_EXPORT DiskTensor {
 
 };
 
@@ -115,7 +115,7 @@ struct TiledTensor;
  * Specifies that a tensor is a block tensor without needing template parameters. Internal use only.
  * Use BlockTensorBase in your code.
  */
-struct BlockTensorNoExtra {
+struct EINSUMS_EXPORT BlockTensorNoExtra {
 
 };
 
@@ -128,12 +128,12 @@ struct BlockTensor;
  *
  * @brief Specifies that the tensor type can be used by einsum to select different routines other than the generic algorithm.
  */
-struct AlgebraOptimizedTensor {
+struct EINSUMS_EXPORT AlgebraOptimizedTensor {
 
 };
 
-class RuntimeTensorNoType {};
+class EINSUMS_EXPORT RuntimeTensorNoType {};
 
-class RuntimeTensorViewNoType {};
+class EINSUMS_EXPORT RuntimeTensorViewNoType {};
 
 } // namespace einsums::tensor_base

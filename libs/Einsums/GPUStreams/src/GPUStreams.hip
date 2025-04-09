@@ -1,9 +1,15 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
 #include <Einsums/GPUStreams/InitModule.hpp>
 #include <Einsums/Runtime.hpp>
+#include <Einsums/Runtime/ShutdownFunction.hpp>
 
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
@@ -13,7 +19,6 @@
 #include <mutex>
 #include <omp.h>
 #include <vector>
-#include "Einsums/Runtime/ShutdownFunction.hpp"
 
 namespace einsums {
 namespace gpu {
@@ -25,17 +30,23 @@ std::vector<hipStream_t>       default_streams;
 std::vector<bool>              skip_waits;
 std::recursive_mutex           wait_mutex;
 } // namespace detail
-}
-}
+} // namespace gpu
+} // namespace einsums
 
-einsums::init_Einsums_GPUStreams::init_Einsums_GPUStreams() {
+EINSUMS_HOST int einsums::setup_Einsums_GPUStreams() {
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
-    einsums::register_startup_function(einsums::initialize_Einsums_GPUStreams);
-    einsums::register_shutdown_function(einsums::finalize_Einsums_GPUStreams);
-}
+    static bool is_initialized = false;
 
-einsums::init_Einsums_GPUStreams einsums::detail::initialize_module_Einsums_GPUStreams;
+    if (!is_initialized) {
+        einsums::register_startup_function(einsums::initialize_Einsums_GPUStreams);
+        einsums::register_shutdown_function(einsums::finalize_Einsums_GPUStreams);
+
+        is_initialized = true;
+    }
+
+    return 0;
+}
 
 EINSUMS_HOST void einsums::initialize_Einsums_GPUStreams() {
     using namespace einsums::gpu;

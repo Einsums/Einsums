@@ -11,15 +11,7 @@
 
 namespace einsums {
 
-/**
- * @class init_Einsums_BLAS
- *
- * Auto-generated class. The constructor registers the initialization and finalization functions.
- */
-class EINSUMS_EXPORT init_Einsums_BLAS {
-public:
-    init_Einsums_BLAS();
-};
+EINSUMS_EXPORT int setup_Einsums_BLAS();
 
 /**
  * @brief Initialize the BLAS runtime.
@@ -33,8 +25,8 @@ EINSUMS_EXPORT void finalize_Einsums_BLAS();
 
 namespace detail {
 
-extern EINSUMS_EXPORT init_Einsums_BLAS initialize_module_Einsums_BLAS;
+static int initialize_module_Einsums_BLAS = setup_Einsums_BLAS();
 
 }
 
-}
+} // namespace einsums

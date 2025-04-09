@@ -95,11 +95,11 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
         auto A = create_random_tensor<TestType>("A", 3, 4, 5);
         auto B = create_random_tensor<TestType>("B", 4, 3, 5);
 
-        // timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
+        // profile::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
         REQUIRE_NOTHROW(einsum(Indices{i, k}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
-        // timer::pop();
+        // profile::pop();
 
-        // timer::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
+        // profile::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t k0 = 0; k0 < 5; k0++) {
                 TestType sum{0};
@@ -110,7 +110,7 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
                 C1(i0, k0) = sum;
             }
         }
-        // timer::pop();
+        // profile::pop();
 
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
@@ -125,11 +125,11 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
         auto A  = create_random_tensor<TestType>("A", 3, 4, 5);
         auto B  = create_random_tensor<TestType>("B", 4, 3, 5);
 
-        // timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
+        // profile::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
         REQUIRE_NOTHROW(einsum(Indices{i, l}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
-        // timer::pop();
+        // profile::pop();
 
-        // timer::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
+        // profile::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t k0 = 0; k0 < 5; k0++) {
                 for (size_t l0 = 0; l0 < 5; l0++) {
@@ -142,7 +142,7 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
                 }
             }
         }
-        // timer::pop();
+        // profile::pop();
 
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
@@ -152,6 +152,6 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
         }
     }
 
-    // timer::report();
-    // timer::finalize();
+    // profile::report();
+    // profile::finalize();
 }

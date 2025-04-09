@@ -4,31 +4,36 @@
 //--------------------------------------------------------------------------------------------
 
 #include <Einsums/Runtime.hpp>
+#include <Einsums/Runtime/ShutdownFunction.hpp>
 #include <Einsums/Utilities/Random.hpp>
 
+#include <catch2/catch_get_random_seed.hpp>
+#include <catch2/catch_session.hpp>
+#include <catch2/internal/catch_context.hpp>
 #include <functional>
-
-#include "Einsums/Runtime/ShutdownFunction.hpp"
-#include "catch2/catch_get_random_seed.hpp"
-#include "catch2/catch_session.hpp"
-#include "catch2/internal/catch_context.hpp"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch2/catch_all.hpp>
 
 int einsums_main(int argc, char *const *const argv) {
-    Catch::Session session;
-    session.applyCommandLine(argc, argv);
+    int result;
+#pragma omp parallel
+    {
+#pragma omp single
+        {
+            Catch::Session session;
+            session.applyCommandLine(argc, argv);
 
-    Catch::StringMaker<float>::precision  = std::numeric_limits<float>::digits10;
-    Catch::StringMaker<double>::precision = std::numeric_limits<double>::digits10;
-    auto seed                             = session.config().rngSeed();
+            Catch::StringMaker<float>::precision  = std::numeric_limits<float>::digits10;
+            Catch::StringMaker<double>::precision = std::numeric_limits<double>::digits10;
+            auto seed                             = session.config().rngSeed();
 
-    einsums::seed_random(seed);
+            einsums::seed_random(seed);
 
-    int result = session.run();
-    einsums::finalize();
-
+            result = session.run();
+            einsums::finalize();
+        }
+    }
     return result;
 }
 

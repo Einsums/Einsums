@@ -48,6 +48,7 @@ einsums_add_module(
   MODULE_DEPENDENCIES
     Einsums_Config
     Einsums_LinearAlgebra
+    Einsums_BufferAllocator
     Einsums_Concepts
     Einsums_Errors
     Einsums_Logging

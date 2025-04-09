@@ -1,3 +1,8 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #ifndef BACKENDS_DEVICE_TENSOR_HPP
 #define BACKENDS_DEVICE_TENSOR_HPP
 
@@ -5,16 +10,16 @@
 // It depends on functions in this file, and tests break if it is included first.
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Tensor/DeviceTensor.hpp>
+#include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TypeSupport/GPUCast.hpp>
 #include <Einsums/TypeSupport/GPUComplex.hpp>
+#include <Einsums/Iterator/Enumerate.hpp>
 
 #include <cstring>
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
-
-#include "Einsums/TensorBase/IndexUtilities.hpp"
 
 namespace einsums {
 
@@ -196,7 +201,7 @@ DeviceTensor<T, rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
     // compute this dimensionality of this "0" index for them.
     int nfound{0};
     int location{-1};
-    for (auto [i, dim] : enumerate(_dims)) {
+    for (auto [i, dim] : einsums::enumerate(_dims)) {
         if (dim == -1) {
             nfound++;
             location = i;
@@ -209,7 +214,7 @@ DeviceTensor<T, rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
 
     if (nfound == 1) {
         size_t size{1};
-        for (auto [i, dim] : enumerate(_dims)) {
+        for (auto [i, dim] : einsums::enumerate(_dims)) {
             if (i != location)
                 size *= dim;
         }
@@ -339,10 +344,10 @@ __global__ void copy_to_tensor_conv(T *to_data, size_t const *index_strides, siz
         sentinel_to_indices<rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = indices_to_sentinel<rank>(inds, from_strides);
+        size_t from_ind = einsums::indices_to_sentinel<rank>(inds, (size_t const *) from_strides);
 
         // Map index combination onto the tensor.
-        size_t to_ind = indices_to_sentinel<rank>(inds, to_strides);
+        size_t to_ind = einsums::indices_to_sentinel<rank>(inds, (size_t const *) to_strides);
 
         // Do the copy.
         to_data[to_ind] = (T)from_data[from_ind];
@@ -542,7 +547,7 @@ DeviceTensor<T, rank>::dev_datatype *DeviceTensor<T, rank>::gpu_data(MultiIndex.
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
-    for (auto [i, _index] : enumerate(index_list)) {
+    for (auto [i, _index] : einsums::enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
@@ -564,7 +569,7 @@ const DeviceTensor<T, rank>::dev_datatype *DeviceTensor<T, rank>::gpu_data(Multi
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
-    for (auto [i, _index] : enumerate(index_list)) {
+    for (auto [i, _index] : einsums::enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
@@ -586,7 +591,7 @@ DeviceTensor<T, rank>::host_datatype *DeviceTensor<T, rank>::data(MultiIndex... 
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
-    for (auto [i, _index] : enumerate(index_list)) {
+    for (auto [i, _index] : einsums::enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
@@ -608,7 +613,7 @@ const DeviceTensor<T, rank>::host_datatype *DeviceTensor<T, rank>::data(MultiInd
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
-    for (auto [i, _index] : enumerate(index_list)) {
+    for (auto [i, _index] : einsums::enumerate(index_list)) {
         if (_index < 0) {
             index_list[i] = _dims[i] + _index;
         }
@@ -802,7 +807,7 @@ auto DeviceTensor<T, rank>::operator()(MultiIndex... index) const -> DeviceTenso
     Offset<rank> offset{};
     Stride<rank> stride = _strides;
 
-    auto ranges = get_array_from_tuple<std::array<Range, rank>>(std::forward_as_tuple(index...));
+    auto ranges = arguments::get_array_from_tuple<std::array<Range, rank>>(std::forward_as_tuple(index...));
 
     for (int r = 0; r < rank; r++) {
         auto range = ranges[r];
@@ -1561,6 +1566,16 @@ DeviceTensor<T, rank>::operator Tensor<T, rank>() const {
     // no sync needed
 
     return out;
+}
+
+template <typename T, size_t rank>
+DeviceTensor<T, rank>::operator DeviceTensorView<T, rank>() {
+    return DeviceTensorView<T, rank>(*this, _dims);
+}
+
+template <typename T, size_t rank>
+DeviceTensor<T, rank>::operator DeviceTensorView<T, rank> const() const {
+    return DeviceTensorView<T, rank>(*this, _dims);
 }
 
 #endif

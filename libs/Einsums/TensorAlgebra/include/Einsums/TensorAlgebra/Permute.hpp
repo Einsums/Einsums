@@ -33,6 +33,28 @@ void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> 
                             std::complex<float> const beta, std::complex<float> *B);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
                             int const *sizeA, std::complex<double> const beta, std::complex<double> *B);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, 
+                            int const *outerSizeA, float const beta, float *B, int const *offsetB,  int const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA,
+                            int const *outerSizeA, double const beta, double *B, int const *offsetB,  int const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
+                            int const *offsetA, int const *outerSizeA, std::complex<float> const beta, std::complex<float> *B,
+                            int const *offsetB, int const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
+                            int const *offsetA, int const *outerSizeA, std::complex<double> const beta, std::complex<double> *B,
+                            int const *offsetB, int const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, 
+                            int const *outerSizeA, int const innerStrideA, float const beta, float *B, int const *offsetB, 
+                            int const *outerSizeB, int const innerStrideB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA,
+                            int const *outerSizeA, int const innerStrideA, double const beta, double *B, int const *offsetB, 
+                            int const *outerSizeB, int const innerStrideB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
+                            int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<float> const beta, 
+                            std::complex<float> *B, int const *offsetB, int const *outerSizeB, int const innerStrideB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
+                            int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<double> const beta, 
+                            std::complex<double> *B, int const *offsetB, int const *outerSizeB, int const innerStrideB);
 
 } // namespace detail
 #endif
@@ -68,12 +90,6 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 
     auto target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
 
-    // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
-    if (C_prefactor == T{0.0}) {
-        *C = T{0.0};
-    }
-
-    // HPTT interface currently only works for full Tensors and not TensorViews
 #if !defined(EINSUMS_WINDOWS)
     if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
         std::array<int, ARank> perms{};
@@ -83,13 +99,84 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
             size[i0]  = A.dim(i0);
         }
-
         detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
+    } else if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
+        std::array<int, ARank> perms{};
+        std::array<int, ARank> size{};
+        std::array<int, ARank> outerSizeA{};
+        std::array<int, ARank> offsetA{};
+        std::array<int, ARank> outerSizeC{};
+        std::array<int, ARank> offsetC{};
+        int innerStrideA = A.stride(ARank - 1);
+        int innerStrideC = 1;
+
+        for (int i0 = 0; i0 < ARank; i0++) {
+            perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            size[i0]  = A.dim(i0);
+            outerSizeA[i0] = A.source_dim(i0);
+            offsetA[i0] = A.offset(i0);
+            outerSizeC[i0] = 0;
+            offsetC[i0] = 0;
+        }
+
+        for (int i0 = 0; i0 < ARank; i0++) {
+            outerSizeC[i0] = A.dim(perms[i0]);
+        }
+        detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
+                        innerStrideA, C_prefactor, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC);
+    } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
+        std::array<int, ARank> perms{};
+        std::array<int, ARank> size{};
+        std::array<int, ARank> outerSizeA{};
+        std::array<int, ARank> offsetA{};
+        std::array<int, ARank> outerSizeC{};
+        std::array<int, ARank> offsetC{};
+        int innerStrideA = 1;
+        int innerStrideC = C->stride(CRank - 1);
+
+        for (int i0 = 0; i0 < ARank; i0++) {
+            perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            size[i0]  = A.dim(i0);
+            outerSizeA[i0] = A.dim(i0);
+            offsetA[i0] = 0;
+            outerSizeC[i0] = C->source_dim(i0);
+            offsetC[i0] = C->offset(i0);
+        }
+        detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), offsetA.data(), outerSizeA.data(),
+                        innerStrideA, C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
+    } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
+        std::array<int, ARank> perms{};
+        std::array<int, ARank> size{};
+        std::array<int, ARank> outerSizeA{};
+        std::array<int, ARank> offsetA{};
+        std::array<int, ARank> outerSizeC{};
+        std::array<int, ARank> offsetC{};
+        int innerStrideA = A.stride(ARank - 1);
+        int innerStrideC = C->stride(CRank - 1);
+
+        for (int i0 = 0; i0 < ARank; i0++) {
+            perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            size[i0]  = A.dim(i0);
+            outerSizeA[i0] = A.source_dim(i0);
+            offsetA[i0] = A.offset(i0);
+            outerSizeC[i0] = C->source_dim(i0);
+            offsetC[i0] = C->offset(i0);
+        }
+        detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
+                        innerStrideA, C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else
 #endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-        linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
-    } else {
+            // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
+            if (C_prefactor == T{0.0}) {
+                *C = T{0.0};
+            }
+            linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
+    } else {    
+        // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
+        if (C_prefactor == T{0.0}) {
+            *C = T{0.0};
+        }
         Stride<ARank> index_strides;
         size_t elements = dims_to_strides(A.dims(), index_strides);
 

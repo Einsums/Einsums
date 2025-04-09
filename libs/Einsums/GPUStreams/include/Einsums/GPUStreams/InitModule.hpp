@@ -11,15 +11,7 @@
 
 namespace einsums {
 
-/**
- * @class init_Einsums_GPUStreams
- *
- * Auto-generated class. The constructor registers the initialization and finalization functions.
- */
-class EINSUMS_EXPORT init_Einsums_GPUStreams {
-public:
-    init_Einsums_GPUStreams();
-};
+EINSUMS_EXPORT int setup_Einsums_GPUStreams();
 
 /**
  * @brief Set up the GPU, as well as the various streams for threading.
@@ -33,8 +25,8 @@ EINSUMS_HOST EINSUMS_EXPORT void finalize_Einsums_GPUStreams();
 
 namespace detail {
 
-extern EINSUMS_EXPORT init_Einsums_GPUStreams initialize_module_Einsums_GPUStreams;
+static int initialize_module_Einsums_GPUStreams = setup_Einsums_GPUStreams();
 
 }
 
-}
+} // namespace einsums

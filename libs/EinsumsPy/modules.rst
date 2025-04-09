@@ -5,7 +5,7 @@
 .. _EinsumsPy_modules:
 
 =================
-EinsumsPy modules
+EinsumsPy Modules
 =================
 
 .. toctree::

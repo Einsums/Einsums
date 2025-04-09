@@ -1,8 +1,17 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #include <Einsums/Errors/Error.hpp>
 
 namespace einsums {
 EINSUMS_HOST void __hip_catch__(hipError_t condition, char const *func_call, char const *fname, char const *location, char const *funcname,
                                 bool throw_success) {
+
+    if (condition == hipSuccess && !throw_success) {
+        return;
+    }
 
     std::string diagnostic = fname;
     diagnostic += location;
@@ -248,6 +257,11 @@ EINSUMS_HOST void __hip_catch__(hipError_t condition, char const *func_call, cha
 
 EINSUMS_HOST void __hipblas_catch__(hipblasStatus_t status, char const *func_call, char const *fname, char const *location,
                                     char const *funcname, bool throw_success) {
+
+    if (status == HIPBLAS_STATUS_SUCCESS && !throw_success) {
+        return;
+    }
+
     std::string diagnostic = fname;
     diagnostic += location;
     diagnostic += "\nError in line: ";
@@ -303,6 +317,10 @@ EINSUMS_HOST void __hipblas_catch__(hipblasStatus_t status, char const *func_cal
 
 EINSUMS_HOST void __hipsolver_catch__(hipsolverStatus_t condition, char const *func_call, char const *fname, char const *location,
                                       char const *funcname, bool throw_success) {
+    if (condition == HIPSOLVER_STATUS_SUCCESS && !throw_success) {
+        return;
+    }
+
     std::string diagnostic = fname;
     diagnostic += location;
     diagnostic.append(funcname);

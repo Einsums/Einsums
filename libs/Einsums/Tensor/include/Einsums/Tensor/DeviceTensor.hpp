@@ -1,3 +1,8 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #ifndef DEVICE_TENSOR_HPP
 #define DEVICE_TENSOR_HPP
 // We use this so that the implementation headers work on their own.
@@ -5,7 +10,6 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/TensorConcepts.hpp>
-#include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
@@ -15,6 +19,7 @@
 #include <Einsums/TypeSupport/AreAllConvertible.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
+#include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
 
 #include <cstddef>
@@ -816,6 +821,10 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      */
     DeviceTensor<T, rank> &operator/=(DeviceTensor<T, rank> const &other) { return this->div_assign(other); }
 
+    operator DeviceTensorView<T, rank>();
+
+    operator DeviceTensorView<T, rank> const() const;
+
     /**
      * @brief Get the dimension for the given rank.
      */
@@ -995,7 +1004,7 @@ struct DeviceTensor<T, 0>
      * For real data types, this is the same as on the host. For complex data types, the appropriate
      * HIP data type needs to be used.
      */
-    using dev_datatype           = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
+    using dev_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
 
     /**
      * @typedef host_datatype
@@ -1004,14 +1013,14 @@ struct DeviceTensor<T, 0>
      *
      * This is the same as the ValueType.
      */
-    using host_datatype          = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
+    using host_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
 
     /**
      * @typedef ValueType
      *
      * @brief The type of data stored by the tensor.
      */
-    using ValueType              = T;
+    using ValueType = T;
 
     /**
      * @property Rank
@@ -1114,7 +1123,7 @@ struct DeviceTensor<T, 0>
      *
      * @return The pointer to the data on the GPU.
      */
-    auto               gpu_data() -> dev_datatype               *{ return _data; }
+    auto gpu_data() -> dev_datatype * { return _data; }
 
     /**
      * @copydoc DeviceTensor::gpu_data
@@ -1126,7 +1135,7 @@ struct DeviceTensor<T, 0>
      *
      * @return The pointer to the data on the CPU.
      */
-    auto               data() -> host_datatype               *{ return _host_data; }
+    auto data() -> host_datatype * { return _host_data; }
 
     /**
      * @copydoc DeviceTensor::data()
@@ -1225,7 +1234,7 @@ struct DeviceTensor<T, 0>
         }
         return *this;
     }
-    
+
     /**
      * @copydoc DeviceTensor::operator+=()
      */
@@ -1275,7 +1284,7 @@ struct DeviceTensor<T, 0>
      *
      * @param name The new name of the tensor.
      */
-    void               set_name(std::string const &name) { _name = name; }
+    void set_name(std::string const &name) { _name = name; }
 
     /**
      * @brief Get the dimension along a given axis. The argument is ignored.
@@ -1436,7 +1445,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      *
      * @brief The type of tensor that this view views.
      */
-    using underlying_type        = einsums::DeviceTensor<T, rank>;
+    using underlying_type = einsums::DeviceTensor<T, rank>;
 
     /**
      * Deleted default constructor.
@@ -1898,8 +1907,8 @@ DeviceTensorView(std::string, DeviceTensor<T, OtherRank> &, Dim<Rank> const &, A
 
 } // namespace einsums
 
-#include "Einsums/Tensor/Backends/DeviceTensor.hpp"
-#include "Einsums/Tensor/Backends/DeviceTensorView.hpp"
+#include <Einsums/Tensor/Backends/DeviceTensor.hpp>
+#include <Einsums/Tensor/Backends/DeviceTensorView.hpp>
 
 #ifndef DOXYGEN
 namespace einsums {

@@ -26,7 +26,7 @@ inline constexpr bool IsComplexV = false;
  * @copydoc IsComplexV
  */
 template <typename T>
-inline constexpr bool IsComplexV<std::complex<T>> = std::is_floating_point_v<T>;
+inline constexpr bool IsComplexV<std::complex<T>> = std::is_arithmetic_v<T>;
 
 /**
  * @concept IsComplex
@@ -37,6 +37,16 @@ inline constexpr bool IsComplexV<std::complex<T>> = std::is_floating_point_v<T>;
  */
 template <typename T>
 concept IsComplex = IsComplexV<T>;
+
+/**
+ * @concept CanBeComplex
+ *
+ * @brief Tests whether a type is an arithmetic type including complex.
+ *
+ * @tparam T The type to test.
+ */
+template <typename T>
+concept CanBeComplex = IsComplexV<T> || !IsComplexV<T>;
 
 /**
  * @concept IsComplexTensor

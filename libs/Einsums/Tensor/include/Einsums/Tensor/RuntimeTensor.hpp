@@ -39,9 +39,7 @@ namespace einsums {
  * @tparam T The data type stored by the tensor.
  */
 template <typename T>
-struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
-                                      tensor_base::RuntimeTensorNoType,
-                                      design_pats::Lockable<std::recursive_mutex> {
+struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTensorNoType, design_pats::Lockable<std::recursive_mutex> {
   public:
     /**
      * @typedef Vector
@@ -100,6 +98,21 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
     }
 
     /**
+     * @brief Create a new runtime tensor with the given name and dimensions using an initializer list.
+     *
+     * @param name the new name of the tensor.
+     * @param dims The dimensions of the tensor as an initializer list.
+     */
+    RuntimeTensor(std::string name, std::initializer_list<size_t> dims) : RuntimeTensor(name, std::vector<size_t>(dims)) {}
+
+    /**
+     * @brief Create a new runtime tensor with the given dimensions using an initializer list.
+     *
+     * @param dims The dimensions of the tensor as an initializer list.
+     */
+    explicit RuntimeTensor(std::initializer_list<size_t> dims) : RuntimeTensor(std::vector<size_t>(dims)) {}
+
+    /**
      * @brief Copy a tensor into a runtime tensor.
      *
      * The data from the tensor will be copied, not mapped. If you want to alias the data, use a RuntimeTensorView instead.
@@ -108,7 +121,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
      */
     template <size_t Rank>
     RuntimeTensor(Tensor<T, Rank> const &copy) : _rank{Rank}, _dims(Rank), _strides(Rank), _name{copy.name()} {
-        for (int i = 0; i < Rank; i++) {
+        for (int i = Rank - 1; i >= 0; i--) {
             _dims[i]    = copy.dim(i);
             _strides[i] = copy.stride(i);
         }
@@ -148,7 +161,8 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
         }
     }
 
-    virtual ~RuntimeTensor() = default;
+    // HIP clang doesn't like it when this is defaulted.
+    virtual ~RuntimeTensor() {}
 
     /**
      * @brief Set all of the data in the tensor to zero.
@@ -276,7 +290,8 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
     T &operator()(Args... args) {
         if (sizeof...(Args) < rank()) {
             EINSUMS_THROW_EXCEPTION(todo_error,
-                                    "Not yet implemented: can not handle fewer integral indices than rank in (non-const) runtime tensor.");
+                                    "Not yet implemented: can not handle fewer integral indices than rank in (non-const) runtime"
+                                    "tensor.");
         } else if (sizeof...(Args) > rank()) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript operator!");
         }
@@ -496,7 +511,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             _data.resize(other.size());
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t i = 0; i < _data.size(); i++) {
             _data[i] = (T)other.data()[i];
         }
@@ -555,7 +570,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             _data.resize(other.size());
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
             _data[sentinel] = other.data()[sentinel];
         }
@@ -618,7 +633,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             _data.resize(other.size());
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
             _data[sentinel] = other.data()[sentinel];
         }
@@ -672,19 +687,22 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 #    define OPERATOR(OP, NAME)                                                                                                             \
         template <typename TOther>                                                                                                         \
         auto operator OP(const TOther &b)->RuntimeTensor<T> & {                                                                            \
-            EINSUMS_OMP_PARALLEL {                                                                                                         \
-                auto tid       = omp_get_thread_num();                                                                                     \
-                auto chunksize = _data.size() / omp_get_num_threads();                                                                     \
-                auto begin     = _data.begin() + chunksize * tid;                                                                          \
-                auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                     \
-                EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                      \
-                    if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                    \
-                        (*i) OP(T)(RemoveComplexT<T>) b;                                                                                   \
-                    } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                           \
-                        (*i) OP(T) b.real();                                                                                               \
-                    } else {                                                                                                               \
-                        (*i) OP(T) b;                                                                                                      \
-                    }                                                                                                                      \
+            size_t elements  = size();                                                                                                     \
+            T     *this_data = data();                                                                                                     \
+            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
+                EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                              \
+                for (size_t i = 0; i < elements; i++) {                                                                                    \
+                    this_data[i] OP(T)(RemoveComplexT<T>) b;                                                                               \
+                }                                                                                                                          \
+            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
+                EINSUMS_OMP_PARALLEL_FOR                                                                                                   \
+                for (size_t i = 0; i < elements; i++) {                                                                                    \
+                    this_data[i] OP(T) b.real();                                                                                           \
+                }                                                                                                                          \
+            } else {                                                                                                                       \
+                EINSUMS_OMP_PARALLEL_FOR                                                                                                   \
+                for (size_t i = 0; i < elements; i++) {                                                                                    \
+                    this_data[i] OP(T) b;                                                                                                  \
                 }                                                                                                                          \
             }                                                                                                                              \
             return *this;                                                                                                                  \
@@ -696,14 +714,15 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
             }                                                                                                                              \
             T            *this_data = this->data();                                                                                        \
             const TOther *b_data    = b.data();                                                                                            \
-            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
-            for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                     \
+            size_t        elements  = size();                                                                                              \
+            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
+            for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                                   \
                 if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
-                    this->_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                       \
+                    this_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                         \
                 } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
-                    this->_data[sentinel] OP(T) b_data[sentinel].real();                                                                   \
+                    this_data[sentinel] OP(T) b_data[sentinel].real();                                                                     \
                 } else {                                                                                                                   \
-                    this->_data[sentinel] OP(T) b_data[sentinel];                                                                          \
+                    this_data[sentinel] OP(T) b_data[sentinel];                                                                            \
                 }                                                                                                                          \
             }                                                                                                                              \
             return *this;                                                                                                                  \
@@ -719,8 +738,9 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
                 EINSUMS_THROW_EXCEPTION(dimension_error,                                                                                   \
                                         "Can not perform the operation with runtime tensor and view of different dimensions!");            \
             }                                                                                                                              \
+            size_t elements = size();                                                                                                      \
             EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
-            for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                     \
+            for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                                   \
                 thread_local std::vector<size_t> index(rank());                                                                            \
                 sentinel_to_indices(sentinel, this->_strides, index);                                                                      \
                 if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
@@ -741,6 +761,34 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 
 #    undef OPERATOR
 #endif
+
+    template <size_t Rank>
+    operator TensorView<T, Rank>() {
+        if (rank() != Rank) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensor into a rank-{} TensorView!", rank(), Rank);
+        }
+        Dim<Rank>    dims;
+        Stride<Rank> strides;
+        for (int i = Rank - 1; i >= 0; i--) {
+            dims[i]    = _dims[i];
+            strides[i] = _strides[i];
+        }
+        return TensorView<T, Rank>(_data.data(), dims, strides);
+    }
+
+    template <size_t Rank>
+    operator TensorView<T, Rank>() const {
+        if (rank() != Rank) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensor into a rank-{} TensorView!", rank(), Rank);
+        }
+        Dim<Rank>    dims;
+        Stride<Rank> strides;
+        for (int i = Rank - 1; i >= 0; i--) {
+            dims[i]    = _dims[i];
+            strides[i] = _strides[i];
+        }
+        return TensorView<T, Rank>(const_cast<T const *>(_data.data()), dims, strides);
+    }
 
     /**
      * @brief Get the length of the tensor along a given axis.
@@ -865,7 +913,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
 
     template <typename TOther>
     friend class RuntimeTensor;
-}; // namespace einsums
+};
 
 /**
  * @class RuntimeTensorView
@@ -873,10 +921,10 @@ struct EINSUMS_EXPORT RuntimeTensor : public tensor_base::CoreTensor,
  * @brief Represents a view of a tensor whose properties can be determined at runtime but not compile time.
  */
 template <typename T>
-struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
-                                          public tensor_base::RuntimeTensorNoType,
-                                          public tensor_base::RuntimeTensorViewNoType,
-                                          public design_pats::Lockable<std::recursive_mutex> {
+struct RuntimeTensorView : public tensor_base::CoreTensor,
+                           public tensor_base::RuntimeTensorNoType,
+                           public tensor_base::RuntimeTensorViewNoType,
+                           public design_pats::Lockable<std::recursive_mutex> {
   public:
     /**
      * @typedef ValueType
@@ -1145,7 +1193,8 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
         }
     }
 
-    virtual ~RuntimeTensorView() = default;
+    // HIP clang doesn't like it when this is defaulted.
+    virtual ~RuntimeTensorView() {}
 
     /**
      * @brief Set all the entries in the tensor to zero.
@@ -1841,6 +1890,36 @@ struct EINSUMS_EXPORT RuntimeTensorView : public tensor_base::CoreTensor,
 #    undef OPERATOR
 #endif
 
+    template <size_t Rank>
+    operator TensorView<T, Rank>() {
+        if (rank() != Rank) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(),
+                                    Rank);
+        }
+        Dim<Rank>    dims;
+        Stride<Rank> strides;
+        for (int i = Rank - 1; i >= 0; i--) {
+            dims[i]    = _dims[i];
+            strides[i] = _strides[i];
+        }
+        return TensorView<T, Rank>(_data, dims, strides);
+    }
+
+    template <size_t Rank>
+    operator TensorView<T, Rank>() const {
+        if (rank() != Rank) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(),
+                                    Rank);
+        }
+        Dim<Rank>    dims;
+        Stride<Rank> strides;
+        for (int i = Rank - 1; i >= 0; i--) {
+            dims[i]    = _dims[i];
+            strides[i] = _strides[i];
+        }
+        return TensorView<T, Rank>(const_cast<T const *>(_data), dims, strides);
+    }
+
     /**
      * @brief Get the length of the tensor along the given axis.
      *
@@ -2154,15 +2233,17 @@ void println(AType const &A, einsums::TensorPrintOptions options = {}) {
     fprintln(std::cout, A, options);
 }
 
-// EINSUMS_EXPORT extern template class RuntimeTensor<float>;
-// EINSUMS_EXPORT extern template class RuntimeTensor<double>;
-// EINSUMS_EXPORT extern template class RuntimeTensor<std::complex<float>>;
-// EINSUMS_EXPORT extern template class RuntimeTensor<std::complex<double>>;
+#endif
 
-// EINSUMS_EXPORT extern template class RuntimeTensorView<float>;
-// EINSUMS_EXPORT extern template class RuntimeTensorView<double>;
-// EINSUMS_EXPORT extern template class RuntimeTensorView<std::complex<float>>;
-// EINSUMS_EXPORT extern template class RuntimeTensorView<std::complex<double>>;
+#if !defined(EINSUMS_WINDOWS) && !defined(DOXYGEN)
+extern template class EINSUMS_EXPORT RuntimeTensor<float>;
+extern template class EINSUMS_EXPORT RuntimeTensor<double>;
+extern template class EINSUMS_EXPORT RuntimeTensor<std::complex<float>>;
+extern template class EINSUMS_EXPORT RuntimeTensor<std::complex<double>>;
 
+extern template class EINSUMS_EXPORT RuntimeTensorView<float>;
+extern template class EINSUMS_EXPORT RuntimeTensorView<double>;
+extern template class EINSUMS_EXPORT RuntimeTensorView<std::complex<float>>;
+extern template class EINSUMS_EXPORT RuntimeTensorView<std::complex<double>>;
 #endif
 } // namespace einsums

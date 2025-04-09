@@ -14,6 +14,7 @@
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 #include <Einsums/Utilities/Random.hpp>
+#include <Einsums/Version.hpp>
 
 #include <csignal>
 #include <cstdlib>
@@ -84,18 +85,22 @@ int run(std::function<int()> const &f, Runtime &rt, InitParams const &params) {
 }
 
 int run(std::function<int()> const &f, std::vector<std::string> const &argv, InitParams const &params, bool blocking) {
-    EINSUMS_LOG_INFO("Running common initialization routines...");
+    //EINSUMS_LOG_INFO("Running common initialization routines...");
     /// @todo Add a check to ensure the runtime hasn't already been initialized
 
     // Command line arguments for Einsums will be prefixed with --einsums:
     // For example, "--einsums:verbose=1" will be translated to verbose=1
-    std::unordered_map<std::string, std::string> cmdline;
-    RuntimeConfiguration                         config(argv);
+    RuntimeConfiguration config(argv);
 
     // Before this line logging does not work.
     init_logging(config);
 
-    if (config.einsums.install_signal_handlers) {
+    auto &global_config = GlobalConfigMap::get_singleton();
+
+    // Report build settings.
+    EINSUMS_LOG_INFO("Starting Einsums: {}", build_string());
+
+    if (global_config.get_bool("install-signal-handlers")) {
         EINSUMS_LOG_TRACE("Installing signal handlers...");
         set_signal_handlers();
     }
@@ -118,7 +123,9 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
     run(f, *rt, params);
 
     // pointer to runtime is stored in TLS
-    [[maybe_unused]] Runtime *p = rt.release();
+    Runtime *p = rt.release();
+
+    detail::register_free_pointer([p]() { delete p; });
 
     return 0;
 }

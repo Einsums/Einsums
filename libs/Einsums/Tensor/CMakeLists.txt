@@ -44,6 +44,7 @@ einsums_add_module(
   HEADERS ${TensorHeaders}
   DEPENDENCIES Einsums::h5cpp ${TensorGPUDeps}
   MODULE_DEPENDENCIES
+    Einsums_BLAS
     Einsums_Concepts
     Einsums_Config
     Einsums_Errors
