@@ -1,15 +1,12 @@
-#include "einsums/_Common.hpp"
+#include <Einsums/Testing.hpp>
+#include <Einsums/Tensor/DeviceTensor.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
 
-#include "einsums/DeviceTensor.hpp"
-#include "einsums/Tensor.hpp"
-
-#include <catch2/catch_all.hpp>
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
 #include <hip/hip_runtime_api.h>
+#include <source_location>
 #include <type_traits>
-
-#include "catch2/catch_test_macros.hpp"
 
 TEST_CASE("HostDevReference Tests", "[gpu][utilities]") {
     using namespace einsums;
@@ -56,14 +53,14 @@ TEST_CASE("Index Combinations", "[gpu][utilities]") {
 
             index = {(size_t)i, (size_t)j};
 
-            size_t sentinel = einsums::detail::combination_to_index(index, tensor.dims(), tensor.strides());
+            size_t sentinel = einsums::indices_to_sentinel(tensor.strides(), index);
 
             CHECK(sentinel == i * 3 + j);
         }
     }
 
     for (int i = 0; i < 9; i++) {
-        einsums::detail::index_to_combination(i, tensor.dims(), index);
+        einsums::sentinel_to_indices(i, tensor.strides(), index);
         CHECK(tensor(index[0], index[1]) == i);
     }
 }

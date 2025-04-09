@@ -801,7 +801,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                  \
             const size_t elements = this->size();                                                                                          \
             T           *array    = this->data();                                                                                          \
-            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
             for (size_t i = 0; i < elements; i++) {                                                                                        \
                 array[i] OP b;                                                                                                             \
             }                                                                                                                              \
@@ -1201,13 +1201,14 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         : _dims(dims), _strides(strides), _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _index_strides);
         _full_view_of_underlying = (strides == _index_strides);
-        _source_dims = dims;                                            // Must have size Rank
-        _offsets.fill(0);                                               // No offset given, taken to be zero
-        _offset_ordinal = 0;                                            // Follows
+        _source_dims             = dims; // Must have size Rank
+        _offsets.fill(0);                // No offset given, taken to be zero
+        _offset_ordinal = 0;             // Follows
         // Check access is in increasing stride
         for (size_t i = 0; i < Rank - 1; i++) {
-            if (_strides[i] < _strides[i+1]) {
-                EINSUMS_THROW_EXCEPTION(dimension_error, "Strides must be in decreasing order - else unexpected permute behaviour will ensue");
+            if (_strides[i] < _strides[i + 1]) {
+                EINSUMS_THROW_EXCEPTION(dimension_error,
+                                        "Strides must be in decreasing order - else unexpected permute behaviour will ensue");
             }
         }
         if (!_full_view_of_underlying) { // Fuses Indices if Rank < OtherRank (as OtherRank is not known)
@@ -1216,7 +1217,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
                 _source_dims[i] = _strides[i - 1] / current_stride;
                 current_stride *= _source_dims[i];
             }
-            _source_dims[0] = (_strides[0] * _dims[0]) / current_stride;  // stride[0] must be the largest
+            _source_dims[0] = (_strides[0] * _dims[0]) / current_stride; // stride[0] must be the largest
         }
     }
 
@@ -1236,8 +1237,9 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         _offset_ordinal = 0;
         // Check access is in increasing stride
         for (size_t i = 0; i < Rank - 1; i++) {
-            if (_strides[i] < _strides[i+1]) {
-                EINSUMS_THROW_EXCEPTION(dimension_error, "Strides must be in decreasing order - Else unexpected permute behaviour will pursue");
+            if (_strides[i] < _strides[i + 1]) {
+                EINSUMS_THROW_EXCEPTION(dimension_error,
+                                        "Strides must be in decreasing order - Else unexpected permute behaviour will pursue");
             }
         }
         if (!_full_view_of_underlying) { // Fuses Indices if Rank < OtherRank (as OtherRank is not known)
@@ -1710,11 +1712,11 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
         static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
 
-        // set_mutex(other.get_mutex()); 
-        Stride<Rank>        default_strides{};
-        Offset<OtherRank>   default_offsets{};
-        Offset<OtherRank>   temp_offsets{};
-        Stride<Rank>        error_strides{};
+        // set_mutex(other.get_mutex());
+        Stride<Rank>      default_strides{};
+        Offset<OtherRank> default_offsets{};
+        Offset<OtherRank> temp_offsets{};
+        Stride<Rank>      error_strides{};
         error_strides[0] = -1;
 
         // Check to see if the user provided a dim of "-1" in one place. If found then the user requests that we compute this
@@ -1798,13 +1800,13 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             // In decreasing strides when matching the correct dimension is reached (dim[i] = 1 is neglected)
             // Where dimenions less than the outermost are skipped these are incorporated into the dimension inner to it
             // If there are no further inner strides, the inner stride is non-zero to account for missing dimensionality.
-            size_t current_stride       = 1;
-            size_t tensor_index         = 0;
-            size_t cumulative_stride    = 1;
+            size_t current_stride    = 1;
+            size_t tensor_index      = 0;
+            size_t cumulative_stride = 1;
             for (int i = 0; i < Rank; i++) {
-                _source_dims[i]     = 0;
-                cumulative_stride   = 1;
-                current_stride      = _strides[i];
+                _source_dims[i]   = 0;
+                cumulative_stride = 1;
+                current_stride    = _strides[i];
                 while (_source_dims[i] == 0) {
                     cumulative_stride *= other._dims[tensor_index];
                     if (other._strides[tensor_index] == current_stride) {

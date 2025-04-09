@@ -3,10 +3,10 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
-
 #pragma once
 
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
@@ -15,6 +15,7 @@
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
 
+#include <source_location>
 #include <type_traits>
 
 namespace einsums {
@@ -160,7 +161,7 @@ struct FunctionTensor : public CoreTensor {
      *
      * @param inds The index for the function.
      */
-    virtual T call(std::array<size_t, Rank> const &inds) const = 0;
+    virtual T call(std::array<ptrdiff_t, Rank> const &inds) const = 0;
 
     /**
      * @brief Subscript into the function tensor, wrapping negative indices and performing bounds checks.
@@ -191,7 +192,7 @@ struct FunctionTensor : public CoreTensor {
             requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
         }
     T subscript(MultiIndex... inds) const {
-        return this->call(std::array<uint64_t, Rank>{inds...});
+        return this->call(std::array<ptrdiff_t, Rank>{inds...});
     }
 
     /**
@@ -202,12 +203,12 @@ struct FunctionTensor : public CoreTensor {
     template <typename int_type>
         requires requires { requires(std::is_integral_v<int_type>); }
     T subscript(std::array<int_type, Rank> const &inds) const {
-        if constexpr (std::is_same_v<int_type, uint64_t>) {
+        if constexpr (std::is_same_v<int_type, ptrdiff_t>) {
             return this->call(inds);
         } else {
-            std::array<uint64_t, Rank> new_inds;
+            std::array<ptrdiff_t, Rank> new_inds;
             for (size_t i = 0; i < Rank; i++) {
-                new_inds[i] = static_cast<uint64_t>(inds[i]);
+                new_inds[i] = static_cast<ptrdiff_t>(inds[i]);
             }
             return this->call(new_inds);
         }
@@ -226,10 +227,10 @@ struct FunctionTensor : public CoreTensor {
             requires !std::is_same_v<Storage, std::array<int, Rank>>;
         }
     T operator()(Storage const &inds) const {
-        auto new_inds = std::array<int, Rank>();
+        auto new_inds = std::array<ptrdiff_t, Rank>();
 
         for (int i = 0; i < Rank; i++) {
-            new_inds[i] = (int)inds.at(i);
+            new_inds[i] = (ptrdiff_t)inds.at(i);
         }
 
         fix_indices(&new_inds);
@@ -254,7 +255,7 @@ struct FunctionTensor : public CoreTensor {
         -> FunctionTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank> {
         auto const &indices = std::forward_as_tuple(inds...);
 
-        std::array<int, Rank> index_template;
+        std::array<ptrdiff_t, Rank> index_template;
 
         Offset<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> offsets;
         Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>    dims{};
@@ -262,8 +263,8 @@ struct FunctionTensor : public CoreTensor {
         int counter{0};
         for_sequence<sizeof...(MultiIndex)>([&](auto i) {
             // println("looking at {}", i);
-            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, std::int64_t>) {
-                auto tmp = static_cast<std::int64_t>(std::get<i>(indices));
+            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, ptrdiff_t>) {
+                auto tmp = static_cast<ptrdiff_t>(std::get<i>(indices));
                 if (tmp < 0)
                     tmp = _dims[i] + tmp;
                 index_template[i] = tmp;
@@ -300,9 +301,9 @@ struct FunctionTensor : public CoreTensor {
     template <typename... MultiIndex>
         requires NumOfType<Range, Rank, MultiIndex...>
     auto operator()(MultiIndex... index) const -> FunctionTensorView<T, Rank, Rank> {
-        Dim<Rank>             dims{};
-        Offset<Rank>          offset{};
-        std::array<int, Rank> index_template;
+        Dim<Rank>                   dims{};
+        Offset<Rank>                offset{};
+        std::array<ptrdiff_t, Rank> index_template;
 
         auto ranges = arguments::get_array_from_tuple<std::array<Range, Rank>>(std::forward_as_tuple(index...));
 
@@ -356,7 +357,7 @@ struct FunctionTensor : public CoreTensor {
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t item = 0; item < elements; item++) {
-            thread_local std::array<int64_t, Rank> index;
+            thread_local std::array<ptrdiff_t, Rank> index;
 
             sentinel_to_indices(item, index_strides, index);
 
@@ -365,6 +366,8 @@ struct FunctionTensor : public CoreTensor {
 
         return out;
     }
+
+    virtual bool full_view_of_underlying() const { return true; }
 };
 
 } // namespace tensor_base
@@ -381,14 +384,14 @@ struct FunctionTensor : public CoreTensor {
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t Rank>
-struct FuncPointerTensor : public tensor_base::FunctionTensor<T, Rank>, tensor_base::CoreTensor {
+struct FuncPointerTensor : public tensor_base::FunctionTensor<T, Rank> {
   protected:
     /**
      * @property _func_ptr
      *
      * @brief The function pointer called by the subscript operator.
      */
-    T (*_func_ptr)(std::array<int, Rank> const &);
+    T (*_func_ptr)(std::array<ptrdiff_t, Rank> const &);
 
   public:
     /**
@@ -399,7 +402,7 @@ struct FuncPointerTensor : public tensor_base::FunctionTensor<T, Rank>, tensor_b
      * @param dims The dimensions of the tensor.
      */
     template <typename... Args>
-    FuncPointerTensor(std::string name, T (*func_ptr)(std::array<int, Rank> const &), Args... dims)
+    FuncPointerTensor(std::string name, T (*func_ptr)(std::array<ptrdiff_t, Rank> const &), Args... dims)
         : tensor_base::FunctionTensor<T, Rank>(name, dims...), _func_ptr(func_ptr) {}
 
     /**
@@ -414,7 +417,7 @@ struct FuncPointerTensor : public tensor_base::FunctionTensor<T, Rank>, tensor_b
     /**
      * @brief Call the function with the given indices.
      */
-    virtual T call(std::array<int, Rank> const &inds) const override { return _func_ptr(inds); }
+    virtual T call(std::array<ptrdiff_t, Rank> const &inds) const override { return _func_ptr(inds); }
 };
 
 /**
@@ -451,7 +454,7 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
      * The template will contain negative values where indices need to be replaced. Non-negative values
      * will be left intact when being passed to the viewed tensor.
      */
-    std::array<int, UnderlyingRank> _index_template;
+    std::array<ptrdiff_t, UnderlyingRank> _index_template;
 
     /**
      * @property _full_view
@@ -464,16 +467,17 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
      * @brief Takes the input indices and applies the offsets and template to prepare it to be passed to the
      * underlying tensor.
      */
-    virtual std::array<int, UnderlyingRank> apply_view(std::array<int, rank> const &inds) const {
-        std::array<int, UnderlyingRank> out{_index_template};
-        int                             curr_rank = 0;
+    virtual std::array<ptrdiff_t, UnderlyingRank> apply_view(std::array<ptrdiff_t, rank> const &inds) const {
+        std::array<ptrdiff_t, UnderlyingRank> out;
+        int                                curr_rank = 0;
         for (int i = 0; i < Rank && curr_rank < UnderlyingRank; i++) {
-            while (out.at(curr_rank) >= 0) {
+            while (_index_template.at(curr_rank) >= 0) {
+                out[curr_rank] = _index_template[curr_rank];
                 curr_rank++;
             }
             out.at(curr_rank) = inds.at(i);
-            if (out.at(curr_rank) < 0) {
-                out.at(curr_rank) += this->_dims[i];
+            if (inds.at(i) < 0) {
+                out.at(curr_rank) = inds.at(i) + this->_dims[i];
             }
             if (out.at(curr_rank) >= this->_dims[i] || out.at(curr_rank) < 0) {
                 EINSUMS_THROW_EXCEPTION(std::out_of_range,
@@ -514,7 +518,7 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
      * where they have been explicitly specified.
      */
     FunctionTensorView(std::string name, tensor_base::FunctionTensor<T, UnderlyingRank> *func_tens, Offset<Rank> const &offsets,
-                       Dim<Rank> const &dims, std::array<int, UnderlyingRank> const &index_template)
+                       Dim<Rank> const &dims, std::array<ptrdiff_t, UnderlyingRank> const &index_template)
         : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template}, tensor_base::FunctionTensor<T, Rank>(name, dims) {
         if constexpr (Rank != UnderlyingRank) {
             _full_view = false;
@@ -546,7 +550,7 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
      * where they have been explicitly specified.
      */
     FunctionTensorView(tensor_base::FunctionTensor<T, UnderlyingRank> const *func_tens, Offset<Rank> const &offsets, Dim<Rank> const &dims,
-                       std::array<int, UnderlyingRank> const &index_template)
+                       std::array<ptrdiff_t, UnderlyingRank> const &index_template)
         : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template}, tensor_base::FunctionTensor<T, Rank>(dims) {}
 
     /**
@@ -562,7 +566,7 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
     /**
      * @brief Call the underlying function of the function tensor.
      */
-    virtual T call(std::array<int, Rank> const &inds) const {
+    virtual T call(std::array<ptrdiff_t, Rank> const &inds) const override {
         auto fixed_inds = apply_view(inds);
         return _func_tensor->call(fixed_inds);
     }
@@ -570,7 +574,7 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
     /**
      * @brief Returns whether the view sees all of the data of the underlying tensor.
      */
-    bool full_view_of_underlying() const { return _full_view; }
+    bool full_view_of_underlying() const override { return _full_view; }
 };
 
 /**

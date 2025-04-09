@@ -3,18 +3,17 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include <H5Fpublic.h>
-#include <catch2/catch_all.hpp>
-#include <type_traits>
+#include <Einsums/Tensor/TiledTensor.hpp>
+#include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/Testing.hpp>
+#include <Einsums/TensorAlgebra.hpp>
 
-#include "einsums.hpp"
-
-TEST_CASE("TiledDeviceTensor creation", "[tensor]") {
+TEST_CASE("TiledTensor creation", "[tensor]") {
     using namespace einsums;
 
-    TiledDeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
-    TiledDeviceTensor<double, 2> B("B", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
-    TiledDeviceTensor<double, 2> C("C", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
+    TiledTensor<double, 2> A("A", std::array{1, 0, 2});
+    TiledTensor<double, 2> B("B", std::array{1, 0, 2});
+    TiledTensor<double, 2> C("C", std::array{1, 0, 2});
 
     REQUIRE(A.dim(0) == 3);
     REQUIRE(A.dim(1) == 3);
@@ -58,24 +57,24 @@ TEST_CASE("TiledDeviceTensor creation", "[tensor]") {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (i == j) {
-                CHECK((double)A(i, j) == 1.0);
-                CHECK((double)B(i, j) == 1.0);
-                CHECK((double)C(i, j) == 1.0);
+                CHECK(A(i, j) == 1.0);
+                CHECK(B(i, j) == 1.0);
+                CHECK(C(i, j) == 1.0);
             } else {
-                CHECK((double)A(i, j) == 0.0);
-                CHECK((double)B(i, j) == 0.0);
-                CHECK((double)C(i, j) == 0.0);
+                CHECK(A(i, j) == 0.0);
+                CHECK(B(i, j) == 0.0);
+                CHECK(C(i, j) == 0.0);
             }
         }
     }
 }
 
-TEST_CASE("TiledDeviceTensor GEMMs", "[tensor]") {
+TEST_CASE("TiledTensor GEMMs", "[tensor]") {
     using namespace einsums;
 
-    TiledDeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
-    TiledDeviceTensor<double, 2> B("B", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
-    TiledDeviceTensor<double, 2> C("C", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
+    TiledTensor<double, 2> A("A", std::array{1, 0, 2});
+    TiledTensor<double, 2> B("B", std::array{1, 0, 2});
+    TiledTensor<double, 2> C("C", std::array{1, 0, 2});
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -92,7 +91,7 @@ TEST_CASE("TiledDeviceTensor GEMMs", "[tensor]") {
     auto res = einsums::VectorData<double>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0};
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            CHECK((double)C(i, j) == res[3 * i + j]);
+            CHECK(C(i, j) == res[3 * i + j]);
         }
     }
 
@@ -100,7 +99,7 @@ TEST_CASE("TiledDeviceTensor GEMMs", "[tensor]") {
     res = einsums::VectorData<double>{726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0};
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            CHECK((double)C(i, j) == res[3 * i + j]);
+            CHECK(C(i, j) == res[3 * i + j]);
         }
     }
 
@@ -108,7 +107,7 @@ TEST_CASE("TiledDeviceTensor GEMMs", "[tensor]") {
     res = einsums::VectorData<double>{154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0};
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            CHECK((double)C(i, j) == res[3 * i + j]);
+            CHECK(C(i, j) == res[3 * i + j]);
         }
     }
 
@@ -116,17 +115,17 @@ TEST_CASE("TiledDeviceTensor GEMMs", "[tensor]") {
     res = einsums::VectorData<double>{330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0};
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            CHECK((double)C(i, j) == res[3 * i + j]);
+            CHECK(C(i, j) == res[3 * i + j]);
         }
     }
 }
 
-TEST_CASE("TiledDeviceTensor GEMVs", "[tensor]") {
+TEST_CASE("TiledTensor GEMVs", "[tensor]") {
     using namespace einsums;
 
-    TiledDeviceTensor<double, 2>     A("A", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
-    einsums::DeviceTensor<double, 1> x("x", einsums::detail::DEV_ONLY, 3);
-    einsums::DeviceTensor<double, 1> y("y", einsums::detail::DEV_ONLY, 3);
+    TiledTensor<double, 2> A("A", std::array{1, 0, 2});
+    einsums::Tensor        x("x", 3);
+    einsums::Tensor        y("y", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
@@ -143,13 +142,13 @@ TEST_CASE("TiledDeviceTensor GEMVs", "[tensor]") {
     auto res = einsums::VectorData<double>{154.0, 352.0, 550.0};
 
     for (int i = 0; i < 3; i++) {
-        CHECK((double)y(i) == res[i]);
+        CHECK(y(i) == res[i]);
     }
 
     einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
     res = einsums::VectorData<double>{330.0, 396.0, 462.0};
     for (int i = 0; i < 3; i++) {
-        CHECK((double)y(i) == res[i]);
+        CHECK(y(i) == res[i]);
     }
 }
 
@@ -428,14 +427,14 @@ TEST_CASE("arange") {
 }
 */
 
-TEST_CASE("tiled device einsum1", "[tensor]") {
+TEST_CASE("tiled einsum1", "[tensor]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
     SECTION("ik=ij,jk") {
-        TiledDeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
-        TiledDeviceTensor<double, 2> B("B", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
-        TiledDeviceTensor<double, 2> C("C", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
+        TiledTensor<double, 2> A("A", std::array{1, 0, 2});
+        TiledTensor<double, 2> B("B", std::array{1, 0, 2});
+        TiledTensor<double, 2> C("C", std::array{1, 0, 2});
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -443,6 +442,7 @@ TEST_CASE("tiled device einsum1", "[tensor]") {
                 B(i, j) = ij;
             }
         }
+        C.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::i, index::k}, A, Indices{index::k, index::j}, B));
 
@@ -453,21 +453,21 @@ TEST_CASE("tiled device einsum1", "[tensor]") {
         /*[[ 30,  36,  42],
            [ 66,  81,  96],
            [102, 126, 150]]*/
-        REQUIRE((double)C(0, 0) == 30.0);
-        REQUIRE((double)C(0, 1) == 36.0);
-        REQUIRE((double)C(0, 2) == 42.0);
-        REQUIRE((double)C(1, 0) == 66.0);
-        REQUIRE((double)C(1, 1) == 81.0);
-        REQUIRE((double)C(1, 2) == 96.0);
-        REQUIRE((double)C(2, 0) == 102.0);
-        REQUIRE((double)C(2, 1) == 126.0);
-        REQUIRE((double)C(2, 2) == 150.0);
+        CHECK(C(0, 0) == 30.0);
+        CHECK(C(0, 1) == 36.0);
+        CHECK(C(0, 2) == 42.0);
+        CHECK(C(1, 0) == 66.0);
+        CHECK(C(1, 1) == 81.0);
+        CHECK(C(1, 2) == 96.0);
+        CHECK(C(2, 0) == 102.0);
+        CHECK(C(2, 1) == 126.0);
+        CHECK(C(2, 2) == 150.0);
     }
 
     SECTION("il=ijk,jkl") {
-        TiledDeviceTensor<double, 3> A("A", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
-        TiledDeviceTensor<double, 3> B("B", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
-        TiledDeviceTensor<double, 2> C("C", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
+        TiledTensor<double, 3> A("A", std::array{1, 0, 2});
+        TiledTensor<double, 3> B("B", std::array{1, 0, 2});
+        TiledTensor<double, 2> C("C", std::array{1, 0, 2});
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -477,6 +477,7 @@ TEST_CASE("tiled device einsum1", "[tensor]") {
                 }
             }
         }
+        C.zero();
 
         // println(A);
         // println(B);
@@ -491,14 +492,80 @@ TEST_CASE("tiled device einsum1", "[tensor]") {
         // array([[ 765.,  810.,  855.],
         //        [1818., 1944., 2070.],
         //        [2871., 3078., 3285.]])
-        REQUIRE((double)C(0, 0) == 765.0);
-        REQUIRE((double)C(0, 1) == 810.0);
-        REQUIRE((double)C(0, 2) == 855.0);
-        REQUIRE((double)C(1, 0) == 1818.0);
-        REQUIRE((double)C(1, 1) == 1944.0);
-        REQUIRE((double)C(1, 2) == 2070.0);
-        REQUIRE((double)C(2, 0) == 2871.0);
-        REQUIRE((double)C(2, 1) == 3078.0);
-        REQUIRE((double)C(2, 2) == 3285.0);
+        REQUIRE(C(0, 0) == 765.0);
+        REQUIRE(C(0, 1) == 810.0);
+        REQUIRE(C(0, 2) == 855.0);
+        REQUIRE(C(1, 0) == 1818.0);
+        REQUIRE(C(1, 1) == 1944.0);
+        REQUIRE(C(1, 2) == 2070.0);
+        REQUIRE(C(2, 0) == 2871.0);
+        REQUIRE(C(2, 1) == 3078.0);
+        REQUIRE(C(2, 2) == 3285.0);
+    }
+
+    SECTION("ik=block ij,jk") {
+        BlockTensor<double, 2> A("A", 1, 0, 2);
+        TiledTensor<double, 2> B("B", std::array{1, 0, 2});
+        TiledTensor<double, 2> C("C", std::array{1, 0, 2});
+
+        for (int i = 0, ij = 1; i < 3; i++) {
+            for (int j = 0; j < 3; j++, ij++) {
+                A(i, j) = ij;
+                B(i, j) = ij;
+            }
+        }
+        C.zero();
+
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::i, index::k}, A, Indices{index::k, index::j}, B));
+
+        // println(A);
+        // println(B);
+        // println(C);
+
+        /*[[ 1,  2,  3],
+           [ 62,  73,  84],
+           [ 95, 112, 129]]*/
+        CHECK(C(0, 0) == 1.0);
+        CHECK(C(0, 1) == 2.0);
+        CHECK(C(0, 2) == 3.0);
+        CHECK(C(1, 0) == 62.0);
+        CHECK(C(1, 1) == 73.0);
+        CHECK(C(1, 2) == 84.0);
+        CHECK(C(2, 0) == 95.0);
+        CHECK(C(2, 1) == 112.0);
+        CHECK(C(2, 2) == 129.0);
+    }
+
+    SECTION("ik=ij,block jk") {
+        BlockTensor<double, 2> A("A", 1, 0, 2);
+        TiledTensor<double, 2> B("B", std::array{1, 0, 2});
+        TiledTensor<double, 2> C("C", std::array{1, 0, 2});
+
+        for (int i = 0, ij = 1; i < 3; i++) {
+            for (int j = 0; j < 3; j++, ij++) {
+                A(i, j) = ij;
+                B(i, j) = ij;
+            }
+        }
+        C.zero();
+
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::i, index::k}, B, Indices{index::k, index::j}, A));
+
+        // println(A);
+        // println(B);
+        // println(C);
+
+        /*[[ 1,  34,  39],
+           [ 4,  73,  84],
+           [ 7, 112, 129]]*/
+        CHECK(C(0, 0) == 1.0);
+        CHECK(C(0, 1) == 34.0);
+        CHECK(C(0, 2) == 39.0);
+        CHECK(C(1, 0) == 4.0);
+        CHECK(C(1, 1) == 73.0);
+        CHECK(C(1, 2) == 84.0);
+        CHECK(C(2, 0) == 7.0);
+        CHECK(C(2, 1) == 112.0);
+        CHECK(C(2, 2) == 129.0);
     }
 }
