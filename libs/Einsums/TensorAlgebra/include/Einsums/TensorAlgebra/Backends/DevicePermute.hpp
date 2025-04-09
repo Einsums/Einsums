@@ -24,18 +24,18 @@ namespace detail {
 #if defined(EINSUMS_USE_LIBRETT)
 
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta,
-                             float *B);
+                                float *B);
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta,
-                             double *B);
+                                double *B);
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipFloatComplex const alpha, hipFloatComplex const *A, int const *sizeA,
-                             hipFloatComplex const beta, hipFloatComplex *B);
+                                hipFloatComplex const beta, hipFloatComplex *B);
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipDoubleComplex const alpha, hipDoubleComplex const *A, int const *sizeA,
-                             hipDoubleComplex const beta, hipDoubleComplex *B);
+                                hipDoubleComplex const beta, hipDoubleComplex *B);
 #endif
 
 template <typename T, size_t Rank>
 __global__ void permute_kernel(int const *perm, T const alpha, T const *A, size_t const *strideA, T const beta, T *B, size_t const *strideB,
-                            size_t size) {
+                               size_t size) {
     int thread_id, kernel_size;
 
     get_worker_info(thread_id, kernel_size);
@@ -58,7 +58,7 @@ __global__ void permute_kernel(int const *perm, T const alpha, T const *A, size_
             B_sentinel += strideB[i] * A_index[perm[i]];
         }
 
-        B[B_sentinel] = gpu_ops::fma(alpha,  A[A_sentinel], beta * B[B_sentinel]);
+        B[B_sentinel] = gpu_ops::fma(alpha, A[A_sentinel], beta * B[B_sentinel]);
     }
 }
 
@@ -85,21 +85,20 @@ template <template <typename, size_t> typename AType, size_t ARank, template <ty
         requires DeviceRankTensor<CType<T, CRank>, CRank, T>;
     }
 auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType<T, CRank> *C, U const UA_prefactor,
-          std::tuple<AIndices...> const &A_indices,
-          AType<T, ARank> const &A) -> std::enable_if_t<sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank &&
-                                                        sizeof...(AIndices) == ARank && std::is_arithmetic_v<U>> {
+             std::tuple<AIndices...> const &A_indices, AType<T, ARank> const &A)
+    -> std::enable_if_t<sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
+                        std::is_arithmetic_v<U>> {
 
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
-                        ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
-                                      A.name(), print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices))
-                        : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
-                                      print_tuple_no_type(A_indices)));
+                        ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices,
+                                      UC_prefactor, C->name(), C_indices)
+                        : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices));
 
     T const C_prefactor = UC_prefactor;
     T const A_prefactor = UA_prefactor;
 
     // Error check:  If there are any remaining indices then we cannot perform a permute
-    constexpr auto check = difference_t<std::tuple<AIndices...>, std::tuple<CIndices...>>();
+    constexpr auto check = DifferenceT<std::tuple<AIndices...>, std::tuple<CIndices...>>();
     static_assert(std::tuple_size_v<decltype(check)> == 0);
 
     // Librett uses the reverse order for indices.
@@ -120,8 +119,8 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
             using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
 
-            detail::gpu_permute(perms.data(), ARank, HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(),
-                             size.data(), HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data());
+            detail::gpu_permute(perms.data(), ARank, HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(), size.data(),
+                                HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data());
             if (A_prefactor != T{1.0}) {
                 *C *= A_prefactor; // Librett does not handle prefactors (yet?)
             }

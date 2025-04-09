@@ -1,27 +1,29 @@
-#include "einsums/_Common.hpp"
+#include <Einsums/Tensor/BlockTensor.hpp>
+#include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/Profile/Timer.hpp>
+#include <Einsums/Tensor/FunctionTensor.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
+#include <Einsums/TensorAlgebra.hpp>
+#include <Einsums/Tensor/TiledTensor.hpp>
+#include <Einsums/TensorBase/TensorBase.hpp>
+#include <Einsums/Print.hpp>
 
-#include <catch2/catch_all.hpp>
-#include <cmath>
-#include <initializer_list>
+#include <Einsums/Testing.hpp>
 
-#include "catch2/matchers/catch_matchers_floating_point.hpp"
-#include "einsums.hpp"
-
-class ScaleFunctionTensor : public virtual einsums::tensor_props::FunctionTensorBase<double, 4>,
-                            virtual einsums::tensor_props::CoreTensorBase {
+class ScaleFunctionTensor : public einsums::tensor_base::FunctionTensor<double, 4> {
   private:
-    const einsums::Tensor<double, 1> *Evals;
+    einsums::Tensor<double, 1> const *Evals;
 
   public:
-    ScaleFunctionTensor(std::string name, const einsums::Tensor<double, 1> *evals)
+    ScaleFunctionTensor(std::string name, einsums::Tensor<double, 1> const *evals)
         : Evals{evals},
-          einsums::tensor_props::FunctionTensorBase<double, 4>(name, evals->dim(0), evals->dim(0), evals->dim(0), evals->dim(0)) {}
+          einsums::tensor_base::FunctionTensor<double, 4>(name, evals->dim(0), evals->dim(0), evals->dim(0), evals->dim(0)) {}
 
-    virtual double call(const std::array<int, 4> &inds) const override {
+    virtual double call(std::array<ptrdiff_t, 4> const &inds) const override {
         return 1.0 / ((*Evals)(inds[0]) + (*Evals)(inds[2]) - (*Evals)(inds[1]) - (*Evals)(inds[3]));
     }
 
-    size_t dim(int d) const override { return einsums::tensor_props::FunctionTensorBase<double, 4>::dim(d); }
+    size_t dim(int d) const override { return einsums::tensor_base::FunctionTensor<double, 4>::dim(d); }
 };
 
 template <size_t Rank>
@@ -49,9 +51,7 @@ static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
             next = std::strtok(NULL, " \t");
 
             if (next == NULL) {
-                std::printf("Line %d in file ", line_num);
-                println(fname);
-                throw EINSUMSEXCEPTION("Line in file not formatted correctly!");
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Line {} in file {} not formatted correctly!", line_num, fname);
             }
 
             indices[i] = std::atoi(next) - 1;
@@ -60,9 +60,7 @@ static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
         next = std::strtok(NULL, " \t");
 
         if (next == NULL) {
-            std::printf("Line %d in file ", line_num);
-            println(fname);
-            throw EINSUMSEXCEPTION("Line in file not formatted correctly!");
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Line {} in file {} not formatted correctly!", line_num, fname);
         }
 
         if constexpr (Rank == 2) {
@@ -89,8 +87,8 @@ static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
     std::fclose(input);
 }
 
-static void update_Cocc(const einsums::Tensor<double, 1> &energies, einsums::BlockTensor<double, 2> *Cocc,
-                        const einsums::BlockTensor<double, 2> &C, std::array<int, 4> &occ_per_irrep) {
+static void update_Cocc(einsums::Tensor<double, 1> const &energies, einsums::BlockTensor<double, 2> *Cocc,
+                        einsums::BlockTensor<double, 2> const &C, std::array<int, 4> &occ_per_irrep) {
     // Update occupation.
 
     std::array<int, 4> irrep_sizes{4, 0, 1, 2};
@@ -126,12 +124,12 @@ static void update_Cocc(const einsums::Tensor<double, 1> &energies, einsums::Blo
             continue;
         }
         einsums::TensorView<double, 2>       view1 = (*Cocc)[i](einsums::All, einsums::Range{0, occ_per_irrep[i]});
-        const einsums::TensorView<double, 2> view2 = C[i](einsums::All, einsums::Range{0, occ_per_irrep[i]});
+        einsums::TensorView<double, 2> const view2 = C[i](einsums::All, einsums::Range{0, occ_per_irrep[i]});
         view1                                      = view2;
     }
 }
 
-static void compute_diis_coefs(const std::vector<einsums::BlockTensor<double, 2>> &errors, std::vector<double> *out) {
+static void compute_diis_coefs(std::vector<einsums::BlockTensor<double, 2>> const &errors, std::vector<double> *out) {
     einsums::Tensor<double, 2> *B_mat = new einsums::Tensor<double, 2>("DIIS error matrix", errors.size() + 1, errors.size() + 1);
 
     B_mat->zero();
@@ -163,7 +161,7 @@ static void compute_diis_coefs(const std::vector<einsums::BlockTensor<double, 2>
     delete B_mat;
 }
 
-static void compute_diis_fock(const std::vector<double> &coefs, const std::vector<einsums::BlockTensor<double, 2>> &focks,
+static void compute_diis_fock(std::vector<double> const &coefs, std::vector<einsums::BlockTensor<double, 2>> const &focks,
                               einsums::BlockTensor<double, 2> *out) {
 
     out->zero();
@@ -418,12 +416,12 @@ TEST_CASE("RHF symmetry") {
     std::vector<BlockTensor<double, 2>> DIIS_errors, DIIS_focks;
     std::vector<double>                 DIIS_coefs;
 
-    TiledTensor<double, 4> TEI_sym("Two-electron integrals", {4, 0, 1, 2}), MP2_temp1("MP2 temp1", {4, 0, 1, 2}),
-        MP2_temp2("MP2 temp2", {4, 0, 1, 2}),
-        MP2_amps("MP2 amplitudes", std::vector<int>{3, 0, 1, 1}, std::vector<int>{1, 0, 0, 1}, std::vector<int>{3, 0, 1, 1},
-                 std::vector<int>{1, 0, 0, 1}),
-        MP2_amps_den("MP2 amplitudes with denominator", std::vector<int>{3, 0, 1, 1}, std::vector<int>{1, 0, 0, 1},
-                     std::vector<int>{3, 0, 1, 1}, std::vector<int>{1, 0, 0, 1});
+    TiledTensor<double, 4> TEI_sym("Two-electron integrals", std::array{4, 0, 1, 2}), MP2_temp1("MP2 temp1", std::array{4, 0, 1, 2}),
+        MP2_temp2("MP2 temp2", std::array{4, 0, 1, 2}),
+        MP2_amps("MP2 amplitudes", std::array{3, 0, 1, 1}, std::array{1, 0, 0, 1}, std::array{3, 0, 1, 1},
+                 std::array{1, 0, 0, 1}),
+        MP2_amps_den("MP2 amplitudes with denominator", std::array{3, 0, 1, 1}, std::array{1, 0, 0, 1},
+                     std::array{3, 0, 1, 1}, std::array{1, 0, 0, 1});
 
     Tensor<double, 1> Evals("Eigenvalues", 7);
 
@@ -584,7 +582,7 @@ TEST_CASE("RHF symmetry") {
     TEI_sym.tile(3, 2, 3, 2) = TEI_temp2(Range{5, 7}, Range{4, 5}, Range{5, 7}, Range{4, 5});
     TEI_sym.tile(3, 3, 2, 2) = TEI_temp2(Range{5, 7}, Range{5, 7}, Range{4, 5}, Range{4, 5});
 
-    const auto &TEI_sym_ref = *&TEI_sym;
+    auto const &TEI_sym_ref = *&TEI_sym;
 
     for (int i = 0; i < 7; i++) {
         for (int j = 0; j < 7; j++) {

@@ -28,7 +28,7 @@ namespace einsums {
  */
 template <NotComplex T>
 auto arange(T start, T stop, T step = T{1}) -> Tensor<T, 1> {
-    if (stop >= start) {
+    if (stop < start) {
         EINSUMS_THROW_EXCEPTION(bad_logic, "arange: stop ({}) < start ({})", stop, start);
     }
 

@@ -1,19 +1,16 @@
-#include "einsums/_Common.hpp"
+#include <Einsums/Tensor/DeviceTensor.hpp>
 
-#include "einsums/DeviceTensor.hpp"
-
-#include <catch2/catch_all.hpp>
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
 #include <hip/hip_runtime_api.h>
 #include <type_traits>
 
-#include "catch2/catch_test_macros.hpp"
+#include <Einsums/Testing.hpp>
 
 TEST_CASE("Constructing Views", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
+    //using namespace einsums::gpu::detail;
 
     // Create tensors for testing.
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
@@ -90,7 +87,7 @@ TEST_CASE("Constructing Views", "[gpu][tensor]") {
 TEST_CASE("GPU View Set all", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
+    //using namespace einsums::gpu::detail;
 
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);

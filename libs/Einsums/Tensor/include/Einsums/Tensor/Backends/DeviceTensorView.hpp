@@ -10,6 +10,7 @@
 #include <Einsums/Tensor/DeviceTensor.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/GPUComplex.hpp>
+#include <Einsums/Iterator/Enumerate.hpp>
 
 namespace einsums {
 

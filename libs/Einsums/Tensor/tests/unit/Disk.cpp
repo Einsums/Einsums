@@ -3,20 +3,17 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include "einsums/LinearAlgebra.hpp"
-#include "einsums/Print.hpp"
-#include "einsums/STL.hpp"
-#include "einsums/Tensor.hpp"
-#include "einsums/Timer.hpp"
-#include "einsums/Utilities.hpp"
+#include <Einsums/Tensor/DiskTensor.hpp>
+#include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
 #include <algorithm>
-#include <catch2/catch_all.hpp>
 #include <filesystem>
 #include <stdexcept>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+
+#include <catch2/catch_all.hpp>
 
 TEST_CASE("disktensor-creation", "[disktensor]") {
     using namespace einsums;

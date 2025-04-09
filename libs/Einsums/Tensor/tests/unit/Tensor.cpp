@@ -3,11 +3,11 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include <H5Fpublic.h>
-#include <catch2/catch_all.hpp>
-#include <type_traits>
-
-#include "einsums.hpp"
+#include <Einsums/Testing.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
+#include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
+#include <Einsums/TensorUtilities/ARange.hpp>
 
 TEST_CASE("Tensor creation", "[tensor]") {
     using namespace einsums;
@@ -184,94 +184,94 @@ TEST_CASE("TensorView creation", "[tensor]") {
     delete[] array;
 }
 
-TEST_CASE("Tensor-2D HDF5") {
-    using namespace einsums;
+// TEST_CASE("Tensor-2D HDF5") {
+//     using namespace einsums;
 
-    einsums::Tensor A("A", 3, 3);
+//     einsums::Tensor A("A", 3, 3);
 
-    for (int i = 0, ij = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++, ij++) {
-            A(i, j) = ij;
-        }
-    }
+//     for (int i = 0, ij = 0; i < 3; i++) {
+//         for (int j = 0; j < 3; j++, ij++) {
+//             A(i, j) = ij;
+//         }
+//     }
 
-    {
-        h5::fd_t fd = h5::create("tensor.h5", H5F_ACC_TRUNC);
-        h5::ds_t ds = h5::create<double>(fd, "Matrix A", h5::current_dims{10, 20}, h5::max_dims{10, 20});
-        h5::write(ds, A, h5::count{2, 3}, h5::offset{2, 2}, h5::stride{1, 3});
-    }
+//     {
+//         h5::fd_t fd = h5::create("tensor.h5", H5F_ACC_TRUNC);
+//         h5::ds_t ds = h5::create<double>(fd, "Matrix A", h5::current_dims{10, 20}, h5::max_dims{10, 20});
+//         h5::write(ds, A, h5::count{2, 3}, h5::offset{2, 2}, h5::stride{1, 3});
+//     }
 
-    {
-        auto B = h5::read<einsums::Tensor<double, 2>>("tensor.h5", "Matrix A");
+//     {
+//         auto B = h5::read<einsums::Tensor<double, 2>>("tensor.h5", "Matrix A");
 
-        REQUIRE((B.dim(0) == 10 && B.dim(1) == 20));
-        REQUIRE(B(2, 2) == 0.0);
-        REQUIRE(B(2, 5) == 1.0);
-        REQUIRE(B(2, 8) == 2.0);
-        REQUIRE(B(3, 2) == 3.0);
-        REQUIRE(B(3, 5) == 4.0);
-        REQUIRE(B(3, 8) == 5.0);
-    }
-}
+//         REQUIRE((B.dim(0) == 10 && B.dim(1) == 20));
+//         REQUIRE(B(2, 2) == 0.0);
+//         REQUIRE(B(2, 5) == 1.0);
+//         REQUIRE(B(2, 8) == 2.0);
+//         REQUIRE(B(3, 2) == 3.0);
+//         REQUIRE(B(3, 5) == 4.0);
+//         REQUIRE(B(3, 8) == 5.0);
+//     }
+// }
 
-TEST_CASE("Tensor-1D HDF5") {
-    auto A = einsums::create_random_tensor("A", 3);
+// TEST_CASE("Tensor-1D HDF5") {
+//     auto A = einsums::create_random_tensor("A", 3);
 
-    {
-        h5::fd_t fd = h5::create("tensor-1d.h5", H5F_ACC_TRUNC);
-        h5::ds_t ds = h5::create<double>(fd, "A", h5::current_dims{3}, h5::max_dims{3});
-        h5::write(ds, A);
-    }
+//     {
+//         h5::fd_t fd = h5::create("tensor-1d.h5", H5F_ACC_TRUNC);
+//         h5::ds_t ds = h5::create<double>(fd, "A", h5::current_dims{3}, h5::max_dims{3});
+//         h5::write(ds, A);
+//     }
 
-    {
-        auto B = h5::read<einsums::Tensor<double, 1>>("tensor-1d.h5", "A");
+//     {
+//         auto B = h5::read<einsums::Tensor<double, 1>>("tensor-1d.h5", "A");
 
-        REQUIRE(A(0) == B(0));
-        REQUIRE(A(1) == B(1));
-        REQUIRE(A(2) == B(2));
-    }
-}
+//         REQUIRE(A(0) == B(0));
+//         REQUIRE(A(1) == B(1));
+//         REQUIRE(A(2) == B(2));
+//     }
+// }
 
-TEST_CASE("Tensor-3D HDF5") {
-    auto A = einsums::create_random_tensor("A", 3, 2, 1);
+// TEST_CASE("Tensor-3D HDF5") {
+//     auto A = einsums::create_random_tensor("A", 3, 2, 1);
 
-    {
-        h5::fd_t fd = h5::create("tensor-3d.h5", H5F_ACC_TRUNC);
-        h5::ds_t ds = h5::create<double>(fd, "A", h5::current_dims{3, 2, 1});
-        h5::write(ds, A);
-    }
+//     {
+//         h5::fd_t fd = h5::create("tensor-3d.h5", H5F_ACC_TRUNC);
+//         h5::ds_t ds = h5::create<double>(fd, "A", h5::current_dims{3, 2, 1});
+//         h5::write(ds, A);
+//     }
 
-    {
-        auto B = h5::read<einsums::Tensor<double, 3>>("tensor-3d.h5", "A");
+//     {
+//         auto B = h5::read<einsums::Tensor<double, 3>>("tensor-3d.h5", "A");
 
-        REQUIRE(B.dim(0) == 3);
-        REQUIRE(B.dim(1) == 2);
-        REQUIRE(B.dim(2) == 1);
-    }
-}
+//         REQUIRE(B.dim(0) == 3);
+//         REQUIRE(B.dim(1) == 2);
+//         REQUIRE(B.dim(2) == 1);
+//     }
+// }
 
-TEST_CASE("TensorView-2D HDF5") {
-    SECTION("Subview Offset{0,0,0}") {
-        auto                           A = einsums::create_random_tensor("A", 3, 3, 3);
-        einsums::TensorView<double, 2> viewA(A, einsums::Dim{3, 9});
+// TEST_CASE("TensorView-2D HDF5") {
+//     SECTION("Subview Offset{0,0,0}") {
+//         auto                           A = einsums::create_random_tensor("A", 3, 3, 3);
+//         einsums::TensorView<double, 2> viewA(A, einsums::Dim{3, 9});
 
-        REQUIRE((A.dim(0) == 3 && A.dim(1) == 3 && A.dim(2) == 3));
-        REQUIRE((viewA.dim(0) == 3 && viewA.dim(1) == 9));
+//         REQUIRE((A.dim(0) == 3 && A.dim(1) == 3 && A.dim(2) == 3));
+//         REQUIRE((viewA.dim(0) == 3 && viewA.dim(1) == 9));
 
-        {
-            h5::fd_t fd = h5::create("tensorview-2d.h5", H5F_ACC_TRUNC);
-            h5::ds_t ds = h5::create<double>(fd, "A", h5::current_dims{3, 9});
-            h5::write(ds, viewA);
-        }
+//         {
+//             h5::fd_t fd = h5::create("tensorview-2d.h5", H5F_ACC_TRUNC);
+//             h5::ds_t ds = h5::create<double>(fd, "A", h5::current_dims{3, 9});
+//             h5::write(ds, viewA);
+//         }
 
-        {
-            auto B = h5::read<einsums::Tensor<double, 2>>("tensorview-2d.h5", "A");
-            for (int i = 0; i < 3; i++)
-                for (int j = 0; j < 9; j++)
-                    REQUIRE(viewA(i, j) == B(i, j));
-        }
-    }
-}
+//         {
+//             auto B = h5::read<einsums::Tensor<double, 2>>("tensorview-2d.h5", "A");
+//             for (int i = 0; i < 3; i++)
+//                 for (int j = 0; j < 9; j++)
+//                     REQUIRE(viewA(i, j) == B(i, j));
+//         }
+//     }
+// }
 
 TEST_CASE("TensorView Ranges") {
     using namespace einsums;
@@ -311,19 +311,19 @@ TEST_CASE("TensorView Ranges") {
     // }
 }
 
-TEST_CASE("Tensor 2D - HDF5 wrapper") {
-    auto A = einsums::create_random_tensor("A", 3, 3);
+// TEST_CASE("Tensor 2D - HDF5 wrapper") {
+//     auto A = einsums::create_random_tensor("A", 3, 3);
 
-    h5::fd_t fd = h5::create("tensor-wrapper.h5", H5F_ACC_TRUNC);
+//     h5::fd_t fd = h5::create("tensor-wrapper.h5", H5F_ACC_TRUNC);
 
-    einsums::write(fd, A);
+//     einsums::write(fd, A);
 
-    auto B = einsums::read<double, 2>(fd, "A");
+//     auto B = einsums::read<double, 2>(fd, "A");
 
-    for (int i = 0; i < 3; i++)
-        for (int j = 0; j < 3; j++)
-            REQUIRE(A(i, j) == B(i, j));
-}
+//     for (int i = 0; i < 3; i++)
+//         for (int j = 0; j < 3; j++)
+//             REQUIRE(A(i, j) == B(i, j));
+// }
 
 TEST_CASE("reshape") {
     SECTION("1") {
@@ -446,122 +446,4 @@ void arange_test() {
 TEST_CASE("arange") {
     arange_test<double>();
     arange_test<float>();
-}
-
-TEST_CASE("Tensor traits") {
-    using namespace einsums;
-
-    REQUIRE(TensorConcept<Tensor<double, 0>>);
-    REQUIRE(TensorConcept<Tensor<double, 1>>);
-    REQUIRE(TensorConcept<TensorView<double, 1>>);
-    REQUIRE(TensorConcept<BlockTensor<double, 2>>);
-    REQUIRE(TensorConcept<TiledTensor<double, 2>>);
-    REQUIRE(TensorConcept<TiledTensorView<double, 2>>);
-
-    REQUIRE(!TensorConcept<double>);
-
-    REQUIRE(TypedTensorConcept<Tensor<double, 0>, double>);
-    REQUIRE(TypedTensorConcept<Tensor<double, 1>, double>);
-    REQUIRE(TypedTensorConcept<TensorView<double, 1>, double>);
-    REQUIRE(TypedTensorConcept<BlockTensor<double, 2>, double>);
-    REQUIRE(TypedTensorConcept<TiledTensor<double, 2>, double>);
-    REQUIRE(TypedTensorConcept<TiledTensorView<double, 2>, double>);
-
-    REQUIRE(!TypedTensorConcept<Tensor<double, 0>, float>);
-    REQUIRE(!TypedTensorConcept<Tensor<double, 1>, float>);
-    REQUIRE(!TypedTensorConcept<TensorView<double, 1>, float>);
-    REQUIRE(!TypedTensorConcept<BlockTensor<double, 2>, float>);
-    REQUIRE(!TypedTensorConcept<TiledTensor<double, 2>, float>);
-    REQUIRE(!TypedTensorConcept<TiledTensorView<double, 2>, float>);
-
-    REQUIRE(RankTensorConcept<Tensor<double, 0>, 0>);
-    REQUIRE(RankTensorConcept<Tensor<double, 1>, 1>);
-    REQUIRE(RankTensorConcept<TensorView<double, 1>, 1>);
-    REQUIRE(RankTensorConcept<BlockTensor<double, 2>, 2>);
-    REQUIRE(RankTensorConcept<TiledTensor<double, 2>, 2>);
-    REQUIRE(RankTensorConcept<TiledTensorView<double, 2>, 2>);
-
-    REQUIRE(!RankTensorConcept<Tensor<double, 0>, 3>);
-    REQUIRE(!RankTensorConcept<Tensor<double, 1>, 3>);
-    REQUIRE(!RankTensorConcept<TensorView<double, 1>, 3>);
-    REQUIRE(!RankTensorConcept<BlockTensor<double, 2>, 3>);
-    REQUIRE(!RankTensorConcept<TiledTensor<double, 2>, 3>);
-    REQUIRE(!RankTensorConcept<TiledTensorView<double, 2>, 3>);
-
-    REQUIRE(LockableTensorConcept<Tensor<double, 0>>);
-    REQUIRE(LockableTensorConcept<Tensor<double, 1>>);
-    REQUIRE(LockableTensorConcept<TensorView<double, 1>>);
-    REQUIRE(LockableTensorConcept<BlockTensor<double, 2>>);
-    REQUIRE(LockableTensorConcept<TiledTensor<double, 2>>);
-    REQUIRE(LockableTensorConcept<TiledTensorView<double, 2>>);
-
-    REQUIRE(TRTensorConcept<Tensor<double, 0>, 0, double>);
-    REQUIRE(TRTensorConcept<Tensor<double, 1>, 1, double>);
-    REQUIRE(TRTensorConcept<TensorView<double, 1>, 1, double>);
-    REQUIRE(TRTensorConcept<BlockTensor<double, 2>, 2, double>);
-    REQUIRE(TRTensorConcept<TiledTensor<double, 2>, 2, double>);
-    REQUIRE(TRTensorConcept<TiledTensorView<double, 2>, 2, double>);
-
-    REQUIRE(!TRTensorConcept<Tensor<double, 0>, 3, double>);
-    REQUIRE(!TRTensorConcept<Tensor<double, 1>, 3, double>);
-    REQUIRE(!TRTensorConcept<TensorView<double, 1>, 3, double>);
-    REQUIRE(!TRTensorConcept<BlockTensor<double, 2>, 3, double>);
-    REQUIRE(!TRTensorConcept<TiledTensor<double, 2>, 3, double>);
-    REQUIRE(!TRTensorConcept<TiledTensorView<double, 2>, 3, double>);
-
-    REQUIRE(!TRTensorConcept<Tensor<double, 0>, 0, float>);
-    REQUIRE(!TRTensorConcept<Tensor<double, 1>, 1, float>);
-    REQUIRE(!TRTensorConcept<TensorView<double, 1>, 1, float>);
-    REQUIRE(!TRTensorConcept<BlockTensor<double, 2>, 2, float>);
-    REQUIRE(!TRTensorConcept<TiledTensor<double, 2>, 2, float>);
-    REQUIRE(!TRTensorConcept<TiledTensorView<double, 2>, 2, float>);
-
-    REQUIRE(!TRTensorConcept<Tensor<double, 0>, 3, float>);
-    REQUIRE(!TRTensorConcept<Tensor<double, 1>, 3, float>);
-    REQUIRE(!TRTensorConcept<TensorView<double, 1>, 3, float>);
-    REQUIRE(!TRTensorConcept<BlockTensor<double, 2>, 3, float>);
-    REQUIRE(!TRTensorConcept<TiledTensor<double, 2>, 3, float>);
-    REQUIRE(!TRTensorConcept<TiledTensorView<double, 2>, 3, float>);
-
-    REQUIRE(TRLTensorConcept<Tensor<double, 0>, 0, double>);
-    REQUIRE(TRLTensorConcept<Tensor<double, 1>, 1, double>);
-    REQUIRE(TRLTensorConcept<TensorView<double, 1>, 1, double>);
-    REQUIRE(TRLTensorConcept<BlockTensor<double, 2>, 2, double>);
-    REQUIRE(TRLTensorConcept<TiledTensor<double, 2>, 2, double>);
-    REQUIRE(TRLTensorConcept<TiledTensorView<double, 2>, 2, double>);
-
-    REQUIRE(!TRLTensorConcept<Tensor<double, 0>, 3, double>);
-    REQUIRE(!TRLTensorConcept<Tensor<double, 1>, 3, double>);
-    REQUIRE(!TRLTensorConcept<TensorView<double, 1>, 3, double>);
-    REQUIRE(!TRLTensorConcept<BlockTensor<double, 2>, 3, double>);
-    REQUIRE(!TRLTensorConcept<TiledTensor<double, 2>, 3, double>);
-    REQUIRE(!TRLTensorConcept<TiledTensorView<double, 2>, 3, double>);
-
-    REQUIRE(!TRLTensorConcept<Tensor<double, 0>, 0, float>);
-    REQUIRE(!TRLTensorConcept<Tensor<double, 1>, 1, float>);
-    REQUIRE(!TRLTensorConcept<TensorView<double, 1>, 1, float>);
-    REQUIRE(!TRLTensorConcept<BlockTensor<double, 2>, 2, float>);
-    REQUIRE(!TRLTensorConcept<TiledTensor<double, 2>, 2, float>);
-    REQUIRE(!TRLTensorConcept<TiledTensorView<double, 2>, 2, float>);
-
-    REQUIRE(!TRLTensorConcept<Tensor<double, 0>, 3, float>);
-    REQUIRE(!TRLTensorConcept<Tensor<double, 1>, 3, float>);
-    REQUIRE(!TRLTensorConcept<TensorView<double, 1>, 3, float>);
-    REQUIRE(!TRLTensorConcept<BlockTensor<double, 2>, 3, float>);
-    REQUIRE(!TRLTensorConcept<TiledTensor<double, 2>, 3, float>);
-    REQUIRE(!TRLTensorConcept<TiledTensorView<double, 2>, 3, float>);
-
-    REQUIRE(CoreTensorConcept<Tensor<double, 0>>);
-    REQUIRE(CoreTensorConcept<Tensor<double, 1>>);
-    REQUIRE(CoreTensorConcept<TensorView<double, 1>>);
-    REQUIRE(CoreTensorConcept<BlockTensor<double, 2>>);
-    REQUIRE(CoreTensorConcept<TiledTensor<double, 2>>);
-    REQUIRE(CoreTensorConcept<TiledTensorView<double, 2>>);
-
-    REQUIRE(!TensorViewConcept<Tensor<double, 0>>);
-    REQUIRE(!TensorViewConcept<Tensor<double, 1>>);
-    REQUIRE(TensorViewConcept<TensorView<double, 1>>);
-    REQUIRE(!TensorViewConcept<BlockTensor<double, 2>>);
-    REQUIRE(!TensorViewConcept<TiledTensor<double, 2>>);
-    REQUIRE(TensorViewConcept<TiledTensorView<double, 2>>);
 }

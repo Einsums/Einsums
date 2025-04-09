@@ -3,23 +3,16 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include "einsums/DeviceTensor.hpp"
-#include "einsums/LinearAlgebra.hpp"
-#include "einsums/STL.hpp"
-#include "einsums/Sort.hpp"
-#include "einsums/State.hpp"
-#include "einsums/TensorAlgebra.hpp"
-#include "einsums/Utilities.hpp"
-
-#include <H5Fpublic.h>
-#include <catch2/catch_all.hpp>
-#include <complex>
-#include <type_traits>
+#include <Einsums/Testing.hpp>
+#include <Einsums/Tensor/DeviceTensor.hpp>
+#include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
+#include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
+#include <Einsums/TensorUtilities/CreateIdentity.hpp>
 
 TEST_CASE("Test dependence GPU timing", "[jobs][gpu]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::index;
 
     gpu::device_synchronize();
 
@@ -34,21 +27,21 @@ TEST_CASE("Test dependence GPU timing", "[jobs][gpu]") {
     D.zero();
 
     SECTION("Sequential") {
-        timer::push("Sequential GPU");
+        profile::push("Sequential GPU");
 
         for (int sentinel = 0; sentinel < 10; sentinel++) {
             REQUIRE_NOTHROW(einsums::tensor_algebra::einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B));
             REQUIRE_NOTHROW(einsums::tensor_algebra::einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B));
         }
 
-        timer::pop();
+        profile::pop();
     }
 
     SECTION("Tasked") {
 #pragma omp parallel
 #pragma omp single
         {
-            timer::push("Tasked GPU");
+            profile::push("Tasked GPU");
 
             for (int sentinel = 0; sentinel < 10; sentinel++) {
 #pragma omp task depend(in : A, B), depend(out : C)
@@ -58,7 +51,7 @@ TEST_CASE("Test dependence GPU timing", "[jobs][gpu]") {
                 { REQUIRE_NOTHROW(einsums::tensor_algebra::einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B)); }
             }
 
-            timer::pop();
+            profile::pop();
         }
     }
 }
