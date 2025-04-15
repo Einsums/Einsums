@@ -93,8 +93,18 @@ static void create_complex_types() {
         std::terminate();
     } else {
         int err = 1;
-        err *= H5Tinsert(singleton.double_complex_type, "x", 0, H5T_NATIVE_DOUBLE);
-        err *= H5Tinsert(singleton.double_complex_type, "y", 1, H5T_NATIVE_DOUBLE);
+        err = H5Tinsert(singleton.double_complex_type, "x", 0, H5T_NATIVE_DOUBLE);
+
+        if (err < 0) {
+            EINSUMS_LOG_ERROR("Could not assign members to double complex data type!");
+            H5Fclose(singleton.hdf5_file);
+            H5Pclose(singleton.link_property_list);
+            H5Fclose(singleton.double_complex_type);
+            std::terminate();
+        }
+
+
+        err = H5Tinsert(singleton.double_complex_type, "y", 8, H5T_NATIVE_DOUBLE);
 
         if (err < 0) {
             EINSUMS_LOG_ERROR("Could not assign members to double complex data type!");
@@ -123,8 +133,18 @@ static void create_complex_types() {
         std::terminate();
     } else {
         int err = 1;
-        err *= H5Tinsert(singleton.float_complex_type, "x", 0, H5T_NATIVE_FLOAT);
-        err *= H5Tinsert(singleton.float_complex_type, "y", 1, H5T_NATIVE_FLOAT);
+        err = H5Tinsert(singleton.float_complex_type, "x", 0, H5T_NATIVE_FLOAT);
+
+        if (err < 0) {
+            EINSUMS_LOG_ERROR("Could not assign members to float complex data type!");
+            H5Fclose(singleton.hdf5_file);
+            H5Pclose(singleton.link_property_list);
+            H5Fclose(singleton.double_complex_type);
+            H5Fclose(singleton.float_complex_type);
+            std::terminate();
+        }
+
+        err = H5Tinsert(singleton.float_complex_type, "y", 4, H5T_NATIVE_FLOAT);
 
         if (err < 0) {
             EINSUMS_LOG_ERROR("Could not assign members to float complex data type!");
@@ -164,8 +184,17 @@ static void open_complex_types() {
             std::terminate();
         } else {
             int err = 1;
-            err *= H5Tinsert(singleton.double_complex_type, "x", 0, H5T_NATIVE_DOUBLE);
-            err *= H5Tinsert(singleton.double_complex_type, "y", 1, H5T_NATIVE_DOUBLE);
+            err = H5Tinsert(singleton.double_complex_type, "x", 0, H5T_NATIVE_DOUBLE);
+
+            if (err < 0) {
+                EINSUMS_LOG_ERROR("Could not assign members to double complex data type!");
+                H5Fclose(singleton.hdf5_file);
+                H5Pclose(singleton.link_property_list);
+                H5Fclose(singleton.double_complex_type);
+                std::terminate();
+            }
+
+            err = H5Tinsert(singleton.double_complex_type, "y", 8, H5T_NATIVE_DOUBLE);
 
             if (err < 0) {
                 EINSUMS_LOG_ERROR("Could not assign members to double complex data type!");
@@ -198,8 +227,18 @@ static void open_complex_types() {
             std::terminate();
         } else {
             int err = 1;
-            err *= H5Tinsert(singleton.float_complex_type, "x", 0, H5T_NATIVE_FLOAT);
-            err *= H5Tinsert(singleton.float_complex_type, "y", 1, H5T_NATIVE_FLOAT);
+            err = H5Tinsert(singleton.float_complex_type, "x", 0, H5T_NATIVE_FLOAT);
+
+            if (err < 0) {
+                EINSUMS_LOG_ERROR("Could not assign members to float complex data type!");
+                H5Fclose(singleton.hdf5_file);
+                H5Pclose(singleton.link_property_list);
+                H5Fclose(singleton.double_complex_type);
+                H5Fclose(singleton.float_complex_type);
+                std::terminate();
+            }
+
+            err = H5Tinsert(singleton.float_complex_type, "y", 4, H5T_NATIVE_FLOAT);
 
             if (err < 0) {
                 EINSUMS_LOG_ERROR("Could not assign members to float complex data type!");
@@ -244,7 +283,15 @@ void open_hdf5_file(std::string const &fname) {
     }
 
     int res = H5Pset_char_encoding(singleton.link_property_list, H5T_CSET_UTF8);
-    res *= H5Pset_create_intermediate_group(singleton.link_property_list, 1);
+
+    if (res < 0) {
+        EINSUMS_LOG_ERROR("Could not apply properties to the HDF5 link property list!");
+        H5Fclose(singleton.hdf5_file);
+        H5Pclose(singleton.link_property_list);
+        std::terminate();
+    }
+
+    res = H5Pset_create_intermediate_group(singleton.link_property_list, 1);
 
     if (res < 0) {
         EINSUMS_LOG_ERROR("Could not apply properties to the HDF5 link property list!");
@@ -276,7 +323,15 @@ void create_hdf5_file(std::string const &fname) {
     }
 
     int res = H5Pset_char_encoding(singleton.link_property_list, H5T_CSET_UTF8);
-    res *= H5Pset_create_intermediate_group(singleton.link_property_list, 1);
+
+    if (res < 0) {
+        EINSUMS_LOG_ERROR("Could not apply properties to the HDF5 link property list!");
+        H5Fclose(singleton.hdf5_file);
+        H5Pclose(singleton.link_property_list);
+        std::terminate();
+    }
+
+    res = H5Pset_create_intermediate_group(singleton.link_property_list, 1);
 
     if (res < 0) {
         EINSUMS_LOG_ERROR("Could not apply properties to the HDF5 link property list!");

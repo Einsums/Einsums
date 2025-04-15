@@ -8,6 +8,7 @@
 #include <Einsums/Tensor/InitModule.hpp>
 #include <Einsums/Tensor/ModuleVars.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
+#include <H5Tpublic.h>
 
 #include <algorithm>
 #include <filesystem>
@@ -47,6 +48,9 @@ TEST_CASE("File opening and closing") {
     fname /= global_config.get_string("hdf5-file-name");
 
     open_hdf5_file(fname.string());
+
+    REQUIRE(H5Tget_size(singleton.double_complex_type) == sizeof(std::complex<double>));
+    REQUIRE(H5Tget_size(singleton.float_complex_type) == sizeof(std::complex<float>));
 
     REQUIRE_NOTHROW([]() { DiskTensor<double, 2> A("/open-test", 3, 3); }());
 }
@@ -114,10 +118,61 @@ TEMPLATE_TEST_CASE("Write/Read", "[disktensor]", float, double, std::complex<flo
     REQUIRE(sube(2, 1) == Ad(2, 2));
 }
 
+TEMPLATE_TEST_CASE("Write/Read compressed", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
+    using namespace einsums;
+
+    DiskTensor<TestType, 2> A(fmt::format("/A2/{}", type_name<TestType>()), Dim{3, 3}, 9);
+
+    // Data must exist on disk before it can be read in.
+    Tensor Ad = create_random_tensor<TestType>("A", 3, 3);
+
+    {
+        A(All, All) = Ad;
+    }
+
+    auto suba = A(0, All);
+    // println(suba);
+    REQUIRE(suba(0) == Ad(0, 0));
+    REQUIRE(suba(1) == Ad(0, 1));
+    REQUIRE(suba(2) == Ad(0, 2));
+
+    auto subb = A(1, All);
+    // println(subb);
+    REQUIRE(subb(0) == Ad(1, 0));
+    REQUIRE(subb(1) == Ad(1, 1));
+    REQUIRE(subb(2) == Ad(1, 2));
+
+    auto subc = A(All, 1);
+    // println(subc);
+    REQUIRE(subc(0) == Ad(0, 1));
+    REQUIRE(subc(1) == Ad(1, 1));
+    REQUIRE(subc(2) == Ad(2, 1));
+
+    auto subd = A(Range{0, 2}, All);
+    // println(subd);
+    REQUIRE((subd.dim(0) == 2 && subd.dim(1) == 3));
+    REQUIRE(subd(0, 0) == Ad(0, 0));
+    REQUIRE(subd(0, 1) == Ad(0, 1));
+    REQUIRE(subd(0, 2) == Ad(0, 2));
+    REQUIRE(subd(1, 0) == Ad(1, 0));
+    REQUIRE(subd(1, 1) == Ad(1, 1));
+    REQUIRE(subd(1, 2) == Ad(1, 2));
+
+    auto  tempe = A(All, Range{1, 3});
+    auto &sube  = tempe.get();
+    REQUIRE((sube.dim(0) == 3 && sube.dim(1) == 2));
+    REQUIRE(sube(0, 0) == Ad(0, 1));
+    REQUIRE(sube(0, 1) == Ad(0, 2));
+    REQUIRE(sube(1, 0) == Ad(1, 1));
+    REQUIRE(sube(1, 1) == Ad(1, 2));
+    REQUIRE(sube(2, 0) == Ad(2, 1));
+    REQUIRE(sube(2, 1) == Ad(2, 2));
+}
+
 TEMPLATE_TEST_CASE("DiskView 3x3", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
-    DiskTensor<TestType, 2> A(fmt::format("/A2/{}", type_name<TestType>()), 3, 3);
+    DiskTensor<TestType, 2> A(fmt::format("/A3/{}", type_name<TestType>()), 3, 3);
 
     // Data must exist on disk before it can be read in.
     Tensor Ad = create_random_tensor<TestType>("A", 3, 3);

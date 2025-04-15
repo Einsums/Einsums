@@ -84,6 +84,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         if (_dataspace != H5I_INVALID_HID) {
             H5Sclose(_dataspace);
         }
+
+        if (_creation_props != H5I_INVALID_HID) {
+            H5Pclose(_creation_props);
+        }
     }
 
     /**
@@ -93,9 +97,9 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      * @param name The name for the tensor.
      * @param dims The dimensions of the tensor.
      */
-    explicit DiskTensor(hid_t file, std::string name, Dim<Rank> dims) : _file{file}, _name{std::move(name)}, _dims{dims} {
+    explicit DiskTensor(hid_t file, std::string name, Dim<Rank> dims, int deflate_level = -1) : _file{file}, _name{std::move(name)}, _dims{dims} {
 
-        dims_to_strides(_dims, _strides);
+        size_t size = dims_to_strides(_dims, _strides);
 
         _dataspace = H5Screate_simple(Rank, reinterpret_cast<hsize_t *>(_dims.data()), NULL);
 
@@ -118,9 +122,62 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             _existed = true;
             _dataset = H5Dopen(file, _name.c_str(), H5P_DEFAULT);
         } else {
-            _existed = false;
+            _existed        = false;
+            _creation_props = H5Pcreate(H5P_DATASET_CREATE);
+
+            if (_creation_props == H5I_INVALID_HID) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create creation property list!");
+            }
+
+            auto err = H5Pset_layout(_creation_props, H5D_CHUNKED);
+
+            if (err < 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set layout to chunked!");
+            }
+
+            std::array<size_t, rank> chunk_dims;
+
+            chunk_dims.fill(1);
+
+            size_t prod = 1;
+
+            // Maximum chunk size is 2^32 - 1, but chunks can not be bigger than the data set in any dimension.
+            for (int i = rank - 1; i >= 0; i--) {
+                if (prod * _dims[i] >= 0xffffffffUL) {
+                    chunk_dims[i] = 0xffffffffUL / prod;
+                    break;
+                } else {
+                    prod *= _dims[i];
+                    chunk_dims[i] = _dims[i];
+                }
+            }
+
+            err = H5Pset_chunk(_creation_props, rank, reinterpret_cast<hsize_t const *>(chunk_dims.data()));
+
+            if(err < 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set up the chunk properties!");
+            }
+
+            err = H5Pset_chunk_opts(_creation_props, H5D_CHUNK_DONT_FILTER_PARTIAL_CHUNKS);
+
+            if(err < 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set up the chunk options!");
+            }
+
+            if(deflate_level < 0 && size > 0xffffffff) {
+                deflate_level = 1;
+            }
+
+            if(deflate_level > 0) {
+                err = H5Pset_deflate(_creation_props, deflate_level);
+
+                if(err < 0) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set up compression options!");
+                }
+            }
+
             _dataset = H5Dcreate(_file, _name.c_str(), _data_type, _dataspace,
-                                 detail::Einsums_Tensor_vars::get_singleton().link_property_list, H5P_DEFAULT, H5P_DEFAULT);
+                                 detail::Einsums_Tensor_vars::get_singleton().link_property_list, _creation_props, H5P_DEFAULT);
         }
 
         if (_dataset == H5I_INVALID_HID) {
@@ -355,7 +412,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         hid_t mem_dataspace = H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(tensor.dims().data()),
                                                reinterpret_cast<hsize_t const *>(tensor.dims().data()));
 
-        if(mem_dataspace == H5I_INVALID_HID) {
+        if (mem_dataspace == H5I_INVALID_HID) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
         }
 
@@ -363,7 +420,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         H5Sclose(mem_dataspace);
 
-        if(err < 0) {
+        if (err < 0) {
             H5Sclose(mem_dataspace);
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not write data to HDF5 file!");
         }
@@ -391,7 +448,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      */
     Stride<Rank> _strides;
 
-    hid_t _file{H5I_INVALID_HID}, _dataspace{H5I_INVALID_HID}, _dataset{H5I_INVALID_HID}, _data_type{H5I_INVALID_HID};
+    hid_t _file{H5I_INVALID_HID}, _dataspace{H5I_INVALID_HID}, _dataset{H5I_INVALID_HID}, _data_type{H5I_INVALID_HID},
+        _creation_props{H5I_INVALID_HID};
 
     /** @var _existed
      *
