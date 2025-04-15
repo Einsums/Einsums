@@ -9,6 +9,7 @@
 #include <Einsums/TypeSupport/Singleton.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/Config.hpp>
+#include <Einsums/Tensor/InitModule.hpp>
 
 namespace einsums {
 namespace detail {
