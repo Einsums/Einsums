@@ -12,6 +12,7 @@
 #include <H5Fpublic.h>
 #include <H5Ppublic.h>
 #include <H5Tdevelop.h>
+#include <H5public.h>
 #include <argparse/argparse.hpp>
 #include <filesystem>
 #include <mutex>

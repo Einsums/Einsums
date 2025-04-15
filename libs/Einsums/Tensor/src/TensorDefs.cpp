@@ -18,6 +18,8 @@
 #include <string>
 #include <vector>
 
+#include <H5Lpublic.h>
+
 namespace einsums {
 
 TENSOR_DEFINE_RANK(BlockTensor, 2)
