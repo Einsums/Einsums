@@ -18,11 +18,19 @@
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
 
+#include <H5Dpublic.h>
+#include <H5Spublic.h>
 #include <H5Tpublic.h>
 #include <source_location>
 #include <string>
 
 namespace einsums {
+
+namespace detail {
+
+EINSUMS_EXPORT bool verify_exists(hid_t loc_id, std::string const &path, hid_t lapl_id);
+
+}
 
 /**
  * @struct DiskTensor
@@ -107,7 +115,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         }
 
         // Check to see if the data set exists
-        if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
+        if (detail::verify_exists(file, _name, H5P_DEFAULT)) {
             _existed = true;
             _dataset = H5Dopen(file, _name.c_str(), H5P_DEFAULT);
         } else {
@@ -261,7 +269,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create a copy of the data space for view creation!");
         }
 
-        auto err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offsets.data(), NULL, counts.data(), block.data());
+        auto err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, reinterpret_cast<hsize_t const *>(offsets.data()), NULL,
+                                       reinterpret_cast<hsize_t const *>(counts.data()), reinterpret_cast<hsize_t const *>(block.data()));
 
         if (err < 0) {
             H5Sclose(dataspace);
@@ -325,7 +334,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create a copy of the data space for view creation!");
         }
 
-        auto err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offsets.data(), NULL, counts.data(), block.data());
+        auto err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, reinterpret_cast<hsize_t const *>(offsets.data()), NULL,
+                                       reinterpret_cast<hsize_t const *>(counts.data()), reinterpret_cast<hsize_t const *>(block.data()));
 
         if (err < 0) {
             H5Sclose(dataspace);
@@ -430,7 +440,19 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
 
         _full_view = (prod == prod2);
 
-        H5Sread(dataset, _data_type, H5S_ALL, dataspace, H5P_DEFAULT, _tensor.data());
+        _mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims.data()), reinterpret_cast<hsize_t const *>(dims.data()));
+
+        if (_data_type == H5I_INVALID_HID || dataspace == H5I_INVALID_HID || dataset == H5I_INVALID_HID ||
+            _mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not initialize disk view!");
+        }
+
+        auto err = H5Dread(dataset, _data_type, _mem_dataspace, dataspace, H5P_DEFAULT, _tensor.data());
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read data from HDF5 file!");
+        }
     }
 
     /**
@@ -464,7 +486,19 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
 
         _full_view = (prod == prod2);
 
-        H5Sread(dataset, _data_type, H5S_ALL, dataspace, H5P_DEFAULT, _tensor.data());
+        _mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims.data()), reinterpret_cast<hsize_t const *>(dims.data()));
+
+        if (_data_type == H5I_INVALID_HID || dataspace == H5I_INVALID_HID || dataset == H5I_INVALID_HID ||
+            _mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not initialize disk view!");
+        }
+
+        auto err = H5Dread(dataset, _data_type, _mem_dataspace, dataspace, H5P_DEFAULT, _tensor.data());
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read data from HDF5 file!");
+        }
         set_read_only(true);
     }
 
@@ -486,6 +520,12 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
 
         if (_dataspace != H5I_INVALID_HID) {
             H5Sclose(_dataspace);
+            _dataspace = H5I_INVALID_HID;
+        }
+
+        if (_mem_dataspace != H5I_INVALID_HID && _mem_dataspace != H5S_ALL) {
+            H5Sclose(_mem_dataspace);
+            _mem_dataspace = H5S_ALL;
         }
     }
 
@@ -547,7 +587,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      */
     void put() {
         if (!_readOnly)
-            H5Dwrite(_dataset, _data_type, H5S_ALL, _dataspace, H5P_DEFAULT, _tensor.data());
+            H5Dwrite(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
     }
 
     /**
@@ -618,6 +658,13 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      * The dataspace that contains the parameters for the view.
      */
     hid_t _dataspace{H5I_INVALID_HID};
+
+    /**
+     * @var _mem_dataspace
+     *
+     * The dataspace that specifies the parameters for the core tensor.
+     */
+    hid_t _mem_dataspace{H5S_ALL};
 
     /**
      * @var _dataset

@@ -25,7 +25,6 @@ public:
 
     hid_t double_complex_type;
     hid_t float_complex_type;
-
 private:
     explicit Einsums_Tensor_vars() = default;
 

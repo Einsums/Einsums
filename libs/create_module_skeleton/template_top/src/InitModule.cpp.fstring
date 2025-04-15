@@ -81,15 +81,22 @@ EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments(argparse::ArgumentPar
      * This one adds a flag that is normally false, but is set when provided.
      * parser.add_argument("--einsums:dummy-bool")
      *   .flag()
-     *   .help("Dummy int argument.")
-     *   .store_into(global_int["dummy-bool"]);
+     *   .help("Dummy bool argument.")
+     *   .store_into(global_bool["dummy-bool"]);
      *
-     * This one adds a flag that is normally true, but is unset when provided.
-     * parser.add_argument("--einsums:no-dummy-bool2")
-     *   .default_value(true)
-     *   .implicit_value(false)
-     *   .help("Dummy int argument.")
-     *   .store_into(global_int["dummy-bool2"]);
+     * A function in RuntimeConfiguration.hpp provides more customization options. It creates two arguments
+     * that are inverses of each other and are mutually exclusive.
+     *
+     * This creates a flag that is normally false. If --einsums:dummy-bool2 is present, then true is stored. Otherwise, false is stored.
+     * no_flag(parser, global_bool["dummy-bool2"], "--einsums:dummy-bool2", "--einsums:no-dummy-bool2", "Dummy bool 2", "Not dummy bool 2", false);
+     *
+     * This does the opposite, creating a flag that is normally true, but if --einsums:no-dummy-bool2 is present, false is stored.
+     * no_flag(parser, global_bool["dummy-bool3"], "--einsums:dummy-bool3", "--einsums:no-dummy-bool3", "Dummy bool 3", "Not dummy bool 3", true);
+     *
+     * Simpler versions can also be created that only require a help statement for the non-default value. The default flag's help will just say
+     * "Negation of [default flag]." The following creates an argument that is normally false and has the given help statement on the true flag.
+     * The default help statement will be on the false flag.
+     * no_flag(parser, global_bool["dummy-bool4"], "--einsums:dummy-bool4", "--einsums:no-dummy-bool4", "Dummy bool 4", false);
      */
 
 }}

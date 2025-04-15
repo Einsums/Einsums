@@ -13,43 +13,34 @@
 #include <type_traits>
 #include <utility>
 
+#include "Einsums/Config/Types.hpp"
+
 #include <catch2/catch_all.hpp>
 
 TEMPLATE_TEST_CASE("disktensor-creation", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
-    SECTION("double") {
-        DiskTensor A("/A0", 3, 3);
-        DiskTensor B("/B0", 3, 3);
-        DiskTensor C("/C0", 3, 3);
+    DiskTensor<TestType, 2> A(fmt::format("/A0/{}", type_name<TestType>()), 3, 3);
+    DiskTensor<TestType, 2> B(fmt::format("/B0/{}", type_name<TestType>()), 3, 3);
+    DiskTensor<TestType, 2> C(fmt::format("/C0/{}", type_name<TestType>()), 3, 3);
 
-        REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
-        REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
-        REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
-    }
-
-    SECTION("float") {
-        auto A = create_disk_tensor<float>("/A1", 3, 3);
-        REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
-    }
-
-    // Complex datatypes currently not supported.  It should be able to handle this through defining a HDF5 compound datatype.
-    // SECTION("complex<double>") {
-    //     auto A = create_disk_tensor<std::complex<double>>(state::data(), "/A2", 3, 3);
-    //     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
-    // }
+    REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
+    REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
+    REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
 }
 
-#if 0
-TEST_CASE("Write/Read", "[disktensor]") {
+TEMPLATE_TEST_CASE("Write/Read", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
-    DiskTensor<2> A(state::data(), "/A1", 3, 3);
+    DiskTensor<TestType, 2> A(fmt::format("/A1/{}", type_name<TestType>()), 3, 3);
 
     // Data must exist on disk before it can be read in.
-    Tensor<2> Ad = create_random_tensor("A", 3, 3);
-    // println(Ad);
-    A._write(Ad);
+    Tensor Ad = create_random_tensor<TestType>("A", 3, 3);
+    println(Ad);
+
+    {
+        A(All, All) = Ad;
+    }
 
     auto suba = A(0, All);
     // println(suba);
@@ -79,8 +70,8 @@ TEST_CASE("Write/Read", "[disktensor]") {
     REQUIRE(subd(1, 1) == Ad(1, 1));
     REQUIRE(subd(1, 2) == Ad(1, 2));
 
-    auto tempe = A(All, Range{1, 3});
-    auto &sube = tempe.get();
+    auto  tempe = A(All, Range{1, 3});
+    auto &sube  = tempe.get();
     REQUIRE((sube.dim(0) == 3 && sube.dim(1) == 2));
     REQUIRE(sube(0, 0) == Ad(0, 1));
     REQUIRE(sube(0, 1) == Ad(0, 2));
@@ -90,6 +81,7 @@ TEST_CASE("Write/Read", "[disktensor]") {
     REQUIRE(sube(2, 1) == Ad(2, 2));
 }
 
+#if 0
 TEST_CASE("DiskView 3x3", "[disktensor]") {
     using namespace einsums;
 

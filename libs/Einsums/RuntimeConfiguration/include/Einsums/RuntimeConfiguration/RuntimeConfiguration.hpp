@@ -24,6 +24,38 @@ namespace einsums {
 
 namespace detail {} // namespace detail
 
+/**
+ * @brief Creates a command line argument that can appear as a switch.
+ *
+ * Say you want to create a command line switch that looks like @c --dummy-flag , but
+ * you also want a switch like @c --no-dummy-flag . When the first is present, the result will
+ * be true, and when the second, the result will be false. This function sets up such a flag.
+ *
+ * @param arg The argument to add this behavior to.
+ * @param output A reference to where the flag should be stored.
+ * @param true_flag The name for the true flag. If this is present on the command line, @c true will be stored into the output.
+ * @param false_flag The name for the false flag. If this is present on the command line, @c false will be stored into the output.
+ * @param true_help Help statement for the true flag.
+ * @param false_help Help statement for the false flag.
+ * @param default_value The default value for the flag.
+ */
+EINSUMS_EXPORT void no_flag(argparse::ArgumentParser &arg, bool &output, std::string const &true_flag, std::string const &false_flag,
+                            std::string const &true_help, std::string const &false_help, bool default_value);
+
+/**
+ * @copybrief no_flag(argparse::ArgumentParser &,bool &, std::string const &,std::string const &,std::string const &,std::string const &,bool)
+ * @copydetail no_flag(argparse::ArgumentParser &,bool &, std::string const &,std::string const &,std::string const &,std::string const &,bool)
+ *
+ * @param arg The argument to add this behavior to.
+ * @param output A reference to where the flag should be stored.
+ * @param true_flag The name for the true flag. If this is present on the command line, @c true will be stored into the output.
+ * @param false_flag The name for the false flag. If this is present on the command line, @c false will be stored into the output.
+ * @param non_default_help Help statement for the flag corresponding to the opposite of the default value. The other flag will have a simple help statement.
+ * @param default_value The default value for the flag.
+ */
+EINSUMS_EXPORT void no_flag(argparse::ArgumentParser &arg, bool &output, std::string const &true_flag, std::string const &false_flag,
+                            std::string const &non_default_help, bool default_value);
+
 EINSUMS_EXPORT void register_arguments(std::function<void(argparse::ArgumentParser &)>);
 
 /**

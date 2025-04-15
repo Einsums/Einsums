@@ -31,6 +31,26 @@
 #include <argparse/argparse.hpp>
 
 namespace einsums {
+
+void no_flag(argparse::ArgumentParser &arg, bool &output, std::string const &true_flag, std::string const &false_flag,
+             std::string const &true_help, std::string const &false_help, bool default_value) {
+    auto &group = arg.add_mutually_exclusive_group();
+
+    group.add_argument(true_flag).action([&output](auto const &) { output = true; }).help(true_help).default_value(false).implicit_value(true);
+    group.add_argument(false_flag).action([&output](auto const &) { output = false; }).help(false_help).default_value(true).implicit_value(false);
+
+    output = default_value;
+}
+
+void no_flag(argparse::ArgumentParser &arg, bool &output, std::string const &true_flag, std::string const &false_flag,
+             std::string const &non_default_help, bool default_value) {
+    if (!default_value) {
+        no_flag(arg, output, true_flag, false_flag, non_default_help, fmt::format("Negation of {}.", true_flag), default_value);
+    } else {
+        no_flag(arg, output, true_flag, false_flag, fmt::format("Negation of {}.", false_flag), non_default_help, default_value);
+    }
+}
+
 namespace detail {
 
 struct EINSUMS_EXPORT ArgumentList final : design_pats::Lockable<std::mutex> {
@@ -171,23 +191,16 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
         std::scoped_lock lock{*global_config.get_string_map(), *global_config.get_int_map(), *global_config.get_double_map(),
                               *global_config.get_bool_map()};
 
-        argument_parser->add_argument("--einsums:no-install-signal-handlers")
-            .default_value(true)
-            .implicit_value(false)
-            .help("do not install signal handlers")
-            .store_into(global_bools["install-signal-handlers"]);
+        no_flag(*argument_parser, global_bools["install-signal-handlers"], "--einsums:install-signal-handlers",
+                "--einsums:no-install-signal-handlers", "Install signal handlers", "Do not install signal handlers", true);
 
-        argument_parser->add_argument("--einsums:no-attach-debugger")
-            .default_value(true)
-            .implicit_value(false)
-            .help("do not provide mechanism to attach debugger on detected errors")
-            .store_into(global_bools["attach-debugger"]);
+        no_flag(*argument_parser, global_bools["attach-debugger"], "--einsums:attach-debugger", "--einsums:no-attach-debugger",
+                "Provide a mechanism to attach debugger on detected errors.",
+                "Do not provide a mechanism to attach debugger on detected errors", true);
 
-        argument_parser->add_argument("--einsums:no-diagnostics-on-terminate")
-            .default_value(true)
-            .implicit_value(false)
-            .help("do not print additional diagnostic information on termination")
-            .store_into(global_bools["diagnostics-on-terminate"]);
+        no_flag(*argument_parser, global_bools["diagnosits-on-terminate"], "--einsums:diagnostics-on-terminate",
+                "--einsums:no-diagnostics-on-terminate", "Print additional diagnostic information on termination.",
+                "Do not print additional diagnostic information on termination.", true);
 
         argument_parser
             ->add_argument("--einsums:log-level")
@@ -208,21 +221,18 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
             .default_value("[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%-8l%$] [%s:%#/%!] %v")
             .store_into(global_strings["log-format"]);
 
-        argument_parser->add_argument("--einsums:no-profiler-report")
-            .default_value(true)
-            .implicit_value(false)
-            .help("generate profiling report")
-            .store_into(global_bools["profiler-report"]);
+        no_flag(*argument_parser, global_bools["profiler-report"], "--einsums:profiler-report", "--einsums:no-profiler-report",
+                "Generate profiling report.", "Do not generate profiling report.", true);
 
         argument_parser->add_argument("--einsums:profiler-filename")
             .default_value("profile.txt")
             .help("filename of the profiling report")
             .store_into(global_strings["profiler-filename"]);
-        argument_parser->add_argument("--einsums:no-profiler-append")
-            .default_value(true)
-            .implicit_value(false)
-            .help("append to an existing file")
-            .store_into(global_bools["profiler-append"]);
+
+
+        no_flag(*argument_parser, global_bools["profiler-append"], "--einsums:profiler-append", "--einsums:no-profiler-append",
+                "Append to an existing profiling file.", "Replace the contents of the profiling file with the new profiling information.",
+                true);
     }
 
     {

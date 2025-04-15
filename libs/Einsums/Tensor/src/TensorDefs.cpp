@@ -4,8 +4,8 @@
 #include <Einsums/Tensor/DiskTensor.hpp>
 #include <Einsums/Tensor/RuntimeTensor.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
-#include <Einsums/Tensor/TiledTensor.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
+#include <Einsums/Tensor/TiledTensor.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <hip/hip_common.h>
@@ -45,5 +45,30 @@ template class RuntimeTensorView<double>;
 template class RuntimeTensorView<std::complex<float>>;
 template class RuntimeTensorView<std::complex<double>>;
 #endif
+
+namespace detail {
+bool verify_exists(hid_t loc_id, std::string const &path, hid_t lapl_id) {
+    if (path.length() <= 1) {
+        return true;
+    }
+
+    std::string temp_path;
+
+    temp_path.reserve(path.length());
+
+    for (auto ch : path) {
+        if (ch == '/' && temp_path.length() > 0) {
+            auto res = H5Lexists(loc_id, temp_path.c_str(), lapl_id);
+
+            if (res <= 0) {
+                return false;
+            }
+        }
+        temp_path.push_back(ch);
+    }
+
+    return H5Lexists(loc_id, temp_path.c_str(), lapl_id) > 0;
+}
+} // namespace detail
 
 } // namespace einsums
