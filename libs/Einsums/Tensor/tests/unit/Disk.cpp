@@ -81,22 +81,22 @@ TEMPLATE_TEST_CASE("Write/Read", "[disktensor]", float, double, std::complex<flo
     REQUIRE(sube(2, 1) == Ad(2, 2));
 }
 
-#if 0
-TEST_CASE("DiskView 3x3", "[disktensor]") {
+
+TEMPLATE_TEST_CASE("DiskView 3x3", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
-    DiskTensor<2> A(state::data(), "/A2", 3, 3);
+    DiskTensor<TestType, 2> A(fmt::format("/A2/{}", type_name<TestType>()), 3, 3);
 
     // Data must exist on disk before it can be read in.
-    Tensor<2> Ad = create_random_tensor("A", 3, 3);
+    Tensor Ad = create_random_tensor<TestType>("A", 3, 3);
     // println(Ad);
-    A._write(Ad);
+    A.write(Ad);
 
     {
         // Obtaining a DiskView does not automatically allocate memory.
         auto suba = A(2, All);
 
-        Tensor<1> tempa{"tempa", 3};
+        Tensor<TestType, 1> tempa{"tempa", 3};
         tempa(0) = 1.0;
         tempa(1) = 2.0;
         tempa(2) = 3.0;
@@ -108,15 +108,15 @@ TEST_CASE("DiskView 3x3", "[disktensor]") {
         auto &tempb = suba.get();
 
         // Test
-        REQUIRE(tempb(0) == 1.0);
-        REQUIRE(tempb(1) == 2.0);
-        REQUIRE(tempb(2) == 3.0);
+        REQUIRE(tempb(0) == TestType{1.0});
+        REQUIRE(tempb(1) == TestType{2.0});
+        REQUIRE(tempb(2) == TestType{3.0});
     }
 
     {
         auto suba = A(2, Range{1, 3});
 
-        Tensor<1> tempa{"tempb", 2};
+        Tensor<TestType, 1> tempa{"tempb", 2};
         tempa(0) = 4.0;
         tempa(1) = 5.0;
 
@@ -125,14 +125,14 @@ TEST_CASE("DiskView 3x3", "[disktensor]") {
         // Perform a read
         auto &tempb = suba.get();
 
-        REQUIRE(tempb(0) == 4.0);
-        REQUIRE(tempb(1) == 5.0);
+        REQUIRE(tempb(0) == TestType{4.0});
+        REQUIRE(tempb(1) == TestType{5.0});
     }
 
     {
         auto suba = A(Range{1, 3}, Range{0, 2});
 
-        Tensor<2> tempa{"tempa", 2, 2};
+        Tensor<TestType, 2> tempa{"tempa", 2, 2};
         tempa(0, 0) = 10.0;
         tempa(0, 1) = 11.0;
         tempa(1, 0) = 12.0;
@@ -142,13 +142,14 @@ TEST_CASE("DiskView 3x3", "[disktensor]") {
 
         auto &tempb = suba.get();
 
-        REQUIRE(tempb(0, 0) == 10.0);
-        REQUIRE(tempb(0, 1) == 11.0);
-        REQUIRE(tempb(1, 0) == 12.0);
-        REQUIRE(tempb(1, 1) == 13.0);
+        REQUIRE(tempb(0, 0) == TestType{10.0});
+        REQUIRE(tempb(0, 1) == TestType{11.0});
+        REQUIRE(tempb(1, 0) == TestType{12.0});
+        REQUIRE(tempb(1, 1) == TestType{13.0});
     }
 }
 
+#if 0
 TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
     using namespace einsums;
 
