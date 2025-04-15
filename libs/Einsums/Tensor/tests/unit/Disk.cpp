@@ -147,28 +147,48 @@ TEMPLATE_TEST_CASE("DiskView 3x3", "[disktensor]", float, double, std::complex<f
         REQUIRE(tempb(1, 0) == TestType{12.0});
         REQUIRE(tempb(1, 1) == TestType{13.0});
     }
+
+    {
+        auto suba1 = A(Range{1, 3}, All);
+        auto suba = suba1(All, Range{0, 2});
+
+        Tensor<TestType, 2> tempa{"tempa", 2, 2};
+        tempa(0, 0) = 10.0;
+        tempa(0, 1) = 11.0;
+        tempa(1, 0) = 12.0;
+        tempa(1, 1) = 13.0;
+
+        suba = tempa;
+
+        auto &tempb = suba.get();
+
+        REQUIRE(tempb(0, 0) == TestType{10.0});
+        REQUIRE(tempb(0, 1) == TestType{11.0});
+        REQUIRE(tempb(1, 0) == TestType{12.0});
+        REQUIRE(tempb(1, 1) == TestType{13.0});
+    }
 }
 
-#if 0
-TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
+
+TEMPLATE_TEST_CASE("DiskView 7x7x7x7", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
     SECTION("Write [7,7] data to [:,2,4,:]") {
-        DiskTensor g(state::data(), "g0", 7, 7, 7, 7);
-        Tensor     data   = create_random_tensor("data", 7, 7);
+        DiskTensor<TestType, 4> g(fmt::format("/g0/{}", type_name<TestType>()), 7, 7, 7, 7);
+        Tensor     data   = create_random_tensor<TestType>("data", 7, 7);
         g(All, 2, 4, All) = data;
     }
 
     SECTION("Write [7,2,7] data to [:,4-5,2,:]") {
-        DiskTensor g(state::data(), "g1", 7, 7, 7, 7);
-        Tensor     data2            = create_random_tensor("data", 7, 2, 7);
+        DiskTensor<TestType, 4> g(fmt::format("/g1/{}", type_name<TestType>()), 7, 7, 7, 7);
+        Tensor     data2            = create_random_tensor<TestType>("data", 7, 2, 7);
         g(All, Range{4, 6}, 2, All) = data2;
     }
 
     SECTION("Write/Read [7,7] data to/from [2,2,:,:]") {
-        DiskTensor g(state::data(), "g2", 3, 3, 3, 3);
-        Tensor     data3 = create_random_tensor("data", 3, 3);
-        double     value = 0.0;
+        DiskTensor<TestType, 4> g(fmt::format("/g2/{}", type_name<TestType>()), 3, 3, 3, 3);
+        Tensor     data3 = create_random_tensor<TestType>("data", 3, 3);
+        TestType     value = 0.0;
 
         for (size_t i = 0; i < 3; i++) {
             for (size_t j = 0; j < 3; j++) {
@@ -190,4 +210,3 @@ TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
         }
     }
 }
-#endif
