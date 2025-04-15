@@ -36,7 +36,6 @@ TEMPLATE_TEST_CASE("Write/Read", "[disktensor]", float, double, std::complex<flo
 
     // Data must exist on disk before it can be read in.
     Tensor Ad = create_random_tensor<TestType>("A", 3, 3);
-    println(Ad);
 
     {
         A(All, All) = Ad;

@@ -198,7 +198,7 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
                 "Provide a mechanism to attach debugger on detected errors.",
                 "Do not provide a mechanism to attach debugger on detected errors", true);
 
-        no_flag(*argument_parser, global_bools["diagnosits-on-terminate"], "--einsums:diagnostics-on-terminate",
+        no_flag(*argument_parser, global_bools["diagnostics-on-terminate"], "--einsums:diagnostics-on-terminate",
                 "--einsums:no-diagnostics-on-terminate", "Print additional diagnostic information on termination.",
                 "Do not print additional diagnostic information on termination.", true);
 
