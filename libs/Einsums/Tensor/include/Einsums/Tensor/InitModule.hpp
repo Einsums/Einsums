@@ -28,6 +28,9 @@ EINSUMS_EXPORT void add_Einsums_Tensor_arguments(argparse::ArgumentParser &);
 EINSUMS_EXPORT void initialize_Einsums_Tensor();
 EINSUMS_EXPORT void finalize_Einsums_Tensor();
 
+EINSUMS_EXPORT void open_hdf5_file(std::string const &fname);
+EINSUMS_EXPORT void create_hdf5_file(std::string const &fname);
+
 namespace detail {
 
 static int initialize_module_Einsums_Tensor = setup_Einsums_Tensor();

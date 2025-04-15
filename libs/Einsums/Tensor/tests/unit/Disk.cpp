@@ -12,10 +12,39 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include <Einsums/Tensor/InitModule.hpp>
 
-#include "Einsums/Config/Types.hpp"
+#include <Einsums/Config/Types.hpp>
+#include <Einsums/Tensor/ModuleVars.hpp>
 
 #include <catch2/catch_all.hpp>
+
+TEST_CASE("File opening and closing") {
+    using namespace einsums;
+
+    auto &singleton = detail::Einsums_Tensor_vars::get_singleton();
+
+    H5Fclose(singleton.hdf5_file);
+
+    if(singleton.link_property_list != H5I_INVALID_HID) {
+        H5Pclose(singleton.link_property_list);
+    }
+
+    if (singleton.double_complex_type != H5I_INVALID_HID) {
+        H5Tclose(singleton.double_complex_type);
+    }
+
+    if (singleton.float_complex_type != H5I_INVALID_HID) {
+        H5Tclose(singleton.float_complex_type);
+    }
+
+    auto &global_config = GlobalConfigMap::get_singleton();
+
+    auto fname = std::filesystem::path(global_config.get_string("scratch-dir"));
+    fname /= global_config.get_string("hdf5-file-name");
+
+    open_hdf5_file(fname.string());
+}
 
 TEMPLATE_TEST_CASE("disktensor-creation", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
