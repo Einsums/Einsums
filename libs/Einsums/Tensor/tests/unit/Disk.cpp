@@ -3,7 +3,10 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Config/Types.hpp>
 #include <Einsums/Tensor/DiskTensor.hpp>
+#include <Einsums/Tensor/InitModule.hpp>
+#include <Einsums/Tensor/ModuleVars.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
 #include <algorithm>
@@ -12,10 +15,6 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
-#include <Einsums/Tensor/InitModule.hpp>
-
-#include <Einsums/Config/Types.hpp>
-#include <Einsums/Tensor/ModuleVars.hpp>
 
 #include <catch2/catch_all.hpp>
 
@@ -24,9 +23,13 @@ TEST_CASE("File opening and closing") {
 
     auto &singleton = detail::Einsums_Tensor_vars::get_singleton();
 
+    {
+        DiskTensor<double, 2> A("/open-test", 3, 3);
+    }
+
     H5Fclose(singleton.hdf5_file);
 
-    if(singleton.link_property_list != H5I_INVALID_HID) {
+    if (singleton.link_property_list != H5I_INVALID_HID) {
         H5Pclose(singleton.link_property_list);
     }
 
@@ -44,6 +47,8 @@ TEST_CASE("File opening and closing") {
     fname /= global_config.get_string("hdf5-file-name");
 
     open_hdf5_file(fname.string());
+
+    REQUIRE_NOTHROW([]() { DiskTensor<double, 2> A("/open-test", 3, 3); }());
 }
 
 TEMPLATE_TEST_CASE("disktensor-creation", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
@@ -108,7 +113,6 @@ TEMPLATE_TEST_CASE("Write/Read", "[disktensor]", float, double, std::complex<flo
     REQUIRE(sube(2, 0) == Ad(2, 1));
     REQUIRE(sube(2, 1) == Ad(2, 2));
 }
-
 
 TEMPLATE_TEST_CASE("DiskView 3x3", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
@@ -178,7 +182,7 @@ TEMPLATE_TEST_CASE("DiskView 3x3", "[disktensor]", float, double, std::complex<f
 
     {
         auto suba1 = A(Range{1, 3}, All);
-        auto suba = suba1(All, Range{0, 2});
+        auto suba  = suba1(All, Range{0, 2});
 
         Tensor<TestType, 2> tempa{"tempa", 2, 2};
         tempa(0, 0) = 10.0;
@@ -197,26 +201,25 @@ TEMPLATE_TEST_CASE("DiskView 3x3", "[disktensor]", float, double, std::complex<f
     }
 }
 
-
 TEMPLATE_TEST_CASE("DiskView 7x7x7x7", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
     SECTION("Write [7,7] data to [:,2,4,:]") {
         DiskTensor<TestType, 4> g(fmt::format("/g0/{}", type_name<TestType>()), 7, 7, 7, 7);
-        Tensor     data   = create_random_tensor<TestType>("data", 7, 7);
-        g(All, 2, 4, All) = data;
+        Tensor                  data = create_random_tensor<TestType>("data", 7, 7);
+        g(All, 2, 4, All)            = data;
     }
 
     SECTION("Write [7,2,7] data to [:,4-5,2,:]") {
         DiskTensor<TestType, 4> g(fmt::format("/g1/{}", type_name<TestType>()), 7, 7, 7, 7);
-        Tensor     data2            = create_random_tensor<TestType>("data", 7, 2, 7);
-        g(All, Range{4, 6}, 2, All) = data2;
+        Tensor                  data2 = create_random_tensor<TestType>("data", 7, 2, 7);
+        g(All, Range{4, 6}, 2, All)   = data2;
     }
 
     SECTION("Write/Read [7,7] data to/from [2,2,:,:]") {
         DiskTensor<TestType, 4> g(fmt::format("/g2/{}", type_name<TestType>()), 3, 3, 3, 3);
-        Tensor     data3 = create_random_tensor<TestType>("data", 3, 3);
-        TestType     value = 0.0;
+        Tensor                  data3 = create_random_tensor<TestType>("data", 3, 3);
+        TestType                value = 0.0;
 
         for (size_t i = 0; i < 3; i++) {
             for (size_t j = 0; j < 3; j++) {
