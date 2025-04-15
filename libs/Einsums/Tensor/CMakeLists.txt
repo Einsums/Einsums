@@ -15,9 +15,11 @@ set(TensorHeaders
     Einsums/Tensor/FunctionTensor.hpp
     Einsums/Tensor/RuntimeTensor.hpp
     Einsums/Tensor/TiledTensor.hpp
+    Einsums/Tensor/InitModule.hpp
+    Einsums/Tensor/ModuleVars.hpp
 )
 
-set(TensorSources TensorDefs.cpp Requirements.cpp)
+set(TensorSources TensorDefs.cpp Requirements.cpp InitModule.cpp ModuleVars.cpp)
 
 if(EINSUMS_WITH_GPU_SUPPORT)
   set_source_files_properties(TensorDefs.cpp PROPERTIES LANGUAGE CXX)
@@ -54,6 +56,7 @@ einsums_add_module(
     Einsums_TypeSupport
     Einsums_Profile
     Einsums_Print
+    Einsums_Runtime
     Einsums_Utilities
     ${TensorGPUModules}
   CMAKE_SUBDIRS examples tests

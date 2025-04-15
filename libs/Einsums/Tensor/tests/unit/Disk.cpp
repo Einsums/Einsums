@@ -15,13 +15,13 @@
 
 #include <catch2/catch_all.hpp>
 
-TEST_CASE("disktensor-creation", "[disktensor]") {
+TEMPLATE_TEST_CASE("disktensor-creation", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
     SECTION("double") {
-        DiskTensor A(state::data(), "/A0", 3, 3);
-        DiskTensor B(state::data(), "/B0", 3, 3);
-        DiskTensor C(state::data(), "/C0", 3, 3);
+        DiskTensor A("/A0", 3, 3);
+        DiskTensor B("/B0", 3, 3);
+        DiskTensor C("/C0", 3, 3);
 
         REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
         REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -29,7 +29,7 @@ TEST_CASE("disktensor-creation", "[disktensor]") {
     }
 
     SECTION("float") {
-        auto A = create_disk_tensor<float>(state::data(), "/A1", 3, 3);
+        auto A = create_disk_tensor<float>("/A1", 3, 3);
         REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     }
 
@@ -156,7 +156,6 @@ TEST_CASE("DiskView 3x3", "[disktensor]") {
         REQUIRE(tempb(1, 1) == 13.0);
     }
 }
-#endif
 
 TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
     using namespace einsums;
@@ -198,3 +197,4 @@ TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
         }
     }
 }
+#endif

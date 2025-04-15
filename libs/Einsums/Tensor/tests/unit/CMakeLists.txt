@@ -4,7 +4,7 @@
 #----------------------------------------------------------------------------------------------
 
 set(TensorTests ArithmeticTensor.cpp BlockTensor.cpp BlockDeviceTensor.hip RuntimeTensors.cpp TensorView.cpp DeviceTensor_extras.hip
-DeviceTensor.hip DeviceTensorView.hip DeviceTiledTensor.hip FunctionTensor.cpp TiledTensor.cpp Tensor.cpp)
+DeviceTensor.hip DeviceTensorView.hip DeviceTiledTensor.hip FunctionTensor.cpp TiledTensor.cpp Tensor.cpp Disk.cpp)
 
 foreach(test ${TensorTests})
   # Extract base name of test Example1.cpp -> Example1, Example.2.hip -> Example
