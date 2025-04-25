@@ -11,16 +11,16 @@
 
 #if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #    define EINSUMS_OMP_PARALLEL_FOR_SIMD _Pragma("omp parallel for simd")
-#    define EINSUMS_OMP_PARALLEL_FOR _Pragma("omp parallel for")
-#    define EINSUMS_OMP_SIMD         _Pragma("omp simd")
-#    define EINSUMS_OMP_PARALLEL     _Pragma("omp parallel")
-#    define EINSUMS_OMP_TASK_FOR     _Pragma("omp taskloop simd")
-#    define EINSUMS_OMP_TASK         _Pragma("omp task")
-#    define EINSUMS_OMP_FOR_NOWAIT   _Pragma("omp for nowait")
-#    define EINSUMS_OMP_CRITICAL     _Pragma("omp critical")
+#    define EINSUMS_OMP_PARALLEL_FOR      _Pragma("omp parallel for")
+#    define EINSUMS_OMP_SIMD              _Pragma("omp simd")
+#    define EINSUMS_OMP_PARALLEL          _Pragma("omp parallel")
+#    define EINSUMS_OMP_TASK_FOR          _Pragma("omp taskloop simd")
+#    define EINSUMS_OMP_TASK              _Pragma("omp task")
+#    define EINSUMS_OMP_FOR_NOWAIT        _Pragma("omp for nowait")
+#    define EINSUMS_OMP_CRITICAL          _Pragma("omp critical")
 #else
 #    define EINSUMS_OMP_PARALLEL_FOR_SIMD _Pragma("omp parallel for")
-#    define EINSUMS_OMP_PARALLEL_FOR _Pragma("omp parallel for")
+#    define EINSUMS_OMP_PARALLEL_FOR      _Pragma("omp parallel for")
 #    define EINSUMS_OMP_SIMD
 #    define EINSUMS_OMP_PARALLEL   _Pragma("omp parallel")
 #    define EINSUMS_OMP_TASK_FOR   _Pragma("omp taskloop")
@@ -150,6 +150,23 @@
 #if defined(__MINGW32__)
 #   define EINSUMS_WINDOWS
 #   define EINSUMS_MINGW
+#endif
+
+#if defined(__APPLE__)
+#define EINSUMS_APPLE
+#if defined(__arm__)
+#define EINSUMS_APPLE_ARM
+#define EINSUMS_APPLE_ARM32
+#elif defined(__aarch64__)
+#define EINSUMS_APPLE_ARM
+#define EINSUMS_APPLE_ARM64
+#else
+#error Unknown Apple architecture. Update Config/CompilerSpecific.hpp
+#endif
+#endif
+
+#if defined(__linux__)
+#define EINSUMS_LINUX
 #endif
 
 // Detecting CUDA compilation mode

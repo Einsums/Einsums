@@ -5,6 +5,8 @@
 
 cmake_minimum_required(VERSION 3.25.2 FATAL_ERROR) # 3.25.2 for CUDA20 support.
 
+list(APPEND CMAKE_MESSAGE_CONTEXT "Einsums")
+
 # Overrides must go before project() statement, otherwise they are ignored
 
 # ##################################################################################################
