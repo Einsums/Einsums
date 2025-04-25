@@ -6,7 +6,9 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(ProfileHeaders
-    Einsums/Profile/Profile.hpp Einsums/Profile/LabeledSection.hpp Einsums/Profile/Section.hpp
+#    Einsums/Profile/Profile.hpp
+    Einsums/Profile/LabeledSection.hpp
+    Einsums/Profile/Section.hpp
     Einsums/Profile/Timer.hpp
     Einsums/Profile/Detail/PerformanceCounter.hpp
 )
