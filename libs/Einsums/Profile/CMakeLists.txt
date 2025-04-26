@@ -20,6 +20,7 @@ if(APPLE)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  list(APPEND ProfileSources Linux.hpp Linux.cpp)
 endif()
 
 if(EINSUMS_WITH_OMP_TOOLS_H)

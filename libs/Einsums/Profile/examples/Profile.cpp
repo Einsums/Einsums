@@ -1,14 +1,12 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile.hpp>
 #include <Einsums/Runtime.hpp>
-
-#include <sys/sysctl.h>
 
 int einsums_main() {
     // EINSUMS_PROFILER_SCOPE("einsums_main");
