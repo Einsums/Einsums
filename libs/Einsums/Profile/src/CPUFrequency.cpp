@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/Profile/Detail/CPUFrequency.hpp>
 
@@ -23,8 +23,8 @@ auto cpu_frequency() -> uint64_t {
 #if defined(EINSUMS_APPLE)
     uint64_t frequency = 0;
     size_t   size      = sizeof(frequency);
-    if (sysctlbyname("hw.cpufrequency", &freq, &size, nullptr, 0) == 0) {
-        return freq; // In Hz
+    if (sysctlbyname("hw.cpufrequency", &frequency, &size, nullptr, 0) == 0) {
+        return frequency; // In Hz
     } else {
         return 0; // Failed
     }

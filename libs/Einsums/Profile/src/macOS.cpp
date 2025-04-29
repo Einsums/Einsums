@@ -849,15 +849,25 @@ struct PerformanceCounterMac : PerformanceCounter {
         }
     }
 
-    int nevents() override { return num_counters; }
+    int nevents() const override { return num_counters; }
 
-    std::vector<std::string> event_names() override {
+    std::vector<std::string> event_names() const override {
         std::vector<std::string> names(num_counters);
 
         for (int i = 0; i < num_counters; ++i) {
             names[i] = profile_events[i].alias;
         }
         return names;
+    }
+
+    std::unordered_map<std::string, uint64_t> to_event_map(std::vector<uint64_t> const &d) const override {
+        std::unordered_map<std::string, uint64_t> result;
+
+        for (int i = 0; i < nevents(); i++) {
+            result[profile_events[i].alias] = d[i];
+        }
+
+        return result;
     }
 
   private:

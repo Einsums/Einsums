@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -147,6 +147,8 @@ struct ThreadIdData {
     std::size_t                     readable_id;
 };
 
+struct ThreadCallGraph;
+
 struct EINSUMS_EXPORT Profiler {
   private:
     using CallGraphStorage = std::unordered_map<std::thread::id, ThreadIdData>;
@@ -160,6 +162,8 @@ struct EINSUMS_EXPORT Profiler {
 
     bool       _print_at_destruction = true;
     std::mutex _setter_mutex;
+
+    std::vector<ThreadCallGraph *> _thread_call_graphs;
 
     std::unique_ptr<PerformanceCounter> _performance_counter;
 
@@ -179,6 +183,8 @@ struct EINSUMS_EXPORT Profiler {
     void print_at_exit(bool value) noexcept;
 
     std::string format_results(Style const &style = Style{});
+
+    void add_thread_call_graph(ThreadCallGraph *thread_call_graph);
 
     static Profiler &get();
 };

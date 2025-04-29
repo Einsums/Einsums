@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
@@ -103,11 +103,11 @@ void NodeMatrix::resize(std::size_t new_rows, std::size_t new_cols) {
     std::size_t const new_rows_capacity = new_rows_over_capacity ? new_rows + NodeMatrix::row_growth_add : _rows_capacity;
     std::size_t const new_cols_capacity = new_cols_over_capacity ? new_cols * NodeMatrix::col_growth_mul : _cols_capacity;
 
-    ArrayType new_prev_ids(new_cols_capacity, NodeId::empty);
-    ArrayType new_next_ids(new_rows_capacity * new_cols_capacity, NodeId::empty);
-    ArrayType new_times(new_cols_capacity, duration{});
-    ArrayType new_events(new_cols_capacity, std::unordered_map<std::string, uint64_t>{});
-    ArrayType new_callsites(new_rows_capacity, CallSiteInfo{});
+    ArrayType<NodeId>                                    new_prev_ids(new_cols_capacity, NodeId::empty);
+    ArrayType<NodeId>                                    new_next_ids(new_rows_capacity * new_cols_capacity, NodeId::empty);
+    ArrayType<duration>                                  new_times(new_cols_capacity, duration{});
+    ArrayType<std::unordered_map<std::string, uint64_t>> new_events(new_cols_capacity, std::unordered_map<std::string, uint64_t>{});
+    ArrayType<CallSiteInfo>                              new_callsites(new_rows_capacity, CallSiteInfo{});
 
     // Copy old data
     for (std::size_t j = 0; j < _cols_size; ++j)
@@ -165,9 +165,17 @@ void Profiler::print_at_exit(bool value) noexcept {
 }
 
 std::string Profiler::format_results(Style const &style) {
+    // Walk through all the threads and make sure they have updated the Profiler
+    for (auto thread : _thread_call_graphs)
+        thread->upload_results(false);
+
     upload_this_thread();
 
     return format_available_results(style);
+}
+
+void Profiler::add_thread_call_graph(ThreadCallGraph *thread_call_graph) {
+    _thread_call_graphs.push_back(thread_call_graph);
 }
 
 void Profiler::call_graph_add(std::thread::id thread_id) {
@@ -326,11 +334,12 @@ std::string Profiler::format_available_results(Style const &style) {
 
 ThreadCallGraph::ThreadCallGraph() {
     Profiler::get().call_graph_add(_thread_id);
+    Profiler::get().add_thread_call_graph(this);
     create_root_node();
 }
 
 ThreadCallGraph::~ThreadCallGraph() {
-    upload_results(true);
+    // upload_results(true);
 }
 
 NodeId ThreadCallGraph::create_root_node() {
