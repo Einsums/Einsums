@@ -1,13 +1,13 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -19,7 +19,8 @@ extern void FC_GLOBAL(dsyev, DSYEV)(char *, char *, int_t *, double *, int_t *, 
 }
 
 auto ssyev(char job, char uplo, int_t n, float *a, int_t lda, float *w, float *work, int_t lwork) -> int_t {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("BLASVendor");
+    ;
 
     int_t info{0};
     FC_GLOBAL(ssyev, SSYEV)(&job, &uplo, &n, a, &lda, w, work, &lwork, &info);
@@ -27,7 +28,8 @@ auto ssyev(char job, char uplo, int_t n, float *a, int_t lda, float *w, float *w
 }
 
 auto dsyev(char job, char uplo, int_t n, double *a, int_t lda, double *w, double *work, int_t lwork) -> int_t {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("BLASVendor");
+    ;
 
     int_t info{0};
     FC_GLOBAL(dsyev, DSYEV)(&job, &uplo, &n, a, &lda, w, work, &lwork, &info);

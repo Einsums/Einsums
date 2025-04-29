@@ -9,6 +9,7 @@
 #include <Einsums/Debugging/AttachDebugger.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 
 #include <csignal>
@@ -69,8 +70,8 @@ EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type) {
 
     try {
         auto &global_config = GlobalConfigMap::get_singleton();
-        attach = global_config.get_bool("attach-debugger", true);
-    } catch(...) {
+        attach              = global_config.get_bool("attach-debugger", true);
+    } catch (...) {
         attach = true;
     }
 
@@ -244,7 +245,11 @@ int Runtime::run(std::function<EinsumsMainFunctionType> const &func) {
     // Once we start using a thread pool / threading manager we can
     // pass the function to the pool and have the manager handle it.
     EINSUMS_LOG_INFO("running user provided function");
-    int result = func();
+    int result{0};
+    {
+        EINSUMS_PROFILE_SCOPE("User Provided Function");
+        result = func();
+    }
 
     return result;
 }

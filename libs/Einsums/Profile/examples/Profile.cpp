@@ -9,33 +9,33 @@
 #include <Einsums/Runtime.hpp>
 
 int einsums_main() {
-    // EINSUMS_PROFILER_SCOPE("einsums_main");
+    EINSUMS_PROFILE_SCOPE("einsums_main");
 
     using namespace einsums;
 
-    auto performance_counter = profile::detail::PerformanceCounter::create();
-    auto nevents             = performance_counter->nevents();
-    auto event_names         = performance_counter->event_names();
+    // auto performance_counter = profile::detail::PerformanceCounter::create();
+    // auto nevents             = performance_counter->nevents();
+    // auto event_names         = performance_counter->event_names();
 
-    std::vector<uint64_t> start(nevents);
-    std::vector<uint64_t> stop(nevents);
+    // std::vector<uint64_t> start(nevents);
+    // std::vector<uint64_t> stop(nevents);
 
     size_t i{10};
     auto   A = create_random_tensor("A", i);
     auto   B = create_random_tensor("B", i);
 
-    performance_counter->start(start);
+    // performance_counter->start(start);
     double C = linear_algebra::dot(A, B);
-    performance_counter->stop(stop);
+    // performance_counter->stop(stop);
 
     println(A);
     println(B);
     println("C = {}", C);
 
-    performance_counter->delta(start, stop);
+    // performance_counter->delta(start, stop);
 
-    println("events: {}", event_names);
-    println("performance: {}", stop);
+    // println("events: {}", event_names);
+    // println("performance: {}", stop);
 
     finalize();
     return EXIT_SUCCESS;

@@ -7,6 +7,7 @@
 
 #include <Einsums/Logging.hpp>
 
+#include <filesystem>
 #include <fstream>
 #include <linux/perf_event.h>
 #include <sys/ioctl.h>
@@ -27,12 +28,42 @@ bool is_wsl() {
     return osrelease.find("Microsoft") != std::string::npos || osrelease.find("microsoft") != std::string::npos;
 }
 
+bool is_performance_mode() {
+    namespace fs                = std::filesystem;
+    std::string const base_path = "/sys/devices/system/cpu/";
+    for (auto const &entry : fs::directory_iterator(base_path)) {
+        if (!entry.is_directory())
+            continue;
+        std::string const cpu_path = entry.path();
+        if (cpu_path.find("cpu") == std::string::npos)
+            continue;
+        std::string const governor_file = cpu_path + "/cpufreq/scaling_governor";
+        std::ifstream     governor(governor_file);
+        if (!governor.is_open())
+            continue; // Some "cpu" directories may not have cpufreq (like cpu0, cpu1 ok, cpuX missing)
+        std::string mode;
+        std::getline(governor, mode);
+
+        if (mode != "performance") {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 } // namespace
 
 PerformanceCounterLinux::PerformanceCounterLinux() {
     if (is_wsl()) {
         EINSUMS_LOG_WARN("WSL detected, disabling performance counters");
         return;
+    }
+
+    if (!is_performance_mode()) {
+        EINSUMS_LOG_WARN("CPU is not set to 'performance' mode. "
+                         "Timing measurements may be unreliable due to frequency scaling.\n"
+                         "To fix: sudo cpupower frequency-set -g performance");
     }
 
     perf_event_attr pe;
@@ -77,11 +108,11 @@ PerformanceCounterLinux::~PerformanceCounterLinux() {
         close(fd);
 }
 
-int PerformanceCounterLinux::nevents() {
+int PerformanceCounterLinux::nevents() const {
     return static_cast<int>(_fds.size());
 }
 
-std::vector<std::string> PerformanceCounterLinux::event_names() {
+std::vector<std::string> PerformanceCounterLinux::event_names() const {
     return _names;
 }
 
@@ -130,6 +161,16 @@ void PerformanceCounterLinux::delta(std::vector<uint64_t> const &s, std::vector<
 
 int PerformanceCounterLinux::perf_event_open(perf_event_attr *hw_event, pid_t pid, int cpu, int group_fd, unsigned long flags) {
     return syscall(__NR_perf_event_open, hw_event, pid, cpu, group_fd, flags);
+}
+
+std::unordered_map<std::string, uint64_t> PerformanceCounterLinux::to_event_map(std::vector<uint64_t> const &d) const {
+    std::unordered_map<std::string, uint64_t> result;
+
+    for (int i = 0; i < nevents(); i++) {
+        result[_names[i]] = d[i];
+    }
+
+    return result;
 }
 
 std::unique_ptr<PerformanceCounter> PerformanceCounter::create() {

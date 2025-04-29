@@ -3,14 +3,12 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/Profile.hpp>
 #include <Einsums/Runtime.hpp>
-#include <Einsums/Runtime/ShutdownFunction.hpp>
 #include <Einsums/Utilities/Random.hpp>
 
-#include <catch2/catch_get_random_seed.hpp>
 #include <catch2/catch_session.hpp>
 #include <catch2/internal/catch_context.hpp>
-#include <functional>
 
 #define CATCH_CONFIG_RUNNER
 #include <catch2/catch_all.hpp>
@@ -38,5 +36,6 @@ int einsums_main(int argc, char *const *const argv) {
 }
 
 int main(int argc, char **argv) {
+    EINSUMS_PROFILE_SCOPE("Testing Main");
     return einsums::start(einsums_main, argc, argv);
 }

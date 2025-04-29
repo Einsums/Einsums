@@ -5,13 +5,13 @@
 
 #pragma once
 
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/LinearAlgebra.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
-#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 namespace einsums::decomposition {
 
@@ -28,7 +28,8 @@ template <TensorConcept TTensor, VectorConcept WTensor>
 auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<ValueTypeT<TTensor>, TensorRank<TTensor>> {
     using TType            = ValueTypeT<TTensor>;
     constexpr size_t TRank = TensorRank<TTensor>;
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("Decomposition");
+    ;
 
     if (tensor.dim(0) != weights.dim(0)) {
         println_abort("The first dimension of the tensor and the dimension of the weight DO NOT match");
@@ -44,9 +45,9 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
     for (size_t elem = 0; elem < elements; elem++) {
         thread_local std::array<size_t, TRank> target_combination;
         sentinel_to_indices(elem, strides, target_combination);
-        TType const &source             = subscript_tensor(tensor, target_combination);
-        TType       &target             = weighted_tensor.data()[elem];
-        TType const &scale              = subscript_tensor(weights, std::get<0>(target_combination));
+        TType const &source = subscript_tensor(tensor, target_combination);
+        TType       &target = weighted_tensor.data()[elem];
+        TType const &scale  = subscript_tensor(weights, std::get<0>(target_combination));
 
         target = scale * source;
     }
@@ -61,7 +62,8 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
  */
 template <size_t TRank, typename TType>
 auto parafac_reconstruct(std::vector<Tensor<TType, 2>> const &factors) -> Tensor<TType, TRank> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("Decomposition");
+    ;
 
     size_t     rank = 0;
     Dim<TRank> dims;
@@ -81,12 +83,11 @@ auto parafac_reconstruct(std::vector<Tensor<TType, 2>> const &factors) -> Tensor
 
     size_t elements = dims_to_strides(dims, index_strides);
 
-
     for (auto it = 0; it < elements; it++) {
         std::array<size_t, TRank> idx_combo;
         sentinel_to_indices(it, index_strides, idx_combo);
 
-        TType &target    = subscript_tensor(new_tensor, idx_combo);
+        TType &target = subscript_tensor(new_tensor, idx_combo);
         for (size_t r = 0; r < rank; r++) {
             double temp = 1.0;
             for_sequence<TRank>([&](auto n) { temp *= subscript_tensor(factors[n], std::get<n>(idx_combo), r); });
@@ -99,7 +100,8 @@ auto parafac_reconstruct(std::vector<Tensor<TType, 2>> const &factors) -> Tensor
 
 template <size_t TRank, typename TType>
 auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::vector<Tensor<TType, 2>> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("Decomposition");
+    ;
 
     using namespace einsums::tensor_algebra;
 
@@ -167,7 +169,8 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto parafac(TTensor<TType, TRank> const &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8)
     -> std::vector<Tensor<TType, 2>> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("Decomposition");
+    ;
 
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
@@ -264,7 +267,8 @@ auto parafac(TTensor<TType, TRank> const &tensor, size_t rank, int n_iter_max = 
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto weighted_parafac(TTensor<TType, TRank> const &tensor, TTensor<TType, 1> const &weights, size_t rank, int n_iter_max = 100,
                       double tolerance = 1.e-8) -> std::vector<Tensor<TType, 2>> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("Decomposition");
+    ;
 
     using namespace einsums::tensor_algebra;
 

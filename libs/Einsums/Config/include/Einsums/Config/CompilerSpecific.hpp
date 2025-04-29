@@ -155,6 +155,7 @@
 #if defined(__APPLE__)
 #define EINSUMS_APPLE
 #if defined(__arm__)
+#define EINSUMS_ARM
 #define EINSUMS_APPLE_ARM
 #define EINSUMS_APPLE_ARM32
 #elif defined(__aarch64__)

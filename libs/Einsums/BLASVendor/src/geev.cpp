@@ -1,13 +1,13 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -27,8 +27,9 @@ extern void FC_GLOBAL(zgeev, ZGEEV)(char *, char *, int_t *, std::complex<double
 
 #define GEEV_complex(Type, lc, UC)                                                                                                         \
     auto lc##geev(char jobvl, char jobvr, int_t n, std::complex<Type> *a, int_t lda, std::complex<Type> *w, std::complex<Type> *vl,        \
-                  int_t ldvl, std::complex<Type> *vr, int_t ldvr) -> int_t {                                                               \
-        LabeledSection0();                                                                                                                 \
+                  int_t ldvl, std::complex<Type> *vr, int_t ldvr)                                                                          \
+        ->int_t {                                                                                                                          \
+        EINSUMS_PROFILE_SCOPE("BLASVendor");                                                                                               \
                                                                                                                                            \
         int_t                           info  = 0;                                                                                         \
         int_t                           lwork = -1;                                                                                        \
@@ -68,12 +69,12 @@ extern void FC_GLOBAL(zgeev, ZGEEV)(char *, char *, int_t *, std::complex<double
         lwork = (int_t)work_query.real();                                                                                                  \
         work.resize(lwork);                                                                                                                \
                                                                                                                                            \
-        a_t.resize(lda_t *std::max(int_t{1}, n));                                                                                          \
+        a_t.resize(lda_t * std::max(int_t{1}, n));                                                                                         \
         if (lsame(jobvl, 'v')) {                                                                                                           \
-            vl_t.resize(ldvl_t *std::max(int_t{1}, n));                                                                                    \
+            vl_t.resize(ldvl_t * std::max(int_t{1}, n));                                                                                   \
         }                                                                                                                                  \
         if (lsame(jobvr, 'v')) {                                                                                                           \
-            vr_t.resize(ldvr_t *std::max(int_t{1}, n));                                                                                    \
+            vr_t.resize(ldvr_t * std::max(int_t{1}, n));                                                                                   \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
@@ -103,8 +104,8 @@ GEEV_complex(double, z, Z);
 
 #define GEEV(Type, lc, uc)                                                                                                                 \
     auto lc##geev(char jobvl, char jobvr, int_t n, Type *a, int_t lda, std::complex<Type> *w, Type *vl, int_t ldvl, Type *vr, int_t ldvr)  \
-        -> int_t {                                                                                                                         \
-        LabeledSection0();                                                                                                                 \
+        ->int_t {                                                                                                                          \
+        EINSUMS_PROFILE_SCOPE("BLASVendor");                                                                                               \
                                                                                                                                            \
         int_t             info  = 0;                                                                                                       \
         int_t             lwork = -1;                                                                                                      \
@@ -142,12 +143,12 @@ GEEV_complex(double, z, Z);
         lwork = (int_t)work_query;                                                                                                         \
         work.resize(lwork);                                                                                                                \
                                                                                                                                            \
-        a_t.resize(lda_t *std::max(int_t{1}, n));                                                                                          \
+        a_t.resize(lda_t * std::max(int_t{1}, n));                                                                                         \
         if (lsame(jobvl, 'v')) {                                                                                                           \
-            vl_t.resize(ldvl_t *std::max(int_t{1}, n));                                                                                    \
+            vl_t.resize(ldvl_t * std::max(int_t{1}, n));                                                                                   \
         }                                                                                                                                  \
         if (lsame(jobvr, 'v')) {                                                                                                           \
-            vr_t.resize(ldvr_t *std::max(int_t{1}, n));                                                                                    \
+            vr_t.resize(ldvr_t * std::max(int_t{1}, n));                                                                                   \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \

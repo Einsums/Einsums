@@ -9,7 +9,7 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
-#include <Einsums/Profile/Timer.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 
@@ -17,15 +17,15 @@
 
 namespace einsums {
 
-    namespace detail {
+namespace detail {
 
-        static std::list<std::function<void()>> __deleters{};
-        
-        void register_free_pointer(std::function<void()> f) {
-            __deleters.push_back(f);
-        }
-        
-        }
+static std::list<std::function<void()>> __deleters{};
+
+void register_free_pointer(std::function<void()> f) {
+    __deleters.push_back(f);
+}
+
+} // namespace detail
 
 int finalize() {
     auto &rt = runtime();
@@ -37,7 +37,8 @@ int finalize() {
     auto &global_config = GlobalConfigMap::get_singleton();
 
     if (global_config.get_bool("profiler-report")) {
-        profile::report(global_config.get_string("profiler-filename"), global_config.get_bool("profiler-append"));
+        println(profile::detail::Profiler::get().format_results());
+        // profile::report(global_config.get_string("profiler-filename"), global_config.get_bool("profiler-append"));
     }
 
     // this function destroys the runtime.
@@ -46,14 +47,12 @@ int finalize() {
     // This is the only explicit finalization routine. This is because the runtime depends on the
     // profiler. If the profiler used the normal finalization, then it would also depend on the runtime.
     // This would cause a dependency error.
-    profile::finalize();
+    // profile::finalize();
 
     // Free lost pointers.
-    for(auto fn : detail::__deleters) {
+    for (auto fn : detail::__deleters) {
         fn();
     }
-
-    EINSUMS_LOG_INFO("einsums shutdown completed");
 
     return EXIT_SUCCESS;
 }

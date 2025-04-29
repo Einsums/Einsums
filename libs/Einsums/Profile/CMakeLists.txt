@@ -6,14 +6,15 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(ProfileHeaders
-#    Einsums/Profile/Profile.hpp
-    Einsums/Profile/LabeledSection.hpp
-    Einsums/Profile/Section.hpp
-    Einsums/Profile/Timer.hpp
+    Einsums/Profile.hpp
+    Einsums/Profile/Detail/CPUFrequency.hpp
     Einsums/Profile/Detail/PerformanceCounter.hpp
 )
 
-set(ProfileSources Section.cpp Timer.cpp)
+set(ProfileSources
+    Profile.cpp
+    CPUFrequency.cpp
+)
 
 if(APPLE)
   list(APPEND ProfileSources macOS.cpp)
@@ -33,6 +34,6 @@ einsums_add_module(
   SOURCES ${ProfileSources}
   HEADERS ${ProfileHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES Einsums_Config Einsums_Logging Einsums_Print Einsums_StringUtil
+  MODULE_DEPENDENCIES Einsums_Config Einsums_Concepts Einsums_Logging Einsums_Print Einsums_StringUtil
   CMAKE_SUBDIRS examples tests
 )

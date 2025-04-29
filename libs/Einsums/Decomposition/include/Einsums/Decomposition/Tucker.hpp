@@ -5,19 +5,19 @@
 
 #pragma once
 
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/LinearAlgebra.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
-#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 namespace einsums::decomposition {
 
 template <TensorConcept TTensor>
 auto tucker_reconstruct(TTensor const &g_tensor, std::vector<TensorLike<TTensor, ValueTypeT<TTensor>, 2>> const &factors) -> TTensor {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("Decomposition");
 
     // Dimension workspace for temps
     Dim dims_buffer = g_tensor.dims();
@@ -65,7 +65,7 @@ auto tucker_reconstruct(TTensor const &g_tensor, std::vector<TensorLike<TTensor,
 
 template <size_t Rank, MatrixConcept TTensor>
 auto initialize_tucker(std::vector<TTensor> &folds, std::vector<size_t> &ranks) -> std::vector<TTensor> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("Decomposition");
 
     std::vector<TTensor> factors;
     factors.reserve(TensorRank<TTensor>);
@@ -101,7 +101,7 @@ template <template <typename, size_t> typename TTensor, size_t TRank, typename T
 auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, std::vector<size_t> &ranks,
                    std::vector<Tensor<TType, 2>> const &folds = std::vector<Tensor<TType, 2>>())
     -> std::tuple<Tensor<TType, TRank>, std::vector<Tensor<TType, 2>>> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("Decomposition");
 
     // Compute set of unfolded matrices
     std::vector<Tensor<TType, 2>> unfolded_matrices;
@@ -169,7 +169,7 @@ auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, std::vector<size_t> &ran
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, std::vector<size_t> &ranks, int n_iter_max = 100, double tolerance = 1.e-8)
     -> std::tuple<TTensor<TType, TRank>, std::vector<Tensor<TType, 2>>> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("Decomposition");
 
     // Use HO SVD as a starting guess
     auto ho_svd_guess = tucker_ho_svd(tensor, ranks);

@@ -16,12 +16,13 @@ struct PerformanceCounterLinux : PerformanceCounter {
     explicit PerformanceCounterLinux();
     ~PerformanceCounterLinux() override;
 
-    int                      nevents() override;
-    std::vector<std::string> event_names() override;
+    int                      nevents() const override;
+    std::vector<std::string> event_names() const override;
 
-    void start(std::vector<uint64_t> &s) override;
-    void stop(std::vector<uint64_t> &e) override;
-    void delta(std::vector<uint64_t> const &s, std::vector<uint64_t> &e) const override;
+    void                                      start(std::vector<uint64_t> &s) override;
+    void                                      stop(std::vector<uint64_t> &e) override;
+    void                                      delta(std::vector<uint64_t> const &s, std::vector<uint64_t> &e) const override;
+    std::unordered_map<std::string, uint64_t> to_event_map(std::vector<uint64_t> const &d) const override;
 
   private:
     struct PerfFd {

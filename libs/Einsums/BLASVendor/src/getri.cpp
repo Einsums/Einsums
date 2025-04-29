@@ -1,13 +1,13 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -21,7 +21,8 @@ extern void FC_GLOBAL(zgetri, ZGETRI)(int_t *, std::complex<double> *, int_t *, 
 }
 
 auto sgetri(int_t n, float *a, int_t lda, int_t const *ipiv) -> int_t {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("BLASVendor");
+    ;
 
     int_t              info{0};
     int_t              lwork = n * 64;
@@ -31,7 +32,8 @@ auto sgetri(int_t n, float *a, int_t lda, int_t const *ipiv) -> int_t {
 }
 
 auto dgetri(int_t n, double *a, int_t lda, int_t const *ipiv) -> int_t {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("BLASVendor");
+    ;
 
     int_t               info{0};
     int_t               lwork = n * 64;
@@ -41,7 +43,8 @@ auto dgetri(int_t n, double *a, int_t lda, int_t const *ipiv) -> int_t {
 }
 
 auto cgetri(int_t n, std::complex<float> *a, int_t lda, int_t const *ipiv) -> int_t {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("BLASVendor");
+    ;
 
     int_t                            info{0};
     int_t                            lwork = n * 64;
@@ -51,7 +54,8 @@ auto cgetri(int_t n, std::complex<float> *a, int_t lda, int_t const *ipiv) -> in
 }
 
 auto zgetri(int_t n, std::complex<double> *a, int_t lda, int_t const *ipiv) -> int_t {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("BLASVendor");
+    ;
 
     int_t                             info{0};
     int_t                             lwork = n * 64;

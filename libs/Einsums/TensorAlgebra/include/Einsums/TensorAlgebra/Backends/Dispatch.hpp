@@ -23,7 +23,7 @@
 #    if defined(EINSUMS_COMPUTE_CODE)
 #        include <Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp>
 #    endif
-#    include <Einsums/Profile/Timer.hpp>
+#    include <Einsums/Profile.hpp>
 
 #    include <algorithm>
 #    include <cmath>
@@ -48,7 +48,6 @@ template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType
 auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
             BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor, std::tuple<AIndices...> const & /*As*/,
             AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B) -> void {
-    // profile::Timer const _timer();
     print::Indent const _indent;
 
     using ADataType        = AType::ValueType;
@@ -232,7 +231,7 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
 
         return;
     } else if constexpr (element_wise_multiplication) {
-        profile::Timer const element_wise_multiplication_timer{"element-wise multiplication"};
+        EINSUMS_PROFILE_SCOPE("element-wise multiplication");
 
         linear_algebra::direct_product(AB_prefactor, A, B, C_prefactor, C);
 
@@ -560,33 +559,22 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     EINSUMS_LOG_TRACE("BEGIN: einsum");
-    std::unique_ptr<Section> _section;
-    if constexpr (IsTensorV<CType>) {
-        EINSUMS_LOG_INFO(std::fabs(UC_prefactor) > EINSUMS_ZERO
-                             ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
-                                           A.name(), A_indices, B.name(), B_indices, UC_prefactor, C->name(), C_indices)
-                             : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, UAB_prefactor, A.name(),
-                                           A_indices, B.name(), B_indices));
-        // look
-        _section.reset(
-            new Section(std::fabs(UC_prefactor) > EINSUMS_ZERO
-                            ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
-                                          A.name(), A_indices, B.name(), B_indices, UC_prefactor, C->name(), C_indices)
-                            : fmt::format(R"(einsums: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, UAB_prefactor, A.name(),
-                                          A_indices, B.name(), B_indices)));
-    } else {
-        EINSUMS_LOG_INFO(
-            std::fabs(UC_prefactor) > EINSUMS_ZERO
-                ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(),
-                              B_indices, UC_prefactor, C_indices)
-                : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(), B_indices));
-        // look
-        _section.reset(new Section(std::fabs(UC_prefactor) > EINSUMS_ZERO
-                                       ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(),
-                                                     A_indices, B.name(), B_indices, UC_prefactor, C_indices)
-                                       : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices,
-                                                     B.name(), B_indices)));
-    }
+    std::string const label = [&]() {
+        if constexpr (IsTensorV<CType>) {
+            return std::fabs(UC_prefactor) > EINSUMS_ZERO
+                       ? fmt::format(R"("{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor, A.name(), A_indices,
+                                     B.name(), B_indices, UC_prefactor, C->name(), C_indices)
+                       : fmt::format(R"("{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, UAB_prefactor, A.name(), A_indices, B.name(),
+                                     B_indices);
+        } else {
+            return std::fabs(UC_prefactor) > EINSUMS_ZERO
+                       ? fmt::format(R"("C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(),
+                                     B_indices, UC_prefactor, C_indices)
+                       : fmt::format(R"("C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(), B_indices);
+        }
+    }();
+    EINSUMS_LOG_INFO(label);
+    EINSUMS_PROFILE_SCOPE(fmt::runtime(label));
 
     CDataType const  C_prefactor  = UC_prefactor;
     ABDataType const AB_prefactor = UAB_prefactor;

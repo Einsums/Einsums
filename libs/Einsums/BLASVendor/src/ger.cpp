@@ -1,13 +1,13 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -43,14 +43,14 @@ void ger_parameter_check(int_t m, int_t n, int_t inc_x, int_t inc_y, int_t lda) 
 } // namespace
 
 void sger(int_t m, int_t n, float alpha, float const *x, int_t inc_x, float const *y, int_t inc_y, float *a, int_t lda) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("BLASVendor");
 
     ger_parameter_check(m, n, inc_x, inc_y, lda);
     FC_GLOBAL(sger, SGER)(&n, &m, &alpha, y, &inc_y, x, &inc_x, a, &lda);
 }
 
 void dger(int_t m, int_t n, double alpha, double const *x, int_t inc_x, double const *y, int_t inc_y, double *a, int_t lda) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("BLASVendor");
 
     ger_parameter_check(m, n, inc_x, inc_y, lda);
     FC_GLOBAL(dger, DGER)(&n, &m, &alpha, y, &inc_y, x, &inc_x, a, &lda);
@@ -58,7 +58,7 @@ void dger(int_t m, int_t n, double alpha, double const *x, int_t inc_x, double c
 
 void cger(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x, std::complex<float> const *y, int_t inc_y,
           std::complex<float> *a, int_t lda) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("BLASVendor");
 
     ger_parameter_check(m, n, inc_x, inc_y, lda);
     FC_GLOBAL(cgeru, CGERU)(&n, &m, &alpha, y, &inc_y, x, &inc_x, a, &lda);
@@ -66,7 +66,7 @@ void cger(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const
 
 void zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
           int_t inc_y, std::complex<double> *a, int_t lda) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("BLASVendor");
 
     ger_parameter_check(m, n, inc_x, inc_y, lda);
     FC_GLOBAL(zgeru, ZGERU)(&n, &m, &alpha, y, &inc_y, x, &inc_x, a, &lda);

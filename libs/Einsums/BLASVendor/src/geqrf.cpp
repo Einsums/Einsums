@@ -1,13 +1,13 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -23,9 +23,8 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(int_t *, int_t *, std::complex<double> *, 
 }
 
 #define GEQRF(Type, lc, uc)                                                                                                                \
-    auto lc##geqrf(int_t m, int_t n, Type *a, int_t lda, Type *tau) -> int_t {                                                             \
-        LabeledSection0();                                                                                                                 \
-                                                                                                                                           \
+    auto lc##geqrf(int_t m, int_t n, Type *a, int_t lda, Type *tau)->int_t {                                                               \
+        EINSUMS_PROFILE_SCOPE("BLASVendor");                                                                                               \
         int_t info{0};                                                                                                                     \
         int_t lwork{-1};                                                                                                                   \
         Type  work_query;                                                                                                                  \
@@ -45,7 +44,7 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(int_t *, int_t *, std::complex<double> *, 
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        std::vector<Type> a_t(lda_t *std::max(int_t{1}, n));                                                                               \
+        std::vector<Type> a_t(lda_t * std::max(int_t{1}, n));                                                                              \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
         transpose<OrderMajor::Row>(m, n, a, lda, a_t, lda_t);                                                                              \
@@ -64,9 +63,8 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(int_t *, int_t *, std::complex<double> *, 
     } /**/
 
 #define GEQRF_complex(Type, lc, uc)                                                                                                        \
-    auto lc##geqrf(int_t m, int_t n, Type *a, int_t lda, Type *tau) -> int_t {                                                             \
-        LabeledSection0();                                                                                                                 \
-                                                                                                                                           \
+    auto lc##geqrf(int_t m, int_t n, Type *a, int_t lda, Type *tau)->int_t {                                                               \
+        EINSUMS_PROFILE_SCOPE("BLASVendor");                                                                                               \
         int_t info{0};                                                                                                                     \
         int_t lwork{-1};                                                                                                                   \
         Type  work_query;                                                                                                                  \
@@ -86,7 +84,7 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(int_t *, int_t *, std::complex<double> *, 
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        std::vector<Type> a_t(lda_t *std::max(int_t{1}, n));                                                                               \
+        std::vector<Type> a_t(lda_t * std::max(int_t{1}, n));                                                                              \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
         transpose<OrderMajor::Row>(m, n, a, lda, a_t, lda_t);                                                                              \

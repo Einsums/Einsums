@@ -7,6 +7,7 @@
 
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Logging.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/Utilities/Random.hpp>
@@ -40,6 +41,7 @@ namespace einsums {
  */
 template <typename T = double, bool Normalize = false, typename... MultiIndex>
 auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
+    EINSUMS_PROFILE_SCOPE("\"{}\" {}", name, std::forward_as_tuple(index...));
     EINSUMS_LOG_TRACE("creating random tensor {}, {}", name, std::forward_as_tuple(index...));
 
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);

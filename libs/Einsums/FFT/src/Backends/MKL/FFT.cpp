@@ -9,7 +9,7 @@
 
 #include <Einsums/FFT/Defines.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include <mkl_dfti.h>
 
@@ -29,7 +29,7 @@ inline void verify(MKL_LONG status) {
  *******************************************************************************/
 
 void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("MKL");
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -47,7 +47,7 @@ void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
 }
 
 void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("MKL");
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -65,7 +65,7 @@ void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 
 }
 
 void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("MKL");
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -83,7 +83,7 @@ void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) 
 }
 
 void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("MKL");
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -105,7 +105,7 @@ void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>
  *******************************************************************************/
 
 void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("MKL");
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -126,7 +126,7 @@ void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
 }
 
 void zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("MKL");
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -144,7 +144,7 @@ void zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result)
 }
 
 void ccifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("MKL");
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -162,7 +162,7 @@ void ccifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>,
 }
 
 void zzifft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("MKL");
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 

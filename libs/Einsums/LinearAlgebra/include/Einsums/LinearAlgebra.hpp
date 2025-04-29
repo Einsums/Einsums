@@ -15,6 +15,7 @@
 #include <Einsums/LinearAlgebra/BlockTensor.hpp>
 #include <Einsums/LinearAlgebra/TiledTensor.hpp>
 #include <Einsums/LinearAlgebra/Unoptimized.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
@@ -53,7 +54,7 @@ namespace einsums::linear_algebra {
  */
 template <TensorConcept AType>
 void sum_square(AType const &a, RemoveComplexT<typename AType::ValueType> *scale, RemoveComplexT<typename AType::ValueType> *sumsq) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("Square sum of a tensor");
     detail::sum_square(a, scale, sumsq);
 }
 
@@ -123,7 +124,7 @@ template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, ty
         requires SameUnderlying<AType, BType>;
     }
 auto gemm(U const alpha, AType const &A, BType const &B) -> RemoveViewT<AType> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     RemoveViewT<AType> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
     gemm<TransA, TransB>(static_cast<typename AType::ValueType>(alpha), A, B, static_cast<typename AType::ValueType>(0.0), &C);
@@ -142,7 +143,7 @@ template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, Ma
         requires SameUnderlying<AType, BType, CType>;
     }
 void symm_gemm(AType const &A, BType const &B, CType *C) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     detail::symm_gemm<TransA, TransB>(A, B, C);
 }
@@ -178,7 +179,7 @@ template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept Y
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
-    LabeledSection1(fmt::format("<TransA={}>", TransA));
+    EINSUMS_PROFILE_SCOPE("<TransA={}>", TransA);
 
     detail::gemv<TransA>(alpha, A, z, beta, y);
 }
@@ -218,8 +219,7 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
         requires !Complex<AType>;
     }
 void syev(AType *A, WType *W) {
-
-    LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+    EINSUMS_PROFILE_SCOPE("<ComputeEigenvectors={}>", ComputeEigenvectors);
     detail::syev<ComputeEigenvectors>(A, W);
 }
 
@@ -236,8 +236,7 @@ template <bool ComputeLeftRightEigenvectors = true, MatrixConcept AType, VectorC
         requires std::is_same_v<typename WType::ValueType, AddComplexT<typename AType::ValueType>>;
     }
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
-    LabeledSection1(fmt::format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
-
+    EINSUMS_PROFILE_SCOPE("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors);
     detail::geev<ComputeLeftRightEigenvectors>(A, W, lvecs, rvecs);
 }
 
@@ -249,7 +248,7 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
         requires std::is_same_v<typename WType::ValueType, RemoveComplexT<typename AType::ValueType>>;
     }
 void heev(AType *A, WType *W) {
-    LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+    EINSUMS_PROFILE_SCOPE("<ComputeEigenvectors={}>", ComputeEigenvectors);
     detail::heev<ComputeEigenvectors>(A, W);
 }
 
@@ -259,8 +258,7 @@ template <MatrixConcept AType, MatrixConcept BType>
         requires SameUnderlying<AType, BType>;
     }
 auto gesv(AType *A, BType *B) -> int {
-
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
     return detail::gesv(A, B);
 }
 
@@ -289,7 +287,7 @@ auto gesv(AType *A, BType *B) -> int {
 template <bool ComputeEigenvectors = true, MatrixConcept AType>
     requires(NotComplex<AType>)
 auto syev(AType const &A) -> std::tuple<RemoveViewT<AType>, BasicTensorLike<AType, typename AType::ValueType, 1>> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     assert(A.dim(0) == A.dim(1));
 
@@ -319,21 +317,21 @@ auto syev(AType const &A) -> std::tuple<RemoveViewT<AType>, BasicTensorLike<ATyp
  */
 template <TensorConcept AType>
 void scale(typename AType::ValueType scale, AType *A) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     detail::scale(scale, A);
 }
 
 template <MatrixConcept AType>
 void scale_row(size_t row, typename AType::ValueType scale, AType *A) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     detail::scale_row(row, scale, A);
 }
 
 template <MatrixConcept AType>
 void scale_column(size_t col, typename AType::ValueType scale, AType *A) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     detail::scale_column(col, scale, A);
 }
@@ -351,7 +349,7 @@ void scale_column(size_t col, typename AType::ValueType scale, AType *A) {
 template <MatrixConcept AType>
 auto pow(AType const &a, typename AType::ValueType alpha,
          typename AType::ValueType cutoff = std::numeric_limits<typename AType::ValueType>::epsilon()) -> RemoveViewT<AType> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     return detail::pow(a, alpha, cutoff);
 }
@@ -363,8 +361,7 @@ template <VectorConcept AType, VectorConcept BType>
         requires SameRank<AType, BType>;
     }
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
-    LabeledSection0();
-
+    EINSUMS_PROFILE_SCOPE("Dot Product");
     return detail::dot(A, B);
 }
 #endif
@@ -384,9 +381,7 @@ template <TensorConcept AType, TensorConcept BType>
         requires AType::Rank != 1;
     }
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
-
-    LabeledSection0();
-
+    EINSUMS_PROFILE_SCOPE("Dot Product");
     return detail::dot(A, B);
 }
 
@@ -397,8 +392,7 @@ template <VectorConcept AType, VectorConcept BType>
         requires SameRank<AType, BType>;
     }
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
-    LabeledSection0();
-
+    EINSUMS_PROFILE_SCOPE("True Dot Product");
     return detail::true_dot(A, B);
 }
 #endif
@@ -419,9 +413,7 @@ template <TensorConcept AType, TensorConcept BType>
         requires AType::Rank != 1;
     }
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
-
-    LabeledSection0();
-
+    EINSUMS_PROFILE_SCOPE("True Dot Product");
     return detail::true_dot(A, B);
 }
 
@@ -441,8 +433,7 @@ template <TensorConcept AType, TensorConcept BType, TensorConcept CType>
     }
 auto dot(AType const &A, BType const &B, CType const &C)
     -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType> {
-
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("Triple Dot Product");
     return detail::dot(A, B, C);
 }
 
@@ -452,7 +443,7 @@ template <TensorConcept XType, TensorConcept YType>
         requires SameUnderlyingAndRank<XType, YType>;
     }
 void axpy(typename XType::ValueType alpha, XType const &X, YType *Y) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     detail::axpy(alpha, X, Y);
 }
@@ -463,7 +454,7 @@ template <TensorConcept XType, TensorConcept YType>
         requires SameUnderlyingAndRank<XType, YType>;
     }
 void axpby(typename XType::ValueType alpha, XType const &X, typename XType::ValueType beta, YType *Y) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     detail::axpby(alpha, X, beta, Y);
 }
@@ -474,7 +465,7 @@ template <MatrixConcept AType, VectorConcept XYType>
         requires InSamePlace<AType, XYType>;
     }
 void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     detail::ger(alpha, X, Y, A);
 }
@@ -497,7 +488,7 @@ void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, ATyp
 template <MatrixConcept TensorType>
     requires(CoreTensorConcept<TensorType>)
 auto getrf(TensorType *A, std::vector<blas::int_t> *pivot) -> int {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
         // println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
@@ -527,7 +518,7 @@ auto getrf(TensorType *A, std::vector<blas::int_t> *pivot) -> int {
 template <MatrixConcept TensorType>
     requires(CoreTensorConcept<TensorType>)
 auto getri(TensorType *A, std::vector<blas::int_t> const &pivot) -> int {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     int result = blas::getri(A->dim(0), A->data(), A->stride(0), pivot.data());
 
@@ -554,7 +545,7 @@ void invert(TensorType *A) {
             linear_algebra::invert(&(A->block(i)));
         }
     } else {
-        LabeledSection0();
+        EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
         std::vector<blas::int_t> pivot(A->dim(0));
         int                      result = getrf(A, &pivot);
@@ -574,7 +565,7 @@ void invert(TensorType *A) {
 #if !defined(DOXYGEN)
 template <SmartPointer SmartPtr>
 void invert(SmartPtr *A) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     return invert(A->get());
 }
@@ -619,7 +610,7 @@ enum class Norm : char {
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto norm(Norm norm_type, AType const &a) -> RemoveComplexT<typename AType::ValueType> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     std::vector<RemoveComplexT<typename AType::ValueType>> work(4 * a.dim(0), 0.0);
     return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
@@ -636,7 +627,7 @@ template <MatrixConcept AType>
 auto svd(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
                                         Tensor<typename AType::ValueType, 2>> {
     using T = typename AType::ValueType;
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     // Calling svd will destroy the original data. Make a copy of it.
     Tensor<T, 2> A = _A;
@@ -674,7 +665,7 @@ template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
     using T = typename AType::ValueType;
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     // Calling svd will destroy the original data. Make a copy of it.
     Tensor<T, 2> A = _A;
@@ -735,7 +726,7 @@ auto svd_dd(AType const &_A, Vectors job = Vectors::All)
     -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
                   Tensor<typename AType::ValueType, 2>> {
     using T = typename AType::ValueType;
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     //    DisableOMPThreads const nothreads;
 
@@ -771,9 +762,10 @@ auto svd_dd(AType const &_A, Vectors job = Vectors::All)
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto truncated_svd(AType const &_A, size_t k)
-    -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>, Tensor<typename AType::ValueType, 2>> {
+    -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
+                  Tensor<typename AType::ValueType, 2>> {
     using T = typename AType::ValueType;
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     size_t m = _A.dim(0);
     size_t n = _A.dim(1);
@@ -813,7 +805,7 @@ template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 1>> {
     using T = typename AType::ValueType;
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     if (A.dim(0) != A.dim(1)) {
         println_abort("Non-square matrix used as input of truncated_syev!");
@@ -862,7 +854,7 @@ template <MatrixConcept AType, typename T>
         requires std::is_same_v<typename AType::ValueType, T>;
     }
 inline auto pseudoinverse(AType const &A, T tol) -> Tensor<T, 2> {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     auto [U, S, Vh] = svd_a(A);
 
@@ -894,7 +886,7 @@ template <MatrixConcept AType, MatrixConcept QType>
     }
 inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<typename AType::ValueType, 2> {
     using T = typename AType::ValueType;
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     if (A.dim(0) != A.dim(1)) {
         println_abort("solve_continuous_lyapunov: Dimensions of A ({} x {}), do not match", A.dim(0), A.dim(1));
@@ -939,7 +931,7 @@ template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto qr(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 1>> {
     using T = typename AType::ValueType;
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     // Copy A because it will be overwritten by the QR call.
     Tensor<T, 2>      A = _A;
@@ -983,7 +975,7 @@ auto q(AType const &qr, TauType const &tau) -> Tensor<typename AType::ValueType,
 template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typename T>
     requires(SameRank<AType, BType, CType>)
 void direct_product(T alpha, AType const &A, BType const &B, T beta, CType *C) {
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
 
     detail::direct_product(alpha, A, B, beta, C);
 }

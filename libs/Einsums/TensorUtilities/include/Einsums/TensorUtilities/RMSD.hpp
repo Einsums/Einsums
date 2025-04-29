@@ -6,8 +6,9 @@
 #pragma once
 
 #include <Einsums/Concepts/SubscriptChooser.hpp>
-#include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Profile.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
 
 namespace einsums {
 
@@ -22,7 +23,7 @@ template <TensorConcept AType, TensorConcept BType>
 auto rmsd(AType const &tensor1, BType const &tensor2) -> ValueTypeT<AType> {
     using TType            = ValueTypeT<AType>;
     constexpr size_t TRank = TensorRank<AType>;
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("TensorUtilities");
 
     TType diff = 0.0;
 

@@ -1,13 +1,13 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -23,8 +23,9 @@ extern void FC_GLOBAL(zungqr, ZUNGQR)(int_t *, int_t *, int_t *, std::complex<do
 }
 
 #define ORGQR(Type, lc, uc)                                                                                                                \
-    auto lc##orgqr(int_t m, int_t n, int_t k, Type *a, int_t lda, const Type *tau) -> int_t {                                              \
-        LabeledSection0();                                                                                                                 \
+    auto lc##orgqr(int_t m, int_t n, int_t k, Type *a, int_t lda, const Type *tau)->int_t {                                                \
+        EINSUMS_PROFILE_SCOPE("BLASVendor");                                                                                               \
+        ;                                                                                                                                  \
                                                                                                                                            \
         int_t info{0};                                                                                                                     \
         int_t lwork{-1};                                                                                                                   \
@@ -44,7 +45,7 @@ extern void FC_GLOBAL(zungqr, ZUNGQR)(int_t *, int_t *, int_t *, std::complex<do
         lwork = (int_t)work_query;                                                                                                         \
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
-        std::vector<Type> a_t(lda_t *std::max(int_t{1}, n));                                                                               \
+        std::vector<Type> a_t(lda_t * std::max(int_t{1}, n));                                                                              \
         /* Transpose input matrices */                                                                                                     \
         transpose<OrderMajor::Row>(m, n, a, lda, a_t, lda_t);                                                                              \
                                                                                                                                            \
@@ -65,8 +66,9 @@ ORGQR(double, d, D);
 ORGQR(float, s, S);
 
 #define UNGQR(Type, lc, uc)                                                                                                                \
-    auto lc##ungqr(int_t m, int_t n, int_t k, Type *a, int_t lda, const Type *tau) -> int_t {                                              \
-        LabeledSection0();                                                                                                                 \
+    auto lc##ungqr(int_t m, int_t n, int_t k, Type *a, int_t lda, const Type *tau)->int_t {                                                \
+        EINSUMS_PROFILE_SCOPE("BLASVendor");                                                                                               \
+        ;                                                                                                                                  \
                                                                                                                                            \
         int_t info{0};                                                                                                                     \
         int_t lwork{-1};                                                                                                                   \
@@ -86,7 +88,7 @@ ORGQR(float, s, S);
         lwork = (int_t)(work_query.real());                                                                                                \
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
-        std::vector<Type> a_t(lda_t *std::max(int_t{1}, n));                                                                               \
+        std::vector<Type> a_t(lda_t * std::max(int_t{1}, n));                                                                              \
         /* Transpose input matrices */                                                                                                     \
         transpose<OrderMajor::Row>(m, n, a, lda, a_t, lda_t);                                                                              \
                                                                                                                                            \
