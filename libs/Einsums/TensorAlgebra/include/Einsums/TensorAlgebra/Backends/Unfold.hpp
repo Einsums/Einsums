@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -68,7 +68,7 @@ constexpr auto get_n(std::tuple<List...> const &) {
 template <unsigned int mode, template <typename, size_t> typename CType, size_t CRank, typename T>
     requires(std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>)
 Tensor<T, 2> unfold(CType<T, CRank> const &source) {
-    EINSUMS_PROFILE_SCOPE("mode-{} unfold", mode);
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/Unfold:mode-{}", mode);
 
     Dim<2> target_dims;
     target_dims[0] = source.dim(mode);

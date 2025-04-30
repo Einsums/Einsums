@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -73,6 +73,8 @@ template <CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices
     }
 void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
              std::tuple<AIndices...> const &A_indices, AType const &A) {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra");
+
     using T                = typename AType::ValueType;
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
@@ -233,6 +235,7 @@ template <BlockTensorConcept AType, BlockTensorConcept CType, typename... CIndic
     }
 void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
              std::tuple<AIndices...> const &A_indices, AType const &A) {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra");
 
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
@@ -253,8 +256,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
  */
 template <typename CType, TensorConcept AType, TensorConcept BType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename... AllUniqueIndices>
-inline auto get_grid_ranges_for_many(CType const &C, std::tuple<CIndices...> const &C_indices, AType const &A,
-                                     std::tuple<AIndices...> const &A_indices, std::tuple<AllUniqueIndices...> const &All_unique_indices) {
+auto get_grid_ranges_for_many(CType const &C, std::tuple<CIndices...> const &C_indices, AType const &A,
+                              std::tuple<AIndices...> const &A_indices, std::tuple<AllUniqueIndices...> const &All_unique_indices) {
     return std::array{get_grid_ranges_for_many_a<AllUniqueIndices, 0>(C, C_indices, A, A_indices)...};
 }
 
@@ -269,6 +272,7 @@ template <TiledTensorConcept AType, TiledTensorConcept CType, typename... CIndic
     }
 void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
              std::tuple<AIndices...> const &A_indices, AType const &A) {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra");
 
     using ADataType        = typename AType::ValueType;
     using CDataType        = typename CType::ValueType;

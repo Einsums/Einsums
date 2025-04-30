@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -28,7 +28,7 @@ template <CoreTensorConcept CType, typename UnaryOperator>
         requires RankTensorConcept<CType>;
     }
 auto element_transform(CType *C, UnaryOperator unary_opt) -> void {
-    EINSUMS_PROFILE_SCOPE("TensorAlgebra");
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/ElementTransform");
     using T               = typename CType::ValueType;
     constexpr size_t Rank = CType::Rank;
 
@@ -48,6 +48,7 @@ auto element_transform(CType *C, UnaryOperator unary_opt) -> void {
 
 template <BlockTensorConcept CType, typename UnaryOperator>
 auto element_transform(CType *C, UnaryOperator unary_opt) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/ElementTransform");
     for (int i = 0; i < C->num_blocks(); i++) {
         element_transform(&(C->block(i)), unary_opt);
     }
@@ -59,6 +60,8 @@ template <BlockTensorConcept CType, typename MultiOperator, BlockTensorConcept..
         requires(SameUnderlyingAndRank<CType, MultiTensors> && ...);
     }
 auto element(MultiOperator multi_opt, CType *C, MultiTensors &...tensors) {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/ElementTransform");
+
     if (((C->num_blocks() != tensors.num_blocks()) || ...)) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "element: All tensors need to have the same number of blocks.");
     }
@@ -81,7 +84,7 @@ template <template <typename, size_t> typename CType, template <typename, size_t
         requires BasicTensorConcept<CType<T, Rank>>;
     }
 auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &...tensors) {
-    EINSUMS_PROFILE_SCOPE("TensorAlgebra");
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/ElementTransform");
 
     // Ensure the various tensors passed in are the same dimensionality
     if (((C->dims() != tensors.dims()) || ...)) {

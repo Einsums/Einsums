@@ -1,19 +1,20 @@
-//----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Complex.hpp>
-#include <Einsums/Concepts/TensorConcepts.hpp>
-#include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
+#include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Profile.hpp>
 
 #include <cstdint>
-#include <Einsums/Config/CompilerSpecific.hpp>
 
 namespace einsums::linear_algebra::detail {
 
@@ -23,6 +24,8 @@ template <TensorConcept AType, TensorConcept BType, typename Result = BiggestTyp
         requires SameRank<AType, BType>;
     }
 auto dot(AType const &A, BType const &B) -> Result {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Unoptimized");
+
     constexpr std::size_t Rank = AType::Rank;
 
     Result                        out{0.0};
@@ -61,6 +64,8 @@ template <TensorConcept AType, TensorConcept BType, typename Result = BiggestTyp
         requires SameRank<AType, BType>;
     }
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Unoptimized");
+
     constexpr size_t Rank = AType::Rank;
     using T               = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
 
@@ -104,6 +109,8 @@ template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, Ma
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Unoptimized");
+
     // Check for compatibility.
     if (((TransA) ? A.dim(0) : A.dim(1)) != ((TransB) ? B.dim(1) : B.dim(0))) {
         EINSUMS_THROW_CODED_EXCEPTION(dimension_error, 0, "Matrices require compatible inner dimensions!");
@@ -150,6 +157,8 @@ template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept Y
         requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<XType> || !AlgebraTensorConcept<YType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Unoptimized");
+
     // Check bounds.
     if (((TransA) ? A.dim(0) : A.dim(1)) != z.dim(0)) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "Matrix and input vector need to have compatible sizes!");
@@ -187,6 +196,8 @@ template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typenam
         requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<BType> || !AlgebraTensorConcept<CType>;
     }
 void direct_product(U alpha, AType const &A, BType const &B, U, CType *C) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Unoptimized");
+
     using T               = typename AType::ValueType;
     constexpr size_t Rank = AType::Rank;
 
@@ -234,6 +245,8 @@ void direct_product(U alpha, AType const &A, BType const &B, U, CType *C) {
 template <MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U>
     requires requires { requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<XType> || !AlgebraTensorConcept<YType>; }
 void ger(U alpha, XType const &X, YType const &Y, AType *A) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Unoptimized");
+
     if (A->dim(0) != X.dim(0) || A->dim(1) != Y.dim(0)) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "Incompatible matrix and vector sizes!");
     }
@@ -252,6 +265,8 @@ void ger(U alpha, XType const &X, YType const &Y, AType *A) {
 template <TensorConcept AType>
     requires(!AlgebraTensorConcept<AType>)
 void scale(typename AType::ValueType alpha, AType *A) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Unoptimized");
+
     constexpr size_t         Rank = AType::Rank;
     std::array<size_t, Rank> strides;
 

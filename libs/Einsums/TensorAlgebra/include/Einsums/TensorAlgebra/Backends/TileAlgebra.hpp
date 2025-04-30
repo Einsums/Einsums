@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -22,6 +22,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/TileAlgebra");
 
     constexpr size_t ARank = AType::Rank;
     constexpr size_t BRank = BType::Rank;
@@ -98,6 +99,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/TileAlgebra");
 
     constexpr size_t ARank = AType::Rank;
     constexpr size_t BRank = BType::Rank;

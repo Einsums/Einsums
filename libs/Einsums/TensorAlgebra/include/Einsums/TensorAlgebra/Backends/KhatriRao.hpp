@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -35,7 +35,7 @@ auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BInd
     -> BasicTensorLike<AType, typename AType::ValueType, 2> {
     using OutType = BasicTensorLike<AType, typename AType::ValueType, 2>;
     using T       = typename AType::ValueType;
-    EINSUMS_PROFILE_SCOPE("TensorAlgebra");
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/KhatriRao");
 
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();

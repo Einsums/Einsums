@@ -29,7 +29,6 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
     using TType            = ValueTypeT<TTensor>;
     constexpr size_t TRank = TensorRank<TTensor>;
     EINSUMS_PROFILE_SCOPE("Decomposition");
-    ;
 
     if (tensor.dim(0) != weights.dim(0)) {
         println_abort("The first dimension of the tensor and the dimension of the weight DO NOT match");
@@ -63,7 +62,6 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
 template <size_t TRank, typename TType>
 auto parafac_reconstruct(std::vector<Tensor<TType, 2>> const &factors) -> Tensor<TType, TRank> {
     EINSUMS_PROFILE_SCOPE("Decomposition");
-    ;
 
     size_t     rank = 0;
     Dim<TRank> dims;
@@ -101,7 +99,6 @@ auto parafac_reconstruct(std::vector<Tensor<TType, 2>> const &factors) -> Tensor
 template <size_t TRank, typename TType>
 auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::vector<Tensor<TType, 2>> {
     EINSUMS_PROFILE_SCOPE("Decomposition");
-    ;
 
     using namespace einsums::tensor_algebra;
 
@@ -170,7 +167,6 @@ template <template <typename, size_t> typename TTensor, size_t TRank, typename T
 auto parafac(TTensor<TType, TRank> const &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8)
     -> std::vector<Tensor<TType, 2>> {
     EINSUMS_PROFILE_SCOPE("Decomposition");
-    ;
 
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
@@ -268,7 +264,6 @@ template <template <typename, size_t> typename TTensor, size_t TRank, typename T
 auto weighted_parafac(TTensor<TType, TRank> const &tensor, TTensor<TType, 1> const &weights, size_t rank, int n_iter_max = 100,
                       double tolerance = 1.e-8) -> std::vector<Tensor<TType, 2>> {
     EINSUMS_PROFILE_SCOPE("Decomposition");
-    ;
 
     using namespace einsums::tensor_algebra;
 

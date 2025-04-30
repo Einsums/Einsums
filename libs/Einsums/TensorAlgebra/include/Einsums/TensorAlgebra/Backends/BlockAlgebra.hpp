@@ -1,12 +1,13 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Profile.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 
 #include <stdexcept>
@@ -28,6 +29,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
                                                 typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/BlockAlgebra");
 
     // Check compatibility.
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks()) {
@@ -58,6 +60,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
                                                 typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/BlockAlgebra");
 
     // Check compatibility.
     if (A.num_blocks() != B.num_blocks()) {
@@ -104,6 +107,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
                                                 typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/BlockAlgebra");
 
     using CDataType = ValueTypeT<CType>;
 
@@ -121,7 +125,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
 #ifdef EINSUMS_COMPUTE_CODE
     if constexpr (IsDeviceTensorV<AType>) {
 
-        size_t     elems = omp_get_max_threads();
+        size_t                 elems = omp_get_max_threads();
         std::vector<CDataType> temp(elems);
 
         for (int i = 0; i < elems; i++) {
@@ -177,6 +181,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/BlockAlgebra");
 
     // Check compatibility.
     if (B.num_blocks() != C->num_blocks()) {
@@ -212,6 +217,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/BlockAlgebra");
 
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
@@ -235,6 +241,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/BlockAlgebra");
 
     using CDataType = ValueTypeT<CType>;
 
@@ -301,6 +308,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/BlockAlgebra");
 
     // Check compatibility.
     if (A.num_blocks() != C->num_blocks()) {
@@ -336,6 +344,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/BlockAlgebra");
 
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
@@ -360,6 +369,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
     using CDataType = ValueTypeT<CType>;
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/BlockAlgebra");
 
 #ifdef EINSUMS_COMPUTE_CODE
     if constexpr (IsDeviceTensorV<AType>) {

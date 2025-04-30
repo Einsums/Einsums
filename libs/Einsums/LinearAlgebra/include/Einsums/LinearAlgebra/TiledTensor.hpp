@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -24,6 +24,8 @@ namespace einsums::linear_algebra::detail {
 template <TiledTensorConcept AType, TiledTensorConcept BType>
     requires(SameRank<AType, BType>)
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/TiledTensor");
+
     constexpr size_t Rank = AType::Rank;
     using T               = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
     std::array<size_t, Rank> strides;
@@ -62,6 +64,8 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
 template <TiledTensorConcept AType, TiledTensorConcept BType>
     requires(SameRank<AType, BType>)
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/TiledTensor");
+
     constexpr size_t Rank = AType::Rank;
     using T               = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
     std::array<size_t, Rank> strides;
@@ -104,6 +108,8 @@ template <bool TransA, bool TransB, TiledTensorConcept AType, TiledTensorConcept
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/TiledTensor");
+
     // Check for compatibility.
     if (C->grid_size(0) != A.grid_size(TransA ? 1 : 0) || C->grid_size(1) != B.grid_size(TransB ? 0 : 1)) {
         EINSUMS_THROW_CODED_EXCEPTION(tensor_compat_error, 0, "Output tensor needs to have a compatible tile grid with the inputs.");
@@ -203,6 +209,8 @@ template <bool TransA, TiledTensorConcept AType, VectorConcept XType, VectorConc
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/TiledTensor");
+
     if constexpr (IsTiledTensorV<XType>) {
         if constexpr (TransA) {
             if (A.tile_sizes(0) != z.tile_sizes(0)) {
@@ -312,6 +320,8 @@ void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y)
 template <TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
 void direct_product(typename AType::ValueType alpha, AType const &A, BType const &B, typename AType::ValueType beta, CType *C) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/TiledTensor");
+
     using T               = typename AType::ValueType;
     constexpr size_t Rank = AType::Rank;
     EINSUMS_OMP_PARALLEL_FOR
@@ -340,6 +350,8 @@ template <TiledTensorConcept AType, TiledTensorConcept XYType>
         requires SameUnderlying<AType, XYType>;
     }
 void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/TiledTensor");
+
     if (A->grid_size(0) != X.grid_size(0) && A->grid_size(1) != Y.grid_size(0)) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Tiled tensors have incompatible grids!");
     }
@@ -361,6 +373,8 @@ void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, ATyp
 
 template <TiledTensorConcept AType>
 void scale(typename AType::ValueType alpha, AType *A) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/TiledTensor");
+
     EINSUMS_OMP_PARALLEL_FOR
     for (auto it = A->tiles().begin(); it != A->tiles().end(); it++) {
         scale(alpha, &(it->second));

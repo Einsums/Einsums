@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -20,6 +20,7 @@ namespace einsums::linear_algebra::detail {
 template <CoreBasicTensorConcept AType>
     requires(RankTensorConcept<AType, 1>)
 void sum_square(AType const &a, RemoveComplexT<typename AType::ValueType> *scale, RemoveComplexT<typename AType::ValueType> *sumsq) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
     int n    = a.dim(0);
     int incx = a.stride(0);
     blas::lassq(n, a.data(), incx, scale, sumsq);
@@ -32,6 +33,7 @@ template <bool TransA, bool TransB, typename U, CoreBasicTensorConcept AType, Co
         requires(std::convertible_to<U, typename AType::ValueType>);
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
     auto m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
     auto lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
@@ -48,6 +50,7 @@ template <bool TransA, typename U, CoreBasicTensorConcept AType, CoreBasicTensor
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
     auto m = A.dim(0), n = A.dim(1);
     auto lda  = A.stride(0);
     auto incx = z.stride(0);
@@ -65,6 +68,7 @@ template <bool ComputeEigenvectors = true, CoreBasicTensorConcept AType, CoreBas
         requires NotComplex<AType>;
     }
 void syev(AType *A, WType *W) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
     assert(A->dim(0) == A->dim(1));
 
     auto                                   n     = A->dim(0);
@@ -82,6 +86,8 @@ template <bool ComputeLeftRightEigenvectors = true, CoreBasicTensorConcept AType
         requires RankTensorConcept<WType, 1>;
     }
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     EINSUMS_ASSERT(A->dim(0) == A->dim(1));
     EINSUMS_ASSERT(W->dim(0) == A->dim(0));
     EINSUMS_ASSERT(A->dim(0) == lvecs->dim(0));
@@ -101,6 +107,8 @@ template <bool ComputeEigenvectors = true, CoreBasicTensorConcept AType, CoreBas
         requires VectorConcept<WType>;
     }
 void heev(AType *A, WType *W) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     EINSUMS_ASSERT(A->dim(0) == A->dim(1));
 
     auto                                   n     = A->dim(0);
@@ -118,6 +126,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires MatrixConcept<AType>;
     }
 auto gesv(AType *A, BType *B) -> int {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     auto n   = A->dim(0);
     auto lda = A->dim(0);
     auto ldb = B->dim(1);
@@ -133,17 +143,23 @@ auto gesv(AType *A, BType *B) -> int {
 
 template <CoreBasicTensorConcept AType>
 void scale(typename AType::ValueType scale, AType *A) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     blas::scal(A->dim(0) * A->stride(0), scale, A->data(), 1);
 }
 
 template <CoreBasicTensorConcept AType>
     requires(MatrixConcept<AType>)
 void scale_row(size_t row, typename AType::ValueType scale, AType *A) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     blas::scal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
 }
 
 template <CoreBasicTensorConcept AType>
 void scale_column(size_t col, typename AType::ValueType scale, AType *A) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     blas::scal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
 }
 
@@ -153,6 +169,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires SameUnderlyingAndRank<AType, BType>;
     }
 auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     EINSUMS_ASSERT(A.dim(0) == B.dim(0));
 
     auto result = blas::dot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
@@ -166,6 +184,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires !SameUnderlying<AType, BType>;
     }
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     EINSUMS_ASSERT(A.dim(0) == B.dim(0));
 
     using OutType = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
@@ -191,6 +211,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires !VectorConcept<AType>;
     }
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
 
     if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
@@ -231,6 +253,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires VectorConcept<AType>;
     }
 auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     assert(A.dim(0) == B.dim(0));
 
     if constexpr (IsComplexV<AType>) {
@@ -247,6 +271,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires !SameUnderlying<AType, BType>;
     }
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     EINSUMS_ASSERT(A.dim(0) == B.dim(0));
 
     using OutType = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
@@ -276,6 +302,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires !VectorConcept<AType>;
     }
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
         Dim<1> dim{1};
 
@@ -317,6 +345,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicT
     requires SameRank<AType, BType, CType>
 auto dot(AType const &A, BType const &B, CType const &C)
     -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     Dim<1> dim{1};
     using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType>;
 
@@ -340,12 +370,16 @@ auto dot(AType const &A, BType const &B, CType const &C)
 template <CoreBasicTensorConcept XType, CoreBasicTensorConcept YType>
     requires SameUnderlyingAndRank<XType, YType>
 void axpy(typename XType::ValueType alpha, XType const &X, YType *Y) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     blas::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
 }
 
 template <CoreBasicTensorConcept XType, CoreBasicTensorConcept YType>
     requires SameUnderlyingAndRank<XType, YType>
 void axpby(typename XType::ValueType alpha, XType const &X, typename YType::ValueType beta, YType *Y) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     blas::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
 }
 
@@ -356,6 +390,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept XYType>
         requires SameUnderlying<AType, XYType>;
     }
 void ger(typename XYType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     blas::ger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
 }
 
@@ -365,6 +401,8 @@ template <bool TransA, bool TransB, CoreBasicTensorConcept AType, CoreBasicTenso
         requires MatrixConcept<AType>;
     }
 void symm_gemm(AType const &A, BType const &B, CType *C) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     int temp_rows, temp_cols;
     if constexpr (TransA && TransB) {
         EINSUMS_ASSERT(B.dim(0) == A.dim(0) && A.dim(1) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
@@ -446,6 +484,8 @@ template <CoreBasicTensorConcept AType>
 auto pow(AType const &a, typename AType::ValueType alpha,
          typename AType::ValueType cutoff = std::numeric_limits<typename AType::ValueType>::epsilon())
     -> Tensor<typename AType::ValueType, 2> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/Base");
+
     assert(a.dim(0) == a.dim(1));
 
     using T = typename AType::ValueType;

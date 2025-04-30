@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -32,6 +32,8 @@ template <bool TransA, bool TransB, BlockTensorConcept AType, BlockTensorConcept
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "gemm: Tensors need the same number of blocks.");
     }
@@ -80,6 +82,8 @@ template <bool TransA, BlockTensorConcept AType, VectorConcept XType, VectorConc
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     using T = typename AType::ValueType;
     if (beta == U(0.0)) {
         y->zero();
@@ -103,6 +107,8 @@ template <bool ComputeEigenvectors = true, BlockTensorConcept AType, VectorConce
         requires MatrixConcept<AType>;
     }
 void syev(AType *A, WType *W) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
@@ -119,6 +125,8 @@ template <bool ComputeEigenvectors = true, BlockTensorConcept AType, VectorConce
         requires MatrixConcept<AType>;
     }
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
@@ -136,6 +144,8 @@ template <bool ComputeEigenvectors = true, BlockTensorConcept AType, VectorConce
         requires std::is_same_v<RemoveComplexT<typename AType::ValueType>, typename WType::ValueType>;
     }
 void heev(AType *A, WType *W) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
@@ -152,6 +162,8 @@ template <BlockTensorConcept AType, BlockTensorConcept BType>
         requires SameUnderlyingAndRank<AType, BType>;
     }
 auto gesv(AType *A, BType *B) -> int {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     if (A->num_blocks() != B->num_blocks()) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "gesv: Tensors need the same number of blocks.");
     }
@@ -177,6 +189,8 @@ auto gesv(AType *A, BType *B) -> int {
 
 template <BlockTensorConcept AType>
 void scale(typename AType::ValueType alpha, AType *A) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
@@ -189,6 +203,8 @@ void scale(typename AType::ValueType alpha, AType *A) {
 template <BlockTensorConcept AType>
     requires MatrixConcept<AType>
 void scale_row(size_t row, typename AType::ValueType alpha, AType *A) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     int  block_ind = A->block_of(row);
     auto temp      = A->block(block_ind)(row - A->block_range(block_ind)[0], All);
     scale(alpha, &temp);
@@ -197,6 +213,8 @@ void scale_row(size_t row, typename AType::ValueType alpha, AType *A) {
 template <BlockTensorConcept AType>
     requires MatrixConcept<AType>
 void scale_column(size_t column, typename AType::ValueType alpha, AType *A) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     int  block_ind = A->block_of(column);
     auto temp      = A->block(block_ind)(All, column - A->block_range(block_ind)[0]);
     scale(alpha, &temp);
@@ -205,6 +223,8 @@ void scale_column(size_t column, typename AType::ValueType alpha, AType *A) {
 template <BlockTensorConcept AType, BlockTensorConcept BType>
     requires SameRank<AType, BType>
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     if (A.num_blocks() != B.num_blocks()) {
         return dot(typename AType::StoredType(A), typename BType::StoredType(B));
     }
@@ -231,6 +251,8 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
 template <BlockTensorConcept AType, BlockTensorConcept BType>
     requires SameRank<AType, BType>
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     if (A.num_blocks() != B.num_blocks()) {
         return true_dot(typename AType::StoredType(A), typename BType::StoredType(B));
     }
@@ -258,6 +280,8 @@ template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept
     requires SameRank<AType, BType, CType>
 auto dot(AType const &A, BType const &B, CType const &C)
     -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C.num_blocks() || B.num_blocks() != C.num_blocks()) {
         return dot(AType::StoredType(A), BType::StoredType(B), CType::StoredType(C));
     }
@@ -284,6 +308,7 @@ auto dot(AType const &A, BType const &B, CType const &C)
 template <BlockTensorConcept XType, BlockTensorConcept YType>
     requires SameUnderlyingAndRank<XType, YType>
 void axpy(typename XType::ValueType alpha, XType const &X, YType *Y) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
 
     if (X.num_blocks() != Y->num_blocks()) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "axpy: Tensors need to have the same number of blocks.");
@@ -306,6 +331,7 @@ void axpy(typename XType::ValueType alpha, XType const &X, YType *Y) {
 template <BlockTensorConcept XType, BlockTensorConcept YType>
     requires SameUnderlyingAndRank<XType, YType>
 void axpby(typename XType::ValueType alpha, XType const &X, typename YType::ValueType beta, YType *Y) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
 
     if (X.num_blocks() != Y->num_blocks()) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "axpby: Tensors need to have the same number of blocks.");
@@ -327,6 +353,8 @@ void axpby(typename XType::ValueType alpha, XType const &X, typename YType::Valu
 template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
 void direct_product(typename AType::ValueType alpha, AType const &A, BType const &B, typename CType::ValueType beta, CType *C) {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
         if (A.block_dim(i) == 0) {
@@ -340,6 +368,8 @@ template <BlockTensorConcept AType>
     requires MatrixConcept<AType>
 auto pow(AType const &a, typename AType::ValueType alpha,
          typename AType::ValueType cutoff = std::numeric_limits<typename AType::ValueType>::epsilon()) -> RemoveViewT<AType> {
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra/BlockTensor");
+
     RemoveViewT<AType> out{"pow result", a.vector_dims()};
 
     EINSUMS_OMP_PARALLEL_FOR

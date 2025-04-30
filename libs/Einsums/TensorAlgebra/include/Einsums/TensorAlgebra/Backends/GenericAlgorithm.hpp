@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -33,7 +33,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                               std::conditional_t<(sizeof(typename AType::ValueType) > sizeof(typename BType::ValueType)),
                                                  typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                               AType const &A, BType const &B) {
-    EINSUMS_PROFILE_SCOPE("TensorAlgebra");
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/GenericAlgorithm");
 
     using ADataType        = typename AType::ValueType;
     using BDataType        = typename BType::ValueType;

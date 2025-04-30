@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 #ifndef DOXYGEN
@@ -48,6 +48,7 @@ template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType
 auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
             BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor, std::tuple<AIndices...> const & /*As*/,
             AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/Dispatch");
     print::Indent const _indent;
 
     using ADataType        = AType::ValueType;
