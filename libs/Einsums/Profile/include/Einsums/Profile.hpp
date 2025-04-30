@@ -160,7 +160,6 @@ struct EINSUMS_EXPORT Profiler {
     std::thread::id _main_thread_id;
     std::size_t     _thread_counter;
 
-    bool       _print_at_destruction = true;
     std::mutex _setter_mutex;
 
     std::vector<ThreadCallGraph *> _thread_call_graphs;
@@ -169,7 +168,7 @@ struct EINSUMS_EXPORT Profiler {
 
     bool results_are_empty();
 
-    std::string format_available_results(Style const &style = Style{});
+    void format_available_results(std::ostream &out, Style const &style = Style{});
 
     void call_graph_add(std::thread::id thread_id);
 
@@ -180,9 +179,8 @@ struct EINSUMS_EXPORT Profiler {
     ~Profiler();
 
     void upload_this_thread();
-    void print_at_exit(bool value) noexcept;
 
-    std::string format_results(Style const &style = Style{});
+    void format_results(std::ostream &out, Style const &style = Style{});
 
     void add_thread_call_graph(ThreadCallGraph *thread_call_graph);
 

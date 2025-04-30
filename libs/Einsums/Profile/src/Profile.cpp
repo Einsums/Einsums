@@ -10,11 +10,34 @@
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile.hpp>
 
-#include <fmt/printf.h>
+#include <fmt/color.h>   // Enables text styles and colors
+#include <fmt/ostream.h> // Enables fmt to write to std::ostream (e.g., ofstream)
 
 #include <algorithm>
 #include <cstdio>
 #include <filesystem>
+#include <fstream>
+#include <ostream>
+
+#if defined(EINSUMS_WINDOWS)
+#    include <io.h>
+inline bool is_terminal(std::ostream const &os) {
+    if (&os == &std::cout)
+        return _isatty(_fileno(stdout));
+    if (&os == &std::cerr)
+        return _isatty(_fileno(stderr));
+    return false;
+}
+#else
+#    include <unistd.h>
+inline bool is_terminal(std::ostream const &os) {
+    if (&os == &std::cout)
+        return isatty(fileno(stdout));
+    if (&os == &std::cerr)
+        return isatty(fileno(stderr));
+    return false;
+}
+#endif
 
 namespace einsums::profile::detail {
 
@@ -142,13 +165,7 @@ void NodeMatrix::resize(std::size_t new_rows, std::size_t new_cols) {
 Profiler::Profiler() : _main_thread_id(std::this_thread::get_id()), _performance_counter(PerformanceCounter::create()) {
 }
 
-Profiler::~Profiler() {
-    if (_print_at_destruction)
-        return;
-    if (results_are_empty())
-        return;
-    fmt::printf(format_available_results());
-}
+Profiler::~Profiler() = default;
 
 Profiler &Profiler::get() {
     static Profiler instance;
@@ -159,19 +176,14 @@ void Profiler::upload_this_thread() {
     thread_call_graph.upload_results(false);
 }
 
-void Profiler::print_at_exit(bool value) noexcept {
-    std::lock_guard const lock(_setter_mutex);
-    _print_at_destruction = value;
-}
-
-std::string Profiler::format_results(Style const &style) {
+void Profiler::format_results(std::ostream &out, Style const &style) {
     // Walk through all the threads and make sure they have updated the Profiler
     for (auto thread : _thread_call_graphs)
         thread->upload_results(false);
 
     upload_this_thread();
 
-    return format_available_results(style);
+    return format_available_results(out, style);
 }
 
 void Profiler::add_thread_call_graph(ThreadCallGraph *thread_call_graph) {
@@ -217,16 +229,40 @@ std::string format_call_site(std::string const &file, std::size_t line, std::str
     fmt::format_to(std::back_inserter(res), "{}:{}, {}()", filename, line, function);
     return res;
 }
+
+// Internal helper
+template <typename... Args>
+void safe_print(std::ostream &os, fmt::text_style style, std::string_view format_str, Args &&...args) {
+    std::string output;
+    if (is_terminal(os)) {
+        output = fmt::format(style, fmt::runtime(format_str), std::forward<Args>(args)...);
+    } else {
+        output = fmt::format(fmt::runtime(format_str), std::forward<Args>(args)...);
+    }
+    fmt::print(os, "{}", output);
+}
+
+constexpr fmt::emphasis no_style = static_cast<fmt::emphasis>(0);
+
 } // namespace
 
-std::string Profiler::format_available_results(Style const &style) {
+void Profiler::format_available_results(std::ostream &out, Style const &style) {
     std::lock_guard const lock(_call_graph_mutex);
 
     std::vector<FormattedRow> rows;
-    std::string               res;
 
     // Format header
-    fmt::format_to(std::back_inserter(res), emphasis::bold | fg(color::cyan), "\n{:-^110}\n", " EINSUMS PROFILING RESULTS ");
+    safe_print(out, emphasis::bold | fg(color::cyan), "\n{:-^110}\n", " EINSUMS PROFILING RESULTS ");
+
+    // Format using strftime-style format string
+    // Get system time
+    auto now = std::chrono::system_clock::now();
+    // Convert to time_t
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    // Convert to local time (non-thread-safe)
+    std::tm *local_tm = std::localtime(&now_c);
+    // Print using fmt (safe even with non-thread-safe tm*)
+    safe_print(out, no_style, "\nReporting time: {:%Y-%m-%d %H:%M:%S} local time\n", *local_tm);
 
     for (auto const &[thread_id, thread_lifetimes] : _call_graph_info) {
         for (std::size_t reuse = 0; reuse < thread_lifetimes.lifetimes.size(); ++reuse) {
@@ -241,22 +277,21 @@ std::string Profiler::format_available_results(Style const &style) {
             bool const        thread_uploaded = !mat.empty();
 
             // Format thread header
-            fmt::format_to(std::back_inserter(res), emphasis::bold | fg(color::cyan), "\n# Thread [ {} ] (reuse {})", thread_str,
-                           std::to_string(reuse));
+            safe_print(out, emphasis::bold | fg(color::cyan), "\n# Thread [ {} ] (reuse {})", thread_str, std::to_string(reuse));
 
             // Format thread status
-            fmt::format_to(std::back_inserter(res), joined ? emphasis::bold | fg(color::green) : emphasis::bold | fg(color::magenta),
-                           " ({})", joined ? "joined" : "running");
+            safe_print(out, joined ? emphasis::bold | fg(color::green) : emphasis::bold | fg(color::magenta), " ({})",
+                       joined ? "joined" : "running");
 
             // Early escape for lifetimes that haven't uploaded yet
             if (!thread_uploaded) {
-                fmt::format_to(std::back_inserter(res), "\n");
+                safe_print(out, no_style, "\n");
                 continue;
             }
 
             // Format thread runtime
             ms const runtime = mat.time(NodeId::root);
-            fmt::format_to(std::back_inserter(res), emphasis::bold | fg(color::light_blue), " (runtime -> {:.2f} ms)\n", runtime.count());
+            safe_print(out, emphasis::bold | fg(color::light_blue), " (runtime -> {:.2f} ms)\n", runtime.count());
 
             // Gather call graph data in a digestible format
             mat.root_apply_recursively([&](CallSiteId callsite_id, NodeId node_id, std::size_t depth) {
@@ -300,10 +335,10 @@ std::string Profiler::format_available_results(Style const &style) {
             assert(rows.size() == rows_str.size());
 
             // Print out column labels
-            fmt::format_to(std::back_inserter(res), "{:^{}} | {:^{}} | {:^{}} | {:^{}} |\n", "Percent", width_percentage, "Time",
-                           width_time, "Label", width_label, "Location", width_callsite);
-            fmt::format_to(std::back_inserter(res), "{} | {} | {} | {} |\n", std::string(width_percentage, '-'),
-                           std::string(width_time, '-'), std::string(width_label, '-'), std::string(width_callsite, '-'));
+            safe_print(out, no_style, "{:^{}} | {:^{}} | {:^{}} | {:^{}} |\n", "Percent", width_percentage, "Time", width_time, "Label",
+                       width_label, "Location", width_callsite);
+            safe_print(out, no_style, "{} | {} | {} | {} |\n", std::string(width_percentage, '-'), std::string(width_time, '-'),
+                       std::string(width_label, '-'), std::string(width_callsite, '-'));
 
             // Format result with colors and alignment
             for (std::size_t i = 0; i < rows.size(); ++i) {
@@ -319,13 +354,11 @@ std::string Profiler::format_available_results(Style const &style) {
                 else if (color_row_gray)
                     text_color = fg(color::gray);
 
-                fmt::format_to(std::back_inserter(res), text_color, "{:-<{}} | {:>{}} | {:>{}} | {:<{}} |\n", rows_str[i][0],
-                               width_percentage, rows_str[i][1], width_time, rows_str[i][2], width_label, rows_str[i][3], width_callsite);
+                safe_print(out, text_color, "{:-<{}} | {:>{}} | {:>{}} | {:<{}} |\n", rows_str[i][0], width_percentage, rows_str[i][1],
+                           width_time, rows_str[i][2], width_label, rows_str[i][3], width_callsite);
             }
         }
     }
-
-    return res;
 }
 
 ////////////////////////////////////////////////////////////////////

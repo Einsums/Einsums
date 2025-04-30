@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
@@ -37,8 +37,15 @@ int finalize() {
     auto &global_config = GlobalConfigMap::get_singleton();
 
     if (global_config.get_bool("profiler-report")) {
-        println(profile::detail::Profiler::get().format_results());
-        // profile::report(global_config.get_string("profiler-filename"), global_config.get_bool("profiler-append"));
+        auto filename = global_config.get_string("profiler-filename");
+        if (filename == "stdout") {
+            profile::detail::Profiler::get().format_results(std::cout);
+        } else if (filename == "stderr") {
+            profile::detail::Profiler::get().format_results(std::cerr);
+        } else {
+            std::ofstream ofs(filename, global_config.get_bool("profiler-append") ? std::ios::out | std::ios::app : std::ios::out);
+            profile::detail::Profiler::get().format_results(ofs);
+        }
     }
 
     // this function destroys the runtime.
