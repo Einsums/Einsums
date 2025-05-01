@@ -24,6 +24,7 @@ set(_Einsums_modules
   GPUStreams
   HPTT
   Iterator
+  JSON
   LinearAlgebra
   Logging
   Preprocessor

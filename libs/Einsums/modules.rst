@@ -26,6 +26,7 @@ Einsums Modules
     /libs/Einsums/GPUStreams/docs/index.rst
     /libs/Einsums/HPTT/docs/index.rst
     /libs/Einsums/Iterator/docs/index.rst
+    /libs/Einsums/JSON/docs/index.rst
     /libs/Einsums/LinearAlgebra/docs/index.rst
     /libs/Einsums/Logging/docs/index.rst
     /libs/Einsums/Preprocessor/docs/index.rst
