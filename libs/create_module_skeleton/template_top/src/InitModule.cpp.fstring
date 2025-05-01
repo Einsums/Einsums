@@ -3,9 +3,11 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
-#include <{lib_name}/{module_name}/InitModule.hpp>
 #include <Einsums/Runtime.hpp>
+
 #include <argparse/argparse.hpp>
+
+#include "InitModule.hpp"
 
 namespace einsums {{
     
@@ -26,9 +28,9 @@ int setup_{lib_name}_{module_name}() {{
     static bool is_initialized = false;
 
     if(!is_initialized) {{
-        einsums::register_arguments(einsums::add_{lib_name}_{module_name}_arguments);
-        einsums::register_startup_function(einsums::initialize_{lib_name}_{module_name});
-        einsums::register_shutdown_function(einsums::finalize_{lib_name}_{module_name});
+        register_arguments(add_{lib_name}_{module_name}_arguments);
+        register_startup_function(initialize_{lib_name}_{module_name});
+        register_shutdown_function(finalize_{lib_name}_{module_name});
 
         is_initialized = true;
     }}
@@ -48,8 +50,6 @@ EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments(argparse::ArgumentPar
     auto &global_double = global_config.get_double_map()->get_value();
     auto &global_int = global_config.get_int_map()->get_value();
     auto &global_bool = global_config.get_bool_map()->get_value();
-
-    auto lock = std::lock_guard(global_string, global_double, global_int, global_bool);
 
     /* Examples:
      * String argument: 
