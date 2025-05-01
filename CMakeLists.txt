@@ -646,12 +646,12 @@ else()
   endif()
 
   # Check if our libraries have unresolved symbols
-  if(NOT APPLE
-     AND NOT WIN32
-     AND NOT EINSUMS_WITH_SANITIZERS
-  )
-    einsums_add_link_flag_if_available(-Wl,-z,defs)
-  endif()
+  #if(NOT APPLE
+  #   AND NOT WIN32
+  #   AND NOT EINSUMS_WITH_SANITIZERS
+  #)
+  #  einsums_add_link_flag_if_available(-Wl,-z,defs)
+  #endif()
   if(WIN32)
     target_link_libraries(einsums_base_libraries INTERFACE psapi WS2_32 mswsock)
   endif()

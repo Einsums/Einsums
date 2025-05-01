@@ -14,8 +14,7 @@ function(einsums_extend_with_python target)
   endif()
 
   if(UNIX AND NOT APPLE)
-    # shouldn't be needed (nor should EinsumsPy tests be embed) but adding for now
-    target_link_libraries(${target} PRIVATE pybind11::embed)
+    target_link_libraries(${target} PRIVATE pybind11::module)
   endif()
 
   if(APPLE)
