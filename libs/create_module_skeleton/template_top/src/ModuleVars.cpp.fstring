@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
-#include <{lib_name}/{module_name}/ModuleVars.hpp>
+#include "ModuleVars.hpp"
 
 namespace einsums::detail {{
 
