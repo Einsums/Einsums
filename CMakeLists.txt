@@ -150,7 +150,8 @@ einsums_option(
 
 # Compiler related build options
 einsums_option(
-  EINSUMS_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)" ON ADVANCED CATEGORY "Debugging"
+  EINSUMS_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)" ON ADVANCED
+  CATEGORY "Debugging"
 )
 
 einsums_option(
@@ -159,9 +160,11 @@ einsums_option(
 )
 
 einsums_option(
-  EINSUMS_WITH_EXECUTABLE_PREFIX STRING "Sets a string to be prepended to executable names (default: none)." ""
+  EINSUMS_WITH_EXECUTABLE_PREFIX STRING
+  "Sets a string to be prepended to executable names (default: none)." ""
   CATEGORY "Build Targets"
-  ADVANCED CATEGORY "Build Targets"
+  ADVANCED
+  CATEGORY "Build Targets"
 )
 
 einsums_option(
@@ -197,7 +200,9 @@ einsums_option(
   ADVANCED
 )
 
-einsums_option(EINSUMS_WITH_COVERAGE BOOL "Enable code coverage generation" OFF ADVANCED CATEGORY "Debugging")
+einsums_option(
+  EINSUMS_WITH_COVERAGE BOOL "Enable code coverage generation" OFF ADVANCED CATEGORY "Debugging"
+)
 
 # ##################################################################################################
 
@@ -223,8 +228,7 @@ endif()
 
 einsums_option(
   EINSUMS_WITH_PRECOMPILED_HEADERS BOOL
-  "Enabled precompiled headers for certain build targets (experimental) (default: OFF)" OFF
-  ADVANCED
+  "Enabled precompiled headers for certain build targets (experimental) (default: OFF)" OFF ADVANCED
   CATEGORY "Build Targets"
 )
 if(EINSUMS_WITH_PRECOMPILED_HEADERS)
@@ -243,55 +247,47 @@ einsums_option(
 )
 einsums_option(EINSUMS_WITH_TESTS BOOL "Build tests (default: ON)" ON CATEGORY "Build Targets")
 einsums_option(
-  EINSUMS_WITH_TESTS_BENCHMARKS BOOL "Build benchmark tests (default: ON)" ON DEPENDS
-  "EINSUMS_WITH_TESTS" CATEGORY "Build Targets"
-)
-einsums_option(
-  EINSUMS_WITH_TESTS_REGRESSIONS BOOL "Build regression tests (default: ON)" ON DEPENDS
-  "EINSUMS_WITH_TESTS" CATEGORY "Build Targets"
-)
-einsums_option(
-  EINSUMS_WITH_TESTS_UNIT BOOL "Build unit tests (default: ON)" ON DEPENDS "EINSUMS_WITH_TESTS"
+  EINSUMS_WITH_TESTS_BENCHMARKS BOOL "Build benchmark tests (default: ON)" ON
+  DEPENDS "EINSUMS_WITH_TESTS"
   CATEGORY "Build Targets"
 )
 einsums_option(
-  EINSUMS_WITH_TESTS_HEADERS
-  BOOL
-  "Build header tests (default: ON)"
-  ON
+  EINSUMS_WITH_TESTS_REGRESSIONS BOOL "Build regression tests (default: ON)" ON
+  DEPENDS "EINSUMS_WITH_TESTS"
+  CATEGORY "Build Targets"
+)
+einsums_option(
+  EINSUMS_WITH_TESTS_UNIT BOOL "Build unit tests (default: ON)" ON
+  DEPENDS "EINSUMS_WITH_TESTS"
+  CATEGORY "Build Targets"
+)
+einsums_option(
+  EINSUMS_WITH_TESTS_HEADERS BOOL "Build header tests (default: ON)" ON ADVANCED
+  DEPENDS "EINSUMS_WITH_TESTS"
+  CATEGORY "Build Targets"
+)
+einsums_option(
+  EINSUMS_WITH_TESTS_EXTERNAL_BUILD BOOL "Build external CMake build tests (default: ON)" ON
   ADVANCED
-  DEPENDS
-  "EINSUMS_WITH_TESTS"
+  DEPENDS "EINSUMS_WITH_TESTS"
   CATEGORY "Build Targets"
 )
 einsums_option(
-  EINSUMS_WITH_TESTS_EXTERNAL_BUILD
-  BOOL
-  "Build external CMake build tests (default: ON)"
-  ON
-  ADVANCED
-  DEPENDS
-  "EINSUMS_WITH_TESTS"
-  CATEGORY "Build Targets"
-)
-einsums_option(
-  EINSUMS_WITH_TESTS_EXAMPLES
-  BOOL
-  "Add examples as tests (default: ON)"
-  ON
-  DEPENDS
-  "EINSUMS_WITH_TESTS;EINSUMS_WITH_EXAMPLES"
+  EINSUMS_WITH_TESTS_EXAMPLES BOOL "Add examples as tests (default: ON)" ON
+  DEPENDS "EINSUMS_WITH_TESTS;EINSUMS_WITH_EXAMPLES"
   ADVANCED
   CATEGORY "Build Targets"
 )
 einsums_option(
   EINSUMS_WITH_COMPILE_ONLY_TESTS BOOL
-  "Create build system support for compile time only tests (default: ON)" ON DEPENDS
-  "EINSUMS_WITH_TESTS" CATEGORY "Build Targets"
+  "Create build system support for compile time only tests (default: ON)" ON
+  DEPENDS "EINSUMS_WITH_TESTS"
+  CATEGORY "Build Targets"
 )
 einsums_option(
   EINSUMS_WITH_FAIL_COMPILE_TESTS BOOL
-  "Create build system support for fail compile tests (default: ON)" ON DEPENDS "EINSUMS_WITH_TESTS"
+  "Create build system support for fail compile tests (default: ON)" ON
+  DEPENDS "EINSUMS_WITH_TESTS"
   CATEGORY "Build Targets"
 )
 
@@ -428,8 +424,8 @@ einsums_option(
 )
 
 einsums_option(
-        EINSUMS_WITH_SANITIZERS STRING "Configure with sanitizer instrumentation support." OFF
-        STRINGS "OFF;;address;leak;memory;thread;undefined"
+  EINSUMS_WITH_SANITIZERS STRING "Configure with sanitizer instrumentation support." OFF
+  STRINGS "OFF;;address;leak;memory;thread;undefined"
   CATEGORY "Debugging"
   ADVANCED
 )
@@ -439,8 +435,7 @@ einsums_option(
 einsums_option(
   EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES BOOL
   "Verify that no modules are cross-referenced from a different module category (default: OFF)" OFF
-  ADVANCED
-  CATEGORY "Debugging"
+  ADVANCED CATEGORY "Debugging"
 )
 
 einsums_option(
@@ -482,7 +477,7 @@ einsums_info("EINSUMS_LINALG_INT_INTERFACE ${EINSUMS_LINALG_INT_INTERFACE}")
 
 find_package(OpenMP REQUIRED MODULE COMPONENTS CXX)
 target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
-#einsums_info("OpenMP Version ${OpenMP_CXX_MAJOR_VERSION}")
+# einsums_info("OpenMP Version ${OpenMP_CXX_MAJOR_VERSION}")
 einsums_check_for_omp_tools_h(DEFINITIONS EINSUMS_HAVE_OMP_TOOLS_H)
 
 # ##################################################################################################
@@ -647,13 +642,8 @@ else()
     einsums_add_compile_flag_if_available(-Wno-delete-non-virtual-dtor)
   endif()
 
-  # Check if our libraries have unresolved symbols
-  #if(NOT APPLE
-  #   AND NOT WIN32
-  #   AND NOT EINSUMS_WITH_SANITIZERS
-  #)
-  #  einsums_add_link_flag_if_available(-Wl,-z,defs)
-  #endif()
+  # Check if our libraries have unresolved symbols if(NOT APPLE AND NOT WIN32 AND NOT
+  # EINSUMS_WITH_SANITIZERS ) einsums_add_link_flag_if_available(-Wl,-z,defs) endif()
   if(WIN32)
     target_link_libraries(einsums_base_libraries INTERFACE psapi WS2_32 mswsock)
   endif()
@@ -720,27 +710,27 @@ if(EINSUMS_USE_LIBRETT AND EINSUMS_WITH_GPU_SUPPORT)
   include(Einsums_SetupLibreTT)
 endif()
 
-if (EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
-  if (EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
+if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
+  if(EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
     find_package(
-            Python "${EINSUMS_BUILD_PYTHON}" EXACT
-            COMPONENTS Interpreter Development NumPy
-            REQUIRED
+      Python "${EINSUMS_BUILD_PYTHON}" EXACT
+      COMPONENTS Interpreter Development NumPy
+      REQUIRED
     )
-  else ()
+  else()
     find_package(
-            Python 3.10
-            COMPONENTS Interpreter Development NumPy
-            REQUIRED
+      Python 3.10
+      COMPONENTS Interpreter Development NumPy
+      REQUIRED
     )
-  endif ()
+  endif()
 
   include(Einsums_SetupPybind11)
 
   find_package(pybind11)
-endif ()
+endif()
 
-if (EINSUMS_WITH_SANITIZERS AND NOT MSVC)
+if(EINSUMS_WITH_SANITIZERS AND NOT MSVC)
   einsums_info("Adding sanitizer flags for ${EINSUMS_WITH_SANITIZERS}")
   target_compile_options(einsums_public_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})
   target_link_options(einsums_public_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})

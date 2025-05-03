@@ -87,6 +87,7 @@ function(einsums_add_test category name)
   endif()
 
   if(TARGET ${${name}_EXECUTABLE}_test AND ${name}_PERFORMANCE_TESTING)
+    # @todo Create a testing library for performance testing that utilizes the performance counter code
     # target_link_libraries(${${name}_EXECUTABLE}_test PRIVATE einsums_performance_testing)
   endif()
 
