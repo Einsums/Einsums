@@ -14,7 +14,6 @@ namespace einsums {
     // clang-format off
     std::string_view const config_strings[] =
     {@einsums_config_information@
-        nullptr
     };
     // clang-format off
 
