@@ -17,6 +17,7 @@ set(_EinsumsPy_modules
   Tensor
   TensorAlgebra
   TestUtils
+  Version
   )
 # cmake-format: on
 

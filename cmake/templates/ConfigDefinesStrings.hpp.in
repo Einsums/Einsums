@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <string_view>
+
 namespace einsums {
 
     // clang-format off
-    char const* const config_strings[] =
+    std::string_view const config_strings[] =
     {@einsums_config_information@
         nullptr
     };

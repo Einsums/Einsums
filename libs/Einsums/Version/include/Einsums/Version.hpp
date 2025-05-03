@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -62,12 +62,12 @@ EINSUMS_EXPORT std::string build_date_time();
 EINSUMS_EXPORT std::string full_build_string();
 
 /// Returns the copyright string.
-constexpr std::string_view copyright() {
-    char const *const copyright = "Einsums\n\n"
-                                  "Copyright (c) The Einsums Developers. All rights reserved.\n"
-                                  "https://github.com/Einsms/Einsums\n\n"
-                                  "Distributed under the MIT License, See accompanying LICENSE.txt in the\n"
-                                  "project root for license information.\n";
+inline std::string_view const copyright() {
+    static std::string_view const copyright = "Einsums\n\n"
+                                              "Copyright (c) The Einsums Developers. All rights reserved.\n"
+                                              "https://github.com/Einsms/Einsums\n\n"
+                                              "Distributed under the MIT License, See accompanying LICENSE.txt in the\n"
+                                              "project root for license information.\n";
     return copyright;
 }
 

@@ -133,7 +133,7 @@ einsums_option(
 )
 
 if(EINSUMS_WITH_DEPRECATION_WARNINGS)
-  einsums_add_config_cond_define(EINSUMS_HAVE_DEPRECATION_WARNINGS 1)
+  einsums_add_config_cond_define(EINSUMS_HAVE_DEPRECATION_WARNINGS)
 endif()
 
 # Ultimately this will be something different

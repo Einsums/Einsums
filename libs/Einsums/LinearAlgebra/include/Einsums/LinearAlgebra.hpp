@@ -93,7 +93,7 @@ template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, Ma
         requires SameUnderlying<AType, BType, CType>;
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
-    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra: gemm<TransA={}, TransB={}>", TransA, TransB);
     detail::gemm<TransA, TransB>(alpha, A, B, beta, C);
 }
 
@@ -125,7 +125,7 @@ template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, ty
         requires SameUnderlying<AType, BType>;
     }
 auto gemm(U const alpha, AType const &A, BType const &B) -> RemoveViewT<AType> {
-    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra: gemm<TransA={}, TransB={}>", TransA, TransB);
 
     RemoveViewT<AType> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
     gemm<TransA, TransB>(static_cast<typename AType::ValueType>(alpha), A, B, static_cast<typename AType::ValueType>(0.0), &C);
@@ -144,7 +144,7 @@ template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, Ma
         requires SameUnderlying<AType, BType, CType>;
     }
 void symm_gemm(AType const &A, BType const &B, CType *C) {
-    EINSUMS_PROFILE_SCOPE("LinearAlgebra");
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra: symm_gemm<TransA={}, TransB={}>", TransA, TransB);
 
     detail::symm_gemm<TransA, TransB>(A, B, C);
 }
@@ -180,7 +180,7 @@ template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept Y
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
-    EINSUMS_PROFILE_SCOPE("LinearAlgebra:<TransA={}>", TransA);
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra: gemv<TransA={}>", TransA);
 
     detail::gemv<TransA>(alpha, A, z, beta, y);
 }
@@ -220,7 +220,7 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
         requires !Complex<AType>;
     }
 void syev(AType *A, WType *W) {
-    EINSUMS_PROFILE_SCOPE("LinearAlgebra:<ComputeEigenvectors={}>", ComputeEigenvectors);
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra: syev<ComputeEigenvectors={}>", ComputeEigenvectors);
     detail::syev<ComputeEigenvectors>(A, W);
 }
 
@@ -237,7 +237,7 @@ template <bool ComputeLeftRightEigenvectors = true, MatrixConcept AType, VectorC
         requires std::is_same_v<typename WType::ValueType, AddComplexT<typename AType::ValueType>>;
     }
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
-    EINSUMS_PROFILE_SCOPE("LinearAlgebra:<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors);
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra: geev<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors);
     detail::geev<ComputeLeftRightEigenvectors>(A, W, lvecs, rvecs);
 }
 
@@ -249,7 +249,7 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
         requires std::is_same_v<typename WType::ValueType, RemoveComplexT<typename AType::ValueType>>;
     }
 void heev(AType *A, WType *W) {
-    EINSUMS_PROFILE_SCOPE("LinearAlgebra:<ComputeEigenvectors={}>", ComputeEigenvectors);
+    EINSUMS_PROFILE_SCOPE("LinearAlgebra: heev<ComputeEigenvectors={}>", ComputeEigenvectors);
     detail::heev<ComputeEigenvectors>(A, W);
 }
 
@@ -319,21 +319,18 @@ auto syev(AType const &A) -> std::tuple<RemoveViewT<AType>, BasicTensorLike<ATyp
 template <TensorConcept AType>
 void scale(typename AType::ValueType scale, AType *A) {
     EINSUMS_PROFILE_SCOPE("LinearAlgebra");
-
     detail::scale(scale, A);
 }
 
 template <MatrixConcept AType>
 void scale_row(size_t row, typename AType::ValueType scale, AType *A) {
     EINSUMS_PROFILE_SCOPE("LinearAlgebra");
-
     detail::scale_row(row, scale, A);
 }
 
 template <MatrixConcept AType>
 void scale_column(size_t col, typename AType::ValueType scale, AType *A) {
     EINSUMS_PROFILE_SCOPE("LinearAlgebra");
-
     detail::scale_column(col, scale, A);
 }
 
@@ -351,7 +348,6 @@ template <MatrixConcept AType>
 auto pow(AType const &a, typename AType::ValueType alpha,
          typename AType::ValueType cutoff = std::numeric_limits<typename AType::ValueType>::epsilon()) -> RemoveViewT<AType> {
     EINSUMS_PROFILE_SCOPE("LinearAlgebra");
-
     return detail::pow(a, alpha, cutoff);
 }
 
