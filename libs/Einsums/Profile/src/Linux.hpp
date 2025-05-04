@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -19,9 +19,9 @@ struct PerformanceCounterLinux : PerformanceCounter {
     int                      nevents() const override;
     std::vector<std::string> event_names() const override;
 
-    void                                      start(std::vector<uint64_t> &s) override;
-    void                                      stop(std::vector<uint64_t> &e) override;
+    void                                      capture(std::vector<uint64_t> &s) override;
     void                                      delta(std::vector<uint64_t> const &s, std::vector<uint64_t> &e) const override;
+
     std::unordered_map<std::string, uint64_t> to_event_map(std::vector<uint64_t> const &d) const override;
 
   private:

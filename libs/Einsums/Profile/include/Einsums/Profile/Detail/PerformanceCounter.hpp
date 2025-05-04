@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -22,14 +22,10 @@ struct PerformanceCounter {
     /// The names of the events being tracked
     [[nodiscard]] virtual std::vector<std::string> event_names() const = 0;
 
-    /// Start capturing performance data
-    /// @param s pre-allocated vector of length nevents()
-    virtual void start(std::vector<uint64_t> &s) = 0;
-
-    /// Stop capturing and compute delta
+    /// Capture the current state of the counters
     /// @param e pre-allocated vector of length nevents()
     /// @note The data stored in e will not be valid until you call the delta function
-    virtual void stop(std::vector<uint64_t> &e) = 0;
+    virtual void capture(std::vector<uint64_t> &e) = 0;
 
     /// Return performance counter results
     /// @param s the data from start()

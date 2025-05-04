@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
@@ -816,7 +816,7 @@ struct PerformanceCounterMac : PerformanceCounter {
         _available = true;
     }
 
-    void start(std::vector<uint64_t> &s) override {
+    void capture(std::vector<uint64_t> &s) override {
         if (!_available) [[unlikely]] {
             return;
         }
@@ -825,19 +825,6 @@ struct PerformanceCounterMac : PerformanceCounter {
         }
         for (int i = 0; i < num_counters; ++i) {
             s[i] = counters[counter_map[i]];
-        }
-    }
-
-    void stop(std::vector<uint64_t> &e) override {
-        if (!_available) [[unlikely]] {
-            return;
-        }
-        if (kpc_get_thread_counters(0, KPC_MAX_COUNTERS, counters.data()) != 0) [[unlikely]] {
-            EINSUMS_LOG_ERROR("Failed to get stopping thread counters");
-        }
-        std::unordered_map<std::string, uint64_t> result;
-        for (int i = 0; i < num_counters; ++i) {
-            e[i] = counters[counter_map[i]];
         }
     }
 

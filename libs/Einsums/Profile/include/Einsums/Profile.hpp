@@ -11,7 +11,7 @@
 #include <Einsums/Profile/Detail/CPUFrequency.hpp>
 #include <Einsums/Profile/Detail/PerformanceCounter.hpp>
 
-#include <fmt/format.h>
+#include <fmt/format.h> // Needed for macros at the bottom to work
 
 #include <chrono>
 #include <cstdint>
@@ -184,7 +184,8 @@ struct EINSUMS_EXPORT Profiler {
 
     void add_thread_call_graph(ThreadCallGraph *thread_call_graph);
 
-    static Profiler &get();
+    PerformanceCounter &get_performance_counter() const;
+    static Profiler    &get();
 };
 
 // Is this even needed?
@@ -206,7 +207,7 @@ struct EINSUMS_EXPORT ThreadCallGraph {
     NodeId traverse_forward(CallSiteId callsite_id);
     void   traverse_back();
 
-    void record_time(duration time);
+    void record(duration time, std::unordered_map<std::string, uint64_t> &events);
 
     CallSiteId callsite_add(CallSiteInfo const &info);
 };
@@ -222,10 +223,15 @@ struct EINSUMS_EXPORT CallSite {
 struct EINSUMS_EXPORT Timer {
     Timer(CallSiteId id);
 
-    void finish() const;
+    void finish();
 
   private:
-    time_point entry = clock::now();
+    PerformanceCounter &_performance_counter;
+    time_point          _entry;
+    struct {
+        std::vector<uint64_t> start;
+        std::vector<uint64_t> end;
+    } _counters;
 };
 
 struct ScopeTimer : Timer {

@@ -162,7 +162,7 @@ void NodeMatrix::resize(std::size_t new_rows, std::size_t new_cols) {
 /// Profiler
 ////////////////////////////////////////////////////////////////////
 
-Profiler::Profiler() : _main_thread_id(std::this_thread::get_id()), _performance_counter(PerformanceCounter::create()) {
+Profiler::Profiler() : _main_thread_id(std::this_thread::get_id()), _thread_counter(0), _performance_counter(PerformanceCounter::create()) {
 }
 
 Profiler::~Profiler() = default;
@@ -361,6 +361,10 @@ void Profiler::format_available_results(std::ostream &out, Style const &style) {
     }
 }
 
+PerformanceCounter &Profiler::get_performance_counter() const {
+    return *_performance_counter.get();
+}
+
 ////////////////////////////////////////////////////////////////////
 /// Thread Call Graph
 ////////////////////////////////////////////////////////////////////
@@ -413,8 +417,15 @@ void ThreadCallGraph::traverse_back() {
     _current_node_id = _mat.prev_id(_current_node_id);
 }
 
-void ThreadCallGraph::record_time(duration time) {
+void ThreadCallGraph::record(duration time, std::unordered_map<std::string, uint64_t> &events) {
     _mat.time(_current_node_id) += time;
+    // ensure the vector is of the right length
+    auto &thread_events = _mat.events(_current_node_id);
+    // if "key" doesn't exist in thread_events it is automatically added and
+    // assigned a value of 0.
+    for (auto const &[key, value] : events) {
+        thread_events[key] += value;
+    }
 }
 
 CallSiteId ThreadCallGraph::callsite_add(CallSiteInfo const &info) {
@@ -437,12 +448,22 @@ CallSite::CallSite(CallSiteInfo const &info) {
 ////////////////////////////////////////////////////////////////////
 /// Timer
 ////////////////////////////////////////////////////////////////////
-Timer::Timer(CallSiteId id) {
+Timer::Timer(CallSiteId id) : _performance_counter(Profiler::get().get_performance_counter()) {
     thread_call_graph.traverse_forward(id);
+    _counters.start.resize(_performance_counter.nevents());
+    _counters.end.resize(_performance_counter.nevents());
+
+    _entry = clock::now();
+    _performance_counter.capture(_counters.start);
 }
 
-void Timer::finish() const {
-    thread_call_graph.record_time(clock::now() - entry);
+void Timer::finish() {
+    _performance_counter.capture(_counters.end);
+    auto duration = clock::now() - _entry;
+    _performance_counter.delta(_counters.start, _counters.end);
+    auto mapped = _performance_counter.to_event_map(_counters.end);
+
+    thread_call_graph.record(duration, mapped);
     thread_call_graph.traverse_back();
 }
 

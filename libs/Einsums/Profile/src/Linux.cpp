@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #include "Linux.hpp"
 
@@ -116,7 +116,7 @@ std::vector<std::string> PerformanceCounterLinux::event_names() const {
     return _names;
 }
 
-void PerformanceCounterLinux::start(std::vector<uint64_t> &s) {
+void PerformanceCounterLinux::capture(std::vector<uint64_t> &s) {
     s.resize(_fds.size() * 3);
     for (size_t i = 0; i < _fds.size(); ++i) {
         ReadData data{};
@@ -127,20 +127,6 @@ void PerformanceCounterLinux::start(std::vector<uint64_t> &s) {
         s[i * 3 + 0] = data.value;
         s[i * 3 + 1] = data.time_enabled;
         s[i * 3 + 2] = data.time_running;
-    }
-}
-
-void PerformanceCounterLinux::stop(std::vector<uint64_t> &e) {
-    e.resize(_fds.size() * 3);
-    for (size_t i = 0; i < _fds.size(); ++i) {
-        ReadData data{};
-        if (read(_fds[i].fd, &data, sizeof(data)) != sizeof(data)) {
-            EINSUMS_LOG_ERROR("Failed to read perf counter");
-            continue;
-        }
-        e[i * 3 + 0] = data.value;
-        e[i * 3 + 1] = data.time_enabled;
-        e[i * 3 + 2] = data.time_running;
     }
 }
 
