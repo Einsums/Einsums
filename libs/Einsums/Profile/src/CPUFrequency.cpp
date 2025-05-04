@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #include <Einsums/Profile/Detail/CPUFrequency.hpp>
 
@@ -21,14 +21,7 @@ namespace einsums::profile::detail {
 
 auto cpu_frequency() -> uint64_t {
 #if defined(EINSUMS_APPLE)
-    uint64_t frequency = 0;
-    size_t   size      = sizeof(frequency);
-    if (sysctlbyname("hw.cpufrequency", &frequency, &size, nullptr, 0) == 0) {
-        return frequency; // In Hz
-    } else {
-        return 0; // Failed
-    }
-
+    return 0; // No idea how to get this on macOS.
 #elif defined(EINSUMS_LINUX)
     // Linux: try /sys first, then fall back to /proc
     std::ifstream sysfs("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq");

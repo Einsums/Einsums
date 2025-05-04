@@ -264,6 +264,10 @@ void Profiler::format_available_results(std::ostream &out, Style const &style) {
     // Print using fmt (safe even with non-thread-safe tm*)
     safe_print(out, no_style, "\nReporting time: {:%Y-%m-%d %H:%M:%S} local time\n", *local_tm);
 
+    auto hz = cpu_frequency();
+    if (hz != 0)
+        safe_print(out, no_style, "\nCPU operating at {} MHz\n", cpu_frequency() / 1000000.0);
+
     for (auto const &[thread_id, thread_lifetimes] : _call_graph_info) {
         for (std::size_t reuse = 0; reuse < thread_lifetimes.lifetimes.size(); ++reuse) {
             auto const       &mat         = thread_lifetimes.lifetimes[reuse].mat;
