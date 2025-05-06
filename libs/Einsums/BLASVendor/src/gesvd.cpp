@@ -1,13 +1,13 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -22,9 +22,9 @@ extern void FC_GLOBAL(sgesvd, SGESVD)(char *, char *, int_t *, int_t *, float *,
 
 #define GESVD(Type, lcletter, UCLETTER)                                                                                                    \
     auto lcletter##gesvd(char jobu, char jobvt, int_t m, int_t n, Type *a, int_t lda, Type *s, Type *u, int_t ldu, Type *vt, int_t ldvt,   \
-                         Type *superb) -> int_t {                                                                                          \
-        LabeledSection0();                                                                                                                 \
-                                                                                                                                           \
+                         Type *superb)                                                                                                     \
+        ->int_t {                                                                                                                          \
+        EINSUMS_PROFILE_SCOPE("BLASVendor");                                                                                               \
         int_t info  = 0;                                                                                                                   \
         int_t lwork = -1;                                                                                                                  \
                                                                                                                                            \
@@ -66,13 +66,13 @@ extern void FC_GLOBAL(sgesvd, SGESVD)(char *, char *, int_t *, int_t *, float *,
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        std::vector<Type> a_t(lda_t *std::max(int_t{1}, n));                                                                               \
+        std::vector<Type> a_t(lda_t * std::max(int_t{1}, n));                                                                              \
         std::vector<Type> u_t, vt_t;                                                                                                       \
         if (lsame(jobu, 'a') || lsame(jobu, 's')) {                                                                                        \
-            u_t.resize(ldu_t *std::max(int_t{1}, ncols_u));                                                                                \
+            u_t.resize(ldu_t * std::max(int_t{1}, ncols_u));                                                                               \
         }                                                                                                                                  \
         if (lsame(jobvt, 'a') || lsame(jobvt, 's')) {                                                                                      \
-            vt_t.resize(ldvt_t *std::max(int_t{1}, n));                                                                                    \
+            vt_t.resize(ldvt_t * std::max(int_t{1}, n));                                                                                   \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \

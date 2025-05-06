@@ -1,13 +1,13 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -25,9 +25,8 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
 }
 
 #define GESDD(Type, lcletter, UCLETTER)                                                                                                    \
-    auto lcletter##gesdd(char jobz, int_t m, int_t n, Type *a, int_t lda, Type *s, Type *u, int_t ldu, Type *vt, int_t ldvt) -> int_t {    \
-        LabeledSection0();                                                                                                                 \
-                                                                                                                                           \
+    auto lcletter##gesdd(char jobz, int_t m, int_t n, Type *a, int_t lda, Type *s, Type *u, int_t ldu, Type *vt, int_t ldvt)->int_t {      \
+        EINSUMS_PROFILE_SCOPE("BLASVendor");                                                                                               \
         int_t nrows_u  = (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, '0') && m < n)) ? m : 1;                                    \
         int_t ncols_u  = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m < n)) ? m : (lsame(jobz, 's') ? std::min(m, n) : 1);                  \
         int_t nrows_vt = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m >= n)) ? n : (lsame(jobz, 's') ? std::min(m, n) : 1);                 \
@@ -60,12 +59,12 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
         lwork = (int)work_query;                                                                                                           \
                                                                                                                                            \
         /* Allocate memory for temporary arrays(s) */                                                                                      \
-        a_t.resize(lda_t *std::max(int_t{1}, n));                                                                                          \
+        a_t.resize(lda_t * std::max(int_t{1}, n));                                                                                         \
         if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m < n))) {                                                       \
-            u_t.resize(ldu_t *std::max(int_t{1}, ncols_u));                                                                                \
+            u_t.resize(ldu_t * std::max(int_t{1}, ncols_u));                                                                               \
         }                                                                                                                                  \
         if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m >= n))) {                                                      \
-            vt_t.resize(ldvt_t *std::max(int_t{1}, n));                                                                                    \
+            vt_t.resize(ldvt_t * std::max(int_t{1}, n));                                                                                   \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Allocate work array */                                                                                                          \
@@ -95,9 +94,9 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
 
 #define GESDD_complex(Type, lc, UC)                                                                                                        \
     auto lc##gesdd(char jobz, int_t m, int_t n, std::complex<Type> *a, int_t lda, Type *s, std::complex<Type> *u, int_t ldu,               \
-                   std::complex<Type> *vt, int_t ldvt) -> int_t {                                                                          \
-        LabeledSection0();                                                                                                                 \
-                                                                                                                                           \
+                   std::complex<Type> *vt, int_t ldvt)                                                                                     \
+        ->int_t {                                                                                                                          \
+        EINSUMS_PROFILE_SCOPE("BLASVendor");                                                                                               \
         int_t nrows_u  = (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, '0') && m < n)) ? m : 1;                                    \
         int_t ncols_u  = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m < n)) ? m : (lsame(jobz, 's') ? std::min(m, n) : 1);                  \
         int_t nrows_vt = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m >= n)) ? n : (lsame(jobz, 's') ? std::min(m, n) : 1);                 \
@@ -146,12 +145,12 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
         work.resize(lwork);                                                                                                                \
                                                                                                                                            \
         /* Allocate memory for temporary arrays(s) */                                                                                      \
-        a_t.resize(lda_t *std::max(int_t{1}, n));                                                                                          \
+        a_t.resize(lda_t * std::max(int_t{1}, n));                                                                                         \
         if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m < n))) {                                                       \
-            u_t.resize(ldu_t *std::max(int_t{1}, ncols_u));                                                                                \
+            u_t.resize(ldu_t * std::max(int_t{1}, ncols_u));                                                                               \
         }                                                                                                                                  \
         if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m >= n))) {                                                      \
-            vt_t.resize(ldvt_t *std::max(int_t{1}, n));                                                                                    \
+            vt_t.resize(ldvt_t * std::max(int_t{1}, n));                                                                                   \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \

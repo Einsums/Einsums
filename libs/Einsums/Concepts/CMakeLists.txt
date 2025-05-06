@@ -9,6 +9,7 @@ set(ConceptsHeaders Einsums/Concepts/Complex.hpp Einsums/Concepts/File.hpp
                     Einsums/Concepts/SmartPointer.hpp Einsums/Concepts/TensorConcepts.hpp
                     Einsums/Concepts/SubscriptChooser.hpp
                     Einsums/Concepts/NamedRequirements.hpp
+                    Einsums/Concepts/Enum.hpp
 )
 
 set(ConceptsSources CheckRequirements.cpp)

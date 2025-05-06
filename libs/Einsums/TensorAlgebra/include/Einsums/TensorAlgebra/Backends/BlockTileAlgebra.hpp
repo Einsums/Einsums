@@ -1,11 +1,12 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/TensorAlgebra/Backends/Dispatch.hpp>
 #include <Einsums/TensorAlgebra/Backends/TileAlgebra.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
@@ -28,6 +29,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/BlockTileAlgebra");
 
     using ADataType        = typename AType::ValueType;
     using BDataType        = typename BType::ValueType;

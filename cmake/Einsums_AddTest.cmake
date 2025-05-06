@@ -42,7 +42,7 @@ function(einsums_add_test category name)
   endif()
 
   set(args "--einsums:no-install-signal-handlers")
-  set(args ${args} "--einsums:no-profiler-report")
+  set(args ${args} "--einsums:profiler-filename=stdout")
   set(args "${${name}_ARGS}" "${${name}_UNPARSED_ARGUMENTS}" ${args})
 
   set(_script_location ${PROJECT_BINARY_DIR})
@@ -87,6 +87,7 @@ function(einsums_add_test category name)
   endif()
 
   if(TARGET ${${name}_EXECUTABLE}_test AND ${name}_PERFORMANCE_TESTING)
+    # @todo Create a testing library for performance testing that utilizes the performance counter code
     # target_link_libraries(${${name}_EXECUTABLE}_test PRIVATE einsums_performance_testing)
   endif()
 

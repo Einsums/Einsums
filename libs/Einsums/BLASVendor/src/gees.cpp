@@ -1,13 +1,13 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -21,8 +21,8 @@ extern void FC_GLOBAL(sgees, SGEES)(char *, char *, int_t (*)(float *, float *),
 }
 
 #define GEES(Type, lc, UC)                                                                                                                 \
-    auto lc##gees(char jobvs, int_t n, Type *a, int_t lda, int_t *sdim, Type *wr, Type *wi, Type *vs, int_t ldvs) -> int_t {               \
-        LabeledSection0();                                                                                                                 \
+    auto lc##gees(char jobvs, int_t n, Type *a, int_t lda, int_t *sdim, Type *wr, Type *wi, Type *vs, int_t ldvs)->int_t {                 \
+        EINSUMS_PROFILE_SCOPE("BLASVendor");                                                                                               \
                                                                                                                                            \
         int_t  info  = 0;                                                                                                                  \
         int_t  lwork = -1;                                                                                                                 \
@@ -52,10 +52,10 @@ extern void FC_GLOBAL(sgees, SGEES)(char *, char *, int_t (*)(float *, float *),
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        std::vector<Type> a_t(lda_t *std::max(int_t{1}, n));                                                                               \
+        std::vector<Type> a_t(lda_t * std::max(int_t{1}, n));                                                                              \
         std::vector<Type> vs_t;                                                                                                            \
         if (lsame(jobvs, 'v')) {                                                                                                           \
-            vs_t.resize(ldvs_t *std::max(int_t{1}, n));                                                                                    \
+            vs_t.resize(ldvs_t * std::max(int_t{1}, n));                                                                                   \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \

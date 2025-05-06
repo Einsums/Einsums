@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
@@ -9,6 +9,7 @@
 #include <Einsums/Debugging/AttachDebugger.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 
 #include <csignal>
@@ -69,8 +70,8 @@ EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type) {
 
     try {
         auto &global_config = GlobalConfigMap::get_singleton();
-        attach = global_config.get_bool("attach-debugger", true);
-    } catch(...) {
+        attach              = global_config.get_bool("attach-debugger", true);
+    } catch (...) {
         attach = true;
     }
 
@@ -206,12 +207,14 @@ void Runtime::add_startup_function(StartupFunctionType f) {
 void Runtime::call_startup_functions(bool pre_startup) {
     if (pre_startup) {
         EINSUMS_LOG_TRACE("Calling pre-startup routines");
+        EINSUMS_PROFILE_SCOPE("Pre-Startup Routines");
         state(RuntimeState::PreStartup);
         for (StartupFunctionType &f : _pre_startup_functions) {
             f();
         }
     } else {
         EINSUMS_LOG_TRACE("Calling startup routines");
+        EINSUMS_PROFILE_SCOPE("Startup Routines");
         state(RuntimeState::Startup);
         for (StartupFunctionType &f : _startup_functions) {
             f();
@@ -222,12 +225,14 @@ void Runtime::call_startup_functions(bool pre_startup) {
 void Runtime::call_shutdown_functions(bool pre_shutdown) {
     if (pre_shutdown) {
         EINSUMS_LOG_TRACE("Calling pre-shutdown routines");
+        EINSUMS_PROFILE_SCOPE("Pre-Shutdown Routines");
         state(RuntimeState::PreShutdown);
         for (ShutdownFunctionType &f : _pre_shutdown_functions) {
             f();
         }
     } else {
         EINSUMS_LOG_TRACE("Calling shutdown routines");
+        EINSUMS_PROFILE_SCOPE("Shutdown Routines");
         state(RuntimeState::Shutdown);
         for (ShutdownFunctionType &f : _shutdown_functions) {
             f();
@@ -244,7 +249,11 @@ int Runtime::run(std::function<EinsumsMainFunctionType> const &func) {
     // Once we start using a thread pool / threading manager we can
     // pass the function to the pool and have the manager handle it.
     EINSUMS_LOG_INFO("running user provided function");
-    int result = func();
+    int result{0};
+    {
+        EINSUMS_PROFILE_SCOPE("User Provided Function");
+        result = func();
+    }
 
     return result;
 }

@@ -5,11 +5,26 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(ProfileHeaders Einsums/Profile/LabeledSection.hpp Einsums/Profile/Timer.hpp)
+set(ProfileHeaders
+    Einsums/Profile.hpp
+    Einsums/Profile/Detail/CPUFrequency.hpp
+    Einsums/Profile/Detail/PerformanceCounter.hpp
+)
 
-set(ProfileSources Section.cpp Timer.cpp)
+set(ProfileSources
+    Profile.cpp
+    CPUFrequency.cpp
+)
 
-if (EINSUMS_WITH_OMP_TOOLS_H)
+if(APPLE)
+  list(APPEND ProfileSources macOS.cpp)
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  list(APPEND ProfileSources Linux.hpp Linux.cpp)
+endif()
+
+if(EINSUMS_WITH_OMP_TOOLS_H)
   list(APPEND ProfileSource OMPT.cpp)
 endif()
 
@@ -19,6 +34,6 @@ einsums_add_module(
   SOURCES ${ProfileSources}
   HEADERS ${ProfileHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES Einsums_Config Einsums_Logging Einsums_Print Einsums_StringUtil
+  MODULE_DEPENDENCIES Einsums_Config Einsums_Concepts Einsums_Logging Einsums_Print Einsums_StringUtil
   CMAKE_SUBDIRS examples tests
 )

@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -11,6 +11,7 @@
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TypeSupport/GPUCast.hpp>
+#include <Einsums/Profile.hpp>
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
@@ -89,10 +90,10 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     -> std::enable_if_t<sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
                         std::is_arithmetic_v<U>> {
 
-    LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
+    EINSUMS_PROFILE_SCOPE(fmt::runtime(((std::fabs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices,
                                       UC_prefactor, C->name(), C_indices)
-                        : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices));
+                        : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices)));
 
     T const C_prefactor = UC_prefactor;
     T const A_prefactor = UA_prefactor;
