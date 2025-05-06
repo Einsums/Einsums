@@ -23,17 +23,20 @@ int einsums_main() {
             // std::vector<uint64_t> start(nevents);
             // std::vector<uint64_t> stop(nevents);
 
-            size_t i{10};
-            auto   A = create_random_tensor("A", i);
-            auto   B = create_random_tensor("B", i);
+            for (int j = 0; j < 10; j++) {
+                EINSUMS_PROFILE_SCOPE("loop");
+                size_t i{10};
+                auto   A = create_random_tensor("A", i);
+                auto   B = create_random_tensor("B", i);
 
-            // performance_counter->start(start);
-            double C = linear_algebra::dot(A, B);
-            // performance_counter->stop(stop);
+                // performance_counter->start(start);
+                double C = linear_algebra::dot(A, B);
+                // performance_counter->stop(stop);
+            }
 
-            println(A);
-            println(B);
-            println("C = {}", C);
+            // println(A);
+            // println(B);
+            // println("C = {}", C);
 
             // performance_counter->delta(start, stop);
 

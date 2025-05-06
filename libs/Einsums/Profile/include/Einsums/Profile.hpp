@@ -8,6 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Enum.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/Profile/Detail/CPUFrequency.hpp>
 #include <Einsums/Profile/Detail/PerformanceCounter.hpp>
 
@@ -72,15 +73,16 @@ struct EINSUMS_EXPORT NodeMatrix {
     ArrayType<NodeId> _prev_ids;
     ArrayType<NodeId> _next_ids;
 
-    ArrayType<duration>                                  _times;
-    ArrayType<std::unordered_map<std::string, uint64_t>> _events;
+    ArrayType<duration>                                  _times;  // accumulation of elapsed time
+    ArrayType<std::unordered_map<std::string, uint64_t>> _events; // accumulation of various performance counters
+    ArrayType<uint64_t>                                  _count;  // how many times the marker was hit.
 
     ArrayType<CallSiteInfo> _callsites;
 
-    std::size_t _rows_size;
-    std::size_t _cols_size;
-    std::size_t _rows_capacity;
-    std::size_t _cols_capacity;
+    std::size_t _rows_size     = 0;
+    std::size_t _cols_size     = 0;
+    std::size_t _rows_capacity = 0;
+    std::size_t _cols_capacity = 0;
 
   public:
     std::size_t rows() const noexcept;
@@ -92,12 +94,14 @@ struct EINSUMS_EXPORT NodeMatrix {
     NodeId                                    &next_id(CallSiteId callsite_id, NodeId node_id);
     duration                                  &time(NodeId node_id);
     std::unordered_map<std::string, uint64_t> &events(NodeId node_id);
+    uint64_t                                  &count(NodeId node_id);
     CallSiteInfo                              &callsite(CallSiteId callsite_id);
 
     NodeId const                                    &prev_id(NodeId node_id) const;
     NodeId const                                    &next_id(CallSiteId callsite_id, NodeId node_id) const;
     duration const                                  &time(NodeId node_id) const;
     std::unordered_map<std::string, uint64_t> const &events(NodeId node_id) const;
+    uint64_t const                                  &count(NodeId node_id) const;
     CallSiteInfo const                              &callsite(CallSiteId callsite_id) const;
 
     void resize(std::size_t new_rows, std::size_t new_cols);
@@ -188,9 +192,6 @@ struct EINSUMS_EXPORT Profiler {
     static Profiler    &get();
 };
 
-// Is this even needed?
-// extern Profiler profiler;
-
 struct EINSUMS_EXPORT ThreadCallGraph {
     NodeMatrix      _mat;
     NodeId          _current_node_id  = NodeId::empty;
@@ -213,11 +214,14 @@ struct EINSUMS_EXPORT ThreadCallGraph {
 };
 
 struct EINSUMS_EXPORT CallSite {
+    CallSite() = default;
     CallSite(CallSiteInfo const &info);
     CallSiteId get_id() const noexcept { return _id; }
 
+    CallSite &operator=(CallSiteInfo const &info);
+
   private:
-    CallSiteId _id;
+    CallSiteId _id = CallSiteId::empty;
 };
 
 struct EINSUMS_EXPORT Timer {
@@ -247,34 +251,32 @@ struct ScopeTimer : Timer {
 #define einsums_profile_uuid(varname_) EINSUMS_PP_CAT(varname_, __LINE__)
 
 #define EINSUMS_PROFILE_SCOPE(label_, ...)                                                                                                 \
-    constexpr bool einsums_profile_uuid(einsums_profile_macro_guard_) = true;                                                              \
-    static_assert(einsums_profile_uuid(einsums_profile_macro_guard_), "EINSUMS_PROFILE is a multi-line macro.");                           \
+    EINSUMS_LOG_TRACE(label_, ##__VA_ARGS__);                                                                                              \
+    thread_local einsums::profile::detail::CallSite einsums_profile_uuid(einsums_profile_callsite_);                                       \
+    einsums_profile_uuid(einsums_profile_callsite_) =                                                                                      \
+        einsums::profile::detail::CallSiteInfo(__FILE__, __func__, fmt::format(label_, ##__VA_ARGS__), __LINE__);                          \
                                                                                                                                            \
-    const thread_local einsums::profile::detail::CallSite einsums_profile_uuid(einsums_profile_callsite_)(                                 \
-        einsums::profile::detail::CallSiteInfo(__FILE__, __func__, fmt::format(label_, ##__VA_ARGS__), __LINE__));                         \
-                                                                                                                                           \
-    const einsums::profile::detail::ScopeTimer einsums_profile_uuid(einsums_profile_scope_timer_) {                                        \
+    einsums::profile::detail::ScopeTimer einsums_profile_uuid(einsums_profile_scope_timer_) {                                              \
         einsums_profile_uuid(einsums_profile_callsite_).get_id()                                                                           \
     }
 
 #define EINSUMS_PROFILE(label_)                                                                                                            \
-    constexpr bool einsums_profile_uuid(einsums_profile_macro_guard_) = true;                                                              \
-    static_assert(einsums_profile_uuid(einsums_profile_macro_guard_), "EINSUMS_PROFILER is a multi-line macro.");                          \
-                                                                                                                                           \
-    const thread_local einsums::profile::detail::CallSite einsums_profile_uuid(einsums_profile_callsite_)(                                 \
-        einsums::profile::detail::CallSiteInfo{__FILE__, __func__, label_, __LINE__});                                                     \
+    EINSUMS_LOG_TRACE(label_, ##__VA_ARGS__);                                                                                              \
+    const thread_local einsums::profile::detail::CallSite einsums_profile_uuid(einsums_profile_callsite_);                                 \
+    einsums_profile_uuid(einsums_profile_callsite_) = einsums::profile::detail::CallSiteInfo{__FILE__, __func__, label_, __LINE__};        \
                                                                                                                                            \
     if constexpr (const einsums::profile::detail::ScopeTimer einsums_profile_uuid(einsums_profile_scope_timer_){                           \
                       einsums_profile_uuid(einsums_profile_callsite_).get_id()})
 
 // 'if constexpr (timer)' allows this macro to "capture" the scope of the following expression
 
-#define EINSUMS_PROFILE_BEGIN(segment_, label_, ...)                                                                                       \
-    const thread_local einsums::profile::detail::CallSite einsums_profile_callsite_##segment_(                                             \
-        einsums::profile::detail::CallSiteInfo{__FILE__, __func__, fmt::format(label_, ##__VA_ARGS__), __LINE__});                         \
-                                                                                                                                           \
-    const einsums::profile::detail::Timer einsums_profile_timer_##segment_ {                                                               \
-        einsums_profile_callsite_##segment_.get_id()                                                                                       \
+#define EINSUMS_PROFILE_BEGIN(segment_, label_, ...)                                                                                                    \
+    EINSUMS_LOG_TRACE(label_, ##__VA_ARGS__);                                                                                                           \
+    const thread_local einsums::profile::detail::CallSite einsums_profile_callsite_##segment_;                                                          \
+    einsums_profile_callsite_## segment_ =  einsums::profile::detail::CallSiteInfo{__FILE__, __func__, fmt::format(label_, ## __VA_ARGS__), __LINE__}); \
+                                                                                                                                                        \
+    const einsums::profile::detail::Timer einsums_profile_timer_##segment_ {                                                                            \
+        einsums_profile_callsite_##segment_.get_id()                                                                                                    \
     }
 
 #define EINSUMS_PROFILE_END(segment_) einsums_profile_timer_##segment_.finish()

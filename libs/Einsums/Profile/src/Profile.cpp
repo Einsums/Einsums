@@ -79,6 +79,11 @@ std::unordered_map<std::string, uint64_t> &NodeMatrix::events(NodeId node_id) {
     return _events[to_int(node_id)];
 }
 
+uint64_t &NodeMatrix::count(NodeId node_id) {
+    EINSUMS_ASSERT(to_int(node_id) < cols());
+    return _count[to_int(node_id)];
+}
+
 CallSiteInfo &NodeMatrix::callsite(CallSiteId callsite_id) {
     EINSUMS_ASSERT(to_int(callsite_id) < rows());
     return _callsites[to_int(callsite_id)];
@@ -103,6 +108,11 @@ duration const &NodeMatrix::time(NodeId node_id) const {
 std::unordered_map<std::string, uint64_t> const &NodeMatrix::events(NodeId node_id) const {
     EINSUMS_ASSERT(to_int(node_id) < cols());
     return _events[to_int(node_id)];
+}
+
+uint64_t const &NodeMatrix::count(NodeId node_id) const {
+    EINSUMS_ASSERT(to_int(node_id) < cols());
+    return _count[to_int(node_id)];
 }
 
 CallSiteInfo const &NodeMatrix::callsite(CallSiteId callsite_id) const {
@@ -130,6 +140,7 @@ void NodeMatrix::resize(std::size_t new_rows, std::size_t new_cols) {
     ArrayType<NodeId>                                    new_next_ids(new_rows_capacity * new_cols_capacity, NodeId::empty);
     ArrayType<duration>                                  new_times(new_cols_capacity, duration{});
     ArrayType<std::unordered_map<std::string, uint64_t>> new_events(new_cols_capacity, std::unordered_map<std::string, uint64_t>{});
+    ArrayType<uint64_t>                                  new_count(new_cols_capacity, uint64_t{});
     ArrayType<CallSiteInfo>                              new_callsites(new_rows_capacity, CallSiteInfo{});
 
     // Copy old data
@@ -142,6 +153,8 @@ void NodeMatrix::resize(std::size_t new_rows, std::size_t new_cols) {
         new_times[j] = _times[j];
     for (std::size_t j = 0; j < _cols_size; ++j)
         new_events[j] = _events[j];
+    for (std::size_t j = 0; j < _cols_size; ++j)
+        new_count[j] = _count[j];
     for (std::size_t i = 0; i < _rows_size; ++i)
         new_callsites[i] = _callsites[i];
 
@@ -150,6 +163,7 @@ void NodeMatrix::resize(std::size_t new_rows, std::size_t new_cols) {
     _next_ids  = std::move(new_next_ids);
     _times     = std::move(new_times);
     _events    = std::move(new_events);
+    _count     = std::move(new_count);
     _callsites = std::move(new_callsites);
 
     _rows_size     = new_rows;
@@ -423,6 +437,7 @@ void ThreadCallGraph::traverse_back() {
 
 void ThreadCallGraph::record(duration time, std::unordered_map<std::string, uint64_t> &events) {
     _mat.time(_current_node_id) += time;
+    _mat.count(_current_node_id) += 1;
     // ensure the vector is of the right length
     auto &thread_events = _mat.events(_current_node_id);
     // if "key" doesn't exist in thread_events it is automatically added and
@@ -447,6 +462,11 @@ CallSiteId ThreadCallGraph::callsite_add(CallSiteInfo const &info) {
 
 CallSite::CallSite(CallSiteInfo const &info) {
     _id = thread_call_graph.callsite_add(info);
+}
+
+CallSite &CallSite::operator=(CallSiteInfo const &info) {
+    _id = thread_call_graph.callsite_add(info);
+    return *this;
 }
 
 ////////////////////////////////////////////////////////////////////
