@@ -236,14 +236,14 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
         if constexpr (!direct_product_swap) {
             einsum_generic_algorithm_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, CRank, ARank,
                                          BRank><<<threads, grid, 0, get_stream()>>>(
-                unique_strides_gpu, C_index_strides_gpu, A_index_table_gpu, B_index_table_gpu,
+                unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
                 HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->gpu_data(), C->gpu_dims(), C->gpu_strides(),
                 HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_dims(), A.gpu_strides(), B.gpu_data(),
                 B.gpu_dims(), B.gpu_strides(), std::get<0>(unique_dims) * unique_strides[0]);
         } else {
             einsum_generic_algorithm_direct_product_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value,
                                                         CRank, ARank, BRank><<<threads, grid, 0, get_stream()>>>(
-                unique_strides_gpu, C_index_strides_gpu, A_index_table_gpu, B_index_table_gpu,
+                unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
                 HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->gpu_data(), C->gpu_dims(), C->gpu_strides(),
                 HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_dims(), A.gpu_strides(), B.gpu_data(),
                 B.gpu_dims(), B.gpu_strides(), std::get<0>(unique_dims) * unique_strides[0]);
