@@ -1,0 +1,21 @@
+.. 
+    ---------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
+
+==============
+v1.0.2 Release
+==============
+
+Bug Fixes
+---------
+
+* Fixed a typo in :cpp:func:`arange`. It was throwing an error when valid inputs were passed.
+* Fixed a synchronization issue in the GPU tensor contractions
+* Fixed a bug in the in-place tensor-scalar operations for :cpp:class:`Tensor`
+* Fixed a typo in :cpp:func:`truncated_svd` that could cause compilation errors
+* Fixed the :cpp:func:`hip_catch` family of functions so they would not construct temporary strings for every call.
+  They now only construct temporary strings on failure.
