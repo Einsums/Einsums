@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
@@ -37,9 +37,8 @@ std::string configuration_string() {
 
     strm << "Einsums:\n";
 
-    char const *const *p = einsums::config_strings;
-    while (*p)
-        strm << "  " << *p++ << "\n";
+    for (auto p : config_strings)
+        strm << "  " << p << "\n";
     strm << "\n";
 
     return strm.str();

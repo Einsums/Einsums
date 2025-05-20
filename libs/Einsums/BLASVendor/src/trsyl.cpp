@@ -1,13 +1,13 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -22,7 +22,9 @@ extern void FC_GLOBAL(strsyl, STRSYL)(char *, char *, int_t *, int_t *, int_t *,
 
 #define TRSYL(Type, lc, uc)                                                                                                                \
     auto lc##trsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, const Type *a, int_t lda, const Type *b, int_t ldb, Type *c,      \
-                   int_t ldc, Type *scale) -> int_t {                                                                                      \
+                   int_t ldc, Type *scale)                                                                                                 \
+        ->int_t {                                                                                                                          \
+        EINSUMS_PROFILE_SCOPE("BLASVendor");                                                                                               \
         int_t info  = 0;                                                                                                                   \
         int_t lda_t = std::max(int_t{1}, m);                                                                                               \
         int_t ldb_t = std::max(int_t{1}, n);                                                                                               \
@@ -43,9 +45,9 @@ extern void FC_GLOBAL(strsyl, STRSYL)(char *, char *, int_t *, int_t *, int_t *,
         }                                                                                                                                  \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        std::vector<Type> a_t(lda_t *std::max(int_t{1}, m));                                                                               \
-        std::vector<Type> b_t(ldb_t *std::max(int_t{1}, n));                                                                               \
-        std::vector<Type> c_t(ldc_t *std::max(int_t{1}, n));                                                                               \
+        std::vector<Type> a_t(lda_t * std::max(int_t{1}, m));                                                                              \
+        std::vector<Type> b_t(ldb_t * std::max(int_t{1}, n));                                                                              \
+        std::vector<Type> c_t(ldc_t * std::max(int_t{1}, n));                                                                              \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
         transpose<OrderMajor::Row>(m, m, a, lda, a_t, lda_t);                                                                              \

@@ -1,14 +1,14 @@
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 #pragma once
 
 #ifndef DOXYGEN
 
 #    include <Einsums/Concepts/TensorConcepts.hpp>
-#    include <Einsums/Profile/LabeledSection.hpp>
+#    include <Einsums/Profile.hpp>
 #    include <Einsums/Tensor/Tensor.hpp>
 #    include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 
@@ -31,11 +31,11 @@ template <TensorConcept AType, TensorConcept BType, typename... AIndices, typena
         requires AType::Rank == sizeof...(AIndices);
         requires BType::Rank == sizeof...(BIndices);
     }
-auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BIndices...> const &,
-                BType const &B) -> BasicTensorLike<AType, typename AType::ValueType, 2> {
+auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BIndices...> const &, BType const &B)
+    -> BasicTensorLike<AType, typename AType::ValueType, 2> {
     using OutType = BasicTensorLike<AType, typename AType::ValueType, 2>;
     using T       = typename AType::ValueType;
-    LabeledSection0();
+    EINSUMS_PROFILE_SCOPE("TensorAlgebra/KhatriRao");
 
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();

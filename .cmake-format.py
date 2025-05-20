@@ -516,7 +516,7 @@ with section("parse"):
         'einsums_include': {'pargs': {'nargs': 0}},
         'einsums_info': {'pargs': {'nargs': 0}},
         'einsums_message': {'pargs': {'nargs': 1}},
-        'einsums_option': {'kwargs': {'CATEGORY': 1, 'MODULE': 1, 'STRINGS': '+'},
+        'einsums_option': {'kwargs': {'CATEGORY': 1, 'DEPENDS': 1, 'MODULE': 1, 'STRINGS': '+'},
                            'pargs': {'flags': ['ADVANCED'], 'nargs': '4+'}},
         'einsums_perform_cxx_feature_tests': {'pargs': {'nargs': 0}},
         'einsums_print_list': {'pargs': {'nargs': 3}},

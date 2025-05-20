@@ -17,3 +17,4 @@ EinsumsPy Modules
     /libs/EinsumsPy/Tensor/docs/index.rst
     /libs/EinsumsPy/TensorAlgebra/docs/index.rst
     /libs/EinsumsPy/TestUtils/docs/index.rst
+    /libs/EinsumsPy/Version/docs/index.rst
