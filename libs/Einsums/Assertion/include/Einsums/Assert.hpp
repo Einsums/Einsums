@@ -13,15 +13,14 @@
 #include <fmt/format.h>
 
 #include <exception>
-#include <source_location>
 #include <string>
 #include <type_traits>
 
 namespace einsums::detail {
 
-using assertion_handler_type = void (*)(std::source_location const &loc, char const *expr, std::string const &msg);
+using assertion_handler_type = void (*)(einsums::source_location const &loc, char const *expr, std::string const &msg);
 
-EINSUMS_EXPORT void default_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg);
+EINSUMS_EXPORT void default_assertion_handler(einsums::source_location const &loc, char const *expr, std::string const &msg);
 
 EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 
@@ -58,12 +57,12 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 /// \cond NOINTERNAL
 #    define EINSUMS_ASSERT_(expr, ...)                                                                                                     \
         ((bool)(expr) ? void()                                                                                                             \
-                      : ::einsums::detail::handle_assert(std::source_location::current(), EINSUMS_PP_STRINGIFY(expr),                      \
+                      : ::einsums::detail::handle_assert(einsums::source_location::current(), EINSUMS_PP_STRINGIFY(expr),                      \
                                                          fmt::format(__VA_ARGS__))) /**/
 
 #    define EINSUMS_ASSERT_LOCKED_(l, expr, ...)                                                                                           \
         ((bool)(expr) ? void()                                                                                                             \
-                      : ((l).unlock(), ::einsums::detail::handle_assert(std::source_location::current(), EINSUMS_PP_STRINGIFY(expr),       \
+                      : ((l).unlock(), ::einsums::detail::handle_assert(einsums::source_location::current(), EINSUMS_PP_STRINGIFY(expr),       \
                                                                         fmt::format(__VA_ARGS__)))) /**/
 
 #    if defined(EINSUMS_DEBUG)

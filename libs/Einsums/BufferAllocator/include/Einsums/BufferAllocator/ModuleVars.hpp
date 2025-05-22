@@ -12,8 +12,6 @@
 #include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/TypeSupport/Singleton.hpp>
 
-#include <source_location>
-
 namespace einsums {
 namespace detail {
 

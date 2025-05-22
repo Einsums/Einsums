@@ -5,7 +5,6 @@
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
 #include <hip/hip_runtime_api.h>
-#include <source_location>
 #include <type_traits>
 
 TEST_CASE("HostDevReference Tests", "[gpu][utilities]") {

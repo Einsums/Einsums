@@ -13,6 +13,7 @@
 #include <Einsums/Config/ExportDefinitions.hpp>
 #include <Einsums/Config/ForceInline.hpp>
 #include <Einsums/Config/Namespace.hpp>
+#include <Einsums/Config/SourceLocation.hpp>
 #include <Einsums/Config/Types.hpp>
 #include <Einsums/Config/Version.hpp>
 

@@ -12,7 +12,6 @@
 #include <Einsums/StringUtil/MemoryString.hpp>
 
 #include <complex>
-#include <source_location>
 #include <type_traits>
 
 namespace einsums {

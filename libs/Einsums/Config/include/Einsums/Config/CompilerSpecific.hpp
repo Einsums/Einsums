@@ -51,15 +51,19 @@
 
 #elif defined(__GNUC__) || defined(__clang__)
 #    define EINSUMS_DO_PRAGMA(X)                 _Pragma(#X)
-#    define EINSUMS_DISABLE_WARNING_PUSH         EINSUMS_DO_PRAGMA(GCC diagnostic push)
-#    define EINSUMS_DISABLE_WARNING_POP          EINSUMS_DO_PRAGMA(GCC diagnostic pop)
-#    define EINSUMS_DISABLE_WARNING(warningName)  EINSUMS_DO_PRAGMA(GCC diagnostic ignored #warningName)
+#    define EINSUMS_DISABLE_WARNING_PUSH         EINSUMS_DO_PRAGMA(clang diagnostic push)
+#    define EINSUMS_DISABLE_WARNING_POP          EINSUMS_DO_PRAGMA(clang diagnostic pop)
+#    define EINSUMS_DISABLE_WARNING(warningName) EINSUMS_DO_PRAGMA(clang diagnostic ignored #warningName)
+
 #ifndef __clang__
 #    define EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
 #    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS EINSUMS_DISABLE_WARNING(-Wdeprecated-declarations)
+#    define EINSUMS_DISABLE_WARNING_PREDEFINED_IDENTIFIER EINSUMS_DISABLE_WARNING(-Wpedantic)
 #else
 #    define EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE EINSUMS_DISABLE_WARNING(-Wreturn-type-c-linkage)
 #    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS EINSUMS_DISABLE_WARNING(-Wdeprecated-declarations)// other warnings you want to deactivate...
+#    define EINSUMS_DISABLE_WARNING_PREDEFINED_IDENTIFIER EINSUMS_DISABLE_WARNING(-Wpredefined-identifier-outside-function)
+
 #endif
 
 #else

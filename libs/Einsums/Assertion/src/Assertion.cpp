@@ -20,7 +20,7 @@ auto get_handler() -> assertion_handler_type & {
 }
 } // namespace
 
-void default_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg) {
+void default_assertion_handler(einsums::source_location const &loc, char const *expr, std::string const &msg) {
     std::cerr << complete_version() << "\n" << loc.function_name() << ":" << loc.line() << " : Assertion '" << expr << "' failed";
     if (!msg.empty()) {
         std::cerr << " (" << msg << ")\n";
@@ -37,7 +37,7 @@ void set_assertion_handler(assertion_handler_type handler) {
     get_handler() = handler;
 }
 
-void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) noexcept {
+void handle_assert(einsums::source_location const &loc, char const *expr, std::string const &msg) noexcept {
     if (get_handler() == nullptr) {
         default_assertion_handler(loc, expr, msg);
     }

@@ -16,7 +16,6 @@
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
 #include <mutex>
-#include <source_location>
 #include <type_traits>
 
 #include <Einsums/GPUMemory/GPUPointer.hpp>

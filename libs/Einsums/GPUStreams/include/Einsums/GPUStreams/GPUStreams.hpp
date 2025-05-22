@@ -9,8 +9,6 @@
 #include <hipblas/hipblas.h>
 #include <hipsolver/hipsolver.h>
 
-#include <source_location>
-
 namespace einsums {
 namespace gpu {
 
