@@ -7,11 +7,10 @@
 
 #include <Einsums/Config.hpp>
 
-#include <source_location>
 #include <string>
 
 namespace einsums::detail {
 
-EINSUMS_EXPORT void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) noexcept;
+EINSUMS_EXPORT void handle_assert(einsums::source_location const &loc, char const *expr, std::string const &msg) noexcept;
 
 }

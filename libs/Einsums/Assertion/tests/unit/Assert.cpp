@@ -3,17 +3,17 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/Config.hpp>
 #include <Einsums/Assert.hpp>
 #include <Einsums/Debugging/Backtrace.hpp>
 
-#include <source_location>
 #include <string>
 
 #include <Einsums/Testing.hpp>
 
 static std::string result_string;
 
-void test_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg) {
+void test_assertion_handler(einsums::source_location const &loc, char const *expr, std::string const &msg) {
     using namespace einsums;
     INFO("Assertion failed. Making string.");
     std::ostringstream result;

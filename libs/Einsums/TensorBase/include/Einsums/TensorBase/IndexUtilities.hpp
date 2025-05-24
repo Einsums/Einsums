@@ -11,7 +11,6 @@
 
 #include <cstdarg>
 #include <cstddef>
-#include <source_location>
 #include <tuple>
 #include <type_traits>
 #include <vector>

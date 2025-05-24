@@ -21,7 +21,6 @@
 #include <fmt/format.h>
 
 #include <memory>
-#include <source_location>
 #include <stdexcept>
 #include <string>
 #include <variant>

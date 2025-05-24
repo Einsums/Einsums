@@ -15,7 +15,6 @@
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
 
-#include <source_location>
 #include <type_traits>
 
 namespace einsums {
