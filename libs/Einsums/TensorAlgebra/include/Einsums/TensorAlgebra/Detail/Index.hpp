@@ -190,6 +190,10 @@ constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, 
  *
  * @brief Identifier for providing index labels to the the einsum function.
  *
+ * If a variable name is passed to this class, it will raise a compiler error. If this is the case,
+ * please double check that you don't have any name clashes. Try to prefix the indices with @c einsums::index
+ * to see if that fixes your issues.
+ *
  * @tparam Args The indices to pass.
  */
 template <typename... Args>

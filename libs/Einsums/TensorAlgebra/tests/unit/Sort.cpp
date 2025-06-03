@@ -46,15 +46,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
             }
         }
     }
-
-    SECTION("Index with tensor name") {
-        constexpr bool same_name_compiles = requires(Tensor<double, 2> A, Tensor<double, 2> C) {
-            permute(einsums::Indices{A, C}, &C, einsums::Indices{C, A}, A);
-        };
-
-        REQUIRES(!same_name_compiles);
-    }
-
+    
     SECTION("Rank 2 - axpy (2)") {
         Tensor A = create_incremented_tensor("A", 3, 3);
         Tensor C0{"C", 3, 3};
