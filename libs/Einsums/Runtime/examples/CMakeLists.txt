@@ -26,7 +26,7 @@ foreach(example_program ${example_programs})
     ${example_program} INTERNAL_FLAGS
     SOURCES ${sources} ${${example_program}_FLAGS}
     FOLDER "Examples/Modules/Runtime"
-          NOINSTALL
+    NOINSTALL
   )
 
   einsums_add_example_target_dependencies("Modules.Einsums.Runtime" ${example_program})

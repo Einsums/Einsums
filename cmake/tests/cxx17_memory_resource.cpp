@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 //  Copyright (c) 2021 Hartmut Kaiser
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -6,13 +11,12 @@
 
 #include <memory_resource>
 
-int main()
-{
-    int memory[10];
-    std::pmr::monotonic_buffer_resource pool(memory, 10);
+int main() {
+    int                                  memory[10];
+    std::pmr::monotonic_buffer_resource  pool(memory, 10);
     std::pmr::polymorphic_allocator<int> allocator(&pool);
 
-    (void) allocator;
+    (void)allocator;
 
     return 0;
 }

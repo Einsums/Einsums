@@ -3,10 +3,10 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Profile/Timer.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
-#include <Einsums/Profile/Timer.hpp>
 
 #include <Einsums/Testing.hpp>
 

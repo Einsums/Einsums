@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 //  Copyright (c) 2020 Hartmut Kaiser
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -8,9 +13,8 @@
 
 #include <cstdlib>
 
-int main()
-{
-    char* s = std::aligned_alloc(1024, 1024 * sizeof(char));
+int main() {
+    char *s = std::aligned_alloc(1024, 1024 * sizeof(char));
 
     std::free(s);
     return 0;

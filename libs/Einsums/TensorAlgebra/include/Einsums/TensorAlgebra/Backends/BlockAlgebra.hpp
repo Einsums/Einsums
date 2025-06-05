@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -121,7 +121,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
 #ifdef EINSUMS_COMPUTE_CODE
     if constexpr (IsDeviceTensorV<AType>) {
 
-        size_t     elems = omp_get_max_threads();
+        size_t                 elems = omp_get_max_threads();
         std::vector<CDataType> temp(elems);
 
         for (int i = 0; i < elems; i++) {

@@ -1,17 +1,17 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
-#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 #include <cmath>
 #include <cstddef>

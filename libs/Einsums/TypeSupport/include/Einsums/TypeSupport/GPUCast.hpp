@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #pragma once
 
 #include <hip/hip_common.h>
@@ -144,7 +149,9 @@ struct HipCast<std::complex<double>, std::complex<double>> {
 
 template <>
 struct HipCast<hipFloatComplex, std::complex<double>> {
-    __host__ static inline hipFloatComplex cast(std::complex<double> from) { return make_hipFloatComplex((float)from.real(), (float)from.imag()); }
+    __host__ static inline hipFloatComplex cast(std::complex<double> from) {
+        return make_hipFloatComplex((float)from.real(), (float)from.imag());
+    }
 };
 
 template <>
@@ -206,7 +213,9 @@ struct HipCast<std::complex<double>, hipDoubleComplex> {
 
 template <>
 struct HipCast<hipFloatComplex, hipDoubleComplex> {
-    __host__ __device__ static inline hipFloatComplex cast(hipDoubleComplex from) { return make_hipFloatComplex((float)from.x, (float)from.y); }
+    __host__ __device__ static inline hipFloatComplex cast(hipDoubleComplex from) {
+        return make_hipFloatComplex((float)from.x, (float)from.y);
+    }
 };
 
 template <>

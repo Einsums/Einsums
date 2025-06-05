@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 //  Copyright (c) 2016 Agustin Berge
 //  Copyright (c) 2019 Hartmut Kaiser
 //
@@ -11,15 +16,14 @@
 
 typedef void(function_type)();
 
-void test() {}
+void test() {
+}
 
-struct deleter
-{
-    void operator()(function_type*) {}
+struct deleter {
+    void operator()(function_type *) {}
 };
 
-int main()
-{
+int main() {
     auto sp = std::shared_ptr<function_type>(&test, deleter{});
-    (void) sp;
+    (void)sp;
 }

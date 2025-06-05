@@ -1,6 +1,12 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #pragma once
 
 #include <Einsums/Config.hpp>
+
 #include <Einsums/Errors/Error.hpp>
 
 #include <hip/hip_common.h>
@@ -8,7 +14,6 @@
 #include <hip/hip_runtime_api.h>
 #include <hipblas/hipblas.h>
 #include <hipsolver/hipsolver.h>
-
 #include <source_location>
 
 namespace einsums {
@@ -64,7 +69,7 @@ EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t set_solver_handle(hipsolverHandle_
 /**
  * Get an appropriate block size for a kernel.
  */
- EINSUMS_HOST inline dim3 block_size(size_t compute_size) {
+EINSUMS_HOST inline dim3 block_size(size_t compute_size) {
     if (compute_size < 32) {
         return dim3(32);
     } else if (compute_size < 256) {
@@ -77,7 +82,7 @@ EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t set_solver_handle(hipsolverHandle_
 /**
  * Get an appropriate number of blocks for a kernel.
  */
- EINSUMS_HOST inline dim3 blocks(size_t compute_size) {
+EINSUMS_HOST inline dim3 blocks(size_t compute_size) {
     if (compute_size < 256) {
         return dim3(1);
     } else if (compute_size <= 4096) {
@@ -90,14 +95,14 @@ EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t set_solver_handle(hipsolverHandle_
 /**
  * @brief Wait on a stream.
  */
- EINSUMS_HOST EINSUMS_EXPORT void stream_wait(hipStream_t stream);
+EINSUMS_HOST EINSUMS_EXPORT void stream_wait(hipStream_t stream);
 
 /**
  * @brief Indicates that the next skippable wait on the current thread should be skipped.
  * Does not apply to stream_wait(stream) with the stream specified, all_stream_wait, or device_synchronize.
  * Does not affect stream_wait(false), and stream_wait(false) does not affect the skip state.
  */
- EINSUMS_HOST EINSUMS_EXPORT void skip_next_wait();
+EINSUMS_HOST EINSUMS_EXPORT void skip_next_wait();
 
 /**
  * @brief Wait on the current thread's stream. Can be skippable or not.
@@ -105,12 +110,12 @@ EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t set_solver_handle(hipsolverHandle_
  * @param may_skip Indicate that the wait may be skipped to avoid unnecessary waits. Only skipped after a call to skip_next_wait,
  * then resets the skip flag so that later waits are not skipped.
  */
- EINSUMS_HOST EINSUMS_EXPORT void stream_wait(bool may_skip = false);
+EINSUMS_HOST EINSUMS_EXPORT void stream_wait(bool may_skip = false);
 
 /**
  * @brief Wait on all streams managed by Einsums.
  */
- EINSUMS_HOST EINSUMS_EXPORT void all_stream_wait();
+EINSUMS_HOST EINSUMS_EXPORT void all_stream_wait();
 
 // Because I want it to be plural as well
 #define all_streams_wait() all_stream_wait()
@@ -132,7 +137,7 @@ EINSUMS_EXPORT EINSUMS_HOST void set_stream(hipStream_t stream, int thread_id);
  *
  * Waits until the device is in an idle state before continuing. Blocks on all streams.
  */
- EINSUMS_HOST inline void device_synchronize() {
+EINSUMS_HOST inline void device_synchronize() {
     hip_catch(hipDeviceSynchronize());
 }
 
@@ -210,5 +215,5 @@ EINSUMS_DEVICE inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleCo
     atomicAdd(&(address->y), value.y);
 }
 
-}
-}
+} // namespace gpu
+} // namespace einsums

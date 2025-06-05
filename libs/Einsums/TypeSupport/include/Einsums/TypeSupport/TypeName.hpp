@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -20,17 +20,17 @@ namespace detail {
 template <typename T>
 consteval auto get_type_name_string_view() {
 #if __cpp_lib_source_location >= 201907L
-    const auto func_name = std::string_view{std::source_location::current().function_name()};
+    auto const func_name = std::string_view{std::source_location::current().function_name()};
 #elif defined(_MSC_VER)
-    const auto func_name = std::string_view {
+    auto const func_name = std::string_view {
         __FUNCSIG__
     }
 #else
-    const auto func_name = std::string_view{__PRETTY_FUNCTION__};
+    auto const func_name = std::string_view{__PRETTY_FUNCTION__};
 #endif
 
 #if defined(__clang__) || defined(__GNUC__)
-    const auto split = func_name.substr(0, func_name.size() - 1);
+    auto const split = func_name.substr(0, func_name.size() - 1);
     return split.substr(split.find("T = ") + 4);
 #elif defined(_MSC_VER)
     auto split = func_name.substr(0, func_name.size() - 7);
@@ -55,7 +55,7 @@ consteval auto get_type_name_string_view() {
  */
 template <typename T>
 consteval auto type_name() {
-    //static_assert(detail::get_type_name_string_view<int>() == "int", "Expected 'int', got something else.");
+    // static_assert(detail::get_type_name_string_view<int>() == "int", "Expected 'int', got something else.");
     constexpr auto name       = detail::get_type_name_string_view<T>();
     auto const     to_str_lit = [&]<auto... Ns>(std::index_sequence<Ns...>) { return StringLiteral<sizeof...(Ns) + 1>{name[Ns]...}; };
     return to_str_lit(std::make_index_sequence<name.size()>{});

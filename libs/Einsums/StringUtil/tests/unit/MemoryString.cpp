@@ -1,11 +1,15 @@
-#include <Einsums/Testing.hpp>
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #include <Einsums/StringUtil/MemoryString.hpp>
 
+#include <Einsums/Testing.hpp>
 
 TEST_CASE("Memory specifications") {
     using namespace einsums;
     using namespace einsums::string_util;
-
 
     SECTION("Good strings") {
         REQUIRE(memory_string("1") == 1);
@@ -14,7 +18,7 @@ TEST_CASE("Memory specifications") {
         REQUIRE(memory_string("4GB") == 4 * 1024UL * 1024UL * 1024UL);
         REQUIRE(memory_string("5To") == 5UL * 1024UL * 1024UL * 1024UL * 1024UL);
         REQUIRE(memory_string("6kw") == 6 * 1024 / sizeof(size_t));
-        REQUIRE(memory_string("7.8Mb") == 8178892);        
+        REQUIRE(memory_string("7.8Mb") == 8178892);
     }
 
     SECTION("Weird strings") {

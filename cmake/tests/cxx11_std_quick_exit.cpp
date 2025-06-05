@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 ////////////////////////////////////////////////////////////////////////////////
 //  Copyright (c) 2019 Mikael Simberg
 //
@@ -8,10 +13,10 @@
 
 #include <cstdlib>
 
-void on_exit() {}
+void on_exit() {
+}
 
-int main()
-{
+int main() {
     std::at_quick_exit(on_exit);
     std::quick_exit(0);
 }

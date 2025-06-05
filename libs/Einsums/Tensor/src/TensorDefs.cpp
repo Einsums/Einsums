@@ -1,11 +1,16 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Tensor/BlockTensor.hpp>
 #include <Einsums/Tensor/DiskTensor.hpp>
 #include <Einsums/Tensor/RuntimeTensor.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
-#include <Einsums/Tensor/TiledTensor.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
+#include <Einsums/Tensor/TiledTensor.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <hip/hip_common.h>

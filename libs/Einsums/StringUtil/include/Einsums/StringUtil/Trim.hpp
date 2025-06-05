@@ -12,8 +12,8 @@ namespace einsums::string_util {
 
 // trim from start (in place)
 static inline void ltrim(std::string &s) {
-    auto first_nospace = std::find_if(s.cbegin(), s.cend(), [](unsigned char ch) {return !std::isspace(ch);});
-    if(first_nospace != s.cend()) {
+    auto first_nospace = std::find_if(s.cbegin(), s.cend(), [](unsigned char ch) { return !std::isspace(ch); });
+    if (first_nospace != s.cend()) {
         s.erase(s.begin(), first_nospace);
     }
 }

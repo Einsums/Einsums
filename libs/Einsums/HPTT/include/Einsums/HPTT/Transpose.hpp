@@ -1,15 +1,28 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 /*
   Copyright 2018 Paul Springer
-  
-  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-  
+
+  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are
+  met:
+
   1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-  
-  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-  
-  3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-  
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+
+  3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 
@@ -97,9 +110,9 @@ class Transpose {
      *            Column-Major: indices are stored from left to right (leftmost = stride-1 index)
      *            Row-Major: indices are stored from right to left (right = stride-1 index)
      */
-    Transpose(int const *sizeA, int const *perm, int const *outerSizeA, int const *outerSizeB, const int *offsetA, const int *offsetB,
-              const size_t innerStrideA, const size_t innerStrideB, int const dim, floatType const *A, floatType const alpha, 
-              floatType *B, floatType const beta, SelectionMethod const selectionMethod, int const numThreads, int const *threadIds = nullptr, 
+    Transpose(int const *sizeA, int const *perm, int const *outerSizeA, int const *outerSizeB, int const *offsetA, int const *offsetB,
+              const size_t innerStrideA, const size_t innerStrideB, int const dim, floatType const *A, floatType const alpha, floatType *B,
+              floatType const beta, SelectionMethod const selectionMethod, int const numThreads, int const *threadIds = nullptr,
               bool const useRowMajor = false);
 
     /**
@@ -267,12 +280,12 @@ class Transpose {
     void                  createPlans(std::vector<std::shared_ptr<Plan>> &plans) const;
     std::shared_ptr<Plan> selectPlan(std::vector<std::shared_ptr<Plan>> const &plans);
     void                  fuseIndices();
-    void                  skipIndices(int const *_sizeA, int const *_perm, int const *_outerSizeA, int const *_outerSizeB, const int *_offsetA, 
-                                      const int *_offsetB, int const dim);
-    void                  computeLeadingDimensions();
-    double                loopCostHeuristic(std::vector<int> const &loopOrder) const;
-    double                parallelismCostHeuristic(std::vector<int> const &loopOrder) const;
-    int                   getLocalThreadId(int myThreadId) const;
+    void   skipIndices(int const *_sizeA, int const *_perm, int const *_outerSizeA, int const *_outerSizeB, int const *_offsetA,
+                       int const *_offsetB, int const dim);
+    void   computeLeadingDimensions();
+    double loopCostHeuristic(std::vector<int> const &loopOrder) const;
+    double parallelismCostHeuristic(std::vector<int> const &loopOrder) const;
+    int    getLocalThreadId(int myThreadId) const;
     template <bool spawnThreads>
     void getStartEnd(int n, int &myStart, int &myEnd) const;
     void setParallelStrategy(int id) noexcept { selectedParallelStrategyId_ = id; }
@@ -286,8 +299,8 @@ class Transpose {
                       std::list<int> &primeFactors, float const minBalancing, std::vector<int> const &loopsAllowed) const;
     float getLoadBalance(std::vector<int> const &parallelismStrategy) const;
     float estimateExecutionTime(std::shared_ptr<Plan> const plan); // execute just a few iterations and extrapolate the result
-    void  verifyParameter(int const *size, int const *perm, int const *outerSizeA, int const *outerSizeB, const int* offsetA, 
-                          const int* offsetB, const size_t innerStrideA, const size_t innerStrideB, int const dim) const;
+    void  verifyParameter(int const *size, int const *perm, int const *outerSizeA, int const *outerSizeB, int const *offsetA,
+                          int const *offsetB, const size_t innerStrideA, const size_t innerStrideB, int const dim) const;
     void  getBestParallelismStrategy(std::vector<int> &bestParallelismStrategy) const;
     void  getBestLoopOrder(std::vector<int> &loopOrder) const; // innermost loop idx is stored at dim_-1
     void  getLoopOrders(std::vector<std::vector<int>> &loopOrders) const;
@@ -301,22 +314,22 @@ class Transpose {
     executeEstimate(Plan const *plan) noexcept; // almost identical to execute, but it just executes few iterations and then extrapolates
     double getTimeLimit() const;
 
-    floatType const    *A_;          //!< rawdata pointer for A
-    floatType          *B_;          //!< rawdata pointer for B
-    floatType           alpha_;      //!< scaling factor for A
-    floatType           beta_;       //!< scaling factor for B
-    int                 dim_;        //!< dimension of the tensor
-    std::vector<size_t> sizeA_;      //!< size of A
-    std::vector<int>    perm_;       //!< permutation
-    std::vector<size_t> outerSizeA_; //!< outer sizes of A
-    std::vector<size_t> outerSizeB_; //!< outer sizes of B
-    std::vector<size_t> offsetA_;    //!< offsets of A
-    std::vector<size_t> offsetB_;    //!< offsets of B
-    size_t innerStrideA_;            //!< innerStride of A
-    size_t innerStrideB_;            //!< innerStride of B
-    std::vector<size_t> lda_;        //!< strides for all dimensions of A (first dimension has a stride of 1)
-    std::vector<size_t> ldb_;        //!< strides for all dimensions of B (first dimension has a stride of 1)
-    std::vector<int>    threadIds_;  //!< OpenMP threadIds of the threads involed in the transposition
+    floatType const    *A_;            //!< rawdata pointer for A
+    floatType          *B_;            //!< rawdata pointer for B
+    floatType           alpha_;        //!< scaling factor for A
+    floatType           beta_;         //!< scaling factor for B
+    int                 dim_;          //!< dimension of the tensor
+    std::vector<size_t> sizeA_;        //!< size of A
+    std::vector<int>    perm_;         //!< permutation
+    std::vector<size_t> outerSizeA_;   //!< outer sizes of A
+    std::vector<size_t> outerSizeB_;   //!< outer sizes of B
+    std::vector<size_t> offsetA_;      //!< offsets of A
+    std::vector<size_t> offsetB_;      //!< offsets of B
+    size_t              innerStrideA_; //!< innerStride of A
+    size_t              innerStrideB_; //!< innerStride of B
+    std::vector<size_t> lda_;          //!< strides for all dimensions of A (first dimension has a stride of 1)
+    std::vector<size_t> ldb_;          //!< strides for all dimensions of B (first dimension has a stride of 1)
+    std::vector<int>    threadIds_;    //!< OpenMP threadIds of the threads involed in the transposition
     int                 numThreads_;
     int                 selectedParallelStrategyId_;
     int                 selectedLoopOrderId_;

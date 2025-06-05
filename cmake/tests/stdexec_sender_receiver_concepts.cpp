@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 //  Copyright (c) 2024 ETH Zurich
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -6,8 +11,7 @@
 
 #include <stdexec/execution.hpp>
 
-int main()
-{
-    using sender_concept = stdexec::sender_t;
+int main() {
+    using sender_concept   = stdexec::sender_t;
     using receiver_concept = stdexec::receiver_t;
 }

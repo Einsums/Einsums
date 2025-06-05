@@ -45,10 +45,8 @@ foreach(test ${linear_algebra_ests})
   source_group("Source Files" FILES ${Sources})
 
   einsums_add_executable(
-    ${TestName}_test
-    INTERNAL_FLAGS
-    SOURCES ${Sources}
-    ${${TestName}_${TestExtension}_FLAGS}
+    ${TestName}_test INTERNAL_FLAGS
+    SOURCES ${Sources} ${${TestName}_${TestExtension}_FLAGS}
     NOINSTALL
   )
 

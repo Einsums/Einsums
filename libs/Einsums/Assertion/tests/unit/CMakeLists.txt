@@ -16,7 +16,7 @@ foreach(test ${AssertionTests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     FOLDER ${folder_name}
-          NOINSTALL
+    NOINSTALL
   )
 
   einsums_add_unit_test("Modules.Assertion" ${test} ${${test}_PARAMETERS})
