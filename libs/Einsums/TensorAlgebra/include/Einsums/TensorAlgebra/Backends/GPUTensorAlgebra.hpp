@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #pragma once
 
 #include <Einsums/Concepts/TensorConcepts.hpp>
@@ -19,13 +24,14 @@ namespace tensor_algebra {
 namespace detail {
 
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t CRank, size_t ARank, size_t BRank>
-__global__ void einsum_generic_algorithm_gpu(
-    size_t const *__restrict__ unique_strides, int const *__restrict__ C_index_table,
-    int const *__restrict__ A_index_table, int const *__restrict__ B_index_table, CDataType const C_prefactor, CDataType *__restrict__ C,
-    size_t const *__restrict__ C_dims, size_t const *__restrict__ C_stride,
-    std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> const AB_prefactor, ADataType const *__restrict__ A,
-    size_t const *__restrict__ A_dims, size_t const *__restrict__ A_stride, BDataType const *__restrict__ B,
-    size_t const *__restrict__ B_dims, size_t const *__restrict__ B_stride, size_t max_index) {
+__global__ void
+einsum_generic_algorithm_gpu(size_t const *__restrict__ unique_strides, int const *__restrict__ C_index_table,
+                             int const *__restrict__ A_index_table, int const *__restrict__ B_index_table, CDataType const C_prefactor,
+                             CDataType *__restrict__ C, size_t const *__restrict__ C_dims, size_t const *__restrict__ C_stride,
+                             std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> const AB_prefactor,
+                             ADataType const *__restrict__ A, size_t const *__restrict__ A_dims, size_t const *__restrict__ A_stride,
+                             BDataType const *__restrict__ B, size_t const *__restrict__ B_dims, size_t const *__restrict__ B_stride,
+                             size_t max_index) {
     using namespace einsums::gpu;
 
     int thread_id, kernel_size;
@@ -65,9 +71,9 @@ __global__ void einsum_generic_algorithm_gpu(
 // When we will only see a certain element once, we can ignore atomicity for a speedup.
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t CRank, size_t ARank, size_t BRank>
 __global__ void einsum_generic_algorithm_direct_product_gpu(
-    size_t const *__restrict__ unique_strides, int const *__restrict__ C_index_table,
-    int const *__restrict__ A_index_table, int const *__restrict__ B_index_table, CDataType const C_prefactor, CDataType *__restrict__ C,
-    size_t const *__restrict__ C_dims, size_t const *__restrict__ C_stride,
+    size_t const *__restrict__ unique_strides, int const *__restrict__ C_index_table, int const *__restrict__ A_index_table,
+    int const *__restrict__ B_index_table, CDataType const C_prefactor, CDataType *__restrict__ C, size_t const *__restrict__ C_dims,
+    size_t const *__restrict__ C_stride,
     std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> const AB_prefactor, ADataType const *__restrict__ A,
     size_t const *__restrict__ A_dims, size_t const *__restrict__ A_stride, BDataType const *__restrict__ B,
     size_t const *__restrict__ B_dims, size_t const *__restrict__ B_stride, size_t max_index) {
@@ -214,8 +220,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                              std::tuple_size<decltype(unique_indices)>::value * sizeof(size_t), hipMemcpyHostToDevice, get_stream()));
 
     // Calculate the optimal launch bounds.
-    dim3 threads = block_size(std::get<0>(unique_dims) * unique_strides[0]),
-         grid    = blocks(std::get<0>(unique_dims) * unique_strides[0]);
+    dim3 threads = block_size(std::get<0>(unique_dims) * unique_strides[0]), grid = blocks(std::get<0>(unique_dims) * unique_strides[0]);
 
     if constexpr (sizeof...(CIndices) != 0) {
         using C_devtype   = typename CType::dev_datatype;
@@ -227,7 +232,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
         using B_hosttype  = typename BType::host_datatype;
         using AB_hosttype = BiggestTypeT<A_hosttype, B_hosttype>;
 
-        if(C_prefactor == C_hosttype{0.0}) {
+        if (C_prefactor == C_hosttype{0.0}) {
             C->zero();
         } else {
             *C *= C_prefactor;

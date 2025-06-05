@@ -55,7 +55,7 @@ if(EINSUMS_WITH_CUDA AND NOT TARGET cuda)
     set_source_files_properties(${X} PROPERTIES LANGUAGE CUDA)
   endforeach()
 
-  list(APPEND CMAKE_CUDA_SOURCE_FILE_EXTENSIONS hip) 
+  list(APPEND CMAKE_CUDA_SOURCE_FILE_EXTENSIONS hip)
 
   set(HIP_PLATFORM "nvidia")
   set(USE_CUDA ON)
@@ -87,4 +87,3 @@ if(EINSUMS_WITH_CUDA AND NOT TARGET cuda)
   set(ENABLE_CUDA "ON")
 
 endif()
-

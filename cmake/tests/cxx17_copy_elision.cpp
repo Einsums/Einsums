@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 //  Copyright (c) 2021 Hartmut Kaiser
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -12,46 +17,42 @@
 #include <utility>
 
 template <typename F>
-class with_result_of_t
-{
-    F&& f;
+class with_result_of_t {
+    F &&f;
 
-public:
-    using type = decltype(std::declval<F&&>()());
+  public:
+    using type = decltype(std::declval<F &&>()());
 
-    explicit with_result_of_t(F&& f)
-      : f(std::forward<F>(f))
-    {
-    }
+    explicit with_result_of_t(F &&f) : f(std::forward<F>(f)) {}
     operator type() { return std::forward<F>(f)(); }
 };
 
 template <typename F>
-inline with_result_of_t<F> with_result_of(F&& f)
-{
+inline with_result_of_t<F> with_result_of(F &&f) {
     return with_result_of_t<F>(std::forward<F>(f));
 }
 
-struct cant_do_anything
-{
-    cant_do_anything() = default;
-    cant_do_anything(cant_do_anything&&) = delete;
-    cant_do_anything(cant_do_anything const&) = delete;
-    cant_do_anything& operator=(cant_do_anything&&) = delete;
-    cant_do_anything& operator=(cant_do_anything const&) = delete;
+struct cant_do_anything {
+    cant_do_anything()                                    = default;
+    cant_do_anything(cant_do_anything &&)                 = delete;
+    cant_do_anything(cant_do_anything const &)            = delete;
+    cant_do_anything &operator=(cant_do_anything &&)      = delete;
+    cant_do_anything &operator=(cant_do_anything const &) = delete;
 };
 
-cant_do_anything f() { return {}; }
+cant_do_anything f() {
+    return {};
+}
 
-struct wrapper
-{
+struct wrapper {
     template <typename F>
-    explicit wrapper(with_result_of_t<F> v)
-    {
+    explicit wrapper(with_result_of_t<F> v) {
         // the following complains about move constructor being deleted
         new (&value) cant_do_anything(v);
     }
     cant_do_anything value;
 };
 
-int main() { wrapper value(with_result_of(&f)); }
+int main() {
+    wrapper value(with_result_of(&f));
+}

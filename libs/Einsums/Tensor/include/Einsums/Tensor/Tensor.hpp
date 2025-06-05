@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -644,7 +644,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             requires !std::is_same_v<Container, Offset<Rank>>;
             requires !std::is_same_v<Container, Range>;
         }
-    const T &operator()(Container const &index) const {
+    T const &operator()(Container const &index) const {
         if (index.size() < Rank) {
             [[unlikely]] EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) {
@@ -1568,7 +1568,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             requires !std::is_same_v<Container, Offset<Rank>>;
             requires !std::is_same_v<Container, Range>;
         }
-    const T &operator()(Container const &index) const {
+    T const &operator()(Container const &index) const {
         if (index.size() < Rank) {
             [[unlikely]] EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) {

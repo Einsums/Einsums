@@ -1,3 +1,8 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
 # FindTargetHDF5.cmake
 # --------------------
 #
@@ -5,41 +10,33 @@
 #
 # This module sets the following variables in your project: ::
 #
-#   TargetHDF5_FOUND - true if HDF5 and all required components found on the system
-#   TargetHDF5_VERSION - HDF5 version in format Major.Minor.Release
-#   TargetHDF5_MESSAGE - status message with HDF5 library path list and version
+# TargetHDF5_FOUND - true if HDF5 and all required components found on the system TargetHDF5_VERSION
+# - HDF5 version in format Major.Minor.Release TargetHDF5_MESSAGE - status message with HDF5 library
+# path list and version
 #
-# Note that components are passed along to find_package(HDF5 (untested) but not checked in the direct TargetHDF5Config
-# Note that version checking/attaching not working yet
+# Note that components are passed along to find_package(HDF5 (untested) but not checked in the
+# direct TargetHDF5Config Note that version checking/attaching not working yet
 #
-# This module *unsets* the following conventional HDF5 variables so as
-#   to force using the target: ::
+# This module *unsets* the following conventional HDF5 variables so as to force using the target: ::
 #
-#   HDF5_FOUND
-#   HDF5_VERSION
-#   HDF5_INCLUDE_DIRS
-#   HDF5_LIBRARIES
+# HDF5_FOUND HDF5_VERSION HDF5_INCLUDE_DIRS HDF5_LIBRARIES
 #
 # Exported targets::
 #
-# If HDF5 is found, this module defines the following :prop_tgt:`IMPORTED`
-# target. ::
+# If HDF5 is found, this module defines the following :prop_tgt:`IMPORTED` target. ::
 #
-#   tgt::hdf5 - the HDF5 libraries with headers attached.
+# tgt::hdf5 - the HDF5 libraries with headers attached.
 #
 # Suggested usage::
 #
-#   find_package(TargetHDF5)
-#   find_package(TargetHDF5 1.8.16 REQUIRED)
-#
+# find_package(TargetHDF5) find_package(TargetHDF5 1.8.16 REQUIRED)
 #
 # The following variables can be set to guide the search for this package::
 #
-#   TargetHDF5_DIR - CMake variable, set to directory containing this Config file
-#   CMAKE_PREFIX_PATH - CMake variable, set to root directory of this package
+# TargetHDF5_DIR - CMake variable, set to directory containing this Config file CMAKE_PREFIX_PATH -
+# CMake variable, set to root directory of this package
 #
-# Einsums specialization
-# * None TODO
+# Einsums specialization * None TODO
 
 set(PN TargetHDF5)
 

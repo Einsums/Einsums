@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -24,9 +24,9 @@
   public:                                                                                                                                  \
     Type(PrivateConstructorStuff ignore) : Type() {                                                                                        \
     }                                                                                                                                      \
-    static Type &get_singleton(); \
-    Type(const Type &) = delete; \
-    Type(Type &&) = delete;
+    static Type &get_singleton();                                                                                                          \
+    Type(const Type &) = delete;                                                                                                           \
+    Type(Type &&)      = delete;
 
 /**
  * @def EINSUMS_SINGLETON_IMPL

@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 ////////////////////////////////////////////////////////////////////////////////
 //  Copyright (c) 2020 Giannis Gonidelis
 //
@@ -8,10 +13,9 @@
 
 #include <iterator>
 
-int main()
-{
+int main() {
     constexpr bool b = std::disable_sized_sentinel_for<void, void>;
-    (void) b;
+    (void)b;
 
     return 0;
 }

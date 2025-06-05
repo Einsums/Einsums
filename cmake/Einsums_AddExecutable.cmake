@@ -4,7 +4,15 @@
 #----------------------------------------------------------------------------------------------
 
 function(einsums_add_executable name)
-  set(options GPU EXCLUDE_FROM_ALL EXCLUDE_FROM_DEFAULT_BUILD INTERNAL_FLAGS NOLIBS UNITY_BUILD NOINSTALL)
+  set(options
+      GPU
+      EXCLUDE_FROM_ALL
+      EXCLUDE_FROM_DEFAULT_BUILD
+      INTERNAL_FLAGS
+      NOLIBS
+      UNITY_BUILD
+      NOINSTALL
+  )
   set(one_value_args
       INI
       FOLDER
@@ -12,7 +20,7 @@ function(einsums_add_executable name)
       HEADER_ROOT
       SOURCE_GLOB
       HEADER_GLOB
-          OUTPUT_NAME
+      OUTPUT_NAME
       OUTPUT_SUFFIX
       INSTALL_SUFFIX
       LANGUAGE
@@ -57,7 +65,7 @@ function(einsums_add_executable name)
   # add the executable build target
   if(${name}_EXCLUDE_FROM_ALL)
     set(exclude_from_all EXCLUDE_FROM_ALL TRUE)
-  elseif (NOT ${name}_NOINSTALL)
+  elseif(NOT ${name}_NOINSTALL)
     set(install_destination ${CMAKE_INSTALL_BINDIR})
     if(${name}_INSTALL_SUFFIX)
       set(install_destination ${${name}_INSTALL_SUFFIX})
@@ -150,11 +158,13 @@ function(einsums_add_executable name)
     endif()
   endif()
 
-  if (${name}_OUTPUT_NAME)
-    set_target_properties(${name} PROPERTIES OUTPUT_NAME "${EINSUMS_WITH_EXECUTABLE_PREFIX}${${name}_OUTPUT_NAME}")
-  else ()
+  if(${name}_OUTPUT_NAME)
+    set_target_properties(
+      ${name} PROPERTIES OUTPUT_NAME "${EINSUMS_WITH_EXECUTABLE_PREFIX}${${name}_OUTPUT_NAME}"
+    )
+  else()
     set_target_properties(${name} PROPERTIES OUTPUT_NAME "${EINSUMS_WITH_EXECUTABLE_PREFIX}${name}")
-  endif ()
+  endif()
 
   if(exclude_from_all)
     set_target_properties(${name} PROPERTIES ${exclude_from_all})

@@ -14,35 +14,33 @@
 # Name of test file. Include .cpp, .hip, etc. extension.
 set(VersionTests)
 
-foreach (test ${VersionTests})
-    # Extract base name of test Example1.cpp -> Example1, Example.2.hip -> Example
-    get_filename_component(TestName ${test} NAME_WE)
-    # Extract extension of the test Example1.cpp -> .cpp, Example.2.hip -> .2.hip
-    get_filename_component(Extension ${test} EXT)
+foreach(test ${VersionTests})
+  # Extract base name of test Example1.cpp -> Example1, Example.2.hip -> Example
+  get_filename_component(TestName ${test} NAME_WE)
+  # Extract extension of the test Example1.cpp -> .cpp, Example.2.hip -> .2.hip
+  get_filename_component(Extension ${test} EXT)
 
-    # Remove the leading dot and replace any periods with underscores
-    string(SUBSTRING ${Extension} 1 -1 EXT_NO_DOT) # Remove the leading dot
-    string(REPLACE "." "_" TestExtension ${EXT_NO_DOT})
+  # Remove the leading dot and replace any periods with underscores
+  string(SUBSTRING ${Extension} 1 -1 EXT_NO_DOT) # Remove the leading dot
+  string(REPLACE "." "_" TestExtension ${EXT_NO_DOT})
 
-    # Check if the cleaned extension is "cu" or "hip"
-    if (NOT EINSUMS_WITH_GPU_SUPPORT AND (TestExtension STREQUAL "cu" OR TestExtension STREQUAL "hip"))
-        # Skip this iteration
-        continue()
-    endif ()
+  # Check if the cleaned extension is "cu" or "hip"
+  if(NOT EINSUMS_WITH_GPU_SUPPORT AND (TestExtension STREQUAL "cu" OR TestExtension STREQUAL "hip"))
+    # Skip this iteration
+    continue()
+  endif()
 
-    set(Sources ${test})
+  set(Sources ${test})
 
-    source_group("Source Files" FILES ${Sources})
+  source_group("Source Files" FILES ${Sources})
 
-    einsums_add_executable(
-            ${TestName}_test
-            INTERNAL_FLAGS
-            SOURCES ${Sources}
-            ${${TestName}_${TestExtension}_FLAGS}
-            NOINSTALL
-    )
+  einsums_add_executable(
+    ${TestName}_test INTERNAL_FLAGS
+    SOURCES ${Sources} ${${TestName}_${TestExtension}_FLAGS}
+    NOINSTALL
+  )
 
-    einsums_add_unit_test(
-            "Modules.Einsums.Version" ${test} ${${TestName}_${TestExtension}_PARAMETERS}
-    )
-endforeach ()
+  einsums_add_unit_test(
+    "Modules.Einsums.Version" ${test} ${${TestName}_${TestExtension}_PARAMETERS}
+  )
+endforeach()

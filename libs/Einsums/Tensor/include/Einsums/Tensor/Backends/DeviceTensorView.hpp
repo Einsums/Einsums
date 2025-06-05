@@ -1,16 +1,16 @@
-//--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All Rights Reserved.
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #ifndef BACKENDS_DEVICE_TENSOR_VIEW_HPP
 #define BACKENDS_DEVICE_TENSOR_VIEW_HPP
 
+#include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/Tensor/Backends/DeviceTensor.hpp>
 #include <Einsums/Tensor/DeviceTensor.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/GPUComplex.hpp>
-#include <Einsums/Iterator/Enumerate.hpp>
 
 namespace einsums {
 
@@ -242,13 +242,13 @@ auto DeviceTensorView<T, rank>::gpu_data_array(std::array<size_t, rank> const &i
 
 template <typename T, size_t rank>
 template <typename... MultiIndex>
-auto DeviceTensorView<T, rank>::operator()(MultiIndex&&... index) const -> T {
+auto DeviceTensorView<T, rank>::operator()(MultiIndex &&...index) const -> T {
     using namespace einsums::gpu;
     T out;
 
     size_t ordinal = einsums::indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
 
-    hip_catch(hipMemcpy(&out, (const void *) (this->_data + ordinal), sizeof(T), hipMemcpyDeviceToHost));
+    hip_catch(hipMemcpy(&out, (void const *)(this->_data + ordinal), sizeof(T), hipMemcpyDeviceToHost));
     // no sync
 
     return out;

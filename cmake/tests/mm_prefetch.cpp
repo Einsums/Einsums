@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 //  Copyright (c) 2016 Hartmut Kaiser
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -5,14 +10,13 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #if defined(_MSC_VER)
-# include <intrin.h>
+#    include <intrin.h>
 #endif
 #if defined(__GNUC__)
-# include <emmintrin.h>
+#    include <emmintrin.h>
 #endif
 
-int main()
-{
-    char* p = 0;
+int main() {
+    char *p = 0;
     _mm_prefetch(p, _MM_HINT_T0);
 }

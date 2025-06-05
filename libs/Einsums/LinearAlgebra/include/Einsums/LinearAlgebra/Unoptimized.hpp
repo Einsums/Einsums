@@ -8,12 +8,12 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Complex.hpp>
-#include <Einsums/Concepts/TensorConcepts.hpp>
-#include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
+#include <Einsums/Errors/ThrowException.hpp>
 
 #include <cstdint>
-#include <Einsums/Config/CompilerSpecific.hpp>
 
 namespace einsums::linear_algebra::detail {
 

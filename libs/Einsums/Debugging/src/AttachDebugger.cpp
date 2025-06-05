@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
@@ -45,7 +45,7 @@ void attach_debugger() {
 #if defined(EINSUMS_WINDOWS)
     DebugBreak();
 #elif defined(_POSIX_VERSION) && defined(EINSUMS_HAVE_UNISTD_H)
-    volatile int i = 0;
+    int volatile i = 0;
     std::cerr << "PID: " << getpid() << " on " << hostname()
               << " ready for attaching debugger. Once attached set i = 1 "
                  "and continue"
