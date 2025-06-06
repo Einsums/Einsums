@@ -589,24 +589,6 @@ constexpr bool einsum_is_batchable(std::tuple<CIndices...> const &, std::tuple<A
     return std::tuple_size_v<decltype(batches)> > 0;
 }
 
-template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
-    requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
-bool einsum_do_batches(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
-                       BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
-                       std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B) {
-    constexpr auto A_indices = std::tuple<AIndices...>();
-    constexpr auto B_indices = std::tuple<BIndices...>();
-    constexpr auto C_indices = std::tuple<CIndices...>();
-    constexpr auto A_unique  = UniqueT<std::tuple<AIndices...>>();
-    constexpr auto B_unique  = UniqueT<std::tuple<BIndices...>>();
-    constexpr auto C_unique  = UniqueT<std::tuple<CIndices...>>();
-    constexpr auto linksAB   = IntersectT<std::tuple<AIndices...>, std::tuple<BIndices...>>();
-    constexpr auto batches   = IntersectT<std::tuple<CIndices...>, decltype(linksAB)>();
-
-
-}
-
 // CType has typename to allow for interoperability with scalar types.
 template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
