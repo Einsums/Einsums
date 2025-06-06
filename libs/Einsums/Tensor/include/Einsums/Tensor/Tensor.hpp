@@ -1829,6 +1829,15 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
         // Calculate the index strides.
         dims_to_strides(_dims, _index_strides);
+
+        // Check the index strides. If they are the same as the strides, then this is the "full view" of the underlying tensor.
+        _full_view_of_underlying = true;
+        for(int i = 0; i < Rank; i++) {
+            if(_index_strides[i] != _strides[i]) {
+                _full_view_of_underlying = false;
+                break;
+            }
+        }
     }
 
     /**

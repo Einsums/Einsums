@@ -124,7 +124,7 @@ TEMPLATE_TEST_CASE("TensorView einsum", "[tensor]", float, double, std::complex<
 
     // einsum where everything is a TensorView
     REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_view, Indices{i, k}, A_view, Indices{j, k}, B_view, &alg_choice));
-    REQUIRE(alg_choice == einsums::tensor_algebra::detail::GEMM);
+    REQUIRE(alg_choice == einsums::tensor_algebra::detail::GENERIC);
 
     for (int x = 0; x < 3; x++) {
         for (int y = 0; y < 3; y++) {
