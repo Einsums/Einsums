@@ -42,6 +42,13 @@
 namespace einsums::tensor_algebra {
 namespace detail {
 
+template <bool OnlyUseGenericAlgorithm, bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+    requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
+AlgorithmChoice einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
+                       BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
+                       std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B);
+
 /**
  * @brief Perform runtime checks for the tensor dimensions.
  */
@@ -126,20 +133,30 @@ void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndic
  * This will either call einsum_generic_algorithm or einsum_special_dispatch, depending on whether the tensors
  * have special dispatching. The template argument will be passed onto einsum_special_dispatch.
  */
-template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
+template <bool OnlyUseGenericAlgorithm, bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
     requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
-void einsum_generic_default(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
-                            BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
-                            std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/,
-                            BType const &B) {
+AlgorithmChoice einsum_generic_default(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
+                                       BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
+                                       std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/,
+                                       BType const &B) {
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();
     constexpr auto C_indices = std::tuple<CIndices...>();
 
     if constexpr (IsAlgebraTensorV<AType> && IsAlgebraTensorV<BType> && (IsAlgebraTensorV<CType> || !IsTensorV<CType>) &&
                   (!IsBasicTensorV<AType> || !IsBasicTensorV<BType> || (!IsBasicTensorV<CType> && IsTensorV<CType>))) {
-        einsum_special_dispatch<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        if constexpr (!DryRun) {
+            einsum_special_dispatch<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        }
+        Tensor<typename AType::ValueType, AType::Rank> dry_A;
+        Tensor<typename BType::ValueType, BType::Rank> dry_B;
+        if constexpr (TensorConcept<CType>) {
+            Tensor<typename CType::ValueType, CType::Rank> dry_C;
+            return einsum<OnlyUseGenericAlgorithm, true>(C_prefactor, C_indices, &dry_C, AB_prefactor, A_indices, dry_A, B_indices, dry_B);
+        } else {
+            return einsum<OnlyUseGenericAlgorithm, true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, dry_A, B_indices, dry_B);
+        }
     } else {
         constexpr auto A_unique              = UniqueT<std::tuple<AIndices...>>();
         constexpr auto B_unique              = UniqueT<std::tuple<BIndices...>>();
@@ -155,8 +172,11 @@ void einsum_generic_default(ValueTypeT<CType> const C_prefactor, std::tuple<CInd
 
         EINSUMS_LOG_TRACE("Performing the generic algorithm.");
 
-        einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
-                                 unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
+        if constexpr (!DryRun) {
+            einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
+                                     unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
+        }
+        return GENERIC;
     }
 }
 
@@ -226,7 +246,8 @@ constexpr bool einsum_is_outer_product(std::tuple<CIndices...> const &, std::tup
 /**
  * @brief Sets up tensor views and performs the outer product on them.
  */
-template <TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
+template <bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices, typename... AIndices,
+          typename... BIndices>
 bool einsum_do_outer_product(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/,
@@ -249,6 +270,11 @@ bool einsum_do_outer_product(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
         EINSUMS_LOG_TRACE("do not have full view of underlying data A {} B{}", !A.full_view_of_underlying(), !B.full_view_of_underlying());
         return false;
     }
+
+    if constexpr (DryRun) {
+        return true;
+    }
+
     constexpr bool swap_AB = std::get<1>(A_target_position_in_C) != 0;
     EINSUMS_LOG_TRACE("swap_AB {}", swap_AB);
 
@@ -337,7 +363,8 @@ constexpr bool einsum_is_matrix_vector(std::tuple<CIndices...> const &, std::tup
 /**
  * @brief Sets up tensor views and performs a matrix-vector product on them.
  */
-template <TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
+template <bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices, typename... AIndices,
+          typename... BIndices>
 bool einsum_do_matrix_vector(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/,
@@ -366,6 +393,10 @@ bool einsum_do_matrix_vector(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
         EINSUMS_LOG_TRACE("do not have full view of underlying data A {} B{} C{}", !A.full_view_of_underlying(),
                           !B.full_view_of_underlying(), !C->full_view_of_underlying());
         return false;
+    }
+
+    if constexpr (DryRun) {
+        return true;
     }
 
     constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
@@ -452,8 +483,8 @@ constexpr bool einsum_is_matrix_product(std::tuple<CIndices...> const &, std::tu
 /**
  * @brief Sets up tensor views and performs a matrix-vector product on them.
  */
-template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices, typename... AIndices,
+          typename... BIndices>
     requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
 bool einsum_do_matrix_product(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
                               BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
@@ -485,6 +516,10 @@ bool einsum_do_matrix_product(ValueTypeT<CType> const C_prefactor, std::tuple<CI
         EINSUMS_LOG_TRACE("do not have full view of underlying data A {} B{} C{}", !A.full_view_of_underlying(),
                           !B.full_view_of_underlying(), !C->full_view_of_underlying());
         return false;
+    }
+
+    if constexpr (DryRun) {
+        return true;
     }
 
     constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
@@ -590,12 +625,12 @@ constexpr bool einsum_is_batchable(std::tuple<CIndices...> const &, std::tuple<A
 }
 
 // CType has typename to allow for interoperability with scalar types.
-template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
+template <bool OnlyUseGenericAlgorithm, bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
     requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
 auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
             BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor, std::tuple<AIndices...> const & /*As*/,
-            AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B) -> void {
+            AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B) -> AlgorithmChoice {
     // profile::Timer const _timer();
     print::Indent const _indent;
 
@@ -617,10 +652,13 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
 
     // Runtime check of sizes
 #    if defined(EINSUMS_RUNTIME_INDICES_CHECK)
-    einsum_runtime_check(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    if constepxr (!DryRun) {
+        einsum_runtime_check(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    }
 #    endif
 
-    bool has_performed_contraction = false;
+    bool            has_performed_contraction = false;
+    AlgorithmChoice retval                    = INDETERMINATE;
 
     if constexpr (OnlyUseGenericAlgorithm) {
         // Skip to the generic algorithm.
@@ -629,38 +667,49 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
                          (!IsAlgebraTensorV<AType> || !IsAlgebraTensorV<BType> || (!IsAlgebraTensorV<CType> && !IsScalarV<CType>))) {
         // Mixed datatypes and poorly behaved tensor types go directly to the generic algorithm.
     } else if constexpr (einsum_is_dot_product(C_indices, A_indices, B_indices)) {
-        CDataType temp = linear_algebra::dot(A, B);
-        (*C) *= C_prefactor;
-        (*C) += AB_prefactor * temp;
+        if constexpr (!DryRun) {
+            CDataType temp = linear_algebra::dot(A, B);
+            (*C) *= C_prefactor;
+            (*C) += AB_prefactor * temp;
+        }
 
         has_performed_contraction = true;
+        retval                    = DOT;
     } else if constexpr (einsum_is_direct_product(C_indices, A_indices, B_indices)) {
-        profile::Timer const element_wise_multiplication_timer{"element-wise multiplication"};
+        if constexpr (!DryRun) {
+            profile::Timer const element_wise_multiplication_timer{"element-wise multiplication"};
 
-        linear_algebra::direct_product(AB_prefactor, A, B, C_prefactor, C);
+            linear_algebra::direct_product(AB_prefactor, A, B, C_prefactor, C);
+        }
 
         has_performed_contraction = true;
+        retval                    = DIRECT;
     } else if constexpr (!IsBasicTensorV<AType> || !IsBasicTensorV<BType> || !IsBasicTensorV<CType>) {
-        einsum_generic_default<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        retval = einsum_generic_default<false, DryRun>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
         has_performed_contraction = true;
     } else if constexpr (einsum_is_outer_product(C_indices, A_indices, B_indices)) {
-        has_performed_contraction = einsum_do_outer_product(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
-        if constexpr (einsum_is_matrix_vector(C_indices, A_indices, B_indices)) {
-            has_performed_contraction = einsum_do_matrix_vector(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
-        } else if constexpr (einsum_is_matrix_vector(C_indices, B_indices, A_indices)) {
-            has_performed_contraction = einsum_do_matrix_vector(C_prefactor, C_indices, C, AB_prefactor, B_indices, B, A_indices, A);
-        }
-        // To use a gemm the input tensors need to be at least rank 2
-        else if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
-            if constexpr (einsum_is_matrix_product(C_indices, A_indices, B_indices)) {
-                has_performed_contraction = einsum_do_matrix_product(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
-            }
+        has_performed_contraction = einsum_do_outer_product<DryRun>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        retval                    = GER;
+    } else if constexpr (einsum_is_matrix_vector(C_indices, A_indices, B_indices)) {
+        has_performed_contraction = einsum_do_matrix_vector<DryRun>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        retval                    = GEMV;
+    } else if constexpr (einsum_is_matrix_vector(C_indices, B_indices, A_indices)) {
+        has_performed_contraction = einsum_do_matrix_vector<DryRun>(C_prefactor, C_indices, C, AB_prefactor, B_indices, B, A_indices, A);
+        retval                    = GEMV;
+    }
+    // To use a gemm the input tensors need to be at least rank 2
+    else if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
+        if constexpr (einsum_is_matrix_product(C_indices, A_indices, B_indices)) {
+            has_performed_contraction =
+                einsum_do_matrix_product<DryRun>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+            retval = GEMM;
         }
     }
 
     if (!has_performed_contraction) {
-        einsum_generic_default<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        return einsum_generic_default<true, DryRun>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
     }
+    return retval;
 }
 } // namespace detail
 
@@ -670,8 +719,9 @@ template <TensorConcept AType, TensorConcept BType, typename CType, typename U, 
         requires InSamePlace<AType, BType>;
         requires InSamePlace<AType, CType> || !TensorConcept<CType>;
     }
-auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UAB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) -> void {
+void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UAB_prefactor,
+            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice) {
     using ADataType        = AType::ValueType;
     using BDataType        = BType::ValueType;
     using CDataType        = ValueTypeT<CType>;
@@ -725,7 +775,7 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
             // Perform the einsum using only the generic algorithm
             // #pragma omp task depend(in: A, B) depend(inout: testC)
             {
-                detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB);
+                detail::einsum<true, false>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB);
             }
             // #pragma omp taskwait depend(in: testC)
         } else {
@@ -734,23 +784,23 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                 auto testA = Tensor<ADataType, ARank>(A);
                 auto testB = Tensor<BDataType, BRank>(B);
                 {
-                    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB);
+                    detail::einsum<true, false>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB);
                 }
             } else if constexpr (!einsums::detail::IsBasicTensorV<AType>) {
                 auto testA = Tensor<ADataType, ARank>(A);
                 {
-                    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, B);
+                    detail::einsum<true, false>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, B);
                 }
             } else if constexpr (!einsums::detail::IsBasicTensorV<BType>) {
                 auto testB = Tensor<BDataType, BRank>(B);
                 {
-                    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, testB);
+                    detail::einsum<true, false>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, testB);
                 }
             } else {
                 // Perform the einsum using only the generic algorithm
                 // #pragma omp task depend(in: A, B) depend(inout: testC)
                 {
-                    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
+                    detail::einsum<true, false>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
                 }
                 // #pragma omp taskwait depend(in: testC)
             }
@@ -761,7 +811,7 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
 #    endif
 
     // Default einsums.
-    detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    detail::AlgorithmChoice retval = detail::einsum<false, false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
 
 #    if defined(EINSUMS_TEST_NANS)
     // The tests need a wait.
@@ -954,6 +1004,10 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     }
 #    endif
     EINSUMS_LOG_TRACE("END: einsum");
+
+    if (algorithm_choice != nullptr) {
+        *algorithm_choice = retval;
+    }
 }
 } // namespace einsums::tensor_algebra
 

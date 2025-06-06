@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 
 #include <Einsums/Testing.hpp>
@@ -10,6 +11,8 @@
 TEST_CASE("einsum1", "[tensor]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
+
+    tensor_algebra::detail::AlgorithmChoice alg_choice;
 
     SECTION("ik=ij,jk") {
         Tensor A{"A", 3, 3};
@@ -23,7 +26,9 @@ TEST_CASE("einsum1", "[tensor]") {
             }
         }
 
-        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::i, index::k}, A, Indices{index::k, index::j}, B));
+        REQUIRE_NOTHROW(
+            einsum(Indices{index::i, index::j}, &C, Indices{index::i, index::k}, A, Indices{index::k, index::j}, B, &alg_choice));
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
 
         // println(A);
         // println(B);
@@ -62,8 +67,9 @@ TEST_CASE("einsum1", "[tensor]") {
         // println(C);
 
         // einsum("il=ijk,jkl", &C, A, B);
-        REQUIRE_NOTHROW(
-            einsum(Indices{index::i, index::l}, &C, Indices{index::i, index::j, index::k}, A, Indices{index::j, index::k, index::l}, B));
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::l}, &C, Indices{index::i, index::j, index::k}, A,
+                               Indices{index::j, index::k, index::l}, B, &alg_choice));
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
 
         // println(C);
 
@@ -86,6 +92,8 @@ TEMPLATE_TEST_CASE("TensorView einsum", "[tensor]", float, double, std::complex<
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
+
+    tensor_algebra::detail::AlgorithmChoice alg_choice;
 
     // Test if everything passed to einsum is a TensorView.
     Tensor     A = create_random_tensor<TestType>("A", 3, 5);
@@ -111,10 +119,12 @@ TEMPLATE_TEST_CASE("TensorView einsum", "[tensor]", float, double, std::complex<
     // The target solution is determined from not using views
     Tensor C_solution = create_tensor<TestType>("C solution", 3, 3);
     C_solution.zero();
-    REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_solution, Indices{i, k}, A_copy, Indices{j, k}, B_copy));
+    REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_solution, Indices{i, k}, A_copy, Indices{j, k}, B_copy, &alg_choice));
+    REQUIRE(alg_choice == einsums::tensor_algebra::detail::GEMM);
 
     // einsum where everything is a TensorView
-    REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_view, Indices{i, k}, A_view, Indices{j, k}, B_view));
+    REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_view, Indices{i, k}, A_view, Indices{j, k}, B_view, &alg_choice));
+    REQUIRE(alg_choice == einsums::tensor_algebra::detail::GEMM);
 
     for (int x = 0; x < 3; x++) {
         for (int y = 0; y < 3; y++) {

@@ -12,6 +12,8 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
+    tensor_algebra::detail::AlgorithmChoice alg_choice;
+
     size_t proj_rank_{10}, nocc_{5}, nvirt_{28}, naux_{3}, u_rank_{4};
 
     SECTION("1") {
@@ -20,7 +22,8 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
         auto ortho_temp_1 = create_zero_tensor<TestType>("ortho temp 1", nocc_, nvirt_, proj_rank_);
 
         einsum(0.0, Indices{index::i, index::a, index::W}, &ortho_temp_1, 1.0, Indices{index::i, index::W}, y_iW_,
-               Indices{index::a, index::W}, y_aW_);
+               Indices{index::a, index::W}, y_aW_, &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
     }
 
     SECTION("2") {
@@ -30,7 +33,8 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
         zero(ortho_temp_2);
         einsum(0.0, Indices{index::i, index::a, index::P}, &ortho_temp_2, 1.0, Indices{index::i, index::a, index::W}, ortho_temp_1,
-               Indices{index::P, index::W}, tau_);
+               Indices{index::P, index::W}, tau_, &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
     }
 
     SECTION("3") {
@@ -39,7 +43,8 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
         auto c = create_tensor<TestType>("c", nvirt_, nvirt_);
         zero(c);
 
-        einsum(0.0, Indices{index::p, index::q}, &c, -1.0, Indices{index::p, index::q}, a, Indices{index::p, index::q}, b);
+        einsum(0.0, Indices{index::p, index::q}, &c, -1.0, Indices{index::p, index::q}, a, Indices{index::p, index::q}, b, &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::DIRECT);
 
         for (int x = 0; x < nvirt_; x++) {
             for (int y = 0; y < nvirt_; y++) {
@@ -56,7 +61,9 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
         auto c0 = create_tensor<TestType>("c0", proj_rank_, proj_rank_);
 
         zero(c);
-        einsum(Indices{index::Q, index::X}, &c, Indices{index::Q, index::i, index::a}, A, Indices{index::i, index::a, index::X}, B);
+        einsum(Indices{index::Q, index::X}, &c, Indices{index::Q, index::i, index::a}, A, Indices{index::i, index::a, index::X}, B,
+               &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
 
         zero(c0);
         for (size_t Q = 0; Q < proj_rank_; Q++) {
@@ -85,7 +92,8 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
         zero(F_BAR);
         einsum(Indices{index::Q, index::a, index::X}, &F_BAR, Indices{index::Q, index::Y, index::X}, F_TEMP, Indices{index::a, index::Y},
-               y_aW);
+               y_aW, &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
 
         zero(F_BAR0);
         for (size_t Q = 0; Q < proj_rank_; Q++) {
@@ -113,7 +121,8 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
         auto C = create_tensor<TestType>("C", 84, 84);
         zero(C);
 
-        einsum(Indices{index::a, index::b}, &C, Indices{index::a}, A, Indices{index::b}, A);
+        einsum(Indices{index::a, index::b}, &C, Indices{index::a}, A, Indices{index::b}, A, &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::GER);
 
         for (size_t a = 0; a < 84; a++) {
             for (size_t b = 0; b < 84; b++) {
@@ -137,7 +146,8 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
         auto C = create_tensor<TestType>("C", 9, 9);
         zero(C);
 
-        einsum(Indices{index::a, index::b}, &C, Indices{index::a}, A, Indices{index::b}, A);
+        einsum(Indices{index::a, index::b}, &C, Indices{index::a}, A, Indices{index::b}, A, &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::GER);
 
         for (size_t a = 0; a < 9; a++) {
             for (size_t b = 0; b < 9; b++) {
@@ -155,7 +165,8 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
         zero(D_TILDE);
 
         einsum(0.0, Indices{index::a, index::X}, &D_TILDE, 1.0, Indices{index::Q, index::a, index::X}, C_TILDE, Indices{index::Q, index::X},
-               B_QY);
+               B_QY, &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
     }
 
     SECTION("9") {
@@ -165,7 +176,9 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
         auto N_QX = create_tensor<TestType>("N_QX", naux_, u_rank_);
         zero(N_QX);
 
-        einsum(Indices{index::Q, index::X}, &N_QX, Indices{index::Q, index::i, index::a}, Qov, Indices{index::i, index::a, index::X}, ia_X);
+        einsum(Indices{index::Q, index::X}, &N_QX, Indices{index::Q, index::i, index::a}, Qov, Indices{index::i, index::a, index::X}, ia_X,
+               &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
     }
 
     SECTION("10") {
@@ -175,7 +188,8 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
         auto M_X = create_tensor<TestType>("M_X", u_rank_);
         zero(M_X);
 
-        einsum(Indices{index::X}, &M_X, Indices{index::i, index::a, index::X}, ia_X, Indices{index::i, index::a}, t_ia);
+        einsum(Indices{index::X}, &M_X, Indices{index::i, index::a, index::X}, ia_X, Indices{index::i, index::a}, t_ia, &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMV);
     }
 
     SECTION("11") {
@@ -190,6 +204,8 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
         auto N_QX = create_tensor<TestType>("N_QX", naux_, u_rank_);
         zero(N_QX);
 
-        einsum(Indices{index::Q, index::X}, &N_QX, Indices{index::Q, index::i, index::a}, Qov, Indices{index::i, index::a, index::X}, ia_X);
+        einsum(Indices{index::Q, index::X}, &N_QX, Indices{index::Q, index::i, index::a}, Qov, Indices{index::i, index::a, index::X}, ia_X,
+               &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
     }
 }
