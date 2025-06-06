@@ -1,0 +1,26 @@
+.. 
+    ---------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
+
+==============
+v0.4.0 Release
+==============
+
+What's New
+----------
+
+* Added HIP-compatible tensors
+* Added GPU profiling capabilities
+* Tensors can be resized
+* More LAPACK routines have become available.
+* Some minor features
+* Added a job manager
+
+What's Removed
+--------------
+
+* LAPACKE and CBLAS are no longer dependencies for Einsums.

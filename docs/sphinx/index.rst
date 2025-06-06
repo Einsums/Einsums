@@ -52,6 +52,7 @@ dgemm call:
 
    .. grid-item-card::
       :img-top: _static/index-images/getting_started.svg
+      :class-img-top: icon
 
       Getting Started
       ^^^^^^^^^^^^^^^
@@ -71,6 +72,7 @@ dgemm call:
 
    .. grid-item-card::
       :img-top: _static/index-images/user_guide.svg
+      :class-img-top: icon
 
       User Guide
       ^^^^^^^^^^
@@ -89,9 +91,10 @@ dgemm call:
 
    .. grid-item-card::
       :img-top: _static/index-images/api.svg
+      :class-img-top: icon
 
       Developer's Guide
-      ^^^^^^^^^^^^^
+      ^^^^^^^^^^^^^^^^^
 
       The reference guide contains a detailed description of the functions,
       modules, and objects included in Einsums. The reference describes how the
@@ -100,7 +103,7 @@ dgemm call:
 
       .. image:: https://codecov.io/github/Einsums/Einsums/graph/badge.svg?token=Z8WA6CEGQA 
          :target: https://codecov.io/github/Einsums/Einsums
-
+         :class: dark-light
       +++
 
       .. button-ref:: /libs/overview
@@ -112,6 +115,7 @@ dgemm call:
 
    .. grid-item-card::
       :img-top: _static/index-images/contributor.svg
+      :class-img-top: icon
 
       Contributor's Guide
       ^^^^^^^^^^^^^^^^^^^

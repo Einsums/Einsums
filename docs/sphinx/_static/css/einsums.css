@@ -25,7 +25,7 @@
 .sd-card .sd-card-header {
   border: none;
   background-color: white;
-  color: #150458 !important;
+  color: var(--pst-color-primary);
   font-size: var(--pst-font-size-h5);
   font-weight: bold;
   padding: 2.5rem 0rem 0.5rem 0rem;
@@ -47,7 +47,7 @@ nav.bd-links p.caption {
 }
 
 /* Dark theme tweaking */
-html[data-theme=dark] .sd-card img[src*='.svg'] {
+html[data-theme=dark] img[src*='.svg'].icon {
   filter: invert(0.82) brightness(0.8) contrast(1.2);
 }
 
@@ -60,19 +60,6 @@ html[data-theme=dark] .sd-shadow-sm {
   box-shadow: 0 .1rem 1rem rgba(250, 250, 250, .6) !important
 }
 
-html[data-theme=dark] .sd-card .sd-card-header {
-  background-color: var(--pst-color-background);
-  color: #150458 !important;
-}
-
 html[data-theme=dark] .sd-card .sd-card-footer {
   background-color: var(--pst-color-background);
-}
-
-html[data-theme=dark] h1 {
-  color: var(--pst-color-primary);
-}
-
-html[data-theme=dark] h3 {
-  color: #0a6774;
 }
