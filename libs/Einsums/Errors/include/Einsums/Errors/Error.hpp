@@ -9,7 +9,6 @@
 
 #include <Einsums/TypeSupport/StringLiteral.hpp>
 
-#include <source_location>
 #include <stdexcept>
 #include <string>
 
@@ -35,21 +34,21 @@ namespace detail {
  *
  * @return A message with this extra debugging info.
  */
-EINSUMS_EXPORT std::string make_error_message(std::string_view const &type_name, char const *str, std::source_location const &location);
+EINSUMS_EXPORT std::string make_error_message(std::string_view const &type_name, char const *str, einsums::source_location const &location);
 
-/// @copydoc make_error_message(char const *,char const *,std::source_location const &)
+/// @copydoc make_error_message(char const *,char const *,einsums::source_location const &)
 template <size_t N>
-std::string make_error_message(StringLiteral<N> const type_name, char const *str, std::source_location const &location) {
+std::string make_error_message(StringLiteral<N> const type_name, char const *str, einsums::source_location const &location) {
     return make_error_message(type_name.string_view(), str, location);
 }
 
-/// @copydoc make_error_message(char const *,char const *,std::source_location const &)
+/// @copydoc make_error_message(char const *,char const *,einsums::source_location const &)
 EINSUMS_EXPORT std::string make_error_message(std::string_view const &type_name, std::string const &str,
-                                              std::source_location const &location);
+                                              einsums::source_location const &location);
 
-/// @copydoc make_error_message(char const *,char const *,std::source_location const &)
+/// @copydoc make_error_message(char const *,char const *,einsums::source_location const &)
 template <size_t N>
-std::string make_error_message(StringLiteral<N> const type_name, std::string const &str, std::source_location const &location) {
+std::string make_error_message(StringLiteral<N> const type_name, std::string const &str, einsums::source_location const &location) {
     return make_error_message(type_name.string_view(), str, location);
 }
 
@@ -766,17 +765,17 @@ EINSUMS_HOST EINSUMS_EXPORT void __hip_catch__(hipError_t condition, char const 
 #    define hip_catch_STR(x)  hip_catch_STR1(x)
 #    define hip_catch(condition, ...)                                                                                                      \
         __hip_catch__((condition), "hip_catch" hip_catch_STR((condition)) ";", __FILE__, ":" hip_catch_STR(__LINE__) ":\nIn function: ",   \
-                      std::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
+                      einsums::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
 
 #    define hipblas_catch(condition, ...)                                                                                                  \
         __hipblas_catch__(                                                                                                                 \
             (condition), "hipblas_catch" hip_catch_STR((condition)) ";", __FILE__,                                                         \
-            ":" hip_catch_STR(__LINE__) ":\nIn function: ", std::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
+            ":" hip_catch_STR(__LINE__) ":\nIn function: ", einsums::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
 
 #    define hipsolver_catch(condition, ...)                                                                                                \
         __hipsolver_catch__(                                                                                                               \
             (condition), "hipsolver_catch" hip_catch_STR((condition)) ";", __FILE__,                                                       \
-            ":" hip_catch_STR(__LINE__) ":\nIn function: ", std::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
+            ":" hip_catch_STR(__LINE__) ":\nIn function: ", einsums::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
 
 #endif
 

@@ -10,7 +10,7 @@
 #include <string_view>
 #include <utility>
 
-#if __has_include(<source_location>)
+#if (defined(__cpp_lib_source_location) && __cpp_lib_source_location >= 201907L) || __has_include(<source_location>)
 #    include <source_location>
 #endif
 
