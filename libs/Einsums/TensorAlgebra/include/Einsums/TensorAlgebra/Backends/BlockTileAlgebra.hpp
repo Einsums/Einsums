@@ -141,10 +141,10 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
             C->unlock();
             C_block.lock();
             if constexpr (IsBlockTensorV<AType>) {
-                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_block, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
+                einsum<OnlyUseGenericAlgorithm, false>(CDataType{1.0}, C_indices, &C_block, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
                                                 B.tile(B_tile_index));
             } else if constexpr (IsBlockTensorV<BType>) {
-                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_block, AB_prefactor, A_indices, A.tile(A_tile_index),
+                einsum<OnlyUseGenericAlgorithm, false>(CDataType{1.0}, C_indices, &C_block, AB_prefactor, A_indices, A.tile(A_tile_index),
                                                 B_indices, B[B_tile_index[0]]);
             }
             C_block.unlock();
@@ -158,13 +158,13 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
             C->unlock();
             C_tile.lock();
             if constexpr (IsBlockTensorV<AType> && IsBlockTensorV<BType>) {
-                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
+                einsum<OnlyUseGenericAlgorithm, false>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
                                                 B[B_tile_index[0]]);
             } else if constexpr (IsBlockTensorV<AType>) {
-                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
+                einsum<OnlyUseGenericAlgorithm, false>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
                                                 B.tile(B_tile_index));
             } else if constexpr (IsBlockTensorV<BType>) {
-                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index),
+                einsum<OnlyUseGenericAlgorithm, false>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index),
                                                 B_indices, B[B_tile_index[0]]);
             }
             C_tile.unlock();

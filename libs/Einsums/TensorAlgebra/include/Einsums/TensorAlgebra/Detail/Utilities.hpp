@@ -15,6 +15,25 @@
 
 namespace einsums::tensor_algebra {
 
+namespace detail {
+/**
+ * @enum AlgorithmChoice
+ *
+ * @brief Indicates which algorithm the einsum call used.
+ *
+ * This is an enum for testing purposes only.
+ */
+enum AlgorithmChoice {
+    GENERIC,      /// Generic algorithm
+    DOT,          /// Dot product
+    DIRECT,       /// Direct product
+    GER,          /// Outer product
+    GEMV,         /// Matrix-vector product
+    GEMM,         /// Matrix-matrix product
+    INDETERMINATE /// Something happened and the einsum call failed.
+};
+} // namespace detail
+
 #if !defined(DOXYGEN)
 namespace detail {
 
