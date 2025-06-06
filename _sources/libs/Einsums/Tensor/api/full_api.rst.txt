@@ -18,15 +18,15 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 .. toctree::
    :maxdepth: 1
 
-   /libs/Einsums/Tensor/api/DeviceTensor.rst
-   /libs/Einsums/Tensor/api/TensorForward.rst
-   /libs/Einsums/Tensor/api/DiskTensor.rst
    /libs/Einsums/Tensor/api/BlockTensor.rst
-   /libs/Einsums/Tensor/api/TiledTensor.rst
    /libs/Einsums/Tensor/api/H5.rst
    /libs/Einsums/Tensor/api/ArithmeticTensor.rst
-   /libs/Einsums/Tensor/api/FunctionTensor.rst
    /libs/Einsums/Tensor/api/Tensor.rst
+   /libs/Einsums/Tensor/api/DiskTensor.rst
+   /libs/Einsums/Tensor/api/TiledTensor.rst
+   /libs/Einsums/Tensor/api/TensorForward.rst
+   /libs/Einsums/Tensor/api/DeviceTensor.rst
+   /libs/Einsums/Tensor/api/FunctionTensor.rst
    /libs/Einsums/Tensor/api/RuntimeTensor.rst
-   /libs/Einsums/Tensor/api/Backends_DeviceTensor.rst
    /libs/Einsums/Tensor/api/DeviceTensorView.rst
+   /libs/Einsums/Tensor/api/Backends_DeviceTensor.rst

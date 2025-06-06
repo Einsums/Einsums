@@ -18,6 +18,6 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 .. toctree::
    :maxdepth: 1
 
+   /libs/Einsums/BufferAllocator/api/BufferAllocator.rst
    /libs/Einsums/BufferAllocator/api/InitModule.rst
    /libs/Einsums/BufferAllocator/api/ModuleVars.rst
-   /libs/Einsums/BufferAllocator/api/BufferAllocator.rst

@@ -20,5 +20,5 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 
    /libs/Einsums/Preprocessor/api/Stringify.rst
    /libs/Einsums/Preprocessor/api/Expand.rst
-   /libs/Einsums/Preprocessor/api/NArgs.rst
    /libs/Einsums/Preprocessor/api/Cat.rst
+   /libs/Einsums/Preprocessor/api/NArgs.rst

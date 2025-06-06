@@ -19,8 +19,8 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
    :maxdepth: 1
 
    /libs/Einsums/LinearAlgebra/api/LinearAlgebra.rst
-   /libs/Einsums/LinearAlgebra/api/Unoptimized.rst
-   /libs/Einsums/LinearAlgebra/api/Base.rst
    /libs/Einsums/LinearAlgebra/api/BlockTensor.rst
-   /libs/Einsums/LinearAlgebra/api/TiledTensor.rst
    /libs/Einsums/LinearAlgebra/api/GPULinearAlgebra.rst
+   /libs/Einsums/LinearAlgebra/api/TiledTensor.rst
+   /libs/Einsums/LinearAlgebra/api/Base.rst
+   /libs/Einsums/LinearAlgebra/api/Unoptimized.rst
