@@ -21,7 +21,7 @@ extern void FC_GLOBAL(sgees, SGEES)(char *, char *, int_t (*)(float *, float *),
 }
 
 #define GEES(Type, lc, UC)                                                                                                                 \
-    auto lc##gees(char jobvs, int_t n, Type *a, int_t lda, int_t *sdim, Type *wr, Type *wi, Type *vs, int_t ldvs) -> int_t {               \
+    auto lc##gees(char jobvs, int_t n, Type *a, int_t lda, int_t *sdim, Type *wr, Type *wi, Type *vs, int_t ldvs)->int_t {                 \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t  info  = 0;                                                                                                                  \

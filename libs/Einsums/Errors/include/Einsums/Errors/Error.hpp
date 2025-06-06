@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -241,9 +241,9 @@ struct hip_exception : std::exception {
      */
     bool operator!=(hipError_t other) const { return error != other; }
 
-    template<hipError_t error2>
+    template <hipError_t error2>
     friend bool operator==(hipError_t, hip_exception<error2> const &);
-    template<hipError_t error2>
+    template <hipError_t error2>
     friend bool operator!=(hipError_t, hip_exception<error2> const &);
 };
 
@@ -401,9 +401,9 @@ struct EINSUMS_EXPORT hipblas_exception : std::exception {
      */
     bool operator!=(hipblasStatus_t other) const { return error != other; }
 
-    template<hipblasStatus_t error2>
+    template <hipblasStatus_t error2>
     friend bool operator==(hipblasStatus_t, hipblas_exception<error2> const &);
-    template<hipblasStatus_t error2>
+    template <hipblasStatus_t error2>
     friend bool operator!=(hipblasStatus_t, hipblas_exception<error2> const &);
 };
 
@@ -638,7 +638,7 @@ using blasUnknown         = hipblas_exception<HIPBLAS_STATUS_UNKNOWN>;
  *
  * @return A pointer to a string containing a brief message detailing the status.
  */
-EINSUMS_EXPORT EINSUMS_HOST const char *hipsolverStatusToString(hipsolverStatus_t status);
+EINSUMS_EXPORT EINSUMS_HOST char const *hipsolverStatusToString(hipsolverStatus_t status);
 
 /**
  * @struct hipsolver_exception
@@ -699,9 +699,9 @@ struct EINSUMS_EXPORT hipsolver_exception : std::exception {
      */
     bool operator!=(hipsolverStatus_t other) const { return error != other; }
 
-    template<hipsolverStatus_t error2>
+    template <hipsolverStatus_t error2>
     friend bool operator==(hipsolverStatus_t, hipsolver_exception<error2> const &);
-    template<hipsolverStatus_t error2>
+    template <hipsolverStatus_t error2>
     friend bool operator!=(hipsolverStatus_t, hipsolver_exception<error> const &);
 };
 

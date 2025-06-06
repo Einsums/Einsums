@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All Rights Reserved.
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/BLAS/InitModule.hpp>
 #include <Einsums/BLASVendor/Vendor.hpp>
@@ -19,7 +19,7 @@ int setup_Einsums_BLAS() {
     // Instead, modify the other functions below.
     static bool is_initialized = false;
 
-    if(!is_initialized) {
+    if (!is_initialized) {
         einsums::register_startup_function(einsums::initialize_Einsums_BLAS);
         einsums::register_shutdown_function(einsums::finalize_Einsums_BLAS);
         is_initialized = true;

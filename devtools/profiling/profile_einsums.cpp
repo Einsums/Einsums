@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Tensor.hpp>
@@ -119,7 +124,7 @@ void parse_args(int argc, char **argv, int *norbs, int *trials) {
     }
 }
 
-int main(int argc, char **argv) {
+int         main(int argc, char **argv) {
 #pragma omp parallel
     {
 #pragma omp single

@@ -1,3 +1,8 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
 # used while generating sphinx config file
 set(doxygen_definition_list
     "DOXYGEN:=1"
@@ -83,7 +88,9 @@ foreach(_cat ${EINSUMS_OPTION_CATEGORIES})
   endforeach()
 endforeach()
 
-set(SPHINX_CMAKE_VARIABLES_RST_DEST "${CMAKE_CURRENT_BINARY_DIR}/sphinx/generated/CMakeVariables.rst")
+set(SPHINX_CMAKE_VARIABLES_RST_DEST
+    "${CMAKE_CURRENT_BINARY_DIR}/sphinx/generated/CMakeVariables.rst"
+)
 configure_file(
   "${PROJECT_SOURCE_DIR}/cmake/templates/CMakeVariables.rst.in" ${SPHINX_CMAKE_VARIABLES_RST_DEST}
   @ONLY
@@ -141,7 +148,11 @@ file(
 list(APPEND sphinx_libs_source_files "index.rst" "overview.rst")
 
 foreach(lib IN LISTS EINSUMS_LIBS PYTHON_LIBS)
-  file(GLOB _sphinx_sources RELATIVE "${PROJECT_SOURCE_DIR}/libs" "${PROJECT_SOURCE_DIR}/libs/${lib}/*.rst")
+  file(
+    GLOB _sphinx_sources
+    RELATIVE "${PROJECT_SOURCE_DIR}/libs"
+    "${PROJECT_SOURCE_DIR}/libs/${lib}/*.rst"
+  )
   list(APPEND sphinx_libs_source_files ${_sphinx_sources})
 endforeach()
 

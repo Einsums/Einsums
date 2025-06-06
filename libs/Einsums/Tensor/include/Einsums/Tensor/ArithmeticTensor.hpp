@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -255,8 +255,8 @@ OPERATOR(/, einsums::detail::DivisionOp)
 #    undef OPERATOR
 
 template <typename T, size_t Rank, typename... Args>
-auto operator-(const einsums::ArithmeticTensor<T, Rank, Args...> &&tensor)
-    -> einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, const std::tuple<Args...> *> {
+auto operator-(einsums::ArithmeticTensor<T, Rank, Args...> const &&tensor)
+    -> einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, std::tuple<Args...> const *> {
     return einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, std::tuple<Args...> const *>(
         std::make_tuple(einsums::detail::SubtractionOp(), tensor.get_tuple()));
 }

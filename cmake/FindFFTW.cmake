@@ -1,31 +1,25 @@
-# - Find FFTW 3
-# Find the native FFTW headers and libraries
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
+# * Find FFTW 3 Find the native FFTW headers and libraries
 #
-# Usage:
-#   find_package(FFTW [REQUIRED] [QUIET] [COMPONENTS component1 ... componentX] )
+# Usage: find_package(FFTW [REQUIRED] [QUIET] [COMPONENTS component1 ... componentX] )
 #
-# It sets the following variables:
-#   FFTW_FOUND                  ... true if fftw is found on the system
-#   FFTW_[component]_LIB_FOUND  ... true if the component is found on the system (see components below)
-#   FFTW_LIBRARIES              ... full paths to all found fftw libraries
-#   FFTW_[component]_LIB        ... full path to one of the components (see below)
-#   FFTW_INCLUDE_DIRS           ... fftw include directory paths
+# It sets the following variables: FFTW_FOUND                  ... true if fftw is found on the
+# system FFTW_[component]_LIB_FOUND  ... true if the component is found on the system (see
+# components below) FFTW_LIBRARIES              ... full paths to all found fftw libraries
+# FFTW_[component]_LIB        ... full path to one of the components (see below) FFTW_INCLUDE_DIRS
+# ... fftw include directory paths
 #
-# The following variables will be checked by the function
-#   FFTW_USE_STATIC_LIBS        ... if true, only static libraries are found, otherwise both static and shared.
-#   FFTW_ROOT                   ... if set, the libraries are exclusively searched
-#                                   under this path
+# The following variables will be checked by the function FFTW_USE_STATIC_LIBS        ... if true,
+# only static libraries are found, otherwise both static and shared. FFTW_ROOT                   ...
+# if set, the libraries are exclusively searched under this path
 #
-# This package supports the following components:
-#   FLOAT_LIB
-#   DOUBLE_LIB
-#   LONGDOUBLE_LIB
-#   FLOAT_THREADS_LIB
-#   DOUBLE_THREADS_LIB
-#   LONGDOUBLE_THREADS_LIB
-#   FLOAT_OPENMP_LIB
-#   DOUBLE_OPENMP_LIB
-#   LONGDOUBLE_OPENMP_LIB
+# This package supports the following components: FLOAT_LIB DOUBLE_LIB LONGDOUBLE_LIB
+# FLOAT_THREADS_LIB DOUBLE_THREADS_LIB LONGDOUBLE_THREADS_LIB FLOAT_OPENMP_LIB DOUBLE_OPENMP_LIB
+# LONGDOUBLE_OPENMP_LIB
 #
 
 if(NOT FFTW_ROOT AND DEFINED ENV{FFTWDIR})
@@ -64,88 +58,77 @@ if(FFTW_ROOT)
     FFTW_DOUBLE_THREADS_LIB
     NAMES "fftw3_threads"
     PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES "lib" "lib64" NO_DEFAULT_PATH
   )
 
   find_library(
     FFTW_DOUBLE_OPENMP_LIB
     NAMES "fftw3_omp"
     PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES "lib" "lib64" NO_DEFAULT_PATH
   )
 
   find_library(
     FFTW_DOUBLE_MPI_LIB
     NAMES "fftw3_mpi"
     PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES "lib" "lib64" NO_DEFAULT_PATH
   )
 
   find_library(
     FFTW_FLOAT_LIB
     NAMES "fftw3f" libfftw3f-3
     PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES "lib" "lib64" NO_DEFAULT_PATH
   )
 
   find_library(
     FFTW_FLOAT_THREADS_LIB
     NAMES "fftw3f_threads"
     PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES "lib" "lib64" NO_DEFAULT_PATH
   )
 
   find_library(
     FFTW_FLOAT_OPENMP_LIB
     NAMES "fftw3f_omp"
     PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES "lib" "lib64" NO_DEFAULT_PATH
   )
 
   find_library(
     FFTW_FLOAT_MPI_LIB
     NAMES "fftw3f_mpi"
     PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES "lib" "lib64" NO_DEFAULT_PATH
   )
 
   find_library(
     FFTW_LONGDOUBLE_LIB
     NAMES "fftw3l" libfftw3l-3
     PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES "lib" "lib64" NO_DEFAULT_PATH
   )
 
   find_library(
     FFTW_LONGDOUBLE_THREADS_LIB
     NAMES "fftw3l_threads"
     PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES "lib" "lib64" NO_DEFAULT_PATH
   )
 
   find_library(
     FFTW_LONGDOUBLE_OPENMP_LIB
     NAMES "fftw3l_omp"
     PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES "lib" "lib64" NO_DEFAULT_PATH
   )
 
   find_library(
     FFTW_LONGDOUBLE_MPI_LIB
     NAMES "fftw3l_mpi"
     PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES "lib" "lib64" NO_DEFAULT_PATH
   )
 
   # find includes

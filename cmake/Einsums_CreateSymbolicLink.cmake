@@ -1,6 +1,10 @@
-# Creates a symbolic link from the destination to the target, if the link
-# doesn't exist yet. Since `create_symlink` is only available for unix
-# derivates, we work around that in this macro.
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
+# Creates a symbolic link from the destination to the target, if the link doesn't exist yet. Since
+# `create_symlink` is only available for unix derivates, we work around that in this macro.
 function(create_symbolic_link SYM_TARGET SYM_DESTINATION)
   if(WIN32)
     if(NOT EXISTS ${SYM_DESTINATION})

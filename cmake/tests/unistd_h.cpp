@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 ////////////////////////////////////////////////////////////////////////////////
 //  Copyright (c) 2015 Thomas Heller
 //
@@ -8,4 +13,5 @@
 
 #include <unistd.h>
 
-int main() {}
+int main() {
+}

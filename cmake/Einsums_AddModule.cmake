@@ -68,8 +68,18 @@ function(einsums_add_module libname modulename)
   endforeach()
 
   # Write full path for the sources files
-  list(TRANSFORM ${modulename}_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE sources)
-  list(TRANSFORM ${modulename}_HEADERS PREPEND ${HEADER_ROOT}/ OUTPUT_VARIABLE headers)
+  list(
+    TRANSFORM ${modulename}_SOURCES
+    PREPEND ${SOURCE_ROOT}/
+            OUTPUT_VARIABLE
+            sources
+  )
+  list(
+    TRANSFORM ${modulename}_HEADERS
+    PREPEND ${HEADER_ROOT}/
+            OUTPUT_VARIABLE
+            headers
+  )
 
   # generate configuration header for this module
   set(config_header "${CMAKE_CURRENT_BINARY_DIR}/include/${basename}/${modulename}/Defines.hpp")
@@ -126,7 +136,9 @@ function(einsums_add_module libname modulename)
 
   # create library modules
   add_library(${libname}_${modulename} ${module_library_type} ${sources} ${${modulename}_OBJECTS})
-  einsums_append_coverage_compiler_flags_to_target(${libname}_${modulename} ${module_public_keyword})
+  einsums_append_coverage_compiler_flags_to_target(
+    ${libname}_${modulename} ${module_public_keyword}
+  )
 
   if(EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES)
     # verify that all dependencies are from the same module category

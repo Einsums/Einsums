@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 #ifndef DOXYGEN
@@ -330,13 +330,13 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
             sC[0] = last_stride(A_target_position_in_C, *C);
 
 #    ifdef EINSUMS_COMPUTE_CODE
-            std::conditional_t<IsIncoreTensorV<AType>, const TensorView<ADataType, 2>, const DeviceTensorView<ADataType, 2>> tA{
+            std::conditional_t<IsIncoreTensorV<AType>, TensorView<ADataType, 2> const, DeviceTensorView<ADataType, 2> const> tA{
                 const_cast<AType &>(A), dA, sA};
             std::conditional_t<IsIncoreTensorV<BType>, TensorView<BDataType, 1> const, DeviceTensorView<BDataType, 1> const> tB{
                 const_cast<BType &>(B), dB, sB};
             std::conditional_t<IsIncoreTensorV<CType>, TensorView<CDataType, 1>, DeviceTensorView<CDataType, 1>> tC{*C, dC, sC};
 #    else
-            const TensorView<ADataType, 2> tA{const_cast<AType &>(A), dA, sA};
+            TensorView<ADataType, 2> const tA{const_cast<AType &>(A), dA, sA};
             TensorView<BDataType, 1> const tB{const_cast<BType &>(B), dB, sB};
             TensorView<CDataType, 1>       tC{*C, dC, sC};
 #    endif
@@ -384,13 +384,13 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
             sC[0] = last_stride(B_target_position_in_C, *C);
 
 #    ifdef EINSUMS_COMPUTE_CODE
-            std::conditional_t<IsIncoreTensorV<AType>, const TensorView<ADataType, 1>, const DeviceTensorView<ADataType, 2>> tA{
+            std::conditional_t<IsIncoreTensorV<AType>, TensorView<ADataType, 1> const, DeviceTensorView<ADataType, 2> const> tA{
                 const_cast<AType &>(A), dA, sA};
             std::conditional_t<IsIncoreTensorV<BType>, TensorView<BDataType, 2> const, DeviceTensorView<BDataType, 1> const> tB{
                 const_cast<BType &>(B), dB, sB};
             std::conditional_t<IsIncoreTensorV<CType>, TensorView<CDataType, 1>, DeviceTensorView<CDataType, 1>> tC{*C, dC, sC};
 #    else
-            const TensorView<ADataType, 1> tA{const_cast<AType &>(A), dA, sA};
+            TensorView<ADataType, 1> const tA{const_cast<AType &>(A), dA, sA};
             TensorView<BDataType, 2> const tB{const_cast<BType &>(B), dB, sB};
             TensorView<CDataType, 1>       tC{*C, dC, sC};
 #    endif
@@ -467,8 +467,8 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
                         }
 
 #    ifdef EINSUMS_COMPUTE_CODE
-                        std::conditional_t<IsIncoreRankTensorV<AType, ARank, ADataType>, const TensorView<ADataType, 2>,
-                                           const DeviceTensorView<ADataType, 2>>
+                        std::conditional_t<IsIncoreRankTensorV<AType, ARank, ADataType>, TensorView<ADataType, 2> const,
+                                           DeviceTensorView<ADataType, 2> const>
                             tA{const_cast<AType &>(A), dA, sA};
                         std::conditional_t<IsIncoreRankTensorV<BType, BRank, BDataType>, TensorView<BDataType, 2> const,
                                            DeviceTensorView<BDataType, 2> const>
@@ -477,7 +477,7 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
                                            DeviceTensorView<CDataType, 2>>
                             tC{*C, dC, sC};
 #    else
-                        const TensorView<ADataType, 2> tA{const_cast<AType &>(A), dA, sA};
+                        TensorView<ADataType, 2> const tA{const_cast<AType &>(A), dA, sA};
                         TensorView<BDataType, 2> const tB{const_cast<BType &>(B), dB, sB};
                         TensorView<CDataType, 2>       tC{*C, dC, sC};
 #    endif
@@ -532,8 +532,9 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
 generic_default:;
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
-    if constexpr (IsAlgebraTensorV<AType> && IsAlgebraTensorV<BType> && (IsAlgebraTensorV<CType> || !IsTensorV<CType>) &&
-                  (!IsBasicTensorV<AType> || !IsBasicTensorV<BType> || (!IsBasicTensorV<CType> && IsTensorV<CType>))) {
+    if constexpr (IsAlgebraTensorV<AType> && IsAlgebraTensorV<BType> &&
+                  (IsAlgebraTensorV<CType> || !IsTensorV<CType>)&&(!IsBasicTensorV<AType> || !IsBasicTensorV<BType> ||
+                                                                   (!IsBasicTensorV<CType> && IsTensorV<CType>))) {
         einsum_special_dispatch<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
     } else {
         einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
@@ -602,34 +603,24 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
             auto testB = Tensor<BDataType, BRank>(B);
             // Perform the einsum using only the generic algorithm
             // #pragma omp task depend(in: A, B) depend(inout: testC)
-            {
-                detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB);
-            }
+            { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB); }
             // #pragma omp taskwait depend(in: testC)
         } else {
 #        endif
             if constexpr (!einsums::detail::IsBasicTensorV<AType> && !einsums::detail::IsBasicTensorV<BType>) {
                 auto testA = Tensor<ADataType, ARank>(A);
                 auto testB = Tensor<BDataType, BRank>(B);
-                {
-                    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB);
-                }
+                { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB); }
             } else if constexpr (!einsums::detail::IsBasicTensorV<AType>) {
                 auto testA = Tensor<ADataType, ARank>(A);
-                {
-                    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, B);
-                }
+                { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, B); }
             } else if constexpr (!einsums::detail::IsBasicTensorV<BType>) {
                 auto testB = Tensor<BDataType, BRank>(B);
-                {
-                    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, testB);
-                }
+                { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, testB); }
             } else {
                 // Perform the einsum using only the generic algorithm
                 // #pragma omp task depend(in: A, B) depend(inout: testC)
-                {
-                    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
-                }
+                { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B); }
                 // #pragma omp taskwait depend(in: testC)
             }
 #        ifdef EINSUMS_COMPUTE_CODE

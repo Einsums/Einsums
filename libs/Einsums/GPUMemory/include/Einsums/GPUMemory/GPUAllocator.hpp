@@ -1,14 +1,16 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/GPUMemory/GPUPointer.hpp>
 #include <Einsums/GPUMemory/InitModule.hpp>
 #include <Einsums/GPUMemory/ModuleVars.hpp>
+#include <Einsums/StringUtil/MemoryString.hpp>
 
 #include <complex>
 #include <hip/hip_common.h>
@@ -18,9 +20,6 @@
 #include <mutex>
 #include <source_location>
 #include <type_traits>
-
-#include <Einsums/GPUMemory/GPUPointer.hpp>
-#include <Einsums/StringUtil/MemoryString.hpp>
 
 namespace einsums {
 

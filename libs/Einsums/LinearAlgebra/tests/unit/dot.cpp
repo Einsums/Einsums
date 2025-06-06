@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
@@ -96,7 +96,7 @@ TEST_CASE("mixed dots", "[linear-algebra]") {
     constexpr int size = 10;
 
     SECTION("Rank 1 tensors") {
-        Tensor<float, 1> A = create_random_tensor<float>("A", size);
+        Tensor<float, 1>  A = create_random_tensor<float>("A", size);
         Tensor<double, 1> B = create_random_tensor<double>("B", size);
 
         double test{0.0};

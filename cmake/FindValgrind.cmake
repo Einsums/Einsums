@@ -1,3 +1,8 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
 # compatibility with older CMake versions
 if(VALGRIND_ROOT AND NOT Valgrind_ROOT)
   set(Valgrind_ROOT

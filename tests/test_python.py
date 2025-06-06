@@ -1,3 +1,6 @@
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 """
 This module just makes sure that Python actually works and that any issues are caused by Einsums.
 """

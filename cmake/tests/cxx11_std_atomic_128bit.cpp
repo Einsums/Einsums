@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 ////////////////////////////////////////////////////////////////////////////////
 //  Copyright (c) 2017 Agustin Berge
 //
@@ -10,18 +15,18 @@
 #include <cstdint>
 
 template <typename T>
-void test_atomic()
-{
+void test_atomic() {
     std::atomic<T> a;
     a.store(T{});
     T i = a.load();
-    (void) i;
+    (void)i;
 }
 
-struct uint128_type
-{
+struct uint128_type {
     std::uint64_t left;
     std::uint64_t right;
 };
 
-int main() { test_atomic<uint128_type>(); }
+int main() {
+    test_atomic<uint128_type>();
+}

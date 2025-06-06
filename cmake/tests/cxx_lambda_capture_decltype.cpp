@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 //  Copyright (c) 2021 ETH Zurich
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -7,12 +12,17 @@
 // Test if decltype on a lambda capture correctly detects rvalues. The rvalue
 // overload should be used.
 
-constexpr bool g(int&) { return false; }
-constexpr bool g(int&&) { return true; }
+constexpr bool g(int &) {
+    return false;
+}
+constexpr bool g(int &&) {
+    return true;
+}
 
 template <typename T>
-constexpr bool f(T&& t)
-{
-    return [&]() { return g(static_cast<decltype(t)&&>(t)); }();
+constexpr bool f(T &&t) {
+    return [&]() { return g(static_cast<decltype(t) &&>(t)); }();
 }
-int main() { static_assert(f(3)); }
+int main() {
+    static_assert(f(3));
+}

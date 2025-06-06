@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All Rights Reserved.
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #ifndef BACKENDS_DEVICE_TENSOR_HPP
 #define BACKENDS_DEVICE_TENSOR_HPP
@@ -9,11 +9,11 @@
 // If this is included on its own, we should not include DeviceTensorView.hpp here.
 // It depends on functions in this file, and tests break if it is included first.
 #include <Einsums/Errors/Error.hpp>
+#include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/Tensor/DeviceTensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TypeSupport/GPUCast.hpp>
 #include <Einsums/TypeSupport/GPUComplex.hpp>
-#include <Einsums/Iterator/Enumerate.hpp>
 
 #include <cstring>
 #include <hip/driver_types.h>
@@ -344,10 +344,10 @@ __global__ void copy_to_tensor_conv(T *to_data, size_t const *index_strides, siz
         sentinel_to_indices<rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = einsums::indices_to_sentinel<rank>(inds, (size_t const *) from_strides);
+        size_t from_ind = einsums::indices_to_sentinel<rank>(inds, (size_t const *)from_strides);
 
         // Map index combination onto the tensor.
-        size_t to_ind = einsums::indices_to_sentinel<rank>(inds, (size_t const *) to_strides);
+        size_t to_ind = einsums::indices_to_sentinel<rank>(inds, (size_t const *)to_strides);
 
         // Do the copy.
         to_data[to_ind] = (T)from_data[from_ind];
@@ -563,7 +563,7 @@ template <typename... MultiIndex>
         requires NoneOfType<AllT, MultiIndex...>;
         requires NoneOfType<Range, MultiIndex...>;
     }
-const DeviceTensor<T, rank>::dev_datatype *DeviceTensor<T, rank>::gpu_data(MultiIndex... index) const {
+DeviceTensor<T, rank>::dev_datatype const *DeviceTensor<T, rank>::gpu_data(MultiIndex... index) const {
     using namespace einsums::gpu;
 #    if !defined(DOXYGEN)
     assert(sizeof...(MultiIndex) <= _dims.size());
@@ -607,7 +607,7 @@ template <typename... MultiIndex>
         requires NoneOfType<AllT, MultiIndex...>;
         requires NoneOfType<Range, MultiIndex...>;
     }
-const DeviceTensor<T, rank>::host_datatype *DeviceTensor<T, rank>::data(MultiIndex... index) const {
+DeviceTensor<T, rank>::host_datatype const *DeviceTensor<T, rank>::data(MultiIndex... index) const {
     using namespace einsums::gpu;
 #    if !defined(DOXYGEN)
     assert(sizeof...(MultiIndex) <= _dims.size());
