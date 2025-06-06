@@ -11,6 +11,8 @@
 
 #include <tuple>
 
+#include "Einsums/TypeSupport/TypeName.hpp"
+
 namespace einsums::tensor_algebra {
 
 namespace detail {
@@ -532,6 +534,42 @@ auto get_grid_ranges_for_many(CType const &C, std::tuple<CIndices...> const &C_i
 }
 
 } // namespace detail
+
+namespace detail {
+
+template <typename CheckType1, typename CheckType2, TensorConcept TensorType>
+auto get_stride_for_index(TensorType const &tensor, size_t index) {
+    if constexpr (std::is_same_v<std::remove_cvref_t<CheckType1>, std::remove_cvref_t<CheckType2>>) {
+        return tensor.stride(index);
+    } else {
+        return 0;
+    }
+}
+
+template <size_t N, TensorConcept TensorType, typename... TensIndexWithPos, typename... OutIndex, size_t... I>
+auto get_stride_for(TensorType const &tensor, std::tuple<TensIndexWithPos...> const &args, std::tuple<OutIndex...> const &out_indices,
+                    std::array<size_t, sizeof...(OutIndex)> &out, std::index_sequence<I...> const &seq) {
+    if constexpr (N >= sizeof...(OutIndex)) {
+        return;
+    } else {
+        out[N] =
+            (get_stride_for_index<std::tuple_element_t<N, std::remove_cvref_t<decltype(out_indices)>>,
+                                  std::tuple_element_t<2 * I, std::remove_cvref_t<decltype(args)>>>(tensor, std::get<2 * I + 1>(args)) +
+             ... + 0);
+        get_stride_for<N + 1>(tensor, args, out_indices, out, seq);
+    }
+}
+} // namespace detail
+
+template <TensorConcept TensorType, typename... TensIndexWithPos, typename... OutIndex>
+auto get_stride_for(TensorType const &tensor, std::tuple<TensIndexWithPos...> const &args, std::tuple<OutIndex...> const &out_indices) {
+    std::array<size_t, sizeof...(OutIndex)> out;
+    out.fill(0);
+
+    detail::get_stride_for<0>(tensor, args, out_indices, out, std::make_index_sequence<sizeof...(TensIndexWithPos) / 2>{});
+
+    return out;
+}
 
 namespace detail {
 template <typename T, typename Tuple>

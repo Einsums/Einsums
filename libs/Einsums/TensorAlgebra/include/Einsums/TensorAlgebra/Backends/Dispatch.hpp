@@ -15,6 +15,7 @@
 #    include <Einsums/Print.hpp>
 #    include <Einsums/Tensor/BlockTensor.hpp>
 #    include <Einsums/Tensor/Tensor.hpp>
+#    include <Einsums/TensorAlgebra/Backends/BaseAlgebra.hpp>
 #    include <Einsums/TensorAlgebra/Backends/BlockAlgebra.hpp>
 #    include <Einsums/TensorAlgebra/Backends/BlockTileAlgebra.hpp>
 #    include <Einsums/TensorAlgebra/Backends/GenericAlgorithm.hpp>
