@@ -77,7 +77,7 @@ struct TensorView;
 template <typename T, size_t Rank>
 struct TiledTensorView;
 
-template <typename T, size_t ViewRank, size_t Rank>
+template <typename T, size_t Rank>
 struct DiskView;
 
 template <typename T, size_t Rank>

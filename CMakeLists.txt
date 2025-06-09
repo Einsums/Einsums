@@ -709,7 +709,7 @@ set(EINSUMS_WITH_TARGET_ARCHITECTURE
 # Find other dependencies.
 include(Einsums_SetupFmt)
 include(Einsums_SetupCatch)
-include(Einsums_SetupH5cpp)
+include(Einsums_SetupHDF5)
 include(Einsums_SetupArgparse)
 include(Einsums_SetupSpdlog)
 include(Einsums_SetupAllocator)
