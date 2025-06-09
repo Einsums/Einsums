@@ -86,7 +86,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
         auto &C_tile = C->tile(C_tile_index);
         C->unlock();
         C_tile.lock();
-        einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
+        einsum<OnlyUseGenericAlgorithm, false>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
                                         B.tile(B_tile_index));
         C_tile.unlock();
     }
@@ -149,7 +149,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
         }
 
         CDataType C_tile{0.0};
-        einsum<OnlyUseGenericAlgorithm>(CDataType{0.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
+        einsum<OnlyUseGenericAlgorithm, false>(CDataType{0.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
                                         B.tile(B_tile_index));
         out += C_tile;
     }

@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
 #include <Einsums/TensorUtilities/CreateZeroTensor.hpp>
@@ -13,6 +14,8 @@ TEMPLATE_TEST_CASE("F12 - V term", "[tensor_algebra]", float, double, std::compl
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
+
+    tensor_algebra::detail::AlgorithmChoice alg_choice;
 
     // int nocc{5}, ncabs{116}, nobs{41};
     int nocc{1}, ncabs{4}, nobs{2};
@@ -35,9 +38,12 @@ TEMPLATE_TEST_CASE("F12 - V term", "[tensor_algebra]", float, double, std::compl
     Tensor result  = create_zero_tensor<TestType>("Result", nocc, nocc, nocc, nocc);
     Tensor result2 = create_zero_tensor<TestType>("Result2", nocc, nocc, nocc, nocc);
 
-    einsum(Indices{i, j, k, l}, &ijkl_1, Indices{i, j, p, n}, G_ooco, Indices{k, l, p, n}, F_ooco);
-    einsum(Indices{i, j, k, l}, &ijkl_2, Indices{i, j, m, q}, G_oooc, Indices{k, l, m, q}, F_oooc);
-    einsum(Indices{i, j, k, l}, &ijkl_3, Indices{i, j, p, q}, G_oopq, Indices{k, l, p, q}, F_oopq);
+    einsum(Indices{i, j, k, l}, &ijkl_1, Indices{i, j, p, n}, G_ooco, Indices{k, l, p, n}, F_ooco, &alg_choice);
+    REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
+    einsum(Indices{i, j, k, l}, &ijkl_2, Indices{i, j, m, q}, G_oooc, Indices{k, l, m, q}, F_oooc, &alg_choice);
+    REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
+    einsum(Indices{i, j, k, l}, &ijkl_3, Indices{i, j, p, q}, G_oopq, Indices{k, l, p, q}, F_oopq, &alg_choice);
+    REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
 
     for (size_t _i = 0; _i < nocc; _i++) {
         for (size_t _j = 0; _j < nocc; _j++) {
@@ -82,6 +88,8 @@ TEMPLATE_TEST_CASE("B_tilde", "[tensor_algebra]", float, double, std::complex<fl
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
+    tensor_algebra::detail::AlgorithmChoice alg_choice;
+
     // int nocc{5}, ncabs{116}, nobs{41};
     int nocc{5}, ncabs{10}, nobs{10};
     assert(nobs > nocc); // sanity check
@@ -93,7 +101,8 @@ TEMPLATE_TEST_CASE("B_tilde", "[tensor_algebra]", float, double, std::complex<fl
     auto   D    = create_random_tensor<TestType>("D", nocc, nocc, nvir, nvir);
     auto   D_ij = D(2, 2, All, All);
 
-    einsum(Indices{k, l, a, b}, &CD, Indices{k, l, a, b}, C, Indices{a, b}, D_ij);
+    einsum(Indices{k, l, a, b}, &CD, Indices{k, l, a, b}, C, Indices{a, b}, D_ij, &alg_choice);
+    REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
 
     for (int _k = 0; _k < nocc; _k++) {
         for (int _l = 0; _l < nocc; _l++) {

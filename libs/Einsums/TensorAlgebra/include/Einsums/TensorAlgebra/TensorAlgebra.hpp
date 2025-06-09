@@ -11,6 +11,7 @@
 #include <Einsums/Concepts/SmartPointer.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
+#include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 
 #include <cmath>
 #include <cstddef>
@@ -25,12 +26,12 @@ namespace einsums::tensor_algebra {
 namespace detail {
 
 // CType has typename to allow for interoperability with scalar types.
-template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
+template <bool OnlyUseGenericAlgorithm, bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
     requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
-void einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
-            BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor, std::tuple<AIndices...> const & /*As*/,
-            AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B);
+AlgorithmChoice einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
+                       BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
+                       std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B);
 } // namespace detail
 
 /*
@@ -43,7 +44,8 @@ template <TensorConcept AType, TensorConcept BType, typename CType, typename U, 
         requires InSamePlace<AType, CType> || !TensorConcept<CType>;
     }
 void einsum(U const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C, U const UAB_prefactor,
-            std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B);
+            std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice = nullptr);
 
 // Einsums with provided prefactors.
 // 1. C n A n B n is defined above as the base implementation.
@@ -52,56 +54,63 @@ void einsum(U const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *
 template <NotASmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices, typename T>
 void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, *B);
+            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, *B, algorithm_choice);
 }
 
 // 3. C n A y B n
 template <SmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices, typename T>
 void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, B);
+            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, B, algorithm_choice);
 }
 
 // 4. C n A y B y
 template <SmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
 void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, *B);
+            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, *B, algorithm_choice);
 }
 
 // 5. C y A n B n
 template <NotASmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices, typename T>
 void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, B);
+            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, B, algorithm_choice);
 }
 
 // 6. C y A n B y
 template <NotASmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
 void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, *B);
+            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, *B, algorithm_choice);
 }
 
 // 7. C y A y B n
 template <SmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
 void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, B);
+            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, B, algorithm_choice);
 }
 
 // 8. C y A y B y
 template <SmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
 void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, *B);
+            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, *B, algorithm_choice);
 }
 
 //
@@ -112,60 +121,60 @@ void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType
 template <NotASmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices>
 void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(0, C_indices, C, 1, A_indices, A, B_indices, B);
+            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(0, C_indices, C, 1, A_indices, A, B_indices, B, algorithm_choice);
 }
 
 // 2. C n A n B y
 template <NotASmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices>
 void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(0, C_indices, C, 1, A_indices, A, B_indices, *B);
+            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(0, C_indices, C, 1, A_indices, A, B_indices, *B, algorithm_choice);
 }
 
 // 3. C n A y B n
 template <SmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices>
 void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(0, C_indices, C, 1, A_indices, *A, B_indices, B);
+            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(0, C_indices, C, 1, A_indices, *A, B_indices, B, algorithm_choice);
 }
 
 // 4. C n A y B y
 template <SmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
 void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(0, C_indices, C, 1, A_indices, *A, B_indices, *B);
+            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(0, C_indices, C, 1, A_indices, *A, B_indices, *B, algorithm_choice);
 }
 
 // 5. C y A n B n
 template <NotASmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices>
 void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, B);
+            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, B, algorithm_choice);
 }
 
 // 6. C y A n B y
 template <NotASmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
 void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, *B);
+            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, *B, algorithm_choice);
 }
 
 // 7. C y A y B n
 template <SmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
 void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, B);
+            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, B, algorithm_choice);
 }
 
 // 8. C y A y B y
 template <SmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
 void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B) {
-    einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, *B);
+            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, *B, algorithm_choice);
 }
 
 //
