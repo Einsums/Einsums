@@ -4,12 +4,15 @@
 //--------------------------------------------------------------------------------------------
 
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
+#include "Einsums/TensorAlgebra/Detail/Utilities.hpp"
 
 #include <Einsums/Testing.hpp>
 
 TEMPLATE_TEST_CASE("einsum TensorView", "[tensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
+
+    tensor_algebra::detail::AlgorithmChoice alg_choice;
 
     SECTION("Subset View GEMM 7x3x3[4,:,:] -> [2,:,:]") {
         // Description: Obtain view [4,:,:] (3x3 view) perform GEMM and store result into
@@ -40,7 +43,8 @@ TEMPLATE_TEST_CASE("einsum TensorView", "[tensor]", float, double, std::complex<
         {
             // einsum("ik=ij,jk", &result, view, view);
             REQUIRE_NOTHROW(
-                einsum(Indices{index::i, index::k}, &result, Indices{index::i, index::j}, view, Indices{index::j, index::k}, view));
+                einsum(Indices{index::i, index::k}, &result, Indices{index::i, index::j}, view, Indices{index::j, index::k}, view, &alg_choice));
+            REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
             // gemm<false, false>(1.0, view, view, 0.0, &result);
 
             // Test against the view
