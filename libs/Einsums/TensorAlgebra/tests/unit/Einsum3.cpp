@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 
 #include <Einsums/Testing.hpp>
@@ -12,13 +13,16 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
+    tensor_algebra::detail::AlgorithmChoice alg_choice;
+
     SECTION("3x3 <- 3x5 * 5x3") {
         auto C0 = create_tensor<TestType>("C0", 3, 3);
         auto C1 = create_tensor<TestType>("C1", 3, 3);
         auto A  = create_random_tensor<TestType>("A", 3, 5);
         auto B  = create_random_tensor<TestType>("B", 5, 3);
 
-        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B, &alg_choice));
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
         linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
@@ -34,7 +38,8 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
         auto A  = create_random_tensor<TestType>("A", 3, 5);
         auto B  = create_random_tensor<TestType>("B", 3, 5);
 
-        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{j, k}, B));
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{j, k}, B, &alg_choice));
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
         linear_algebra::gemm<false, true>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
@@ -53,7 +58,8 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
         C0.zero();
         C1.zero();
 
-        REQUIRE_NOTHROW(einsum(Indices{i}, &C0, Indices{i, j}, A, Indices{j}, B));
+        REQUIRE_NOTHROW(einsum(Indices{i}, &C0, Indices{i, j}, A, Indices{j}, B, &alg_choice));
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMV);
         linear_algebra::gemv<false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
@@ -69,7 +75,8 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
         auto A = create_random_tensor<TestType>("A", 3, 4, 5);
         auto B = create_random_tensor<TestType>("B", 4, 3, 5);
 
-        REQUIRE_NOTHROW(einsum(Indices{i}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
+        REQUIRE_NOTHROW(einsum(Indices{i}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B, &alg_choice));
+        REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
 
         for (size_t i0 = 0; i0 < 3; i0++) {
             TestType sum{0};
@@ -96,7 +103,8 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
         auto B = create_random_tensor<TestType>("B", 4, 3, 5);
 
         // profile::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
-        REQUIRE_NOTHROW(einsum(Indices{i, k}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
+        REQUIRE_NOTHROW(einsum(Indices{i, k}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B, &alg_choice));
+        REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
         // profile::pop();
 
         // profile::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
@@ -126,7 +134,8 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
         auto B  = create_random_tensor<TestType>("B", 4, 3, 5);
 
         // profile::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
-        REQUIRE_NOTHROW(einsum(Indices{i, l}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
+        REQUIRE_NOTHROW(einsum(Indices{i, l}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B, &alg_choice));
+        REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
         // profile::pop();
 
         // profile::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
