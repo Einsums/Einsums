@@ -5,314 +5,484 @@
 
 #pragma once
 
-#include <Einsums/Config.hpp>
+#include <Einsums/Config/ExportDefinitions.hpp>
+#include <Einsums/Errors/Error.hpp>
+#include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/TypeSupport/Lockable.hpp>
 
 #include <deque>
 #include <memory>
-#include "Einsums/TypeSupport/Lockable.hpp"
+#include <mutex>
+#include <vector>
 
 namespace einsums {
-
 namespace graph {
 
-template <typename EdgeWeight>
-struct BasicEdge;
-template <>
-struct BasicEdge<void>;
+template <typename Data, typename Weight>
+struct Vertex;
+template <typename Data, typename Weight>
+struct Edge;
+template <typename Data, typename Weight>
+struct Graph;
 
-template <typename EdgeWeight>
-struct BasicNode {
+template <typename Data, typename Weight>
+using SharedVertex = std::shared_ptr<Vertex<Data, Weight>>;
+template <typename Data, typename Weight>
+using WeakVertex = std::weak_ptr<Vertex<Data, Weight>>;
+template <typename Data, typename Weight>
+using SharedEdge = std::shared_ptr<Edge<Data, Weight>>;
+template <typename Data, typename Weight>
+using WeakEdge = std::weak_ptr<Edge<Data, Weight>>;
+
+template <typename Data, typename Weight>
+struct Vertex {
   public:
-    BasicNode(size_t id) : edges_(), serial_id_{id} {}
-    BasicNode(BasicNode<EdgeWeight> const &) = delete;
+    Vertex() : serial_id_{0}, edges_(), data_() {}
 
-    virtual ~BasicNode() { edges_.clear(); }
+    template <typename... Args>
+    Vertex(size_t serial_id, Args &&...args) : serial_id_{serial_id}, edges_(), data_(std::forward<Args>(args)...) {}
 
-    void add_edge(std::shared_ptr<BasicEdge<EdgeWeight>> new_edge) { edges_.push_back(new_edge); }
+    Vertex(Vertex const &other) : serial_id_{other.id()}, edges_(), data_(other.data()) {}
 
-    std::deque<std::shared_ptr<BasicEdge<EdgeWeight>>> &get_edges() { return edges_; }
+    virtual ~Vertex() { edges_.clear(); }
 
-    virtual BasicNode<EdgeWeight> create_copy() const {
-        return BasicNode(serial_id_);
-    }
+    SharedVertex<Data, Weight> clone() const { return std::make_shared<Vertex<Data, Weight>>(id(), data()); }
 
-    virtual bool operator==(BasicNode<EdgeWeight> const &other) const {
-        return other.id() == this->id();
-    }
+    bool operator==(Vertex const &other) const { return id() == other.id(); }
 
-    size_t id() const {
-        return serial_id_;
-    }
+    size_t id() const { return serial_id_; }
 
-  private:
-    std::deque<std::shared_ptr<BasicEdge<EdgeWeight>>> edges_;
-    size_t serial_id_;
-};
+    void set_id(size_t new_id) { serial_id_ = new_id; }
 
-template <typename EdgeWeight>
-struct BasicEdge {
-  public:
-    BasicEdge(std::shared_ptr<BasicNode<EdgeWeight>> start, std::shared_ptr<BasicNode<EdgeWeight>> end, EdgeWeight weight)
-        : start_(start), end_(end), weight_{weight} {}
+    std::vector<WeakEdge<Data, Weight>> &edges() { return edges_; }
 
-    virtual ~BasicEdge() = default;
+    std::vector<WeakEdge<Data, Weight>> const &edges() const { return edges_; }
 
-    virtual std::weak_ptr<BasicNode<EdgeWeight>> const traverse(std::shared_ptr<BasicNode<EdgeWeight>> input) const = 0;
-    virtual std::weak_ptr<BasicNode<EdgeWeight>>       traverse(std::shared_ptr<BasicNode<EdgeWeight>> input)       = 0;
+    WeakEdge<Data, Weight> edge(int index) { return edges_.at(index); }
 
-    virtual bool is_traversable(std::shared_ptr<BasicNode<EdgeWeight>> input) const = 0;
+    WeakEdge<Data, Weight> const edge(int index) const { return edges_.at(index); }
 
-    std::weak_ptr<BasicNode<EdgeWeight>> const get_start() const { return start_; }
+    void add_edge(SharedEdge<Data, Weight> edge) { edges_.push_back(edge); }
 
-    std::weak_ptr<BasicNode<EdgeWeight>> const get_end() const { return end_; }
-
-    std::weak_ptr<BasicNode<EdgeWeight>> get_start() { return start_; }
-
-    std::weak_ptr<BasicNode<EdgeWeight>> get_end() { return end_; }
-
-    EdgeWeight const &weight() const { return weight_; }
-
-    EdgeWeight &weight() { return weight_; }
-
-  protected:
-    std::weak_ptr<BasicNode<EdgeWeight>> start_, end_;
-    EdgeWeight                           weight_;
-};
-
-template <typename EdgeWeight>
-struct BasicDirectedEdge : public BasicEdge<EdgeWeight> {
-  public:
-    using BasicEdge<EdgeWeight>::BasicEdge;
-
-    virtual ~BasicDirectedEdge() = default;
-
-    std::weak_ptr<BasicNode<EdgeWeight>> const traverse(std::shared_ptr<BasicNode<EdgeWeight>> input) const override {
-        auto start_lock = this->get_start().lock();
-
-        if (start_lock.get() == input.get()) {
-            return this->get_end();
-        }
-        return std::weak_ptr<BasicNode<EdgeWeight>>();
-    }
-    std::weak_ptr<BasicNode<EdgeWeight>> traverse(std::shared_ptr<BasicNode<EdgeWeight>> input) override {
-        auto start_lock = this->get_start().lock();
-
-        if (start_lock.get() == input.get()) {
-            return this->get_end();
-        }
-        return std::weak_ptr<BasicNode<EdgeWeight>>();
-    }
-
-    bool is_traversable(std::shared_ptr<BasicNode<EdgeWeight>> input) const override {
-        auto start_lock = this->get_start().lock();
-
-        if (start_lock.get() == input.get()) {
-            return true;
-        }
-        return false;
-    }
-};
-
-template <typename EdgeWeight>
-struct BasicUndirectedEdge : public BasicEdge<EdgeWeight> {
-  public:
-    using BasicEdge<EdgeWeight>::BasicEdge;
-
-    virtual ~BasicUndirectedEdge() = default;
-
-    std::weak_ptr<BasicNode<EdgeWeight>> const traverse(std::shared_ptr<BasicNode<EdgeWeight>> input) const override {
-        auto start_lock = this->get_start().lock();
-
-        if (start_lock.get() == input.get()) {
-            return this->get_end();
-        }
-        return std::weak_ptr<BasicNode<EdgeWeight>>();
-    }
-    std::weak_ptr<BasicNode<EdgeWeight>> traverse(std::shared_ptr<BasicNode<EdgeWeight>> input) override {
-        if (this->get_start().lock().get() == input.get()) {
-            return this->get_end();
-        }
-        if (this->get_end().lock().get() == input.get()) {
-            return this->get_start();
-        }
-        return std::weak_ptr<BasicNode<EdgeWeight>>();
-    }
-
-    bool is_traversable(std::shared_ptr<BasicNode<EdgeWeight>> input) const override {
-        if (this->get_start().lock().get() == input.get()) {
-            return true;
-        }
-        if (this->get_end().lock().get() == input.get()) {
-            return true;
-        }
-        return false;
-    }
-};
-
-template<typename EdgeWeight>
-struct EdgeCompare {
-    public:
-    bool operator()(std::shared_ptr<BasicEdge<EdgeWeight>> const a, std::shared_ptr<BasicEdge<EdgeWeight>> const b) const {
-        return a->weight < b->weight;
-    }
-};
-
-template <typename EdgeWeight>
-struct BasicGraph : public design_pats::Lockable<std::mutex> {
-  public:
-    BasicGraph() : nodes_(), edges_() {}
-
-    virtual ~BasicGraph() {
-        edges_.clear();
-        nodes_.clear();
-    }
-
-    void add_node(std::shared_ptr<BasicNode<EdgeWeight>> node) { nodes_.push_back(node); }
-
-    void add_edge(std::shared_ptr<BasicEdge<EdgeWeight>> edge) {
-        edges_.push_back(edge);
-        for (auto &node : nodes_) {
-            if (edge->is_traversable(node)) {
-                node->add_edge(edge);
+    void remove_edge(SharedEdge<Data, Weight> edge) {
+        for (auto it = edges_.begin(); it != edges_.end(); it++) {
+            if (*it->lock() == *edge) {
+                edges_.erase(it);
+                return;
             }
         }
     }
 
-    std::deque<std::shared_ptr<BasicNode<EdgeWeight>>> &get_nodes() { return nodes_; }
+    Data &data() { return data_; }
 
-    std::deque<std::shared_ptr<BasicNode<EdgeWeight>>> const &get_nodes() const { return nodes_; }
-
-    std::deque<std::shared_ptr<BasicEdge<EdgeWeight>>> &get_edges() { return edges_; }
-
-    std::deque<std::shared_ptr<BasicEdge<EdgeWeight>>> const &get_edges() const { return edges_; }
+    Data const &data() const { return data_; }
 
   private:
-    std::deque<std::shared_ptr<BasicNode<EdgeWeight>>> nodes_;
-    std::deque<std::shared_ptr<BasicEdge<EdgeWeight>>> edges_;
+    size_t serial_id_{0};
+
+    std::vector<WeakEdge<Data, Weight>> edges_;
+
+    Data data_;
 };
 
-template <>
-struct EINSUMS_EXPERIMENTAL_EXPORT BasicNode<void> {
+template <typename Weight>
+struct Vertex<void, Weight> {
   public:
-    BasicNode(size_t id);
-    BasicNode(BasicNode<void> const &) = delete;
+    Vertex() : serial_id_{0}, edges_() {}
 
-    virtual ~BasicNode();
+    template <typename... Args>
+    Vertex(size_t serial_id) : serial_id_{serial_id}, edges_() {}
 
-    void add_edge(std::shared_ptr<BasicEdge<void>> new_edge);
+    Vertex(Vertex const &other) : serial_id_{other.id()}, edges_() {}
 
-    std::deque<std::shared_ptr<BasicEdge<void>>> &get_edges();
+    virtual ~Vertex() { edges_.clear(); }
 
-    virtual bool operator==(BasicNode<void> const &other) const;
+    SharedVertex<void, Weight> clone() const { return std::make_shared<Vertex<void, Weight>>(id()); }
 
-    size_t id() const;
+    bool operator==(Vertex const &other) const { return id() == other.id(); }
+
+    size_t id() const { return serial_id_; }
+
+    void set_id(size_t new_id) { serial_id_ = new_id; }
+
+    std::vector<WeakEdge<void, Weight>> &edges() { return edges_; }
+
+    std::vector<WeakEdge<void, Weight>> const &edges() const { return edges_; }
+
+    WeakEdge<void, Weight> edge(int index) { return edges_.at(index); }
+
+    WeakEdge<void, Weight> const edge(int index) const { return edges_.at(index); }
+
+    void add_edge(SharedEdge<void, Weight> edge) { edges_.push_back(edge); }
+
+    void remove_edge(SharedEdge<void, Weight> edge) {
+        for (auto it = edges_.begin(); it != edges_.end(); it++) {
+            if (*it->lock() == *edge) {
+                edges_.erase(it);
+                return;
+            }
+        }
+    }
 
   private:
-    std::deque<std::shared_ptr<BasicEdge<void>>> edges_;
-    size_t serial_id_;
+    size_t serial_id_{0};
+
+    std::vector<WeakEdge<void, Weight>> edges_;
 };
 
-template <>
-struct EINSUMS_EXPERIMENTAL_EXPORT BasicEdge<void> {
+template <typename Data, typename Weight>
+struct Edge {
   public:
-    BasicEdge(std::shared_ptr<BasicNode<void>> start, std::shared_ptr<BasicNode<void>> end);
+    Edge() noexcept : start_(), end_(), serial_id_{0}, is_directed_{true}, weight_() {}
 
-    virtual ~BasicEdge() = default;
+    template <typename... Args>
+    Edge(size_t serial_id, SharedVertex<Data, Weight> const &start, SharedVertex<Data, Weight> const &end, bool is_directed, Args &&...args)
+        : start_(start), end_(end), serial_id_{serial_id}, is_directed_{is_directed}, weight_(std::forward<Args>(args)...) {}
+    Edge(Edge const &other) noexcept
+        : start_(other.start()), end_(other.end()), serial_id_{other.id()}, is_directed_{other.is_directed()}, weight_(other.weight()) {}
 
-    virtual std::weak_ptr<BasicNode<void>> const traverse(std::shared_ptr<BasicNode<void>> input) const = 0;
-    virtual std::weak_ptr<BasicNode<void>>       traverse(std::shared_ptr<BasicNode<void>> input)       = 0;
+    virtual ~Edge() {
+        start_.reset();
+        end_.reset();
+    }
 
-    virtual bool is_traversable(std::shared_ptr<BasicNode<void>> input) const = 0;
+    bool operator==(Edge const &other) const { return id() == other.id(); }
 
-    std::weak_ptr<BasicNode<void>> const get_start() const;
+    bool is_traversable(Vertex<Data, Weight> const &from) const {
+        if (*start_.lock() == from) {
+            return true;
+        } else if (!is_directed() && *end_.lock() == from) {
+            return true;
+        }
+        return false;
+    }
 
-    std::weak_ptr<BasicNode<void>> const get_end() const;
+    bool is_directed() const { return is_directed_; }
 
-    std::weak_ptr<BasicNode<void>> get_start();
+    void set_directed(bool new_directed) { is_directed_ = new_directed; }
 
-    std::weak_ptr<BasicNode<void>> get_end();
+    void swap_direction() { std::swap(start_, end_); }
 
-  protected:
-    std::weak_ptr<BasicNode<void>> start_, end_;
-};
+    size_t id() const { return serial_id_; }
 
-template <>
-struct EINSUMS_EXPERIMENTAL_EXPORT BasicDirectedEdge<void> : public BasicEdge<void> {
-  public:
-    using BasicEdge<void>::BasicEdge;
+    void set_id(size_t new_id) { serial_id_ = new_id; }
 
-    virtual ~BasicDirectedEdge() = default;
+    WeakVertex<Data, Weight> traverse(Vertex<Data, Weight> const &from) const {
+        if (*start_.lock() == from) {
+            return end();
+        } else if (!is_directed() && *end_.lock() == from) {
+            return start();
+        }
+        if (is_directed() && *end_.lock() == from) {
+            EINSUMS_THROW_EXCEPTION(bad_logic,
+                                    "Could not follow edge! Edge is directed, and the code is trying to traverse the wrong direction!");
+        } else {
+            EINSUMS_THROW_EXCEPTION(bad_logic, "Could not follow edge! The starting node is not part of the edge!");
+        }
+    }
 
-    std::weak_ptr<BasicNode<void>> const traverse(std::shared_ptr<BasicNode<void>> input) const override;
-    std::weak_ptr<BasicNode<void>>       traverse(std::shared_ptr<BasicNode<void>> input) override;
+    WeakVertex<Data, Weight> start() { return start_; }
 
-    bool is_traversable(std::shared_ptr<BasicNode<void>> input) const override;
-};
+    WeakVertex<Data, Weight> end() { return end_; }
 
-template <>
-struct EINSUMS_EXPERIMENTAL_EXPORT BasicUndirectedEdge<void> : public BasicEdge<void> {
-  public:
-    using BasicEdge<void>::BasicEdge;
+    WeakVertex<Data, Weight> const start() const { return start_; }
 
-    virtual ~BasicUndirectedEdge() = default;
+    WeakVertex<Data, Weight> const end() const { return end_; }
 
-    std::weak_ptr<BasicNode<void>> const traverse(std::shared_ptr<BasicNode<void>> input) const override;
-    std::weak_ptr<BasicNode<void>>       traverse(std::shared_ptr<BasicNode<void>> input) override;
+    SharedEdge<Data, Weight> clone() const { return std::make_shared<Edge<Data, Weight>>(*this); }
 
-    bool is_traversable(std::shared_ptr<BasicNode<void>> input) const override;
-};
+    Weight &weight() { return weight_; }
 
-template <>
-struct EINSUMS_EXPERIMENTAL_EXPORT BasicGraph<void> : public design_pats::Lockable<std::mutex> {
-  public:
-    BasicGraph();
-
-    virtual ~BasicGraph();
-
-    size_t pop_serial_id();
-
-    void add_node(std::shared_ptr<BasicNode<void>> node);
-
-    void add_edge(std::shared_ptr<BasicEdge<void>> edge);
-
-    std::deque<std::shared_ptr<BasicNode<void>>> &get_nodes();
-
-    std::deque<std::shared_ptr<BasicNode<void>>> const &get_nodes() const;
-
-    std::deque<std::shared_ptr<BasicEdge<void>>> &get_edges();
-
-    std::deque<std::shared_ptr<BasicEdge<void>>> const &get_edges() const;
+    Weight const &weight() const { return weight_; }
 
   private:
-    std::deque<std::shared_ptr<BasicNode<void>>> nodes_;
-    std::deque<std::shared_ptr<BasicEdge<void>>> edges_;
-    size_t serial_id_;
+    WeakVertex<Data, Weight> start_, end_;
+
+    bool   is_directed_{true};
+    size_t serial_id_{0};
+
+    Weight weight_;
 };
 
-template <typename EdgeWeight>
-using SharedEdge = typename std::shared_ptr<BasicEdge<EdgeWeight>>;
-template <typename EdgeWeight>
-using SharedNode = typename std::shared_ptr<BasicNode<EdgeWeight>>;
-template <typename EdgeWeight>
-using SharedUndirectedEdge = typename std::shared_ptr<BasicUndirectedEdge<EdgeWeight>>;
-template <typename EdgeWeight>
-using SharedDirectedEdge = typename std::shared_ptr<BasicDirectedEdge<EdgeWeight>>;
-template <typename EdgeWeight>
-using SharedGraph = typename std::shared_ptr<BasicGraph<EdgeWeight>>;
+template <typename Data>
+struct Edge<Data, void> {
+  public:
+    Edge() noexcept : start_(), end_(), serial_id_{0}, is_directed_{true} {}
 
-#ifndef _MSC_VER
-extern template class EINSUMS_EXPERIMENTAL_EXPORT BasicNode<int>;
-extern template class EINSUMS_EXPERIMENTAL_EXPORT BasicEdge<int>;
-extern template class EINSUMS_EXPERIMENTAL_EXPORT BasicUndirectedEdge<int>;
-extern template class EINSUMS_EXPERIMENTAL_EXPORT BasicDirectedEdge<int>;
-extern template class EINSUMS_EXPERIMENTAL_EXPORT BasicGraph<int>;
-extern template class EINSUMS_EXPERIMENTAL_EXPORT BasicNode<double>;
-extern template class EINSUMS_EXPERIMENTAL_EXPORT BasicEdge<double>;
-extern template class EINSUMS_EXPERIMENTAL_EXPORT BasicUndirectedEdge<double>;
-extern template class EINSUMS_EXPERIMENTAL_EXPORT BasicDirectedEdge<double>;
-extern template class EINSUMS_EXPERIMENTAL_EXPORT BasicGraph<double>;
+    template <typename... Args>
+    Edge(size_t serial_id, SharedVertex<Data, void> const &start, SharedVertex<Data, void> const &end, bool is_directed)
+        : start_(start), end_(end), serial_id_{serial_id}, is_directed_{is_directed} {}
+    Edge(Edge const &other) noexcept
+        : start_(other.start()), end_(other.end()), serial_id_{other.id()}, is_directed_{other.is_directed()} {}
+
+    virtual ~Edge() {
+        start_.reset();
+        end_.reset();
+    }
+
+    bool operator==(Edge const &other) const { return id() == other.id(); }
+
+    bool is_traversable(Vertex<Data, void> const &from) const {
+        if (*start_.lock() == from) {
+            return true;
+        } else if (!is_directed() && *end_.lock() == from) {
+            return true;
+        }
+        return false;
+    }
+
+    bool is_directed() const { return is_directed_; }
+
+    void set_directed(bool new_directed) { is_directed_ = new_directed; }
+
+    void swap_direction() { std::swap(start_, end_); }
+
+    size_t id() const { return serial_id_; }
+
+    void set_id(size_t new_id) { serial_id_ = new_id; }
+
+    WeakVertex<Data, void> traverse(Vertex<Data, void> const &from) const {
+        if (*start_.lock() == from) {
+            return end();
+        } else if (!is_directed() && *end_.lock() == from) {
+            return start();
+        }
+        if (is_directed() && *end_.lock() == from) {
+            EINSUMS_THROW_EXCEPTION(bad_logic,
+                                    "Could not follow edge! Edge is directed, and the code is trying to traverse the wrong direction!");
+        } else {
+            EINSUMS_THROW_EXCEPTION(bad_logic, "Could not follow edge! The starting node is not part of the edge!");
+        }
+    }
+
+    WeakVertex<Data, void> start() { return start_; }
+
+    WeakVertex<Data, void> end() { return end_; }
+
+    WeakVertex<Data, void> const start() const { return start_; }
+
+    WeakVertex<Data, void> const end() const { return end_; }
+
+    SharedEdge<Data, void> clone() const { return std::make_shared<Edge<Data, void>>(*this); }
+
+  private:
+    WeakVertex<Data, void> start_, end_;
+
+    bool   is_directed_{true};
+    size_t serial_id_{0};
+};
+
+template <typename Data, typename Weight>
+struct EdgeCompare {
+    bool operator()(std::shared_ptr<Edge<Data, Weight>> const &a, std::shared_ptr<Edge<Data, Weight>> const &b) const {
+        return a->weight() < b->weight();
+    }
+};
+
+template <typename Data, typename Weight>
+struct Graph : design_pats::Lockable<std::mutex> {
+  public:
+    Graph() : vertices_(), edges_(), vertex_id_{0}, edge_id_{0} {}
+
+    Graph(Graph const &other) : vertices_(), edges_(), vertex_id_{other.vertex_id_}, edge_id_{other.edge_id_} {
+        for (auto vertex : other.vertices()) {
+            vertices_.emplace_back(vertex->clone());
+        }
+
+        for (auto edge : other.edges()) {
+            auto new_edge     = edge->clone();
+            new_edge->start() = vertex_by_id(edge->start().lock()->id());
+            new_edge->end()   = vertex_by_id(edge->end().lock()->id());
+
+            edges_.push_back(new_edge);
+        }
+    }
+
+    virtual ~Graph() {
+        edges_.clear();
+        vertices_.clear();
+    }
+
+    std::deque<SharedVertex<Data, Weight>> &vertices() { return vertices_; }
+
+    std::deque<SharedVertex<Data, Weight>> const &vertices() const { return vertices_; }
+
+    std::deque<SharedEdge<Data, Weight>> &edges() { return edges_; }
+
+    std::deque<SharedEdge<Data, Weight>> const &edges() const { return edges_; }
+
+    SharedVertex<Data, Weight> vertex(size_t index) { return vertices_.at(index); }
+
+    SharedVertex<Data, Weight> const vertex(size_t index) const { return vertices_.at(index); }
+
+    SharedEdge<Data, Weight> edge(size_t index) { return edges_.at(index); }
+
+    SharedEdge<Data, Weight> const edge(size_t index) const { return edges_.at(index); }
+
+    SharedVertex<Data, Weight> vertex_by_id(size_t id) {
+        for (auto vertex : vertices_) {
+            if (vertex->id() == id) {
+                return vertex;
+            }
+        }
+
+        EINSUMS_THROW_EXCEPTION(std::out_of_range, "Could not find vertex with the given ID!");
+    }
+
+    SharedVertex<Data, Weight> const vertex_by_id(size_t id) const {
+        for (auto vertex : vertices_) {
+            if (vertex->id() == id) {
+                return vertex;
+            }
+        }
+
+        EINSUMS_THROW_EXCEPTION(std::out_of_range, "Could not find vertex with the given ID!");
+    }
+
+    SharedEdge<Data, Weight> edge_by_id(size_t id) {
+        for (auto edge : edges_) {
+            if (edge->id() == id) {
+                return edge;
+            }
+        }
+
+        EINSUMS_THROW_EXCEPTION(std::out_of_range, "Could not find edge with the given ID!");
+    }
+    SharedEdge<Data, Weight> const edge_by_id(size_t id) const {
+        for (auto edge : edges_) {
+            if (edge->id() == id) {
+                return edge;
+            }
+        }
+
+        EINSUMS_THROW_EXCEPTION(std::out_of_range, "Could not find edge with the given ID!");
+    }
+
+    bool has_vertex(size_t id) const {
+        for (auto vertex : vertices_) {
+            if (vertex->id() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool has_vertex(Vertex<Data, Weight> const &other) const {
+        for (auto vertex : vertices_) {
+            if (*vertex == other) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool has_vertex(SharedVertex<Data, Weight> other) const {
+        for (auto vertex : vertices_) {
+            if (vertex == other) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool has_edge(size_t id) const {
+        for (auto edge : edges_) {
+            if (edge->id() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool has_edge(Edge<Data, Weight> const &other) const {
+        for (auto edge : edges_) {
+            if (*edge == other) {
+                return true;
+            }
+        }
+        return false;
+    }
+    bool has_edge(SharedEdge<Data, Weight> other) const {
+        for (auto edge : edges_) {
+            if (edge == other) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    size_t num_vertices() const { return vertices_.size(); }
+
+    size_t num_edges() const { return edges_.size(); }
+
+    void push_vertex(SharedVertex<Data, Weight> vertex) {
+        auto lock = std::lock_guard(*this);
+        vertices_.push_back(vertex);
+
+        if (vertex->id() > vertex_id_) {
+            vertex_id_ = vertex->id() + 1;
+        }
+    }
+
+    void push_edge(SharedEdge<Data, Weight> edge) {
+        auto lock = std::lock_guard(*this);
+        edges_.push_back(edge);
+        if (edge->id() > edge_id_) {
+            edge_id_ = edge->id() + 1;
+        }
+    }
+
+    template <typename... Args>
+    SharedVertex<Data, Weight> emplace_vertex(Args &&...args) {
+        auto lock = std::lock_guard(*this);
+
+        auto out = std::make_shared<Vertex<Data, Weight>>(vertex_id_, std::forward<Args>(args)...);
+
+        vertex_id_++;
+
+        return out;
+    }
+
+    template <typename... Args>
+    SharedEdge<Data, Weight> emplace_edge(Args &&...args) {
+        auto lock = std::lock_guard(*this);
+
+        auto out = std::make_shared<Edge<Data, Weight>>(edge_id_, std::forward<Args>(args)...);
+
+        edge_id_++;
+
+        return out;
+    }
+
+    void pop_vertex(size_t index) {
+        auto lock = std::lock_guard(*this);
+        vertices_.erase(std::next(vertices_.begin(), index));
+    }
+    void pop_edge(size_t index) {
+        auto lock = std::lock_guard(*this);
+        edges_.erase(std::next(edges_.begin(), index));
+    }
+
+    Graph clone() const { return Graph(*this); }
+
+  private:
+    std::deque<SharedVertex<Data, Weight>> vertices_;
+    std::deque<SharedEdge<Data, Weight>>   edges_;
+
+    size_t vertex_id_{0}, edge_id_{0};
+};
+
+#ifndef EINSUMS_WINDOWS
+extern template struct EINSUMS_EXPERIMENTAL_EXPORT Edge<void, void>;
+extern template struct EINSUMS_EXPERIMENTAL_EXPORT Edge<void, int>;
+extern template struct EINSUMS_EXPERIMENTAL_EXPORT Edge<void, double>;
+extern template struct EINSUMS_EXPERIMENTAL_EXPORT Vertex<void, void>;
+extern template struct EINSUMS_EXPERIMENTAL_EXPORT Vertex<void, int>;
+extern template struct EINSUMS_EXPERIMENTAL_EXPORT Vertex<void, double>;
+extern template struct EINSUMS_EXPERIMENTAL_EXPORT Graph<void, void>;
+extern template struct EINSUMS_EXPERIMENTAL_EXPORT Graph<void, int>;
+extern template struct EINSUMS_EXPERIMENTAL_EXPORT Graph<void, double>;
 #endif
 
 } // namespace graph
-
 } // namespace einsums
