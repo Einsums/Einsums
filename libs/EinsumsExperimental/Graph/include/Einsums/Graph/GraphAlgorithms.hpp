@@ -8,12 +8,12 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Graph/BasicGraph.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/Utilities/Random.hpp>
 
 #include <queue>
 #include <random>
 #include <stdexcept>
-#include "Einsums/Tensor/Tensor.hpp"
 
 namespace einsums {
 namespace graph {
@@ -83,24 +83,24 @@ Graph<Data, Weight> min_spanning_tree(Graph<Data, Weight> const &graph, bool ran
     return out;
 }
 
-template<typename Data, typename Weight>
-Tensor<double, 2> adjacency_matrix(Graph<Data, Weight> const &graph) { 
+template <typename Data, typename Weight>
+Tensor<double, 2> adjacency_matrix(Graph<Data, Weight> const &graph) {
     Tensor<double, 2> out{"Adjacency matrix", graph.num_vertices(), graph.num_vertices()};
 
     out.zero();
 
-    for(int i = 0; i < graph.num_vertices(); i++) {
+    for (int i = 0; i < graph.num_vertices(); i++) {
         auto vertex = graph.vertex(i);
-        for(auto edge : vertex->edges()) {
-            if(!edge.lock()->is_traversable(*vertex)) {
-                continue;       
+        for (auto edge : vertex->edges()) {
+            if (!edge.lock()->is_traversable(*vertex)) {
+                continue;
             }
             auto goal = edge.lock()->traverse(*vertex).lock();
 
-            for(int j = 0; j < graph.num_vertices(); j++) {
-                if(*goal == *graph.vertex(j)) {
+            for (int j = 0; j < graph.num_vertices(); j++) {
+                if (*goal == *graph.vertex(j)) {
                     out(i, j) += 1.0;
-                } 
+                }
             }
         }
     }
