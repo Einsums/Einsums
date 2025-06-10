@@ -317,7 +317,6 @@ EINSUMS_HOST void __hipblas_catch__(hipblasStatus_t status, char const *func_cal
 
 EINSUMS_HOST void __hipsolver_catch__(hipsolverStatus_t condition, char const *func_call, char const *fname, char const *location,
                                       char const *funcname, bool throw_success) {
-
     if (condition == HIPSOLVER_STATUS_SUCCESS && !throw_success) {
         return;
     }
