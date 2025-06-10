@@ -1,13 +1,16 @@
-# ITTNOTIFY is the instrumentation and tracing technology (ITT) APIs provided by
-# the Intel® VTune™ enable your application to generate and control the collection
-# of trace data during its execution.
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
+# ITTNOTIFY is the instrumentation and tracing technology (ITT) APIs provided by the Intel® VTune™
+# enable your application to generate and control the collection of trace data during its execution.
 #
-# The following variables are set when ITTNOTIFY is found:
-#  ITTNOTIFY_FOUND          = Set to true, if all components of ITTNOTIFY have been found.
-#  ITTNOTIFY_INCLUDE_DIRS   = Include path for the header files of ITTNOTIFY.
-#  ITTNOTIFY_LIBRARY_DIRS   = Library search path for the ITTNOTIFY libraries.
-#  ITTNOTIFY_LIBRARIES      = Link these to use ITTNOTIFY.
-#  ITTNOTIFY_LFLAGS         = Linker flags (optional).
+# The following variables are set when ITTNOTIFY is found: ITTNOTIFY_FOUND          = Set to true,
+# if all components of ITTNOTIFY have been found. ITTNOTIFY_INCLUDE_DIRS   = Include path for the
+# header files of ITTNOTIFY. ITTNOTIFY_LIBRARY_DIRS   = Library search path for the ITTNOTIFY
+# libraries. ITTNOTIFY_LIBRARIES      = Link these to use ITTNOTIFY. ITTNOTIFY_LFLAGS         =
+# Linker flags (optional).
 
 include(FindPackageHandleStandardArgs)
 

@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #include <Einsums/Config.hpp>
 
 #include <EinsumsPy/TestUtils/BadBuffer.hpp>
@@ -29,11 +34,11 @@ BadBuffer::BadBuffer(pybind11::buffer const &buffer) {
     _size     = buffer_info.shape[0] * buffer_info.strides[0];
     _format   = buffer_info.format;
 
-    for(int i = 0; i < _dims.size(); i++) {
+    for (int i = 0; i < _dims.size(); i++) {
         _dims[i] = buffer_info.shape[i];
     }
 
-    for(int i = 0; i < _strides.size(); i++) {
+    for (int i = 0; i < _strides.size(); i++) {
         _strides[i] = buffer_info.strides[i];
     }
 

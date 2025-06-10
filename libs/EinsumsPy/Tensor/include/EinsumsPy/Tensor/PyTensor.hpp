@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 //--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
@@ -864,7 +869,7 @@ class PyTensor : public RuntimeTensor<T> {
   public:
 #define OPERATOR(OP, NAME, OPNAME)                                                                                                         \
     template <typename TOther>                                                                                                             \
-    RuntimeTensor<T> &operator OP(const TOther & other) {                                                                                  \
+    RuntimeTensor<T> &operator OP(const TOther &other) {                                                                                   \
         PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, OPNAME, other);                                                            \
     }                                                                                                                                      \
     template <typename TOther>                                                                                                             \
@@ -876,7 +881,7 @@ class PyTensor : public RuntimeTensor<T> {
     RuntimeTensor<T> &operator OP(const RuntimeTensorView<TOther> &other) {                                                                \
         PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, OPNAME, other);                                                            \
     }                                                                                                                                      \
-    RuntimeTensor<T> &operator OP(const pybind11::buffer & buffer) {                                                                       \
+    RuntimeTensor<T> &operator OP(const pybind11::buffer &buffer) {                                                                        \
         pybind11::gil_scoped_acquire gil;                                                                                                  \
         pybind11::function           override = pybind11::get_override(static_cast<PyTensor<T> *>(this), #OPNAME);                         \
                                                                                                                                            \
@@ -1639,7 +1644,7 @@ class PyTensorView : public RuntimeTensorView<T> {
 
 #define OPERATOR(OP, NAME, OPNAME)                                                                                                         \
     template <typename TOther>                                                                                                             \
-    RuntimeTensorView<T> &operator OP(const TOther & other) {                                                                              \
+    RuntimeTensorView<T> &operator OP(const TOther &other) {                                                                               \
         PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OPNAME, other);                                                    \
     }                                                                                                                                      \
     template <typename TOther>                                                                                                             \
@@ -1650,7 +1655,7 @@ class PyTensorView : public RuntimeTensorView<T> {
     RuntimeTensorView<T> &operator OP(const RuntimeTensorView<TOther> &other) {                                                            \
         PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OPNAME, other);                                                    \
     }                                                                                                                                      \
-    RuntimeTensorView<T> &operator OP(const pybind11::buffer & buffer) {                                                                   \
+    RuntimeTensorView<T> &operator OP(const pybind11::buffer &buffer) {                                                                    \
         pybind11::gil_scoped_acquire gil;                                                                                                  \
         pybind11::function           override = pybind11::get_override(static_cast<PyTensorView<T> *>(this), #OPNAME);                     \
                                                                                                                                            \

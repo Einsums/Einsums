@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/TensorUtilities/CreateIdentity.hpp>
 
@@ -26,9 +26,8 @@ TEMPLATE_TEST_CASE("Identity", "[tensor]", float, double, std::complex<float>, s
 TEMPLATE_TEST_CASE("Identity - 3d", "[tensor]", float, double, std::complex<float>, std::complex<double>) {
     auto I = einsums::create_identity_tensor<TestType>("I", 3, 3, 3);
 
-    auto strides = I.strides();
+    auto   strides  = I.strides();
     size_t elements = I.size();
-
 
     for (size_t item = 0; item < elements; item++) {
         std::array<size_t, 3> index;

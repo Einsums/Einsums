@@ -1,3 +1,8 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
 # FindTargetLAPACK.cmake
 # ----------------------
 #
@@ -5,25 +10,21 @@
 #
 # This module sets the following variables in your project: ::
 #
-#   TargetLAPACK_FOUND - true if BLAS/LAPACK found on the system
-#   TargetLAPACK_MESSAGE - status message with BLAS/LAPACK library path list
+# TargetLAPACK_FOUND - true if BLAS/LAPACK found on the system TargetLAPACK_MESSAGE - status message
+# with BLAS/LAPACK library path list
 #
-# This module *unsets* the following conventional LAPACK variables so as
-#   to force using the target: ::
+# This module *unsets* the following conventional LAPACK variables so as to force using the target:
+# ::
 #
-#   LAPACK_FOUND
-#   LAPACK_LIBRARIES
+# LAPACK_FOUND LAPACK_LIBRARIES
 #
-# In order of decreasing precedence, this module returns in a target ``tgt::lapack``
-#  (1) the libraries passed through CMake variable LAPACK_LIBRARIES,
-#  (2) the libraries defined in a detectable TargetLAPACKConfig.cmake file
-#      (skip via CMAKE_DISABLE_FIND_PACKAGE_TargetLAPACK), or
-#  (3) the libraries detected by the usual FindLAPACK.cmake module.
+# In order of decreasing precedence, this module returns in a target ``tgt::lapack`` (1) the
+# libraries passed through CMake variable LAPACK_LIBRARIES, (2) the libraries defined in a
+# detectable TargetLAPACKConfig.cmake file (skip via CMAKE_DISABLE_FIND_PACKAGE_TargetLAPACK), or
+# (3) the libraries detected by the usual FindLAPACK.cmake module.
 #
-# Einsums specialization
-# * sets property VENDOR for MKL-ness
-# * sets property INT_INTERFACE for lp64/ilp64
-# * uses targets, not variables, from FindLAPACK (CMake 3.18)
+# Einsums specialization * sets property VENDOR for MKL-ness * sets property INT_INTERFACE for
+# lp64/ilp64 * uses targets, not variables, from FindLAPACK (CMake 3.18)
 
 set(PN TargetLAPACK)
 

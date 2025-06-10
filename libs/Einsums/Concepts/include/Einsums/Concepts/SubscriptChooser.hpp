@@ -1,11 +1,12 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/Concepts/TensorConcepts.hpp>
+
 #include <type_traits>
 
 namespace einsums {
@@ -19,8 +20,7 @@ template <RankTensorConcept TensorType, typename... MultiArgs>
         requires(std::is_integral_v<std::remove_cvref_t<MultiArgs>> && ...);
         requires FastSubscriptableConcept<TensorType>;
     }
-inline auto subscript_tensor(TensorType &&tensor, MultiArgs &&...args)
-    -> decltype(tensor.subscript(std::forward<MultiArgs>(args)...)) {
+inline auto subscript_tensor(TensorType &&tensor, MultiArgs &&...args) -> decltype(tensor.subscript(std::forward<MultiArgs>(args)...)) {
     return tensor.subscript(std::forward<MultiArgs>(args)...);
 }
 #ifndef DOXYGEN

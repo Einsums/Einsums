@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #pragma once
 
 #include <Einsums/Concepts/TensorConcepts.hpp>
@@ -272,8 +277,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                              std::tuple_size<decltype(unique_indices)>::value * sizeof(size_t), hipMemcpyHostToDevice, get_stream()));
 
     // Calculate the optimal launch bounds.
-    dim3 threads = block_size(std::get<0>(unique_dims) * unique_strides[0]),
-         grid    = blocks(std::get<0>(unique_dims) * unique_strides[0]);
+    dim3 threads = block_size(std::get<0>(unique_dims) * unique_strides[0]), grid = blocks(std::get<0>(unique_dims) * unique_strides[0]);
 
     if constexpr (sizeof...(CIndices) != 0) {
         using C_devtype   = typename CType::dev_datatype;

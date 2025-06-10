@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All Rights Reserved.
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -469,7 +469,7 @@ struct FunctionTensorView : public tensor_base::FunctionTensor<T, rank> {
      */
     virtual std::array<ptrdiff_t, UnderlyingRank> apply_view(std::array<ptrdiff_t, rank> const &inds) const {
         std::array<ptrdiff_t, UnderlyingRank> out;
-        int                                curr_rank = 0;
+        int                                   curr_rank = 0;
         for (int i = 0; i < Rank && curr_rank < UnderlyingRank; i++) {
             while (_index_template.at(curr_rank) >= 0) {
                 out[curr_rank] = _index_template[curr_rank];

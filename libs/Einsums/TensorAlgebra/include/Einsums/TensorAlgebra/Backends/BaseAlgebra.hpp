@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -125,3 +125,4 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
     }
 }
 } // namespace einsums::tensor_algebra::detail
+

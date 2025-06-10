@@ -1,14 +1,14 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 // CP test cases generate some massive intermediates that the auto einsum tests struggle with.
 // Undefine the tests and simply use the manual tests listed in this file.
-#include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/LinearAlgebra.hpp>
-#include <Einsums/Testing.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
 
+#include <Einsums/Testing.hpp>
 
 TEST_CASE("Lyapunov") {
     using namespace einsums;

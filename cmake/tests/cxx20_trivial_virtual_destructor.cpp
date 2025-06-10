@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 //  Copyright (c) 2021 ETH Zurich
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -7,11 +12,11 @@
 // Test if virtual destructors are trivial, so that types with virtual
 // destructors can be used in constexpr variables.
 
-struct virtual_destructor
-{
+struct virtual_destructor {
     virtual ~virtual_destructor() = default;
 };
 
 constexpr virtual_destructor x;
 
-int main() {}
+int main() {
+}

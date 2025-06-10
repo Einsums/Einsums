@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -202,7 +202,7 @@ struct Indices : std::tuple<Args...> {
     /**
      * Construct a new Indices object using the given indices.
      */
-    Indices(Args... args) : std::tuple<Args...>(args...) {};
+    Indices(Args... args) : std::tuple<Args...>(args...){};
 };
 
 } // namespace einsums
