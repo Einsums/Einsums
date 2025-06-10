@@ -7,22 +7,24 @@
 .. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
 
 ==============
-vX.Y.Z Release
+v1.1.0 Release
 ==============
 
 What's New
 ----------
 
-* Views of block and tiled tensors has been made easier
+* Views of block and tiled tensors has been made easier.
 * :cpp:class:`TensorView`s can be made from :cpp:class:`RuntimeTensor`s and :cpp:class:`RuntimeTensorView`s
-  so that compile-time rank can be assigned to them
+  so that compile-time rank can be assigned to them.
 * Buffer allocators for future projects. These allow users to limit the amount of memory used by Einsums.
-* Tensor permutations where the smallest stride is not 1
+* Tensor permutations where the smallest stride is not 1.
+* The in-core generic algorithm is now much more performant.
+* The dispatching function for :cpp:func:`einsum` is now more modular, so it is hopefully easier to maintain.
 
 What's Removed
 --------------
 
-* `sort` is no longer a valid alias for :cpp:func:`permute`
+* `sort` is no longer a valid alias for :cpp:func:`permute`.
 
 Bug Fixes
 ---------

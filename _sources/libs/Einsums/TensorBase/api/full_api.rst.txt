@@ -18,7 +18,7 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 .. toctree::
    :maxdepth: 1
 
+   /libs/Einsums/TensorBase/api/Common.rst
    /libs/Einsums/TensorBase/api/IndexUtilities.rst
    /libs/Einsums/TensorBase/api/TensorBase.rst
    /libs/Einsums/TensorBase/api/HashFunctions.rst
-   /libs/Einsums/TensorBase/api/Common.rst

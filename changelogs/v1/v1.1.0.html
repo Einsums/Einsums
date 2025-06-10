@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>vX.Y.Z Release &#8212; Einsums 1.1.0-trunk documentation</title>
+    <title>v1.1.0 Release &#8212; Einsums 1.1.0-trunk documentation</title>
   
   
   
@@ -295,7 +295,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">vX.Y.Z Release</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">v1.1.0 Release</span></li>
   </ul>
 </nav>
 </div>
@@ -312,22 +312,24 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="vx-y-z-release">
-<h1>vX.Y.Z Release<a class="headerlink" href="#vx-y-z-release" title="Link to this heading">#</a></h1>
+  <section id="v1-1-0-release">
+<h1>v1.1.0 Release<a class="headerlink" href="#v1-1-0-release" title="Link to this heading">#</a></h1>
 <section id="what-s-new">
 <h2>What’s New<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Views of block and tiled tensors has been made easier</p></li>
+<li><p>Views of block and tiled tensors has been made easier.</p></li>
 <li><p>:cpp:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>TensorView`s can be made from :cpp:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>RuntimeTensor`s and :cpp:class:<a href="#id5"><span class="problematic" id="id6">`</span></a>RuntimeTensorView`s
-so that compile-time rank can be assigned to them</p></li>
+so that compile-time rank can be assigned to them.</p></li>
 <li><p>Buffer allocators for future projects. These allow users to limit the amount of memory used by Einsums.</p></li>
-<li><p>Tensor permutations where the smallest stride is not 1</p></li>
+<li><p>Tensor permutations where the smallest stride is not 1.</p></li>
+<li><p>The in-core generic algorithm is now much more performant.</p></li>
+<li><p>The dispatching function for <a class="reference internal" href="../../libs/Einsums/TensorAlgebra/docs/index.html#_CPPv4I_13TensorConcept_13TensorConcept00DpDpDpE6einsumvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5ATypeRKNSt5tupleIDp8BIndicesEERK5BType" title="einsum"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsum</span></code></a> is now more modular, so it is hopefully easier to maintain.</p></li>
 </ul>
 </section>
 <section id="what-s-removed">
 <h2>What’s Removed<a class="headerlink" href="#what-s-removed" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><cite>sort</cite> is no longer a valid alias for <a class="reference internal" href="../../libs/Einsums/TensorAlgebra/docs/index.html#_CPPv4I_13TensorConcept_13TensorConceptDpDp0E7permutevK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="permute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">permute</span></code></a></p></li>
+<li><p><cite>sort</cite> is no longer a valid alias for <a class="reference internal" href="../../libs/Einsums/TensorAlgebra/docs/index.html#_CPPv4I_13TensorConcept_13TensorConceptDpDp0E7permutevK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType" title="permute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">permute</span></code></a>.</p></li>
 </ul>
 </section>
 <section id="bug-fixes">

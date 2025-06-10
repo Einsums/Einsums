@@ -18,13 +18,13 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 .. toctree::
    :maxdepth: 1
 
-   /libs/Einsums/TypeSupport/api/TypeName.rst
-   /libs/Einsums/TypeSupport/api/Observable.rst
-   /libs/Einsums/TypeSupport/api/GPUCast.rst
-   /libs/Einsums/TypeSupport/api/Singleton.rst
-   /libs/Einsums/TypeSupport/api/CountOfType.rst
-   /libs/Einsums/TypeSupport/api/GPUComplex.rst
-   /libs/Einsums/TypeSupport/api/Arguments.rst
    /libs/Einsums/TypeSupport/api/StringLiteral.rst
+   /libs/Einsums/TypeSupport/api/Observable.rst
+   /libs/Einsums/TypeSupport/api/GPUComplex.rst
+   /libs/Einsums/TypeSupport/api/TypeName.rst
    /libs/Einsums/TypeSupport/api/AreAllConvertible.rst
+   /libs/Einsums/TypeSupport/api/Arguments.rst
+   /libs/Einsums/TypeSupport/api/CountOfType.rst
    /libs/Einsums/TypeSupport/api/Lockable.rst
+   /libs/Einsums/TypeSupport/api/Singleton.rst
+   /libs/Einsums/TypeSupport/api/GPUCast.rst

@@ -429,49 +429,49 @@ a sign that the todo list is finished.</p>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
 <span class="pre">Namespace</span> <a class="reference internal" href="../EinsumsPy/TestUtils/api/BadBuffer.html#namespaceeinsums"><span class="std std-ref"><span class="pre">einsums</span></span></a></dt>
-<dd><p><span class="target" id="todo_1_todo000001"></span></p>
+<dd><p><span class="target" id="todo_1_todo000005"></span></p>
 </dd></dl>
 
 <dl>
 <dt class="sig sig-object cpp">
 <span class="pre">Member</span> <a class="reference internal" href="Tensor/api/DiskTensor.html#structeinsums_1_1_disk_tensor_1a6ab1eaee173fc13c07b9cac0a22ff5fc"><span class="std std-ref"><span class="pre">einsums::DiskTensor&lt;</span> <span class="pre">T,</span> <span class="pre">rank</span> <span class="pre">&gt;::DiskTensor</span></span></a>&#160; <span class="pre">(h5::fd_t</span> <span class="pre">&amp;file,</span> <span class="pre">std::string</span> <span class="pre">name,</span> <a class="reference internal" href="TensorBase/api/Common.html#structeinsums_1_1_chunk"><span class="std std-ref"><span class="pre">Chunk&lt;</span> <span class="pre">sizeof...(Dims)&gt;</span></span></a> <span class="pre">chunk,</span> <span class="pre">Dims...</span> <span class="pre">dims)</span></dt>
-<dd><p><span class="target" id="todo_1_todo000003"></span>No clue.  </p>
+<dd><p><span class="target" id="todo_1_todo000006"></span>No clue.  </p>
 </dd></dl>
 
 <dl>
 <dt class="sig sig-object cpp">
 <span class="pre">Member</span> <a class="reference internal" href="Tensor/api/DiskTensor.html#structeinsums_1_1_disk_view_1a3c20565a96204f284fa48050d559ddb3"><span class="std std-ref"><span class="pre">einsums::DiskView&lt;</span> <span class="pre">T,</span> <span class="pre">ViewRank,</span> <span class="pre">rank</span> <span class="pre">&gt;::operator=</span></span></a>&#160; <span class="pre">(TType&lt;</span> <span class="pre">T,</span> <span class="pre">ViewRank</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;other)</span> <span class="pre">-&gt;</span> <a class="reference internal" href="Tensor/api/DiskTensor.html#structeinsums_1_1_disk_view"><span class="std std-ref"><span class="pre">DiskView</span></span></a> <span class="pre">&amp;</span></dt>
-<dd><p><span class="target" id="todo_1_todo000004"></span>I’m not entirely sure if a <a class="reference internal" href="Tensor/api/Tensor.html#structeinsums_1_1_tensor_view"><span class="std std-ref">TensorView</span></a> can be sent to the disk.  </p>
+<dd><p><span class="target" id="todo_1_todo000007"></span>I’m not entirely sure if a <a class="reference internal" href="Tensor/api/Tensor.html#structeinsums_1_1_tensor_view"><span class="std std-ref">TensorView</span></a> can be sent to the disk.  </p>
 </dd></dl>
 
 <dl>
 <dt class="sig sig-object cpp">
 <span class="pre">Struct</span> <a class="reference internal" href="Runtime/api/InitRuntime.html#structeinsums_1_1_init_params"><span class="std std-ref"><span class="pre">einsums::InitParams</span></span></a></dt>
-<dd><p><span class="target" id="todo_1_todo000008"></span>Document.  </p>
+<dd><p><span class="target" id="todo_1_todo000011"></span>Document.  </p>
 </dd></dl>
 
 <dl>
 <dt class="sig sig-object cpp">
 <span class="pre">Member</span> <a class="reference internal" href="Tensor/api/Tensor.html#namespaceeinsums_1a268b6d959c053800ba69f0b82bb59246"><span class="std std-ref"><span class="pre">einsums::read</span></span></a>&#160; <span class="pre">(h5::fd_t</span> <span class="pre">const</span> <span class="pre">&amp;fd,</span> <span class="pre">std::string</span> <span class="pre">const</span> <span class="pre">&amp;name)</span> <span class="pre">-&gt;</span> <a class="reference internal" href="Tensor/api/Tensor.html#structeinsums_1_1_tensor"><span class="std std-ref"><span class="pre">Tensor&lt;</span> <span class="pre">T,</span> <span class="pre">Rank</span> <span class="pre">&gt;</span></span></a></dt>
-<dd><p><span class="target" id="todo_1_todo000002"></span>This needs to be expanded to handle the various h5 parameters like above.  </p>
+<dd><p><span class="target" id="todo_1_todo000004"></span>This needs to be expanded to handle the various h5 parameters like above.  </p>
 </dd></dl>
 
 <dl>
 <dt class="sig sig-object cpp">
 <span class="pre">Member</span> <a class="reference internal" href="RuntimeConfiguration/api/RuntimeConfiguration.html#structeinsums_1_1_runtime_configuration_1a29f1792000de3bdab82a3a91460bb09d"><span class="std std-ref"><span class="pre">einsums::RuntimeConfiguration::original</span></span></a></dt>
-<dd><p><span class="target" id="todo_1_todo000007"></span>Document.  </p>
+<dd><p><span class="target" id="todo_1_todo000013"></span>Document.  </p>
 </dd></dl>
 
 <dl>
 <dt class="sig sig-object cpp">
 <span class="pre">Member</span> <a class="reference internal" href="Tensor/api/RuntimeTensor.html#structeinsums_1_1_runtime_tensor_1a04f9f19e360f374d66c32708e3bfd087"><span class="std std-ref"><span class="pre">einsums::RuntimeTensor&lt;</span> <span class="pre">T</span> <span class="pre">&gt;::operator()</span></span></a>&#160; <span class="pre">(Args...</span> <span class="pre">args)</span></dt>
-<dd><p><span class="target" id="todo_1_todo000006"></span>std::variant can’t handle references. We may be able to make our own, but for right now, this will not be able to handle the wrong number of arguments.  </p>
+<dd><p><span class="target" id="todo_1_todo000009"></span>std::variant can’t handle references. We may be able to make our own, but for right now, this will not be able to handle the wrong number of arguments.  </p>
 </dd></dl>
 
 <dl>
 <dt class="sig sig-object cpp">
 <span class="pre">Member</span> <a class="reference internal" href="HPTT/api/Utils.html#namespacehptt_1ac6b22ab5427fa06adadb02f6fe4d87f9"><span class="std std-ref"><span class="pre">hptt::trashCache</span></span></a>&#160; <span class="pre">(double</span> <span class="pre">*A,</span> <span class="pre">double</span> <span class="pre">*B,</span> <span class="pre">int</span> <span class="pre">n)</span></dt>
-<dd><p><span class="target" id="todo_1_todo000011"></span>Figure this out. </p>
+<dd><p><span class="target" id="todo_1_todo000012"></span>Figure this out. </p>
 </dd></dl>
 
 </p>
