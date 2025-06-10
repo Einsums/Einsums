@@ -41,10 +41,10 @@ endif()
 # Build all of Einsums
 # ##################################################################################################
 set(EINSUMS_VERSION_MAJOR 1)
-set(EINSUMS_VERSION_MINOR 0)
-set(EINSUMS_VERSION_PATCH 3)
-set(EINSUMS_VERSION_DATE "20250501")
-set(EINSUMS_VERSION_TAG "")
+set(EINSUMS_VERSION_MINOR 1)
+set(EINSUMS_VERSION_PATCH 0)
+string(TIMESTAMP EINSUMS_VERSION_DATE "%Y%m%d" UTC)
+set(EINSUMS_VERSION_TAG "-trunk")
 
 set(EINSUMS_VERSION "${EINSUMS_VERSION_MAJOR}.${EINSUMS_VERSION_MINOR}.${EINSUMS_VERSION_PATCH}")
 set(EINSUMS_VERSION_FULL
