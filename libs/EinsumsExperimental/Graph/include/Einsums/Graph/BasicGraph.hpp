@@ -303,13 +303,13 @@ struct Graph : design_pats::Lockable<std::mutex> {
         vertices_.clear();
     }
 
-    std::deque<SharedVertex<Data, Weight>> &vertices() { return vertices_; }
+    std::vector<SharedVertex<Data, Weight>> &vertices() { return vertices_; }
 
-    std::deque<SharedVertex<Data, Weight>> const &vertices() const { return vertices_; }
+    std::vector<SharedVertex<Data, Weight>> const &vertices() const { return vertices_; }
 
-    std::deque<SharedEdge<Data, Weight>> &edges() { return edges_; }
+    std::vector<SharedEdge<Data, Weight>> &edges() { return edges_; }
 
-    std::deque<SharedEdge<Data, Weight>> const &edges() const { return edges_; }
+    std::vector<SharedEdge<Data, Weight>> const &edges() const { return edges_; }
 
     SharedVertex<Data, Weight> vertex(size_t index) { return vertices_.at(index); }
 
@@ -438,6 +438,8 @@ struct Graph : design_pats::Lockable<std::mutex> {
 
         auto out = std::make_shared<Vertex<Data, Weight>>(vertex_id_, std::forward<Args>(args)...);
 
+        vertices_.push_back(out);
+
         vertex_id_++;
 
         return out;
@@ -448,6 +450,14 @@ struct Graph : design_pats::Lockable<std::mutex> {
         auto lock = std::lock_guard(*this);
 
         auto out = std::make_shared<Edge<Data, Weight>>(edge_id_, std::forward<Args>(args)...);
+
+        out->start().lock()->add_edge(out);
+
+        if (!out->is_directed()) {
+            out->end().lock()->add_edge(out);
+        }
+
+        edges_.push_back(out);
 
         edge_id_++;
 
@@ -466,8 +476,8 @@ struct Graph : design_pats::Lockable<std::mutex> {
     Graph clone() const { return Graph(*this); }
 
   private:
-    std::deque<SharedVertex<Data, Weight>> vertices_;
-    std::deque<SharedEdge<Data, Weight>>   edges_;
+    std::vector<SharedVertex<Data, Weight>> vertices_;
+    std::vector<SharedEdge<Data, Weight>>   edges_;
 
     size_t vertex_id_{0}, edge_id_{0};
 };
