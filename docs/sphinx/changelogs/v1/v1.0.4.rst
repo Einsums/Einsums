@@ -7,11 +7,18 @@
 .. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
 
 ==============
-v1.0.1 Release
+v1.0.4 Release
 ==============
 
 What's New
 ----------
 
-* Modules can add their own command line arguments
-* More constructors for `RuntimeTensors`
+- `Indices` no longer accepts things that aren't indices as arguments. This means that a tensor that
+  shadows an index name will throw a more reasonable error, rather than the esoteric mess that it had
+  in the past.
+
+Bug Fixes
+---------
+
+- GPU tensor contractions now compile properly.
+- `BlockTensor`s with a block of zero size will no longer cause segfaults with an `einsum` call.

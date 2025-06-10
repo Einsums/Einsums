@@ -4,14 +4,13 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. include:: v1.1.0.rst
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
 
-.. include:: v1.0.4.rst
+==============
+v1.0.3 Release
+==============
 
-.. include:: v1.0.3.rst
+Bug Fixes
+---------
 
-.. include:: v1.0.2.rst
-
-.. include:: v1.0.1.rst
-
-.. include:: v1.0.0.rst
+- Fixed how the Python module is linked to hopefully produce smaller binaries.
