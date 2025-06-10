@@ -22,7 +22,8 @@ extern void FC_GLOBAL(sgesvd, SGESVD)(char *, char *, int_t *, int_t *, float *,
 
 #define GESVD(Type, lcletter, UCLETTER)                                                                                                    \
     auto lcletter##gesvd(char jobu, char jobvt, int_t m, int_t n, Type *a, int_t lda, Type *s, Type *u, int_t ldu, Type *vt, int_t ldvt,   \
-                         Type *superb) -> int_t {                                                                                          \
+                         Type *superb)                                                                                                     \
+        ->int_t {                                                                                                                          \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t info  = 0;                                                                                                                   \

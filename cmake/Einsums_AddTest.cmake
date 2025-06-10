@@ -124,10 +124,13 @@ function(einsums_add_test_and_deps_test category subcategory name)
 endfunction(einsums_add_test_and_deps_test)
 
 function(einsums_set_test_properties name labels)
-  set_tests_properties(${name}
-          PROPERTIES
-          LABELS ${labels}
-          ENVIRONMENT "LLVM_PROFILE_FILE=${name}.profraw;TSAN_OPTIONS=ignore_noninstrumented_modules=1;LSAN_OPTIONS=suppression=${PROJECT_SOURCE_DIR}/devtools/lsan.supp"
+  set_tests_properties(
+    ${name}
+    PROPERTIES
+      LABELS
+      ${labels}
+      ENVIRONMENT
+      "LLVM_PROFILE_FILE=${name}.profraw;TSAN_OPTIONS=ignore_noninstrumented_modules=1;LSAN_OPTIONS=suppression=${PROJECT_SOURCE_DIR}/devtools/lsan.supp"
   )
 endfunction()
 

@@ -1,22 +1,34 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 /*
   Copyright 2018 Paul Springer
-  
-  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-  
+
+  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are
+  met:
+
   1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-  
-  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-  
-  3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-  
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+
+  3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
  * @author: Paul Springer (springer@aices.rwth-aachen.de)
  */
 
-#include "Primes.hpp"
 #include <Einsums/HPTT/Utils.hpp>
 
 #include <bit>
@@ -26,6 +38,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+
+#include "Primes.hpp"
 
 namespace hptt {
 
@@ -41,7 +55,7 @@ void getPrimeFactors(std::uint8_t n, std::list<std::uint8_t> &primeFactors) {
     // Extract the factors.
     std::uint8_t factor = factor_list & mask_0;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -49,7 +63,7 @@ void getPrimeFactors(std::uint8_t n, std::list<std::uint8_t> &primeFactors) {
 
     factor = (factor_list & mask_1) >> 8;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -57,7 +71,7 @@ void getPrimeFactors(std::uint8_t n, std::list<std::uint8_t> &primeFactors) {
 
     factor = (factor_list & mask_2) >> 16;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -65,7 +79,7 @@ void getPrimeFactors(std::uint8_t n, std::list<std::uint8_t> &primeFactors) {
 
     factor = (factor_list & mask_3) >> 24;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -73,7 +87,7 @@ void getPrimeFactors(std::uint8_t n, std::list<std::uint8_t> &primeFactors) {
 
     factor = (factor_list & mask_4) >> 32;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -81,7 +95,7 @@ void getPrimeFactors(std::uint8_t n, std::list<std::uint8_t> &primeFactors) {
 
     factor = (factor_list & mask_5) >> 40;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -89,7 +103,7 @@ void getPrimeFactors(std::uint8_t n, std::list<std::uint8_t> &primeFactors) {
 
     factor = (factor_list & mask_6) >> 48;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -184,7 +198,7 @@ template <>
 void getPrimeFactors(std::int8_t n, std::list<std::int8_t> &primeFactors) {
     primeFactors.clear();
 
-    if(n <= 0) {
+    if (n <= 0) {
         return;
     }
 
@@ -196,7 +210,7 @@ void getPrimeFactors(std::int8_t n, std::list<std::int8_t> &primeFactors) {
     // Extract the factors.
     std::uint8_t factor = factor_list & mask_0;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -204,7 +218,7 @@ void getPrimeFactors(std::int8_t n, std::list<std::int8_t> &primeFactors) {
 
     factor = (factor_list & mask_1) >> 8;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -212,7 +226,7 @@ void getPrimeFactors(std::int8_t n, std::list<std::int8_t> &primeFactors) {
 
     factor = (factor_list & mask_2) >> 16;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -220,7 +234,7 @@ void getPrimeFactors(std::int8_t n, std::list<std::int8_t> &primeFactors) {
 
     factor = (factor_list & mask_3) >> 24;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -228,7 +242,7 @@ void getPrimeFactors(std::int8_t n, std::list<std::int8_t> &primeFactors) {
 
     factor = (factor_list & mask_4) >> 32;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -236,7 +250,7 @@ void getPrimeFactors(std::int8_t n, std::list<std::int8_t> &primeFactors) {
 
     factor = (factor_list & mask_5) >> 40;
 
-    if(!factor) {
+    if (!factor) {
         return;
     }
 
@@ -373,8 +387,8 @@ uint64_t factorial(uint8_t n) {
     }
 }
 
-void accountForRowMajor(int const *sizeA, int const *outerSizeA, int const *outerSizeB, const int *offsetA, const int *offsetB, 
-                        int const *perm, int *tmpSizeA, int *tmpOuterSizeA, int *tmpOuterSizeB, int *tmpOffsetA, int *tmpOffsetB, 
+void accountForRowMajor(int const *sizeA, int const *outerSizeA, int const *outerSizeB, int const *offsetA, int const *offsetB,
+                        int const *perm, int *tmpSizeA, int *tmpOuterSizeA, int *tmpOuterSizeB, int *tmpOffsetA, int *tmpOffsetB,
                         int *tmpPerm, int const dim, bool const useRowMajor) {
     for (int i = 0; i < dim; ++i) {
         int idx = i;
@@ -393,11 +407,11 @@ void accountForRowMajor(int const *sizeA, int const *outerSizeA, int const *oute
             tmpOuterSizeB[i] = sizeA[perm[idx]];
         else
             tmpOuterSizeB[i] = outerSizeB[idx];
-        if( offsetA == nullptr )
+        if (offsetA == nullptr)
             tmpOffsetA[i] = 0;
         else
             tmpOffsetA[i] = offsetA[idx];
-        if( offsetB == nullptr )
+        if (offsetB == nullptr)
             tmpOffsetB[i] = 0;
         else
             tmpOffsetB[i] = offsetB[idx];

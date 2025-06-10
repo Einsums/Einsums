@@ -3,11 +3,12 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include <Einsums/Testing.hpp>
-#include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/LinearAlgebra.hpp>
-#include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorUtilities/ARange.hpp>
+#include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
+
+#include <Einsums/Testing.hpp>
 
 TEST_CASE("Tensor creation", "[tensor]") {
     using namespace einsums;
@@ -168,8 +169,8 @@ TEST_CASE("TensorView creation", "[tensor]") {
     // Drop down in scope to make sure the view is deleted before the array it is viewing.
     {
         TensorView<double, 2>       view1{array, Dim<2>{10, 10}}, view2{array, Dim{10, 10}, Stride{10, 1}};
-        const TensorView<double, 2> const_view1{(const double *)array, Dim<2>{10, 10}},
-            const_view2{(const double *)array, Dim{10, 10}, Stride{10, 1}};
+        TensorView<double, 2> const const_view1{(double const *)array, Dim<2>{10, 10}},
+            const_view2{(double const *)array, Dim{10, 10}, Stride{10, 1}};
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {

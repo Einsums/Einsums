@@ -215,28 +215,19 @@ endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_unistd_h)
-  einsums_add_config_test(
-    EINSUMS_WITH_UNISTD_H
-    SOURCE cmake/tests/unistd_h.cpp
-    FILE ${ARGN}
-  )
+  einsums_add_config_test(EINSUMS_WITH_UNISTD_H SOURCE cmake/tests/unistd_h.cpp FILE ${ARGN})
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_omp_tools_h)
-  einsums_add_config_test(
-    EINSUMS_WITH_OMP_TOOLS_H
-    SOURCE cmake/tests/omp_tools.cpp
-    FILE ${ARGN}
-  )
+  einsums_add_config_test(EINSUMS_WITH_OMP_TOOLS_H SOURCE cmake/tests/omp_tools.cpp FILE ${ARGN})
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_libfun_std_experimental_optional)
   einsums_add_config_test(
     EINSUMS_WITH_LIBFUN_EXPERIMENTAL_OPTIONAL
-    SOURCE cmake/tests/libfun_std_experimental_optional.cpp
-    FILE ${ARGN}
+    SOURCE cmake/tests/libfun_std_experimental_optional.cpp FILE ${ARGN}
   )
 endfunction()
 
@@ -257,8 +248,7 @@ function(einsums_check_for_cxx11_std_atomic)
   einsums_add_config_test(
     EINSUMS_WITH_CXX11_ATOMIC
     SOURCE cmake/tests/cxx11_std_atomic.cpp
-    LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
-    FILE ${ARGN} ${check_not_required}
+    LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES} FILE ${ARGN} ${check_not_required}
   )
 
   if(NOT MSVC)
@@ -273,8 +263,7 @@ function(einsums_check_for_cxx11_std_atomic)
       einsums_add_config_test(
         EINSUMS_WITH_CXX11_ATOMIC
         SOURCE cmake/tests/cxx11_std_atomic.cpp
-        LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
-        FILE ${ARGN} EXTRA_MSG "with -latomic"
+        LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES} FILE ${ARGN} EXTRA_MSG "with -latomic"
       )
       if(NOT EINSUMS_WITH_CXX11_ATOMIC)
         unset(EINSUMS_CXX11_STD_ATOMIC_LIBRARIES CACHE)
@@ -296,8 +285,7 @@ function(einsums_check_for_cxx11_std_atomic_128bit)
   einsums_add_config_test(
     EINSUMS_WITH_CXX11_ATOMIC_128BIT
     SOURCE cmake/tests/cxx11_std_atomic_128bit.cpp
-    LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
-    FILE ${ARGN} NOT_REQUIRED
+    LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES} FILE ${ARGN} NOT_REQUIRED
   )
 
   if(NOT MSVC)
@@ -312,8 +300,7 @@ function(einsums_check_for_cxx11_std_atomic_128bit)
       einsums_add_config_test(
         EINSUMS_WITH_CXX11_ATOMIC_128BIT
         SOURCE cmake/tests/cxx11_std_atomic_128bit.cpp
-        LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES}
-        FILE ${ARGN} EXTRA_MSG "with -latomic"
+        LIBRARIES ${EINSUMS_CXX11_STD_ATOMIC_LIBRARIES} FILE ${ARGN} EXTRA_MSG "with -latomic"
       )
       if(NOT EINSUMS_WITH_CXX11_ATOMIC_128BIT)
         # Adding -latomic did not help, so we don't attempt to link to it later
@@ -327,35 +314,29 @@ endfunction()
 # ##################################################################################################
 function(einsums_check_for_cxx11_std_shared_ptr_lwg3018)
   einsums_add_config_test(
-    EINSUMS_WITH_CXX11_SHARED_PTR_LWG3018
-    SOURCE cmake/tests/cxx11_std_shared_ptr_lwg3018.cpp
-    FILE ${ARGN}
+    EINSUMS_WITH_CXX11_SHARED_PTR_LWG3018 SOURCE cmake/tests/cxx11_std_shared_ptr_lwg3018.cpp FILE
+                                                 ${ARGN}
   )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_c11_aligned_alloc)
   einsums_add_config_test(
-    EINSUMS_WITH_C11_ALIGNED_ALLOC
-    SOURCE cmake/tests/c11_aligned_alloc.cpp
-    FILE ${ARGN}
+    EINSUMS_WITH_C11_ALIGNED_ALLOC SOURCE cmake/tests/c11_aligned_alloc.cpp FILE ${ARGN}
   )
 endfunction()
 
 function(einsums_check_for_cxx17_std_aligned_alloc)
   einsums_add_config_test(
-    EINSUMS_WITH_CXX17_STD_ALIGNED_ALLOC
-    SOURCE cmake/tests/cxx17_std_aligned_alloc.cpp
-    FILE ${ARGN}
+    EINSUMS_WITH_CXX17_STD_ALIGNED_ALLOC SOURCE cmake/tests/cxx17_std_aligned_alloc.cpp FILE
+                                                ${ARGN}
   )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx11_std_quick_exit)
   einsums_add_config_test(
-    EINSUMS_WITH_CXX11_STD_QUICK_EXIT
-    SOURCE cmake/tests/cxx11_std_quick_exit.cpp
-    FILE ${ARGN}
+    EINSUMS_WITH_CXX11_STD_QUICK_EXIT SOURCE cmake/tests/cxx11_std_quick_exit.cpp FILE ${ARGN}
   )
 endfunction()
 
@@ -363,8 +344,7 @@ endfunction()
 function(einsums_check_for_cxx17_aligned_new)
   einsums_add_config_test(
     EINSUMS_WITH_CXX17_ALIGNED_NEW
-    SOURCE cmake/tests/cxx17_aligned_new.cpp
-    FILE ${ARGN}
+    SOURCE cmake/tests/cxx17_aligned_new.cpp FILE ${ARGN}
     REQUIRED
   )
 endfunction()
@@ -373,35 +353,29 @@ endfunction()
 function(einsums_check_for_cxx17_std_transform_scan)
   einsums_add_config_test(
     EINSUMS_WITH_CXX17_STD_TRANSFORM_SCAN_ALGORITHMS
-    SOURCE cmake/tests/cxx17_std_transform_scan_algorithms.cpp
-    FILE ${ARGN}
+    SOURCE cmake/tests/cxx17_std_transform_scan_algorithms.cpp FILE ${ARGN}
   )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx17_std_scan)
   einsums_add_config_test(
-    EINSUMS_WITH_CXX17_STD_SCAN_ALGORITHMS
-    SOURCE cmake/tests/cxx17_std_scan_algorithms.cpp
-    FILE ${ARGN}
+    EINSUMS_WITH_CXX17_STD_SCAN_ALGORITHMS SOURCE cmake/tests/cxx17_std_scan_algorithms.cpp FILE
+                                                  ${ARGN}
   )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx17_copy_elision)
   einsums_add_config_test(
-    EINSUMS_WITH_CXX17_COPY_ELISION
-    SOURCE cmake/tests/cxx17_copy_elision.cpp
-    FILE ${ARGN}
+    EINSUMS_WITH_CXX17_COPY_ELISION SOURCE cmake/tests/cxx17_copy_elision.cpp FILE ${ARGN}
   )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx17_memory_resource)
   einsums_add_config_test(
-    EINSUMS_WITH_CXX17_MEMORY_RESOURCE
-    SOURCE cmake/tests/cxx17_memory_resource.cpp
-    FILE ${ARGN}
+    EINSUMS_WITH_CXX17_MEMORY_RESOURCE SOURCE cmake/tests/cxx17_memory_resource.cpp FILE ${ARGN}
   )
 endfunction()
 
@@ -409,8 +383,7 @@ endfunction()
 function(einsums_check_for_cxx20_no_unique_address_attribute)
   einsums_add_config_test(
     EINSUMS_WITH_CXX20_NO_UNIQUE_ADDRESS_ATTRIBUTE
-    SOURCE cmake/tests/cxx20_no_unique_address_attribute.cpp
-    FILE ${ARGN} CHECK_CXXSTD 20
+    SOURCE cmake/tests/cxx20_no_unique_address_attribute.cpp FILE ${ARGN} CHECK_CXXSTD 20
   )
 endfunction()
 
@@ -418,8 +391,7 @@ endfunction()
 function(einsums_check_for_cxx20_std_disable_sized_sentinel_for)
   einsums_add_config_test(
     EINSUMS_WITH_CXX20_STD_DISABLE_SIZED_SENTINEL_FOR
-    SOURCE cmake/tests/cxx20_std_disable_sized_sentinel_for.cpp
-    FILE ${ARGN} CHECK_CXXSTD 20
+    SOURCE cmake/tests/cxx20_std_disable_sized_sentinel_for.cpp FILE ${ARGN} CHECK_CXXSTD 20
   )
 endfunction()
 
@@ -427,17 +399,15 @@ endfunction()
 function(einsums_check_for_cxx20_trivial_virtual_destructor)
   einsums_add_config_test(
     EINSUMS_WITH_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR
-    SOURCE cmake/tests/cxx20_trivial_virtual_destructor.cpp
-    FILE ${ARGN}
+    SOURCE cmake/tests/cxx20_trivial_virtual_destructor.cpp FILE ${ARGN}
   )
 endfunction()
 
 # ##################################################################################################
 function(einsums_check_for_cxx23_static_call_operator)
   einsums_add_config_test(
-    EINSUMS_WITH_CXX23_STATIC_CALL_OPERATOR
-    SOURCE cmake/tests/cxx23_static_call_operator.cpp
-    FILE ${ARGN}
+    EINSUMS_WITH_CXX23_STATIC_CALL_OPERATOR SOURCE cmake/tests/cxx23_static_call_operator.cpp FILE
+                                                   ${ARGN}
   )
 endfunction()
 
@@ -458,8 +428,8 @@ function(einsums_check_for_cxx23_static_call_operator_gpu)
 
     einsums_add_config_test(
       EINSUMS_WITH_CXX23_STATIC_CALL_OPERATOR_GPU
-      SOURCE cmake/tests/cxx23_static_call_operator.${static_call_operator_test_extension} GPU
-      FILE ${ARGN}
+      SOURCE cmake/tests/cxx23_static_call_operator.${static_call_operator_test_extension} GPU FILE
+             ${ARGN}
     )
   endif()
 endfunction()
@@ -467,8 +437,7 @@ endfunction()
 # ##################################################################################################
 function(einsums_check_for_cxx_lambda_capture_decltype)
   einsums_add_config_test(
-    EINSUMS_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE
-    SOURCE cmake/tests/cxx_lambda_capture_decltype.cpp
-    FILE ${ARGN}
+    EINSUMS_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE SOURCE cmake/tests/cxx_lambda_capture_decltype.cpp
+                                                    FILE ${ARGN}
   )
 endfunction()

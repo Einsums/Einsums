@@ -14,7 +14,7 @@ else()
   return()
 endif()
 
-set(example_programs )
+set(example_programs)
 
 foreach(example_program ${example_programs})
   set(sources ${example_program}.cpp)
@@ -26,7 +26,7 @@ foreach(example_program ${example_programs})
     ${example_program} INTERNAL_FLAGS
     SOURCES ${sources} ${${example_program}_FLAGS}
     FOLDER "Examples/Modules/Iterator"
-          NOINSTALL
+    NOINSTALL
   )
 
   einsums_add_example_target_dependencies("Modules.Einsums.Iterator" ${example_program})

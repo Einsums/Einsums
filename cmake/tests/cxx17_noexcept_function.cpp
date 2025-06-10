@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 //  Copyright (c) 2019 Hartmut Kaiser
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -11,19 +16,15 @@ template <typename F, F f>
 struct action;
 
 template <typename R, typename... Args, R (*F)(Args...)>
-struct action<R (*)(Args...), F>
-{
-};
+struct action<R (*)(Args...), F> {};
 
 template <typename R, typename... Args, R (*F)(Args...) noexcept>
-struct action<R (*)(Args...) noexcept, F>
-{
-};
+struct action<R (*)(Args...) noexcept, F> {};
 
-void foo() noexcept {}
+void foo() noexcept {
+}
 
-int main()
-{
+int main() {
     action<decltype(&foo), &foo> t;
     return 0;
 }

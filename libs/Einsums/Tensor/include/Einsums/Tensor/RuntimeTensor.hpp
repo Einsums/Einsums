@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #pragma once
 
 #include <Einsums/Config.hpp>
@@ -204,7 +209,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
-    const T *data(Storage const &index) const {
+    T const *data(Storage const &index) const {
         return &(_data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index)));
     }
 
@@ -237,7 +242,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
-    const T &operator()(Storage const &index) const {
+    T const &operator()(Storage const &index) const {
         if (index.size() < rank()) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Too few indices passed to subscript tensor!");
         }
@@ -1256,7 +1261,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
-    const T *data(Storage const &index) const {
+    T const *data(Storage const &index) const {
         return &(_data[einsums::indices_to_sentinel_negative_check(_strides, _dims, index)]);
     }
 
@@ -1282,7 +1287,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      */
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
-    const T &operator()(Storage const &index) const {
+    T const &operator()(Storage const &index) const {
         return _data[einsums::indices_to_sentinel_negative_check(_strides, _dims, index)];
     }
 
@@ -1403,7 +1408,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      */
     template <typename... Args>
         requires((!std::is_integral_v<Args>) || ...)
-    const RuntimeTensorView<T> operator()(Args... args) const {
+    RuntimeTensorView<T> const operator()(Args... args) const {
         if (sizeof...(Args) > rank()) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript operator!");
         }

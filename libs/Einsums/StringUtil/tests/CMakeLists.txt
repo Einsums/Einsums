@@ -37,4 +37,3 @@ if(EINSUMS_WITH_TESTS)
     )
   endif()
 endif()
-

@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 #include "Einsums/Errors/Error.hpp"
@@ -778,7 +778,6 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
             {
                 detail::einsum<true, false>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB);
             }
-            // #pragma omp taskwait depend(in: testC)
         } else {
 #        endif
             if constexpr (!einsums::detail::IsBasicTensorV<AType> && !einsums::detail::IsBasicTensorV<BType>) {

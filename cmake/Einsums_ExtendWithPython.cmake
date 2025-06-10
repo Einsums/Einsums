@@ -19,23 +19,15 @@ function(einsums_extend_with_python target)
 
   if(APPLE)
     set_target_properties(
-      ${target}
-      PROPERTIES PREFIX ""
-               DEBUG_POSTFIX ""
-               INSTALL_RPATH "${CMAKE_INSTALL_RPATH};\@loader_path/../"
+      ${target} PROPERTIES PREFIX "" DEBUG_POSTFIX "" INSTALL_RPATH
+                                                      "${CMAKE_INSTALL_RPATH};\@loader_path/../"
     )
   elseif(NOT MSVC)
     set_target_properties(
-      ${target}
-      PROPERTIES PREFIX ""
-               DEBUG_POSTFIX ""
-               INSTALL_RPATH "${CMAKE_INSTALL_RPATH};\$ORIGIN/../"
+      ${target} PROPERTIES PREFIX "" DEBUG_POSTFIX "" INSTALL_RPATH
+                                                      "${CMAKE_INSTALL_RPATH};\$ORIGIN/../"
     )
   else()
-    set_target_properties(
-      ${target}
-      PROPERTIES PREFIX ""
-                  DEBUG_POSTFIX ""
-    )
+    set_target_properties(${target} PROPERTIES PREFIX "" DEBUG_POSTFIX "")
   endif()
 endfunction()

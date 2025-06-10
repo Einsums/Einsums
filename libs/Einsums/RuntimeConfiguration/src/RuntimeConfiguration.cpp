@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
@@ -57,8 +57,8 @@ std::string get_executable_filename() {
 #elif defined(__linux) || defined(linux) || defined(__linux__)
     r     = std::filesystem::canonical("/proc/self/exe").string();
     errno = 0; // errno seems to be set by the previous call. However, since the call does not throw an exception,
-    // and the specification for the call requires it to throw an exception when it encounters an error,
-    // it can be assumed that the error is actually not important.
+               // and the specification for the call requires it to throw an exception when it encounters an error,
+               // it can be assumed that the error is actually not important.
 #elif defined(__APPLE__)
     char          exe_path[PATH_MAX + 1];
     std::uint32_t len = sizeof(exe_path) / sizeof(exe_path[0]);

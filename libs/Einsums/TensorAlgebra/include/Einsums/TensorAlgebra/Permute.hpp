@@ -1,20 +1,20 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/SmartPointer.hpp>
+#include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorBase/Common.hpp>
-#include <Einsums/Concepts/SubscriptChooser.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/TensorAlgebra/Backends/DevicePermute.hpp>
@@ -33,28 +33,29 @@ void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> 
                             std::complex<float> const beta, std::complex<float> *B);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
                             int const *sizeA, std::complex<double> const beta, std::complex<double> *B);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, 
-                            int const *outerSizeA, float const beta, float *B, int const *offsetB,  int const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA,
+                            int const *outerSizeA, float const beta, float *B, int const *offsetB, int const *outerSizeB);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA,
-                            int const *outerSizeA, double const beta, double *B, int const *offsetB,  int const *outerSizeB);
+                            int const *outerSizeA, double const beta, double *B, int const *offsetB, int const *outerSizeB);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
                             int const *offsetA, int const *outerSizeA, std::complex<float> const beta, std::complex<float> *B,
                             int const *offsetB, int const *outerSizeB);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
-                            int const *offsetA, int const *outerSizeA, std::complex<double> const beta, std::complex<double> *B,
-                            int const *offsetB, int const *outerSizeB);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA, 
-                            int const *outerSizeA, int const innerStrideA, float const beta, float *B, int const *offsetB, 
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
+                            int const *sizeA, int const *offsetA, int const *outerSizeA, std::complex<double> const beta,
+                            std::complex<double> *B, int const *offsetB, int const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA,
+                            int const *outerSizeA, int const innerStrideA, float const beta, float *B, int const *offsetB,
                             int const *outerSizeB, int const innerStrideB);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA,
-                            int const *outerSizeA, int const innerStrideA, double const beta, double *B, int const *offsetB, 
+                            int const *outerSizeA, int const innerStrideA, double const beta, double *B, int const *offsetB,
                             int const *outerSizeB, int const innerStrideB);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
-                            int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<float> const beta, 
+                            int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<float> const beta,
                             std::complex<float> *B, int const *offsetB, int const *outerSizeB, int const innerStrideB);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
-                            int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<double> const beta, 
-                            std::complex<double> *B, int const *offsetB, int const *outerSizeB, int const innerStrideB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
+                            int const *sizeA, int const *offsetA, int const *outerSizeA, int const innerStrideA,
+                            std::complex<double> const beta, std::complex<double> *B, int const *offsetB, int const *outerSizeB,
+                            int const innerStrideB);
 
 } // namespace detail
 #endif
@@ -107,23 +108,23 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         std::array<int, ARank> offsetA{};
         std::array<int, ARank> outerSizeC{};
         std::array<int, ARank> offsetC{};
-        int innerStrideA = A.stride(ARank - 1);
-        int innerStrideC = 1;
+        int                    innerStrideA = A.stride(ARank - 1);
+        int                    innerStrideC = 1;
 
         for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
-            size[i0]  = A.dim(i0);
+            perms[i0]      = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            size[i0]       = A.dim(i0);
             outerSizeA[i0] = A.source_dim(i0);
-            offsetA[i0] = A.offset(i0);
+            offsetA[i0]    = A.offset(i0);
             outerSizeC[i0] = 0;
-            offsetC[i0] = 0;
+            offsetC[i0]    = 0;
         }
 
         for (int i0 = 0; i0 < ARank; i0++) {
             outerSizeC[i0] = A.dim(perms[i0]);
         }
-        detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
-                        innerStrideA, C_prefactor, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC);
+        detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
+                        C_prefactor, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
         std::array<int, ARank> perms{};
         std::array<int, ARank> size{};
@@ -131,19 +132,19 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         std::array<int, ARank> offsetA{};
         std::array<int, ARank> outerSizeC{};
         std::array<int, ARank> offsetC{};
-        int innerStrideA = 1;
-        int innerStrideC = C->stride(CRank - 1);
+        int                    innerStrideA = 1;
+        int                    innerStrideC = C->stride(CRank - 1);
 
         for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
-            size[i0]  = A.dim(i0);
+            perms[i0]      = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            size[i0]       = A.dim(i0);
             outerSizeA[i0] = A.dim(i0);
-            offsetA[i0] = 0;
+            offsetA[i0]    = 0;
             outerSizeC[i0] = C->source_dim(i0);
-            offsetC[i0] = C->offset(i0);
+            offsetC[i0]    = C->offset(i0);
         }
-        detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), offsetA.data(), outerSizeA.data(),
-                        innerStrideA, C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
+        detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
+                        C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
         std::array<int, ARank> perms{};
         std::array<int, ARank> size{};
@@ -151,34 +152,34 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         std::array<int, ARank> offsetA{};
         std::array<int, ARank> outerSizeC{};
         std::array<int, ARank> offsetC{};
-        int innerStrideA = A.stride(ARank - 1);
-        int innerStrideC = C->stride(CRank - 1);
+        int                    innerStrideA = A.stride(ARank - 1);
+        int                    innerStrideC = C->stride(CRank - 1);
 
         for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
-            size[i0]  = A.dim(i0);
+            perms[i0]      = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            size[i0]       = A.dim(i0);
             outerSizeA[i0] = A.source_dim(i0);
-            offsetA[i0] = A.offset(i0);
+            offsetA[i0]    = A.offset(i0);
             outerSizeC[i0] = C->source_dim(i0);
-            offsetC[i0] = C->offset(i0);
+            offsetC[i0]    = C->offset(i0);
         }
-        detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), 
-                        innerStrideA, C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
+        detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
+                        C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else
 #endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-            // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
-            if (C_prefactor == T{0.0}) {
-                *C = T{0.0};
-            }
-            linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
-    } else {    
+        // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
+        if (C_prefactor == T{0.0}) {
+            *C = T{0.0};
+        }
+        linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
+    } else {
         // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
         if (C_prefactor == T{0.0}) {
             *C = T{0.0};
         }
         Stride<ARank> index_strides;
-        size_t elements = dims_to_strides(A.dims(), index_strides);
+        size_t        elements = dims_to_strides(A.dims(), index_strides);
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = 0; i < elements; i++) {
@@ -252,8 +253,7 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 template <typename CType, TensorConcept AType, TensorConcept BType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename... AllUniqueIndices>
 inline auto get_grid_ranges_for_many(CType const &C, std::tuple<CIndices...> const &C_indices, AType const &A,
-                                     std::tuple<AIndices...> const         &A_indices,
-                                     std::tuple<AllUniqueIndices...> const &All_unique_indices) {
+                                     std::tuple<AIndices...> const &A_indices, std::tuple<AllUniqueIndices...> const &All_unique_indices) {
     return std::array{get_grid_ranges_for_many_a<AllUniqueIndices, 0>(C, C_indices, A, A_indices)...};
 }
 
