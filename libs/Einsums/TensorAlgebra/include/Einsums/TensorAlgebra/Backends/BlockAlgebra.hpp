@@ -47,6 +47,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
             continue;
         }
         einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
+
     }
 }
 
