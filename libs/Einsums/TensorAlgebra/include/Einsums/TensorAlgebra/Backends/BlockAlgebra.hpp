@@ -43,6 +43,9 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
+        if(A.block_dim(i) == 0 || B.block_dim(i) == 0 || C->block_dim(i) == 0) {
+            continue;
+        }
         einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
     }
 }
@@ -73,6 +76,9 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
+        if(A.block_dim(i) == 0 || B.block_dim(i) == 0) {
+            continue;
+        }
         std::array<Range, CType::Rank> view_index;
         view_index.fill(A.block_range(i));
         einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &(std::apply(*C, view_index)), AB_prefactor, A_indices, A[i], B_indices,
@@ -157,9 +163,9 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
         // Loop through and perform einsums.
 #pragma omp parallel for reduction(+ : temp)
         for (int i = 0; i < A.num_blocks(); i++) {
-            if (A.block_dim(i) == 0) {
-                continue;
-            }
+            if(A.block_dim(i) == 0 || B.block_dim(i) == 0) {
+            continue;
+        }
             CType temp_c = *C;
             einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, A[i], B_indices, B[i]);
             temp += (CDataType)temp_c;
@@ -192,7 +198,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < B.num_blocks(); i++) {
-        if (B.block_dim(i) == 0) {
+        if(B.block_dim(i) == 0 || C->block_dim(i) == 0) {
             continue;
         }
         std::array<Range, AType::Rank> view_index;
@@ -316,7 +322,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
-        if (A.block_dim(i) == 0) {
+        if(A.block_dim(i) == 0 || C->block_dim(i) == 0) {
             continue;
         }
         std::array<Range, BType::Rank> view_index;
