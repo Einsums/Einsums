@@ -3,14 +3,21 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#pragma once
+
 #include <Einsums/Config.hpp>
 
+#include <Einsums/BLAS.hpp>
+#include <Einsums/Errors/Error.hpp>
+#include <Einsums/Errors/ThrowException.hpp>
+
+#include <pybind11/detail/common.h>
 #include <pybind11/pybind11.h>
 
-namespace py = pybind11;
+namespace einsums {
+namespace python {
 
-@EinsumsPy_EXPORT_FUNCTIONS@
 
-PYBIND11_MODULE(core, mod) {
-@EinsumsPy_EXPORTS@
-}
+
+} // namespace python
+} // namespace einsums
