@@ -280,8 +280,11 @@ struct EdgeCompare {
 };
 
 template <typename Data, typename Weight>
-struct Graph : design_pats::Lockable<std::mutex> {
+struct Graph : design_pats::Lockable<std::recursive_mutex> {
   public:
+    using VertexType = Vertex<Data, Weight>;
+    using EdgeType   = Edge<Data, Weight>;
+
     Graph() : vertices_(), edges_(), vertex_id_{0}, edge_id_{0} {}
 
     Graph(Graph const &other) : vertices_(), edges_(), vertex_id_{other.vertex_id_}, edge_id_{other.edge_id_} {
@@ -464,12 +467,45 @@ struct Graph : design_pats::Lockable<std::mutex> {
         return out;
     }
 
+    size_t vertex_index(Vertex<Data, Weight> const &vertex) const {
+        auto lock = std::lock_guard(*this);
+        for (int i = 0; i < vertices_.size(); i++) {
+            if (vertices_[i]->id() == vertex.id()) {
+                return i;
+            }
+        }
+        return vertices_.size();
+    }
+
+    size_t edge_index(Edge<Data, Weight> const &edge) const {
+        auto lock = std::lock_guard(*this);
+        for (int i = 0; i < edges_.size(); i++) {
+            if (edges_[i]->id() == edge.id()) {
+                return i;
+            }
+        }
+        return edges_.size();
+    }
+
     void pop_vertex(size_t index) {
         auto lock = std::lock_guard(*this);
+        // Go through and remove all of the edges from this vertex and its neighbors.
+        auto vertex = vertices_[index];
+        for (auto edge : vertex->edges()) {
+            pop_edge(edge_index(*edge));
+        }
+
         vertices_.erase(std::next(vertices_.begin(), index));
     }
+
     void pop_edge(size_t index) {
         auto lock = std::lock_guard(*this);
+
+        auto edge = edges_.at(index);
+
+        edge->start()->remove_edge(edge);
+        edge->end()->remove_edge(edge);
+
         edges_.erase(std::next(edges_.begin(), index));
     }
 

@@ -5,9 +5,9 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(GraphHeaders Einsums/Graph/BasicGraph.hpp Einsums/Graph/GraphAlgorithms.hpp)
+set(GraphHeaders Einsums/Graph/BasicGraph.hpp Einsums/Graph/GraphAlgorithms.hpp Einsums/Graph/TensorNetwork.hpp)
 
-set(GraphSources BasicGraph.cpp)
+set(GraphSources BasicGraph.cpp TensorNetwork.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
