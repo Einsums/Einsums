@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
@@ -17,15 +17,15 @@
 
 namespace einsums {
 
-    namespace detail {
+namespace detail {
 
-        static std::list<std::function<void()>> __deleters{};
-        
-        void register_free_pointer(std::function<void()> f) {
-            __deleters.push_back(f);
-        }
-        
-        }
+static std::list<std::function<void()>> __deleters{};
+
+void register_free_pointer(std::function<void()> f) {
+    __deleters.push_back(f);
+}
+
+} // namespace detail
 
 int finalize() {
     auto &rt = runtime();
@@ -49,7 +49,7 @@ int finalize() {
     profile::finalize();
 
     // Free lost pointers.
-    for(auto fn : detail::__deleters) {
+    for (auto fn : detail::__deleters) {
         fn();
     }
 

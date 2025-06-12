@@ -22,7 +22,8 @@ extern void FC_GLOBAL(strsyl, STRSYL)(char *, char *, int_t *, int_t *, int_t *,
 
 #define TRSYL(Type, lc, uc)                                                                                                                \
     auto lc##trsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, const Type *a, int_t lda, const Type *b, int_t ldb, Type *c,      \
-                   int_t ldc, Type *scale) -> int_t {                                                                                      \
+                   int_t ldc, Type *scale)                                                                                                 \
+        ->int_t {                                                                                                                          \
         int_t info  = 0;                                                                                                                   \
         int_t lda_t = std::max(int_t{1}, m);                                                                                               \
         int_t ldb_t = std::max(int_t{1}, n);                                                                                               \

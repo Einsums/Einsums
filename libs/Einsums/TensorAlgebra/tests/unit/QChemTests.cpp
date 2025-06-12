@@ -1,12 +1,17 @@
-#include <Einsums/Tensor/BlockTensor.hpp>
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/Print.hpp>
 #include <Einsums/Profile/Timer.hpp>
+#include <Einsums/Tensor/BlockTensor.hpp>
 #include <Einsums/Tensor/FunctionTensor.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
-#include <Einsums/TensorAlgebra.hpp>
 #include <Einsums/Tensor/TiledTensor.hpp>
+#include <Einsums/TensorAlgebra.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
-#include <Einsums/Print.hpp>
 
 #include <Einsums/Testing.hpp>
 
@@ -16,8 +21,7 @@ class ScaleFunctionTensor : public einsums::tensor_base::FunctionTensor<double, 
 
   public:
     ScaleFunctionTensor(std::string name, einsums::Tensor<double, 1> const *evals)
-        : Evals{evals},
-          einsums::tensor_base::FunctionTensor<double, 4>(name, evals->dim(0), evals->dim(0), evals->dim(0), evals->dim(0)) {}
+        : Evals{evals}, einsums::tensor_base::FunctionTensor<double, 4>(name, evals->dim(0), evals->dim(0), evals->dim(0), evals->dim(0)) {}
 
     virtual double call(std::array<ptrdiff_t, 4> const &inds) const override {
         return 1.0 / ((*Evals)(inds[0]) + (*Evals)(inds[2]) - (*Evals)(inds[1]) - (*Evals)(inds[3]));
@@ -418,10 +422,9 @@ TEST_CASE("RHF symmetry") {
 
     TiledTensor<double, 4> TEI_sym("Two-electron integrals", std::array{4, 0, 1, 2}), MP2_temp1("MP2 temp1", std::array{4, 0, 1, 2}),
         MP2_temp2("MP2 temp2", std::array{4, 0, 1, 2}),
-        MP2_amps("MP2 amplitudes", std::array{3, 0, 1, 1}, std::array{1, 0, 0, 1}, std::array{3, 0, 1, 1},
-                 std::array{1, 0, 0, 1}),
-        MP2_amps_den("MP2 amplitudes with denominator", std::array{3, 0, 1, 1}, std::array{1, 0, 0, 1},
-                     std::array{3, 0, 1, 1}, std::array{1, 0, 0, 1});
+        MP2_amps("MP2 amplitudes", std::array{3, 0, 1, 1}, std::array{1, 0, 0, 1}, std::array{3, 0, 1, 1}, std::array{1, 0, 0, 1}),
+        MP2_amps_den("MP2 amplitudes with denominator", std::array{3, 0, 1, 1}, std::array{1, 0, 0, 1}, std::array{3, 0, 1, 1},
+                     std::array{1, 0, 0, 1});
 
     Tensor<double, 1> Evals("Eigenvalues", 7);
 

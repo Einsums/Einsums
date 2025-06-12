@@ -6,6 +6,10 @@
 
 .. include:: v1.1.0.rst
 
+.. include:: v1.0.4.rst
+
+.. include:: v1.0.3.rst
+
 .. include:: v1.0.2.rst
 
 .. include:: v1.0.1.rst

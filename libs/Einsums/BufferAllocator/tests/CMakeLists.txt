@@ -33,7 +33,7 @@ if(EINSUMS_WITH_TESTS)
       Modules.Einsums.BufferAllocator
       HEADERS ${BufferAllocatorHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
-      DEPENDENCIES Einsums_BufferAllocator 
+      DEPENDENCIES Einsums_BufferAllocator
     )
   endif()
 endif()

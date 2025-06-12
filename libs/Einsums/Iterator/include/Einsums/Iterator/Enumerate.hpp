@@ -45,7 +45,7 @@ constexpr auto enumerate(T &&iterable) {
         std::size_t i;
         Iter        iter;
 
-        auto operator!=(const Iterator &other) const -> bool { return iter != other.iter; }
+        auto operator!=(Iterator const &other) const -> bool { return iter != other.iter; }
         void operator++() {
             ++i;
             ++iter;

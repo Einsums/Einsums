@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -17,6 +17,8 @@
 #include <cstddef>
 #include <tuple>
 #include <type_traits>
+
+#include "Einsums/Concepts/NamedRequirements.hpp"
 
 #if defined(EINSUMS_USE_CATCH2)
 #    include <catch2/catch_all.hpp>
@@ -45,6 +47,15 @@ template <TensorConcept AType, TensorConcept BType, typename CType, typename U, 
     }
 void einsum(U const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C, U const UAB_prefactor,
             std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice = nullptr);
+
+/*
+ * Batched einsums calls over collections of tensors.
+ */
+template <Container CType, Container AType, Container BType, typename CPrefactorType, typename ABPrefactorType, typename... AIndices,
+          typename... BIndices, typename... CIndices>
+void einsum(CPrefactorType const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C_list, ABPrefactorType const AB_prefactor,
+            std::tuple<AIndices...> const &A_indices, AType const &A_list, std::tuple<BIndices...> const &B_indices, BType const &B_list,
             detail::AlgorithmChoice *algorithm_choice = nullptr);
 
 // Einsums with provided prefactors.

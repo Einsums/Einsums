@@ -37,6 +37,15 @@ jobs:
               - 'cmake/**'
               - 'libs/**'
               - 'testing/**'
+            cmake:
+              - 'CMakeLists.txt'
+              - '**/CMakeLists.txt'
+              - '**/*.cmake'
+              - '.cmake-format.py'
+            cpp:
+              - '**/*.cpp'
+              - '**/*.hpp'
+              - '.clang-format'
 
       - name: Set output
         id: result
