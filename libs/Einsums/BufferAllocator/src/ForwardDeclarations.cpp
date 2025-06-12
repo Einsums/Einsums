@@ -20,6 +20,7 @@ static void check_requirements() {
 
 #ifndef WINDOWS
 
+template struct BufferAllocator<void>;
 template struct BufferAllocator<float>;
 template struct BufferAllocator<double>;
 template struct BufferAllocator<std::complex<float>>;
