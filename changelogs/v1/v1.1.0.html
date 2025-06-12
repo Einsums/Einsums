@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 10, 2025"/>
+    <meta name="docbuild:last-update" content="Jun 12, 2025"/>
   </head>
   
   
@@ -324,6 +324,7 @@ so that compile-time rank can be assigned to them.</p></li>
 <li><p>Tensor permutations where the smallest stride is not 1.</p></li>
 <li><p>The in-core generic algorithm is now much more performant.</p></li>
 <li><p>The dispatching function for <a class="reference internal" href="../../libs/Einsums/TensorAlgebra/docs/index.html#_CPPv4I_13TensorConcept_13TensorConcept00DpDpDpE6einsumvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5ATypeRKNSt5tupleIDp8BIndicesEERK5BType" title="einsum"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsum</span></code></a> is now more modular, so it is hopefully easier to maintain.</p></li>
+<li><p>Einsum calls can now be batched over containers, such as <a href="#id7"><span class="problematic" id="id8">`</span></a>vector`s and <a href="#id9"><span class="problematic" id="id10">`</span></a>array`s of tensors.</p></li>
 </ul>
 </section>
 <section id="what-s-removed">

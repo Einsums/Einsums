@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 10, 2025"/>
+    <meta name="docbuild:last-update" content="Jun 12, 2025"/>
   </head>
   
   
@@ -324,6 +324,7 @@ so that compile-time rank can be assigned to them.</p></li>
 <li><p>Tensor permutations where the smallest stride is not 1.</p></li>
 <li><p>The in-core generic algorithm is now much more performant.</p></li>
 <li><p>The dispatching function for <a class="reference internal" href="../../libs/Einsums/TensorAlgebra/docs/index.html#_CPPv4I_13TensorConcept_13TensorConcept00DpDpDpE6einsumvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5ATypeRKNSt5tupleIDp8BIndicesEERK5BType" title="einsum"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsum</span></code></a> is now more modular, so it is hopefully easier to maintain.</p></li>
+<li><p>Einsum calls can now be batched over containers, such as <a href="#id7"><span class="problematic" id="id8">`</span></a>vector`s and <a href="#id9"><span class="problematic" id="id10">`</span></a>array`s of tensors.</p></li>
 </ul>
 </section>
 <section id="what-s-removed">
@@ -338,16 +339,16 @@ so that compile-time rank can be assigned to them.</p></li>
 </section>
 <section id="v1-0-4-release">
 <h1>v1.0.4 Release<a class="headerlink" href="#v1-0-4-release" title="Link to this heading">#</a></h1>
-<section id="id7">
-<h2>What’s New<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id11">
+<h2>What’s New<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">Indices</span></code> no longer accepts things that aren’t indices as arguments. This means that a tensor that
 shadows an index name will throw a more reasonable error, rather than the esoteric mess that it had
 in the past.</p></li>
 </ul>
 </section>
-<section id="id8">
-<h2>Bug Fixes<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id12">
+<h2>Bug Fixes<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>GPU tensor contractions now compile properly.</p></li>
 <li><p><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">BlockTensor`s</span> <span class="pre">with</span> <span class="pre">a</span> <span class="pre">block</span> <span class="pre">of</span> <span class="pre">zero</span> <span class="pre">size</span> <span class="pre">will</span> <span class="pre">no</span> <span class="pre">longer</span> <span class="pre">cause</span> <span class="pre">segfaults</span> <span class="pre">with</span> <span class="pre">an</span> <span class="pre">`einsum</span></code> call.</p></li>
@@ -356,8 +357,8 @@ in the past.</p></li>
 </section>
 <section id="v1-0-3-release">
 <h1>v1.0.3 Release<a class="headerlink" href="#v1-0-3-release" title="Link to this heading">#</a></h1>
-<section id="id9">
-<h2>Bug Fixes<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<section id="id13">
+<h2>Bug Fixes<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Fixed how the Python module is linked to hopefully produce smaller binaries.</p></li>
 </ul>
@@ -365,8 +366,8 @@ in the past.</p></li>
 </section>
 <section id="v1-0-1-release">
 <h1>v1.0.1 Release<a class="headerlink" href="#v1-0-1-release" title="Link to this heading">#</a></h1>
-<section id="id10">
-<h2>What’s New<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<section id="id14">
+<h2>What’s New<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Modules can add their own command line arguments</p></li>
 <li><p>More constructors for <cite>RuntimeTensors</cite></p></li>
@@ -375,8 +376,8 @@ in the past.</p></li>
 </section>
 <section id="v1-0-0-release">
 <h1>v1.0.0 Release<a class="headerlink" href="#v1-0-0-release" title="Link to this heading">#</a></h1>
-<section id="id11">
-<h2>What’s New<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<section id="id15">
+<h2>What’s New<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Arbitrary tensor views of pointers</p></li>
 <li><p>Python support</p></li>
@@ -394,14 +395,14 @@ in the past.</p></li>
 <li><p>Several namespaces have been renamed</p></li>
 </ul>
 </section>
-<section id="id12">
-<h2>What’s Removed<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<section id="id16">
+<h2>What’s Removed<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Temporarily removed Windows support</p></li>
 </ul>
 </section>
-<section id="id13">
-<h2>Bug Fixes<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<section id="id17">
+<h2>Bug Fixes<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Improved performance with some tensor contractions</p></li>
 </ul>
@@ -444,23 +445,23 @@ in the past.</p></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#v1-0-4-release">v1.0.4 Release</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">What’s New</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Bug Fixes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">What’s New</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Bug Fixes</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#v1-0-3-release">v1.0.3 Release</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Bug Fixes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Bug Fixes</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#v1-0-1-release">v1.0.1 Release</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">What’s New</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">What’s New</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#v1-0-0-release">v1.0.0 Release</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">What’s New</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">What’s New</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-changed">What’s Changed</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">What’s Removed</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Bug Fixes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">What’s Removed</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Bug Fixes</a></li>
 </ul>
 </li>
 </ul>
