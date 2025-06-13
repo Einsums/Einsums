@@ -28,7 +28,6 @@ einsums_add_module(
     Einsums_Config
     Einsums_Debugging
     Einsums_Profile
-    Einsums_Utilities
     Einsums_RuntimeConfiguration
     Einsums_Errors
     Einsums_Logging
