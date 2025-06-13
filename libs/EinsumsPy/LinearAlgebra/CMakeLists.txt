@@ -6,9 +6,9 @@
 if(EINSUMS_WITH_GPU_SUPPORT)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(LinearAlgebraHeaders)
+set(LinearAlgebraHeaders EinsumsPy/LinearAlgebra/LinearAlgebra.hpp)
 
-set(LinearAlgebraSources Export.cpp)
+set(LinearAlgebraSources Export.cpp sum_square.cpp gemm.cpp gemv.cpp eigen.cpp solver.cpp scale.cpp dot.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
@@ -16,7 +16,7 @@ einsums_add_module(
   SOURCES ${LinearAlgebraSources}
   HEADERS ${LinearAlgebraHeaders}
   DEPENDENCIES Einsums
-  MODULE_DEPENDENCIES Einsums_Runtime Einsums_Logging Einsums_TypeSupport Einsums_Config
+  MODULE_DEPENDENCIES Einsums_Runtime Einsums_Logging Einsums_TypeSupport Einsums_Config EinsumsPy_Tensor
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME EinsumsPy
 )
