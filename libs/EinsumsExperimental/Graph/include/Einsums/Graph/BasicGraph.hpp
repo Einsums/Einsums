@@ -492,7 +492,7 @@ struct Graph : design_pats::Lockable<std::recursive_mutex> {
         // Go through and remove all of the edges from this vertex and its neighbors.
         auto vertex = vertices_[index];
         for (auto edge : vertex->edges()) {
-            pop_edge(edge_index(*edge));
+            pop_edge(edge_index(*edge.lock()));
         }
 
         vertices_.erase(std::next(vertices_.begin(), index));
@@ -503,8 +503,8 @@ struct Graph : design_pats::Lockable<std::recursive_mutex> {
 
         auto edge = edges_.at(index);
 
-        edge->start()->remove_edge(edge);
-        edge->end()->remove_edge(edge);
+        edge->start().lock()->remove_edge(edge);
+        edge->end().lock()->remove_edge(edge);
 
         edges_.erase(std::next(edges_.begin(), index));
     }
