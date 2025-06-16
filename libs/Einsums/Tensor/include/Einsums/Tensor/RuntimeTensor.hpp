@@ -2191,14 +2191,16 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                     }
                 } else if (Rank == 1) {
                     size_t size = A.size();
+                    std::array<size_t, 1> index;
 
                     for (size_t sentinel = 0; sentinel < size; sentinel++) {
                         std::ostringstream oss;
                         oss << "(";
                         oss << fmt::format("{}", sentinel);
                         oss << "): ";
+                        index[0] = sentinel;
 
-                        T value = std::get<T>(A());
+                        T value = A(index);
                         if (std::abs(value) > 1.0E+5) {
                             if constexpr (std::is_floating_point_v<T>)
                                 oss << fmt::format(fmt::fg(fmt::color::white) | fmt::bg(fmt::color::red), "{:14.8f} ", value);

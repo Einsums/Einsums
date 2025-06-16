@@ -181,3 +181,23 @@ def create_random_tensor(
             out[ind] = real_func()
 
     return out
+
+def remove_complex(dtype) :
+    """
+    Takes a datatype and gives the real equivalent.
+    """
+    if dtype in __complex_singles :
+        return __singles[0]
+    if dtype in __complex_doubles :
+        return __doubles[0]
+    return dtype
+
+def add_complex(dtype) :
+    """
+    Takes a datatype and gives the complex equivalent.
+    """
+    if dtype in __singles :
+        return __complex_singles[0]
+    if dtype in __doubles :
+        return __complex_doubles[0]
+    return dtype

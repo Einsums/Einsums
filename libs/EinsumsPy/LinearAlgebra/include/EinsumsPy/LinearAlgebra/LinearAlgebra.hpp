@@ -19,7 +19,7 @@ namespace einsums {
 namespace python {
 namespace detail {
 
-void EINSUMS_EXPORT sum_square(pybind11::buffer const &A, pybind11::object &scale, pybind11::object &sum_sq);
+pybind11::tuple EINSUMS_EXPORT sum_square(pybind11::buffer const &A);
 
 void EINSUMS_EXPORT gemm(std::string const &transA, std::string const &transB, pybind11::object const &alpha, pybind11::buffer const &A,
                          pybind11::buffer const &B, pybind11::object const &beta, pybind11::buffer &C);
