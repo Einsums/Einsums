@@ -19,7 +19,7 @@ namespace detail {
 template <typename T, typename Haystack, size_t... I>
     requires requires {
         { std::tuple_size_v<Haystack> };
-        { std::get<0>(declval<Haystack>()) };
+        { std::get<0>(std::declval<Haystack>()) };
     }
 constexpr bool is_in(T &&needle, Haystack const &haystack, std::index_sequence<I...> const &) {
     return ((needle == std::get<I>(haystack)) || ... || false);
@@ -29,7 +29,7 @@ constexpr bool is_in(T &&needle, Haystack const &haystack, std::index_sequence<I
 template <typename T, typename Haystack>
     requires requires {
         { std::tuple_size_v<Haystack> };
-        { std::get<0>(declval<Haystack>()) };
+        { std::get<0>(std::declval<Haystack>()) };
     }
 constexpr bool is_in(T &&needle, Haystack const &haystack) {
     return detail::is_in(std::forward<T>(needle), std::forward<Haystack>(haystack),
@@ -59,7 +59,7 @@ constexpr bool is_in(T &&needle, std::initializer_list<std::decay_t<T>> haystack
 template <typename T, typename Haystack>
     requires requires {
         { std::tuple_size_v<Haystack> };
-        { std::get<0>(declval<Haystack>()) };
+        { std::get<0>(std::declval<Haystack>()) };
     }
 constexpr bool not_in(T &&needle, Haystack const &haystack) {
     return !detail::is_in(std::forward<T>(needle), std::forward<Haystack>(haystack),
