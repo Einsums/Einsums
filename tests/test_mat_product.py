@@ -71,7 +71,7 @@ def test_mat_prod_gpu_map(a, b, c, dtype, array) :
     B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
     C = ein.utils.tensor_factory("C", [a, c], dtype, array)
 
-    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], type = dtype)
+    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], dtype = dtype)
 
     plan = ein.core.compile_plan("ij", "ik", "kj")
 
