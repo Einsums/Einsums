@@ -5,14 +5,19 @@ import pytest
 import einsums as ein
 import numpy as np
 
-pytestmark = pytest.mark.parametrize(["a", "b", "c"], [(10, 10, 10), pytest.param(100, 100, 100, marks = pytest.mark.slow), (11, 13, 17)])
+pytestmark = [pytest.mark.parametrize(["a", "b", "c"], [(10, 10, 10), pytest.param(100, 100, 100, marks = pytest.mark.slow), (11, 13, 17)]),
+              pytest.mark.parametrize(
+        ["dtype"], [(np.float32,), (np.float64,), (np.complex64,), (np.complex128,)]
+    ),
+    pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
+]
 
-def test_mat_prod(a, b, c) :
-    A = np.array([[np.random.rand() for i in range(b)] for j in range(a)])
-    B = np.array([[np.random.rand() for i in range(c)] for j in range(b)])
-    C = np.array([[0.0 for i in range(c)] for j in range(a)])
+def test_mat_prod(a, b, c, dtype, array) :
+    A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
+    C = ein.utils.tensor_factory("C", [a, c], dtype, array)
 
-    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)])
+    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], dtype = dtype)
 
     plan = ein.core.compile_plan("ij", "ik", "kj")
 
@@ -28,15 +33,15 @@ def test_mat_prod(a, b, c) :
 
     for i in range(a) :
         for j in range(c) :
-            assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
+            assert(C[i, j] == pytest.approx(C_actual[i, j]))
 
 @pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
-def test_mat_prod_gpu_copy(a, b, c) :
-    A = np.array([[np.random.rand() for i in range(b)] for j in range(a)])
-    B = np.array([[np.random.rand() for i in range(c)] for j in range(b)])
-    C = np.array([[0.0 for i in range(c)] for j in range(a)])
+def test_mat_prod_gpu_copy(a, b, c, dtype, array) :
+    A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
+    C = ein.utils.tensor_factory("C", [a, c], dtype, array)
 
-    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)])
+    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], dtype = dtype)
 
     plan = ein.core.compile_plan("ij", "ik", "kj")
 
@@ -58,15 +63,15 @@ def test_mat_prod_gpu_copy(a, b, c) :
 
     for i in range(a) :
         for j in range(c) :
-            assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
+            assert(C[i, j] == pytest.approx(C_actual[i, j]))
 
 @pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
-def test_mat_prod_gpu_map(a, b, c) :
-    A = np.array([[np.random.rand() for i in range(b)] for j in range(a)])
-    B = np.array([[np.random.rand() for i in range(c)] for j in range(b)])
-    C = np.array([[0.0 for i in range(c)] for j in range(a)])
+def test_mat_prod_gpu_map(a, b, c, dtype, array) :
+    A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
+    C = ein.utils.tensor_factory("C", [a, c], dtype, array)
 
-    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)])
+    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], type = dtype)
 
     plan = ein.core.compile_plan("ij", "ik", "kj")
 
@@ -86,4 +91,4 @@ def test_mat_prod_gpu_map(a, b, c) :
 
     for i in range(a) :
         for j in range(c) :
-            assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
+            assert(C[i, j] == pytest.approx(C_actual[i, j]))
