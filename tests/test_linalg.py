@@ -5,8 +5,9 @@ import pytest
 import einsums as ein
 import numpy as np
 
+pytestmark = pytest.mark.parametrize(["dtype"], [(np.float32,), (np.float64,), (np.complex64,), (np.complex128,)])
+
 @pytest.mark.parametrize(["length"], [(10,), (1000,)])
-@pytest.mark.parametrize(["dtype"], [(np.float32,), (np.float64,), (np.complex64,), (np.complex128,)])
 def test_sumsq(length, dtype) :
     lst = ein.utils.create_random_tensor("vector", [length], dtype)
 
@@ -20,7 +21,6 @@ def test_sumsq(length, dtype) :
     assert(check == pytest.approx(scale ** 2 * sumsq))
 
 @pytest.mark.parametrize(["a", "b", "c"], [(10, 10, 10), pytest.param(100, 100, 100, marks = pytest.mark.slow), (11, 13, 17)])
-@pytest.mark.parametrize(["dtype"], [(np.float32,), (np.float64,), (np.complex64,), (np.complex128,)])
 def test_gemm(a, b, c, dtype) :
     A = np.array([[np.random.rand() for i in range(b)] for j in range(a)], dtype = dtype)
     B = np.array([[np.random.rand() for i in range(c)] for j in range(b)], dtype = dtype)
@@ -41,7 +41,6 @@ def test_gemm(a, b, c, dtype) :
             assert(C[i, j] == pytest.approx(C_actual[i, j]))
 
 @pytest.mark.parametrize(["a", "b"], [(10, 10), pytest.param(1000, 1000, marks = pytest.mark.slow), (11, 13)])
-@pytest.mark.parametrize(["dtype"], [(np.float32,), (np.float64,), (np.complex64,), (np.complex128,)])
 def test_mat_vec_prod(a, b, dtype) :
     A = np.array([[np.random.rand() for i in range(a)] for j in range(b)], dtype = dtype)
     B = np.array([np.random.rand() for i in range(a)], dtype = dtype)
@@ -60,7 +59,6 @@ def test_mat_vec_prod(a, b, dtype) :
         assert(C[i] == pytest.approx(C_actual[i]))
 
 @pytest.mark.parametrize(["width"], [(10,), (100,)])
-@pytest.mark.parametrize(["dtype"], [(np.float32,), (np.float64,), (np.complex64,), (np.complex128,)])
 def test_syev(width, dtype) :
     A = ein.utils.create_random_tensor("Test tensor", [width, width], dtype = dtype)
 

@@ -5,30 +5,43 @@ import pytest
 import einsums as ein
 import numpy as np
 
-pytestmark = pytest.mark.parametrize(["a", "b"], [(10, 10), pytest.param(1000, 1000, marks = pytest.mark.slow), (11, 13)])
+pytestmark = [
+    pytest.mark.parametrize(
+        ["a", "b"],
+        [(10, 10), pytest.param(1000, 1000, marks=pytest.mark.slow), (11, 13)],
+    ),
+    pytest.mark.parametrize(
+        ["dtype"], [(np.float32,), (np.float64,), (np.complex64,), (np.complex128,)]
+    ),
+    pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
+]
 
-def test_generic(a: int, b: int) :
-    A = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
-    B = np.array([[np.random.rand() for i in range(b)] for j in range(a)])
-    C = np.array([[0.0 for i in range(b)] for j in range(a)])
+
+def test_generic(a: int, b: int, dtype, array):
+    A = ein.utils.random_tensor_factory("A", [b, a], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
+    C = ein.utils.tensor_factory("C", [a, b], dtype, array)
 
     plan = ein.core.compile_plan("ij", "ji", "ij")
 
-    assert(type(plan) is ein.core.EinsumGenericPlan)
+    assert type(plan) is ein.core.EinsumGenericPlan
 
     plan.execute(0.0, C, 1.0, A, B)
 
     C_actual = A.T * B
 
-    for i in range(a) :
-        for j in range(b) :
-            assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
+    for i in range(a):
+        for j in range(b):
+            assert C[i, j] == pytest.approx(C_actual[i, j])
 
-@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
-def test_generic_gpu_copy(a: int, b: int) :
-    A = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
-    B = np.array([[np.random.rand() for i in range(b)] for j in range(a)])
-    C = np.array([[0.0 for i in range(b)] for j in range(a)])
+
+@pytest.mark.skipif(
+    not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
+)
+def test_generic_gpu_copy(a: int, b: int, dtype, array):
+    A = ein.utils.random_tensor_factory("A", [b, a], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
+    C = ein.utils.tensor_factory("C", [a, b], dtype, array)
 
     A_view = ein.core.GPUView(A, ein.core.COPY)
     B_view = ein.core.GPUView(B, ein.core.COPY)
@@ -36,7 +49,7 @@ def test_generic_gpu_copy(a: int, b: int) :
 
     plan = ein.core.compile_plan("ij", "ji", "ij")
 
-    assert(type(plan) is ein.core.EinsumGenericPlan)
+    assert type(plan) is ein.core.EinsumGenericPlan
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 
@@ -44,15 +57,18 @@ def test_generic_gpu_copy(a: int, b: int) :
 
     C_actual = A.T * B
 
-    for i in range(a) :
-        for j in range(b) :
-            assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
+    for i in range(a):
+        for j in range(b):
+            assert C[i, j] == pytest.approx(C_actual[i, j])
 
-@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
-def test_generic_gpu_map(a: int, b: int) :
-    A = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
-    B = np.array([[np.random.rand() for i in range(b)] for j in range(a)])
-    C = np.array([[0.0 for i in range(b)] for j in range(a)])
+
+@pytest.mark.skipif(
+    not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
+)
+def test_generic_gpu_map(a: int, b: int, dtype, array):
+    A = ein.utils.random_tensor_factory("A", [b, a], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
+    C = ein.utils.tensor_factory("C", [a, b], dtype, array)
 
     A_view = ein.core.GPUView(A, ein.core.MAP)
     B_view = ein.core.GPUView(B, ein.core.MAP)
@@ -60,13 +76,12 @@ def test_generic_gpu_map(a: int, b: int) :
 
     plan = ein.core.compile_plan("ij", "ji", "ij")
 
-    assert(type(plan) is ein.core.EinsumGenericPlan)
+    assert type(plan) is ein.core.EinsumGenericPlan
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 
     C_actual = A.T * B
 
-    for i in range(a) :
-        for j in range(b) :
-            assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
-
+    for i in range(a):
+        for j in range(b):
+            assert C[i, j] == pytest.approx(C_actual[i, j])

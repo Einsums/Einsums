@@ -140,47 +140,15 @@ def create_tensor(*args, dtype=float):
         return core.RuntimeTensorC(*args)
     if dtype in __complex_doubles:
         return core.RuntimeTensorZ(*args)
-    raise TypeError(f"Can not create tensor with data type {dtype}!")
+    raise ValueError(f"Can not create tensor with data type {dtype}!")
 
-
-def create_random_tensor(
-    name: str, dims: list[int], dtype=float, random_func=random.random
-):
-    """
-    Creates a random tensor with the given name and dimensions.
-    """
-    out = create_tensor(name, dims, dtype=dtype)
-
-    # Check to see if the user-specified function gives real or complex values.
-    complex_func = lambda: random_func() + 1j * random_func()
-    real_func = random_func
-
-    # Check if the data type is complex.
-    if dtype in __complex_singles or dtype in __complex_doubles:
-        # Check if the random function gives real or complex values.
-        # If it gives complex values, then use the random function for
-        # complex tensors. If it returns real values, use these as the
-        # real and imaginary components.
-        test_val = random_func()
-
-        if type(test_val) in __complex_singles or type(test_val) in __complex_doubles:
-            complex_func = random_func
-    else:  # The data type is real.
-        # Check if the random function gives real or complex values.
-        # If it gives complex values, then only use the real parts of the random
-        # numbers. Otherwise, use the function directly.
-        test_val = random_func()
-
-        if type(test_val) in __complex_singles or type(test_val) in __complex_doubles:
-            real_func = lambda: random_func().real
-
-    for ind in TensorIndices(out):
-        if dtype in __complex_singles or dtype in __complex_doubles:
-            out[ind] = complex_func()
-        else:
-            out[ind] = real_func()
-
-    return out
+def tensor_factory(name: str, dims: list[int], dtype = float, method = "einsums") :
+    if method == "einsums" :
+        return create_tensor(name, dims, dtype = dtype)
+    elif method == "numpy" :
+        return np.zeros(dims, dtype)
+    else :
+        raise ValueError("Can only produce tensors when the method is 'einsums' or 'numpy'.")
 
 def remove_complex(dtype) :
     """
@@ -201,3 +169,41 @@ def add_complex(dtype) :
     if dtype in __doubles :
         return __complex_doubles[0]
     return dtype
+
+def create_random_numpy_array(dims: list[int], dtype = float) :
+    rng = np.random.default_rng()
+
+    if dtype in __singles or dtype in __doubles :
+        return rng.random(dims, dtype = dtype)
+    elif dtype in __complex_singles :
+        real_arr = rng.random(dims, dtype = np.float32)
+        imag_arr = rng.random(dims, dtype = np.float32)
+
+        return real_arr.astype(np.complex64) + 1.0j * imag_arr.astype(np.complex64)
+    elif dtype in __complex_doubles :
+        real_arr = rng.random(dims, dtype = np.float64)
+        imag_arr = rng.random(dims, dtype = np.float64)
+
+        return real_arr.astype(np.complex128) + 1.0j * imag_arr.astype(np.complex128)
+    else :
+        raise ValueError("The data type must be real or complex floating point.")
+
+def create_random_tensor(name: str, dims: list[int], dtype = float) :
+    if dtype in __singles :
+        return core.create_random_tensorF(name, dims)
+    elif dtype in __doubles :
+        return core.create_random_tensorD(name, dims)
+    elif dtype in __complex_singles :
+        return core.create_random_tensorC(name, dims)
+    elif dtype in __complex_doubles :
+        return core.create_random_tensorZ(name, dims)
+    else :
+        raise ValueError(f"Can not create random tensor with data type {dtype}!")
+
+def random_tensor_factory(name: str, dims: list[int], dtype: type = float, method: str = "einsums") :
+    if method == "einsums" :
+        return create_random_tensor(name, dims, dtype)
+    elif method == "numpy" :
+        return create_random_numpy_array(dims, dtype)
+    else :
+        raise ValueError("Can only produce tensors when the method is 'einsums' or 'numpy'.")

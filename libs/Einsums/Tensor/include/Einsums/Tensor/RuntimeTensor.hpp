@@ -166,6 +166,35 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         }
     }
 
+    /**
+     * @brief Copy a tensor view into a runtime tensor.
+     *
+     * The data from the tensor will be copied, not mapped. If you want to alias the data, use a RuntimeTensorView instead.
+     *
+     * @param copy The tensor view to copy.
+     */
+    RuntimeTensor(RuntimeTensorView<T> const &copy) : _rank{copy.rank()}, _dims(copy.rank()), _strides(copy.rank()) {
+        size_t size = 1;
+
+        for (int i = copy.rank() - 1; i >= 0; i--) {
+            _strides[i] = size;
+            _dims[i]    = (size_t)copy.dim(i);
+            size *= _dims[i];
+        }
+
+        _data.resize(size);
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
+            size_t hold = sentinel, ord = 0;
+            for (int i = 0; i < _rank; i++) {
+                ord += copy.stride(i) * (hold / _strides[i]);
+                hold %= _strides[i];
+            }
+            _data[sentinel] = copy.data()[ord];
+        }
+    }
+
     // HIP clang doesn't like it when this is defaulted.
     virtual ~RuntimeTensor() {}
 
