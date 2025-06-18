@@ -5,47 +5,65 @@ import pytest
 import einsums as ein
 import numpy as np
 
-pytestmark = [pytest.mark.parametrize(["a", "b", "c"], [(10, 10, 10), pytest.param(100, 100, 100, marks = pytest.mark.slow), (11, 13, 17)]),
-              pytest.mark.parametrize(
-        ["dtype"], [(np.float32,), (np.float64,), (np.complex64,), (np.complex128,)]
+pytestmark = [
+    pytest.mark.parametrize(
+        ["a", "b", "c"],
+        [
+            (10, 10, 10),
+            pytest.param(100, 100, 100, marks=pytest.mark.slow),
+            (11, 13, 17),
+        ],
+    ),
+    pytest.mark.parametrize(
+        ["dtype", "rel"],
+        [
+            (np.float32, 1e-3),
+            (np.float64, 1e-6),
+            (np.complex64, 1e-3),
+            (np.complex128, 1e-6),
+        ],
     ),
     pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
 ]
 
-def test_mat_prod(a, b, c, dtype, array) :
+
+def test_mat_prod(a, b, c, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
     C = ein.utils.tensor_factory("C", [a, c], dtype, array)
 
-    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], dtype = dtype)
+    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], dtype=dtype)
 
     plan = ein.core.compile_plan("ij", "ik", "kj")
 
-    assert(type(plan) is ein.core.EinsumGemmPlan)
+    assert type(plan) is ein.core.EinsumGemmPlan
 
     plan.execute(0.0, C, 1.0, A, B)
 
     # Numpy hates doing matrix multiplication with einsums imported
-    for i in range(a) :
-        for j in range(c) :
-            for k in range(b) :
+    for i in range(a):
+        for j in range(c):
+            for k in range(b):
                 C_actual[i, j] += A[i, k] * B[k, j]
 
-    for i in range(a) :
-        for j in range(c) :
-            assert(C[i, j] == pytest.approx(C_actual[i, j]))
+    for i in range(a):
+        for j in range(c):
+            assert C[i, j] == pytest.approx(C_actual[i, j], rel=rel)
 
-@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
-def test_mat_prod_gpu_copy(a, b, c, dtype, array) :
+
+@pytest.mark.skipif(
+    not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
+)
+def test_mat_prod_gpu_copy(a, b, c, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
     C = ein.utils.tensor_factory("C", [a, c], dtype, array)
 
-    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], dtype = dtype)
+    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], dtype=dtype)
 
     plan = ein.core.compile_plan("ij", "ik", "kj")
 
-    assert(type(plan) is ein.core.EinsumGemmPlan)
+    assert type(plan) is ein.core.EinsumGemmPlan
 
     A_view = ein.core.GPUView(A, ein.core.COPY)
     B_view = ein.core.GPUView(B, ein.core.COPY)
@@ -56,26 +74,29 @@ def test_mat_prod_gpu_copy(a, b, c, dtype, array) :
     C_view.update_D2H()
 
     # Numpy hates doing matrix multiplication with einsums imported
-    for i in range(a) :
-        for j in range(c) :
-            for k in range(b) :
+    for i in range(a):
+        for j in range(c):
+            for k in range(b):
                 C_actual[i, j] += A[i, k] * B[k, j]
 
-    for i in range(a) :
-        for j in range(c) :
-            assert(C[i, j] == pytest.approx(C_actual[i, j]))
+    for i in range(a):
+        for j in range(c):
+            assert C[i, j] == pytest.approx(C_actual[i, j], rel=rel)
 
-@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
-def test_mat_prod_gpu_map(a, b, c, dtype, array) :
+
+@pytest.mark.skipif(
+    not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
+)
+def test_mat_prod_gpu_map(a, b, c, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
     C = ein.utils.tensor_factory("C", [a, c], dtype, array)
 
-    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], dtype = dtype)
+    C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], dtype=dtype)
 
     plan = ein.core.compile_plan("ij", "ik", "kj")
 
-    assert(type(plan) is ein.core.EinsumGemmPlan)
+    assert type(plan) is ein.core.EinsumGemmPlan
 
     A_view = ein.core.GPUView(A, ein.core.MAP)
     B_view = ein.core.GPUView(B, ein.core.MAP)
@@ -83,12 +104,14 @@ def test_mat_prod_gpu_map(a, b, c, dtype, array) :
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 
-    # Numpy hates doing matrix multiplication with einsums imported
-    for i in range(a) :
-        for j in range(c) :
-            for k in range(b) :
-                C_actual[i, j] += A[i, k] * B[k, j]
+    # C_actual = np.matmul(A, B)
 
-    for i in range(a) :
-        for j in range(c) :
-            assert(C[i, j] == pytest.approx(C_actual[i, j]))
+    # Numpy hates doing matrix multiplication with einsums imported
+    for i in range(a):
+        for j in range(c):
+            for k in range(b):
+                C_actual[i, j] += dtype(dtype(A[i, k]) * dtype(B[k, j]))
+
+    for i in range(a):
+        for j in range(c):
+            assert C[i, j] == pytest.approx(C_actual[i, j], rel=rel)

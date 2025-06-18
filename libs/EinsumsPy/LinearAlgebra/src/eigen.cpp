@@ -131,11 +131,40 @@ void syev(std::string const &jobz, py::buffer &A, py::buffer &W) {
 
         info = blas::heev<float>(jobz_ch, 'U', n, (std::complex<float> *)A_info.ptr, lda, (float *)W_info.ptr, (std::complex<float> *)work,
                                  lwork, rwork_vec.data());
+        // Fix the eigenvectors. They should be conjugated due to the difference between row and column major.
+        if (info == 0) {
+            std::complex<float> *A_data = (std::complex<float> *)A_info.ptr;
+#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
+#    pragma omp parallel for simd collapse(2)
+#else
+#    pragma omp parallel for collapse(2)
+#endif
+            for (size_t i = 0; i < n * lda; i += lda) {
+                for (size_t j = 0; j < n; j++) {
+                    A_data[i + j] = std::conj(A_data[i + j]);
+                }
+            }
+        }
     } else if (A_info.format == py::format_descriptor<std::complex<double>>::format()) {
         std::vector<double, BufferAllocator<double>> rwork_vec(std::max(3 * n - 2, blas::int_t{1}));
 
         info = blas::heev<double>(jobz_ch, 'U', n, (std::complex<double> *)A_info.ptr, lda, (double *)W_info.ptr,
                                   (std::complex<double> *)work, lwork, rwork_vec.data());
+
+        // Fix the eigenvectors. They should be conjugated due to the difference between row and column major.
+        if (info == 0) {
+            std::complex<double> *A_data = (std::complex<double> *)A_info.ptr;
+#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
+#    pragma omp parallel for simd collapse(2)
+#else
+#    pragma omp parallel for collapse(2)
+#endif
+            for (size_t i = 0; i < n * lda; i += lda) {
+                for (size_t j = 0; j < n; j++) {
+                    A_data[i + j] = std::conj(A_data[i + j]);
+                }
+            }
+        }
     }
 
     if (info < 0) {

@@ -2171,18 +2171,30 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                     auto                ndigits   = detail::ndigits(final_dim);
                     std::vector<size_t> index_strides;
                     dims_to_strides(A.dims(), index_strides);
-                    size_t              size = A.size();
-                    std::vector<size_t> indices(A.rank());
+                    index_strides.resize(A.rank() - 1);
+
+                    size_t div = index_strides[index_strides.size() - 1];
+
+                    for(size_t i = 0; i < index_strides.size(); i++) {
+                        index_strides[i] /= div;
+                    }
+
+                    size_t              size = A.dim(0) * index_strides[0];
+                    std::vector<size_t> indices(A.rank()), tmp_inds(A.rank() - 1);
 
                     for (size_t sentinel = 0; sentinel < size; sentinel++) {
 
                         sentinel_to_indices(sentinel, index_strides, indices);
+                        
+                        for(int i = 0; i < A.rank() - 1; i++) {
+                            tmp_inds[i] = indices[i];
+                        }
 
                         std::ostringstream oss;
                         for (int j = 0; j < final_dim; j++) {
                             if (j % options.width == 0) {
                                 std::ostringstream tmp;
-                                tmp << fmt::format("{}", fmt::join(indices, ", "));
+                                tmp << fmt::format("{}", fmt::join(tmp_inds, ", "));
                                 if (final_dim >= j + options.width)
                                     oss << fmt::format("{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits,
                                                                              j + options.width - 1, ndigits));
@@ -2190,6 +2202,7 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                                     oss << fmt::format("{:<14}",
                                                        fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
                             }
+                            indices[A.rank() - 1] = j;
                             T value = A(indices);
                             if (std::abs(value) > 1.0E+10) {
                                 if constexpr (std::is_floating_point_v<T>)

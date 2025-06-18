@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Tensor/RuntimeTensor.hpp>
 #include <Einsums/TensorAlgebra/Detail/Index.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
@@ -69,8 +70,8 @@ RuntimeTensor<T> transpose(RuntimeTensor<T> const &in) {
 
     TensorView<T, 2> in_view(in), out_view(out);
 
-    einsums::tensor_algebra::permute(0.0, einsums::Indices{index::i, index::j}, &out_view, 1.0,
-            einsums::Indices{index::j, index::i}, in_view);
+    einsums::tensor_algebra::permute(0.0, einsums::Indices{index::i, index::j}, &out_view, 1.0, einsums::Indices{index::j, index::i},
+                                     in_view);
 
     return out;
 }
@@ -86,11 +87,12 @@ RuntimeTensor<T> transpose(RuntimeTensorView<T> const &in) {
 
     TensorView<T, 2> in_view(in), out_view(out);
 
-    einsums::tensor_algebra::permute(0.0, einsums::Indices{index::i, index::j}, &out_view, 1.0,
-            einsums::Indices{index::j, index::i}, in_view);
+    einsums::tensor_algebra::permute(0.0, einsums::Indices{index::i, index::j}, &out_view, 1.0, einsums::Indices{index::j, index::i},
+                                     in_view);
 
     return out;
 }
+
 } // namespace detail
 
 /**
