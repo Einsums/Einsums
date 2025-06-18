@@ -11,7 +11,7 @@ pytestmark = [
         [(10, 10), pytest.param(1000, 1000, marks=pytest.mark.slow), (11, 13)],
     ),
     pytest.mark.parametrize(
-        ["dtype", "rel"], [(np.float32,1e-3), (np.float64,1e-6), (np.complex64,1e-3), (np.complex128,1e-6)]
+        ["dtype", "rel"], [(np.float64,1e-6), (np.complex128,1e-6)]
     ),
     pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
 ]

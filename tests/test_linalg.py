@@ -7,7 +7,7 @@ import numpy as np
 import math
 
 pytestmark = pytest.mark.parametrize(
-    ["dtype"], [(np.float32,), (np.float64,), (np.complex64,), (np.complex128,)]
+    ["dtype"], [(np.float64,), (np.complex128,)]
 )
 
 

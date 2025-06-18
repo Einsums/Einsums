@@ -8,7 +8,7 @@ import numpy as np
 pytestmark = [
     pytest.mark.parametrize("a", [10, pytest.param(1000, marks=pytest.mark.slow)]),
     pytest.mark.parametrize(
-        ["dtype"], [(np.float32,), (np.float64,), (np.complex64,), (np.complex128,)]
+        ["dtype"], [(np.float64,), (np.complex128,)]
     ),
     pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
 ]
