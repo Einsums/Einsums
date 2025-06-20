@@ -4,6 +4,7 @@
 #----------------------------------------------------------------------------------------------
 
 set(TensorAlgebraTests
+    Batched.cpp
     Dot.cpp
     DotGPU.hip
     Einsum1.cpp

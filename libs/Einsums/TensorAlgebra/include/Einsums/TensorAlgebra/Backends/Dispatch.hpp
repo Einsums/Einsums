@@ -1009,6 +1009,31 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
         *algorithm_choice = retval;
     }
 }
+
+template <Container CType, Container AType, Container BType, typename CPrefactorType, typename ABPrefactorType, typename... AIndices,
+          typename... BIndices, typename... CIndices>
+void einsum(CPrefactorType const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C_list, ABPrefactorType const AB_prefactor,
+            std::tuple<AIndices...> const &A_indices, AType const &A_list, std::tuple<BIndices...> const &B_indices, BType const &B_list,
+            detail::AlgorithmChoice *algorithm_choice) {
+    if (C_list->size() != A_list.size() || C_list->size() != B_list.size()) {
+        EINSUMS_THROW_EXCEPTION(bad_logic, "Lists passed to batched einsum call do not have the same size!");
+    }
+
+    if (C_list->size() == 0) {
+        return;
+    }
+
+    size_t tensors = C_list->size();
+
+    *algorithm_choice = detail::einsum<false, true>(C_prefactor, C_indices, &(C_list->at(0)), AB_prefactor,
+                                                    A_indices, A_list.at(0), B_indices, B_list.at(0));
+
+    EINSUMS_OMP_PARALLEL_FOR
+    for (size_t i = 0; i < tensors; i++) {
+        einsum(C_prefactor, C_indices, &(C_list->at(i)), AB_prefactor, A_indices, A_list.at(i), B_indices, B_list.at(i));
+    }
+}
+
 } // namespace einsums::tensor_algebra
 
 #endif
