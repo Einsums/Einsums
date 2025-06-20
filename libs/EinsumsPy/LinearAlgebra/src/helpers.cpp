@@ -20,7 +20,7 @@ int determine_easy_vector(pybind11::buffer const &X, size_t *easy_elems, size_t 
                            std::vector<size_t> *X_strides, std::vector<size_t> *hard_index_strides) {
     py::buffer_info X_info = X.request(false);
 
-    int    easy_rank   = -1;
+    int    easy_rank   =-1;
     size_t total_elems = 1;
 
     *easy_elems = 1;
@@ -34,7 +34,6 @@ int determine_easy_vector(pybind11::buffer const &X, size_t *easy_elems, size_t 
     for (int i = X_info.ndim - 1; i >= 0; i--) {
         (*hard_index_strides)[i] = total_elems;
         (*X_strides)[i]       = X_info.strides[i] / X_info.itemsize;
-        total_elems *= X_info.shape[i];
 
         if (total_elems * *incx == (*X_strides)[i]) {
             *easy_elems *= X_info.shape[i];
@@ -42,6 +41,7 @@ int determine_easy_vector(pybind11::buffer const &X, size_t *easy_elems, size_t 
         } else {
             *hard_elems *= X_info.shape[i];
         }
+        total_elems *= X_info.shape[i];
     }
 
     if (easy_rank == 0) {

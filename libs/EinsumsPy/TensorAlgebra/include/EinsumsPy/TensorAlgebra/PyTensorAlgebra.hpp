@@ -16,6 +16,7 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
+#include <EinsumsPy/LinearAlgebra/LinearAlgebra.hpp>
 
 #include <omp.h>
 
@@ -681,45 +682,15 @@ class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
             EINSUMS_THROW_EXCEPTION(num_argument_error, "Tensor ranks do not match the indices!");
         }
 
-        std::vector<size_t> unique_strides(A_info.ndim);
-        size_t              prod = 1;
-
-        for (int i = A_info.ndim - 1; i >= 0; i--) {
-            unique_strides[i] = prod;
-            prod *= A_info.shape[i];
-        }
-
-        T       C_data = *(T *)C_info.ptr;
-        T const *A_data = (T const *)(A_info.ptr);
-        T const *B_data = (T const *)(B_info.ptr);
+        T       *C_data = (T *)C_info.ptr;
 
         if (C_prefactor == T{0.0}) {
-            C_data = T{0.0};
+            *C_data = T{0.0};
         } else {
-            C_data *= C_prefactor;
+            *C_data *= C_prefactor;
         }
 
-// #ifdef EINSUMS_SIMD_ENABLED
-// #    pragma omp parallel for simd reduction(+ : C_data)
-// #else
-// #    pragma omp parallel for reduction(+ : C_data)
-// #endif
-        for (size_t sentinel = 0; sentinel < A_info.shape[0] * unique_strides[0]; sentinel++) {
-            size_t quotient = sentinel;
-            size_t A_index  = 0;
-            size_t B_index  = 0;
-            for (int i = 0; i < A_info.ndim; i++) {
-                size_t unique_index = quotient / unique_strides[i];
-                quotient %= unique_strides[i];
-
-                A_index += (A_info.strides[i] / sizeof(T)) * unique_index;
-                B_index += (B_info.strides[i] / sizeof(T)) * unique_index;
-            }
-
-            C_data += AB_prefactor * A_data[A_index] * B_data[B_index];
-        }
-
-        *(T *) C_info.ptr = C_data;
+        *C_data = pybind11::cast<T>(einsums::python::detail::dot(A, B));
     }
 
   public:
