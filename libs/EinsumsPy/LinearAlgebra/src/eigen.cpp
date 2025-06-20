@@ -4,6 +4,7 @@
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Print.hpp>
 #include <Einsums/Utilities/InCollection.hpp>
 
 #include <EinsumsPy/LinearAlgebra/LinearAlgebra.hpp>
@@ -12,8 +13,8 @@
 #include <pybind11/detail/common.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-
-#include "Einsums/Print.hpp"
+#include <pybind11/stl.h>
+#include <pybind11/typing.h>
 
 namespace py = pybind11;
 
@@ -175,8 +176,8 @@ void syev(std::string const &jobz, py::buffer &A, py::buffer &W) {
 }
 
 template <typename T>
-void geev_real_in_cmplx_out(char jobvl, char jobvr, py::buffer &A, py::buffer &W, py::buffer &Vl, py::buffer &Vr) {
-    py::buffer_info A_info = A.request(true), W_info = W.request(true), Vl_info, Vr_info;
+void geev_real_in_cmplx_out(char jobvl, char jobvr, py::buffer &A, py::buffer &W, py::buffer_info &Vl_info, py::buffer_info &Vr_info) {
+    py::buffer_info A_info = A.request(true), W_info = W.request(true);
 
     blas::int_t n = A_info.shape[0], lda = A_info.strides[0] / A_info.itemsize;
     blas::int_t ldvl = n, ldvr = n;
@@ -190,13 +191,11 @@ void geev_real_in_cmplx_out(char jobvl, char jobvr, py::buffer &A, py::buffer &W
 
     if (jobvl == 'V') {
         Vl_real.resize(n * n);
-        Vl_info     = Vl.request(true);
         Vl_real_ptr = Vl_real.data();
     }
 
     if (jobvr == 'V') {
         Vr_real.resize(n * n);
-        Vr_info     = Vr.request(true);
         Vr_real_ptr = Vr_real.data();
     }
 
@@ -212,35 +211,35 @@ void geev_real_in_cmplx_out(char jobvl, char jobvr, py::buffer &A, py::buffer &W
     }
 
     // Now, the left eigenvectors.
-    if (jobvl == 'v') {
+    if (jobvl == 'V') {
         std::complex<T> *Vl_data = reinterpret_cast<std::complex<T> *>(Vl_info.ptr);
         for (size_t j = 0; j < n; j++) {
             // Handle the complex case.
             if (W_data[j].imag() != T{0.0} && j < n - 1) {
                 for (size_t i = 0; i < n; i++) {
                     // These are complex conjugate pairs.
-                    Vl_data[i * ldvl + j]     = std::complex<T>(Vl_real_ptr[i * ldvl + j], Vl_real_ptr[i * ldvl + j + 1]);
-                    Vl_data[i * ldvl + j + 1] = std::complex<T>(Vl_real_ptr[i * ldvl + j], -Vl_real_ptr[i * ldvl + j + 1]);
+                    Vl_data[j * ldvl + i]       = std::complex<T>(Vl_real_ptr[i * ldvl + j], Vl_real_ptr[i * ldvl + j + 1]);
+                    Vl_data[(j + 1) * ldvl + i] = std::complex<T>(Vl_real_ptr[i * ldvl + j], -Vl_real_ptr[i * ldvl + j + 1]);
                 }
                 // Skip the next case.
                 j++;
             } else {
                 for (size_t i = 0; i < n; i++) {
-                    Vl_data[i * ldvl + j] = std::complex<T>(Vl_real_ptr[i * ldvl + j], 0);
+                    Vl_data[j * ldvl + i] = std::complex<T>(Vl_real_ptr[j * ldvl + i], 0);
                 }
             }
         }
     }
 
     // Now, the right eigenvectors.
-    if (jobvr == 'v') {
+    if (jobvr == 'V') {
         std::complex<T> *Vr_data = reinterpret_cast<std::complex<T> *>(Vr_info.ptr);
         for (size_t j = 0; j < n; j++) {
             // Handle the complex case.
             if (W_data[j].imag() != T{0.0} && j < n - 1) {
                 for (size_t i = 0; i < n; i++) {
                     // These are complex conjugate pairs.
-                    Vr_data[i * ldvl + j]     = std::complex<T>(Vr_real_ptr[i * ldvl + j], Vr_real_ptr[i * ldvl + j + 1]);
+                    Vr_data[i * ldvl + j]       = std::complex<T>(Vr_real_ptr[i * ldvl + j], Vr_real_ptr[i * ldvl + j + 1]);
                     Vr_data[i * ldvl + j + 1] = std::complex<T>(Vr_real_ptr[i * ldvl + j], -Vr_real_ptr[i * ldvl + j + 1]);
                 }
                 // Skip the next case.
@@ -255,8 +254,8 @@ void geev_real_in_cmplx_out(char jobvl, char jobvr, py::buffer &A, py::buffer &W
 }
 
 template <typename T>
-void geev_cmplx_in_cmplx_out(char jobvl, char jobvr, py::buffer &A, py::buffer &W, py::buffer &Vl, py::buffer &Vr) {
-    py::buffer_info A_info = A.request(true), W_info = W.request(true), Vl_info, Vr_info;
+void geev_cmplx_in_cmplx_out(char jobvl, char jobvr, py::buffer &A, py::buffer &W, py::buffer_info &Vl_info, py::buffer_info &Vr_info) {
+    py::buffer_info A_info = A.request(true), W_info = W.request(true);
 
     blas::int_t n = A_info.shape[0], lda = A_info.strides[0] / A_info.itemsize;
     blas::int_t ldvl = n, ldvr = n;
@@ -269,13 +268,11 @@ void geev_cmplx_in_cmplx_out(char jobvl, char jobvr, py::buffer &A, py::buffer &
     T *Vl_ptr = nullptr, *Vr_ptr = nullptr;
 
     if (jobvl == 'V') {
-        Vl_info = Vl.request(true);
-        Vl_ptr  = reinterpret_cast<T *>(Vl_info.ptr);
+        Vl_ptr = reinterpret_cast<T *>(Vl_info.ptr);
     }
 
     if (jobvr == 'V') {
-        Vr_info = Vr.request(true);
-        Vr_ptr  = reinterpret_cast<T *>(Vr_info.ptr);
+        Vr_ptr = reinterpret_cast<T *>(Vr_info.ptr);
     }
 
     // Decompose.
@@ -287,10 +284,26 @@ void geev_cmplx_in_cmplx_out(char jobvl, char jobvr, py::buffer &A, py::buffer &
         EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
     }
 
-    // No need to convert to real after this.
+    // Transpose the outputs.
+    // if (jobvl == 'V') {
+    //     for (size_t i = 0; i < n; i++) {
+    //         for (size_t j = i + 1; j < n; j++) {
+    //             std::swap(Vl_ptr[i * ldvl + j], Vl_ptr[j * ldvl + i]);
+    //         }
+    //     }
+    // }
+
+    // if (jobvr == 'V') {
+    //     for (size_t i = 0; i < n; i++) {
+    //         for (size_t j = i + 1; j < n; j++) {
+    //             std::swap(Vr_ptr[i * ldvr + j], Vr_ptr[j * ldvr + i]);
+    //         }
+    //     }
+    // }
 }
 
-void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py::buffer &W, py::buffer &Vl, py::buffer &Vr) {
+void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py::buffer &W,
+          std::variant<pybind11::buffer, pybind11::none> &Vl_or_none, std::variant<pybind11::buffer, pybind11::none> &Vr_or_none) {
     char jobvl_ch = 'n', jobvr_ch = 'n';
 
     if (jobvl.length() > 0 && is_in(jobvl, {"n", "N", "v", "V"})) {
@@ -301,7 +314,7 @@ void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py:
         jobvr_ch = toupper(jobvr[0]);
     }
 
-    py::buffer_info A_info = A.request(false), W_info = W.request(false), Vl_info = Vl.request(false), Vr_info = Vr.request(false);
+    py::buffer_info A_info = A.request(false), W_info = W.request(false), Vl_info, Vr_info;
 
     if (A_info.ndim != 2) {
         EINSUMS_THROW_EXCEPTION(rank_error, "Can only perform eigendecomposition on matrices!");
@@ -309,14 +322,6 @@ void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py:
 
     if (W_info.ndim != 1) {
         EINSUMS_THROW_EXCEPTION(rank_error, "The output of geev is a vector of eigenvalues!");
-    }
-
-    if (jobvl_ch == 'V' && Vl_info.ndim != 2) {
-        EINSUMS_THROW_EXCEPTION(rank_error, "The left eigenvectors form a matrix!");
-    }
-
-    if (jobvr_ch == 'V' && Vr_info.ndim != 2) {
-        EINSUMS_THROW_EXCEPTION(rank_error, "The right eigenvectors form a matrix!");
     }
 
     if (A_info.shape[0] != A_info.shape[1]) {
@@ -329,6 +334,16 @@ void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py:
     }
 
     if (jobvl_ch == 'V') {
+        if (std::holds_alternative<py::none>(Vl_or_none)) {
+            EINSUMS_THROW_EXCEPTION(py::type_error, "Left eigenvectors were requested, but None was passed as the argument!");
+        }
+
+        Vl_info = std::get<pybind11::buffer>(Vl_or_none).request(true);
+
+        if (Vl_info.ndim != 2) {
+            EINSUMS_THROW_EXCEPTION(rank_error, "The left eigenvectors form a matrix!");
+        }
+
         if (Vl_info.shape[0] != Vl_info.shape[1]) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The left eigenvector matrix needs to be square!");
         }
@@ -336,9 +351,28 @@ void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py:
             EINSUMS_THROW_EXCEPTION(tensor_compat_error,
                                     "The left eigenvector matrix needs to have the same dimensions as the input matrix!");
         }
+    } else {
+        Vl_info.format   = "";
+        Vl_info.itemsize = 0;
+        Vl_info.ndim     = 0;
+        Vl_info.ptr      = nullptr;
+        Vl_info.readonly = true;
+        Vl_info.shape.clear();
+        Vl_info.size = 0;
+        Vl_info.strides.clear();
     }
 
     if (jobvr_ch == 'V') {
+        if (std::holds_alternative<py::none>(Vr_or_none)) {
+            EINSUMS_THROW_EXCEPTION(py::type_error, "Left eigenvectors were requested, but None was passed as the argument!");
+        }
+
+        Vr_info = std::get<pybind11::buffer>(Vr_or_none).request(true);
+
+        if (Vr_info.ndim != 2) {
+            EINSUMS_THROW_EXCEPTION(rank_error, "The right eigenvectors form a matrix!");
+        }
+
         if (Vr_info.shape[0] != Vr_info.shape[1]) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The right eigenvector matrix needs to be square!");
         }
@@ -346,6 +380,15 @@ void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py:
             EINSUMS_THROW_EXCEPTION(tensor_compat_error,
                                     "The right eigenvector matrix needs to have the same dimensions as the input matrix!");
         }
+    } else {
+        Vr_info.format   = "";
+        Vr_info.itemsize = 0;
+        Vr_info.ndim     = 0;
+        Vr_info.ptr      = nullptr;
+        Vr_info.readonly = true;
+        Vr_info.shape.clear();
+        Vr_info.size = 0;
+        Vr_info.strides.clear();
     }
 
     if ((W_info.format != Vl_info.format && jobvl_ch == 'V') || (W_info.format != Vr_info.format && jobvr_ch == 'V')) {
@@ -359,7 +402,7 @@ void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py:
         } else if (W_info.format != py::format_descriptor<std::complex<float>>::format()) {
             EINSUMS_THROW_EXCEPTION(py::type_error, "The output buffers have an incompatible storage type!");
         } else {
-            geev_real_in_cmplx_out<float>(jobvl_ch, jobvr_ch, A, W, Vl, Vr);
+            geev_real_in_cmplx_out<float>(jobvl_ch, jobvr_ch, A, W, Vl_info, Vr_info);
         }
     } else if (A_info.format == py::format_descriptor<double>::format()) {
         if (W_info.format == py::format_descriptor<double>::format()) {
@@ -367,14 +410,14 @@ void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py:
         } else if (W_info.format != py::format_descriptor<std::complex<double>>::format()) {
             EINSUMS_THROW_EXCEPTION(py::type_error, "The output buffers have an incompatible storage type!");
         } else {
-            geev_real_in_cmplx_out<double>(jobvl_ch, jobvr_ch, A, W, Vl, Vr);
+            geev_real_in_cmplx_out<double>(jobvl_ch, jobvr_ch, A, W, Vl_info, Vr_info);
         }
     } else if (A_info.format == py::format_descriptor<std::complex<float>>::format() &&
                W_info.format == py::format_descriptor<std::complex<float>>::format()) {
-        geev_cmplx_in_cmplx_out<std::complex<float>>(jobvl_ch, jobvr_ch, A, W, Vl, Vr);
+        geev_cmplx_in_cmplx_out<std::complex<float>>(jobvl_ch, jobvr_ch, A, W, Vl_info, Vr_info);
     } else if (A_info.format == py::format_descriptor<std::complex<double>>::format() &&
                W_info.format == py::format_descriptor<std::complex<double>>::format()) {
-        geev_cmplx_in_cmplx_out<std::complex<double>>(jobvl_ch, jobvr_ch, A, W, Vl, Vr);
+        geev_cmplx_in_cmplx_out<std::complex<double>>(jobvl_ch, jobvr_ch, A, W, Vl_info, Vr_info);
     } else {
         EINSUMS_THROW_EXCEPTION(py::type_error, "The input and output buffers have incompatible storage types!");
     }

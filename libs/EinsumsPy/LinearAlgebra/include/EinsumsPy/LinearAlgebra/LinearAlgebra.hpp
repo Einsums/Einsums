@@ -14,6 +14,7 @@
 
 #include <pybind11/detail/common.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 namespace einsums {
 namespace python {
@@ -29,8 +30,8 @@ void EINSUMS_EXPORT gemv(std::string const &transA, pybind11::object const &alph
 
 void EINSUMS_EXPORT syev(std::string const &jobz, pybind11::buffer &A, pybind11::buffer &W);
 
-void EINSUMS_EXPORT geev(std::string const &jobvl, std::string const &jobvr, pybind11::buffer &A, pybind11::buffer &W, pybind11::buffer &Vl,
-                         pybind11::buffer &Vr);
+void EINSUMS_EXPORT geev(std::string const &jobvl, std::string const &jobvr, pybind11::buffer &A, pybind11::buffer &W, std::variant<pybind11::buffer, pybind11::none> &Vl,
+                         std::variant<pybind11::buffer, pybind11::none> &Vr);
 
 void EINSUMS_EXPORT gesv(pybind11::buffer &A, pybind11::buffer &B);
 

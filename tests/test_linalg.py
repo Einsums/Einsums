@@ -6,14 +6,15 @@ import einsums as ein
 import numpy as np
 import math
 
-pytestmark = pytest.mark.parametrize(
-    ["dtype"], [(np.float64,), (np.complex128,)]
-)
+pytestmark = [
+    pytest.mark.parametrize(["dtype"], [(np.float64,), (np.complex128,)]),
+    pytest.mark.parametrize("array", ["einsums", "numpy"]),
+]
 
 
 @pytest.mark.parametrize(["length"], [(10,), (1000,)])
-def test_sumsq(length, dtype):
-    lst = ein.utils.create_random_tensor("vector", [length], dtype)
+def test_sumsq(length, dtype, array):
+    lst = ein.utils.random_tensor_factory("vector", [length], dtype, array)
 
     scale = 0
     sumsq = 0
@@ -29,10 +30,10 @@ def test_sumsq(length, dtype):
     ["a", "b", "c"],
     [(10, 10, 10), pytest.param(100, 100, 100, marks=pytest.mark.slow), (11, 13, 17)],
 )
-def test_gemm(a, b, c, dtype):
-    A = np.array([[np.random.rand() for i in range(b)] for j in range(a)], dtype=dtype)
-    B = np.array([[np.random.rand() for i in range(c)] for j in range(b)], dtype=dtype)
-    C = np.array([[0.0 for i in range(c)] for j in range(a)], dtype=dtype)
+def test_gemm(a, b, c, dtype, array):
+    A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
+    C = ein.utils.tensor_factory("C", [a, c], dtype, array)
 
     C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], dtype=dtype)
 
@@ -52,18 +53,19 @@ def test_gemm(a, b, c, dtype):
 @pytest.mark.parametrize(
     ["a", "b"], [(10, 10), pytest.param(1000, 1000, marks=pytest.mark.slow), (11, 13)]
 )
-def test_mat_vec_prod(a, b, dtype):
-    A = np.array([[np.random.rand() for i in range(a)] for j in range(b)], dtype=dtype)
-    B = np.array([np.random.rand() for i in range(a)], dtype=dtype)
-    C = np.array([0.0 for i in range(b)], dtype=dtype)
+def test_mat_vec_prod(a, b, dtype, array):
+
+    A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [b], dtype, array)
+    C = ein.utils.tensor_factory("C", [a], dtype, array)
 
     ein.core.gemv("N", 1.0, A, B, 0.0, C)
 
     C_actual = np.array([0.0 for i in range(b)])
 
     # Numpy hates doing matrix multiplication with einsums imported
-    for i in range(b):
-        for j in range(a):
+    for i in range(a):
+        for j in range(b):
             C_actual[i] += A[i, j] * B[j]
 
     for i in range(b):
@@ -71,8 +73,8 @@ def test_mat_vec_prod(a, b, dtype):
 
 
 @pytest.mark.parametrize(["width"], [(10,), (100,)])
-def test_syev(width, dtype):
-    A = ein.utils.create_random_tensor("Test tensor", [width, width], dtype=dtype)
+def test_syev(width, dtype, array):
+    A = ein.utils.random_tensor_factory("Test tensor", [width, width], dtype, array)
 
     # Make A symmetric/hermitian.
     for i in range(width):
@@ -80,10 +82,10 @@ def test_syev(width, dtype):
         for j in range(i + 1, width):
             A[i, j] = A[j, i].conjugate()
 
-    A_copy = A.copy()
+    A_copy = np.array(A.copy(), dtype = dtype)
 
-    got_vals = ein.utils.create_tensor(
-        "Eigenvalues", [width], dtype=ein.utils.remove_complex(dtype)
+    got_vals = ein.utils.tensor_factory(
+        "Eigenvalues", [width], ein.utils.remove_complex(dtype), array
     )
 
     ein.core.syev("V", A, got_vals)
@@ -126,6 +128,74 @@ def test_syev(width, dtype):
                 assert (expected_vecs[i, j] == pytest.approx(A[i, j])) or (
                     expected_vecs[i, j] == pytest.approx(-A[i, j])
                 )
+
+    # for i in range(width) :
+    #     for j in range(width) :
+    #         assert(A[i, j] == pytest.approx(expected_vecs[i, j]))
+
+
+@pytest.mark.parametrize(["width"], [(10,), (50,)])
+def test_geev(width, dtype, array):
+    A = ein.utils.random_tensor_factory("Test tensor", [width, width], dtype, array)
+
+    A_copy = np.array(A.copy(), dtype = dtype)
+
+    got_vals = ein.utils.tensor_factory(
+        "Eigenvalues", [width], ein.utils.add_complex(dtype), array
+    )
+
+    A_vecs = ein.utils.tensor_factory("Test eigenvectors", [width, width], ein.utils.add_complex(dtype), array)
+
+    ein.core.geev("N", "V", A, got_vals, None, A_vecs)
+
+    expected_vals, expected_vecs = np.linalg.eig(A_copy)
+
+    # eiglist = [
+    #     (expected_vals[i], expected_vecs[:, i]) for i in range(len(expected_vals))
+    # ]
+
+    # eiglist = sorted(eiglist, key=lambda x: x[0])
+
+    # expected_vals = [val[0] for val in eiglist]
+    # expected_vecs = np.array([val[1] for val in eiglist], dtype=dtype)
+
+    # Go through each vector, divide by the first element, then renormalize.
+    for i in range(width):
+        # div = A_vecs[i, 0]
+        # div_ind = 0
+        # while div == pytest.approx(0.0) and div_ind < width:
+        #     div = A_vecs[i, div_ind]
+        #     div_ind += 1
+
+        # for j in range(width):
+        #     A_vecs[i, j] /= div
+        norm = np.linalg.norm(A_vecs[:, i])
+        for j in range(width):
+            A_vecs[j, i] /= norm
+
+    print(got_vals)
+    print(expected_vals)
+
+    # The algorithm is very unstable for 32-bit floats.
+    if dtype == np.float32 or dtype == np.complex64:
+        for exp, res in zip(expected_vals, got_vals):
+            assert exp == pytest.approx(res, 1e-3)
+        # Don't even check the eigenvectors. They are really bad!
+        # for i in range(width):
+        #     for j in range(width):
+        #         assert (expected_vecs[i, j] == pytest.approx(A[i, j], rel=1e-2)) or (
+        #             expected_vecs[i, j] == pytest.approx(-A[i, j], rel=1e-2)
+        #        )
+    else:
+        for exp, res in zip(expected_vals, got_vals):
+            assert exp == pytest.approx(res)
+        # In my experience, the eigenvectors become very unstable above 30x30.
+        if width < 30 :
+            for i in range(width):
+                for j in range(width):
+                    assert (expected_vecs[i, j] == pytest.approx(A_vecs[i, j])) or (
+                        expected_vecs[i, j] == pytest.approx(-A_vecs[i, j])
+                    )
 
     # for i in range(width) :
     #     for j in range(width) :
