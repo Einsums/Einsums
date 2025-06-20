@@ -61,14 +61,14 @@ def test_mat_vec_prod(a, b, dtype, array):
 
     ein.core.gemv("N", 1.0, A, B, 0.0, C)
 
-    C_actual = np.array([0.0 for i in range(b)])
+    C_actual = np.array([0.0 for i in range(b)], dtype)
 
     # Numpy hates doing matrix multiplication with einsums imported
     for i in range(a):
         for j in range(b):
             C_actual[i] += A[i, j] * B[j]
 
-    for i in range(b):
+    for i in range(a):
         assert C[i] == pytest.approx(C_actual[i])
 
 
@@ -200,3 +200,74 @@ def test_geev(width, dtype, array):
     # for i in range(width) :
     #     for j in range(width) :
     #         assert(A[i, j] == pytest.approx(expected_vecs[i, j]))
+
+@pytest.mark.parametrize(["a", "b"], [(10, 1), (10, 10), (100, 100)])
+def test_gesv(a, b, dtype, array) :
+    A = ein.utils.random_tensor_factory("A", [a, a], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
+    
+    A_copy = A.copy()
+    B_copy = B.copy()
+
+    ein.core.gesv(A, B)
+
+    expected_B = np.linalg.solve(A_copy, B_copy)
+
+    print(B)
+    print(expected_B)
+
+    for i in range(a) :
+        for j in range(b) :
+            assert B[i, j] == pytest.approx(expected_B[i, j])
+
+@pytest.mark.parametrize(["a", "b", "c"], [(10, 10, 10), (11, 13, 17)])
+def test_scale(a, b, c, dtype, array) :
+    A = ein.utils.random_tensor_factory("A", [a, b, c], dtype, array)
+
+    A_copy = A.copy()
+
+    scale_factor = ein.utils.random.random()
+    print(scale_factor)
+
+    ein.core.scale(scale_factor, A)
+
+    for i in range(a) :
+        for j in range(b) :
+            for k in range(c) :
+                assert scale_factor * A_copy[i, j, k] == pytest.approx(A[i, j, k])
+
+@pytest.mark.parametrize(["a", "b"], [(10, 1), (1, 10), (10, 10), (100, 100)])
+def test_scale_row(a, b, dtype, array) :
+    A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
+
+    A_copy = A.copy()
+
+    scale = ein.utils.random.random()
+    row = ein.utils.random.randint(0, a - 1)
+
+    ein.core.scale_row(row, scale, A)
+
+    for i in range(a) :
+        for j in range(b) :
+            if i == row :
+                assert A_copy[i, j] * scale == pytest.approx(A[i, j])
+            else :
+                assert A_copy[i, j] == A[i, j]
+
+@pytest.mark.parametrize(["a", "b"], [(10, 1), (1, 10), (10, 10), (100, 100)])
+def test_scale_col(a, b, dtype, array) :
+    A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
+
+    A_copy = A.copy()
+
+    scale = ein.utils.random.random()
+    col = ein.utils.random.randint(0, b - 1)
+
+    ein.core.scale_column(col, scale, A)
+
+    for i in range(a) :
+        for j in range(b) :
+            if j == col :
+                assert A_copy[i, j] * scale == pytest.approx(A[i, j])
+            else :
+                assert A_copy[i, j] == A[i, j]

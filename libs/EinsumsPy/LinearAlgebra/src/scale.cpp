@@ -27,21 +27,23 @@ void scale_work(T factor, py::buffer &A) {
 
     std::vector<size_t> index_strides(A_info.ndim), A_strides(A_info.ndim);
 
-    size_t elements = 1, easy_elems = 1, hard_elems = 1;
+    size_t easy_elems = 1, hard_elems = 1;
     int    easy_scale = -1; // Find the rank for the inner loop.
     size_t A_stride   = A_info.strides[A_info.ndim - 1] / A_info.itemsize;
 
     easy_scale = determine_easy_vector(A, &easy_elems, &A_stride, &hard_elems, &A_strides, &index_strides);
 
+    fprintf(stderr, "easy_scale = %d, easy_elems = %zu, hard_elems = %zu\n", easy_scale, easy_elems, hard_elems);
+
     if (easy_scale == 0) {
         // The entire tensor is contiguous, though may skip in the smallest stride.
-        blas::int_t n = elements, inc = A_strides[A_info.ndim - 1];
+        blas::int_t n = easy_elems, inc = A_strides[A_info.ndim - 1];
 
         blas::scal(n, factor, A_data, inc);
     } else {
         recalc_index_strides(&index_strides, easy_scale);
         A_strides.resize(easy_scale);
-        
+
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = 0; i < hard_elems; i++) {
             size_t sentinel;
