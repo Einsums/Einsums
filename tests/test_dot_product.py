@@ -28,10 +28,6 @@ def test_dot(a: int, dtype, array):
     plan.execute(0.0, C, 1.0, A, B)
 
     C_actual = sum(a_ * b_ for a_, b_ in zip(A, B))
-    C_actual_2 = dtype(0.0)
-
-    for i in range(a) :
-        C_actual_2 += A[i] * B[i]
 
     assert C_actual == pytest.approx(C_actual_2)
     assert C[0] == pytest.approx(C_actual)
