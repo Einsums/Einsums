@@ -689,7 +689,7 @@ class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
             prod *= A_info.shape[i];
         }
 
-        T       &C_data = *(T *)C_info.ptr;
+        T       C_data = *(T *)C_info.ptr;
         T const *A_data = (T const *)(A_info.ptr);
         T const *B_data = (T const *)(B_info.ptr);
 
@@ -699,11 +699,11 @@ class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
             C_data *= C_prefactor;
         }
 
-#ifdef EINSUMS_SIMD_ENABLED
-#    pragma omp parallel for simd reduction(+ : C_data)
-#else
-#    pragma omp parallel for reduction(+ : C_data)
-#endif
+// #ifdef EINSUMS_SIMD_ENABLED
+// #    pragma omp parallel for simd reduction(+ : C_data)
+// #else
+// #    pragma omp parallel for reduction(+ : C_data)
+// #endif
         for (size_t sentinel = 0; sentinel < A_info.shape[0] * unique_strides[0]; sentinel++) {
             size_t quotient = sentinel;
             size_t A_index  = 0;
@@ -718,6 +718,8 @@ class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
 
             C_data += AB_prefactor * A_data[A_index] * B_data[B_index];
         }
+
+        *(T *) C_info.ptr = C_data;
     }
 
   public:
