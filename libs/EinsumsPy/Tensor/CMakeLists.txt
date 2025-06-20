@@ -5,7 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(TensorHeaders EinsumsPy/Tensor/PyTensor.hpp)
+set(TensorHeaders EinsumsPy/Tensor/PyTensor.hpp EinsumsPy/Tensor/TensorExport.hpp)
 
 set(TensorSources Export.cpp)
 

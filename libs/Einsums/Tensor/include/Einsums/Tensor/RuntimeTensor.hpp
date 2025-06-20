@@ -166,6 +166,35 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         }
     }
 
+    /**
+     * @brief Copy a tensor view into a runtime tensor.
+     *
+     * The data from the tensor will be copied, not mapped. If you want to alias the data, use a RuntimeTensorView instead.
+     *
+     * @param copy The tensor view to copy.
+     */
+    RuntimeTensor(RuntimeTensorView<T> const &copy) : _rank{copy.rank()}, _dims(copy.rank()), _strides(copy.rank()) {
+        size_t size = 1;
+
+        for (int i = copy.rank() - 1; i >= 0; i--) {
+            _strides[i] = size;
+            _dims[i]    = (size_t)copy.dim(i);
+            size *= _dims[i];
+        }
+
+        _data.resize(size);
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
+            size_t hold = sentinel, ord = 0;
+            for (int i = 0; i < _rank; i++) {
+                ord += copy.stride(i) * (hold / _strides[i]);
+                hold %= _strides[i];
+            }
+            _data[sentinel] = copy.data()[ord];
+        }
+    }
+
     // HIP clang doesn't like it when this is defaulted.
     virtual ~RuntimeTensor() {}
 
@@ -2142,18 +2171,30 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                     auto                ndigits   = detail::ndigits(final_dim);
                     std::vector<size_t> index_strides;
                     dims_to_strides(A.dims(), index_strides);
-                    size_t              size = A.size();
-                    std::vector<size_t> indices(A.rank());
+                    index_strides.resize(A.rank() - 1);
+
+                    size_t div = index_strides[index_strides.size() - 1];
+
+                    for(size_t i = 0; i < index_strides.size(); i++) {
+                        index_strides[i] /= div;
+                    }
+
+                    size_t              size = A.dim(0) * index_strides[0];
+                    std::vector<size_t> indices(A.rank()), tmp_inds(A.rank() - 1);
 
                     for (size_t sentinel = 0; sentinel < size; sentinel++) {
 
                         sentinel_to_indices(sentinel, index_strides, indices);
+                        
+                        for(int i = 0; i < A.rank() - 1; i++) {
+                            tmp_inds[i] = indices[i];
+                        }
 
                         std::ostringstream oss;
                         for (int j = 0; j < final_dim; j++) {
                             if (j % options.width == 0) {
                                 std::ostringstream tmp;
-                                tmp << fmt::format("{}", fmt::join(indices, ", "));
+                                tmp << fmt::format("{}", fmt::join(tmp_inds, ", "));
                                 if (final_dim >= j + options.width)
                                     oss << fmt::format("{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits,
                                                                              j + options.width - 1, ndigits));
@@ -2161,6 +2202,7 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                                     oss << fmt::format("{:<14}",
                                                        fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
                             }
+                            indices[A.rank() - 1] = j;
                             T value = A(indices);
                             if (std::abs(value) > 1.0E+10) {
                                 if constexpr (std::is_floating_point_v<T>)
@@ -2191,14 +2233,16 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                     }
                 } else if (Rank == 1) {
                     size_t size = A.size();
+                    std::array<size_t, 1> index;
 
                     for (size_t sentinel = 0; sentinel < size; sentinel++) {
                         std::ostringstream oss;
                         oss << "(";
                         oss << fmt::format("{}", sentinel);
                         oss << "): ";
+                        index[0] = sentinel;
 
-                        T value = std::get<T>(A());
+                        T value = A(index);
                         if (std::abs(value) > 1.0E+5) {
                             if constexpr (std::is_floating_point_v<T>)
                                 oss << fmt::format(fmt::fg(fmt::color::white) | fmt::bg(fmt::color::red), "{:14.8f} ", value);

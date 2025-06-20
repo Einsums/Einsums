@@ -7,8 +7,8 @@ include(FetchContent)
 fetchcontent_declare(
   cpptrace
   GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace.git
-  GIT_TAG v0.7.3 # <HASH or TAG>
+  GIT_TAG v1.0.1 # <HASH or TAG>
   FIND_PACKAGE_ARGS
-  0.7
+  1.0
 )
 fetchcontent_makeavailable(cpptrace)

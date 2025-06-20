@@ -75,6 +75,15 @@ struct CodedError : ErrorClass {
 };
 
 /**
+ * @struct rank_error
+ *
+ * Indicates that the rank of some tensor arguments are not compatible with the given operation.
+ */
+struct EINSUMS_EXPORT rank_error : std::invalid_argument {
+    using std::invalid_argument::invalid_argument;
+};
+
+/**
  * @struct dimension_error
  *
  * Indicates that the dimensions of some tensor arguments are not compatible with the given operation.
