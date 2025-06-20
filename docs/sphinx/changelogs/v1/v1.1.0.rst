@@ -20,6 +20,7 @@ What's New
 * Tensor permutations where the smallest stride is not 1.
 * The in-core generic algorithm is now much more performant.
 * The dispatching function for :cpp:func:`einsum` is now more modular, so it is hopefully easier to maintain.
+* Einsum calls can now be batched over containers, such as `vector`s and `array`s of tensors.
 
 What's Removed
 --------------
