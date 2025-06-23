@@ -973,7 +973,13 @@ auto q(AType const &qr, TauType const &tau) -> Tensor<typename AType::ValueType,
 
     Tensor<T, 2> Q = qr;
 
-    blas::int_t info = blas::orgqr(m, m, p, Q.data(), m, tau.data());
+    blas::int_t info;
+    if constexpr (!IsComplexV<T>) {
+
+        info = blas::orgqr(m, m, p, Q.data(), m, tau.data());
+    } else {
+        info = blas::ungqr(m, m, p, Q.data(), m, tau.data());
+    }
     if (info != 0) {
         println_abort("{} parameter to orgqr has an illegal value. {} {} {}", -info, m, m, p);
     }

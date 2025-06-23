@@ -87,15 +87,17 @@ void axpy(pybind11::object const &alpha, pybind11::buffer const &x, pybind11::bu
 
     if (easy == 0) {
         if (x_info.format == py::format_descriptor<float>::format()) {
-            return blas::axpy<float>(easy, alpha.cast<float>(), (float const *)x_info.ptr, x_stride, (float *)y_info.ptr, y_stride);
+            return blas::axpy<float>(easy_elems, alpha.cast<float>(), (float const *)x_info.ptr, x_stride, (float *)y_info.ptr, y_stride);
         } else if (x_info.format == py::format_descriptor<double>::format()) {
-            return blas::axpy<double>(easy, alpha.cast<double>(), (double const *)x_info.ptr, x_stride, (double *)y_info.ptr, y_stride);
+            return blas::axpy<double>(easy_elems, alpha.cast<double>(), (double const *)x_info.ptr, x_stride, (double *)y_info.ptr,
+                                      y_stride);
         } else if (x_info.format == py::format_descriptor<std::complex<float>>::format()) {
-            return blas::axpy<std::complex<float>>(easy, alpha.cast<std::complex<float>>(), (std::complex<float> const *)x_info.ptr,
+            return blas::axpy<std::complex<float>>(easy_elems, alpha.cast<std::complex<float>>(), (std::complex<float> const *)x_info.ptr,
                                                    x_stride, (std::complex<float> *)y_info.ptr, y_stride);
         } else if (x_info.format == py::format_descriptor<std::complex<double>>::format()) {
-            return blas::axpy<std::complex<double>>(easy, alpha.cast<std::complex<double>>(), (std::complex<double> const *)x_info.ptr,
-                                                    x_stride, (std::complex<double> *)y_info.ptr, y_stride);
+            return blas::axpy<std::complex<double>>(easy_elems, alpha.cast<std::complex<double>>(),
+                                                    (std::complex<double> const *)x_info.ptr, x_stride, (std::complex<double> *)y_info.ptr,
+                                                    y_stride);
         } else {
             EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform the dot product on real or complex floating point inputs!");
         }
@@ -189,19 +191,19 @@ void axpby(pybind11::object const &alpha, pybind11::buffer const &x, pybind11::o
 
     if (easy == 0) {
         if (x_info.format == py::format_descriptor<float>::format()) {
-            return blas::axpby<float>(easy, alpha.cast<float>(), (float const *)x_info.ptr, x_stride, beta.cast<float>(),
+            return blas::axpby<float>(easy_elems, alpha.cast<float>(), (float const *)x_info.ptr, x_stride, beta.cast<float>(),
                                       (float *)y_info.ptr, y_stride);
         } else if (x_info.format == py::format_descriptor<double>::format()) {
-            return blas::axpby<double>(easy, alpha.cast<double>(), (double const *)x_info.ptr, x_stride, beta.cast<double>(),
+            return blas::axpby<double>(easy_elems, alpha.cast<double>(), (double const *)x_info.ptr, x_stride, beta.cast<double>(),
                                        (double *)y_info.ptr, y_stride);
         } else if (x_info.format == py::format_descriptor<std::complex<float>>::format()) {
-            return blas::axpby<std::complex<float>>(easy, alpha.cast<std::complex<float>>(), (std::complex<float> const *)x_info.ptr,
+            return blas::axpby<std::complex<float>>(easy_elems, alpha.cast<std::complex<float>>(), (std::complex<float> const *)x_info.ptr,
                                                     x_stride, beta.cast<std::complex<float>>(), (std::complex<float> *)y_info.ptr,
                                                     y_stride);
         } else if (x_info.format == py::format_descriptor<std::complex<double>>::format()) {
-            return blas::axpby<std::complex<double>>(easy, alpha.cast<std::complex<double>>(), (std::complex<double> const *)x_info.ptr,
-                                                     x_stride, beta.cast<std::complex<double>>(), (std::complex<double> *)y_info.ptr,
-                                                     y_stride);
+            return blas::axpby<std::complex<double>>(easy_elems, alpha.cast<std::complex<double>>(),
+                                                     (std::complex<double> const *)x_info.ptr, x_stride, beta.cast<std::complex<double>>(),
+                                                     (std::complex<double> *)y_info.ptr, y_stride);
         } else {
             EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform the dot product on real or complex floating point inputs!");
         }

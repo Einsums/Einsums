@@ -11,6 +11,8 @@
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorAlgebra/Permute.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
+#include <Einsums/TensorUtilities/CreateRandomDefinite.hpp>
+#include <Einsums/TensorUtilities/CreateRandomSemidefinite.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
 #include <EinsumsPy/Tensor/PyTensor.hpp>
@@ -116,7 +118,18 @@ void export_tensor(pybind11::module &mod) {
     }
 
     mod.def(("create_random_tensor" + suffix).c_str(),
-            [](std::string const &name, std::vector<size_t> const &dims) { return einsums::create_random_tensor<T>(name, dims); });
+            [](std::string const &name, std::vector<size_t> const &dims) { return einsums::create_random_tensor<T>(name, dims); })
+        .def(("create_random_definite" + suffix).c_str(),
+             [](std::string const &name, size_t rows, RemoveComplexT<T> mean) {
+                 return RuntimeTensor<T>(einsums::create_random_definite<T>(name, rows, rows));
+             },
+             pybind11::arg("name"), pybind11::arg("rows"), pybind11::arg("mean") = RemoveComplexT<T>{1.0})
+        .def(("create_random_semidefinite" + suffix).c_str(),
+             [](std::string const &name, size_t rows, RemoveComplexT<T> mean, int force_zeros) {
+                 return RuntimeTensor<T>(einsums::create_random_semidefinite<T>(name, rows, rows));
+             },
+             pybind11::arg("name"), pybind11::arg("rows"), pybind11::arg("mean") = RemoveComplexT<T>{1.0},
+             pybind11::arg("force_zeros") = 1);
 
     pybind11::class_<PyTensorIterator<T>, std::shared_ptr<PyTensorIterator<T>>>(mod, ("PyTensorIterator" + suffix).c_str())
         .def("__next__", &PyTensorIterator<T>::next, pybind11::return_value_policy::reference)

@@ -21,7 +21,7 @@ namespace detail {
 void ger(pybind11::object const &alpha, pybind11::buffer const &X, pybind11::buffer const &Y, pybind11::buffer &A) {
     py::buffer_info X_info = X.request(false), Y_info = Y.request(false), A_info = A.request(true);
 
-    if (X_info.ndim != 1 || Y_info.ndim != 1 || A_info.ndim != 1) {
+    if (X_info.ndim != 1 || Y_info.ndim != 1 || A_info.ndim != 2) {
         EINSUMS_THROW_EXCEPTION(rank_error, "The ger function takes two rank-1 tensors and outputs into a rank-2 tensor!");
     }
 
@@ -33,7 +33,7 @@ void ger(pybind11::object const &alpha, pybind11::buffer const &X, pybind11::buf
         EINSUMS_THROW_EXCEPTION(py::value_error, "The storage types of the tensors passed to ger must be the same!");
     }
 
-    size_t m = X_info.shape[0], n = Y_info.shape[1];
+    size_t m = X_info.shape[0], n = Y_info.shape[0];
 
     size_t incx = X_info.strides[0] / X_info.itemsize, incy = Y_info.strides[0] / Y_info.itemsize,
            lda = A_info.strides[0] / A_info.itemsize;

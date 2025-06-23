@@ -22,7 +22,7 @@
         if (__cond__ && !__skip_arg__) {                                                                                                   \
             (__call__);                                                                                                                    \
         }                                                                                                                                  \
-        return __cond__;                                                                                                                   \
+        return __cond__ || __skip_arg__;                                                                                                   \
     };                                                                                                                                     \
     bool __skip__ = __lambda__(float{0.0}, false);                                                                                         \
     __skip__      = __lambda__(double{0.0}, __skip__);                                                                                     \

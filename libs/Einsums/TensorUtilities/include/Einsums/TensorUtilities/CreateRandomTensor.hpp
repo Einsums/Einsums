@@ -23,148 +23,6 @@
 
 namespace einsums {
 
-namespace detail {
-
-/**
- * @struct circle_distribution
- *
- * @brief A uniformly random distribution on a circle with a center and radius.
- *
- * For real numbers, this will give a uniform distribution on an interval. For complex numbers,
- * the distribution will be such that the probability of a point being within a subregion
- * is proportional to the area of that subregion.
- */
-template <typename T>
-struct circle_distribution {};
-
-template <>
-struct circle_distribution<float> {
-  public:
-    circle_distribution(float center, float radius) : mag_dist_(0, std::numeric_limits<uint32_t>::max()) {}
-
-    ~circle_distribution() = default;
-
-    template <typename Generator>
-    float operator()(Generator &generator) {
-        union {
-            uint32_t integer;
-            float    floating;
-        } bitmanip;
-
-        bitmanip.integer = mag_dist_(generator);
-
-        // Clear the exponent.
-        bitmanip.integer &= 0x807fffffU;
-        // Set the exponent so that these numbers range from (-2,-1] and [1,2).
-        bitmanip.integer |= 0x40000000;
-
-        // Now, generate a second random number for backfilling.
-        uint32_t backfill = mag_dist_(generator);
-
-        // Compute the number of bits we will need.
-        uint32_t temp = bitmanip.integer;
-        // Clear the sign and exponent.
-        temp &= 0x007fffff;
-        // Now, count the number of leading zeros in the new value.
-        int fill_bits = std::countl_zero(temp);
-        // Shift a bitmask.
-        uint32_t mask = 0x007fffff >> (32 - fill_bits);
-        // Now, mask the backfill.
-        backfill &= mask;
-        // Now, when we perform the subtraction, we can backfill these values in.
-        if (bitmanip.floating < 0.0f) {
-            bitmanip.floating += 1.0f;
-        } else {
-            bitmanip.floating -= 1.0f;
-        }
-
-        // Backfill. Use xor just to be fancy.
-        bitmanip.integer ^= backfill;
-
-        // Now, scale and recenter the value.
-        return bitmanip.floating * radius_ + center_;
-    }
-
-  private:
-    float                                   center_, radius_;
-    std::uniform_int_distribution<uint32_t> mag_dist_;
-};
-
-template <>
-struct circle_distribution<double> {
-  public:
-    circle_distribution(double center, double radius) : mag_dist_(0, std::numeric_limits<uint64_t>::max()) {}
-
-    ~circle_distribution() = default;
-
-    template <typename Generator>
-    double operator()(Generator &generator) {
-        union {
-            uint64_t integer;
-            double   floating;
-        } bitmanip;
-
-        bitmanip.integer = mag_dist_(generator);
-
-        // Clear the exponent.
-        bitmanip.integer &= 0x800fffffffffffffUL;
-        // Set the exponent so that these numbers range from (-2,-1] and [1,2).
-        bitmanip.integer |= 0x4000000000000000UL;
-
-        // Now, generate a second random number for backfilling.
-        uint64_t backfill = mag_dist_(generator);
-
-        // Compute the number of bits we will need.
-        uint64_t temp = bitmanip.integer;
-        // Clear the sign and exponent.
-        temp &= 0x000fffffffffffffUL;
-        // Now, count the number of leading zeros in the new value.
-        int fill_bits = std::countl_zero(temp);
-        // Shift a bitmask.
-        uint32_t mask = 0x000fffffffffffffUL >> (32 - fill_bits);
-        // Now, mask the backfill.
-        backfill &= mask;
-        // Now, when we perform the subtraction, we can backfill these values in.
-        if (bitmanip.floating < 0.0) {
-            bitmanip.floating += 1.0;
-        } else {
-            bitmanip.floating -= 1.0;
-        }
-
-        // Backfill. Use xor just to be fancy.
-        bitmanip.integer ^= backfill;
-
-        // Now, scale and recenter the value.
-        return bitmanip.floating * radius_ + center_;
-    }
-
-  private:
-    double                                  center_, radius_;
-    std::uniform_int_distribution<uint64_t> mag_dist_;
-};
-
-// For this case, we can just use the normal uniform distribution. The boundary of the region will not be included.
-template <typename T>
-struct circle_distribution<std::complex<T>> {
-  public:
-    circle_distribution(T center, T radius) : center_{center}, mag_dist_(0, radius), angle_dist_(0, 2 * std::numbers::pi_v<T>) {}
-
-    ~circle_distribution() = default;
-
-    template <typename Generator>
-    std::complex<T> operator()(Generator &generator) {
-        T mag = mag_dist_(generator), angle = angle_dist_(generator);
-
-        return std::complex<T>{mag * std::cos(angle), mag * std::sin(angle)} + center_;
-    }
-
-  private:
-    T                                                 center_;
-    std::uniform_real_distribution<T> mutable mag_dist_, angle_dist_;
-};
-
-} // namespace detail
-
 /**
  * @brief Create a new tensor with \p name and \p index filled with random data.
  *
@@ -239,7 +97,7 @@ auto create_random_tensor(std::string const &name, Distribution &&distribution, 
 template <typename T = double, bool Normalize = false, std::integral... MultiIndex>
 auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     if constexpr (IsComplexV<T>) {
-        return create_random_tensor<T, Normalize>(name, detail::circle_distribution<T>(0, 1), index...);
+        return create_random_tensor<T, Normalize>(name, detail::unit_circle_distribution<T>(), index...);
     } else {
         return create_random_tensor<T, Normalize>(name, std::uniform_real_distribution<T>(-1, 1), index...);
     }
@@ -278,7 +136,7 @@ auto create_random_tensor(std::string const &name, Distribution &&dist, Indices 
 template <typename T = double, bool Normalize = false, Container Indices>
 auto create_random_tensor(std::string const &name, Indices const &index) -> RuntimeTensor<T> {
     if constexpr (IsComplexV<T>) {
-        return create_random_tensor<T, Normalize>(name, detail::circle_distribution<T>(0, 1), index);
+        return create_random_tensor<T, Normalize>(name, detail::unit_circle_distribution<T>(), index);
     } else {
         return create_random_tensor<T, Normalize>(name, std::uniform_real_distribution<T>(-1, 1), index);
     }
