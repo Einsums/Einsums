@@ -927,13 +927,13 @@ static INLINE void macro_kernel(floatType const *A, floatType const *Anext, size
 template <bool betaIsZero, typename floatType, bool conjA>
 void transpose_int_scalar(floatType const *A, size_t sizeStride1A, size_t innerStrideA, floatType *B, size_t sizeStride1B,
                           size_t innerStrideB, floatType const alpha, floatType const beta, ComputeNode const *plan) {
-    size_t const    end       = plan->end;
+    ptrdiff_t const    end       = plan->end;
     size_t const    lda       = plan->lda;
     size_t const    ldb       = plan->ldb;
     ptrdiff_t const offDiffAB = plan->offDiffAB;
     if (plan->next->next != nullptr) {
         // recurse
-        size_t i = plan->start;
+        ptrdiff_t i = plan->start;
         if (plan->indexA)
             transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], end - plan->start, innerStrideA, &B[i * ldb],
                                                                sizeStride1B, innerStrideB, alpha, beta, plan->next);
@@ -948,8 +948,8 @@ void transpose_int_scalar(floatType const *A, size_t sizeStride1A, size_t innerS
         // macro-kernel
         size_t const lda_macro       = plan->next->lda;
         size_t const ldb_macro       = plan->next->ldb;
-        size_t       i               = plan->start;
-        size_t const scalarRemainder = plan->end - plan->start;
+        ptrdiff_t       i               = plan->start;
+        ptrdiff_t const scalarRemainder = plan->end - plan->start;
         if (scalarRemainder > 0) {
             if (lda == 1)
                 macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, scalarRemainder, innerStrideA,
@@ -967,8 +967,8 @@ void transpose_int_scalar(floatType const *A, size_t sizeStride1A, size_t innerS
 template <int blockingA, int blockingB, bool betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
 void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrideA, floatType *B, floatType const *Bnext,
                    size_t innerStrideB, floatType const alpha, floatType const beta, ComputeNode const *plan) {
-    size_t const  end       = plan->end - (plan->inc - 1);
-    size_t const  inc       = plan->inc;
+    ptrdiff_t const  end       = plan->end - (plan->inc - 1);
+    ptrdiff_t const  inc       = plan->inc;
     size_t const  lda       = plan->lda;
     size_t const  ldb       = plan->ldb;
     int32_t const offDiffAB = plan->offDiffAB;
@@ -978,7 +978,7 @@ void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrid
 
     if (plan->next->next != nullptr) {
         // recurse
-        size_t i;
+        ptrdiff_t i;
         for (i = plan->start; i < end; i += inc) {
             if (i + inc < end)
                 transpose_int<blockingA, blockingB, betaIsZero, floatType, useStreamingStores, conjA>(
@@ -1011,7 +1011,7 @@ void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrid
                     &A[(i + offDiffAB) * lda], Anext, innerStrideA, &B[i * ldb], Bnext, innerStrideB, alpha, beta, plan->next);
             i += blocking_ / 4;
         }
-        size_t const scalarRemainder = plan->end - i;
+        ptrdiff_t const scalarRemainder = plan->end - i;
         if (scalarRemainder > 0) {
             if (plan->indexA)
                 transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], scalarRemainder, innerStrideA, &B[i * ldb],
@@ -1028,7 +1028,7 @@ void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrid
         size_t const ldb_macro = plan->next->ldb;
         // invoke macro-kernel
 
-        size_t i;
+        ptrdiff_t i;
         for (i = plan->start; i < end; i += inc)
             if (i + inc < end)
                 macro_kernel<blockingA, blockingB, betaIsZero, floatType, useStreamingStores, conjA>(
@@ -1056,7 +1056,7 @@ void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrid
                     &A[(i + offDiffAB) * lda], Anext, lda_macro, innerStrideA, &B[i * ldb], Bnext, ldb_macro, innerStrideB, alpha, beta);
             i += blocking_ / 4;
         }
-        size_t const scalarRemainder = plan->end - i;
+        ptrdiff_t const scalarRemainder = plan->end - i;
         if (scalarRemainder > 0) {
             if (plan->indexA)
                 macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, scalarRemainder, innerStrideA,
@@ -1073,21 +1073,21 @@ void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrid
 
 template <bool betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
 void transpose_int_constStride1(floatType const *A, floatType *B, floatType const alpha, floatType const beta, ComputeNode const *plan) {
-    size_t const end = plan->end - (plan->inc - 1);
+    ptrdiff_t const end = plan->end - (plan->inc - 1);
     /// @todo Fix code.
-    constexpr int32_t inc       = 1;
+    constexpr ptrdiff_t inc       = 1;
     size_t const      lda       = plan->lda;
     size_t const      ldb       = plan->ldb;
     ptrdiff_t const   offDiffAB = plan->offDiffAB;
 
     if (plan->next != nullptr) {
-        for (size_t i = plan->start; i < end; i += inc) {
+        for (ptrdiff_t i = plan->start; i < end; i += inc) {
             // recurse
             transpose_int_constStride1<betaIsZero, floatType, useStreamingStores, conjA>(&A[(i + offDiffAB) * lda], &B[i * ldb], alpha,
                                                                                          beta, plan->next);
         }
     } else if constexpr (!betaIsZero) {
-        for (size_t i = plan->start; i < end; i += inc) {
+        for (ptrdiff_t i = plan->start; i < end; i += inc) {
             if constexpr (conjA)
                 B[i * ldb] = alpha * conj(A[(i + offDiffAB) * lda]) + beta * B[i * ldb];
             else
@@ -1097,21 +1097,21 @@ void transpose_int_constStride1(floatType const *A, floatType *B, floatType cons
         if constexpr (useStreamingStores) {
             if constexpr (conjA) {
 #pragma vector nontemporal
-                for (size_t i = plan->start; i < end; i += inc) {
+                for (ptrdiff_t i = plan->start; i < end; i += inc) {
                     B[i * ldb] = alpha * conj(A[(i + offDiffAB) * lda]);
                 }
             } else {
 #pragma vector nontemporal
-                for (size_t i = plan->start; i < end; i += inc) {
+                for (ptrdiff_t i = plan->start; i < end; i += inc) {
                     B[i * ldb] = alpha * A[(i + offDiffAB) * lda];
                 }
             }
         } else if constexpr (conjA) {
-            for (size_t i = plan->start; i < end; i += inc) {
+            for (ptrdiff_t i = plan->start; i < end; i += inc) {
                 B[i * ldb] = alpha * conj(A[(i + offDiffAB) * lda]);
             }
         } else {
-            for (size_t i = plan->start; i < end; i += inc) {
+            for (ptrdiff_t i = plan->start; i < end; i += inc) {
                 B[i * ldb] = alpha * A[(i + offDiffAB) * lda];
             }
         }
@@ -1123,9 +1123,9 @@ Transpose<floatType>::Transpose(size_t const *sizeA, int const *perm, size_t con
                                 size_t const *offsetA, size_t const *offsetB, size_t const innerStrideA, size_t const innerStrideB,
                                 int const dim, floatType const *A, floatType const alpha, floatType *B, floatType const beta,
                                 SelectionMethod const selectionMethod, int const numThreads, int const *threadIds, bool const useRowMajor)
-    : A_(A), B_(B), alpha_(alpha), beta_(beta), dim_(-1), innerStrideA_(-1), innerStrideB_(-1), numThreads_(numThreads),
-      masterPlan_(nullptr), selectionMethod_(selectionMethod), maxAutotuningCandidates_(-1), selectedParallelStrategyId_(-1),
-      selectedLoopOrderId_(-1), conjA_(false) {
+    : A_(A), B_(B), alpha_(alpha), beta_(beta), dim_(-1), innerStrideA_(0), innerStrideB_(0), numThreads_(numThreads), masterPlan_(nullptr),
+      selectionMethod_(selectionMethod), maxAutotuningCandidates_(-1), selectedParallelStrategyId_(-1), selectedLoopOrderId_(-1),
+      conjA_(false) {
 #ifdef _OPENMP
     omp_init_lock(&writelock);
 #endif
