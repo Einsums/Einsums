@@ -373,3 +373,25 @@ def test_vec_norm(a, dtype, array) :
     A = ein.utils.random_tensor_factory("A", [a], dtype, array)
 
     assert ein.core.vec_norm(A) == pytest.approx(np.linalg.norm(A))
+
+@pytest.mark.parametrize("a", [10, 100])
+def test_dot(a, dtype, array) :
+    A = ein.utils.random_tensor_factory("A", [a], dtype, array)
+    B = ein.utils.random_tensor_factory("A", [a], dtype, array)
+
+    test = sum(x * y for x, y in zip(A, B))
+
+    got = ein.core.dot(A, B)
+
+    assert got == pytest.approx(test)
+    
+@pytest.mark.parametrize("a", [10, 100])
+def test_true_dot(a, dtype, array) :
+    A = ein.utils.random_tensor_factory("A", [a], dtype, array)
+    B = ein.utils.random_tensor_factory("A", [a], dtype, array)
+
+    test = sum(x.conjugate() * y for x, y in zip(A, B))
+
+    got = ein.core.true_dot(A, B)
+
+    assert got == pytest.approx(test)
