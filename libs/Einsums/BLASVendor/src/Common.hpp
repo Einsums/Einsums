@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/BLAS/Types.hpp>
 #include <Einsums/HPTT/HPTT.hpp>
 #include <Einsums/HPTT/HPTTTypes.hpp>
 
@@ -37,8 +38,8 @@ inline bool lsame(char ca, char cb) {
 enum OrderMajor { Column, Row };
 
 // OrderMajor indicates the order of the input matrix. C is Row, Fortran is Column
-template <OrderMajor Order, typename T, typename Integer>
-void transpose(Integer m, Integer n, T const *in, Integer ldin, T *out, Integer ldout) {
+template <OrderMajor Order, typename T>
+void transpose(blas::int_t m, blas::int_t n, T const *in, blas::int_t ldin, T *out, blas::int_t ldout) {
     if (in == nullptr || out == nullptr) {
         return;
     }
@@ -52,18 +53,18 @@ void transpose(Integer m, Integer n, T const *in, Integer ldin, T *out, Integer 
     plan->execute();
 }
 
-template <OrderMajor Order, typename T, typename Integer>
-void transpose(Integer m, Integer n, std::vector<T> const &in, Integer ldin, T *out, Integer ldout) {
+template <OrderMajor Order, typename T>
+void transpose(blas::int_t m, blas::int_t n, std::vector<T> const &in, blas::int_t ldin, T *out, blas::int_t ldout) {
     transpose<Order>(m, n, in.data(), ldin, out, ldout);
 }
 
-template <OrderMajor Order, typename T, typename Integer>
-void transpose(Integer m, Integer n, T const *in, Integer ldin, std::vector<T> &out, Integer ldout) {
+template <OrderMajor Order, typename T>
+void transpose(blas::int_t m, blas::int_t n, T const *in, blas::int_t ldin, std::vector<T> &out, blas::int_t ldout) {
     transpose<Order>(m, n, in, ldin, out.data(), ldout);
 }
 
-template <OrderMajor Order, typename T, typename Integer>
-void transpose(Integer m, Integer n, std::vector<T> const &in, Integer ldin, std::vector<T> &out, Integer ldout) {
+template <OrderMajor Order, typename T>
+void transpose(blas::int_t m, blas::int_t n, std::vector<T> const &in, blas::int_t ldin, std::vector<T> &out, blas::int_t ldout) {
     transpose<Order>(m, n, in.data(), ldin, out.data(), ldout);
 }
 } // namespace einsums::blas::vendor
