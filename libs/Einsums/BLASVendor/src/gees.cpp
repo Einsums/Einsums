@@ -18,6 +18,12 @@ extern void FC_GLOBAL(dgees, DGEES)(char *, char *, int_t (*)(double *, double *
                                     double *, int_t *, double *, int_t *, int_t *, int_t *);
 extern void FC_GLOBAL(sgees, SGEES)(char *, char *, int_t (*)(float *, float *), int_t *, float *, int_t *, int_t *, float *, float *,
                                     float *, int_t *, float *, int_t *, int_t *, int_t *);
+extern void FC_GLOBAL(cgees, CGEES)(char *, char *, int_t (*)(double *, double *), int_t *, std::complex<float> *, int_t *, int_t *,
+                                    std::complex<float> *, std::complex<float> *, int_t *, std::complex<float> *, int_t *, float *, int_t *,
+                                    int_t *);
+extern void FC_GLOBAL(zgees, ZGEES)(char *, char *, int_t (*)(double *, double *), int_t *, std::complex<double> *, int_t *, int_t *,
+                                    std::complex<double> *, std::complex<double> *, int_t *, std::complex<double> *, int_t *, double *,
+                                    int_t *, int_t *);
 }
 
 #define GEES(Type, lc, UC)                                                                                                                 \
@@ -76,5 +82,65 @@ extern void FC_GLOBAL(sgees, SGEES)(char *, char *, int_t (*)(float *, float *),
 
 GEES(double, d, D);
 GEES(float, s, S);
+
+#undef GEES
+#define GEES(Type, lc, UC)                                                                                                                 \
+    auto lc##gees(char jobvs, int_t n, std::complex<Type> *a, int_t lda, int_t *sdim, std::complex<Type> *w, std::complex<Type> *vs,       \
+                  int_t ldvs)                                                                                                              \
+        ->int_t {                                                                                                                          \
+        LabeledSection0();                                                                                                                 \
+                                                                                                                                           \
+        int_t  info  = 0;                                                                                                                  \
+        int_t  lwork = -1;                                                                                                                 \
+        int_t *bwork = nullptr;                                                                                                            \
+                                                                                                                                           \
+        std::complex<Type> work_query;                                                                                                     \
+                                                                                                                                           \
+        int_t lda_t  = std::max(int_t{1}, n);                                                                                              \
+        int_t ldvs_t = std::max(int_t{1}, n);                                                                                              \
+                                                                                                                                           \
+        /* Check leading dimensions */                                                                                                     \
+        if (lda < n) {                                                                                                                     \
+            println_warn("gees warning: lda < n, lda = {}, n = {}", lda, n);                                                               \
+            return -4;                                                                                                                     \
+        }                                                                                                                                  \
+        if (ldvs < n) {                                                                                                                    \
+            println_warn("gees warning: ldvs < n, ldvs = {}, n = {}", ldvs, n);                                                            \
+            return -9;                                                                                                                     \
+        }                                                                                                                                  \
+                                                                                                                                           \
+        std::vector<Type> rwork(n); /* real work */                                                                                        \
+        char              sort = 'N';                                                                                                      \
+        FC_GLOBAL(lc##gees, UC##GEES)                                                                                                      \
+        (&jobvs, &sort, nullptr, &n, a, &lda_t, sdim, w, vs, &ldvs_t, &work_query, &lwork, rwork.data(), bwork, &info);                    \
+                                                                                                                                           \
+        lwork = (int_t)work_query.real(); /* Allocate memory for work array */                                                             \
+        std::vector<std::complex<Type>> work(lwork);                                                                                       \
+                                                                                                                                           \
+        /* Allocate memory for temporary array(s) */                                                                                       \
+        std::vector<std::complex<Type>> a_t(lda_t *std::max(int_t{1}, n));                                                                 \
+        std::vector<std::complex<Type>> vs_t;                                                                                              \
+        if (lsame(jobvs, 'v')) {                                                                                                           \
+            vs_t.resize(ldvs_t *std::max(int_t{1}, n));                                                                                    \
+        }                                                                                                                                  \
+                                                                                                                                           \
+        /* Transpose input matrices */                                                                                                     \
+        transpose<OrderMajor::Row>(n, n, a, lda, a_t, lda_t);                                                                              \
+                                                                                                                                           \
+        /* Call LAPACK function and adjust info */                                                                                         \
+        FC_GLOBAL(lc##gees, UC##GEES)                                                                                                      \
+        (&jobvs, &sort, nullptr, &n, a_t.data(), &lda_t, sdim, w, vs_t.data(), &ldvs_t, work.data(), &lwork, rwork.data(), bwork, &info);  \
+                                                                                                                                           \
+        /* Transpose output matrices */                                                                                                    \
+        transpose<OrderMajor::Column>(n, n, a_t, lda_t, a, lda);                                                                           \
+        if (lsame(jobvs, 'v')) {                                                                                                           \
+            transpose<OrderMajor::Column>(n, n, vs_t, ldvs_t, vs, ldvs);                                                                   \
+        }                                                                                                                                  \
+                                                                                                                                           \
+        return 0;                                                                                                                          \
+    }
+
+GEES(double, z, Z);
+GEES(float, c, C);
 
 } // namespace einsums::blas::vendor
