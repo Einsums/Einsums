@@ -206,7 +206,7 @@ def test_geev(width, dtype, array):
 
 @pytest.mark.parametrize(["a", "b"], [(10, 1), (10, 10), (100, 100)])
 def test_gesv(a, b, dtype, array):
-    A = ein.utils.random_definite_tensor_factory("A", a, dtype, array)
+    A = ein.utils.random_definite_tensor_factory("A", a, dtype = dtype, method = array)
     B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
 
     A_copy = A.copy()
