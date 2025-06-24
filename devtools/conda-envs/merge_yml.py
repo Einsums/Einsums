@@ -8,7 +8,6 @@ import argparse
 
 packages_to_filter = [
     'cpptrace' if platform.system() == 'Windows' else None,
-    'cpptrace' if platform.system() == 'Darwin' and platform.machine() == 'arm64' else None,
 ]
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -84,7 +83,7 @@ if __name__ == "__main__":
         args.blas = "mkl"
 
     snippets = ["snippets/common.yml", f"snippets/compiler/{args.compiler}.yml",
-                f"snippets/blas/{args.blas}.yml"]
+                f"snippets/blas/{args.blas}.yml", f"snippets/os/{platform.system()}.yml"]
     if args.docs:
         snippets.append("snippets/docs.yml")
 

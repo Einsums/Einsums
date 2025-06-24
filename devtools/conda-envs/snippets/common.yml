@@ -16,6 +16,7 @@ dependencies:
   - fftw
   - fmt
   - cpptrace
+  - spdlog
   # HDF5
   # * zlib brings headers; hdf5 package only bring libzlib
   - hdf5
