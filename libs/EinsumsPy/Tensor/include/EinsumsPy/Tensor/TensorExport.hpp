@@ -588,6 +588,7 @@ void export_tensor(pybind11::module &mod) {
         .def("set_name", &RuntimeTensorView<T>::set_name)
         .def_property("name", &RuntimeTensorView<T>::name, &RuntimeTensorView<T>::set_name)
         .def("size", &RuntimeTensorView<T>::size)
+        .def("copy", [](RuntimeTensorView<T> const &self) { return RuntimeTensor<T>(self); })
         .def("__len__", &RuntimeTensorView<T>::size)
         .def("__iter__", [](RuntimeTensorView<T> const &tensor) { return std::make_shared<PyTensorIterator<T>>(tensor); })
         .def("__reversed__", [](RuntimeTensorView<T> const &tensor) { return std::make_shared<PyTensorIterator<T>>(tensor, true); })
