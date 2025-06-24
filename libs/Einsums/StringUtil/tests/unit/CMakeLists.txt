@@ -19,7 +19,6 @@ foreach(test ${StringUtilTests})
   get_filename_component(TestName ${test} NAME_WE)
   # Extract extension of the test Example1.cpp -> .cpp, Example.2.hip -> .2.hip
   get_filename_component(Extension ${test} EXT)
-  message("Test name ${TestName}")
 
   # Remove the leading dot and replace any periods with underscores
   string(SUBSTRING ${Extension} 1 -1 EXT_NO_DOT) # Remove the leading dot
