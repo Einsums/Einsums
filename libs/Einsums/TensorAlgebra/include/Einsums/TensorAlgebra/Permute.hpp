@@ -25,37 +25,38 @@ namespace einsums::tensor_algebra {
 #if !defined(EINSUMS_WINDOWS)
 namespace detail {
 
-void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta,
+void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, float const beta,
                             float *B);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta,
+void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, size_t const *sizeA, double const beta,
                             double *B);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
-                            std::complex<float> const beta, std::complex<float> *B);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A,
+                            size_t const *sizeA, std::complex<float> const beta, std::complex<float> *B);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
-                            int const *sizeA, std::complex<double> const beta, std::complex<double> *B);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA,
-                            int const *outerSizeA, float const beta, float *B, int const *offsetB, int const *outerSizeB);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA,
-                            int const *outerSizeA, double const beta, double *B, int const *offsetB, int const *outerSizeB);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
-                            int const *offsetA, int const *outerSizeA, std::complex<float> const beta, std::complex<float> *B,
-                            int const *offsetB, int const *outerSizeB);
+                            size_t const *sizeA, std::complex<double> const beta, std::complex<double> *B);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, size_t const *offsetA,
+                            size_t const *outerSizeA, float const beta, float *B, size_t const *offsetB, size_t const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, size_t const *sizeA, size_t const *offsetA,
+                            size_t const *outerSizeA, double const beta, double *B, size_t const *offsetB, size_t const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A,
+                            size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, std::complex<float> const beta,
+                            std::complex<float> *B, size_t const *offsetB, size_t const *outerSizeB);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
-                            int const *sizeA, int const *offsetA, int const *outerSizeA, std::complex<double> const beta,
-                            std::complex<double> *B, int const *offsetB, int const *outerSizeB);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *offsetA,
-                            int const *outerSizeA, int const innerStrideA, float const beta, float *B, int const *offsetB,
-                            int const *outerSizeB, int const innerStrideB);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *offsetA,
-                            int const *outerSizeA, int const innerStrideA, double const beta, double *B, int const *offsetB,
-                            int const *outerSizeB, int const innerStrideB);
-void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
-                            int const *offsetA, int const *outerSizeA, int const innerStrideA, std::complex<float> const beta,
-                            std::complex<float> *B, int const *offsetB, int const *outerSizeB, int const innerStrideB);
+                            size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, std::complex<double> const beta,
+                            std::complex<double> *B, size_t const *offsetB, size_t const *outerSizeB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, size_t const *offsetA,
+                            size_t const *outerSizeA, size_t const innerStrideA, float const beta, float *B, size_t const *offsetB,
+                            size_t const *outerSizeB, size_t const innerStrideB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, size_t const *sizeA, size_t const *offsetA,
+                            size_t const *outerSizeA, size_t const innerStrideA, double const beta, double *B, size_t const *offsetB,
+                            size_t const *outerSizeB, size_t const innerStrideB);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A,
+                            size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, size_t const innerStrideA,
+                            std::complex<float> const beta, std::complex<float> *B, size_t const *offsetB, size_t const *outerSizeB,
+                            size_t const innerStrideB);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
-                            int const *sizeA, int const *offsetA, int const *outerSizeA, int const innerStrideA,
-                            std::complex<double> const beta, std::complex<double> *B, int const *offsetB, int const *outerSizeB,
-                            int const innerStrideB);
+                            size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, size_t const innerStrideA,
+                            std::complex<double> const beta, std::complex<double> *B, size_t const *offsetB, size_t const *outerSizeB,
+                            size_t const innerStrideB);
 
 } // namespace detail
 #endif
@@ -93,26 +94,26 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 
 #if !defined(EINSUMS_WINDOWS)
     if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
-        std::array<int, ARank> perms{};
-        std::array<int, ARank> size{};
+        std::array<int, ARank>    perms{};
+        std::array<size_t, ARank> size{};
 
         for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            perms[i0] = arguments::get_from_tuple<size_t>(target_position_in_A, (2 * i0) + 1);
             size[i0]  = A.dim(i0);
         }
         detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
     } else if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
-        std::array<int, ARank> perms{};
-        std::array<int, ARank> size{};
-        std::array<int, ARank> outerSizeA{};
-        std::array<int, ARank> offsetA{};
-        std::array<int, ARank> outerSizeC{};
-        std::array<int, ARank> offsetC{};
-        int                    innerStrideA = A.stride(ARank - 1);
-        int                    innerStrideC = 1;
+        std::array<int, ARank>    perms{};
+        std::array<size_t, ARank> size{};
+        std::array<size_t, ARank> outerSizeA{};
+        std::array<size_t, ARank> offsetA{};
+        std::array<size_t, ARank> outerSizeC{};
+        std::array<size_t, ARank> offsetC{};
+        size_t                    innerStrideA = A.stride(ARank - 1);
+        size_t                    innerStrideC = 1;
 
         for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0]      = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            perms[i0]      = arguments::get_from_tuple<size_t>(target_position_in_A, (2 * i0) + 1);
             size[i0]       = A.dim(i0);
             outerSizeA[i0] = A.source_dim(i0);
             offsetA[i0]    = A.offset(i0);
@@ -126,17 +127,17 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
                         C_prefactor, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
-        std::array<int, ARank> perms{};
-        std::array<int, ARank> size{};
-        std::array<int, ARank> outerSizeA{};
-        std::array<int, ARank> offsetA{};
-        std::array<int, ARank> outerSizeC{};
-        std::array<int, ARank> offsetC{};
-        int                    innerStrideA = 1;
-        int                    innerStrideC = C->stride(CRank - 1);
+        std::array<int, ARank>    perms{};
+        std::array<size_t, ARank> size{};
+        std::array<size_t, ARank> outerSizeA{};
+        std::array<size_t, ARank> offsetA{};
+        std::array<size_t, ARank> outerSizeC{};
+        std::array<size_t, ARank> offsetC{};
+        size_t                    innerStrideA = 1;
+        size_t                    innerStrideC = C->stride(CRank - 1);
 
         for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0]      = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            perms[i0]      = arguments::get_from_tuple<size_t>(target_position_in_A, (2 * i0) + 1);
             size[i0]       = A.dim(i0);
             outerSizeA[i0] = A.dim(i0);
             offsetA[i0]    = 0;
@@ -146,17 +147,17 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
                         C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
-        std::array<int, ARank> perms{};
-        std::array<int, ARank> size{};
-        std::array<int, ARank> outerSizeA{};
-        std::array<int, ARank> offsetA{};
-        std::array<int, ARank> outerSizeC{};
-        std::array<int, ARank> offsetC{};
-        int                    innerStrideA = A.stride(ARank - 1);
-        int                    innerStrideC = C->stride(CRank - 1);
+        std::array<int, ARank>    perms{};
+        std::array<size_t, ARank> size{};
+        std::array<size_t, ARank> outerSizeA{};
+        std::array<size_t, ARank> offsetA{};
+        std::array<size_t, ARank> outerSizeC{};
+        std::array<size_t, ARank> offsetC{};
+        size_t                    innerStrideA = A.stride(ARank - 1);
+        size_t                    innerStrideC = C->stride(CRank - 1);
 
         for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0]      = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            perms[i0]      = arguments::get_from_tuple<size_t>(target_position_in_A, (2 * i0) + 1);
             size[i0]       = A.dim(i0);
             outerSizeA[i0] = A.source_dim(i0);
             offsetA[i0]    = A.offset(i0);
