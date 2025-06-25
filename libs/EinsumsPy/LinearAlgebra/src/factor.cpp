@@ -171,20 +171,23 @@ template <typename T>
 RuntimeTensor<T> q_work(pybind11::buffer const &qr, pybind11::buffer const &tau) {
     py::buffer_info qr_info = qr.request(false), tau_info = tau.request(false);
 
-    blas::int_t const m = qr_info.shape[1];
-    blas::int_t const p = qr_info.shape[0];
+    blas::int_t const m   = qr_info.shape[0];
+    blas::int_t const n   = std::min(qr_info.shape[0], qr_info.shape[1]);
+    blas::int_t const k   = tau_info.shape[0];
+    blas::int_t const lda = qr_info.strides[0] / qr_info.itemsize;
 
     Tensor<T, 2> Q = PyTensorView<T>(qr);
 
     blas::int_t info;
     if constexpr (!IsComplexV<T>) {
-
-        info = blas::orgqr(m, m, p, Q.data(), m, (T *)tau_info.ptr);
+        info = blas::orgqr(m, n, k, Q.data(), lda, (T *)tau_info.ptr);
     } else {
-        info = blas::ungqr(m, m, p, Q.data(), m, (T *)tau_info.ptr);
+        info = blas::ungqr(m, n, k, Q.data(), lda, (T *)tau_info.ptr);
     }
+
     if (info < 0) {
-        EINSUMS_THROW_EXCEPTION(py::value_error, "{} parameter to orgqr has an illegal value. {} {} {}", print::ordinal(-info), m, m, p);
+        EINSUMS_THROW_EXCEPTION(py::value_error, "{} parameter to orgqr has an illegal value. m = {}, n = {}, k = {}, lda = {}",
+                                print::ordinal(-info), m, n, k, lda);
     }
 
     return RuntimeTensor<T>(std::move(Q));

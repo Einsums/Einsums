@@ -27,38 +27,31 @@ T det_work(pybind11::buffer const &A) {
 
     std::vector<blas::int_t> pivots;
     int                      singular = linear_algebra::getrf(&temp, &pivots);
+
     if (singular > 0) {
         return T{0.0}; // Matrix is singular, so it has a determinant of zero.
+    }
+
+    if (singular < 0) {
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The {} argument to getrf was invalid!", print::ordinal(-singular));
     }
 
     T ret{1.0};
 
     int parity = 0;
 
+    EINSUMS_LOG_DEBUG("{}", pivots);
+
     // Calculate the effect of the pivots.
     size_t dim = temp.dim(0);
     for (int i = 0; i < dim; i++) {
-        int         temp_parity = 0;
-        blas::int_t curr        = pivots.at(i);
-
-        bool skip = false;
-
-        while (curr != i + 1) {
-            if (curr < i + 1) {
-                skip = true;
-                break;
-            }
-            temp_parity++;
-            curr = pivots.at(curr - 1);
-        }
-
-        if (!skip) {
-            parity += temp_parity;
+        if (pivots[i] != i + 1) {
+            parity++;
         }
     }
 
     // Calculate the contribution of the diagonal elements.
-#pragma omp parallel for simd reduction(* : ret)
+    // #pragma omp parallel for simd reduction(* : ret)
     for (int i = 0; i < dim; i++) {
         ret *= temp(i, i);
     }

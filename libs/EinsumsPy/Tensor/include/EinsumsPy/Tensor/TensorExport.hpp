@@ -16,6 +16,7 @@
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
 #include <EinsumsPy/Tensor/PyTensor.hpp>
+#include <pybind11/cast.h>
 #include <pybind11/pybind11.h>
 
 namespace einsums::python {
@@ -362,6 +363,7 @@ void export_tensor(pybind11::module &mod) {
         .def("get_name", &RuntimeTensor<T>::name)
         .def("set_name", &RuntimeTensor<T>::set_name)
         .def_property("name", &RuntimeTensor<T>::name, &RuntimeTensor<T>::set_name)
+        .def_property_readonly("shape", [](RuntimeTensor<T> &self) { return pybind11::cast(self.dims()); })
         .def("size", &RuntimeTensor<T>::size)
         .def("__len__", &RuntimeTensor<T>::size)
         .def("__iter__", [](RuntimeTensor<T> const &tensor) { return std::make_shared<PyTensorIterator<T>>(tensor); })
@@ -587,6 +589,7 @@ void export_tensor(pybind11::module &mod) {
         .def("get_name", &RuntimeTensorView<T>::name)
         .def("set_name", &RuntimeTensorView<T>::set_name)
         .def_property("name", &RuntimeTensorView<T>::name, &RuntimeTensorView<T>::set_name)
+        .def_property_readonly("shape", [](RuntimeTensorView<T> &self) { return pybind11::cast(self.dims()); })
         .def("size", &RuntimeTensorView<T>::size)
         .def("copy", [](RuntimeTensorView<T> const &self) { return RuntimeTensor<T>(self); })
         .def("__len__", &RuntimeTensorView<T>::size)

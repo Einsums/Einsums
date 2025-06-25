@@ -29,3 +29,4 @@ dependencies:
   - numpy
   - pytest-cov
   - coverage
+  - scipy

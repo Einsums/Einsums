@@ -11,6 +11,8 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
+#include "Einsums/TensorAlgebra/Detail/Index.hpp"
+#include "Einsums/TensorAlgebra/Permute.hpp"
 #include "macros.hpp"
 
 namespace py = pybind11;
@@ -79,13 +81,15 @@ RuntimeTensor<T> svd_nullspace_work(pybind11::buffer const &_A) {
     blas::int_t n   = A.dim(1);
     blas::int_t lda = A.stride(0);
 
+    EINSUMS_LOG_DEBUG("Making tensors.");
+
     auto U = create_tensor<T>("U", m, m);
     zero(U);
     auto S = create_tensor<RemoveComplexT<T>>("S", n);
     zero(S);
     auto V = create_tensor<T>("V", n, n);
     zero(V);
-    auto superb = create_tensor<T>("superb", std::min(m, n) - 2);
+    auto superb = create_tensor<T>("superb", std::min(m, n));
 
     int info = blas::gesvd('N', 'A', m, n, A.data(), lda, S.data(), U.data(), m, V.data(), n, superb.data());
 
@@ -108,18 +112,54 @@ RuntimeTensor<T> svd_nullspace_work(pybind11::buffer const &_A) {
     }
 
     // println("rank {}", rank);
+
     auto Vview          = V(Range{rank, V.dim(0)}, All);
-    auto nullspace      = RuntimeTensor(V);
+    EINSUMS_LOG_DEBUG("Made the view of the first tensor.");
+    auto nullspace      = RuntimeTensor<T>("Nullspace", {Vview.dim(1), Vview.dim(0)});
+    EINSUMS_LOG_DEBUG("Made the tensor.");
     auto nullspace_view = (TensorView<T, 2>)nullspace;
+    EINSUMS_LOG_DEBUG("Made the view.");
+
+    if(nullspace.dim(0) == 0 || nullspace.dim(1) == 0) {
+        return nullspace;
+    }
+
+    tensor_algebra::permute<true>(T{0.0}, Indices{index::i, index::j}, &nullspace_view, T{1.0}, Indices{index::j, index::i}, Vview);
+    EINSUMS_LOG_DEBUG("Transposed.");
+
+    // for (size_t i = 0; i < nullspace.dim(0); i++) {
+    //     for (size_t j = 0; j < nullspace.dim(1); j++) {
+    //         if constexpr (IsComplexV<T>) {
+    //             nullspace(i, j) = std::conj(Vview(j, i));
+    //         } else {
+    //             nullspace(i, j) = Vview(j, i);
+    //         }
+    //     }
+    // }
 
     // Normalize nullspace. LAPACK does not guarentee them to be orthonormal
-    for (int i = 0; i < nullspace.dim(0); i++) {
-        T sum{0};
-        for (int j = 0; j < nullspace.dim(1); j++) {
-            sum += std::pow(nullspace(i, j), 2.0);
+    for (int i = 0; i < nullspace_view.dim(1); i++) {
+        // Make the first non-zero element positive real.
+        T rescale{0.0};
+        for (int j = 0; j < nullspace_view.dim(0); j++) {
+            rescale = nullspace_view(j, i);
+
+            if (std::abs(rescale) > 1e-12) {
+                break;
+            }
         }
-        sum = std::sqrt(sum);
-        linear_algebra::scale_row(i, sum, &nullspace_view);
+
+        rescale /= std::abs(rescale);
+
+        // Normalize
+        T norm{0.0};
+
+        for (int j = 0; j < nullspace_view.dim(0); j++) {
+            norm += std::norm(nullspace_view(j, i));
+        }
+
+        norm = T{1.0} / (norm * rescale);
+        linear_algebra::scale_column(i, norm, &nullspace_view);
     }
 
     return nullspace;
@@ -166,10 +206,10 @@ pybind11::tuple svd_dd_work(pybind11::buffer const &_A, linear_algebra::Vectors 
 
     if (info != 0) {
         if (info < 0) {
-            println_abort("svd_a: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
+            println_abort("svd_dd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
                           m);
         } else {
-            println_abort("svd_a: error value {}", info);
+            println_abort("svd_dd: error value {}", info);
         }
     }
 

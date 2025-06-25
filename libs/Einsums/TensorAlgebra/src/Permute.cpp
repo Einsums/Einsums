@@ -20,41 +20,45 @@
 
 namespace einsums::tensor_algebra::detail {
 
-void permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, float const beta, float *B) {
+void permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, float const beta, float *B,
+             bool conjA) {
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, nullptr, beta, B, nullptr, hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
 }
 
-void permute(int const *perm, int const dim, double const alpha, double const *A, size_t const *sizeA, double const beta, double *B) {
+void permute(int const *perm, int const dim, double const alpha, double const *A, size_t const *sizeA, double const beta, double *B,
+             bool conjA) {
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, nullptr, beta, B, nullptr, hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
 }
 
 void permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, size_t const *sizeA,
-             std::complex<float> const beta, std::complex<float> *B) {
+             std::complex<float> const beta, std::complex<float> *B, bool conjA) {
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, nullptr, beta, B, nullptr, hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
+    plan->setConjA(conjA);
     plan->execute();
 }
 
 void permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, size_t const *sizeA,
-             std::complex<double> const beta, std::complex<double> *B) {
+             std::complex<double> const beta, std::complex<double> *B, bool conjA) {
     auto plan =
         hptt::create_plan(perm, dim, alpha, A, sizeA, nullptr, beta, B, nullptr, hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
+    plan->setConjA(conjA);
     plan->execute();
 }
 
-void permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA,
-             float const beta, float *B, size_t const *offsetB, size_t const *outerSizeB) {
+void permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, size_t const *offsetA,
+             size_t const *outerSizeA, float const beta, float *B, size_t const *offsetB, size_t const *outerSizeB, bool conjA) {
     auto plan = hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE,
                                   omp_get_max_threads(), nullptr, true);
     plan->execute();
 }
 
 void permute(int const *perm, int const dim, double const alpha, double const *A, size_t const *sizeA, size_t const *offsetA,
-             size_t const *outerSizeA, double const beta, double *B, size_t const *offsetB, size_t const *outerSizeB) {
+             size_t const *outerSizeA, double const beta, double *B, size_t const *offsetB, size_t const *outerSizeB, bool conjA) {
     auto plan = hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE,
                                   omp_get_max_threads(), nullptr, true);
     plan->execute();
@@ -62,48 +66,53 @@ void permute(int const *perm, int const dim, double const alpha, double const *A
 
 void permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, size_t const *sizeA,
              size_t const *offsetA, size_t const *outerSizeA, std::complex<float> const beta, std::complex<float> *B, size_t const *offsetB,
-             size_t const *outerSizeB) {
+             size_t const *outerSizeB, bool conjA) {
     auto plan = hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE,
                                   omp_get_max_threads(), nullptr, true);
+    plan->setConjA(conjA);
     plan->execute();
 }
 
 void permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, size_t const *sizeA,
-             size_t const *offsetA, size_t const *outerSizeA, std::complex<double> const beta, std::complex<double> *B, size_t const *offsetB,
-             size_t const *outerSizeB) {
+             size_t const *offsetA, size_t const *outerSizeA, std::complex<double> const beta, std::complex<double> *B,
+             size_t const *offsetB, size_t const *outerSizeB, bool conjA) {
     auto plan = hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, beta, B, outerSizeB, offsetB, hptt::ESTIMATE,
                                   omp_get_max_threads(), nullptr, true);
+    plan->setConjA(conjA);
     plan->execute();
 }
 
-void permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA,
-             size_t const innerStrideA, float const beta, float *B, size_t const *offsetB, size_t const *outerSizeB, size_t const innerStrideB) {
+void permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, size_t const *offsetA,
+             size_t const *outerSizeA, size_t const innerStrideA, float const beta, float *B, size_t const *offsetB,
+             size_t const *outerSizeB, size_t const innerStrideB, bool conjA) {
     auto plan = hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
                                   hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
 }
 
 void permute(int const *perm, int const dim, double const alpha, double const *A, size_t const *sizeA, size_t const *offsetA,
-             size_t const *outerSizeA, size_t const innerStrideA, double const beta, double *B, size_t const *offsetB, size_t const *outerSizeB,
-             size_t const innerStrideB) {
+             size_t const *outerSizeA, size_t const innerStrideA, double const beta, double *B, size_t const *offsetB,
+             size_t const *outerSizeB, size_t const innerStrideB, bool conjA) {
     auto plan = hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
                                   hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
     plan->execute();
 }
 
 void permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, size_t const *sizeA,
-             size_t const *offsetA, size_t const *outerSizeA, size_t const innerStrideA, std::complex<float> const beta, std::complex<float> *B,
-             size_t const *offsetB, size_t const *outerSizeB, size_t const innerStrideB) {
+             size_t const *offsetA, size_t const *outerSizeA, size_t const innerStrideA, std::complex<float> const beta,
+             std::complex<float> *B, size_t const *offsetB, size_t const *outerSizeB, size_t const innerStrideB, bool conjA) {
     auto plan = hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
                                   hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
+    plan->setConjA(conjA);
     plan->execute();
 }
 
 void permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, size_t const *sizeA,
-             size_t const *offsetA, size_t const *outerSizeA, size_t const innerStrideA, std::complex<double> const beta, std::complex<double> *B,
-             size_t const *offsetB, size_t const *outerSizeB, size_t const innerStrideB) {
+             size_t const *offsetA, size_t const *outerSizeA, size_t const innerStrideA, std::complex<double> const beta,
+             std::complex<double> *B, size_t const *offsetB, size_t const *outerSizeB, size_t const innerStrideB, bool conjA) {
     auto plan = hptt::create_plan(perm, dim, alpha, A, sizeA, outerSizeA, offsetA, innerStrideA, beta, B, outerSizeB, offsetB, innerStrideB,
                                   hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
+    plan->setConjA(conjA);
     plan->execute();
 }
 
