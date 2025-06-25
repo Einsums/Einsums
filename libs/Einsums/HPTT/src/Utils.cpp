@@ -387,9 +387,9 @@ uint64_t factorial(uint8_t n) {
     }
 }
 
-void accountForRowMajor(int const *sizeA, int const *outerSizeA, int const *outerSizeB, int const *offsetA, int const *offsetB,
-                        int const *perm, int *tmpSizeA, int *tmpOuterSizeA, int *tmpOuterSizeB, int *tmpOffsetA, int *tmpOffsetB,
-                        int *tmpPerm, int const dim, bool const useRowMajor) {
+void accountForRowMajor(size_t const *sizeA, size_t const *outerSizeA, size_t const *outerSizeB, size_t const *offsetA,
+                        size_t const *offsetB, int const *perm, size_t *tmpSizeA, size_t *tmpOuterSizeA, size_t *tmpOuterSizeB,
+                        size_t *tmpOffsetA, size_t *tmpOffsetB, int *tmpPerm, int const dim, bool const useRowMajor) {
     for (int i = 0; i < dim; ++i) {
         int idx = i;
         if (useRowMajor) {
