@@ -82,7 +82,7 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
 
-    LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
+    LabeledSection1((std::abs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices,
                                       UC_prefactor, C->name(), C_indices)
                         : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices));
