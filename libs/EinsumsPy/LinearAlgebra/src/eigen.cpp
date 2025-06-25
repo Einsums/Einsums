@@ -16,6 +16,8 @@
 #include <pybind11/stl.h>
 #include <pybind11/typing.h>
 
+#include "macros.hpp"
+
 namespace py = pybind11;
 
 namespace einsums {
@@ -423,6 +425,73 @@ void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py:
     } else {
         EINSUMS_THROW_EXCEPTION(py::type_error, "The input and output buffers have incompatible storage types!");
     }
+}
+
+template <typename T>
+pybind11::tuple truncated_syev_work(pybind11::buffer const &_A, size_t k) {
+    Tensor<T, 2> A = PyTensorView<T>(_A);
+
+    size_t n = A.dim(0);
+
+    // Omega Test Matrix
+    Tensor<T, 2> omega = create_random_tensor<T>("omega", n, k + 5);
+
+    // Matrix Y = A * Omega
+    Tensor<T, 2> Y("Y", n, k + 5);
+    linear_algebra::gemm<false, false>(T{1.0}, A, omega, T{0.0}, &Y);
+
+    Tensor<T, 1> tau("tau", std::min(n, k + 5));
+    // Compute QR factorization of Y
+    blas::int_t const info1 = blas::geqrf(n, k + 5, Y.data(), k + 5, tau.data());
+    // Extract Matrix Q out of QR factorization
+    blas::int_t info2;
+    if constexpr (IsComplexV<T>) {
+        info2 = blas::ungqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<T const *>(tau.data()));
+    } else {
+        info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<T const *>(tau.data()));
+    }
+    Tensor<T, 2> &Q1 = Y;
+
+    // Cast the matrix A into a smaller rank (B)
+    // B = Q^T * A * Q
+    Tensor<T, 2> Btemp("Btemp", k + 5, n);
+    linear_algebra::gemm<true, false>(1.0, Q1, A, 0.0, &Btemp);
+    Tensor<T, 2> B("B", k + 5, k + 5);
+    linear_algebra::gemm<false, false>(1.0, Btemp, Q1, 0.0, &B);
+
+    // Create buffer for eigenvalues
+    Tensor<RemoveComplexT<T>, 1> w("eigenvalues", k + 5);
+
+    // Diagonalize B
+    if constexpr (IsComplexV<T>) {
+        linear_algebra::heev(&B, &w);
+    } else {
+        linear_algebra::syev(&B, &w);
+    }
+
+    // Cast U back into full basis (B is column-major so we need to transpose it)
+    Tensor<T, 2> U("U", n, k + 5);
+    linear_algebra::gemm<false, true>(1.0, Q1, B, 0.0, &U);
+
+    return py::make_tuple(PyTensor<T>(std::move(U)), PyTensor<RemoveComplexT<T>>(std::move(w)));
+}
+
+pybind11::tuple truncated_syev(pybind11::buffer const &A, size_t k) {
+    py::buffer_info A_info = A.request(false);
+
+    if (A_info.ndim != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "Can only take the truncated_syev of matrices!");
+    }
+
+    if (A_info.shape[0] != A_info.shape[1]) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Can only take the truncated_syev of square matrices!");
+    }
+
+    py::tuple out;
+
+    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), (out = truncated_syev_work<Float>(A, k)));
+
+    return out;
 }
 
 } // namespace detail

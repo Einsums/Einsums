@@ -136,6 +136,16 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         std::memcpy(_data.data(), copy.data(), copy.size() * sizeof(T));
     }
 
+    template <size_t Rank>
+    RuntimeTensor(Tensor<T, Rank> &&copy) : _rank{Rank}, _dims(Rank), _strides(Rank), _name{copy.name()} {
+        for (int i = Rank - 1; i >= 0; i--) {
+            _dims[i]    = copy.dim(i);
+            _strides[i] = copy.stride(i);
+        }
+
+        _data = std::move(copy.vector_data());
+    }
+
     /**
      * @brief Copy a tensor view into a runtime tensor.
      *
@@ -1941,6 +1951,21 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
 
     template <size_t Rank>
     operator TensorView<T, Rank>() const {
+        if (rank() != Rank) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(),
+                                    Rank);
+        }
+        Dim<Rank>    dims;
+        Stride<Rank> strides;
+        for (int i = Rank - 1; i >= 0; i--) {
+            dims[i]    = _dims[i];
+            strides[i] = _strides[i];
+        }
+        return TensorView<T, Rank>(const_cast<T const *>(_data), dims, strides);
+    }
+
+    template <size_t Rank>
+    operator Tensor<T, Rank>() const {
         if (rank() != Rank) {
             EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(),
                                     Rank);

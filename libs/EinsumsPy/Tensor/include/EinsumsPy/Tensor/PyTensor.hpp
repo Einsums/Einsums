@@ -1066,6 +1066,30 @@ class PyTensorView : public RuntimeTensorView<T> {
         }
     }
 
+    PyTensorView(pybind11::buffer const &buffer) {
+        pybind11::buffer_info buffer_info = buffer.request(false);
+
+        if (buffer_info.item_type_is_equivalent_to<T>()) {
+            this->_data = (T *)buffer_info.ptr;
+        } else {
+            EINSUMS_THROW_EXCEPTION(pybind11::type_error, "Can not create RuntimeTensorView from buffer whose type does not match!");
+        }
+
+        this->_rank = buffer_info.ndim;
+        this->_dims.resize(this->_rank);
+        this->_strides.resize(this->_rank);
+        this->_index_strides.resize(this->_rank);
+        this->_size       = 1;
+        this->_alloc_size = buffer_info.shape[0] * buffer_info.strides[0];
+
+        for (int i = this->_rank - 1; i >= 0; i--) {
+            this->_strides[i]       = buffer_info.strides[i] / buffer_info.itemsize;
+            this->_dims[i]          = buffer_info.shape[i];
+            this->_index_strides[i] = this->_size;
+            this->_size *= this->_dims[i];
+        }
+    }
+
     virtual ~PyTensorView() = default;
 
     /**

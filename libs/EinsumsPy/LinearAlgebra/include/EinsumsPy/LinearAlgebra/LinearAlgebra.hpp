@@ -30,8 +30,8 @@ void EINSUMS_EXPORT gemv(std::string const &transA, pybind11::object const &alph
 
 void EINSUMS_EXPORT syev(std::string const &jobz, pybind11::buffer &A, pybind11::buffer &W);
 
-void EINSUMS_EXPORT geev(std::string const &jobvl, std::string const &jobvr, pybind11::buffer &A, pybind11::buffer &W, std::variant<pybind11::buffer, pybind11::none> &Vl,
-                         std::variant<pybind11::buffer, pybind11::none> &Vr);
+void EINSUMS_EXPORT geev(std::string const &jobvl, std::string const &jobvr, pybind11::buffer &A, pybind11::buffer &W,
+                         std::variant<pybind11::buffer, pybind11::none> &Vl, std::variant<pybind11::buffer, pybind11::none> &Vr);
 
 void EINSUMS_EXPORT gesv(pybind11::buffer &A, pybind11::buffer &B);
 
@@ -60,6 +60,29 @@ void EINSUMS_EXPORT invert(pybind11::buffer &A);
 pybind11::object EINSUMS_EXPORT norm(einsums::linear_algebra::Norm type, pybind11::buffer const &A);
 
 pybind11::object EINSUMS_EXPORT vec_norm(pybind11::buffer const &A);
+
+pybind11::tuple EINSUMS_EXPORT svd(pybind11::buffer const &A);
+
+pybind11::object EINSUMS_EXPORT svd_nullspace(pybind11::buffer const &A);
+
+pybind11::tuple EINSUMS_EXPORT svd_dd(pybind11::buffer const &A, einsums::linear_algebra::Vectors job);
+
+pybind11::tuple EINSUMS_EXPORT truncated_svd(pybind11::buffer const &A, size_t k);
+
+pybind11::tuple EINSUMS_EXPORT truncated_syev(pybind11::buffer const &A, size_t k);
+
+pybind11::object EINSUMS_EXPORT pseudoinverse(pybind11::buffer const &A, pybind11::object const &tol);
+
+pybind11::object EINSUMS_EXPORT solve_continuous_lyapunov(pybind11::buffer const &A, pybind11::buffer const &Q);
+
+pybind11::tuple EINSUMS_EXPORT qr(pybind11::buffer const &A);
+
+pybind11::object EINSUMS_EXPORT q(pybind11::buffer const &qr, pybind11::buffer const &tau);
+
+void EINSUMS_EXPORT direct_product(pybind11::object const &alpha, pybind11::buffer const &A, pybind11::buffer const &B,
+                                   pybind11::object const &beta, pybind11::buffer &C);
+
+pybind11::object EINSUMS_EXPORT det(pybind11::buffer const &A);
 
 /**
  * @brief Determines how to loop over vector calls for tensors that don't have contiguous strides.

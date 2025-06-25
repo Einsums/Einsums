@@ -304,8 +304,22 @@ auto zgesvd(char jobu, char jobvt, int_t m, int_t n, std::complex<double> *a, in
     return vendor::zgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
 }
 
+auto sgees(char jobvs, int_t n, float *a, int_t lda, int_t *sdim, float *wr, float *wi, float *vs, int_t ldvs) -> int_t {
+    return vendor::sgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
+}
+
 auto dgees(char jobvs, int_t n, double *a, int_t lda, int_t *sdim, double *wr, double *wi, double *vs, int_t ldvs) -> int_t {
     return vendor::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
+}
+
+auto cgees(char jobvs, int_t n, std::complex<float> *a, int_t lda, int_t *sdim, std::complex<float> *w, std::complex<float> *vs, int_t ldvs)
+    -> int_t {
+    return vendor::cgees(jobvs, n, a, lda, sdim, w, vs, ldvs);
+}
+
+auto zgees(char jobvs, int_t n, std::complex<double> *a, int_t lda, int_t *sdim, std::complex<double> *w, std::complex<double> *vs,
+           int_t ldvs) -> int_t {
+    return vendor::zgees(jobvs, n, a, lda, sdim, w, vs, ldvs);
 }
 
 auto strsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, float const *a, int_t lda, float const *b, int_t ldb, float *c, int_t ldc,

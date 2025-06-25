@@ -36,8 +36,16 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .value("Frobenius", einsums::linear_algebra::Norm::Frobenius)
         .export_values();
 
+    py::enum_<einsums::linear_algebra::Vectors>(mod, "Vectors")
+        .value("All", einsums::linear_algebra::Vectors::All)
+        .value("Some", einsums::linear_algebra::Vectors::Some)
+        .value("Overwrite", einsums::linear_algebra::Vectors::Overwrite)
+        .value("None", einsums::linear_algebra::Vectors::None)
+        .export_values();
+
     mod.def("sum_square", &sum_square,
-            "Calculate the sum of the squares of the elements of a vector. The result will be scale**2 * sum_sq. sum_sq is the first return value, scale is the second.")
+            "Calculate the sum of the squares of the elements of a vector. The result will be scale**2 * sum_sq. sum_sq is the first "
+            "return value, scale is the second.")
         .def("gemm", &gemm,
              "Matrix multiplication. The first two arguments indicate whether to transpose the input matrices. The third is a scale factor "
              "for the input matrices. The next two arguments are the matrices to multiply. The fifth argument is a scale factor for the "
@@ -61,5 +69,16 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .def("getri", &getri)
         .def("invert", &invert)
         .def("norm", &norm)
-        .def("vec_norm", vec_norm);
+        .def("vec_norm", &vec_norm)
+        .def("svd", &svd)
+        .def("svd_nullspace", &svd_nullspace)
+        .def("svd_dd", &svd_dd, py::arg("A"), py::arg("job") = einsums::linear_algebra::Vectors::All)
+        .def("truncated_svd", &truncated_svd)
+        .def("truncated_syev", &truncated_syev)
+        .def("pseudoinverse", &pseudoinverse)
+        .def("solve_continuous_lyapunov", &solve_continuous_lyapunov)
+        .def("qr", &qr)
+        .def("q", &q)
+        .def("direct_product", &direct_product)
+        .def("det", &det);
 }

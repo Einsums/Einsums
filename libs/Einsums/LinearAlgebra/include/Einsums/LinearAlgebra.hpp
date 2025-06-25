@@ -758,10 +758,10 @@ auto svd_dd(AType const &_A, Vectors job = Vectors::All)
 
     if (info != 0) {
         if (info < 0) {
-            println_abort("svd_a: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
+            println_abort("svd_dd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
                           m);
         } else {
-            println_abort("svd_a: error value {}", info);
+            println_abort("svd_dd: error value {}", info);
         }
     }
 
@@ -865,7 +865,7 @@ template <MatrixConcept AType, typename T>
 inline auto pseudoinverse(AType const &A, T tol) -> Tensor<T, 2> {
     LabeledSection0();
 
-    auto [U, S, Vh] = svd_a(A);
+    auto [U, S, Vh] = svd_dd(A);
 
     size_t new_dim{0};
     for (size_t v = 0; v < S.dim(0); v++) {

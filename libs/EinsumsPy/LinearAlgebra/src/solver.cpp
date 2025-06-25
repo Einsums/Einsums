@@ -5,14 +5,18 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Print.hpp>
+#include <Einsums/Tensor.hpp>
 #include <Einsums/TensorAlgebra/Detail/Index.hpp>
 #include <Einsums/TensorAlgebra/Permute.hpp>
 
 #include <EinsumsPy/LinearAlgebra/LinearAlgebra.hpp>
+#include <EinsumsPy/Tensor/PyTensor.hpp>
 #include <pybind11/buffer_info.h>
 #include <pybind11/detail/common.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+
+#include "macros.hpp"
 
 namespace py = pybind11;
 
@@ -77,6 +81,68 @@ void gesv(pybind11::buffer &A, pybind11::buffer &B) {
     } else {
         EINSUMS_THROW_EXCEPTION(py::type_error, "The storage type of the input to the solver is invalid!");
     }
+}
+
+template <typename T>
+RuntimeTensor<T> solve_continuous_lyapunov_work(pybind11::buffer const &_A, pybind11::buffer const &_Q) {
+
+    Tensor<T, 2> R = PyTensorView<T>(_A), Q = PyTensorView<T>(_Q);
+
+    size_t n = R.dim(0);
+
+    //// @todo Break this off into a separate schur function
+    // Compute Schur Decomposition of A
+    Tensor<T, 2>             wr("Schur Real Buffer", n, n);
+    Tensor<T, 2>             wi("Schur Imaginary Buffer", n, n);
+    Tensor<T, 2>             U("Lyapunov U", n, n);
+    std::vector<blas::int_t> sdim(1);
+    blas::gees('V', n, R.data(), n, sdim.data(), wr.data(), wi.data(), U.data(), n);
+
+    // Compute F = U^T * Q * U
+    Tensor<T, 2> Fbuff = linear_algebra::gemm<true, false>(1.0, U, Q);
+    Tensor<T, 2> F     = linear_algebra::gemm<false, false>(1.0, Fbuff, U);
+
+    // Call the Sylvester Solve
+    std::vector<RemoveComplexT<T>> scale(1);
+    blas::trsyl('N', 'N', 1, n, n, const_cast<T const *>(R.data()), n, const_cast<T const *>(R.data()), n, F.data(), n, scale.data());
+
+    Tensor<T, 2> Xbuff = linear_algebra::gemm<false, false>(scale[0], U, F);
+    Tensor<T, 2> X     = linear_algebra::gemm<false, true>(1.0, Xbuff, U);
+
+    return RuntimeTensor<T>(std::move(X));
+}
+
+py::object solve_continuous_lyapunov(pybind11::buffer const &A, pybind11::buffer const &Q) {
+    py::buffer_info A_info = A.request(false), Q_info = Q.request(false);
+
+    if (A_info.ndim != 2 || Q_info.ndim != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "Can only solve continuous Lyapunov with matrices!");
+    }
+
+    if (A_info.shape[0] != A_info.shape[1] || A_info.shape[0] != Q_info.shape[0] || A_info.shape[0] != Q_info.shape[1]) {
+        EINSUMS_THROW_EXCEPTION(dimension_error,
+                                "The arguments to solve_continuous_lyapunove need to be square matrices and have the same size!");
+    }
+
+    if (A_info.format != Q_info.format) {
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The storage types of the input matrices need to be the same!");
+    }
+
+    py::object out;
+    if (A_info.format == py::format_descriptor<float>::format()) {
+        return py::cast(solve_continuous_lyapunov_work<float>(A, Q));
+    } else if (A_info.format == py::format_descriptor<double>::format()) {
+        return py::cast(solve_continuous_lyapunov_work<double>(A, Q));
+    } else if (A_info.format == py::format_descriptor<std::complex<float>>::format()) {
+        EINSUMS_THROW_EXCEPTION(not_implemented, "Complex inputs to solve_continuous_lyapunov are currently not supported.");
+    } else if (A_info.format == py::format_descriptor<std::complex<double>>::format()) {
+        EINSUMS_THROW_EXCEPTION(not_implemented, "Complex inputs to solve_continuous_lyapunov are currently not supported.");
+    } else {
+        EINSUMS_THROW_EXCEPTION(py::value_error,
+                                "The inputs to solve_continuous_lyapunov need to store real or complex floating point values!");
+    }
+
+    return out;
 }
 
 } // namespace detail
