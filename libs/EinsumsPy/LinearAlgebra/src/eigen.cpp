@@ -201,6 +201,8 @@ void geev_real_in_cmplx_out(char jobvl, char jobvr, py::buffer &A, py::buffer &W
 
     blas::int_t info = 0;
 
+    EINSUMS_LOG_DEBUG("geev parameters: jobvl = {}, jobvr = {}, n = {}, lda = {}, ldvl = {}, ldvr = {}.", jobvl, jobvr, n, lda, ldvl, ldvr);
+
     // Decompose.
     info = blas::geev<T>(jobvl, jobvr, n, (T *)A_info.ptr, lda, W_data, Vl_real_ptr, ldvl, Vr_real_ptr, ldvr);
 
@@ -239,7 +241,7 @@ void geev_real_in_cmplx_out(char jobvl, char jobvr, py::buffer &A, py::buffer &W
             if (W_data[j].imag() != T{0.0} && j < n - 1) {
                 for (size_t i = 0; i < n; i++) {
                     // These are complex conjugate pairs.
-                    Vr_data[i * ldvl + j]       = std::complex<T>(Vr_real_ptr[i * ldvl + j], Vr_real_ptr[i * ldvl + j + 1]);
+                    Vr_data[i * ldvl + j]     = std::complex<T>(Vr_real_ptr[i * ldvl + j], Vr_real_ptr[i * ldvl + j + 1]);
                     Vr_data[i * ldvl + j + 1] = std::complex<T>(Vr_real_ptr[i * ldvl + j], -Vr_real_ptr[i * ldvl + j + 1]);
                 }
                 // Skip the next case.
