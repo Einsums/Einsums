@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Assert.hpp>
 #include <Einsums/BLAS/Types.hpp>
 #include <Einsums/HPTT/HPTT.hpp>
 #include <Einsums/HPTT/HPTTTypes.hpp>
@@ -35,17 +36,21 @@ inline bool lsame(char ca, char cb) {
     return std::tolower(ca) == std::tolower(cb);
 }
 
-enum OrderMajor { Column, Row };
+enum class OrderMajor { Column, Row };
 
 // OrderMajor indicates the order of the input matrix. C is Row, Fortran is Column
 template <OrderMajor Order, typename T>
-void transpose(blas::int_t m, blas::int_t n, T const *in, blas::int_t ldin, T *out, blas::int_t ldout) {
+void transpose(int_t m, int_t n, T const *in, int_t ldin, T *out, int_t ldout) {
     if (in == nullptr || out == nullptr) {
         return;
     }
+    EINSUMS_ASSERT(m >= 0);
+    EINSUMS_ASSERT(n >= 0);
 
-    std::vector<int> perm{1, 0};
-    std::vector<int> size_in{(int)m, (int)n}, outer_size_in{(int)ldin, (int)n}, outer_size_out{(int)n, (int)ldout};
+    std::vector<int>    perm{1, 0};
+    std::vector<size_t> size_in{static_cast<unsigned long>(m), static_cast<unsigned long>(n)},
+        outer_size_in{static_cast<unsigned long>(ldin), static_cast<unsigned long>(n)},
+        outer_size_out{static_cast<unsigned long>(n), static_cast<unsigned long>(ldout)};
 
     auto plan = hptt::create_plan(perm, 2, T{1.0}, in, size_in, outer_size_in, T{0.0}, out, outer_size_out, hptt::ESTIMATE,
                                   omp_get_max_threads(), {}, Order == OrderMajor::Row);
@@ -54,17 +59,17 @@ void transpose(blas::int_t m, blas::int_t n, T const *in, blas::int_t ldin, T *o
 }
 
 template <OrderMajor Order, typename T>
-void transpose(blas::int_t m, blas::int_t n, std::vector<T> const &in, blas::int_t ldin, T *out, blas::int_t ldout) {
+void transpose(int_t m, int_t n, std::vector<T> const &in, int_t ldin, T *out, int_t ldout) {
     transpose<Order>(m, n, in.data(), ldin, out, ldout);
 }
 
 template <OrderMajor Order, typename T>
-void transpose(blas::int_t m, blas::int_t n, T const *in, blas::int_t ldin, std::vector<T> &out, blas::int_t ldout) {
+void transpose(int_t m, int_t n, T const *in, int_t ldin, std::vector<T> &out, int_t ldout) {
     transpose<Order>(m, n, in, ldin, out.data(), ldout);
 }
 
 template <OrderMajor Order, typename T>
-void transpose(blas::int_t m, blas::int_t n, std::vector<T> const &in, blas::int_t ldin, std::vector<T> &out, blas::int_t ldout) {
+void transpose(int_t m, int_t n, std::vector<T> const &in, int_t ldin, std::vector<T> &out, int_t ldout) {
     transpose<Order>(m, n, in.data(), ldin, out.data(), ldout);
 }
 } // namespace einsums::blas::vendor
