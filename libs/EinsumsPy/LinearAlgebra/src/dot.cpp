@@ -25,7 +25,7 @@ T dot_work(py::buffer_info const &A_info, py::buffer_info const &B_info, std::ve
     T const *A_data = reinterpret_cast<T const *>(A_info.ptr);
     T const *B_data = reinterpret_cast<T const *>(B_info.ptr);
 
-#pragma omp parallel for reduction(+ : out)
+//#pragma omp parallel for reduction(+ : out)
     for (size_t i = 0; i < hard_elems; i++) {
         size_t A_sentinel, B_sentinel;
         sentinel_to_sentinels(i, index_strides, A_strides, A_sentinel, B_strides, B_sentinel);
@@ -128,7 +128,7 @@ T true_dot_work(py::buffer_info const &A_info, py::buffer_info const &B_info, st
     T const *A_data = reinterpret_cast<T const *>(A_info.ptr);
     T const *B_data = reinterpret_cast<T const *>(B_info.ptr);
 
-#pragma omp parallel for reduction(+ : out)
+//#pragma omp parallel for reduction(+ : out)
     for (size_t i = 0; i < hard_elems; i++) {
         size_t A_sentinel, B_sentinel;
         sentinel_to_sentinels(i, index_strides, A_strides, A_sentinel, B_strides, B_sentinel);
