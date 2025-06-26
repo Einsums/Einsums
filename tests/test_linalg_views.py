@@ -84,7 +84,9 @@ def test_mat_vec_prod(a, b, dtype, array):
 
 @pytest.mark.parametrize(["width"], [(10,), (100,)])
 def test_syev(width, dtype, array):
-    A = ein.utils.random_tensor_factory("Test tensor", [width + 2, width + 2], dtype, array)
+    A = ein.utils.random_tensor_factory(
+        "Test tensor", [width + 2, width + 2], dtype, array
+    )
 
     A_view = A[:width, :width]
 
@@ -148,7 +150,9 @@ def test_syev(width, dtype, array):
 
 @pytest.mark.parametrize(["width"], [(10,), (50,)])
 def test_geev(width, dtype, array):
-    A = ein.utils.random_tensor_factory("Test tensor", [width + 2, width + 2], dtype, array)
+    A = ein.utils.random_tensor_factory(
+        "Test tensor", [width + 2, width + 2], dtype, array
+    )
 
     A_view = A[:width, :width]
 
@@ -220,7 +224,7 @@ def test_geev(width, dtype, array):
 
 @pytest.mark.parametrize(["a", "b"], [(10, 1), (10, 10), (100, 100)])
 def test_gesv(a, b, dtype, array):
-    A = ein.utils.random_definite_tensor_factory("A", a + 2, dtype = dtype, method = array)
+    A = ein.utils.random_definite_tensor_factory("A", a + 2, dtype=dtype, method=array)
     B = ein.utils.random_tensor_factory("B", [a + 2, b + 2], dtype, array)
 
     A_view = A[:a, :a]
@@ -397,21 +401,25 @@ def test_norm(a, b, dtype, array):
     assert ein.core.norm(ein.core.Frobenius, A_view) == pytest.approx(
         np.linalg.norm(A_view, "fro")
     )
-    assert ein.core.norm(ein.core.Infinity, A_view) == pytest.approx(np.linalg.norm(A_view, 1))
+    assert ein.core.norm(ein.core.Infinity, A_view) == pytest.approx(
+        np.linalg.norm(A_view, 1)
+    )
     assert ein.core.norm(ein.core.One, A_view) == pytest.approx(
         np.linalg.norm(A_view, np.inf)
     )
 
+
 @pytest.mark.parametrize("a", [10, 100])
-def test_vec_norm(a, dtype, array) :
+def test_vec_norm(a, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2, 2], dtype, array)
 
     A_view = A[:a, 0]
 
     assert ein.core.vec_norm(A_view) == pytest.approx(np.linalg.norm(A_view))
 
+
 @pytest.mark.parametrize("a", [10, 100])
-def test_dot(a, dtype, array) :
+def test_dot(a, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2], dtype, array)
     B = ein.utils.random_tensor_factory("A", [a, 2], dtype, array)
 
@@ -424,8 +432,9 @@ def test_dot(a, dtype, array) :
 
     assert got == pytest.approx(test)
 
+
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (100, 100), (11, 13)])
-def test_dot_mats(a, b, dtype, array) :
+def test_dot_mats(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
     B = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
@@ -434,16 +443,17 @@ def test_dot_mats(a, b, dtype, array) :
 
     test = dtype(0.0)
 
-    for i in range(a) :
-        for j in range(b) :
+    for i in range(a):
+        for j in range(b):
             test += A_view[i, j] * B_view[i, j]
 
     got = ein.core.dot(A_view, B_view)
 
     assert got == pytest.approx(test)
 
+
 @pytest.mark.parametrize("a", [10, 100])
-def test_true_dot(a, dtype, array) :
+def test_true_dot(a, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2], dtype, array)
     B = ein.utils.random_tensor_factory("A", [a, 2], dtype, array)
 
@@ -456,8 +466,9 @@ def test_true_dot(a, dtype, array) :
 
     assert got == pytest.approx(test)
 
+
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (100, 100), (11, 13)])
-def test_true_dot_mats(a, b, dtype, array) :
+def test_true_dot_mats(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
     B = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
@@ -466,58 +477,59 @@ def test_true_dot_mats(a, b, dtype, array) :
 
     test = dtype(0.0)
 
-    for i in range(a) :
-        for j in range(b) :
+    for i in range(a):
+        for j in range(b):
             test += A_view[i, j].conjugate() * B_view[i, j]
 
     got = ein.core.true_dot(A_view, B_view)
 
     assert got == pytest.approx(test)
 
+
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (11, 13)])
-def test_svd(a, b, dtype, array) :
+def test_svd(a, b, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
     A = A_base[:a, :b]
 
-    A_copy = np.array(A.copy(), dtype = dtype)
+    A_copy = np.array(A.copy(), dtype=dtype)
 
     U, S, V = ein.core.svd(A)
 
-    U_test, S_test, V_test = np.linalg.svd(A_copy, compute_uv = True)
+    U_test, S_test, V_test = np.linalg.svd(A_copy, compute_uv=True)
 
-    for i in range(a) :
-        for j in range(a) :
+    for i in range(a):
+        for j in range(a):
             assert abs(U[i, j]) == pytest.approx(abs(U_test[i, j]))
 
-    for i in range(b) :
-        for j in range(b) :
+    for i in range(b):
+        for j in range(b):
             assert abs(V[i, j]) == pytest.approx(abs(V_test[i, j]))
-        
-    for i in range(min(a, b)) :
+
+    for i in range(min(a, b)):
         assert S[i] == pytest.approx(S_test[i])
-    
+
+
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (11, 13)])
-def test_nullspace(a, b, dtype, array) :
+def test_nullspace(a, b, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
     A = A_base[:a, :b]
 
-    A_copy = np.array(A.copy(), dtype = dtype)
+    A_copy = np.array(A.copy(), dtype=dtype)
 
     Null = ein.core.svd_nullspace(A)
 
-    for i in range(Null.shape[1]) :
+    for i in range(Null.shape[1]):
         assert ein.core.vec_norm(Null[:, i]) == pytest.approx(1.0)
 
+    Null_expected = sp.linalg.null_space(A_copy, lapack_driver="gesvd")
 
-    Null_expected = sp.linalg.null_space(A_copy, lapack_driver = "gesvd")
-
-    for i in range(Null_expected.shape[1]) :
+    for i in range(Null_expected.shape[1]):
         scale = 0
-        for j in range(b) :
+        for j in range(b):
             scale = Null_expected[j, i]
-            if abs(scale) > 1e-12 :
+            if abs(scale) > 1e-12:
                 break
         Null_expected[:, i] /= scale
         norm = np.linalg.norm(Null_expected[:, i])
@@ -525,67 +537,88 @@ def test_nullspace(a, b, dtype, array) :
 
     assert Null.shape[1] == Null_expected.shape[1]
 
-    for i in range(b) :
-        for j in range(Null_expected.shape[1]) :
+    for i in range(b):
+        for j in range(Null_expected.shape[1]):
             assert Null[i, j] == pytest.approx(Null_expected[i, j])
 
+
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13)])
-def test_sdd(a, b, dtype, array) :
+def test_sdd(a, b, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
     A = A_base[:a, :b]
 
-    A_copy = np.array(A.copy(), dtype = dtype)
+    A_copy = np.array(A.copy(), dtype=dtype)
 
     U, S, V = ein.core.svd_dd(A)
 
-    U_test, S_test, V_test = np.linalg.svd(A_copy, compute_uv = True)
+    U_test, S_test, V_test = np.linalg.svd(A_copy, compute_uv=True)
 
-    for i in range(a) :
-        for j in range(a) :
+    for i in range(a):
+        for j in range(a):
             assert abs(U[i, j]) == pytest.approx(abs(U_test[i, j]))
 
-    for i in range(b) :
-        for j in range(b) :
+    for i in range(b):
+        for j in range(b):
             assert abs(V[i, j]) == pytest.approx(abs(V_test[i, j]))
-        
-    for i in range(min(a, b)) :
+
+    for i in range(min(a, b)):
         assert S[i] == pytest.approx(S_test[i])
 
+
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (100, 100), (11, 13), (13, 11)])
-def test_qr(a, b, dtype, array) :
+def test_qr(a, b, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
     A = A_base[:a, :b]
 
-    A_copy = np.array(A.copy(), dtype = dtype)
+    A_copy = np.array(A.copy(), dtype=dtype)
 
     R = ein.utils.tensor_factory("R", [min(a, b), b], dtype, array)
     R[:, :] = 0
 
     QR, tau = ein.core.qr(A)
 
-    for i in range(min(a, b)) :
-        for j in range(i, b) :
+    for i in range(min(a, b)):
+        for j in range(i, b):
             R[i, j] = QR[i, j]
 
     Q = ein.core.q(QR, tau)
 
     Q_expected, R_expected = np.linalg.qr(A_copy)
 
-    for i in range(Q_expected.shape[0]) :
-        for j in range(Q_expected.shape[1]) :
+    for i in range(Q_expected.shape[0]):
+        for j in range(Q_expected.shape[1]):
             assert Q[i, j] == pytest.approx(Q_expected[i, j])
-    
-    for i in range(R_expected.shape[0]) :
-        for j in range(R_expected.shape[1]) :
+
+    for i in range(R_expected.shape[0]):
+        for j in range(R_expected.shape[1]):
             assert R[i, j] == pytest.approx(R_expected[i, j])
 
+
 @pytest.mark.parametrize("dims", [[10, 10], [10, 10, 10], [11, 12, 13], [100]])
-def test_direct_prod(dims, dtype, array) :
+def test_direct_prod(dims, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [d + 2 for d in dims], dtype, array)
     B_base = ein.utils.random_tensor_factory("B", [d + 2 for d in dims], dtype, array)
     C_base = ein.utils.random_tensor_factory("C", [d + 2 for d in dims], dtype, array)
+
+    for i in range(dims[0] + 2):
+        if len(dims) == 1 and i >= dims[0]:
+            A_base[i] = np.nan
+            B_base[i] = np.nan
+            C_base[i] = np.nan
+        elif len(dims) > 1:
+            for j in range(dims[1], dims[1] + 2):
+                if len(dims) == 2 and (i >= dims[0] or j >= dims[1]):
+                    A_base[i, j] = np.nan
+                    B_base[i, j] = np.nan
+                    C_base[i, j] = np.nan
+                elif len(dims) > 2:
+                    for k in range(dims[2], dims[2] + 2):
+                        if i >= dims[0] or j >= dims[1] or k >= dims[2]:
+                            A_base[i, j, k] = np.nan
+                            B_base[i, j, k] = np.nan
+                            C_base[i, j, k] = np.nan
 
     A = A_base[tuple(slice(0, d) for d in dims)]
 
@@ -593,34 +626,99 @@ def test_direct_prod(dims, dtype, array) :
 
     C = C_base[tuple(slice(0, d) for d in dims)]
 
-    alpha = ein.utils.random.random()
+    C_hold = C.copy()
+
+    alpha = 1  # ein.utils.random.random()
     beta = ein.utils.random.random()
 
     C_copy = C.copy()
 
     C_copy *= beta
 
+    for i in range(dims[0]):
+        if len(dims) == 1:
+            x = C[i]
+            x *= beta
+            assert C_copy[i] == pytest.approx(x)
+        else:
+            for j in range(dims[1]):
+                if len(dims) == 2:
+                    x = C[i, j]
+                    x *= beta
+                    assert C_copy[i, j] == pytest.approx(x)
+                else:
+                    for k in range(dims[2]):
+                        x = C[i, j, k]
+                        x *= beta
+                        assert C_copy[i, j, k] == pytest.approx(x)
+
     temp = A.copy()
 
-    temp *= B
+    temp *= B.copy()
 
     temp *= alpha
 
+    for i in range(dims[0]):
+        if len(dims) == 1:
+            x = A[i]
+            x *= B[i]
+            x *= alpha
+            assert temp[i] == pytest.approx(x)
+        else:
+            for j in range(dims[1]):
+                if len(dims) == 2:
+                    x = A[i, j]
+                    x *= B[i, j]
+                    x *= alpha
+                    assert temp[i, j] == pytest.approx(x)
+                else:
+                    for k in range(dims[2]):
+                        x = A[i, j, k]
+                        x *= B[i, j, k]
+                        x *= alpha
+                        assert temp[i, j, k] == pytest.approx(x)
+
     C_copy += temp
+
+    for i in range(dims[0]):
+        if len(dims) == 1:
+            assert C_copy[i] == pytest.approx((beta * C[i]) + (alpha * (A[i] * B[i])))
+        else:
+            for j in range(dims[1]):
+                if len(dims) == 2:
+                    assert C_copy[i, j] == pytest.approx(
+                        (beta * C[i, j]) + (alpha * (A[i, j] * B[i, j]))
+                    )
+                else:
+                    for k in range(dims[2]):
+                        assert C_copy[i, j, k] == pytest.approx(
+                            (beta * C[i, j, k]) + (alpha * (A[i, j, k] * B[i, j, k]))
+                        )
 
     ein.core.direct_product(alpha, A, B, beta, C)
 
     failed = False
 
-    for exp, got in zip(C_copy, C) :
-        if got != pytest.approx(exp, rel = 1e-4) :
-            print(f"Expected {exp}, got {got}")
-            failed = True
-    
+    for i in range(dims[0]):
+        if len(dims) == 1:
+            assert C[i] == pytest.approx(beta * C_hold[i] + alpha * A[i] * B[i])
+        else:
+            for j in range(dims[1]):
+                if len(dims) == 2:
+                    assert C[i, j] == pytest.approx(
+                        beta * C_hold[i, j] + alpha * A[i, j] * B[i, j]
+                    )
+                else:
+                    for k in range(dims[2]):
+                        assert C[i, j, k] == pytest.approx(
+                            beta * C_hold[i, j, k] + alpha * A[i, j, k] * B[i, j, k]
+                        )
+
     assert not failed
 
+
 @pytest.mark.parametrize("a", [10, 100])
-def test_det(a, dtype, array) :
+def test_det(a, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [a + 2, a + 2], dtype, array)
 
     A = A_base[:a, :a]

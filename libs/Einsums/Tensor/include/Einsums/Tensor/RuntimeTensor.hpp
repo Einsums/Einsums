@@ -752,13 +752,20 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         }                                                                                                                                  \
         template <typename TOther>                                                                                                         \
         auto operator OP(const RuntimeTensor<TOther> &b)->RuntimeTensor<T> & {                                                             \
-            if (size() != b.size()) {                                                                                                      \
+            if (b.rank() != rank()) {                                                                                                      \
+                EINSUMS_THROW_EXCEPTION(tensor_compat_error,                                                                               \
+                                        "Can not perform the operation with runtime tensor and view of different ranks!");                 \
+            }                                                                                                                              \
+            if (b.dims() != dims()) {                                                                                                      \
+                EINSUMS_THROW_EXCEPTION(dimension_error,                                                                                   \
+                                        "Can not perform the operation with runtime tensor and view of different dimensions!");            \
+            }                                                                                                                              \
+            if (this->size() != b.size()) {                                                                                                \
                 EINSUMS_THROW_EXCEPTION(dimension_error, "tensors differ in size : {} {}", size(), b.size());                              \
             }                                                                                                                              \
             T            *this_data = this->data();                                                                                        \
             const TOther *b_data    = b.data();                                                                                            \
-            size_t        elements  = size();                                                                                              \
-            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
+            size_t        elements  = this->size();                                                                                        \
             for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                                   \
                 if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
                     this_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                         \
