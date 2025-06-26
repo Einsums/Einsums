@@ -109,10 +109,12 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     // Librett uses the reverse order for indices.
     auto target_position_in_A = detail::find_type_with_position(detail::reverse_inds(C_indices), detail::reverse_inds(A_indices));
 
+    auto check_target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
+
     einsums::for_sequence<ARank>([&](auto n) {
-        if (C->dim((size_t)n) < A.dim(std::get<2 * (size_t)n + 1>(target_position_in_A))) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "The {} dimension of the output tensor is smaller than the input tensor!",
-                                    print::ordinal((size_t)n));
+        if (C->dim((size_t)n) < A.dim(std::get<2 * (size_t)n + 1>(check_target_position_in_A))) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "The {} dimension of the output tensor is smaller than the {} dimension of the input tensor!",
+                                    print::ordinal((size_t)n), print::ordinal(std::get<2 * (size_t) n + 1>(check_target_position_in_A)));
         }
 
         if(C->dim((size_t) n) == 0) {
