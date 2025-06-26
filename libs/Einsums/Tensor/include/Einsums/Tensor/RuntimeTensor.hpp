@@ -647,11 +647,10 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
-            thread_local std::vector<size_t> index(_rank);
+            size_t other_index;
+            sentinel_to_sentinels(sentinel, _strides, other.strides(), other_index);
 
-            sentinel_to_indices(sentinel, _strides, index);
-
-            _data[sentinel] = other(index);
+            _data[sentinel] = other.data()[other_index];
         }
 
         return *this;
@@ -707,11 +706,11 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
-            thread_local std::vector<size_t> index(_rank);
+            size_t other_index;
 
-            sentinel_to_indices(sentinel, _strides, index);
+            sentinel_to_sentinels(sentinel, _strides, other.strides(), other_index);
 
-            _data[sentinel] = other(index);
+            _data[sentinel] = other.data()[other_index];
         }
 
         return *this;
@@ -785,14 +784,14 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
             size_t elements = size();                                                                                                      \
             EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
             for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                                   \
-                thread_local std::vector<size_t> index(rank());                                                                            \
-                sentinel_to_indices(sentinel, this->_strides, index);                                                                      \
+                size_t b_index;                                                                                                            \
+                sentinel_to_sentinels(sentinel, this->_strides, b.strides(), b_index);                                                     \
                 if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
-                    (*this)(index) OP(T)(RemoveComplexT<T>) b(index);                                                                      \
+                    this->_data[sentinel] OP(T)(RemoveComplexT<T>) b.data()[b_index];                                                      \
                 } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
-                    (*this)(index) OP(T) b(index).real();                                                                                  \
+                    this->_data[sentinel] OP(T) b.data()[b_index].real();                                                                  \
                 } else {                                                                                                                   \
-                    (*this)(index) OP(T) b(index);                                                                                         \
+                    this->_data[sentinel] OP(T) b.data()[b_index];                                                                         \
                 }                                                                                                                          \
             }                                                                                                                              \
             return *this;                                                                                                                  \
@@ -2200,7 +2199,7 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
 
                     size_t div = index_strides[index_strides.size() - 1];
 
-                    for(size_t i = 0; i < index_strides.size(); i++) {
+                    for (size_t i = 0; i < index_strides.size(); i++) {
                         index_strides[i] /= div;
                     }
 
@@ -2210,8 +2209,8 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                     for (size_t sentinel = 0; sentinel < size; sentinel++) {
 
                         sentinel_to_indices(sentinel, index_strides, indices);
-                        
-                        for(int i = 0; i < A.rank() - 1; i++) {
+
+                        for (int i = 0; i < A.rank() - 1; i++) {
                             tmp_inds[i] = indices[i];
                         }
 
@@ -2228,7 +2227,7 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                                                        fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
                             }
                             indices[A.rank() - 1] = j;
-                            T value = A(indices);
+                            T value               = A(indices);
                             if (std::abs(value) > 1.0E+10) {
                                 if constexpr (std::is_floating_point_v<T>)
                                     oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
@@ -2257,7 +2256,7 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                         fprintln(fp);
                     }
                 } else if (Rank == 1) {
-                    size_t size = A.size();
+                    size_t                size = A.size();
                     std::array<size_t, 1> index;
 
                     for (size_t sentinel = 0; sentinel < size; sentinel++) {
