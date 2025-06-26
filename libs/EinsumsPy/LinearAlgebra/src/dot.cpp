@@ -72,17 +72,18 @@ pybind11::object dot(pybind11::buffer const &A, pybind11::buffer const &B) {
 
     if (A_easy_dot > B_easy_dot) {
         index_strides.swap(A_index_strides);
-        easy_dot = A_easy_dot;
-        B_strides.resize(easy_dot);
+        easy_dot   = A_easy_dot;
         easy_elems = A_easy_elems;
         hard_elems = A_hard_elems;
     } else {
         index_strides.swap(B_index_strides);
         easy_dot = B_easy_dot;
-        A_strides.resize(easy_dot);
         easy_elems = B_easy_elems;
         hard_elems = B_hard_elems;
     }
+
+    A_strides.resize(easy_dot);
+    B_strides.resize(easy_dot);
 
     if (easy_dot == 0) {
         if (A_info.format == py::format_descriptor<float>::format()) {
@@ -119,8 +120,9 @@ pybind11::object dot(pybind11::buffer const &A, pybind11::buffer const &B) {
 }
 
 template <typename T>
-T true_dot_work(py::buffer_info const &A_info, py::buffer_info const &B_info, std::vector<size_t> &index_strides, std::vector<size_t> &A_strides,
-           std::vector<size_t> &B_strides, size_t easy_dot, size_t easy_elems, size_t hard_elems, size_t A_stride, size_t B_stride) {
+T true_dot_work(py::buffer_info const &A_info, py::buffer_info const &B_info, std::vector<size_t> &index_strides,
+                std::vector<size_t> &A_strides, std::vector<size_t> &B_strides, size_t easy_dot, size_t easy_elems, size_t hard_elems,
+                size_t A_stride, size_t B_stride) {
     T out{0.0};
 
     T const *A_data = reinterpret_cast<T const *>(A_info.ptr);
@@ -192,10 +194,10 @@ pybind11::object true_dot(pybind11::buffer const &A, pybind11::buffer const &B) 
             return py::cast(blas::dot<double>(easy_elems, (double const *)A_info.ptr, A_stride, (double const *)B_info.ptr, B_stride));
         } else if (A_info.format == py::format_descriptor<std::complex<float>>::format()) {
             return py::cast(blas::dotc<std::complex<float>>(easy_elems, (std::complex<float> const *)A_info.ptr, A_stride,
-                                                           (std::complex<float> const *)B_info.ptr, B_stride));
+                                                            (std::complex<float> const *)B_info.ptr, B_stride));
         } else if (A_info.format == py::format_descriptor<std::complex<double>>::format()) {
             return py::cast(blas::dotc<std::complex<double>>(easy_elems, (std::complex<double> const *)A_info.ptr, A_stride,
-                                                            (std::complex<double> const *)B_info.ptr, B_stride));
+                                                             (std::complex<double> const *)B_info.ptr, B_stride));
         } else {
             EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform the dot product on real or complex floating point inputs!");
         }
@@ -209,10 +211,10 @@ pybind11::object true_dot(pybind11::buffer const &A, pybind11::buffer const &B) 
                                              A_stride, B_stride));
         } else if (A_info.format == py::format_descriptor<std::complex<float>>::format()) {
             return py::cast(true_dot_work<std::complex<float>>(A_info, B_info, index_strides, A_strides, B_strides, easy_dot, easy_elems,
-                                                          hard_elems, A_stride, B_stride));
+                                                               hard_elems, A_stride, B_stride));
         } else if (A_info.format == py::format_descriptor<std::complex<double>>::format()) {
             return py::cast(true_dot_work<std::complex<double>>(A_info, B_info, index_strides, A_strides, B_strides, easy_dot, easy_elems,
-                                                           hard_elems, A_stride, B_stride));
+                                                                hard_elems, A_stride, B_stride));
         } else {
             EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform the dot product on real or complex floating point inputs!");
         }
