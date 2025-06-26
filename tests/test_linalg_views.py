@@ -610,8 +610,14 @@ def test_direct_prod(dims, dtype, array) :
 
     ein.core.direct_product(alpha, A, B, beta, C)
 
+    failed = False
+
     for exp, got in zip(C_copy, C) :
-        assert got == pytest.approx(exp, rel = 1e-4)
+        if got != pytest.approx(exp, rel = 1e-4) :
+            print(f"Expected {exp}, got {got}")
+            failed = True
+    
+    assert not failed
 
 @pytest.mark.parametrize("a", [10, 100])
 def test_det(a, dtype, array) :
