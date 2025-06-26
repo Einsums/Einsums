@@ -8,10 +8,12 @@
 #include <Einsums/Config/Types.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Logging.hpp>
+#include <Einsums/Profile/Section.hpp>
 #include <Einsums/Runtime.hpp>
 
 #include <exception>
 #include <pybind11/pybind11.h>
+#include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
 #include <stdexcept>
 
@@ -47,4 +49,14 @@ void export_Core(py::module_ &mod) {
         .def("get_string", [](GlobalConfigMap &self, std::string const &str) { return self.get_string(str); })
         .def("get_int", [](GlobalConfigMap &self, std::string const &str) { return self.get_int(str); })
         .def("get_double", [](GlobalConfigMap &self, std::string const &str) { return self.get_double(str); });
+
+    auto section = py::class_<einsums::Section>(mod, "Section");
+
+    section
+        .def(py::init([](std::string const &name, bool push_timer) { return Section(name, push_timer); }), py::arg("name"),
+             py::arg("push_timer") = true)
+        .def(
+            py::init([](std::string const &name, std::string const &domain, bool push_timer) { return Section(name, domain, push_timer); }),
+            py::arg("name"), py::arg("domain"), py::arg("push_timer") = true)
+        .def("end", &Section::end);
 }

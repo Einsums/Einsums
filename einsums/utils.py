@@ -10,12 +10,48 @@ Various utilities for Einsums in Python.
 
 from __future__ import annotations
 
+import functools
+
 import typing
 import random
 
 from einsums import core
 
 import numpy as np
+
+
+def labeled_section(arg: typing.Union[str, typing.Callable]):
+    """
+    Decorates a function. Add a line to the timer report for profiling the function.
+
+    :param arg: This decorator may take a string. This will be placed after the function name in the timer report.
+    :type arg: Optional[str]
+    """
+    if isinstance(arg, str):
+
+        def labeled_section_outer(func):
+            @functools.wraps(func)
+            def labeled_section_inner(*args, **kwargs):
+                section = core.Section(f"{func.__name__} {arg}")
+                retval = func(*args, **kwargs)
+                del section
+                return retval
+
+            return labeled_section_inner
+
+        return labeled_section_outer
+    elif hasattr(arg, "__call__"):
+
+        @functools.wraps(arg)
+        def labeled_section_inner(*args, **kwargs):
+            section = core.Section(f"{arg.__name__}")
+            retval = arg(*args, **kwargs)
+            del section
+            return retval
+
+        return labeled_section_inner
+    else:
+        raise TypeError("Argument to labeled_section not valid!")
 
 
 def enumerate_many(*args, start=0):
