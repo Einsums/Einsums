@@ -52,11 +52,9 @@ void export_Core(py::module_ &mod) {
 
     auto section = py::class_<einsums::Section>(mod, "Section");
 
-    section
-        .def(py::init([](std::string const &name, bool push_timer) { return Section(name, push_timer); }), py::arg("name"),
-             py::arg("push_timer") = true)
-        .def(
-            py::init([](std::string const &name, std::string const &domain, bool push_timer) { return Section(name, domain, push_timer); }),
-            py::arg("name"), py::arg("domain"), py::arg("push_timer") = true)
+    section.def(py::init<std::string const &>())
+        .def(py::init<std::string const &, bool>())
+        .def(py::init<std::string const &, std::string const &>())
+        .def(py::init<std::string const &, std::string const &, bool>())
         .def("end", &Section::end);
 }
