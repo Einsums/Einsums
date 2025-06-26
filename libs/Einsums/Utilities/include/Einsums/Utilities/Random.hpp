@@ -70,7 +70,7 @@ struct circle_distribution<float> {
         }
 
         // Backfill. Use xor just to be fancy.
-        if ((bitmanip.integer & 0x7fffffU) != 0) {
+        if ((bitmanip.integer & 0x7fffffffU) != 0) {
             // Backfill. Use xor just to be fancy.
             bitmanip.integer ^= backfill;
         }
@@ -126,7 +126,7 @@ struct circle_distribution<double> {
             bitmanip.floating -= 1.0;
         }
 
-        if ((bitmanip.integer & 0x7fffffffffffffUL) != 0) {
+        if ((bitmanip.integer & 0x7fffffffffffffffUL) != 0) {
             // Backfill. Use xor just to be fancy.
             bitmanip.integer ^= backfill;
         }
@@ -218,7 +218,7 @@ struct unit_circle_distribution<float> {
         }
 
         // Backfill. Use xor just to be fancy.
-        if ((bitmanip.integer & 0x7fffffU) != 0) {
+        if ((bitmanip.integer & 0x7fffffffU) != 0) {
             // Backfill. Use xor just to be fancy.
             bitmanip.integer ^= backfill;
         }
@@ -272,7 +272,7 @@ struct unit_circle_distribution<double> {
             bitmanip.floating -= 1.0;
         }
 
-        if ((bitmanip.integer & 0x7fffffffffffffUL) != 0) {
+        if ((bitmanip.integer & 0x7fffffffffffffffUL) != 0) {
             // Backfill. Use xor just to be fancy.
             bitmanip.integer ^= backfill;
         }
