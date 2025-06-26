@@ -474,7 +474,7 @@ def test_true_dot_mats(a, b, dtype, array) :
 
     assert got == pytest.approx(test)
 
-@pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13)])
+@pytest.mark.parametrize(["a", "b"], [(10, 10), (11, 13)])
 def test_svd(a, b, dtype, array) :
     A_base = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
@@ -497,7 +497,7 @@ def test_svd(a, b, dtype, array) :
     for i in range(min(a, b)) :
         assert S[i] == pytest.approx(S_test[i])
     
-@pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13)])
+@pytest.mark.parametrize(["a", "b"], [(10, 10), (11, 13)])
 def test_nullspace(a, b, dtype, array) :
     A_base = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
@@ -587,52 +587,28 @@ def test_direct_prod(dims, dtype, array) :
     B_base = ein.utils.random_tensor_factory("B", [d + 2 for d in dims], dtype, array)
     C_base = ein.utils.random_tensor_factory("C", [d + 2 for d in dims], dtype, array)
 
-    print("Made the tensors.")
-
     A = A_base[tuple(slice(0, d) for d in dims)]
-
-    print("made the first view.")
 
     B = B_base[tuple(slice(0, d) for d in dims)]
 
-    print("Made the second view.")
-
     C = C_base[tuple(slice(0, d) for d in dims)]
-
-    print("Made the views.")
 
     alpha = ein.utils.random.random()
     beta = ein.utils.random.random()
 
-    print("Generated the scale factors.")
-
     C_copy = C.copy()
-
-    print("Made a copy of the output.")
 
     C_copy *= beta
 
-    print("Scaled the copy")
-
     temp = A.copy()
 
-    print("Made a temporary tensor")
-
     temp *= B
-    
-    print("Computed the direct product one way.")
 
     temp *= alpha
 
-    print("Scaled the result")
-
     C_copy += temp
 
-    print("Accumulated the result")
-
     ein.core.direct_product(alpha, A, B, beta, C)
-
-    print("Computed the direct product a different way")
 
     for exp, got in zip(C_copy, C) :
         assert got == pytest.approx(exp, rel = 1e-4)

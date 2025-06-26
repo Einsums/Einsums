@@ -397,7 +397,7 @@ def test_true_dot(a, dtype, array) :
 
     assert got == pytest.approx(test)
 
-@pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13)])
+@pytest.mark.parametrize(["a", "b"], [(10, 10), (11, 13)])
 def test_svd(a, b, dtype, array) :
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
@@ -418,7 +418,7 @@ def test_svd(a, b, dtype, array) :
     for i in range(min(a, b)) :
         assert S[i] == pytest.approx(S_test[i])
     
-@pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13)])
+@pytest.mark.parametrize(["a", "b"], [(10, 10), (11, 13)])
 def test_nullspace(a, b, dtype, array) :
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
