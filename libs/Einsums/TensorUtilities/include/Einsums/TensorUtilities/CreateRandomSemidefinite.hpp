@@ -40,7 +40,7 @@ auto create_random_semidefinite(std::string const &name, int rows, int cols, Rem
     if (rows != cols) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "Can only make square positive definite matrices.");
     }
-    Tensor<T, 2> Evecs = create_random_unitary("name", rows, cols);
+    Tensor<T, 2> Evecs = create_random_unitary<T>("name", rows, cols);
 
     std::default_random_engine engine;
 
@@ -65,7 +65,7 @@ auto create_random_semidefinite(std::string const &name, int rows, int cols, Rem
     }
 
     // Create the tensor.
-    Tensor<T, 2> ret = diagonal(Evals);
+    Tensor<T, 2> ret = diagonal(Evals), Temp{"temp", rows, cols};
 
     linear_algebra::gemm<false, false>(1.0, ret, Evecs, 0.0, &Temp);
 
