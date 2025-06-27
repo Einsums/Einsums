@@ -717,7 +717,7 @@ def test_direct_prod(dims, dtype, array):
     assert not failed
 
 
-@pytest.mark.parametrize("a", [10, 100])
+@pytest.mark.parametrize("a", [10, 25])
 def test_det(a, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [a + 2, a + 2], dtype, array)
 

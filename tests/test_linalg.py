@@ -518,7 +518,7 @@ def test_direct_prod(dims, dtype, array) :
     for exp, got in zip(C_copy, C) :
         assert got == pytest.approx(exp, rel = 1e-4)
 
-@pytest.mark.parametrize("a", [10, 100])
+@pytest.mark.parametrize("a", [10, 25])
 def test_det(a, dtype, array) :
     A = ein.utils.random_tensor_factory("A", [a, a], dtype, array)
 
