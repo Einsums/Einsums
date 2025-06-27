@@ -33,8 +33,6 @@ void scale_work(T factor, py::buffer &A) {
 
     easy_scale = determine_easy_vector(A, &easy_elems, &A_stride, &hard_elems, &A_strides, &index_strides);
 
-    fprintf(stderr, "easy_scale = %d, easy_elems = %zu, hard_elems = %zu\n", easy_scale, easy_elems, hard_elems);
-
     if (easy_scale == 0) {
         // The entire tensor is contiguous, though may skip in the smallest stride.
         blas::int_t n = easy_elems, inc = A_strides[A_info.ndim - 1];
@@ -66,7 +64,7 @@ void scale(pybind11::object factor, pybind11::buffer &A) {
     } else if (A_info.format == py::format_descriptor<std::complex<double>>::format()) {
         scale_work<std::complex<double>>(factor.cast<std::complex<double>>(), A);
     } else {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "Can only scale matrices of real or complex floating point values!");
+        EINSUMS_THROW_EXCEPTION(py::value_error, "Can only scale matrices of real or complex floating point values!");
     }
 }
 
@@ -98,7 +96,7 @@ void scale_row(int row, pybind11::object factor, pybind11::buffer &A) {
         blas::scal<std::complex<double>>(A_info.shape[1], factor.cast<std::complex<double>>(), (std::complex<double> *)A_row,
                                          A_info.strides[1] / sizeof(std::complex<double>));
     } else {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "Can only scale matrices of real or complex floating point values!");
+        EINSUMS_THROW_EXCEPTION(py::value_error, "Can only scale matrices of real or complex floating point values!");
     }
 }
 
@@ -130,7 +128,7 @@ void scale_column(int col, pybind11::object factor, pybind11::buffer &A) {
         blas::scal<std::complex<double>>(A_info.shape[0], factor.cast<std::complex<double>>(), (std::complex<double> *)A_col,
                                          A_info.strides[0] / sizeof(std::complex<double>));
     } else {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "Can only scale matrices of real or complex floating point values!");
+        EINSUMS_THROW_EXCEPTION(py::value_error, "Can only scale matrices of real or complex floating point values!");
     }
 }
 

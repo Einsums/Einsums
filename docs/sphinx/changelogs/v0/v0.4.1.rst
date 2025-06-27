@@ -18,4 +18,4 @@ What's Removed
 Bug Fixes
 ---------
 
-* Fixed a performance issue with the `einsum` call.
+* Fixed a performance issue with the ``einsum`` call.
