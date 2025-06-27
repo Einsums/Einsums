@@ -20,13 +20,14 @@ What's New
 * Tensor permutations where the smallest stride is not 1.
 * The in-core generic algorithm is now much more performant.
 * The dispatching function for :cpp:func:`einsum` is now more modular, so it is hopefully easier to maintain.
-* Einsum calls can now be batched over containers, such as `vector`s and `array`s of tensors.
+* Einsum calls can now be batched over containers, such as ``vector``s and ``array``s of tensors.
+* Linear algebra functions are now available in Python.
+* Complex implementations for several linear algebra functions that were previously missing, such as gees.
 
 What's Removed
 --------------
 
-* `sort` is no longer a valid alias for :cpp:func:`permute`.
+* ``sort`` is no longer a valid alias for :cpp:func:`permute`.
 
 Bug Fixes
 ---------
-

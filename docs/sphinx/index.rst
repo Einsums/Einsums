@@ -74,8 +74,8 @@ dgemm call:
       :img-top: _static/index-images/user_guide.svg
       :class-img-top: icon
 
-      User Guide
-      ^^^^^^^^^^
+      User's Guide
+      ^^^^^^^^^^^^
 
       The user guide provides in-depth information on the key concepts of
       Einsums with useful background information and explanation.

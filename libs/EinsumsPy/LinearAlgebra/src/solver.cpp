@@ -68,8 +68,12 @@ void gesv(pybind11::buffer &A, pybind11::buffer &B) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "The solver can only handle square matrices!");
     }
 
+    if(A_info.shape[0] != B_info.shape[0]) {
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The rows of A and B must match!");
+    }
+
     if (A_info.format != B_info.format) {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "The storage types of the input matrices need to be the same!");
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The storage types of the input matrices need to be the same!");
     } else if (A_info.format == py::format_descriptor<float>::format()) {
         gesv_work<float>(A, B);
     } else if (A_info.format == py::format_descriptor<double>::format()) {
@@ -79,7 +83,7 @@ void gesv(pybind11::buffer &A, pybind11::buffer &B) {
     } else if (A_info.format == py::format_descriptor<std::complex<double>>::format()) {
         gesv_work<std::complex<double>>(A, B);
     } else {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "The storage type of the input to the solver is invalid!");
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The storage type of the input to the solver is invalid!");
     }
 }
 

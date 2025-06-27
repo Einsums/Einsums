@@ -56,7 +56,7 @@ py::tuple sum_square(pybind11::buffer const &A) {
 
         return py::make_tuple(new_sum_sq, new_scale);
     } else {
-        EINSUMS_THROW_EXCEPTION(pybind11::type_error, "Could not perform sum_square on the requested type {}!", A_info.format);
+        EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Could not perform sum_square on the requested type {}!", A_info.format);
     }
 }
 
