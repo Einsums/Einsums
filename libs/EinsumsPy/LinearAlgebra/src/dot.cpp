@@ -6,10 +6,13 @@
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
 #include <EinsumsPy/LinearAlgebra/LinearAlgebra.hpp>
+#include <omp.h>
 #include <pybind11/buffer_info.h>
 #include <pybind11/detail/common.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+
+#include "Einsums/Config/CompilerSpecific.hpp"
 
 namespace py = pybind11;
 
@@ -25,12 +28,26 @@ T dot_work(py::buffer_info const &A_info, py::buffer_info const &B_info, std::ve
     T const *A_data = reinterpret_cast<T const *>(A_info.ptr);
     T const *B_data = reinterpret_cast<T const *>(B_info.ptr);
 
-//#pragma omp parallel for reduction(+ : out)
-    for (size_t i = 0; i < hard_elems; i++) {
-        size_t A_sentinel, B_sentinel;
-        sentinel_to_sentinels(i, index_strides, A_strides, A_sentinel, B_strides, B_sentinel);
+    std::vector<T> buffer(omp_get_max_threads());
 
-        out += blas::dot<T>(easy_elems, A_data + A_sentinel, A_stride, B_data + B_sentinel, B_stride);
+    for (size_t i = 0; i < buffer.size(); i++) {
+        buffer[i] = T{0.0};
+    }
+
+#pragma omp parallel
+    {
+        T &out_ref = buffer[omp_get_thread_num()];
+#pragma omp for
+        for (size_t i = 0; i < hard_elems; i++) {
+            size_t A_sentinel, B_sentinel;
+            sentinel_to_sentinels(i, index_strides, A_strides, A_sentinel, B_strides, B_sentinel);
+
+            out_ref += blas::dot<T>(easy_elems, A_data + A_sentinel, A_stride, B_data + B_sentinel, B_stride);
+        }
+    }
+
+    for (size_t i = 0; i < buffer.size(); i++) {
+        out += buffer[i];
     }
 
     return out;
@@ -77,7 +94,7 @@ pybind11::object dot(pybind11::buffer const &A, pybind11::buffer const &B) {
         hard_elems = A_hard_elems;
     } else {
         index_strides.swap(B_index_strides);
-        easy_dot = B_easy_dot;
+        easy_dot   = B_easy_dot;
         easy_elems = B_easy_elems;
         hard_elems = B_hard_elems;
     }
@@ -128,12 +145,26 @@ T true_dot_work(py::buffer_info const &A_info, py::buffer_info const &B_info, st
     T const *A_data = reinterpret_cast<T const *>(A_info.ptr);
     T const *B_data = reinterpret_cast<T const *>(B_info.ptr);
 
-//#pragma omp parallel for reduction(+ : out)
-    for (size_t i = 0; i < hard_elems; i++) {
-        size_t A_sentinel, B_sentinel;
-        sentinel_to_sentinels(i, index_strides, A_strides, A_sentinel, B_strides, B_sentinel);
+    std::vector<T> buffer(omp_get_max_threads());
 
-        out += blas::dotc<T>(easy_elems, A_data + A_sentinel, A_stride, B_data + B_sentinel, B_stride);
+    for (size_t i = 0; i < buffer.size(); i++) {
+        buffer[i] = T{0.0};
+    }
+
+#pragma omp parallel
+    {
+        T &out_ref = buffer[omp_get_thread_num()];
+#pragma omp for
+        for (size_t i = 0; i < hard_elems; i++) {
+            size_t A_sentinel, B_sentinel;
+            sentinel_to_sentinels(i, index_strides, A_strides, A_sentinel, B_strides, B_sentinel);
+
+            out_ref += blas::dotc<T>(easy_elems, A_data + A_sentinel, A_stride, B_data + B_sentinel, B_stride);
+        }
+    }
+
+    for (size_t i = 0; i < buffer.size(); i++) {
+        out += buffer[i];
     }
 
     return out;

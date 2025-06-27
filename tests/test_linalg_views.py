@@ -723,4 +723,6 @@ def test_det(a, dtype, array):
 
     A = A_base[:a, :a]
 
-    assert ein.core.det(A) == pytest.approx(np.linalg.det(A))
+    A_numpy = A.copy()
+
+    assert ein.core.det(A) == pytest.approx(np.linalg.det(A_numpy))

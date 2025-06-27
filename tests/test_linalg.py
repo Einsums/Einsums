@@ -522,4 +522,6 @@ def test_direct_prod(dims, dtype, array) :
 def test_det(a, dtype, array) :
     A = ein.utils.random_tensor_factory("A", [a, a], dtype, array)
 
-    assert ein.core.det(A) == pytest.approx(np.linalg.det(A))
+    A_numpy = A.copy()
+
+    assert ein.core.det(A) == pytest.approx(np.linalg.det(A_numpy))
