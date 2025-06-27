@@ -1,0 +1,20 @@
+
+.. 
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. _modules_EinsumsPy_EinsumsPy/LinearAlgebra/LinearAlgebra.hpp_api:
+
+-------------------------------------------------------------------------------
+EinsumsPy/LinearAlgebra/LinearAlgebra.hpp
+-------------------------------------------------------------------------------
+
+Defined in header EinsumsPy/LinearAlgebra/LinearAlgebra.hpp.
+
+See :ref:`modules_overview` for a list of names and headers that are part of the public
+|einsums| API.
+
+.. autodoxygenfile:: EinsumsPy/LinearAlgebra/LinearAlgebra.hpp
+   :project: EinsumsPy

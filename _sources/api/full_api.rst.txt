@@ -52,6 +52,7 @@ refer to the full documentation below.
    /libs/Einsums/Utilities/api/full_api.rst
    /libs/Einsums/Version/api/full_api.rst
    /libs/EinsumsPy/GPU/api/full_api.rst
+   /libs/EinsumsPy/LinearAlgebra/api/full_api.rst
    /libs/EinsumsPy/Tensor/api/full_api.rst
    /libs/EinsumsPy/TensorAlgebra/api/full_api.rst
    /libs/EinsumsPy/TestUtils/api/full_api.rst

@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 25, 2025"/>
+    <meta name="docbuild:last-update" content="Jun 27, 2025"/>
   </head>
   
   
@@ -264,6 +264,7 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="TensorExport.html">EinsumsPy/Tensor/TensorExport.hpp</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">EinsumsPy/Tensor/PyTensor.hpp</a></li>
 </ul>
 </div>
@@ -349,11 +350,6 @@
 <span class="target" id="_py_tensor_8hpp_1a47531670d876241e1be721b1e349789d"></span><span class="sig-name descname"><span class="n"><span class="pre">OPERATOR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">OP</span></span>, <span class="n"><span class="pre">NAME</span></span>, <span class="n"><span class="pre">OPNAME</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp macro">
-<dt class="sig sig-object cpp">
-<span class="target" id="_py_tensor_8hpp_1a01d1ffd753a590130d78ef0fb2918206"></span><span class="sig-name descname"><span class="n"><span class="pre">OPERATOR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">OP</span></span>, <span class="n"><span class="pre">TYPE</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
 </div>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv47einsums">
@@ -378,20 +374,6 @@
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums6python13export_tensorEvRN8pybind116moduleE">
-<span id="_CPPv3I0EN7einsums6python13export_tensorERN8pybind116moduleE"></span><span id="_CPPv2I0EN7einsums6python13export_tensorERN8pybind116moduleE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_py_tensor_8hpp_1a7e63572277444b2977192beeb6382dc3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">export_tensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">module</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">mod</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums6python13export_tensorEvRN8pybind116moduleE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Expose runtime tensors to Python. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>T</strong> – The stored type of the tensors to export. </p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>mod</strong> – The module which will contain the definitions. </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6python22export_tensor_typelessERN8pybind117module_E">
 <span id="_CPPv3N7einsums6python22export_tensor_typelessERN8pybind117module_E"></span><span id="_CPPv2N7einsums6python22export_tensor_typelessERN8pybind117module_E"></span><span id="einsums::python::export_tensor_typeless__pybind11::module_R"></span><span class="target" id="_py_tensor_8hpp_1a678e31452cc60e4cc9523933915d8dba"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">export_tensor_typeless</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">module_</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">mod</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6python22export_tensor_typelessERN8pybind117module_E" title="Link to this definition">#</a><br /></dt>
@@ -941,6 +923,11 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6python12PyTensorView12PyTensorViewERKN8pybind116bufferE">
+<span id="_CPPv3N7einsums6python12PyTensorView12PyTensorViewERKN8pybind116bufferE"></span><span id="_CPPv2N7einsums6python12PyTensorView12PyTensorViewERKN8pybind116bufferE"></span><span id="einsums::python::PyTensorView::PyTensorView__pybind11::bufferCR"></span><span class="target" id="classeinsums_1_1python_1_1_py_tensor_view_1a472c1da3bd588e0d66033f309aae4061"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PyTensorView</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">buffer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6python12PyTensorView12PyTensorViewERKN8pybind116bufferE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6python12PyTensorViewD0Ev">
 <span id="_CPPv3N7einsums6python12PyTensorViewD0Ev"></span><span id="_CPPv2N7einsums6python12PyTensorViewD0Ev"></span><span id="einsums::python::PyTensorView::~PyTensorView"></span><span class="target" id="classeinsums_1_1python_1_1_py_tensor_view_1ab023d14f9343d3dcdf1065f43531fc2b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~PyTensorView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums6python12PyTensorViewD0Ev" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
@@ -1289,7 +1276,6 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6pythonE"><code class="docutils literal notranslate"><span class="pre">einsums::python</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums6python19SharedRuntimeTensorE"><code class="docutils literal notranslate"><span class="pre">SharedRuntimeTensor</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums6python23SharedRuntimeTensorViewE"><code class="docutils literal notranslate"><span class="pre">SharedRuntimeTensorView</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums6python13export_tensorEvRN8pybind116moduleE"><code class="docutils literal notranslate"><span class="pre">export_tensor()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6python22export_tensor_typelessERN8pybind117module_E"><code class="docutils literal notranslate"><span class="pre">export_tensor_typeless()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums6python8PyTensorE"><code class="docutils literal notranslate"><span class="pre">einsums::python::PyTensor</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6python8PyTensor8PyTensorERKNSt10shared_ptrI8PyTensorI1TEEE"><code class="docutils literal notranslate"><span class="pre">PyTensor()</span></code></a></li>
@@ -1346,6 +1332,7 @@
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6python12PyTensorView12PyTensorViewERK12PyTensorViewI1TE"><code class="docutils literal notranslate"><span class="pre">PyTensorView()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6python12PyTensorView12PyTensorViewERK17RuntimeTensorViewI1TE"><code class="docutils literal notranslate"><span class="pre">PyTensorView()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6python12PyTensorView12PyTensorViewERN8pybind116bufferE"><code class="docutils literal notranslate"><span class="pre">PyTensorView()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6python12PyTensorView12PyTensorViewERKN8pybind116bufferE"><code class="docutils literal notranslate"><span class="pre">PyTensorView()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6python12PyTensorViewD0Ev"><code class="docutils literal notranslate"><span class="pre">~PyTensorView()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6python12PyTensorView4zeroEv"><code class="docutils literal notranslate"><span class="pre">zero()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6python12PyTensorView7set_allE1T"><code class="docutils literal notranslate"><span class="pre">set_all()</span></code></a></li>
