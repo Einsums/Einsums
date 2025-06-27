@@ -12,7 +12,6 @@
 
 #include <numbers>
 #include <string>
-#include <Einsums/TensorUtilities/CreateRandomUnitary.hpp>
 
 namespace einsums {
 
@@ -34,55 +33,38 @@ namespace einsums {
  * @param mean The mean for the eigenvalues. Defaults to 1.
  * @return A new positive definite or negative definite matrix.
  */
-template <typename T = double>
-auto create_random_definite(std::string const &name, int rows, int cols, RemoveComplexT<T> mean = RemoveComplexT<T>{1.0}) -> Tensor<T, 2> {
-    using Real = RemoveComplexT<T>;
-
+template <typename T = double, typename Distribution>
+    requires requires(Distribution dist) {
+        { dist(einsums::random_engine) } -> std::same_as<T>;
+    }
+auto create_random_unitary(std::string const &name, Distribution &&dist, int rows, int cols) -> Tensor<T, 2> {
     if (rows != cols) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "Can only make square positive definite matrices.");
     }
-    Tensor<T, 2> Evecs = create_random_unitary("name", rows, cols);
+    Tensor<T, 2> unitary(name, rows, cols);
 
-    std::default_random_engine engine;
+    Tensor<T, 2>             Temp = unitary;
+    std::vector<blas::int_t> pivs;
 
-    // Create random eigenvalues. Need to calculate the standard deviation from the mean.
-    auto normal =
-        std::normal_distribution<Real>(0, std::abs(mean) / Real{2.0} / std::numbers::sqrt2_v<Real> / std::numbers::inv_sqrtpi_v<Real>);
+    // Make sure the eigenvectors are non-singular.
+    do {
+        unitary = create_random_tensor<T>("name", std::forward<Distribution>(dist), rows, cols);
+        Temp    = unitary;
+    } while (linear_algebra::getrf(&Temp, &pivs) > 0);
 
-    Tensor<T, 1> Evals("name2", rows);
+    // QR decompose Evecs to get a random matrix of orthonormal eigenvectors.
+    auto pair = linear_algebra::qr(unitary);
 
-    for (int i = 0; i < rows; i++) {
-        // Maxwell-Boltzmann distribute the eigenvalues. Make sure they are positive.
-        do {
-            Real val1 = normal(engine), val2 = normal(engine), val3 = normal(engine);
+    return linear_algebra::q(std::get<0>(pair), std::get<1>(pair));
+}
 
-            Evals(i) = std::sqrt(val1 * val1 + val2 * val2 + val3 * val3);
-            if (mean < Real{0.0}) {
-                Evals(i) = -Evals(i);
-            }
-        } while (Evals(i) == Real{0.0}); // Make sure they are non-zero.
-    }
-
-    // Create the tensor.
-    Tensor<T, 2> ret = diagonal(Evals);
-
-    linear_algebra::gemm<false, false>(1.0, ret, Evecs, 0.0, &Temp);
-
-    // We need the conjugate transpose for this.
+template <typename T = double>
+auto create_random_unitary(std::string const &name, int rows, int cols) -> Tensor<T, 2> {
     if constexpr (IsComplexV<T>) {
-        size_t const size = Evecs.size();
-        auto        *data = Evecs.data();
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < size; i++) {
-            data[i] = std::conj(data[i]);
-        }
+        return create_random_unitary<T>(name, detail::unit_circle_distribution<T>(), rows, cols);
+    } else {
+        return create_random_unitary<T>(name, std::uniform_real_distribution<T>(-1, 1), rows, cols);
     }
-
-    linear_algebra::gemm<true, false>(1.0, Evecs, Temp, 0.0, &ret);
-
-    ret.set_name(name);
-
-    return ret;
 }
 
 } // namespace einsums

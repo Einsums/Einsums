@@ -7,6 +7,7 @@
 
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
+#include <Einsums/TensorUtilities/CreateRandomUnitary.hpp>
 #include <Einsums/TensorUtilities/Diagonal.hpp>
 
 #include <numbers>
@@ -39,21 +40,7 @@ auto create_random_semidefinite(std::string const &name, int rows, int cols, Rem
     if (rows != cols) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "Can only make square positive definite matrices.");
     }
-    Tensor<T, 2> Evecs("name", rows, cols);
-
-    Tensor<T, 2>             Temp = Evecs;
-    std::vector<blas::int_t> pivs;
-
-    // Make sure the eigenvectors are non-singular.
-    do {
-        Evecs = create_random_tensor<T>("name", rows, cols);
-        Temp  = Evecs;
-    } while (linear_algebra::getrf(&Temp, &pivs) > 0);
-
-    // QR decompose Evecs to get a random matrix of orthonormal eigenvectors.
-    auto pair = linear_algebra::qr(Evecs);
-
-    Evecs = linear_algebra::q(std::get<0>(pair), std::get<1>(pair));
+    Tensor<T, 2> Evecs = create_random_unitary("name", rows, cols);
 
     std::default_random_engine engine;
 
@@ -81,6 +68,17 @@ auto create_random_semidefinite(std::string const &name, int rows, int cols, Rem
     Tensor<T, 2> ret = diagonal(Evals);
 
     linear_algebra::gemm<false, false>(1.0, ret, Evecs, 0.0, &Temp);
+
+    // We need the conjugate transpose for this.
+    if constexpr (IsComplexV<T>) {
+        size_t const size = Evecs.size();
+        auto        *data = Evecs.data();
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        for (size_t i = 0; i < size; i++) {
+            data[i] = std::conj(data[i]);
+        }
+    }
+
     linear_algebra::gemm<true, false>(1.0, Evecs, Temp, 0.0, &ret);
 
     ret.set_name(name);

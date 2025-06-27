@@ -138,8 +138,20 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
         if (folds[i].dim(0) < rank) {
             // println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
             /// @todo Need to padd U up to rank
-            Tensor<TType, 2> Unew  = create_random_tensor<TType>("Padded SVD Left Vectors", folds[i].dim(0), rank);
+            Tensor<TType, 2> Unew  = create_tensor<TType>("Padded SVD Left Vectors", folds[i].dim(0), rank);
             Unew(All, Range{0, m}) = U(All, All);
+
+            // Fill the rest of Unew with NaN.
+            for (size_t i = 0; i < Unew.dim(0); i++) {
+                for (size_t j = 0; j < Unew.dim(1) - m; j++) {
+                    if constexpr (IsComplexV<TType>) {
+                        Unew(i, j + m) = TType{std::numeric_limits<RemoveComplexT<TType>>::signaling_NaN(),
+                                               std::numeric_limits<RemoveComplexT<TType>>::signaling_NaN()};
+                    } else {
+                        Unew(i, j + m) = std::numeric_limits<TType>::signaling_NaN();
+                    }
+                }
+            }
 
             // Need to save the factors
             factors.push_back(Unew);
