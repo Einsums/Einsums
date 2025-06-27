@@ -136,6 +136,16 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         std::memcpy(_data.data(), copy.data(), copy.size() * sizeof(T));
     }
 
+    template <size_t Rank>
+    RuntimeTensor(Tensor<T, Rank> &&copy) : _rank{Rank}, _dims(Rank), _strides(Rank), _name{copy.name()} {
+        for (int i = Rank - 1; i >= 0; i--) {
+            _dims[i]    = copy.dim(i);
+            _strides[i] = copy.stride(i);
+        }
+
+        _data = std::move(copy.vector_data());
+    }
+
     /**
      * @brief Copy a tensor view into a runtime tensor.
      *
@@ -159,6 +169,35 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
             size_t hold = sentinel, ord = 0;
             for (int i = 0; i < Rank; i++) {
+                ord += copy.stride(i) * (hold / _strides[i]);
+                hold %= _strides[i];
+            }
+            _data[sentinel] = copy.data()[ord];
+        }
+    }
+
+    /**
+     * @brief Copy a tensor view into a runtime tensor.
+     *
+     * The data from the tensor will be copied, not mapped. If you want to alias the data, use a RuntimeTensorView instead.
+     *
+     * @param copy The tensor view to copy.
+     */
+    RuntimeTensor(RuntimeTensorView<T> const &copy) : _rank{copy.rank()}, _dims(copy.rank()), _strides(copy.rank()) {
+        size_t size = 1;
+
+        for (int i = copy.rank() - 1; i >= 0; i--) {
+            _strides[i] = size;
+            _dims[i]    = (size_t)copy.dim(i);
+            size *= _dims[i];
+        }
+
+        _data.resize(size);
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
+            size_t hold = sentinel, ord = 0;
+            for (int i = 0; i < _rank; i++) {
                 ord += copy.stride(i) * (hold / _strides[i]);
                 hold %= _strides[i];
             }
@@ -608,11 +647,10 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
-            thread_local std::vector<size_t> index(_rank);
+            size_t other_index;
+            sentinel_to_sentinels(sentinel, _strides, other.strides(), other_index);
 
-            sentinel_to_indices(sentinel, _strides, index);
-
-            _data[sentinel] = other(index);
+            _data[sentinel] = other.data()[other_index];
         }
 
         return *this;
@@ -668,11 +706,11 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
-            thread_local std::vector<size_t> index(_rank);
+            size_t other_index;
 
-            sentinel_to_indices(sentinel, _strides, index);
+            sentinel_to_sentinels(sentinel, _strides, other.strides(), other_index);
 
-            _data[sentinel] = other(index);
+            _data[sentinel] = other.data()[other_index];
         }
 
         return *this;
@@ -714,13 +752,20 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         }                                                                                                                                  \
         template <typename TOther>                                                                                                         \
         auto operator OP(const RuntimeTensor<TOther> &b)->RuntimeTensor<T> & {                                                             \
-            if (size() != b.size()) {                                                                                                      \
+            if (b.rank() != rank()) {                                                                                                      \
+                EINSUMS_THROW_EXCEPTION(tensor_compat_error,                                                                               \
+                                        "Can not perform the operation with runtime tensor and view of different ranks!");                 \
+            }                                                                                                                              \
+            if (b.dims() != dims()) {                                                                                                      \
+                EINSUMS_THROW_EXCEPTION(dimension_error,                                                                                   \
+                                        "Can not perform the operation with runtime tensor and view of different dimensions!");            \
+            }                                                                                                                              \
+            if (this->size() != b.size()) {                                                                                                \
                 EINSUMS_THROW_EXCEPTION(dimension_error, "tensors differ in size : {} {}", size(), b.size());                              \
             }                                                                                                                              \
             T            *this_data = this->data();                                                                                        \
             const TOther *b_data    = b.data();                                                                                            \
-            size_t        elements  = size();                                                                                              \
-            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
+            size_t        elements  = this->size();                                                                                        \
             for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                                   \
                 if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
                     this_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                         \
@@ -746,14 +791,14 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
             size_t elements = size();                                                                                                      \
             EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
             for (size_t sentinel = 0; sentinel < elements; sentinel++) {                                                                   \
-                thread_local std::vector<size_t> index(rank());                                                                            \
-                sentinel_to_indices(sentinel, this->_strides, index);                                                                      \
+                size_t b_index;                                                                                                            \
+                sentinel_to_sentinels(sentinel, this->_strides, b.strides(), b_index);                                                     \
                 if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
-                    (*this)(index) OP(T)(RemoveComplexT<T>) b(index);                                                                      \
+                    this->_data[sentinel] OP(T)(RemoveComplexT<T>) b.data()[b_index];                                                      \
                 } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
-                    (*this)(index) OP(T) b(index).real();                                                                                  \
+                    this->_data[sentinel] OP(T) b.data()[b_index].real();                                                                  \
                 } else {                                                                                                                   \
-                    (*this)(index) OP(T) b(index);                                                                                         \
+                    this->_data[sentinel] OP(T) b.data()[b_index];                                                                         \
                 }                                                                                                                          \
             }                                                                                                                              \
             return *this;                                                                                                                  \
@@ -1925,6 +1970,21 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
         return TensorView<T, Rank>(const_cast<T const *>(_data), dims, strides);
     }
 
+    template <size_t Rank>
+    operator Tensor<T, Rank>() const {
+        if (rank() != Rank) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(),
+                                    Rank);
+        }
+        Dim<Rank>    dims;
+        Stride<Rank> strides;
+        for (int i = Rank - 1; i >= 0; i--) {
+            dims[i]    = _dims[i];
+            strides[i] = _strides[i];
+        }
+        return TensorView<T, Rank>(const_cast<T const *>(_data), dims, strides);
+    }
+
     /**
      * @brief Get the length of the tensor along the given axis.
      *
@@ -2142,18 +2202,30 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                     auto                ndigits   = detail::ndigits(final_dim);
                     std::vector<size_t> index_strides;
                     dims_to_strides(A.dims(), index_strides);
-                    size_t              size = A.size();
-                    std::vector<size_t> indices(A.rank());
+                    index_strides.resize(A.rank() - 1);
+
+                    size_t div = index_strides[index_strides.size() - 1];
+
+                    for (size_t i = 0; i < index_strides.size(); i++) {
+                        index_strides[i] /= div;
+                    }
+
+                    size_t              size = A.dim(0) * index_strides[0];
+                    std::vector<size_t> indices(A.rank()), tmp_inds(A.rank() - 1);
 
                     for (size_t sentinel = 0; sentinel < size; sentinel++) {
 
                         sentinel_to_indices(sentinel, index_strides, indices);
 
+                        for (int i = 0; i < A.rank() - 1; i++) {
+                            tmp_inds[i] = indices[i];
+                        }
+
                         std::ostringstream oss;
                         for (int j = 0; j < final_dim; j++) {
                             if (j % options.width == 0) {
                                 std::ostringstream tmp;
-                                tmp << fmt::format("{}", fmt::join(indices, ", "));
+                                tmp << fmt::format("{}", fmt::join(tmp_inds, ", "));
                                 if (final_dim >= j + options.width)
                                     oss << fmt::format("{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits,
                                                                              j + options.width - 1, ndigits));
@@ -2161,7 +2233,8 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                                     oss << fmt::format("{:<14}",
                                                        fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
                             }
-                            T value = A(indices);
+                            indices[A.rank() - 1] = j;
+                            T value               = A(indices);
                             if (std::abs(value) > 1.0E+10) {
                                 if constexpr (std::is_floating_point_v<T>)
                                     oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
@@ -2190,15 +2263,17 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                         fprintln(fp);
                     }
                 } else if (Rank == 1) {
-                    size_t size = A.size();
+                    size_t                size = A.size();
+                    std::array<size_t, 1> index;
 
                     for (size_t sentinel = 0; sentinel < size; sentinel++) {
                         std::ostringstream oss;
                         oss << "(";
                         oss << fmt::format("{}", sentinel);
                         oss << "): ";
+                        index[0] = sentinel;
 
-                        T value = std::get<T>(A());
+                        T value = A(index);
                         if (std::abs(value) > 1.0E+5) {
                             if constexpr (std::is_floating_point_v<T>)
                                 oss << fmt::format(fmt::fg(fmt::color::white) | fmt::bg(fmt::color::red), "{:14.8f} ", value);

@@ -36,7 +36,7 @@ inline bool lsame(char ca, char cb) {
     return std::tolower(ca) == std::tolower(cb);
 }
 
-enum class OrderMajor { Column, Row };
+enum class OrderMajor { Column, Row, C = Row, Fortran = Column };
 
 // OrderMajor indicates the order of the input matrix. C is Row, Fortran is Column
 template <OrderMajor Order, typename T>
@@ -48,9 +48,14 @@ void transpose(int_t m, int_t n, T const *in, int_t ldin, T *out, int_t ldout) {
     EINSUMS_ASSERT(n >= 0);
 
     std::vector<int>    perm{1, 0};
-    std::vector<size_t> size_in{static_cast<unsigned long>(m), static_cast<unsigned long>(n)},
-        outer_size_in{static_cast<unsigned long>(ldin), static_cast<unsigned long>(n)},
-        outer_size_out{static_cast<unsigned long>(n), static_cast<unsigned long>(ldout)};
+    std::vector<size_t> size_in{static_cast<unsigned long>(m), static_cast<unsigned long>(n)}, outer_size_in, outer_size_out;
+    if constexpr (Order == OrderMajor::Row) {
+        outer_size_in = std::move(std::vector<size_t>{static_cast<unsigned long>(m), static_cast<unsigned long>(ldin)});
+        outer_size_out = std::move(std::vector<size_t>{static_cast<unsigned long>(n), static_cast<unsigned long>(ldout)});
+    } else {
+        outer_size_in = std::move(std::vector<size_t>{static_cast<unsigned long>(ldin), static_cast<unsigned long>(n)});
+        outer_size_out = std::move(std::vector<size_t>{static_cast<unsigned long>(ldout), static_cast<unsigned long>(m)});
+    }
 
     auto plan = hptt::create_plan(perm, 2, T{1.0}, in, size_in, outer_size_in, T{0.0}, out, outer_size_out, hptt::ESTIMATE,
                                   omp_get_max_threads(), {}, Order == OrderMajor::Row);

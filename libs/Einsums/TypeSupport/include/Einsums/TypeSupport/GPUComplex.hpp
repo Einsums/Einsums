@@ -13,6 +13,19 @@
 
 namespace einsums::gpu_ops {
 
+__device__ inline float conj(float x) {
+    return x;
+}
+__device__ inline double conj(double x) {
+    return x;
+}
+__device__ inline hipFloatComplex conj(hipFloatComplex x) {
+    return make_hipFloatComplex(x.x, -x.y);
+}
+__device__ inline hipDoubleComplex conj(hipDoubleComplex x) {
+    return make_hipDoubleComplex(x.x, -x.y);
+}
+
 __device__ inline float fma(float x, float y, float z) {
     return ::fmaf(x, y, z);
 }

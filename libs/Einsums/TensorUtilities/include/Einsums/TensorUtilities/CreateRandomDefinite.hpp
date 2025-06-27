@@ -34,7 +34,9 @@ namespace einsums {
  * @return A new positive definite or negative definite matrix.
  */
 template <typename T = double>
-auto create_random_definite(std::string const &name, int rows, int cols, T mean = T{1.0}) -> Tensor<T, 2> {
+auto create_random_definite(std::string const &name, int rows, int cols, RemoveComplexT<T> mean = RemoveComplexT<T>{1.0}) -> Tensor<T, 2> {
+    using Real = RemoveComplexT<T>;
+
     if (rows != cols) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "Can only make square positive definite matrices.");
     }
@@ -57,20 +59,20 @@ auto create_random_definite(std::string const &name, int rows, int cols, T mean 
     std::default_random_engine engine;
 
     // Create random eigenvalues. Need to calculate the standard deviation from the mean.
-    auto normal = std::normal_distribution<T>(0, std::abs(mean) / T{2.0} / std::numbers::sqrt2_v<T> / std::numbers::inv_sqrtpi_v<T>);
+    auto normal = std::normal_distribution<Real>(0, std::abs(mean) / Real{2.0} / std::numbers::sqrt2_v<Real> / std::numbers::inv_sqrtpi_v<Real>);
 
     Tensor<T, 1> Evals("name2", rows);
 
     for (int i = 0; i < rows; i++) {
         // Maxwell-Boltzmann distribute the eigenvalues. Make sure they are positive.
         do {
-            T val1 = normal(engine), val2 = normal(engine), val3 = normal(engine);
+            Real val1 = normal(engine), val2 = normal(engine), val3 = normal(engine);
 
             Evals(i) = std::sqrt(val1 * val1 + val2 * val2 + val3 * val3);
-            if (mean < T{0.0}) {
+            if (mean < Real{0.0}) {
                 Evals(i) = -Evals(i);
             }
-        } while (Evals(i) == T{0.0}); // Make sure they are non-zero.
+        } while (Evals(i) == Real{0.0}); // Make sure they are non-zero.
     }
 
     // Create the tensor.

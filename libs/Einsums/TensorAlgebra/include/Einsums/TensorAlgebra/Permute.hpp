@@ -16,6 +16,8 @@
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 
+#include "Einsums/Iterator/Enumerate.hpp"
+
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/TensorAlgebra/Backends/DevicePermute.hpp>
 #endif
@@ -26,37 +28,39 @@ namespace einsums::tensor_algebra {
 namespace detail {
 
 void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, float const beta,
-                            float *B);
+                            float *B, bool conjA);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, size_t const *sizeA, double const beta,
-                            double *B);
+                            double *B, bool conjA);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A,
-                            size_t const *sizeA, std::complex<float> const beta, std::complex<float> *B);
+                            size_t const *sizeA, std::complex<float> const beta, std::complex<float> *B, bool conjA);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
-                            size_t const *sizeA, std::complex<double> const beta, std::complex<double> *B);
+                            size_t const *sizeA, std::complex<double> const beta, std::complex<double> *B, bool conjA);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, size_t const *offsetA,
-                            size_t const *outerSizeA, float const beta, float *B, size_t const *offsetB, size_t const *outerSizeB);
+                            size_t const *outerSizeA, float const beta, float *B, size_t const *offsetB, size_t const *outerSizeB,
+                            bool conjA);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, size_t const *sizeA, size_t const *offsetA,
-                            size_t const *outerSizeA, double const beta, double *B, size_t const *offsetB, size_t const *outerSizeB);
+                            size_t const *outerSizeA, double const beta, double *B, size_t const *offsetB, size_t const *outerSizeB,
+                            bool conjA);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A,
                             size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, std::complex<float> const beta,
-                            std::complex<float> *B, size_t const *offsetB, size_t const *outerSizeB);
+                            std::complex<float> *B, size_t const *offsetB, size_t const *outerSizeB, bool conjA);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
                             size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, std::complex<double> const beta,
-                            std::complex<double> *B, size_t const *offsetB, size_t const *outerSizeB);
+                            std::complex<double> *B, size_t const *offsetB, size_t const *outerSizeB, bool conjA);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA, size_t const *offsetA,
                             size_t const *outerSizeA, size_t const innerStrideA, float const beta, float *B, size_t const *offsetB,
-                            size_t const *outerSizeB, size_t const innerStrideB);
+                            size_t const *outerSizeB, size_t const innerStrideB, bool conjA);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, size_t const *sizeA, size_t const *offsetA,
                             size_t const *outerSizeA, size_t const innerStrideA, double const beta, double *B, size_t const *offsetB,
-                            size_t const *outerSizeB, size_t const innerStrideB);
+                            size_t const *outerSizeB, size_t const innerStrideB, bool conjA);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A,
                             size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, size_t const innerStrideA,
                             std::complex<float> const beta, std::complex<float> *B, size_t const *offsetB, size_t const *outerSizeB,
-                            size_t const innerStrideB);
+                            size_t const innerStrideB, bool conjA);
 void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
                             size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, size_t const innerStrideA,
                             std::complex<double> const beta, std::complex<double> *B, size_t const *offsetB, size_t const *outerSizeB,
-                            size_t const innerStrideB);
+                            size_t const innerStrideB, bool conjA);
 
 } // namespace detail
 #endif
@@ -64,13 +68,13 @@ void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double>
 //
 // permute algorithm
 //
-template <CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
+template <bool ConjA = false, CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
     requires requires {
         requires sizeof...(CIndices) == sizeof...(AIndices);
         requires sizeof...(CIndices) == CType::Rank;
         requires sizeof...(AIndices) == AType::Rank;
         requires SameUnderlyingAndRank<AType, CType>;
-        requires std::is_arithmetic_v<U>;
+        requires std::is_arithmetic_v<U> || IsComplexV<U>;
     }
 void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
              std::tuple<AIndices...> const &A_indices, AType const &A) {
@@ -78,7 +82,7 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
 
-    LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
+    LabeledSection1((std::abs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices,
                                       UC_prefactor, C->name(), C_indices)
                         : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices));
@@ -92,6 +96,17 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 
     auto target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
 
+    einsums::for_sequence<ARank>([&](auto n) {
+        if (C->dim((size_t)n) < A.dim(std::get<2 * (size_t)n + 1>(target_position_in_A))) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "The {} dimension of the output tensor is smaller than the input tensor!",
+                                    print::ordinal((size_t)n));
+        }
+
+        if(C->dim((size_t) n) == 0) {
+            return;
+        }
+    });
+
 #if !defined(EINSUMS_WINDOWS)
     if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
         std::array<int, ARank>    perms{};
@@ -101,7 +116,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             perms[i0] = arguments::get_from_tuple<size_t>(target_position_in_A, (2 * i0) + 1);
             size[i0]  = A.dim(i0);
         }
-        detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
+
+        detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data(), ConjA);
     } else if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
         std::array<int, ARank>    perms{};
         std::array<size_t, ARank> size{};
@@ -125,7 +141,7 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             outerSizeC[i0] = A.dim(perms[i0]);
         }
         detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                        C_prefactor, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC);
+                        C_prefactor, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
         std::array<int, ARank>    perms{};
         std::array<size_t, ARank> size{};
@@ -145,7 +161,7 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             offsetC[i0]    = C->offset(i0);
         }
         detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                        C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
+                        C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA);
     } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
         std::array<int, ARank>    perms{};
         std::array<size_t, ARank> size{};
@@ -165,7 +181,7 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             offsetC[i0]    = C->offset(i0);
         }
         detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                        C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC);
+                        C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA);
     } else
 #endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
@@ -193,43 +209,47 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             T &target_value = subscript_tensor(*C, index);
             T  A_value      = subscript_tensor(A, A_order);
 
-            target_value = C_prefactor * target_value + A_prefactor * A_value;
+            if constexpr (ConjA && IsComplexV<T>) {
+                target_value = C_prefactor * target_value + A_prefactor * std::conj(A_value);
+            } else {
+                target_value = C_prefactor * target_value + A_prefactor * A_value;
+            }
         }
     }
 }
 
 // Sort with default values, no smart pointers
-template <NotASmartPointer ObjectA, NotASmartPointer ObjectC, typename... CIndices, typename... AIndices>
+template <bool ConjA = false, NotASmartPointer ObjectA, NotASmartPointer ObjectC, typename... CIndices, typename... AIndices>
 void permute(std::tuple<CIndices...> const &C_indices, ObjectC *C, std::tuple<AIndices...> const &A_indices, ObjectA const &A) {
-    permute(0, C_indices, C, 1, A_indices, A);
+    permute<ConjA>(0, C_indices, C, 1, A_indices, A);
 }
 
 // Sort with default values, two smart pointers
-template <SmartPointer SmartPointerA, SmartPointer SmartPointerC, typename... CIndices, typename... AIndices>
+template <bool ConjA = false, SmartPointer SmartPointerA, SmartPointer SmartPointerC, typename... CIndices, typename... AIndices>
 void permute(std::tuple<CIndices...> const &C_indices, SmartPointerC *C, std::tuple<AIndices...> const &A_indices, SmartPointerA const &A) {
-    permute(0, C_indices, C->get(), 1, A_indices, *A);
+    permute<ConjA>(0, C_indices, C->get(), 1, A_indices, *A);
 }
 
 // Sort with default values, one smart pointer (A)
-template <SmartPointer SmartPointerA, NotASmartPointer PointerC, typename... CIndices, typename... AIndices>
+template <bool ConjA = false, SmartPointer SmartPointerA, NotASmartPointer PointerC, typename... CIndices, typename... AIndices>
 void permute(std::tuple<CIndices...> const &C_indices, PointerC *C, std::tuple<AIndices...> const &A_indices, SmartPointerA const &A) {
-    permute(0, C_indices, C, 1, A_indices, *A);
+    permute<ConjA>(0, C_indices, C, 1, A_indices, *A);
 }
 
 // Sort with default values, one smart pointer (C)
-template <NotASmartPointer ObjectA, SmartPointer SmartPointerC, typename... CIndices, typename... AIndices>
+template <bool ConjA = false, NotASmartPointer ObjectA, SmartPointer SmartPointerC, typename... CIndices, typename... AIndices>
 void permute(std::tuple<CIndices...> const &C_indices, SmartPointerC *C, std::tuple<AIndices...> const &A_indices, ObjectA const &A) {
-    permute(0, C_indices, C->get(), 1, A_indices, A);
+    permute<ConjA>(0, C_indices, C->get(), 1, A_indices, A);
 }
 
-template <BlockTensorConcept AType, BlockTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
+template <bool ConjA = false, BlockTensorConcept AType, BlockTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
     requires requires {
         requires sizeof...(CIndices) == sizeof...(AIndices);
         requires sizeof...(CIndices) == CType::Rank;
         requires sizeof...(AIndices) == AType::Rank;
         requires SameUnderlyingAndRank<AType, CType>;
         requires InSamePlace<AType, CType>;
-        requires std::is_arithmetic_v<U>;
+        requires std::is_arithmetic_v<U> || IsComplexV<U>;
     }
 void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
              std::tuple<AIndices...> const &A_indices, AType const &A) {
@@ -238,7 +258,7 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     for (int i = 0; i < A.num_blocks(); i++) {
         auto       &C_block = (*C)[i];
         auto const &A_block = A[i];
-        permute(UC_prefactor, C_indices, &C_block, UA_prefactor, A_indices, A_block);
+        permute<ConjA>(UC_prefactor, C_indices, &C_block, UA_prefactor, A_indices, A_block);
     }
 }
 
@@ -258,14 +278,14 @@ inline auto get_grid_ranges_for_many(CType const &C, std::tuple<CIndices...> con
     return std::array{get_grid_ranges_for_many_a<AllUniqueIndices, 0>(C, C_indices, A, A_indices)...};
 }
 
-template <TiledTensorConcept AType, TiledTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
+template <bool ConjA = false, TiledTensorConcept AType, TiledTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
     requires requires {
         requires sizeof...(CIndices) == sizeof...(AIndices);
         requires sizeof...(CIndices) == CType::Rank;
         requires sizeof...(AIndices) == AType::Rank;
         requires SameUnderlyingAndRank<AType, CType>;
         requires InSamePlace<AType, CType>;
-        requires std::is_arithmetic_v<U>;
+        requires std::is_arithmetic_v<U> || IsComplexV<U>;
     }
 void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
              std::tuple<AIndices...> const &A_indices, AType const &A) {
@@ -312,7 +332,7 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         auto &C_tile = C->tile(C_tile_index);
         C->unlock();
         C_tile.lock();
-        permute(UC_prefactor, C_indices, &C_tile, UA_prefactor, A_indices, A.tile(A_tile_index));
+        permute<ConjA>(UC_prefactor, C_indices, &C_tile, UA_prefactor, A_indices, A.tile(A_tile_index));
         C_tile.unlock();
     }
 }

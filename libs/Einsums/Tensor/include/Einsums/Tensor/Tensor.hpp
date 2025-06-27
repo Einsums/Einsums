@@ -1204,6 +1204,17 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         _source_dims             = dims; // Must have size Rank
         _offsets.fill(0);                // No offset given, taken to be zero
         _offset_ordinal = 0;             // Follows
+
+        if (Rank > 0 && _strides[Rank - 1] == 0) {
+            _strides[Rank - 1] = 1;
+        }
+
+        for (ptrdiff_t i = (ptrdiff_t)Rank - 2; i >= 0; i--) {
+            if (_strides[i] == 0) {
+                _strides[i] = _strides[i + 1];
+            }
+        }
+
         // Check access is in increasing stride
         for (size_t i = 0; i < Rank - 1; i++) {
             if (_strides[i] < _strides[i + 1]) {
@@ -1235,6 +1246,17 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         _source_dims             = dims;
         _offsets.fill(0);
         _offset_ordinal = 0;
+
+        if (Rank > 0 && _strides[Rank - 1] == 0) {
+            _strides[Rank - 1] = 1;
+        }
+
+        for (ptrdiff_t i = (ptrdiff_t) Rank - 2; i >= 0; i--) {
+            if (_strides[i] == 0) {
+                _strides[i] = _strides[i + 1];
+            }
+        }
+
         // Check access is in increasing stride
         for (size_t i = 0; i < Rank - 1; i++) {
             if (_strides[i] < _strides[i + 1]) {
@@ -1824,6 +1846,16 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             ordinal -= _offset_ordinal;
         }
 
+        if (Rank > 0 && _strides[Rank - 1] == 0) {
+            _strides[Rank - 1] = 1;
+        }
+
+        for (ptrdiff_t i = (ptrdiff_t)Rank - 2; i >= 0; i--) {
+            if (_strides[i] == 0) {
+                _strides[i] = _strides[i + 1];
+            }
+        }
+
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
         _data = &(other._data[ordinal]);
 
@@ -1832,8 +1864,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
         // Check the index strides. If they are the same as the strides, then this is the "full view" of the underlying tensor.
         _full_view_of_underlying = true;
-        for(int i = 0; i < Rank; i++) {
-            if(_index_strides[i] != _strides[i]) {
+        for (int i = 0; i < Rank; i++) {
+            if (_index_strides[i] != _strides[i]) {
                 _full_view_of_underlying = false;
                 break;
             }

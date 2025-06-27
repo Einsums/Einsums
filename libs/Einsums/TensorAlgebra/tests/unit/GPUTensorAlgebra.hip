@@ -1088,21 +1088,15 @@ TEST_CASE("GPU einsum3") {
             }
         }
 
-        println(A);
-
         gMO0 = 2.0;
         hip_catch(hipDeviceSynchronize());
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 auto vgMO0 = gMO0(i0, j0, All, All);
                 auto vA = A(i0, j0, All, All);
-                println(vA);
                 einsum(Indices{k, l}, &vgMO0, Indices{p, l}, vA, Indices{p, k}, B);
             }
         }
-
-        println(gMO0);
-        println(gMO1);
 
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {

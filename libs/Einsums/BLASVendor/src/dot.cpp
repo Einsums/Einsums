@@ -54,7 +54,7 @@ auto cdot(int_t n, std::complex<float> const *x, int_t incx, std::complex<float>
     LabeledSection0();
 
 #ifdef EINSUMS_HAVE_MKL
-    std::complex<float> out;
+    std::complex<float> out{0.0, 0.0};
     FC_GLOBAL(cdotu, CDOTU)(&out, &n, x, &incx, y, &incy);
     return out;
 #else
@@ -67,7 +67,7 @@ auto zdot(int_t n, std::complex<double> const *x, int_t incx, std::complex<doubl
     LabeledSection0();
 
 #ifdef EINSUMS_HAVE_MKL
-    std::complex<double> out;
+    std::complex<double> out{0.0, 0.0};
     FC_GLOBAL(zdotu, ZDOTU)(&out, &n, x, &incx, y, &incy);
     return out;
 #else
@@ -79,7 +79,7 @@ auto cdotc(int_t n, std::complex<float> const *x, int_t incx, std::complex<float
     LabeledSection0();
 
 #ifdef EINSUMS_HAVE_MKL
-    std::complex<float> out;
+    std::complex<float> out{0.0, 0.0};
     FC_GLOBAL(cdotc, CDOTC)(&out, &n, x, &incx, y, &incy);
     return out;
 #else
@@ -91,7 +91,7 @@ auto zdotc(int_t n, std::complex<double> const *x, int_t incx, std::complex<doub
     LabeledSection0();
 
 #ifdef EINSUMS_HAVE_MKL
-    std::complex<double> out;
+    std::complex<double> out{0.0, 0.0};
     FC_GLOBAL(zdotc, ZDOTC)(&out, &n, x, &incx, y, &incy);
     return out;
 #else

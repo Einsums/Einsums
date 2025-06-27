@@ -124,7 +124,7 @@ void parse_args(int argc, char **argv, int *norbs, int *trials) {
     }
 }
 
-int         main(int argc, char **argv) {
+int main(int argc, char **argv) {
 #pragma omp parallel
     {
 #pragma omp single

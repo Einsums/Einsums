@@ -212,7 +212,7 @@ struct fmt::formatter<einsums::RuntimeState> : formatter<string_view> {
             name = "PreShutdown";
             break;
         case einsums::RuntimeState::Shutdown:
-            name = "Shutown";
+            name = "Shutdown";
             break;
         case einsums::RuntimeState::Stopping:
             name = "Stopping";

@@ -159,6 +159,10 @@ void zlassq(int_t n, std::complex<double> const *x, int_t incx, double *scale, d
 
 auto sgesvd(char, char, int_t, int_t, float *, int_t, float *, float *, int_t, float *, int_t, float *) -> int_t;
 auto dgesvd(char, char, int_t, int_t, double *, int_t, double *, double *, int_t, double *, int_t, double *) -> int_t;
+auto cgesvd(char jobu, char jobvt, int_t m, int_t n, std::complex<float> *a, int_t lda, float *s, std::complex<float> *u, int_t ldu,
+            std::complex<float> *vt, int_t ldvt, std::complex<float> *superb) -> int_t;
+auto zgesvd(char jobu, char jobvt, int_t m, int_t n, std::complex<double> *a, int_t lda, double *s, std::complex<double> *u, int_t ldu,
+            std::complex<double> *vt, int_t ldvt, std::complex<double> *superb) -> int_t;
 
 auto dgesdd(char, int_t, int_t, double *, int_t, double *, double *, int_t, double *, int_t) -> int_t;
 auto sgesdd(char, int_t, int_t, float *, int_t, float *, float *, int_t, float *, int_t) -> int_t;
@@ -169,6 +173,10 @@ auto cgesdd(char jobz, int_t m, int_t n, std::complex<float> *a, int_t lda, floa
 
 auto dgees(char jobvs, int_t n, double *a, int_t lda, int_t *sdim, double *wr, double *wi, double *vs, int_t ldvs) -> int_t;
 auto sgees(char jobvs, int_t n, float *a, int_t lda, int_t *sdim, float *wr, float *wi, float *vs, int_t ldvs) -> int_t;
+auto cgees(char jobvs, int_t n, std::complex<float> *a, int_t lda, int_t *sdim, std::complex<float> *w, std::complex<float> *vs, int_t ldvs)
+    -> int_t;
+auto zgees(char jobvs, int_t n, std::complex<double> *a, int_t lda, int_t *sdim, std::complex<double> *w, std::complex<double> *vs,
+           int_t ldvs) -> int_t;
 
 auto dtrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, double const *a, int_t lda, double const *b, int_t ldb, double *c,
             int_t ldc, double *scale) -> int_t;

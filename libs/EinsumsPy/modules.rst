@@ -14,6 +14,7 @@ EinsumsPy Modules
     /libs/EinsumsPy/Core/docs/index.rst
     /libs/EinsumsPy/Errors/docs/index.rst
     /libs/EinsumsPy/GPU/docs/index.rst
+    /libs/EinsumsPy/LinearAlgebra/docs/index.rst
     /libs/EinsumsPy/Tensor/docs/index.rst
     /libs/EinsumsPy/TensorAlgebra/docs/index.rst
     /libs/EinsumsPy/TestUtils/docs/index.rst
