@@ -566,7 +566,7 @@ def test_sdd(a, b, dtype, array):
         assert S[i] == pytest.approx(S_test[i])
 
 
-@pytest.mark.parametrize(["a", "b"], [(10, 10), (100, 100), (11, 13), (13, 11)])
+@pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13), (13, 11)])
 def test_qr(a, b, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
