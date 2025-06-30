@@ -41,6 +41,16 @@ Basic Arguments
 
     The name of the file for the profiler output.
 
+.. option:: --einsums:buffer-size
+
+    The amount of memory Einsums is allowed to use. It takes a string containing a number and units.
+    The units are either bytes or words. See :cpp:func:`memory_string` for more information.
+
+.. option:: --einsums:gpu-buffer-size
+
+    The amount of memory Einsums is allowed to use on the GPU. It takes a string containing a number and units.
+    The units are either bytes or words. See :cpp:func:`memory_string` for more information.
+
 
 ==================
 Advanced Arguments

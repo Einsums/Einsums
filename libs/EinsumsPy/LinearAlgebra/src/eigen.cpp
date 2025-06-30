@@ -28,11 +28,11 @@ void syev(std::string const &jobz, py::buffer &A, py::buffer &W) {
     py::buffer_info A_info = A.request(true), W_info = W.request(true);
 
     if (A_info.ndim != 2) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "A call to syev/heev can only take a rank-2 tensor as input!");
+        EINSUMS_THROW_EXCEPTION(rank_error, "A call to syev/heev can only take a rank-2 tensor as input!");
     }
 
     if (W_info.ndim != 1) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "A call to syev/heev can only take a rank-1 tensor as output!");
+        EINSUMS_THROW_EXCEPTION(rank_error, "A call to syev/heev can only take a rank-1 tensor as output!");
     }
 
     char jobz_ch = 'N';
@@ -50,38 +50,38 @@ void syev(std::string const &jobz, py::buffer &A, py::buffer &W) {
     // Type check
     if (A_info.format == py::format_descriptor<float>::format()) {
         if (W_info.format == py::format_descriptor<std::complex<float>>::format()) {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "The eigenvalues output from syev/heev are real, but the tensor passed is complex.");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "The eigenvalues output from syev/heev are real, but the tensor passed is complex.");
         } else if (W_info.format != A_info.format) {
-            EINSUMS_THROW_EXCEPTION(py::type_error,
+            EINSUMS_THROW_EXCEPTION(py::value_error,
                                     "The tensors passed to syev/heev need to have compatible storage types. Got A ({}), W ({}).",
                                     A_info.format, W_info.format);
         }
     } else if (A_info.format == py::format_descriptor<double>::format()) {
         if (W_info.format == py::format_descriptor<std::complex<double>>::format()) {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "The eigenvalues output from syev/heev are real, but the tensor passed is complex.");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "The eigenvalues output from syev/heev are real, but the tensor passed is complex.");
         } else if (W_info.format != A_info.format) {
-            EINSUMS_THROW_EXCEPTION(py::type_error,
+            EINSUMS_THROW_EXCEPTION(py::value_error,
                                     "The tensors passed to syev/heev need to have compatible storage types. Got A ({}), W ({}).",
                                     A_info.format, W_info.format);
         }
     } else if (A_info.format == py::format_descriptor<std::complex<float>>::format()) {
         if (W_info.format == py::format_descriptor<std::complex<float>>::format()) {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "The eigenvalues output from syev/heev are real, but the tensor passed is complex.");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "The eigenvalues output from syev/heev are real, but the tensor passed is complex.");
         } else if (W_info.format != py::format_descriptor<float>::format()) {
-            EINSUMS_THROW_EXCEPTION(py::type_error,
+            EINSUMS_THROW_EXCEPTION(py::value_error,
                                     "The tensors passed to syev/heev need to have compatible storage types. Got A ({}), W ({}).",
                                     A_info.format, W_info.format);
         }
     } else if (A_info.format == py::format_descriptor<std::complex<double>>::format()) {
         if (W_info.format == py::format_descriptor<std::complex<double>>::format()) {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "The eigenvalues output from syev/heev are real, but the tensor passed is complex.");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "The eigenvalues output from syev/heev are real, but the tensor passed is complex.");
         } else if (W_info.format != py::format_descriptor<double>::format()) {
-            EINSUMS_THROW_EXCEPTION(py::type_error,
+            EINSUMS_THROW_EXCEPTION(py::value_error,
                                     "The tensors passed to syev/heev need to have compatible storage types. Got A ({}), W ({}).",
                                     A_info.format, W_info.format);
         }
     } else {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "The tensors passed to syev/heev have the wrong storage types. Got A ({}), W ({}).",
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The tensors passed to syev/heev have the wrong storage types. Got A ({}), W ({}).",
                                 A_info.format, W_info.format);
     }
 
@@ -107,7 +107,7 @@ void syev(std::string const &jobz, py::buffer &A, py::buffer &W) {
                                    (blas::int_t)-1, (double *)nullptr);
         lwork = lwork_temp.real();
     } else {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform gemv on floating point matrices! Got type {}.", A_info.format);
+        EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform gemv on floating point matrices! Got type {}.", A_info.format);
     }
 
     if (info < 0) {
@@ -396,23 +396,24 @@ void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py:
     }
 
     if ((W_info.format != Vl_info.format && jobvl_ch == 'V') || (W_info.format != Vr_info.format && jobvr_ch == 'V')) {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "The eigenvalue buffer and the eigenvector buffers that will be used need to have the same "
-                                                "storage type! Unused buffers are ignored.");
+        EINSUMS_THROW_EXCEPTION(py::value_error,
+                                "The eigenvalue buffer and the eigenvector buffers that will be used need to have the same "
+                                "storage type! Unused buffers are ignored.");
     }
 
     if (A_info.format == py::format_descriptor<float>::format()) {
         if (W_info.format == py::format_descriptor<float>::format()) {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "The output buffers need to have complex data types to support the eigenvalues.");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "The output buffers need to have complex data types to support the eigenvalues.");
         } else if (W_info.format != py::format_descriptor<std::complex<float>>::format()) {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "The output buffers have an incompatible storage type!");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "The output buffers have an incompatible storage type!");
         } else {
             geev_real_in_cmplx_out<float>(jobvl_ch, jobvr_ch, A, W, Vl_info, Vr_info);
         }
     } else if (A_info.format == py::format_descriptor<double>::format()) {
         if (W_info.format == py::format_descriptor<double>::format()) {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "The output buffers need to have complex data types to support the eigenvalues.");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "The output buffers need to have complex data types to support the eigenvalues.");
         } else if (W_info.format != py::format_descriptor<std::complex<double>>::format()) {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "The output buffers have an incompatible storage type!");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "The output buffers have an incompatible storage type!");
         } else {
             geev_real_in_cmplx_out<double>(jobvl_ch, jobvr_ch, A, W, Vl_info, Vr_info);
         }
@@ -423,7 +424,7 @@ void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py:
                W_info.format == py::format_descriptor<std::complex<double>>::format()) {
         geev_cmplx_in_cmplx_out<std::complex<double>>(jobvl_ch, jobvr_ch, A, W, Vl_info, Vr_info);
     } else {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "The input and output buffers have incompatible storage types!");
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The input and output buffers have incompatible storage types!");
     }
 }
 
@@ -489,7 +490,10 @@ pybind11::tuple truncated_syev(pybind11::buffer const &A, size_t k) {
 
     py::tuple out;
 
-    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), (out = truncated_syev_work<Float>(A, k)));
+    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), (out = truncated_syev_work<Float>(A, k)))
+    else {
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The input matrix needs to store real or complex floating point data!");
+    }
 
     return out;
 }

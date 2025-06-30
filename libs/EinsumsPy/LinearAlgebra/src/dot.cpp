@@ -67,7 +67,7 @@ pybind11::object dot(pybind11::buffer const &A, pybind11::buffer const &B) {
     }
 
     if (A_info.format != B_info.format) {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "The storage formats of the tensors need to be the same!");
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The storage formats of the tensors need to be the same!");
     }
 
     std::vector<size_t> A_index_strides(A_info.ndim), B_index_strides(B_info.ndim), index_strides(0);
@@ -114,7 +114,7 @@ pybind11::object dot(pybind11::buffer const &A, pybind11::buffer const &B) {
             return py::cast(blas::dot<std::complex<double>>(easy_elems, (std::complex<double> const *)A_info.ptr, A_stride,
                                                             (std::complex<double> const *)B_info.ptr, B_stride));
         } else {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform the dot product on real or complex floating point inputs!");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform the dot product on real or complex floating point inputs!");
         }
     } else {
         recalc_index_strides(&index_strides, easy_dot);
@@ -131,7 +131,7 @@ pybind11::object dot(pybind11::buffer const &A, pybind11::buffer const &B) {
             return py::cast(dot_work<std::complex<double>>(A_info, B_info, index_strides, A_strides, B_strides, easy_dot, easy_elems,
                                                            hard_elems, A_stride, B_stride));
         } else {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform the dot product on real or complex floating point inputs!");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform the dot product on real or complex floating point inputs!");
         }
     }
 }
@@ -184,7 +184,7 @@ pybind11::object true_dot(pybind11::buffer const &A, pybind11::buffer const &B) 
     }
 
     if (A_info.format != B_info.format) {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "The storage formats of the tensors need to be the same!");
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The storage formats of the tensors need to be the same!");
     }
 
     std::vector<size_t> A_index_strides(A_info.ndim), B_index_strides(B_info.ndim), index_strides(0);
@@ -230,7 +230,7 @@ pybind11::object true_dot(pybind11::buffer const &A, pybind11::buffer const &B) 
             return py::cast(blas::dotc<std::complex<double>>(easy_elems, (std::complex<double> const *)A_info.ptr, A_stride,
                                                              (std::complex<double> const *)B_info.ptr, B_stride));
         } else {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform the dot product on real or complex floating point inputs!");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform the dot product on real or complex floating point inputs!");
         }
     } else {
         recalc_index_strides(&index_strides, easy_dot);
@@ -247,7 +247,7 @@ pybind11::object true_dot(pybind11::buffer const &A, pybind11::buffer const &B) 
             return py::cast(true_dot_work<std::complex<double>>(A_info, B_info, index_strides, A_strides, B_strides, easy_dot, easy_elems,
                                                                 hard_elems, A_stride, B_stride));
         } else {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform the dot product on real or complex floating point inputs!");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform the dot product on real or complex floating point inputs!");
         }
     }
 }

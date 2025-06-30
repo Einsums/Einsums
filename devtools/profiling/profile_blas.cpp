@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Config.hpp>
+
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Runtime.hpp>
 
@@ -76,67 +78,29 @@ double stdev(std::vector<double> const &values, double mean) {
     return sqrt(variance(values, mean));
 }
 
-static char const help[] = "Arguments:\n\n"
-                           "-n NUMBER\t\tThe number of orbitals. Defaults to 20.\n\n"
-                           "-t NUMBER\t\tThe number of trials. Defaults to 20.\n\n"
-                           "-h, --help\t\tPrint the help message.";
+void register_args(argparse::ArgumentParser &parser) {
+    auto &global_config = einsums::GlobalConfigMap::get_singleton();
+    auto &global_ints   = global_config.get_int_map()->get_value();
+    auto &global_bools  = global_config.get_bool_map()->get_value();
 
-void parse_args(int argc, char **argv, int *norbs, int *trials) {
-    *norbs  = 20;
-    *trials = 20;
+    parser.add_argument("-n")
+        .default_value<int64_t>(20)
+        .help("The starting number of orbitals for the calculation.")
+        .store_into(global_ints["n"]);
 
-    int state = 0; // 0 for no argument, 1 for orbs, 2 for trials.
-    int i     = 1;
+    parser.add_argument("-s").default_value<int64_t>(10).help("The step value for the range of orbitals.").store_into(global_ints["s"]);
 
-    while (i < argc) {
-        if (state == 0) {
-            if (strncmp(argv[i], "-n", 3) == 0) {
-                state = 1;
-            } else if (strncmp(argv[i], "-t", 3) == 0) {
-                state = 2;
-            } else if (strncmp(argv[i], "-h", 3) == 0 || strncmp(argv[i], "--help", 7) == 0) {
-                puts(help);
-                exit(0);
-            } else {
-                perror("Could not understand arguments! Please see the help message by using -h or --help. Please also make sure that you "
-                       "put a space between a flag and its value.");
-                exit(1);
-            }
-        } else if (state == 1) {
-            int retval;
+    parser.add_argument("-e")
+        .default_value<int64_t>(-1)
+        .help("The ending number of orbitals for the calculation.")
+        .store_into(global_ints["e"]);
 
-            retval = sscanf(argv[i], "%d", norbs);
+    parser.add_argument("-t")
+        .default_value<int64_t>(20)
+        .help("The number of trials for each step in the calculation.")
+        .store_into(global_ints["t"]);
 
-            if (retval != 1) {
-                perror("Could not understand input! Please put an argument after -n.");
-                exit(1);
-            }
-
-            if (*norbs < 1) {
-                perror("Cannot handle negative or zero numbers of orbitals!");
-                exit(1);
-            }
-            state = 0;
-        } else if (state == 2) {
-            int retval;
-            retval = sscanf(argv[i], "%d", trials);
-
-            if (retval != 1) {
-                perror("Could not understand input! Please put an argument after -t.");
-                exit(1);
-            }
-
-            if (*trials < 1) {
-                perror("Cannot handle negative or zero numbers of trials!");
-                exit(1);
-            }
-            state = 0;
-        } else {
-            perror("Something went horribly wrong. Try again.");
-            exit(-1);
-        }
-        i++;
-    }
+    parser.add_argument("-c").flag().store_into(global_bools["c"]);
 }
 
 template <class Generator>
@@ -148,93 +112,126 @@ void fill_random(std::vector<double> &buffer, Generator &generator) {
     }
 }
 
-int         main(int argc, char **argv) {
+int main(int argc, char **argv) {
 #pragma omp parallel
     {
 #pragma omp single
         {
+            einsums::register_arguments(register_args);
+
             einsums::initialize(argc, argv);
             // Initialize random number generator.
             std::default_random_engine engine(clock());
 
-            int norbs, trials;
+            int  start, end, step, trials;
+            bool csv;
 
-            parse_args(argc, argv, &norbs, &trials);
+            {
+                auto &global_config = einsums::GlobalConfigMap::get_singleton();
 
-            printf("Running %d trials with %d orbitals.\n", trials, norbs);
-
-            std::vector<double> times_J(trials), times_K(trials), times_G(trials), times_tot(trials);
-
-            std::vector<double> J(norbs * norbs), K(norbs * norbs), G(norbs * norbs), D(norbs * norbs), TEI(norbs * norbs * norbs * norbs);
-
-            fill_random(D, engine);
-            fill_random(TEI, engine);
-
-            // Calculate the times.
-            for (int i = 0; i < trials; i++) {
-                clock_t start = clock();
-
-                create_J(J.data(), D.data(), TEI.data(), norbs);
-
-                clock_t J_time = clock();
-
-                create_K(K.data(), D.data(), TEI.data(), norbs);
-
-                clock_t K_time = clock();
-
-                create_G(G.data(), J.data(), K.data(), norbs);
-
-                clock_t G_time = clock();
-
-                times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
-                times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
-                times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
-                times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+                start  = global_config.get_int("n");
+                end    = global_config.get_int("e");
+                step   = global_config.get_int("s");
+                trials = global_config.get_int("t");
+                csv    = global_config.get_bool("c");
             }
 
-            // Print the timing info.
-            double J_mean   = mean(times_J);
-            double K_mean   = mean(times_K);
-            double G_mean   = mean(times_G);
-            double tot_mean = mean(times_tot);
-            printf("einsums times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, "
-                   "stdev %lg s\n",
-                   J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
-                   stdev(times_tot, tot_mean));
-
-            std::vector<double> TEI_sorted(norbs * norbs * norbs * norbs);
-
-            // Calculate the linear algebra times.
-            for (int i = 0; i < trials; i++) {
-                clock_t start = clock();
-
-                create_J(J.data(), D.data(), TEI.data(), norbs);
-
-                clock_t J_time = clock();
-
-                create_K_sorted(K.data(), D.data(), TEI.data(), TEI_sorted.data(), norbs);
-
-                clock_t K_time = clock();
-
-                create_G(G.data(), J.data(), K.data(), norbs);
-
-                clock_t G_time = clock();
-
-                times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
-                times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
-                times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
-                times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+            if (end < start) {
+                end = start;
             }
 
-            // Print the timing info.
-            J_mean   = mean(times_J);
-            K_mean   = mean(times_K);
-            G_mean   = mean(times_G);
-            tot_mean = mean(times_tot);
-            printf("sorted times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, stdev "
-                   "%lg s\n",
-                   J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
-                   stdev(times_tot, tot_mean));
+            for (int norbs = start; norbs <= end; norbs += step) {
+
+                if (!csv) {
+                    printf("Running %d trials with %d orbitals.\n", trials, norbs);
+                }
+
+                std::vector<double> times_J(trials), times_K(trials), times_G(trials), times_tot(trials);
+
+                std::vector<double> J(norbs * norbs), K(norbs * norbs), G(norbs * norbs), D(norbs * norbs),
+                    TEI(norbs * norbs * norbs * norbs);
+
+                fill_random(D, engine);
+                fill_random(TEI, engine);
+
+                // Calculate the times.
+                for (int i = 0; i < trials; i++) {
+                    clock_t start = clock();
+
+                    create_J(J.data(), D.data(), TEI.data(), norbs);
+
+                    clock_t J_time = clock();
+
+                    create_K(K.data(), D.data(), TEI.data(), norbs);
+
+                    clock_t K_time = clock();
+
+                    create_G(G.data(), J.data(), K.data(), norbs);
+
+                    clock_t G_time = clock();
+
+                    times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
+                    times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
+                    times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
+                    times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+                }
+
+                // Print the timing info.
+                double J_mean   = mean(times_J);
+                double K_mean   = mean(times_K);
+                double G_mean   = mean(times_G);
+                double tot_mean = mean(times_tot);
+                if (csv) {
+                    printf("%d,%lf,%lf,", norbs, tot_mean, stdev(times_tot, tot_mean));
+                } else {
+                    printf(
+                        "einsums times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, "
+                        "stdev %lg s\n",
+                        J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
+                        stdev(times_tot, tot_mean));
+                }
+
+                std::vector<double> TEI_sorted(norbs * norbs * norbs * norbs);
+
+                // Calculate the linear algebra times.
+                for (int i = 0; i < trials; i++) {
+                    clock_t start = clock();
+
+                    create_J(J.data(), D.data(), TEI.data(), norbs);
+
+                    clock_t J_time = clock();
+
+                    create_K_sorted(K.data(), D.data(), TEI.data(), TEI_sorted.data(), norbs);
+
+                    clock_t K_time = clock();
+
+                    create_G(G.data(), J.data(), K.data(), norbs);
+
+                    clock_t G_time = clock();
+
+                    times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
+                    times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
+                    times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
+                    times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+                }
+
+                // Print the timing info.
+                J_mean   = mean(times_J);
+                K_mean   = mean(times_K);
+                G_mean   = mean(times_G);
+                tot_mean = mean(times_tot);
+
+                if (csv) {
+                    printf("%lf,%lf\n", tot_mean, stdev(times_tot, tot_mean));
+                } else {
+                    printf(
+                        "sorted times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, "
+                        "stdev "
+                        "%lg s\n",
+                        J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
+                        stdev(times_tot, tot_mean));
+                }
+            }
 
             einsums::finalize();
         }

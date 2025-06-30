@@ -30,17 +30,17 @@ using namespace einsums::python::detail;
 
 EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
     py::enum_<einsums::linear_algebra::Norm>(mod, "Norm")
-        .value("MaxAbs", einsums::linear_algebra::Norm::MaxAbs)
-        .value("One", einsums::linear_algebra::Norm::One)
-        .value("Infinity", einsums::linear_algebra::Norm::Infinity)
-        .value("Frobenius", einsums::linear_algebra::Norm::Frobenius)
+        .value("MAXABS", einsums::linear_algebra::Norm::MaxAbs)
+        .value("ONE", einsums::linear_algebra::Norm::One)
+        .value("INFINITY", einsums::linear_algebra::Norm::Infinity)
+        .value("FROBENIUS", einsums::linear_algebra::Norm::Frobenius)
         .export_values();
 
     py::enum_<einsums::linear_algebra::Vectors>(mod, "Vectors")
-        .value("All", einsums::linear_algebra::Vectors::All)
-        .value("Some", einsums::linear_algebra::Vectors::Some)
-        .value("Overwrite", einsums::linear_algebra::Vectors::Overwrite)
-        .value("None", einsums::linear_algebra::Vectors::None)
+        .value("ALL", einsums::linear_algebra::Vectors::All)
+        .value("SOME", einsums::linear_algebra::Vectors::Some)
+        .value("OVERWRITE", einsums::linear_algebra::Vectors::Overwrite)
+        .value("NONE", einsums::linear_algebra::Vectors::None)
         .export_values();
 
     mod.def("sum_square", &sum_square,
@@ -66,6 +66,7 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .def("axpby", &axpby)
         .def("ger", &ger)
         .def("getrf", &getrf)
+        .def("extract_plu", &extract_plu)
         .def("getri", &getri)
         .def("invert", &invert)
         .def("norm", &norm)
@@ -79,6 +80,7 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .def("solve_continuous_lyapunov", &solve_continuous_lyapunov)
         .def("qr", &qr)
         .def("q", &q)
+        .def("r", &r)
         .def("direct_product", &direct_product)
         .def("det", &det);
 }

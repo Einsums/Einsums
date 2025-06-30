@@ -12,6 +12,7 @@
 #include <Einsums/Runtime.hpp>
 
 #include <exception>
+#include <mutex>
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
@@ -46,9 +47,28 @@ void export_Core(py::module_ &mod) {
         .def("empty", [](GlobalConfigMap &self) { return self.empty(); })
         .def("size", [](GlobalConfigMap &self) { return self.size(); })
         .def("max_size", [](GlobalConfigMap &self) { return self.max_size(); })
-        .def("get_string", [](GlobalConfigMap &self, std::string const &str) { return self.get_string(str); })
+        .def("get_str", [](GlobalConfigMap &self, std::string const &str) { return self.get_string(str); })
         .def("get_int", [](GlobalConfigMap &self, std::string const &str) { return self.get_int(str); })
-        .def("get_double", [](GlobalConfigMap &self, std::string const &str) { return self.get_double(str); });
+        .def("get_float", [](GlobalConfigMap &self, std::string const &str) { return self.get_double(str); })
+        .def("get_bool", [](GlobalConfigMap &self, std::string const &str) { return self.get_bool(str); })
+        .def("set_str",
+             [](GlobalConfigMap &self, std::string const &key, std::string const &value) {
+                 auto guard                              = std::lock_guard(self);
+                 self.get_string_map()->get_value()[key] = value;
+             })
+        .def("set_int",
+             [](GlobalConfigMap &self, std::string const &key, std::int64_t value) {
+                 auto guard                           = std::lock_guard(self);
+                 self.get_int_map()->get_value()[key] = value;
+             })
+        .def("set_float", [](GlobalConfigMap &self, std::string const &key, double value) {
+            auto guard                              = std::lock_guard(self);
+            self.get_double_map()->get_value()[key] = value;
+        })
+        .def("set_bool", [](GlobalConfigMap &self, std::string const &key, bool value) {
+            auto guard                              = std::lock_guard(self);
+            self.get_bool_map()->get_value()[key] = value;
+        });
 
     auto section = py::class_<einsums::Section>(mod, "Section");
 

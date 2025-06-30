@@ -92,7 +92,8 @@ Setting up a program
 
 To create a program using Einsums, you must initialize the library before you do anything with Einsums,
 and finalize it after you finish using Einsums. Make sure you wrap your code in OpenMP directives,
-otherwise the threading environment won't be set up properly.
+otherwise the threading environment won't be set up properly and you will notice a significant
+slow down as each call will need to set it up again.
 
 .. code:: C++
 

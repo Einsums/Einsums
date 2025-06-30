@@ -51,7 +51,9 @@ void EINSUMS_EXPORT axpby(pybind11::object const &alpha, pybind11::buffer const 
 
 void EINSUMS_EXPORT ger(pybind11::object const &alpha, pybind11::buffer const &X, pybind11::buffer const &Y, pybind11::buffer &A);
 
-void EINSUMS_EXPORT getrf(pybind11::buffer &A, std::vector<blas::int_t> &pivot);
+std::vector<blas::int_t> EINSUMS_EXPORT getrf(pybind11::buffer &A);
+
+pybind11::tuple EINSUMS_EXPORT extract_plu(pybind11::buffer const &A, std::vector<blas::int_t> const &pivot);
 
 void EINSUMS_EXPORT getri(pybind11::buffer &A, std::vector<blas::int_t> &pivot);
 
@@ -78,6 +80,8 @@ pybind11::object EINSUMS_EXPORT solve_continuous_lyapunov(pybind11::buffer const
 pybind11::tuple EINSUMS_EXPORT qr(pybind11::buffer const &A);
 
 pybind11::object EINSUMS_EXPORT q(pybind11::buffer const &qr, pybind11::buffer const &tau);
+
+pybind11::object EINSUMS_EXPORT r(pybind11::buffer const &qr, pybind11::buffer const &tau);
 
 void EINSUMS_EXPORT direct_product(pybind11::object const &alpha, pybind11::buffer const &A, pybind11::buffer const &B,
                                    pybind11::object const &beta, pybind11::buffer &C);

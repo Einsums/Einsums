@@ -66,7 +66,7 @@ void gemm(std::string const &transA, std::string const &transB, py::object const
     }
 
     if (A_info.format != B_info.format || A_info.format != C_info.format) {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform gemm on matrices with the same stored type! Got A ({}), B ({}), C ({}).",
+        EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform gemm on matrices with the same stored type! Got A ({}), B ({}), C ({}).",
                                 A_info.format, B_info.format, C_info.format);
     }
 
@@ -85,7 +85,7 @@ void gemm(std::string const &transA, std::string const &transB, py::object const
                                          (std::complex<double> const *)A_info.ptr, lda, (std::complex<double> const *)B_info.ptr, ldb,
                                          beta.cast<std::complex<double>>(), (std::complex<double> *)C_info.ptr, ldc);
     } else {
-        EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform gemm on floating point matrices! Got type {}.", A_info.format);
+        EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform gemm on floating point matrices! Got type {}.", A_info.format);
     }
 }
 

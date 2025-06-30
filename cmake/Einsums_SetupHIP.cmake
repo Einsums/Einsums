@@ -4,6 +4,9 @@
 #----------------------------------------------------------------------------------------------
 
 if(EINSUMS_WITH_HIP AND NOT TARGET roc::rocblas)
+  include(Einsums_Utils)
+  include(Einsums_AddDefinitions)
+
   if(EINSUMS_WTIH_CUDA)
     einsums_error(
       "Both EINSUMS_WITH_CUDA and EINSUMS_WITH_HIP are ON. Please choose one of them for einsums to work properly"

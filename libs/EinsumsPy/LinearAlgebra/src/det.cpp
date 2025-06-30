@@ -40,8 +40,6 @@ T det_work(pybind11::buffer const &A) {
 
     int parity = 0;
 
-    EINSUMS_LOG_DEBUG("{}", pivots);
-
     // Calculate the effect of the pivots.
     size_t dim = temp.dim(0);
     for (int i = 0; i < dim; i++) {
@@ -71,7 +69,7 @@ pybind11::object det(pybind11::buffer const &A) {
     }
 
     if (A_info.shape[0] != A_info.shape[1]) {
-        EINSUMS_THROW_EXCEPTION(rank_error, "Can only take the determinant of sqaure matrices!");
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Can only take the determinant of sqaure matrices!");
     }
 
     py::object out;
