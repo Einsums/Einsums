@@ -396,8 +396,9 @@ void geev(std::string const &jobvl, std::string const &jobvr, py::buffer &A, py:
     }
 
     if ((W_info.format != Vl_info.format && jobvl_ch == 'V') || (W_info.format != Vr_info.format && jobvr_ch == 'V')) {
-        EINSUMS_THROW_EXCEPTION(py::value_error, "The eigenvalue buffer and the eigenvector buffers that will be used need to have the same "
-                                                "storage type! Unused buffers are ignored.");
+        EINSUMS_THROW_EXCEPTION(py::value_error,
+                                "The eigenvalue buffer and the eigenvector buffers that will be used need to have the same "
+                                "storage type! Unused buffers are ignored.");
     }
 
     if (A_info.format == py::format_descriptor<float>::format()) {
@@ -489,7 +490,10 @@ pybind11::tuple truncated_syev(pybind11::buffer const &A, size_t k) {
 
     py::tuple out;
 
-    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), (out = truncated_syev_work<Float>(A, k)));
+    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), (out = truncated_syev_work<Float>(A, k)))
+    else {
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The input matrix needs to store real or complex floating point data!");
+    }
 
     return out;
 }

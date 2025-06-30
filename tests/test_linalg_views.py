@@ -398,13 +398,13 @@ def test_norm(a, b, dtype, array):
 
     A_view = A[:a, :b]
 
-    assert ein.core.norm(ein.core.Frobenius, A_view) == pytest.approx(
+    assert ein.core.norm(ein.core.FROBENIUS, A_view) == pytest.approx(
         np.linalg.norm(A_view, "fro")
     )
-    assert ein.core.norm(ein.core.Infinity, A_view) == pytest.approx(
+    assert ein.core.norm(ein.core.INFINITY, A_view) == pytest.approx(
         np.linalg.norm(A_view, 1)
     )
-    assert ein.core.norm(ein.core.One, A_view) == pytest.approx(
+    assert ein.core.norm(ein.core.ONE, A_view) == pytest.approx(
         np.linalg.norm(A_view, np.inf)
     )
 

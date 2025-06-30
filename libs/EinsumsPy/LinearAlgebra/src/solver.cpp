@@ -68,7 +68,7 @@ void gesv(pybind11::buffer &A, pybind11::buffer &B) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "The solver can only handle square matrices!");
     }
 
-    if(A_info.shape[0] != B_info.shape[0]) {
+    if (A_info.shape[0] != B_info.shape[0]) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The rows of A and B must match!");
     }
 
@@ -89,31 +89,99 @@ void gesv(pybind11::buffer &A, pybind11::buffer &B) {
 
 template <typename T>
 RuntimeTensor<T> solve_continuous_lyapunov_work(pybind11::buffer const &_A, pybind11::buffer const &_Q) {
+    if constexpr (!IsComplexV<T>) {
+        Tensor<T, 2> R = PyTensorView<T>(_A), Q = PyTensorView<T>(_Q);
 
-    Tensor<T, 2> R = PyTensorView<T>(_A), Q = PyTensorView<T>(_Q);
+        size_t n = R.dim(0);
 
-    size_t n = R.dim(0);
+        //// @todo Break this off into a separate schur function
+        // Compute Schur Decomposition of A
+        Tensor<T, 2>             wr("Schur Real Buffer", n, n);
+        Tensor<T, 2>             wi("Schur Imaginary Buffer", n, n);
+        Tensor<T, 2>             U("Lyapunov U", n, n);
+        std::vector<blas::int_t> sdim(1);
+        blas::int_t              info = blas::gees('V', n, R.data(), n, sdim.data(), wr.data(), wi.data(), U.data(), n);
 
-    //// @todo Break this off into a separate schur function
-    // Compute Schur Decomposition of A
-    Tensor<T, 2>             wr("Schur Real Buffer", n, n);
-    Tensor<T, 2>             wi("Schur Imaginary Buffer", n, n);
-    Tensor<T, 2>             U("Lyapunov U", n, n);
-    std::vector<blas::int_t> sdim(1);
-    blas::gees('V', n, R.data(), n, sdim.data(), wr.data(), wi.data(), U.data(), n);
+        if (info < 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to gees was invalid!", print::ordinal(-info));
+        } else if (info > 0) {
+            if (info <= n) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "The QR algorithm failed to compute all the eigenvalues!");
+            } else if (info == n + 1) {
+                EINSUMS_LOG_WARN("The eigenvalues could not be reordered.");
+            } else if (info == n + 2) {
+                EINSUMS_LOG_INFO("After reordering, some eigenvalues changed due to roundoff error!");
+            } else {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "gees failed for an unknown reason!");
+            }
+        }
 
-    // Compute F = U^T * Q * U
-    Tensor<T, 2> Fbuff = linear_algebra::gemm<true, false>(1.0, U, Q);
-    Tensor<T, 2> F     = linear_algebra::gemm<false, false>(1.0, Fbuff, U);
+        // Compute F = U^T * Q * U
+        Tensor<T, 2> Fbuff = linear_algebra::gemm<true, false>(1.0, U, Q);
+        Tensor<T, 2> F     = linear_algebra::gemm<false, false>(1.0, Fbuff, U);
 
-    // Call the Sylvester Solve
-    std::vector<RemoveComplexT<T>> scale(1);
-    blas::trsyl('N', 'N', 1, n, n, const_cast<T const *>(R.data()), n, const_cast<T const *>(R.data()), n, F.data(), n, scale.data());
+        // Call the Sylvester Solve
+        std::vector<RemoveComplexT<T>> scale(1);
+        info = blas::trsyl('N', 'N', 1, n, n, const_cast<T const *>(R.data()), n, const_cast<T const *>(R.data()), n, F.data(), n,
+                           scale.data());
 
-    Tensor<T, 2> Xbuff = linear_algebra::gemm<false, false>(scale[0], U, F);
-    Tensor<T, 2> X     = linear_algebra::gemm<false, true>(1.0, Xbuff, U);
+        if (info < 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to trsyl was invalid!", print::ordinal(-info));
+        } else if (info > 0) {
+            EINSUMS_LOG_INFO("The matrices passed to trsyl have common or close eigenvalues. Solving perturbativeley")
+        }
 
-    return RuntimeTensor<T>(std::move(X));
+        Tensor<T, 2> Xbuff = linear_algebra::gemm<false, false>(scale[0], U, F);
+        Tensor<T, 2> X     = linear_algebra::gemm<false, true>(1.0, Xbuff, U);
+
+        return RuntimeTensor<T>(std::move(X));
+    } else {
+        Tensor<T, 2> R = PyTensorView<T>(_A), Q = PyTensorView<T>(_Q);
+
+        size_t n = R.dim(0);
+
+        //// @todo Break this off into a separate schur function
+        // Compute Schur Decomposition of A
+        Tensor<T, 2>             w("Schur Buffer", n, n);
+        Tensor<T, 2>             U("Lyapunov U", n, n), Uh("Lyapunov U hermitian transpose", n, n);
+        std::vector<blas::int_t> sdim(1);
+        blas::int_t              info = blas::gees('V', n, R.data(), n, sdim.data(), w.data(), U.data(), n);
+
+        if (info < 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to gees was invalid!", print::ordinal(-info));
+        } else if (info > 0) {
+            if (info <= n) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "The QR algorithm failed to compute all the eigenvalues!");
+            } else if (info == n + 1) {
+                EINSUMS_LOG_WARN("The eigenvalues could not be reordered.");
+            } else if (info == n + 2) {
+                EINSUMS_LOG_INFO("After reordering, some eigenvalues changed due to roundoff error!");
+            } else {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "gees failed for an unknown reason!");
+            }
+        }
+
+        // Compute F = U^T * Q * U
+        einsums::tensor_algebra::permute<true>(Indices{index::i, index::j}, &Uh, Indices{index::j, index::i}, U);
+        Tensor<T, 2> Fbuff = linear_algebra::gemm<false, false>(1.0, Uh, Q);
+        Tensor<T, 2> F     = linear_algebra::gemm<false, false>(1.0, Fbuff, U);
+
+        // Call the Sylvester Solve
+        std::vector<RemoveComplexT<T>> scale(1);
+        info = blas::trsyl('N', 'N', 1, n, n, const_cast<T const *>(R.data()), n, const_cast<T const *>(R.data()), n, F.data(), n,
+                           scale.data());
+
+        if (info < 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to trsyl was invalid!", print::ordinal(-info));
+        } else if (info > 0) {
+            EINSUMS_LOG_INFO("The matrices passed to trsyl have common or close eigenvalues. Solving perturbativeley")
+        }
+
+        Tensor<T, 2> Xbuff = linear_algebra::gemm<false, false>(scale[0], U, F);
+        Tensor<T, 2> X     = linear_algebra::gemm<false, false>(1.0, Xbuff, Uh);
+
+        return RuntimeTensor<T>(std::move(X));
+    }
 }
 
 py::object solve_continuous_lyapunov(pybind11::buffer const &A, pybind11::buffer const &Q) {
@@ -138,9 +206,9 @@ py::object solve_continuous_lyapunov(pybind11::buffer const &A, pybind11::buffer
     } else if (A_info.format == py::format_descriptor<double>::format()) {
         return py::cast(solve_continuous_lyapunov_work<double>(A, Q));
     } else if (A_info.format == py::format_descriptor<std::complex<float>>::format()) {
-        EINSUMS_THROW_EXCEPTION(not_implemented, "Complex inputs to solve_continuous_lyapunov are currently not supported.");
+        return py::cast(solve_continuous_lyapunov_work<std::complex<float>>(A, Q));
     } else if (A_info.format == py::format_descriptor<std::complex<double>>::format()) {
-        EINSUMS_THROW_EXCEPTION(not_implemented, "Complex inputs to solve_continuous_lyapunov are currently not supported.");
+        return py::cast(solve_continuous_lyapunov_work<std::complex<float>>(A, Q));
     } else {
         EINSUMS_THROW_EXCEPTION(py::value_error,
                                 "The inputs to solve_continuous_lyapunov need to store real or complex floating point values!");

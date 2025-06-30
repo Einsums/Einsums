@@ -66,6 +66,7 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .def("axpby", &axpby)
         .def("ger", &ger)
         .def("getrf", &getrf)
+        .def("extract_plu", &extract_plu)
         .def("getri", &getri)
         .def("invert", &invert)
         .def("norm", &norm)
@@ -79,6 +80,7 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .def("solve_continuous_lyapunov", &solve_continuous_lyapunov)
         .def("qr", &qr)
         .def("q", &q)
+        .def("r", &r)
         .def("direct_product", &direct_product)
         .def("det", &det);
 }

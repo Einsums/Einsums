@@ -361,11 +361,11 @@ def test_invert(a, dtype, array):
 def test_norm(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
-    assert ein.core.norm(ein.core.Frobenius, A) == pytest.approx(
+    assert ein.core.norm(ein.core.FROBENIUS, A) == pytest.approx(
         np.linalg.norm(A, "fro")
     )
-    assert ein.core.norm(ein.core.Infinity, A) == pytest.approx(np.linalg.norm(A, 1))
-    assert ein.core.norm(ein.core.One, A) == pytest.approx(
+    assert ein.core.norm(ein.core.INFINITY, A) == pytest.approx(np.linalg.norm(A, 1))
+    assert ein.core.norm(ein.core.ONE, A) == pytest.approx(
         np.linalg.norm(A, np.inf)
     )
 
