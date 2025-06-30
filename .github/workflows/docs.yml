@@ -74,7 +74,7 @@ jobs:
             -G Ninja \
             -S "$GITHUB_WORKSPACE" \
             -B "$GITHUB_WORKSPACE/build" \
-            -D EINSUMS_BUILD_PYTHON=OFF \
+            -D EINSUMS_BUILD_PYTHON=ON \
             -D EINSUMS_WITH_COVERAGE=ON \
             -D CMAKE_C_COMPILER_LAUNCHER=ccache \
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
