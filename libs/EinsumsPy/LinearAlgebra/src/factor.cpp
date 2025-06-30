@@ -52,12 +52,12 @@ template <typename T>
 py::tuple extract_plu_work(pybind11::buffer const &A, std::vector<blas::int_t> const &pivot) {
     py::buffer_info A_info = A.request(false);
 
-    blas::int_t m = A_info.shape[0], n = A_info.shape[1];
-    blas::int_t P_rows = m, P_cols = m;
-    blas::int_t L_rows = m, L_cols = std::min(m, n);
-    blas::int_t U_rows = std::min(m, n), U_cols = n;
+    size_t m = A_info.shape[0], n = A_info.shape[1];
+    size_t P_rows = m, P_cols = m;
+    size_t L_rows = m, L_cols = std::min(m, n);
+    size_t U_rows = std::min(m, n), U_cols = n;
 
-    RuntimeTensor<T> P("Pivot", P_rows, P_cols), L("Lower Triangle", L_rows, L_cols), U("Upper Triangle", U_rows, U_cols);
+    RuntimeTensor<T> P("Pivot", {P_rows, P_cols}), L("Lower Triangle", {L_rows, L_cols}), U("Upper Triangle", {U_rows, U_cols});
 
     P.zero();
     L.zero();
@@ -296,7 +296,7 @@ template <typename T>
 RuntimeTensor<T> r_work(pybind11::buffer const &qr) {
     py::buffer_info qr_info = qr.request(false);
 
-    RuntimeTensor<T> out("R", std::min(qr_info.shape[0], qr_info.shape[1]), qr_info.shape[1]);
+    RuntimeTensor<T> out("R", {(size_t)std::min(qr_info.shape[0], qr_info.shape[1]), (size_t)qr_info.shape[1]});
 
     out.zero();
 
