@@ -103,16 +103,23 @@ double stdev(double const *__restrict__ values, size_t num_values, double mean) 
     return sqrt(variance(values, num_values, mean));
 }
 
-static char const help[] = "Arguments:\n\n"
-                           "-n NUMBER\t\tThe number of orbitals. Defaults to 20.\n\n"
-                           "-t NUMBER\t\tThe number of trials. Defaults to 20.\n\n"
-                           "-h, --help\t\tPrint the help message.";
+static char const help[] =
+    "Arguments:\n\n"
+    "-n NUMBER\t\tThe number of orbitals. Defaults to 20. If an end is specified, then this is the starting point.\n\n"
+    "-t NUMBER\t\tThe number of trials. Defaults to 20.\n\n"
+    "-e NUMBER\t\tEnding point for multiple trials.\n\n"
+    "-s NUMBER\t\tStep between points.\n\n"
+    "-c\t\t\tOutput in CSV format.\n\n"
+    "-h, --help\t\tPrint the help message.";
 
-void parse_args(int argc, char **argv, int *norbs, int *trials) {
-    *norbs  = 20;
+void parse_args(int argc, char **argv, int *start, int *step, int *end, int *csv, int *trials) {
+    *start  = 20;
+    *step   = 10;
+    *end    = -1;
     *trials = 20;
+    *csv    = 0;
 
-    int state = 0; // 0 for no argument, 1 for orbs, 2 for trials.
+    int state = 0; // 0 for no argument, 1 for orbs, 2 for trials, 3 for end point, 4 for step.
     int i     = 1;
 
     while (i < argc) {
@@ -121,9 +128,15 @@ void parse_args(int argc, char **argv, int *norbs, int *trials) {
                 state = 1;
             } else if (strncmp(argv[i], "-t", 3) == 0) {
                 state = 2;
+            } else if (strncmp(argv[i], "-e", 3) == 0) {
+                state = 3;
+            } else if (strncmp(argv[i], "-s", 3) == 0) {
+                state = 4;
             } else if (strncmp(argv[i], "-h", 3) == 0 || strncmp(argv[i], "--help", 7) == 0) {
                 puts(help);
                 exit(0);
+            } else if (strncmp(argv[i], "-c", 3) == 0) {
+                *csv = 1;
             } else {
                 perror("Could not understand arguments! Please see the help message by using -h or --help. Please also make sure that you "
                        "put a space between a flag and its value.");
@@ -132,14 +145,14 @@ void parse_args(int argc, char **argv, int *norbs, int *trials) {
         } else if (state == 1) {
             int retval;
 
-            retval = sscanf(argv[i], "%d", norbs);
+            retval = sscanf(argv[i], "%d", start);
 
             if (retval != 1) {
                 perror("Could not understand input! Please put an argument after -n.");
                 exit(1);
             }
 
-            if (*norbs < 1) {
+            if (*start < 1) {
                 perror("Cannot handle negative or zero numbers of orbitals!");
                 exit(1);
             }
@@ -155,6 +168,20 @@ void parse_args(int argc, char **argv, int *norbs, int *trials) {
 
             if (*trials < 1) {
                 perror("Cannot handle negative or zero numbers of trials!");
+                exit(1);
+            }
+            state = 0;
+        } else if (state == 3) {
+            int retval = sscanf(argv[i], "%d", end);
+            if (retval != 1) {
+                perror("Could not understand input! Please put an argument after -t.");
+                exit(1);
+            }
+            state = 0;
+        } else if (state == 4) {
+            int retval = sscanf(argv[i], "%d", step);
+            if (retval != 1) {
+                perror("Could not understand input! Please put an argument after -t.");
                 exit(1);
             }
             state = 0;
@@ -195,103 +222,123 @@ int main(int argc, char **argv) {
             gettimeofday(&seed, NULL);
             srand(seed.tv_sec ^ seed.tv_usec);
 
-            int norbs, trials;
+            int start, step, end, csv, trials;
 
             double *times_J, *times_K, *times_G, *times_tot, *J, *K, *G, *TEI, *D;
 
-            parse_args(argc, argv, &norbs, &trials);
+            parse_args(argc, argv, &start, &step, &end, &csv, &trials);
 
-            printf("Running %d trials with %d orbitals.\n", trials, norbs);
+            if (end < start) {
+                end = start;
+            }
 
             times_J   = calloc(trials, sizeof(double));
             times_K   = calloc(trials, sizeof(double));
             times_G   = calloc(trials, sizeof(double));
             times_tot = calloc(trials, sizeof(double));
-            J         = calloc(norbs * norbs, sizeof(double));
-            K         = calloc(norbs * norbs, sizeof(double));
-            G         = calloc(norbs * norbs, sizeof(double));
-            D         = calloc(norbs * norbs, sizeof(double));
-            TEI       = calloc(norbs * norbs * norbs * norbs, sizeof(double));
 
-            // Set up the density matrix.
-            for (size_t i = 0; i < norbs * norbs; i++) {
-                D[i] = random_double();
+            for (int norbs = start; norbs <= end; norbs += step) {
+                if (!csv) {
+                    printf("Running %d trials with %d orbitals.\n", trials, norbs);
+                }
+
+                J   = calloc(norbs * norbs, sizeof(double));
+                K   = calloc(norbs * norbs, sizeof(double));
+                G   = calloc(norbs * norbs, sizeof(double));
+                D   = calloc(norbs * norbs, sizeof(double));
+                TEI = calloc(norbs * norbs * norbs * norbs, sizeof(double));
+
+                // Set up the density matrix.
+                for (size_t i = 0; i < norbs * norbs; i++) {
+                    D[i] = random_double();
+                }
+
+                // Set up the TEI matrix.
+                for (size_t i = 0; i < norbs * norbs * norbs * norbs; i++) {
+                    TEI[i] = random_double();
+                }
+
+                // Calculate the times.
+                for (int i = 0; i < trials; i++) {
+                    clock_t start = clock();
+
+                    create_J(J, D, TEI, norbs);
+
+                    clock_t J_time = clock();
+
+                    create_K(K, D, TEI, norbs);
+
+                    clock_t K_time = clock();
+
+                    create_G(G, J, K, norbs);
+
+                    clock_t G_time = clock();
+
+                    times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
+                    times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
+                    times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
+                    times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+                }
+
+                // Print the timing info.
+                double J_mean   = mean(times_J, trials);
+                double K_mean   = mean(times_K, trials);
+                double G_mean   = mean(times_G, trials);
+                double tot_mean = mean(times_tot, trials);
+
+                if (csv) {
+                    printf("%d,%lf,%lf,", norbs, tot_mean, stdev(times_tot, trials, tot_mean));
+                } else {
+                    printf(
+                        "Non-omp times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, "
+                        "stdev %lg s\n",
+                        J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean,
+                        stdev(times_G, trials, G_mean), tot_mean, stdev(times_tot, trials, tot_mean));
+                }
+
+                // Calculate the OMP times.
+                for (int i = 0; i < trials; i++) {
+                    clock_t start = clock();
+
+                    create_J_omp(J, D, TEI, norbs);
+
+                    clock_t J_time = clock();
+
+                    create_K_omp(K, D, TEI, norbs);
+
+                    clock_t K_time = clock();
+
+                    create_G_omp(G, J, K, norbs);
+
+                    clock_t G_time = clock();
+
+                    times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
+                    times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
+                    times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
+                    times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+                }
+
+                // Print the timing info.
+                J_mean   = mean(times_J, trials);
+                K_mean   = mean(times_K, trials);
+                G_mean   = mean(times_G, trials);
+                tot_mean = mean(times_tot, trials);
+                if (csv) {
+                    printf("%lf,%lf\n", tot_mean, stdev(times_tot, trials, tot_mean));
+                } else {
+                    printf("omp times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, "
+                           "stdev "
+                           "%lg s\n",
+                           J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean,
+                           stdev(times_G, trials, G_mean), tot_mean, stdev(times_tot, trials, tot_mean));
+                }
+
+                free(J);
+                free(K);
+                free(G);
+                free(D);
+                free(TEI);
             }
-
-            // Set up the TEI matrix.
-            for (size_t i = 0; i < norbs * norbs * norbs * norbs; i++) {
-                TEI[i] = random_double();
-            }
-
-            // Calculate the times.
-            for (int i = 0; i < trials; i++) {
-                clock_t start = clock();
-
-                create_J(J, D, TEI, norbs);
-
-                clock_t J_time = clock();
-
-                create_K(K, D, TEI, norbs);
-
-                clock_t K_time = clock();
-
-                create_G(G, J, K, norbs);
-
-                clock_t G_time = clock();
-
-                times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
-                times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
-                times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
-                times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
-            }
-
-            // Print the timing info.
-            double J_mean   = mean(times_J, trials);
-            double K_mean   = mean(times_K, trials);
-            double G_mean   = mean(times_G, trials);
-            double tot_mean = mean(times_tot, trials);
-            printf("Non-omp times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, "
-                   "stdev %lg s\n",
-                   J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean),
-                   tot_mean, stdev(times_tot, trials, tot_mean));
-
-            // Calculate the OMP times.
-            for (int i = 0; i < trials; i++) {
-                clock_t start = clock();
-
-                create_J_omp(J, D, TEI, norbs);
-
-                clock_t J_time = clock();
-
-                create_K_omp(K, D, TEI, norbs);
-
-                clock_t K_time = clock();
-
-                create_G_omp(G, J, K, norbs);
-
-                clock_t G_time = clock();
-
-                times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
-                times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
-                times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
-                times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
-            }
-
-            // Print the timing info.
-            J_mean   = mean(times_J, trials);
-            K_mean   = mean(times_K, trials);
-            G_mean   = mean(times_G, trials);
-            tot_mean = mean(times_tot, trials);
-            printf("omp times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, stdev "
-                   "%lg s\n",
-                   J_mean, stdev(times_J, trials, J_mean), K_mean, stdev(times_K, trials, K_mean), G_mean, stdev(times_G, trials, G_mean),
-                   tot_mean, stdev(times_tot, trials, tot_mean));
-
-            free(J);
-            free(K);
-            free(G);
-            free(D);
-            free(TEI);
             free(times_J);
             free(times_K);
             free(times_G);
