@@ -2,10 +2,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 """
-utils.py
---------
-
-Various utilities for Einsums in Python.
+This module contains extra utilities written in Python for the Einsums library.
 """
 
 from __future__ import annotations
@@ -63,6 +60,8 @@ def enumerate_many(*args, start=0):
     :py:code:`StopIteraton`.
 
     :param args: The iterators to iterate over.
+    :return: Iterator of tuples. The last entry in the tuple is the index number. If an
+    iterator ends early, then its entry will be filled with ``None``.
     """
     index = 0
     stop_cond = [False for arg in args]
@@ -103,9 +102,6 @@ def enumerate_many(*args, start=0):
 
 class TensorIndices:
     """
-    TensorIndices
-    -------------
-
     Iterator for moving through the indices of a tensor.
     """
 
@@ -128,14 +124,30 @@ class TensorIndices:
             self.__size = other.__size
 
     def __iter__(self) -> TensorIndices:
+        """
+        Return the iterator for this iterator (itself).
+
+        :return: The object itself.
+        """
         return self
 
     def __reversed__(self) -> TensorIndices:
+        """
+        Return the iterator that goes in reverse.
+
+        :return: The iterator that goes from the current index back to the beginning.
+        """
         out = TensorIndices(self)
         out.__reverse = not self.__reverse
         return out
 
     def __next__(self) -> tuple[int]:
+        """
+        Get the next index and update the internal state.
+
+        :return: The next index.
+        :raises StopIteration: Raises this if there are no more indices.
+        """
         if self.__curr_index < 0 or self.__curr_index >= self.__size:
             raise StopIteration
 
@@ -180,9 +192,19 @@ def create_tensor(*args, dtype=float):
 
 
 def tensor_factory(name: str, dims: list[int], dtype=float, method="einsums"):
-    if method == "einsums":
+    """
+    Create either a NumPy array or an Einsums tensor. This function is mostly used in tests
+    to ensure cross functionality.
+
+    :param name: The name of the tensor. Ignored for NumPy tensors.
+    :param dims: The dimensions of the tensor.
+    :param dtype: The data type for the tensor.
+    :param method: The kind of tensor to create. It should be either "einsums"  or "numpy'.
+    :raises ValueError: if the method is not valid.
+    """
+    if method.lower() == "einsums":
         return create_tensor(name, dims, dtype=dtype)
-    elif method == "numpy":
+    elif method.lower() == "numpy":
         return np.zeros(dims, dtype)
     else:
         raise ValueError(
@@ -213,6 +235,13 @@ def add_complex(dtype):
 
 
 def create_random_numpy_array(dims: list[int], dtype=float):
+    """
+    Creates a new NumPy array and fills it with random data.
+
+    :param dims: The dimensions of the array.
+    :param dtype: The data type to store.
+    :raises ValueError: if the data type is not a real or complex floating point type.
+    """
     rng = np.random.default_rng()
 
     if dtype in __singles or dtype in __doubles:
@@ -232,6 +261,14 @@ def create_random_numpy_array(dims: list[int], dtype=float):
 
 
 def create_random_tensor(name: str, dims: list[int], dtype=float):
+    """
+    Creates a new Einsums tensor and fills it with random data.
+
+    :param name: The name of the tensor.
+    :param dims: The dimensions of the array.
+    :param dtype: The data type to store.
+    :raises ValueError: if the data type is not a real or complex floating point type.
+    """
     if dtype in __singles:
         return core.create_random_tensorF(name, dims)
     elif dtype in __doubles:
@@ -247,6 +284,16 @@ def create_random_tensor(name: str, dims: list[int], dtype=float):
 def random_tensor_factory(
     name: str, dims: list[int], dtype: type = float, method: str = "einsums"
 ):
+    """
+    Create either a NumPy array or an Einsums tensor and fills it with random data.
+    This function is mostly used in tests to ensure cross functionality.
+
+    :param name: The name of the tensor. Ignored for NumPy tensors.
+    :param dims: The dimensions of the tensor.
+    :param dtype: The data type for the tensor.
+    :param method: The kind of tensor to create. It should be either "einsums"  or "numpy'.
+    :raises ValueError: if the method is not valid.
+    """
     if method == "einsums":
         return create_random_tensor(name, dims, dtype)
     elif method == "numpy":
@@ -258,6 +305,19 @@ def random_tensor_factory(
 
 
 def create_random_definite(name: str, rows: int, mean=1.0, dtype=float):
+    """
+    Create a random positive definite tensor. If the ``mean`` parameter is
+    negative, then this will create a random negative definite tensor.
+
+    :param name: The name of the tensor.
+    :param rows: The number of rows for the tensor. It is a square matrix, so this
+    is also the number of columns.
+    :param mean: The average eigenvalue. The eigenvalues will be distributed in a
+    Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenvalue.
+    :param dtype: The data type to store.
+    :return: A positive definite matrix.
+    :raises ValueError: if the data type is not a real or complex floating point type.
+    """
     if dtype in __singles:
         return core.create_random_definiteF(name, rows, mean)
     elif dtype in __doubles:
@@ -271,12 +331,38 @@ def create_random_definite(name: str, rows: int, mean=1.0, dtype=float):
 
 
 def create_random_definite_numpy_array(rows: int, mean=1.0, dtype=float):
+    """
+    Create a random positive definite NumPy array. If the ``mean`` parameter is
+    negative, then this will create a random negative definite tensor.
+
+    :param rows: The number of rows for the tensor. It is a square matrix, so this
+    is also the number of columns.
+    :param mean: The average eigenvalue. The eigenvalues will be distributed in a
+    Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenvalue.
+    :param dtype: The data type to store.
+    :return: A positive definite matrix.
+    :raises ValueError: if the data type is not a real or complex floating point type.
+    """
     return np.array(create_random_definite("", rows, mean, dtype), dtype=dtype)
 
 
 def random_definite_tensor_factory(
     name: str, rows: int, mean=1.0, dtype: type = float, method: str = "einsums"
 ):
+    """
+    Create a random positive definite NumPy array or Einsums tensor. If the ``mean`` parameter is
+    negative, then this will create a random negative definite tensor.
+
+    :param name: The name for the matrix.
+    :param rows: The number of rows for the tensor. It is a square matrix, so this
+    is also the number of columns.
+    :param mean: The average eigenvalue. The eigenvalues will be distributed in a
+    Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenvalue.
+    :param dtype: The data type to store.
+    :param method: Which kind of tensor to create. Can be "einsums" or "numpy".
+    :return: A positive definite matrix.
+    :raises ValueError: if the method is not valid.
+    """
     if method == "einsums":
         return create_random_definite(name, rows, mean, dtype)
     elif method == "numpy":
@@ -290,6 +376,22 @@ def random_definite_tensor_factory(
 def create_random_semidefinite(
     name: str, rows: int, mean=1.0, force_zeros=1, dtype=float
 ):
+    """
+    Create a random positive semidefinite tensor. If the ``mean`` parameter is
+    negative, then this will create a random negative semidefinite tensor.
+    The number of guaranteed zeros can be set. By default, at least one eigenvalue
+    will be zero.
+
+    :param name: The name of the tensor.
+    :param rows: The number of rows for the tensor. It is a square matrix, so this
+    is also the number of columns.
+    :param mean: The average eigenvalue. The eigenvalues will be distributed in a
+    Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenvalue.
+    :param force_zeros: The number of guaranteed zero eigenvalues to use.
+    :param dtype: The data type to store.
+    :return: A positive definite matrix.
+    :raises ValueError: if the data type is not a real or complex floating point type.
+    """
     if dtype in __singles:
         return core.create_random_semidefiniteF(name, rows, mean, force_zeros)
     elif dtype in __doubles:
@@ -305,6 +407,21 @@ def create_random_semidefinite(
 def create_random_semidefinite_numpy_array(
     rows: int, mean=1.0, force_zeros=1, dtype=float
 ):
+    """
+    Create a random positive semidefinite NumPy array. If the ``mean`` parameter is
+    negative, then this will create a random negative semidefinite tensor.
+    The number of guaranteed zeros can be set. By default, at least one eigenvalue
+    will be zero.
+
+    :param rows: The number of rows for the tensor. It is a square matrix, so this
+    is also the number of columns.
+    :param mean: The average eigenvalue. The eigenvalues will be distributed in a
+    Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenvalue.
+    :param force_zeros: The number of guaranteed zero eigenvalues to use.
+    :param dtype: The data type to store.
+    :return: A positive definite matrix.
+    :raises ValueError: if the data type is not a real or complex floating point type.
+    """
     return np.array(
         create_random_semidefinite("", rows, mean, force_zeros, dtype), dtype=dtype
     )
@@ -318,6 +435,23 @@ def random_semidefinite_tensor_factory(
     dtype: type = float,
     method: str = "einsums",
 ):
+    """
+    Create a random positive semidefinite NumPy array or Einsums tensor. If the ``mean`` parameter is
+    negative, then this will create a random negative demidefinite tensor.
+    The number of guaranteed zeros can be set. By default, at least one eigenvalue
+    will be zero.
+
+    :param name: The name for the matrix.
+    :param rows: The number of rows for the tensor. It is a square matrix, so this
+    is also the number of columns.
+    :param mean: The average eigenvalue. The eigenvalues will be distributed in a
+    Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenvalue.
+    :param force_zeros: The number of guaranteed zero eigenvalues to use.
+    :param dtype: The data type to store.
+    :param method: Which kind of tensor to create. Can be "einsums" or "numpy".
+    :return: A positive definite matrix.
+    :raises ValueError: if the method is not valid.
+    """
     if method == "einsums":
         return create_random_semidefinite(name, rows, mean, force_zeros, dtype)
     elif method == "numpy":
