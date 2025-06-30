@@ -87,8 +87,9 @@ jobs:
 
       - name: Build Documentation
         run: |
-          export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/build/lib:$CONDA_PREFIX/lib
-          cmake --build "${{ github.workspace }}/build" --config Debug
+          cmake --build "${{ github.workspace }}/build" --config Debug --target EinsumsPy -j4
+          export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/build/lib:${{github.workspace}}:$CONDA_PREFIX/lib
+          cmake --build "${{ github.workspace }}/build" --config Debug --target docs -j4
 
       - name: Copy Documentation
         run: |
