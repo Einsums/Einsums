@@ -87,7 +87,7 @@ jobs:
 
       - name: Build Documentation
         run: |
-          export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
+          export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/build/lib:$CONDA_PREFIX/lib
           cmake --build "${{ github.workspace }}/build" --config Debug
 
       - name: Copy Documentation
