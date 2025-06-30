@@ -12,9 +12,9 @@
 namespace einsums {
 
 /**
- * @struct num_argument_error
+ * @struct bad_lexical_cast
  *
- * Indicates that a function did not receive the correct amount of arguments.
+ * Indicates that a string could not be converted to a different type.
  */
 struct EINSUMS_EXPORT bad_lexical_cast : std::bad_cast {
     using std::bad_cast::bad_cast;

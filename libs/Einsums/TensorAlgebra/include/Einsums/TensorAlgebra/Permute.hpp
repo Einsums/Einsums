@@ -65,9 +65,17 @@ void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double>
 } // namespace detail
 #endif
 
-//
-// permute algorithm
-//
+/**
+ * @brief Permutes the elements of a tensor and puts it into an output tensor.
+ *
+ * @param UC_prefactor The prefactor for mixing the output tensor.
+ * @param C_indices The indices for the output tensor.
+ * @param C The output tensor.
+ * @param UA_prefactor The prefactor for the input tensor.
+ * @param A_indices The indices for the input tensor.
+ * @param A The input tensor.
+ * @tparam ConjA If true, conjugate the values of A as it is being permuted.
+ */
 template <bool ConjA = false, CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
     requires requires {
         requires sizeof...(CIndices) == sizeof...(AIndices);

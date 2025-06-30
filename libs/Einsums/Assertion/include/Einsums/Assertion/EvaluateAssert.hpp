@@ -12,6 +12,9 @@
 
 namespace einsums::detail {
 
+/**
+ * Default assertion handler.
+ */
 EINSUMS_EXPORT void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) noexcept;
 
-}
+} // namespace einsums::detail
