@@ -87,7 +87,7 @@ jobs:
 
       - name: Build Documentation
         run: |
-          cmake --build "${{ github.workspace }}/build" --config Debug --target docs
+          cmake --build "${{ github.workspace }}/build" --config Debug
 
       - name: Copy Documentation
         run: |

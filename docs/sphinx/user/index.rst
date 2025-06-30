@@ -96,7 +96,7 @@ This becomes the following code.
 
     // Compute the antisymmetrized two-electron integrals.
     Tensor TEI_antisym = TEI;
-    permute(1.0, index::Indices{index::p, index::q, index::r, index::s}, &TEI_antisym, -1.0, index::Indices{index::p, index::q, index::s, index::r} TEI);
+    permute(1.0, index::Indices{index::p, index::q, index::r, index::s}, &TEI_antisym, -1.0, index::Indices{index::p, index::q, index::s, index::r}, TEI);
 
     // Computing each term.
     TensorView Fia = F(Range{0, n_occ}, Range{n_occ, n_orbs});
