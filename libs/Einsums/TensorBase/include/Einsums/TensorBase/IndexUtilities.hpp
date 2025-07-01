@@ -8,6 +8,7 @@
 #include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Print.hpp>
 
 #include <cstdarg>
 #include <cstddef>
@@ -387,6 +388,54 @@ void sentinel_to_sentinels(size_t sentinel, StorageType const &index_strides, St
 #endif
 
 /**
+ * @brief Adjust the index if it is negative and raise an error if it is out of range.
+ *
+ * The @c index_position parameter is used for creating the exception message. If it is negative,
+ * then the exception message will look something like <tt>"The index is out of range! Expected between -5 and 4, got 6!"</tt>.
+ * However, for better diagnostics, a non-negative index_position, for example 2, will give an exception message like
+ * <tt>"The third index is out of range! Expected between -5 and 4, got 6!"</tt>. Note that these are zero-indexed, so
+ * passing in 2 prints out "third".
+ *
+ * @param index The index to adjust and check.
+ * @param dim The dimension to compare to.
+ * @param index_position Used for the error message. If it is negative, then the index position
+ * will not be included in the error message.
+ */
+template <std::integral IntType>
+constexpr size_t adjust_index(IntType index, size_t dim, int index_position = -1) {
+    if constexpr (std::is_signed_v<IntType>) {
+        auto hold = index;
+
+        if (hold < 0) {
+            hold += dim;
+        }
+
+        if (hold < 0 || hold >= dim) {
+            if (index_position < 0) {
+                EINSUMS_THROW_EXCEPTION(std::out_of_range, "The index is out of range! Expected between {} and {}, got {}!",
+                                        -(ptrdiff_t)dim, dim - 1, index);
+            } else {
+                EINSUMS_THROW_EXCEPTION(std::out_of_range, "The {} index is out of range! Expected between {} and {}, got {}!",
+                                        print::ordinal(index_position + 1), -(ptrdiff_t)dim, dim - 1, index);
+            }
+        }
+        return hold;
+    } else {
+        if (index >= dim) {
+            if (index_position < 0) {
+                EINSUMS_THROW_EXCEPTION(std::out_of_range, "The index is out of range! Expected between {} and {}, got {}!", 0, dim - 1,
+                                        index);
+            } else {
+                EINSUMS_THROW_EXCEPTION(std::out_of_range, "The {} index is out of range! Expected between {} and {}, got {}!",
+                                        print::ordinal(index_position + 1), 0, dim - 1, index);
+            }
+        }
+
+        return index;
+    }
+}
+
+/**
  * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
  */
 template <size_t num_unique_inds>
@@ -576,25 +625,52 @@ inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_stri
  *
  * @param dims The list of dimensions.
  * @param out The calculated strides.
+ * @param row_major Whether to calculate the strides in row-major or column-major order.
  * @return The size calculated from the dimensions. Can be safely ignored.
  */
-EINSUMS_EXPORT size_t dims_to_strides(std::vector<size_t> const &dims, std::vector<size_t> &out);
+constexpr size_t dims_to_strides(std::vector<size_t> const &dims, std::vector<size_t> &out, bool row_major = true) {
+    size_t stride = 1;
+
+    out.resize(dims.size());
+
+    if (row_major) {
+        for (int i = dims.size() - 1; i >= 0; i--) {
+            out[i] = stride;
+            stride *= dims[i];
+        }
+    } else {
+        for (int i = 0; i < dims.size(); i++) {
+            out[i] = stride;
+            stride *= dims[i];
+        }
+    }
+
+    return stride;
+}
 
 /**
  * @brief Compute the strides for turning a sentinel into a list of indices.
  *
  * @param dims The list of dimensions.
  * @param out The calculated strides.
+ * @param row_major Whether to calculate the strides in row-major or column-major order.
  * @return The size calculated from the dimensions. Can be safely ignored.
  */
 template <typename arr_type1, typename arr_type2, size_t Dims>
     requires(std::is_integral_v<arr_type1> && std::is_integral_v<arr_type2>)
-constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out) {
+constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out, bool row_major = true) {
     size_t stride = 1;
 
-    for (int i = Dims - 1; i >= 0; i--) {
-        out[i] = stride;
-        stride *= dims[i];
+    if (row_major) {
+        for (int i = Dims - 1; i >= 0; i--) {
+            out[i] = stride;
+            stride *= dims[i];
+        }
+    } else {
+        for (int i = 0; i < Dims; i++) {
+            out[i] = stride;
+            stride *= dims[i];
+        }
     }
 
     return stride;
@@ -610,15 +686,33 @@ template <ptrdiff_t index, size_t Dims, typename arr_type2, typename... TupleDim
         requires sizeof...(TupleDims) == Dims;
         requires std::is_integral_v<arr_type2>;
     }
-constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out) {
+constexpr size_t dims_to_strides_row_major(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out) {
     if constexpr (index < 0 || index >= sizeof...(TupleDims)) {
         return 1;
     } else {
-        size_t stride = dims_to_strides<index + 1>(dims, out);
+        size_t stride = dims_to_strides_row_major<index + 1>(dims, out);
 
         out[index] = stride;
 
         return stride * std::get<index>(dims);
+    }
+}
+
+/**
+ * @brief Implementation details for dims_to_strides.
+ */
+template <ptrdiff_t index, size_t Dims, typename arr_type2, typename... TupleDims>
+    requires requires {
+        requires sizeof...(TupleDims) == Dims;
+        requires std::is_integral_v<arr_type2>;
+    }
+constexpr size_t dims_to_strides_col_major(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out, size_t accum) {
+    if constexpr (index < 0 || index >= sizeof...(TupleDims)) {
+        return accum;
+    } else {
+        out[index] = accum;
+
+        return dims_to_strides_col_major<index + 1>(dims, out, accum * std::get<index>(dims));
     }
 }
 
@@ -629,6 +723,7 @@ constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::arra
  *
  * @param dims The list of dimensions.
  * @param out The calculated strides.
+ * @param row_major Whether to calculate the strides in row-major or column-major order.
  * @return The size calculated from the dimensions. Can be safely ignored.
  */
 template <typename arr_type2, size_t Dims, typename... TupleDims>
@@ -636,9 +731,13 @@ template <typename arr_type2, size_t Dims, typename... TupleDims>
         requires sizeof...(TupleDims) == Dims;
         requires std::is_integral_v<arr_type2>;
     }
-constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out) {
+constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out, bool row_major = true) {
 
-    return detail::dims_to_strides<0>(dims, out);
+    if (row_major) {
+        return detail::dims_to_strides_row_major<0>(dims, out);
+    } else {
+        return detail::dims_to_strides_col_major<0>(dims, out, 1);
+    }
 }
 
 #ifndef DOXYGEN

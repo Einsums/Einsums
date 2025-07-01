@@ -169,6 +169,8 @@ struct GPUPointer final {
         return static_cast<U *>(gpu_ptr_);
     }
 
+    constexpr operator bool() const noexcept { return gpu_ptr_ == nullptr; }
+
     static pointer pointer_to(element_type &other) { return pointer(&other); }
 
   private:
@@ -307,6 +309,8 @@ struct GPUPointer<T const> final {
     constexpr operator U const *() const {
         return gpu_ptr_;
     }
+
+    constexpr operator bool() const { return gpu_ptr_ == nullptr; }
 
   private:
     dev_datatype const *gpu_ptr_{nullptr};
