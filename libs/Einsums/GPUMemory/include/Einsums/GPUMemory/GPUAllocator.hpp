@@ -25,6 +25,23 @@ namespace einsums {
 
 namespace gpu {
 
+/**
+ * @struct GPUAllocator
+ *
+ * @brief Allocator whose maximum size can be restricted by runtime variables and which allocates memory on a GPU.
+ *
+ * The maximum size is controlled by the global configuration options. In particular, the option to control the size is
+ * @c --einsums:gpu-buffer-size and the string in the configuration mapping is @c gpu-buffer-size with the standard variants,
+ * such as @c GPU_BUFFER_SIZE .
+ *
+ * Use in dynamic allocations with frequent resizing is discouraged, such as in a vector. Resizing requires the buffer
+ * to be reallocated while still being allocated. If the buffers are big when resized, this means that the buffer
+ * allocation will fail even though the result would be expected to fall within the range of acceptable sizes.
+ * However, when using this to allocate a buffer once, this should be fine.
+ *
+ * This allocator follows the C++ standard for allocators, and can be used in templates that use them, such as
+ * containers, smart pointers, and more.
+ */
 template <typename T>
 struct GPUAllocator {
   public:

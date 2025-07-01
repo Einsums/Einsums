@@ -68,6 +68,9 @@ void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double>
 /**
  * @brief Permutes the elements of a tensor and puts it into an output tensor.
  *
+ * This function uses HPTT, which can only handle out-of-place tensor transpositions. The tensors passed in should not
+ * have overlapping storage.
+ *
  * @param UC_prefactor The prefactor for mixing the output tensor.
  * @param C_indices The indices for the output tensor.
  * @param C The output tensor.
@@ -227,11 +230,24 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 }
 
 // Sort with default values, no smart pointers
+/**
+ * @brief Permutes the elements of a tensor and puts it into an output tensor.
+ *
+ * This function uses HPTT, which can only handle out-of-place tensor transpositions. The tensors passed in should not
+ * have overlapping storage.
+ *
+ * @param C_indices The indices for the output tensor.
+ * @param C The output tensor.
+ * @param A_indices The indices for the input tensor.
+ * @param A The input tensor.
+ * @tparam ConjA If true, conjugate the values of A as it is being permuted.
+ */
 template <bool ConjA = false, NotASmartPointer ObjectA, NotASmartPointer ObjectC, typename... CIndices, typename... AIndices>
 void permute(std::tuple<CIndices...> const &C_indices, ObjectC *C, std::tuple<AIndices...> const &A_indices, ObjectA const &A) {
     permute<ConjA>(0, C_indices, C, 1, A_indices, A);
 }
 
+#ifndef DOXYGEN
 // Sort with default values, two smart pointers
 template <bool ConjA = false, SmartPointer SmartPointerA, SmartPointer SmartPointerC, typename... CIndices, typename... AIndices>
 void permute(std::tuple<CIndices...> const &C_indices, SmartPointerC *C, std::tuple<AIndices...> const &A_indices, SmartPointerA const &A) {
@@ -269,6 +285,7 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         permute<ConjA>(UC_prefactor, C_indices, &C_block, UA_prefactor, A_indices, A_block);
     }
 }
+#endif
 
 /**
  * @brief Finds the tile grid dimensions for the requested indices.
@@ -286,6 +303,7 @@ inline auto get_grid_ranges_for_many(CType const &C, std::tuple<CIndices...> con
     return std::array{get_grid_ranges_for_many_a<AllUniqueIndices, 0>(C, C_indices, A, A_indices)...};
 }
 
+#ifndef DOXYGEN
 template <bool ConjA = false, TiledTensorConcept AType, TiledTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
     requires requires {
         requires sizeof...(CIndices) == sizeof...(AIndices);
@@ -344,5 +362,6 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         C_tile.unlock();
     }
 }
+#endif
 
 } // namespace einsums::tensor_algebra
