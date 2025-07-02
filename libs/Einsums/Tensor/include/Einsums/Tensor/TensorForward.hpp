@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <vector>
+#include "Einsums/BufferAllocator/BufferAllocator.hpp"
 
 namespace einsums {
 
@@ -83,7 +84,7 @@ struct DiskView;
 template <typename T, size_t Rank>
 struct DiskTensor;
 
-template <typename T>
+template <typename T, typename Alloc = BufferAllocator<T>>
 struct RuntimeTensor;
 
 template <typename T>

@@ -18,6 +18,8 @@ namespace gpu {
 struct GPUMemoryTracker final : design_pats::Lockable<std::recursive_mutex> {
     EINSUMS_SINGLETON_DEF(GPUMemoryTracker)
 
+    ~GPUMemoryTracker();
+
     /**
      * @brief Finds memory that can be deallocated and deallocates it.
      *
@@ -134,8 +136,6 @@ struct GPUMemoryTracker final : design_pats::Lockable<std::recursive_mutex> {
 
   private:
     GPUMemoryTracker() = default;
-
-    ~GPUMemoryTracker();
 
     struct MemoryData {
         size_t  handle;

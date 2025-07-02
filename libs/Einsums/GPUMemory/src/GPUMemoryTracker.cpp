@@ -138,16 +138,22 @@ size_t GPUMemoryTracker::create_handle() {
 void GPUMemoryTracker::release_handle(size_t handle, bool remove_sticky) {
     auto lock = std::lock_guard(*this);
 
-    for (auto elem : memory_list_) {
-
-        if (elem.handle == handle) {
-            elem.use_count--;
+    for (auto it = memory_list_.begin(); it != memory_list_.end(); it++) {
+        if (it->handle == handle) {
+            it->use_count--;
 
             if (remove_sticky) {
-                elem.is_sticky = false;
+                it->is_sticky = false;
             }
 
             return;
+        }
+    }
+
+    // Look for the parent.
+    for (auto relation : view_list_) {
+        if (relation.handle == handle) {
+            release_handle(relation.handle, false); // We only want to remove the current stickiness, not the parent's.
         }
     }
 }
@@ -225,7 +231,7 @@ GPUPointer<void> GPUMemoryTracker::get_pointer_for_handle_no_alloc(size_t handle
             }
 
             // Offset the parent pointer to get the view pointer.
-            return GPUPointer<uint8_t>((void *)ptr) + relation.offset;
+            return GPUPointer<void>(GPUPointer<uint8_t>((void *)ptr) + relation.offset);
         }
     }
 

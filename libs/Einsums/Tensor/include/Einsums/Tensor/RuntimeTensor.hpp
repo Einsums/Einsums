@@ -44,7 +44,7 @@ namespace einsums {
  *
  * @tparam T The data type stored by the tensor.
  */
-template <typename T, typename Alloc = BufferAllocator<T>>
+template <typename T, typename Alloc>
 struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTensorNoType, design_pats::Lockable<std::recursive_mutex> {
   public:
     /**
@@ -74,7 +74,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      */
     template <ContainerOrInitializer Dims>
     RuntimeTensor(std::string name, Dims const &dims)
-        : data_(std::accumulate(dims.begin(), dims.end(), 1, [](size_t a, size_t b) { return a * b; })), _name{name} {
+        : data_(std::accumulate(dims.begin(), dims.end(), 1, [](size_t a, size_t b) { return a * b; })), name_{name} {
         impl_ = detail::TensorImpl<T>(data_.data(), dims, true);
     }
 
@@ -112,14 +112,14 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param copy The tensor to copy.
      */
     template <size_t Rank, typename Alloc2>
-    RuntimeTensor(Tensor<T, Rank, Alloc2> const &copy) : data_(copy.size()), _name{copy.name()} {
+    RuntimeTensor(Tensor<T, Rank, Alloc2> const &copy) : data_(copy.size()), name_{copy.name()} {
         impl_ = detail::TensorImpl<T>(copy.get_impl());
 
         std::memcpy(data_.data(), copy.data(), copy.size() * sizeof(T));
     }
 
     template <size_t Rank>
-    RuntimeTensor(Tensor<T, Rank, Alloc> &&copy) : data_(std::move(copy.vector_data())), _name{copy.name()} {
+    RuntimeTensor(Tensor<T, Rank, Alloc> &&copy) : data_(std::move(copy.vector_data())), name_{copy.name()} {
         impl_ = std::move(copy.get_impl());
 
         impl_.reset_data(data_.data());
@@ -606,20 +606,20 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     /**
      * @brief Set the name of the tensor.
      *
-     * @param new_name The new name of the tensor.
+     * @param newname_ The new name of the tensor.
      */
-    virtual void set_name(std::string const &new_name) { this->_name = new_name; }
+    virtual void setname_(std::string const &newname_) { this->name_ = newname_; }
 
     /**
      * @brief Get the name of the tensor.
      */
-    virtual std::string const &name() const noexcept { return this->_name; }
+    virtual std::string const &name() const noexcept { return this->name_; }
 
   protected:
     BufferVector<T> data_;
 
     /**
-     * @property _name
+     * @property name_
      *
      * @brief The name of the tensor.
      */
@@ -669,7 +669,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param view The tensor to view.
      */
     RuntimeTensorView(RuntimeTensor<T> &view)
-        : _data{view.data()}, _name{view.name()}, _dims{view.dims()}, _strides{view.strides()}, _rank{view.rank()}, _size{view.size()},
+        : _data{view.data()}, name_{view.name()}, _dims{view.dims()}, _strides{view.strides()}, _rank{view.rank()}, _size{view.size()},
           _full_view{true}, _index_strides(view.rank()) {
         dims_to_strides(_dims, _index_strides);
     }
@@ -680,7 +680,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param view The tensor to view.
      */
     RuntimeTensorView(RuntimeTensor<T> const &view)
-        : _data{(T *)view.data()}, _name{view.name()}, _dims{view.dims()}, _strides{view.strides()}, _rank{view.rank()}, _size{view.size()},
+        : _data{(T *)view.data()}, name_{view.name()}, _dims{view.dims()}, _strides{view.strides()}, _rank{view.rank()}, _size{view.size()},
           _full_view{true}, _index_strides(view.rank()) {
         dims_to_strides(_dims, _index_strides);
     }
@@ -1722,14 +1722,14 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
     /**
      * @brief Returns the name of the tensor.
      */
-    virtual std::string const &name() const { return _name; };
+    virtual std::string const &name() const { return name_; };
 
     /**
      * @brief Sets the name of the tensor.
      *
-     * @param new_name The new name for the tensor.
+     * @param newname_ The new name for the tensor.
      */
-    virtual void set_name(std::string const &new_name) { _name = new_name; };
+    virtual void setname_(std::string const &newname_) { name_ = newname_; };
 
     /**
      * @brief Gets the rank of the tensor.
@@ -1745,11 +1745,11 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
     T *_data;
 
     /**
-     * @property _name
+     * @property name_
      *
      * @brief The name of the tensor.
      */
-    std::string _name{"(unnamed view)"};
+    std::string name_{"(unnamed view)"};
 
     /**
      * @property _dims
@@ -1825,10 +1825,10 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
         } else if constexpr (DiskTensorConcept<AType>) {
             fprintln(fp, "Type: Disk Tensor");
         } else {
-            fprintln(fp, "Type: {}", type_name<AType>());
+            fprintln(fp, "Type: {}", typename_<AType>());
         }
 
-        fprintln(fp, "Data Type: {}", type_name<typename AType::ValueType>());
+        fprintln(fp, "Data Type: {}", typename_<typename AType::ValueType>());
 
         if (Rank > 0) {
             std::ostringstream oss;

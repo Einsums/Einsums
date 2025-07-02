@@ -7,7 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
-#include <Einsums/Errors/Errors.hpp>
+#include <Einsums/Errors/Error.hpp>
 #include <Einsums/GPUStreams.hpp>
 
 #include <hip/driver_types.h>
