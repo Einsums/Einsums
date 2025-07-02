@@ -12,6 +12,7 @@
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Tensor/Backends/TensorImpl.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
@@ -43,22 +44,20 @@ namespace einsums {
  *
  * @tparam T The data type stored by the tensor.
  */
-template <typename T>
+template <typename T, typename Alloc = BufferAllocator<T>>
 struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTensorNoType, design_pats::Lockable<std::recursive_mutex> {
   public:
-    /**
-     * @typedef Vector
-     *
-     * @brief Represents how the data is stored in the tensor.
-     */
-    using Vector = VectorData<T>;
-
     /**
      * @typedef ValueType
      *
      * @brief Represents the data type stored in the tensor.
      */
     using ValueType = T;
+
+    /**
+     *
+     */
+    using DataVector = std::vector<T, Alloc>;
 
     RuntimeTensor() = default;
 
@@ -73,16 +72,10 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param name the new name of the tensor.
      * @param dims The dimensions of the tensor.
      */
-    RuntimeTensor(std::string name, std::vector<size_t> const &dims) : _rank{dims.size()}, _name{name}, _dims{dims} {
-        size_t size = 1;
-        _strides.resize(_rank);
-
-        for (int i = _rank - 1; i >= 0; i--) {
-            _strides[i] = size;
-            size *= _dims[i];
-        }
-
-        _data.resize(size);
+    template <ContainerOrInitializer Dims>
+    RuntimeTensor(std::string name, Dims const &dims)
+        : data_(std::accumulate(dims.begin(), dims.end(), 1, [](size_t a, size_t b) { return a * b; })), _name{name} {
+        impl_ = detail::TensorImpl<T>(data_.data(), dims, true);
     }
 
     /**
@@ -90,32 +83,26 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param dims The dimensions of the tensor.
      */
-    explicit RuntimeTensor(std::vector<size_t> const &dims) : _rank{dims.size()}, _dims{dims} {
-        size_t size = 1;
-        _strides.resize(_rank);
-
-        for (int i = _rank - 1; i >= 0; i--) {
-            _strides[i] = size;
-            size *= _dims[i];
-        }
-
-        _data.resize(size);
+    template <ContainerOrInitializer Dims>
+    explicit RuntimeTensor(Dims const &dims)
+        : data_(std::accumulate(dims.begin(), dims.end(), 1, [](size_t a, size_t b) { return a * b; })) {
+        impl_ = detail::TensorImpl<T>(data_.data(), dims, true);
     }
 
-    /**
-     * @brief Create a new runtime tensor with the given name and dimensions using an initializer list.
-     *
-     * @param name the new name of the tensor.
-     * @param dims The dimensions of the tensor as an initializer list.
-     */
-    RuntimeTensor(std::string name, std::initializer_list<size_t> dims) : RuntimeTensor(name, std::vector<size_t>(dims)) {}
+    // /**
+    //  * @brief Create a new runtime tensor with the given name and dimensions using an initializer list.
+    //  *
+    //  * @param name the new name of the tensor.
+    //  * @param dims The dimensions of the tensor as an initializer list.
+    //  */
+    // RuntimeTensor(std::string name, std::initializer_list<size_t> dims) : RuntimeTensor(name, BufferVector<size_t>(dims)) {}
 
-    /**
-     * @brief Create a new runtime tensor with the given dimensions using an initializer list.
-     *
-     * @param dims The dimensions of the tensor as an initializer list.
-     */
-    explicit RuntimeTensor(std::initializer_list<size_t> dims) : RuntimeTensor(std::vector<size_t>(dims)) {}
+    // /**
+    //  * @brief Create a new runtime tensor with the given dimensions using an initializer list.
+    //  *
+    //  * @param dims The dimensions of the tensor as an initializer list.
+    //  */
+    // explicit RuntimeTensor(std::initializer_list<size_t> dims) : RuntimeTensor(BufferVector<size_t>(dims)) {}
 
     /**
      * @brief Copy a tensor into a runtime tensor.
@@ -124,26 +111,18 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param copy The tensor to copy.
      */
-    template <size_t Rank>
-    RuntimeTensor(Tensor<T, Rank> const &copy) : _rank{Rank}, _dims(Rank), _strides(Rank), _name{copy.name()} {
-        for (int i = Rank - 1; i >= 0; i--) {
-            _dims[i]    = copy.dim(i);
-            _strides[i] = copy.stride(i);
-        }
+    template <size_t Rank, typename Alloc2>
+    RuntimeTensor(Tensor<T, Rank, Alloc2> const &copy) : data_(copy.size()), _name{copy.name()} {
+        impl_ = detail::TensorImpl<T>(copy.get_impl());
 
-        _data.resize(copy.size());
-
-        std::memcpy(_data.data(), copy.data(), copy.size() * sizeof(T));
+        std::memcpy(data_.data(), copy.data(), copy.size() * sizeof(T));
     }
 
     template <size_t Rank>
-    RuntimeTensor(Tensor<T, Rank> &&copy) : _rank{Rank}, _dims(Rank), _strides(Rank), _name{copy.name()} {
-        for (int i = Rank - 1; i >= 0; i--) {
-            _dims[i]    = copy.dim(i);
-            _strides[i] = copy.stride(i);
-        }
+    RuntimeTensor(Tensor<T, Rank, Alloc> &&copy) : data_(std::move(copy.vector_data())), _name{copy.name()} {
+        impl_ = std::move(copy.get_impl());
 
-        _data = std::move(copy.vector_data());
+        impl_.reset_data(data_.data());
     }
 
     /**
@@ -154,25 +133,17 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param copy The tensor view to copy.
      */
     template <size_t Rank>
-    RuntimeTensor(TensorView<T, Rank> const &copy) : _rank{Rank}, _dims(Rank), _strides(Rank) {
-        size_t size = 1;
-
-        for (int i = Rank - 1; i >= 0; i--) {
-            _strides[i] = size;
-            _dims[i]    = (size_t)copy.dim(i);
-            size *= _dims[i];
-        }
-
-        _data.resize(size);
+    RuntimeTensor(TensorView<T, Rank> const &copy) : data_(copy.size()) {
+        impl_ = detail::TensorImpl<T>(data_.data(), copy.dims(), true);
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
             size_t hold = sentinel, ord = 0;
             for (int i = 0; i < Rank; i++) {
-                ord += copy.stride(i) * (hold / _strides[i]);
-                hold %= _strides[i];
+                ord += copy.stride(i) * (hold / stride(i));
+                hold %= stride(i);
             }
-            _data[sentinel] = copy.data()[ord];
+            data_[sentinel] = copy.data()[ord];
         }
     }
 
@@ -183,73 +154,59 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param copy The tensor view to copy.
      */
-    RuntimeTensor(RuntimeTensorView<T> const &copy) : _rank{copy.rank()}, _dims(copy.rank()), _strides(copy.rank()) {
-        size_t size = 1;
-
-        for (int i = copy.rank() - 1; i >= 0; i--) {
-            _strides[i] = size;
-            _dims[i]    = (size_t)copy.dim(i);
-            size *= _dims[i];
-        }
-
-        _data.resize(size);
+    RuntimeTensor(RuntimeTensorView<T> const &copy) : data_(copy.size()) {
+        impl_ = detail::TensorImpl<T>(data_.data(), copy.dims(), true);
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
             size_t hold = sentinel, ord = 0;
-            for (int i = 0; i < _rank; i++) {
-                ord += copy.stride(i) * (hold / _strides[i]);
-                hold %= _strides[i];
+            for (int i = 0; i < rank(); i++) {
+                ord += copy.stride(i) * (hold / stride(i));
+                hold %= stride(i);
             }
-            _data[sentinel] = copy.data()[ord];
+            data_[sentinel] = copy.data()[ord];
         }
     }
 
     // HIP clang doesn't like it when this is defaulted.
-    virtual ~RuntimeTensor() {}
+    ~RuntimeTensor() {}
 
     /**
      * @brief Set all of the data in the tensor to zero.
      */
-    virtual void zero() { std::memset(_data.data(), 0, _data.size() * sizeof(T)); }
+    void zero() { std::memset(data(), 0, size() * sizeof(T)); }
 
     /**
      * @brief Set all of the data in the tensor to the same value.
      *
      * @param val The value to fill the tensor with.
      */
-    virtual void set_all(T val) { std::fill(_data.begin(), _data.end(), val); }
+    void set_all(T val) { std::fill(data_.begin(), data_.end(), val); }
 
     /**
      * @brief Get the pointer to the stored data.
      */
-    T *data() { return _data.data(); }
+    T *data() { return impl_.data(); }
 
     /**
      * @copydoc data()
      */
-    T const *data() const { return _data.data(); }
+    T const *data() const { return impl_.data(); }
 
     /**
-     * @brief Get the pointer to the stored data starting at the given index.
      *
-     * @param index A collection of integers to use as the index.
      */
-    template <typename Storage>
-        requires(!std::is_arithmetic_v<Storage>)
-    T *data(Storage const &index) {
-        return &(_data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index)));
+    template <typename... Args>
+    T *data(Args &&...args) {
+        return impl_.data(std::forward<Args>(args)...);
     }
 
     /**
-     * @brief Get the pointer to the stored data starting at the given index.
      *
-     * @param index A collection of integers to use as the index.
      */
-    template <typename Storage>
-        requires(!std::is_arithmetic_v<Storage>)
-    T const *data(Storage const &index) const {
-        return &(_data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index)));
+    template <typename... Args>
+    T const *data(Args &&...args) const {
+        return impl_.data(std::forward<Args>(args)...);
     }
 
     /**
@@ -264,10 +221,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     T &operator()(Storage const &index) {
-        if (index.size() < rank()) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Too few indices passed to subscript tensor!");
-        }
-        return _data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index));
+        return impl_.subscript(index);
     }
 
     /**
@@ -282,95 +236,35 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     T const &operator()(Storage const &index) const {
-        if (index.size() < rank()) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Too few indices passed to subscript tensor!");
-        }
-        return _data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index));
-    }
-
-    /**
-     * @brief Get the pointer to the stored data starting at the given index.
-     *
-     * @param args A collection of integers to use as the index.
-     */
-    template <typename... Args>
-    T *data(Args... args) {
-        if (sizeof...(Args) > rank()) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
-        }
-        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
-        return _data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index));
-    }
-
-    /**
-     * @brief Get the pointer to the stored data starting at the given index.
-     *
-     * @param args A collection of integers to use as the index.
-     */
-    template <typename... Args>
-    T const *data(Args... args) const {
-        if (sizeof...(Args) > rank()) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
-        }
-        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
-        return _data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index));
+        return impl_.subscript(index);
     }
 
     /**
      * @brief Subscript into the tensor, checking for validity of the index.
      *
      * This function will check the indices. If an index is negative, it will be wrapped around.
-     * It will also make sure that the indices aren't too big. If fewer indices than necessary
-     * are passed, it will throw an error. This will hopefully change in the future to allow for
-     * the creation of views. It will still throw an error when too many arguments are passed.
+     * It will also make sure that the indices aren't too big.
      *
      * @param args The index to use for the subscript.
-     *
-     * @todo std::variant can't handle references. We may be able to make our own, but for right now,
-     * this will not be able to handle the wrong number of arguments.
      */
-    template <typename... Args>
+    template <std::integral... Args>
         requires(std::is_integral_v<Args> && ...)
-    T &operator()(Args... args) {
-        if (sizeof...(Args) < rank()) {
-            EINSUMS_THROW_EXCEPTION(todo_error,
-                                    "Not yet implemented: can not handle fewer integral indices than rank in (non-const) runtime"
-                                    "tensor.");
-        } else if (sizeof...(Args) > rank()) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript operator!");
-        }
-        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
-        return _data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index));
+    T &operator()(Args &&...args) {
+        return impl_.subscript(std::forward<Args>(args)...);
     }
 
     /**
      * @brief Subscript into the tensor, checking for validity of the index.
      *
      * This function will check the indices. If an index is negative, it will be wrapped around.
-     * It will also make sure that the indices aren't too big. If too few indices are passed,
-     * it will create a view.
+     * It will also make sure that the indices aren't too big.
      *
      * @param args The index to use for the subscript.
      */
-    template <typename... Args>
+    template <std::integral... Args>
         requires(std::is_integral_v<Args> && ...)
-    std::variant<T, RuntimeTensorView<T>> operator()(Args... args) const {
-        if (sizeof...(Args) > rank()) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript operator!");
-        }
-
-        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
-
-        if (sizeof...(Args) < rank()) {
-            std::vector<Range> slices(sizeof...(Args));
-
-            for (int i = 0; i < sizeof...(Args); i++) {
-                slices[i] = Range{-1, index[i]};
-            }
-            return std::variant<T, RuntimeTensorView<T>>((*this)(slices));
-        } else {
-            return std::variant<T, RuntimeTensorView<T>>(_data.at(einsums::indices_to_sentinel_negative_check(_strides, _dims, index)));
-        }
+    T operator()(Args &&...args) const {
+        return impl_.subscript(std::forward<Args>(args)...);
     }
 
     /**
@@ -382,133 +276,8 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      */
     template <typename... Args>
         requires((!std::is_integral_v<Args>) || ...)
-    RuntimeTensorView<T> operator()(Args... args) const {
-        if (sizeof...(Args) > rank()) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript operator!");
-        }
-
-        std::tuple<Args...> arg_tuple = std::make_tuple(args...);
-        std::vector<Range>  slices(sizeof...(Args));
-
-        for_sequence<sizeof...(Args)>([&](auto n) {
-            using Arg = std::tuple_element_t<n, std::tuple<Args...>>;
-            if constexpr (std::is_same_v<Arg, AllT>) {
-                slices[n] = Range{0, this->dim(n)};
-            } else if constexpr (std::is_same_v<Arg, Range>) {
-                slices[n] = std::get<n>(arg_tuple);
-            } else if constexpr (std::is_integral_v<Arg>) {
-                auto index = std::get<n>(arg_tuple);
-
-                if (index < 0) {
-                    index += this->dim(n);
-                }
-
-                slices[n] = Range{-1, index};
-            }
-        });
-
-        return (*this)(slices);
-    }
-
-    /*
-     * Special cases:
-     *    Range{a, a + 1}: Keep the axis in the view. It will have dimension 1 and only have the a'th element. a can not be negative.
-     *    Range{-1, a}: Remove the axis from the view. It will still affect the offset. a can not be negative.
-     */
-    /**
-     * @brief Create a view with the specified parameters.
-     *
-     * Internal function only.
-     *
-     * @param slices A list of slices to use when specifying the parameters of the view.
-     */
-    RuntimeTensorView<T> operator()(std::vector<Range> const &slices) {
-        if (slices.size() > _rank) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to tensor!");
-        }
-
-        std::vector<size_t> dims, offsets(_rank), strides;
-        dims.reserve(_rank);
-        strides.reserve(_rank);
-
-        for (int i = 0; i < _rank; i++) {
-            if (i >= slices.size()) {
-                dims.push_back(_dims[i]);
-                strides.push_back(_strides[i]);
-                offsets[i] = 0;
-            } else {
-                size_t start = slices[i][0], end = slices[i][1];
-
-                if (start == -1 && end >= 0) {
-                    offsets[i] = end;
-                } else {
-                    if (start < 0) {
-                        start += _dims[i];
-                    }
-                    if (end < 0) {
-                        end += _dims[i];
-                    }
-
-                    if (start < 0 || end < 0 || start >= _dims[i] || end > _dims[i] || start >= end) {
-                        EINSUMS_THROW_EXCEPTION(std::out_of_range, "Index out of range! Either the start or end is out of range!");
-                    }
-
-                    dims.push_back(end - start);
-                    offsets[i] = start;
-                    strides.push_back(_strides[i]);
-                }
-            }
-        }
-
-        return RuntimeTensorView<T>(*this, dims, strides, offsets);
-    }
-
-    /**
-     * @brief Create a view with the specified parameters.
-     *
-     * Internal function only.
-     *
-     * @param slices A list of slices to use when specifying the parameters of the view.
-     */
-    RuntimeTensorView<T> const operator()(std::vector<Range> const &slices) const {
-        if (slices.size() > _rank) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to tensor!");
-        }
-
-        std::vector<size_t> dims, offsets(_rank), strides;
-        dims.reserve(_rank);
-        strides.reserve(_rank);
-
-        for (int i = 0; i < _rank; i++) {
-            if (i >= slices.size()) {
-                dims.push_back(_dims[i]);
-                strides.push_back(_strides[i]);
-                offsets[i] = 0;
-            } else {
-                size_t start = slices[i][0], end = slices[i][1];
-
-                if (start == -1 && end >= 0) {
-                    offsets[i] = end;
-                } else {
-                    if (start < 0) {
-                        start += _dims[i];
-                    }
-                    if (end < 0) {
-                        end += _dims[i];
-                    }
-
-                    if (start < 0 || end < 0 || start >= _dims[i] || end > _dims[i] || start >= end) {
-                        EINSUMS_THROW_EXCEPTION(std::out_of_range, "Index out of range! Either the start or end is out of range!");
-                    }
-
-                    dims.push_back(end - start);
-                    offsets[i] = start;
-                    strides.push_back(_strides[i]);
-                }
-            }
-        }
-
-        return RuntimeTensorView<T>(*this, dims, strides, offsets);
+    RuntimeTensorView<T> const operator()(Args &&...args) const {
+        return RuntimeTensorView<T>(impl_.subscript(std::forward<Args>(args)...));
     }
 
     /**
@@ -518,19 +287,12 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      */
     template <size_t Rank>
     RuntimeTensor<T> &operator=(Tensor<T, Rank> const &other) {
-        if (_rank != Rank) {
-            _rank = Rank;
-            _dims.resize(Rank);
-            _strides.resize(Rank);
+        impl_ = other.get_impl();
+        if (data_.size() != other.size()) {
+            data_.resize(other.size());
         }
-        for (int i = 0; i < Rank; i++) {
-            _dims[i]    = other.dim(i);
-            _strides[i] = other.stride(i);
-        }
-        if (_data.size() != other.size()) {
-            _data.resize(other.size());
-        }
-        std::memcpy(_data.data(), other.data(), other.size() * sizeof(T));
+        impl_.reset_data(data_.data());
+        std::memcpy(data_.data(), other.data(), other.size() * sizeof(T));
 
         return *this;
     }
@@ -542,23 +304,13 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      */
     template <typename TOther, size_t Rank>
     RuntimeTensor<T> &operator=(Tensor<TOther, Rank> const &other) {
-        if (_rank != Rank) {
-            _rank = Rank;
-            _dims.resize(Rank);
-            _strides.resize(Rank);
+        impl_ = detail::TensorImpl<T>(nullptr, other.dims(), other.strides());
+        if (data_.size() != other.size()) {
+            data_.resize(other.size());
         }
-        for (int i = 0; i < Rank; i++) {
-            _dims[i]    = other.dim(i);
-            _strides[i] = other.stride(i);
-        }
-        if (_data.size() != other.size()) {
-            _data.resize(other.size());
-        }
+        impl_.reset_data(data_.data());
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < _data.size(); i++) {
-            _data[i] = (T)other.data()[i];
-        }
+        impl_.copy_from_both_contiguous(other.get_impl());
 
         return *this;
     }
@@ -570,27 +322,13 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      */
     template <typename TOther, size_t Rank>
     RuntimeTensor<T> &operator=(TensorView<TOther, Rank> const &other) {
-        if (_rank != Rank) {
-            _rank = Rank;
-            _dims.resize(Rank);
-            _strides.resize(Rank);
+        impl_ = detail::TensorImpl<T>(nullptr, other.dims(), true);
+        if (data_.size() != other.size()) {
+            data_.resize(other.size());
         }
-        for (int i = 0; i < Rank; i++) {
-            _dims[i]    = other.dim(i);
-            _strides[i] = other.stride(i);
-        }
-        if (_data.size() != other.size()) {
-            _data.resize(other.size());
-        }
+        impl_.reset_data(data_.data());
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
-            std::array<size_t, Rank> index;
-
-            einsums::sentinel_to_indices(sentinel, _strides, index);
-
-            _data[sentinel] = (T)subscript_tensor(other, index);
-        }
+        impl_.copy_from(other.get_impl());
 
         return *this;
     }
@@ -601,23 +339,13 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param other The tensor to copy from.
      */
     virtual RuntimeTensor<T> &operator=(RuntimeTensor<T> const &other) {
-        if (_rank != other.rank()) {
-            _rank = other.rank();
-            _dims.resize(other.rank());
-            _strides.resize(other.rank());
+        impl_ = detail::TensorImpl<T>(nullptr, other.dims(), other.strides());
+        if (data_.size() != other.size()) {
+            data_.resize(other.size());
         }
-        for (int i = 0; i < other.rank(); i++) {
-            _dims[i]    = other.dim(i);
-            _strides[i] = other.stride(i);
-        }
-        if (_data.size() != other.size()) {
-            _data.resize(other.size());
-        }
+        impl_.reset_data(data_.data());
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
-            _data[sentinel] = other.data()[sentinel];
-        }
+        impl_.copy_from_both_contiguous(other.get_impl());
 
         return *this;
     }
@@ -628,30 +356,15 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param other The tensor view to copy from.
      */
     virtual RuntimeTensor<T> &operator=(RuntimeTensorView<T> const &other) {
-        if (_dims != other.dims() || _rank != other.rank()) {
-            if (_rank != other.rank()) {
-                _rank = other.rank();
-                _dims.resize(other.rank());
-                _strides.resize(other.rank());
+        if (impl_.dims() != other.dims()) {
+            impl_ = detail::TensorImpl<T>(nullptr, other.dims(), other.strides());
+            if (data_.size() != other.size()) {
+                data_.resize(other.size());
             }
-            _data.resize(other.size());
-            for (int i = 0; i < other.rank(); i++) {
-                _dims[i] = other.dim(i);
-            }
-            size_t stride = 1;
-            for (int i = _rank - 1; i >= 0; i--) {
-                _strides[i] = stride;
-                stride *= _dims[i];
-            }
+            impl_.reset_data(data_.data());
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
-            size_t other_index;
-            sentinel_to_sentinels(sentinel, _strides, other.strides(), other_index);
-
-            _data[sentinel] = other.data()[other_index];
-        }
+        impl_.copy_from(other.get_impl());
 
         return *this;
     }
@@ -663,23 +376,13 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      */
     template <typename TOther>
     RuntimeTensor<T> &operator=(RuntimeTensor<TOther> const &other) {
-        if (_rank != other.rank()) {
-            _rank = other.rank();
-            _dims.resize(other.rank());
-            _strides.resize(other.rank());
+        impl_ = detail::TensorImpl<T>(nullptr, other.dims(), other.strides());
+        if (data_.size() != other.size()) {
+            data_.resize(other.size());
         }
-        for (int i = 0; i < other.rank(); i++) {
-            _dims[i]    = other.dim(i);
-            _strides[i] = other.stride(i);
-        }
-        if (_data.size() != other.size()) {
-            _data.resize(other.size());
-        }
+        impl_.reset_data(data_.data());
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
-            _data[sentinel] = other.data()[sentinel];
-        }
+        impl_.copy_from_both_contiguous(other.get_impl());
 
         return *this;
     }
@@ -691,27 +394,15 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      */
     template <typename TOther>
     RuntimeTensor<T> &operator=(RuntimeTensorView<TOther> const &other) {
-        if (_rank != other.rank()) {
-            _rank = other.rank();
-            _dims.resize(other.rank());
-            _strides.resize(other.rank());
-        }
-        for (int i = 0; i < other.rank(); i++) {
-            _dims[i]    = other.dim(i);
-            _strides[i] = other.stride(i);
-        }
-        if (_data.size() != other.size()) {
-            _data.resize(other.size());
+        if (impl_.dims() != other.dims()) {
+            impl_ = detail::TensorImpl<T>(nullptr, other.dims(), other.strides());
+            if (data_.size() != other.size()) {
+                data_.resize(other.size());
+            }
+            impl_.reset_data(data_.data());
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
-            size_t other_index;
-
-            sentinel_to_sentinels(sentinel, _strides, other.strides(), other_index);
-
-            _data[sentinel] = other.data()[other_index];
-        }
+        impl_.copy_from(other.get_impl());
 
         return *this;
     }
@@ -845,7 +536,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param d The axis to query. Negative values will wrap around.
      */
-    virtual size_t dim(int d) const {
+    size_t dim(int d) const {
         // Add support for negative indices.
         if (d < 0) {
             d += _rank;
@@ -856,17 +547,17 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     /**
      * @brief Get the dimensions of the tensor.
      */
-    virtual std::vector<size_t> dims() const noexcept { return _dims; }
+    dims() const noexcept { return _dims; }
 
     /**
      * @brief Return the vector containing the data stored by the tensor.
      */
-    virtual Vector const &vector_data() const { return _data; }
+    virtual DataVector const &vector_data() const { return _data; }
 
     /**
      * @brief Return the vector containing the data stored by the tensor.
      */
-    virtual Vector &vector_data() { return _data; }
+    virtual DataVector &vector_data() { return _data; }
 
     /**
      * @brief Get the stride along a given axis.
@@ -883,14 +574,14 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     /**
      * @brief Return the strides of the tensor.
      */
-    virtual auto strides() const noexcept -> std::vector<size_t> { return _strides; }
+    virtual auto strides() const noexcept -> BufferVector<size_t> { return _strides; }
 
     /**
      * @brief Create a rank-1 view of the tensor.
      */
     virtual auto to_rank_1_view() const -> RuntimeTensorView<T> {
-        size_t              size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
-        std::vector<size_t> dim{size};
+        size_t               size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+        BufferVector<size_t> dim{size};
 
         return RuntimeTensorView<T>{*this, dim};
     }
@@ -925,38 +616,16 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     virtual std::string const &name() const noexcept { return this->_name; }
 
   protected:
-    /**
-     * @property _data
-     *
-     * @brief The vector containing the data stored by the tensor.
-     */
-    Vector _data;
+    BufferVector<T> data_;
 
     /**
      * @property _name
      *
      * @brief The name of the tensor.
      */
-    std::string _name{"(unnamed)"};
+    std::string name_{"(unnamed)"};
 
-    /**
-     * @property _dims
-     *
-     * @brief The dimensions of the tensor.
-     */
-    /**
-     * @property _strides
-     *
-     * @brief The strides of the tensor.
-     */
-    std::vector<size_t> _dims, _strides;
-
-    /**
-     * @property _rank
-     *
-     * @brief The rank of the tensor.
-     */
-    size_t _rank{0};
+    detail::TensorImpl<T> impl_;
 
     template <typename TOther>
     friend class RuntimeTensorView;
@@ -1022,7 +691,8 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param other The tensor to view.
      * @param dims The new dimensions for the view.
      */
-    RuntimeTensorView(RuntimeTensor<T> const &other, std::vector<size_t> const &dims)
+    template <typename Alloc>
+    RuntimeTensorView(RuntimeTensor<T> const &other, std::vector<size_t, Alloc> const &dims)
         : _rank{dims.size()}, _dims{dims}, _full_view{true}, _index_strides(dims.size()) {
         _size = 1;
         _strides.resize(_rank);
@@ -1042,7 +712,8 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param other The tensor to view.
      * @param dims The new dimensions for the view.
      */
-    RuntimeTensorView(RuntimeTensor<T> &other, std::vector<size_t> const &dims)
+    template <typename Alloc>
+    RuntimeTensorView(RuntimeTensor<T> &other, std::vector<size_t, Alloc> const &dims)
         : _rank{dims.size()}, _dims{dims}, _full_view{true}, _index_strides(dims.size()) {
         _size = 1;
         _strides.resize(_rank);
@@ -1062,7 +733,8 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param other The tensor to view.
      * @param dims The new dimensions for the view.
      */
-    RuntimeTensorView(RuntimeTensorView<T> &other, std::vector<size_t> const &dims)
+    template <typename Alloc>
+    RuntimeTensorView(RuntimeTensorView<T> &other, std::vector<size_t, Alloc> const &dims)
         : _rank{dims.size()}, _dims{dims}, _full_view{other.full_view_of_underlying()}, _index_strides(dims.size()) {
         _size = 1;
         _strides.resize(_rank);
@@ -1082,7 +754,8 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param other The tensor to view.
      * @param dims The new dimensions for the view.
      */
-    RuntimeTensorView(RuntimeTensorView<T> const &other, std::vector<size_t> const &dims)
+    template <typename Alloc>
+    RuntimeTensorView(RuntimeTensorView<T> const &other, std::vector<size_t, Alloc> const &dims)
         : _rank{dims.size()}, _dims{dims}, _full_view{other.full_view_of_underlying()}, _index_strides(dims.size()) {
         _size = 1;
         _strides.resize(_rank);
@@ -1104,8 +777,9 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param strides The new strides for the view.
      * @param offsets The offsets for the view.
      */
-    RuntimeTensorView(RuntimeTensor<T> &other, std::vector<size_t> const &dims, std::vector<size_t> const &strides,
-                      std::vector<size_t> const &offsets)
+    template <typename Alloc1, typename Alloc2, typename Alloc3>
+    RuntimeTensorView(RuntimeTensor<T> &other, std::vector<size_t, Alloc1> const &dims, std::vector<size_t, Alloc2> const &strides,
+                      std::vector<size_t, Alloc3> const &offsets)
         : _rank{dims.size()}, _dims{dims}, _strides{strides}, _full_view{other.dims() == dims && other.strides() == strides},
           _index_strides(dims.size()) {
 
@@ -1123,8 +797,9 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param strides The new strides for the view.
      * @param offsets The offsets for the view.
      */
-    RuntimeTensorView(RuntimeTensor<T> const &other, std::vector<size_t> const &dims, std::vector<size_t> const &strides,
-                      std::vector<size_t> const &offsets)
+    template <typename Alloc1, typename Alloc2, typename Alloc3>
+    RuntimeTensorView(RuntimeTensor<T> const &other, std::vector<size_t, Alloc1> const &dims, std::vector<size_t, Alloc2> const &strides,
+                      std::vector<size_t, Alloc3> const &offsets)
         : _rank{dims.size()}, _dims{dims}, _strides{strides}, _full_view{other.dims() == dims && other.strides() == strides},
           _index_strides(dims.size()) {
 
@@ -1142,8 +817,9 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param strides The new strides for the view.
      * @param offsets The offsets for the view.
      */
-    RuntimeTensorView(RuntimeTensorView<T> &other, std::vector<size_t> const &dims, std::vector<size_t> const &strides,
-                      std::vector<size_t> const &offsets)
+    template <typename Alloc1, typename Alloc2, typename Alloc3>
+    RuntimeTensorView(RuntimeTensorView<T> &other, s, std::vector<size_t, Alloc1> const &dims, std::vector<size_t, Alloc2> const &strides,
+                      std::vector<size_t, Alloc3> const &offsets)
         : _rank{dims.size()}, _dims{dims}, _strides{strides},
           _full_view{other.full_view_of_underlying() && other.dims() == dims && other.strides() == strides}, _index_strides(dims.size()) {
 
@@ -1161,8 +837,9 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param strides The new strides for the view.
      * @param offsets The offsets for the view.
      */
-    RuntimeTensorView(RuntimeTensorView<T> const &other, std::vector<size_t> const &dims, std::vector<size_t> const &strides,
-                      std::vector<size_t> const &offsets)
+    template <typename Alloc1, typename Alloc2, typename Alloc3>
+    RuntimeTensorView(RuntimeTensorView<T> const &other, std::vector<size_t, Alloc1> const &dims,
+                      std::vector<size_t, Alloc2> const &strides, std::vector<size_t, Alloc3> const &offsets)
         : _rank{dims.size()}, _dims{dims}, _strides{strides},
           _full_view{other.full_view_of_underlying() && other.dims() == dims && other.strides() == strides}, _index_strides(dims.size()) {
 

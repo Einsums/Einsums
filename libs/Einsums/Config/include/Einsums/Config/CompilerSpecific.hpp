@@ -29,6 +29,8 @@
 #    define EINSUMS_OMP_CRITICAL   _Pragma("omp critical")
 #endif
 
+#define EINSUMS_PRAGMA(X) _Pragma(#X)
+
 #ifdef __GNUC__
 
 // gcc does not have reductions for complex values.

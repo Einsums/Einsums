@@ -11,8 +11,17 @@
 #include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/TypeSupport/Singleton.hpp>
 
+#include <hip/driver_types.h>
+#include <hip/hip_common.h>
+#include <hip/hip_complex.h>
+#include <hip/hip_runtime_api.h>
+
 namespace einsums {
 namespace gpu {
+
+extern EINSUMS_EXPORT __constant__ float float_constants[6];
+extern EINSUMS_EXPORT  __constant__ double double_constants[6];
+
 namespace detail {
 
 /// @todo This class can be freely changed. It is provided as a starting point for your convenience. If not needed, it may be removed.
@@ -44,6 +53,62 @@ class EINSUMS_EXPORT Einsums_GPUMemory_vars final : public design_pats::Lockable
     void deallocate(size_t bytes);
 
     size_t get_max_size() const;
+
+    float *get_const(float val) {
+      if(val == 0.0f) {
+        return float_constants;
+      } else if(val == 1.0f) {
+        return float_constants + 1;
+      } else if(val == -1.0f) {
+        return float_constants + 3;
+      } else {
+        return nullptr;
+      }
+    }
+
+    double *get_const(double val) {
+      if(val == 0.0) {
+        return double_constants;
+      } else if(val == 1.0) {
+        return double_constants + 1;
+      } else if(val == -1.0) {
+        return double_constants + 3;
+      } else {
+        return nullptr;
+      }
+    }
+
+    hipFloatComplex *get_const(std::complex<float> val) {
+      if(val == 0.0f) {
+        return (hipFloatComplex *) (float_constants + 4);
+      } else if(val == 1.0f) {
+        return (hipFloatComplex *) (float_constants + 1);
+      } else if(val == -1.0f) {
+        return (hipFloatComplex *) (float_constants + 3);
+      } else if(val == std::complex<float>{0.0f, 1.0f}) {
+        return (hipFloatComplex *) (float_constants);
+      } else if(val == std::complex<float>{0.0f, -1.0f}) {
+        return (hipFloatComplex *) (float_constants + 2);
+      } else {
+        return nullptr;
+      }
+    }
+
+    hipDoubleComplex *get_const(std::complex<double> val) {
+      if(val == 0.0) {
+        return (hipDoubleComplex *) (double_constants + 4);
+      } else if(val == 1.0) {
+        return (hipDoubleComplex *) (double_constants + 1);
+      } else if(val == -1.0) {
+        return (hipDoubleComplex *) (double_constants + 3);
+      } else if(val == std::complex<double>{0.0, 1.0}) {
+        return (hipDoubleComplex *) (double_constants);
+      } else if(val == std::complex<double>{0.0, -1.0}) {
+        return (hipDoubleComplex *) (double_constants + 2);
+      } else {
+        return nullptr;
+      }
+    }
 
   private:
     explicit Einsums_GPUMemory_vars() = default;

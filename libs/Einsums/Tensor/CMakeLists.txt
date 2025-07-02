@@ -15,6 +15,7 @@ set(TensorHeaders
     Einsums/Tensor/FunctionTensor.hpp
     Einsums/Tensor/RuntimeTensor.hpp
     Einsums/Tensor/TiledTensor.hpp
+    Einsums/Tensor/Backends/TensorImpl.hpp
 )
 
 set(TensorSources TensorDefs.cpp Requirements.cpp)
@@ -25,7 +26,7 @@ if(EINSUMS_WITH_GPU_SUPPORT)
   list(APPEND TensorHeaders Einsums/Tensor/DeviceTensor.hpp)
   list(APPEND TensorSources TensorDefs.hip)
 
-  set(TensorGPUModules Einsums_GPUStreams)
+  set(TensorGPUModules Einsums_GPUStreams Einsums_GPUMemory Einsums_hipBLAS)
   set(TensorGPUDeps hip::host hip::device)
 
   if(EINSUMS_WITH_CUDA)
@@ -45,6 +46,8 @@ einsums_add_module(
   DEPENDENCIES Einsums::h5cpp ${TensorGPUDeps}
   MODULE_DEPENDENCIES
     Einsums_BLAS
+    Einsums_BLASVendor
+    Einsums_BufferAllocator
     Einsums_Concepts
     Einsums_Config
     Einsums_Errors

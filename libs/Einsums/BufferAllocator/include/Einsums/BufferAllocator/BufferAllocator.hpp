@@ -12,8 +12,11 @@
 #include <Einsums/StringUtil/MemoryString.hpp>
 
 #include <complex>
+#include <deque>
+#include <forward_list>
 #include <source_location>
 #include <type_traits>
+#include <unordered_set>
 
 namespace einsums {
 
@@ -223,5 +226,42 @@ extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<float>>;
 extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<double>>;
 
 #endif
+
+// Container overloads.
+template <class T>
+using BufferVector = std::vector<T, BufferAllocator<T>>;
+
+template <class T>
+using BufferDeque = std::deque<T, BufferAllocator<T>>;
+
+template <class T>
+using BufferForwardList = std::forward_list<T, BufferAllocator<T>>;
+
+template <class T>
+using BufferList = std::list<T, BufferAllocator<T>>;
+
+template <class T, class Compare = std::less<T>>
+using BufferSet = std::set<T, Compare, BufferAllocator<T>>;
+
+template <class Key, class T, class Compare = std::less<Key>>
+using BufferMap = std::map<Key, T, Compare, BufferAllocator<std::pair<Key const, T>>>;
+
+template <class Key, class Compare = std::less<Key>>
+using BufferMultiset = std::multiset<Key, Compare, BufferAllocator<Key>>;
+
+template <class Key, class T, class Compare = std::less<Key>>
+using BufferMultimap = std::multimap<Key, T, Compare, BufferAllocator<std::pair<Key const, T>>>;
+
+template <class Key, class Hash = std::hash<Key>, class KeyEqual = std::equal_to<Key>>
+using BufferUnorderedSet = std::unordered_set<Key, Hash, KeyEqual, BufferAllocator<Key>>;
+
+template <class Key, class T, class Hash = std::hash<Key>, class KeyEqual = std::equal_to<Key>>
+using BufferUnorderedMap = std::unordered_map<Key, T, Hash, KeyEqual, BufferAllocator<std::pair<const Key, T>>>;
+
+template <class Key, class Hash = std::hash<Key>, class KeyEqual = std::equal_to<Key>>
+using BufferUnorderedMultiset = std::unordered_multiset<Key, Hash, KeyEqual, BufferAllocator<Key>>;
+
+template <class Key, class T, class Hash = std::hash<Key>, class KeyEqual = std::equal_to<Key>>
+using BufferUnorderedMultimap = std::unordered_multimap<Key, T, Hash, KeyEqual, BufferAllocator<std::pair<const Key, T>>>;
 
 } // namespace einsums

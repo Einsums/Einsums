@@ -14,6 +14,8 @@ set(TypeSupportHeaders
     Einsums/TypeSupport/TypeName.hpp
     Einsums/TypeSupport/Lockable.hpp
     Einsums/TypeSupport/Singleton.hpp
+    Einsums/TypeSupport/TypeSwitch.hpp
+    Einsums/TypeSupport/SizeOf.hpp
 )
 
 set(TypeSupportSources)

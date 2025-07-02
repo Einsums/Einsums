@@ -8,9 +8,10 @@ if(EINSUMS_WITH_GPU_SUPPORT)
 
   set(GPUMemoryHeaders Einsums/GPUMemory/GPUAllocator.hpp Einsums/GPUMemory/InitModule.hpp
                        Einsums/GPUMemory/ModuleVars.hpp Einsums/GPUMemory/GPUPointer.hpp
+                       Einsums/GPUMemory/GPUMemoryTracker.hpp
   )
 
-  set(GPUMemorySources InitModule.cpp ModuleVars.cpp)
+  set(GPUMemorySources InitModule.hip ModuleVars.cpp GPUMemoryTracker.cpp)
 
   include(Einsums_AddModule)
   einsums_add_module(

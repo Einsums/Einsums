@@ -11,7 +11,6 @@
 #include <list>
 #include <mutex>
 #include <thread>
-#include <vector>
 
 namespace einsums {
 

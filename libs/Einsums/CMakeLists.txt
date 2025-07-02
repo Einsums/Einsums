@@ -39,6 +39,7 @@ set(_Einsums_modules
   TypeSupport
   Utilities
   Version
+  hipBLAS
   )
 # cmake-format: on
 
@@ -49,3 +50,4 @@ foreach(module ${_Einsums_modules})
   einsums_info("    ${module}")
   add_subdirectory(${module})
 endforeach()
+

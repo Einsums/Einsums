@@ -11,6 +11,12 @@
 
 #include <argparse/argparse.hpp>
 
+extern EINSUMS_EXPORT __constant__ float float_constants[6];
+extern EINSUMS_EXPORT  __constant__ double double_constants[6];
+
+static float host_float_constants[] = {0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f};
+static double host_double_constants[] = {0.0, 1.0, 0.0, -1.0, 0.0, 0.0};
+
 namespace einsums {
 
 /*
@@ -52,6 +58,9 @@ void initialize_Einsums_GPUMemory() {
     EINSUMS_LOG_TRACE("initializing Einsums/GPUMemory");
 
     gpu::detail::Einsums_GPUMemory_vars::get_singleton().reset_curr_size();
+
+    hip_catch(hipMemcpyToSymbol(float_constants, host_float_constants, 6 * sizeof(float)));
+    hip_catch(hipMemcpyToSymbol(double_constants, host_double_constants, 6 * sizeof(double)));
 }
 
 void finalize_Einsums_GPUMemory() {

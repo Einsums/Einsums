@@ -8,7 +8,6 @@
 #include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
-#include <Einsums/Print.hpp>
 
 #include <cstdarg>
 #include <cstddef>
@@ -16,6 +15,13 @@
 #include <tuple>
 #include <type_traits>
 #include <vector>
+
+namespace einsums {
+namespace print {
+template <std::integral IntType>
+struct ordinal;
+}
+} // namespace einsums
 
 namespace einsums {
 
@@ -388,54 +394,6 @@ void sentinel_to_sentinels(size_t sentinel, StorageType const &index_strides, St
 #endif
 
 /**
- * @brief Adjust the index if it is negative and raise an error if it is out of range.
- *
- * The @c index_position parameter is used for creating the exception message. If it is negative,
- * then the exception message will look something like <tt>"The index is out of range! Expected between -5 and 4, got 6!"</tt>.
- * However, for better diagnostics, a non-negative index_position, for example 2, will give an exception message like
- * <tt>"The third index is out of range! Expected between -5 and 4, got 6!"</tt>. Note that these are zero-indexed, so
- * passing in 2 prints out "third".
- *
- * @param index The index to adjust and check.
- * @param dim The dimension to compare to.
- * @param index_position Used for the error message. If it is negative, then the index position
- * will not be included in the error message.
- */
-template <std::integral IntType>
-constexpr size_t adjust_index(IntType index, size_t dim, int index_position = -1) {
-    if constexpr (std::is_signed_v<IntType>) {
-        auto hold = index;
-
-        if (hold < 0) {
-            hold += dim;
-        }
-
-        if (hold < 0 || hold >= dim) {
-            if (index_position < 0) {
-                EINSUMS_THROW_EXCEPTION(std::out_of_range, "The index is out of range! Expected between {} and {}, got {}!",
-                                        -(ptrdiff_t)dim, dim - 1, index);
-            } else {
-                EINSUMS_THROW_EXCEPTION(std::out_of_range, "The {} index is out of range! Expected between {} and {}, got {}!",
-                                        print::ordinal(index_position + 1), -(ptrdiff_t)dim, dim - 1, index);
-            }
-        }
-        return hold;
-    } else {
-        if (index >= dim) {
-            if (index_position < 0) {
-                EINSUMS_THROW_EXCEPTION(std::out_of_range, "The index is out of range! Expected between {} and {}, got {}!", 0, dim - 1,
-                                        index);
-            } else {
-                EINSUMS_THROW_EXCEPTION(std::out_of_range, "The {} index is out of range! Expected between {} and {}, got {}!",
-                                        print::ordinal(index_position + 1), 0, dim - 1, index);
-            }
-        }
-
-        return index;
-    }
-}
-
-/**
  * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
  */
 template <size_t num_unique_inds>
@@ -628,7 +586,8 @@ inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_stri
  * @param row_major Whether to calculate the strides in row-major or column-major order.
  * @return The size calculated from the dimensions. Can be safely ignored.
  */
-constexpr size_t dims_to_strides(std::vector<size_t> const &dims, std::vector<size_t> &out, bool row_major = true) {
+template <typename Alloc1, typename Alloc2>
+constexpr size_t dims_to_strides(std::vector<size_t, Alloc1> const &dims, std::vector<size_t, Alloc2> &out, bool row_major = true) {
     size_t stride = 1;
 
     out.resize(dims.size());

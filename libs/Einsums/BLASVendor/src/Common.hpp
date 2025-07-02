@@ -47,34 +47,34 @@ void transpose(int_t m, int_t n, T const *in, int_t ldin, T *out, int_t ldout) {
     EINSUMS_ASSERT(m >= 0);
     EINSUMS_ASSERT(n >= 0);
 
-    std::vector<int>    perm{1, 0};
-    std::vector<size_t> size_in{static_cast<unsigned long>(m), static_cast<unsigned long>(n)}, outer_size_in, outer_size_out;
+    std::array<int, 2>    perm{1, 0};
+    std::array<size_t, 2> size_in{static_cast<unsigned long>(m), static_cast<unsigned long>(n)}, outer_size_in, outer_size_out;
     if constexpr (Order == OrderMajor::Row) {
-        outer_size_in = std::move(std::vector<size_t>{static_cast<unsigned long>(m), static_cast<unsigned long>(ldin)});
-        outer_size_out = std::move(std::vector<size_t>{static_cast<unsigned long>(n), static_cast<unsigned long>(ldout)});
+        outer_size_in  = std::move(std::array<size_t, 2>{static_cast<unsigned long>(m), static_cast<unsigned long>(ldin)});
+        outer_size_out = std::move(std::array<size_t, 2>{static_cast<unsigned long>(n), static_cast<unsigned long>(ldout)});
     } else {
-        outer_size_in = std::move(std::vector<size_t>{static_cast<unsigned long>(ldin), static_cast<unsigned long>(n)});
-        outer_size_out = std::move(std::vector<size_t>{static_cast<unsigned long>(ldout), static_cast<unsigned long>(m)});
+        outer_size_in  = std::move(std::array<size_t, 2>{static_cast<unsigned long>(ldin), static_cast<unsigned long>(n)});
+        outer_size_out = std::move(std::array<size_t, 2>{static_cast<unsigned long>(ldout), static_cast<unsigned long>(m)});
     }
 
-    auto plan = hptt::create_plan(perm, 2, T{1.0}, in, size_in, outer_size_in, T{0.0}, out, outer_size_out, hptt::ESTIMATE,
+    auto plan = hptt::create_plan(perm.data(), 2, T{1.0}, in, size_in.data(), outer_size_in.data(), T{0.0}, out, outer_size_out.data(), hptt::ESTIMATE,
                                   omp_get_max_threads(), {}, Order == OrderMajor::Row);
 
     plan->execute();
 }
 
-template <OrderMajor Order, typename T>
-void transpose(int_t m, int_t n, std::vector<T> const &in, int_t ldin, T *out, int_t ldout) {
+template <OrderMajor Order, typename T, typename Alloc>
+void transpose(int_t m, int_t n, std::vector<T, Alloc> const &in, int_t ldin, T *out, int_t ldout) {
     transpose<Order>(m, n, in.data(), ldin, out, ldout);
 }
 
-template <OrderMajor Order, typename T>
-void transpose(int_t m, int_t n, T const *in, int_t ldin, std::vector<T> &out, int_t ldout) {
+template <OrderMajor Order, typename T, typename Alloc>
+void transpose(int_t m, int_t n, T const *in, int_t ldin, std::vector<T, Alloc> &out, int_t ldout) {
     transpose<Order>(m, n, in, ldin, out.data(), ldout);
 }
 
-template <OrderMajor Order, typename T>
-void transpose(int_t m, int_t n, std::vector<T> const &in, int_t ldin, std::vector<T> &out, int_t ldout) {
+template <OrderMajor Order, typename T, typename Alloc1, typename Alloc2>
+void transpose(int_t m, int_t n, std::vector<T, Alloc1> const &in, int_t ldin, std::vector<T, Alloc2> &out, int_t ldout) {
     transpose<Order>(m, n, in.data(), ldin, out.data(), ldout);
 }
 } // namespace einsums::blas::vendor
