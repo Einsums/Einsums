@@ -108,68 +108,58 @@ struct TensorImpl final {
     using ConstPointerType   = T const *;
 
     // Normal constructors. Note that the copy constructor only creates a copy of the view, not a new tensor with the same data.
+
+    /**
+     * @brief Default constructor.
+     */
     constexpr TensorImpl() noexcept = default;
 
-    constexpr TensorImpl(TensorImpl<T> const &other)
-        : data_{other.data_}, rank_{other.rank_}, size_{other.size_}, dims_{other.dims_}, strides_{other.strides_},
-          is_contiguous_{other.is_contiguous_} {
-        gpu_init();
-    }
+    /**
+     * @brief Copy constructor.
+     *
+     * This creates a new view of the other tensor implementation. This means that the pointer the new object will
+     * contain is the same as the pointer the other object contains.
+     */
+    constexpr TensorImpl(TensorImpl<T> const &other);
 
-    constexpr TensorImpl(TensorImpl<T> &&other) noexcept
-        : data_{other.data_}, rank_{other.rank_}, size_{other.size_}, dims_{std::move(other.dims_)}, strides_{std::move(other.strides_)},
-          is_contiguous_{other.is_contiguous_} {
-        other.data_ = nullptr;
-        other.rank_ = 0;
-        other.size_ = 0;
-        other.dims_.clear();
-        other.strides_.clear();
-        gpu_init();
-    }
+    /**
+     * @brief Move constructor.
+     *
+     * At exit, the input tensor will no longer have valid data. Its pointer will be the null pointer and its other data will be cleared.
+     */
+    constexpr TensorImpl(TensorImpl<T> &&other) noexcept;
 
     // Move and copy assignment. Note that the copy assignment only creates a copy of the view, not a new tensor with the same data.
-    constexpr TensorImpl<T> &operator=(TensorImpl<T> const &other) {
-        data_ = other.data_;
-        rank_ = other.rank_;
-        size_ = other.size_;
-        dims_.resize(rank_);
-        strides_.resize(rank_);
 
-        dims_.assign(other.dims_.cbegin(), other.dims_.cend());
-        strides_.assign(other.strides_.cbegin(), other.strides_.cend());
-        is_contiguous_ = other.is_contiguous_;
-        gpu_init();
-    }
+    /**
+     * @brief Copy assignment.
+     *
+     * This creates a new view of the other tensor implementation. This means that the pointer this object will contain
+     * is the same as the pointer that the other object conatins.
+     */
+    constexpr TensorImpl<T> &operator=(TensorImpl<T> const &other);
 
-    constexpr TensorImpl<T> &operator=(TensorImpl<T> &&other) {
-        data_          = other.data_;
-        rank_          = other.rank_;
-        size_          = other.size_;
-        dims_          = std::move(other.dims_);
-        strides_       = std::move(other.strides_);
-        is_contiguous_ = other.is_contiguous_;
-
-        other.data_ = nullptr;
-        other.rank_ = 0;
-        other.size_ = 0;
-        other.dims_.clear();
-        other.strides_.clear();
-        gpu_init();
-    }
+    /**
+     * @brief Move assignment.
+     *
+     * At exit, the input tensor will no longer have valid data. Its pointer will be the null pointer and its other data will be cleared.
+     */
+    constexpr TensorImpl<T> &operator=(TensorImpl<T> &&other);
 
     // Destructor.
-    constexpr ~TensorImpl() noexcept {
-        data_ = nullptr;
-        rank_ = 0;
-        size_ = 0;
-        dims_.clear();
-        strides_.clear();
-#ifdef EINSUMS_COMPUTE_CODE
-        gpu::GPUMemoryTracker::get_singleton().release_handle(gpu_handle_, true);
-#endif
-    }
+    constexpr ~TensorImpl() noexcept;
 
     // Now the more useful constructors.
+
+    /**
+     * @brief Create a new tensor implementation that wraps the given pointer and has the given dimensions.
+     *
+     * A stride ordering can be chosen. By default, it is column major.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the tensor.
+     * @param row_major If true, calculate the strides in row-major order. Otherwise, calculate the strides in column-major order.
+     */
     template <ContainerOrInitializer Dims>
     constexpr TensorImpl(T *data, Dims const &dims, bool row_major = false)
         : data_{data}, dims_(dims.begin(), dims.end()), strides_(dims.size()), rank_{dims.size()} {
@@ -178,1272 +168,249 @@ struct TensorImpl final {
         is_contiguous_ = true;
     }
 
+    /**
+     * @brief Create a new tensor implementation that wraps the given pointer and has the given dimensions and strides.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the tensor.
+     * @param strides The strides of the tensor in number of elements.
+     */
     template <ContainerOrInitializer Dims, ContainerOrInitializer Strides>
-    constexpr TensorImpl(T *data, Dims const &dims, Strides const &strides)
-        : data_{data}, dims_(dims.cbegin(), dims.cend()), strides_(strides.begin(), strides.end()), rank_{dims.size()}, size_{1} {
-        for (int i = 0; i < rank_; i++) {
-            size_ *= dims_[i];
-        }
-
-        // Check to see if it is contiguous.
-        if (strides[0] == 1) {
-            size_t expected = 1;
-            for (int i = 0; i < rank_; i++) {
-                if (strides_[i] != expected) {
-                    is_contiguous_ = false;
-                    break;
-                }
-                expected *= dims_[i];
-            }
-            is_contiguous_ = true;
-        } else if (strides[rank_ - 1] == 1) {
-            size_t expected = 1;
-            for (int i = rank_ - 1; i >= 0; i--) {
-                if (strides_[i] != expected) {
-                    is_contiguous_ = false;
-                    break;
-                }
-                expected *= dims_[i];
-            }
-            is_contiguous_ = true;
-        } else {
-            is_contiguous_ = false;
-        }
-    }
+    constexpr TensorImpl(T *data, Dims const &dims, Strides const &strides);
 
     // Getters
 
+    /**
+     * @brief Get the rank of the tensor.
+     */
     constexpr size_t rank() const noexcept { return rank_; }
 
+    /**
+     * @brief Get the size of the tensor in number of elements.
+     */
     constexpr size_t size() const noexcept { return size_; }
 
+    /**
+     * @brief Get the dimensions of the tensor.
+     */
     constexpr BufferVector<size_t> const &dims() const noexcept { return dims_; }
 
+    /**
+     * @brief Get the strides of the tensor.
+     */
     constexpr BufferVector<size_t> const &strides() const noexcept { return strides_; }
 
+    /**
+     * @brief Get the data pointer.
+     */
     constexpr T *data() noexcept { return data_; }
 
+    /**
+     * @brief Get the data pointer.
+     */
     constexpr T const *data() const noexcept { return data_; }
 
+    /**
+     * @brief Check if the tensor is contiguous.
+     */
     constexpr bool is_contiguous() const noexcept { return is_contiguous_; }
 
     // Setters
 
+    /**
+     * @brief Set the data to a new pointer.
+     */
     constexpr void reset_data(T *data) noexcept { data_ = data; }
 
+    /**
+     * @brief Set the data to a new pointer.
+     */
     constexpr void reset_data(T const *data) noexcept { data_ = data; }
 
     // Indexed getters.
 
-    constexpr size_t dim(int i) const {
-        int temp = i;
-        if (temp < 0) {
-            temp += rank_;
-        }
+    /**
+     * @brief Get the dimension along a certain axis.
+     *
+     * This method handles negative indexing. If the index is negative, then it will be handled as
+     * indexing from the end of the tensor rather than the beginning.
+     *
+     * @param i The axis to query.
+     */
+    constexpr size_t dim(int i) const;
 
-        if (temp < 0 || temp >= rank_) {
-            EINSUMS_THROW_EXCEPTION(std::out_of_range, "The index passed to dim is out of range! Expected between {} and {}, got {}.",
-                                    -rank_, rank_ - 1, i);
-        }
-
-        return dims_[temp];
-    }
-
-    constexpr size_t stride(int i) const {
-        int temp = i;
-        if (temp < 0) {
-            temp += rank_;
-        }
-
-        if (temp < 0 || temp >= rank_) {
-            EINSUMS_THROW_EXCEPTION(std::out_of_range, "The index passed to stride is out of range! Expected between {} and {}, got {}.",
-                                    -rank_, rank_ - 1, i);
-        }
-
-        return strides_[temp];
-    }
+    /**
+     * @brief Get the stride along a certain axis.
+     *
+     * This method handles negative indexing. If the index is negative, then it will be handled as
+     * indexing from the end of the tensor rather than the beginning.
+     *
+     * @param i The axis to query.
+     */
+    constexpr size_t stride(int i) const;
 
     // Indexed data retrieval.
     template <std::integral... MultiIndex>
-    constexpr T *data_no_check(MultiIndex &&...index) {
-        return data_no_check(std::make_tuple(std::forward<MultiIndex>(index)...));
-    }
+    constexpr T *data_no_check(MultiIndex &&...index);
 
     template <std::integral... MultiIndex>
-    constexpr T *data_no_check(std::tuple<MultiIndex...> const &index) {
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
-        }
-
-        size_t offset = 0;
-        for_sequence<sizeof...(MultiIndex)>([&offset, &index, this](size_t n) { offset += std::get<n>(index) * strides_[n]; });
-
-        return data_ + offset;
-    }
+    constexpr T *data_no_check(std::tuple<MultiIndex...> const &index);
 
     template <ContainerOrInitializer MultiIndex>
-    constexpr T *data_no_check(MultiIndex const &index) {
-        if (index.size() > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices in the container passed to data!");
-        }
-
-        return data_ + std::inner_product(index.begin(), index.end(), strides_.cbegin(), 0);
-    }
+    constexpr T *data_no_check(MultiIndex const &index);
 
     template <std::integral... MultiIndex>
-    constexpr T const *data_no_check(MultiIndex &&...index) const {
-        return data_no_check(std::make_tuple(std::forward<MultiIndex>(index)...));
-    }
+    constexpr T const *data_no_check(MultiIndex &&...index) const;
 
     template <std::integral... MultiIndex>
-    constexpr T const *data_no_check(std::tuple<MultiIndex...> const &index) const {
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
-        }
-
-        size_t offset = 0;
-        for_sequence<sizeof...(MultiIndex)>([&offset, &index, this](size_t n) { offset += std::get<n>(index) * strides_[n]; });
-
-        return data_ + offset;
-    }
+    constexpr T const *data_no_check(std::tuple<MultiIndex...> const &index) const;
 
     template <ContainerOrInitializer MultiIndex>
-    constexpr T const *data_no_check(MultiIndex const &index) const {
-        if (index.size() > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices in the container passed to data!");
-        }
-
-        return data_ + std::inner_product(index.begin(), index.end(), strides_.cbegin(), 0);
-    }
+    constexpr T const *data_no_check(MultiIndex const &index) const;
 
     template <std::integral... MultiIndex>
-    constexpr T *data(MultiIndex &&...index) {
-        return data(std::make_tuple(std::forward<MultiIndex>(index)...));
-    }
+    constexpr T *data(MultiIndex &&...index);
 
     template <std::integral... MultiIndex>
-    constexpr T *data(std::tuple<MultiIndex...> const &index) {
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
-        }
-
-        size_t offset = 0;
-        for_sequence<sizeof...(MultiIndex)>(
-            [&offset, &index, this](size_t n) { offset += adjust_index(std::get<n>(index), dims_[n], n) * strides_[n]; });
-
-        return data_ + offset;
-    }
+    constexpr T *data(std::tuple<MultiIndex...> const &index);
 
     template <ContainerOrInitializer MultiIndex>
-    constexpr T *data(MultiIndex const &index) {
-        if (index.size() > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices in the container passed to data!");
-        }
-
-        size_t offset = 0;
-
-        for (int i = 0; i < index.size(); i++) {
-            offset += adjust_index(index[i], dims_[i], i) * strides_[i];
-        }
-
-        return data_ + offset;
-    }
+    constexpr T *data(MultiIndex const &index);
 
     template <std::integral... MultiIndex>
-    constexpr T const *data(MultiIndex &&...index) const {
-        return data(std::make_tuple(std::forward<MultiIndex>(index)...));
-    }
+    constexpr T const *data(MultiIndex &&...index) const;
 
     template <std::integral... MultiIndex>
-    constexpr T const *data(std::tuple<MultiIndex...> const &index) const {
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
-        }
-
-        size_t offset = 0;
-        for_sequence<sizeof...(MultiIndex)>(
-            [&offset, &index, this](size_t n) { offset += adjust_index(std::get<n>(index), dims_[n], n) * strides_[n]; });
-
-        return data_ + offset;
-    }
+    constexpr T const *data(std::tuple<MultiIndex...> const &index) const;
 
     template <ContainerOrInitializer MultiIndex>
-    constexpr T const *data(MultiIndex const &index) const {
-        if (index.size() > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices in the container passed to data!");
-        }
-
-        size_t offset = 0;
-
-        for (int i = 0; i < index.size(); i++) {
-            offset += adjust_index(index[i], dims_[i], i) * strides_[i];
-        }
-
-        return data_ + offset;
-    }
+    constexpr T const *data(MultiIndex const &index) const;
 
     // Const conversion.
     constexpr operator TensorImpl<T const>() { return TensorImpl<T const>(data_, dims_, strides_); }
 
     // Subscripting.
     template <std::integral... MultiIndex>
-    constexpr ReferenceType subscript_no_check(MultiIndex &&...index) {
-        if (sizeof...(MultiIndex) < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data_no_check(std::forward<MultiIndex>(index)...);
-    }
+    constexpr ReferenceType subscript_no_check(MultiIndex &&...index);
 
     template <std::integral... MultiIndex>
-    constexpr ReferenceType subscript_no_check(std::tuple<MultiIndex...> const &index) {
-        if (sizeof...(MultiIndex) < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data_no_check(index);
-    }
+    constexpr ReferenceType subscript_no_check(std::tuple<MultiIndex...> const &index);
 
     template <ContainerOrInitializer Index>
-    constexpr ReferenceType subscript_no_check(Index const &index) {
-        if (index.size() < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (index.size() > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data_no_check(index);
-    }
+    constexpr ReferenceType subscript_no_check(Index const &index);
 
     template <std::integral... MultiIndex>
-    constexpr ConstReferenceType subscript_no_check(MultiIndex &&...index) const {
-        if (sizeof...(MultiIndex) < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data_no_check(std::forward<MultiIndex>(index)...);
-    }
+    constexpr ConstReferenceType subscript_no_check(MultiIndex &&...index) const;
 
     template <std::integral... MultiIndex>
-    constexpr ConstReferenceType subscript_no_check(std::tuple<MultiIndex...> const &index) const {
-        if (sizeof...(MultiIndex) < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data_no_check(index);
-    }
+    constexpr ConstReferenceType subscript_no_check(std::tuple<MultiIndex...> const &index) const;
 
     template <ContainerOrInitializer Index>
-    constexpr ConstReferenceType subscript_no_check(Index const &index) const {
-        if (index.size() < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (index.size() > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data_no_check(index);
-    }
+    constexpr ConstReferenceType subscript_no_check(Index const &index) const;
 
     template <std::integral... MultiIndex>
-    constexpr ReferenceType subscript(MultiIndex &&...index) {
-        if (sizeof...(MultiIndex) < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data(std::forward<MultiIndex>(index)...);
-    }
+    constexpr ReferenceType subscript(MultiIndex &&...index);
 
     template <std::integral... MultiIndex>
-    constexpr ReferenceType subscript(std::tuple<MultiIndex...> const &index) {
-        if (sizeof...(MultiIndex) < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data(index);
-    }
+    constexpr ReferenceType subscript(std::tuple<MultiIndex...> const &index);
 
     template <ContainerOrInitializer Index>
-    constexpr ReferenceType subscript(Index const &index) {
-        if (index.size() < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (index.size() > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data(index);
-    }
+    constexpr ReferenceType subscript(Index const &index);
 
     template <std::integral... MultiIndex>
-    constexpr ConstReferenceType subscript(MultiIndex &&...index) const {
-        if (sizeof...(MultiIndex) < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data(std::forward<MultiIndex>(index)...);
-    }
+    constexpr ConstReferenceType subscript(MultiIndex &&...index) const;
 
     template <std::integral... MultiIndex>
-    constexpr ConstReferenceType subscript(std::tuple<MultiIndex...> const &index) const {
-        if (sizeof...(MultiIndex) < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (sizeof...(MultiIndex) > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data(index);
-    }
+    constexpr ConstReferenceType subscript(std::tuple<MultiIndex...> const &index) const;
 
     template <ContainerOrInitializer Index>
-    constexpr ConstReferenceType subscript(Index const &index) const {
-        if (index.size() < rank_) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to subscript tensor!");
-        }
-        if (index.size() > rank_) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to subscript tensor!");
-        }
-        return *data(index);
-    }
+    constexpr ConstReferenceType subscript(Index const &index) const;
 
     // View creation.
     template <typename... MultiIndex>
         requires(!std::is_integral_v<MultiIndex> || ... || false)
-    constexpr TensorImpl<T> subscript_no_check(MultiIndex &&...index) {
-        BufferVector<size_t> out_dims{}, out_strides{};
-
-        out_dims.reserve(rank_);
-        out_strides.reserve(rank_);
-
-        size_t offset = compute_view<false, 0>(out_dims, out_strides, std::forward<MultiIndex>(index)...);
-
-        return TensorImpl<T>(data_ + offset, out_dims, out_strides);
-    }
+    constexpr TensorImpl<T> subscript_no_check(MultiIndex &&...index);
 
     template <typename... MultiIndex>
         requires(!std::is_integral_v<MultiIndex> || ... || false)
-    constexpr TensorImpl<T> subscript_no_check(std::tuple<MultiIndex...> const &index) {
-        BufferVector<size_t> out_dims{}, out_strides{};
-
-        out_dims.reserve(rank_);
-        out_strides.reserve(rank_);
-
-        size_t offset = compute_view<false, 0>(out_dims, out_strides, index);
-
-        return TensorImpl<T>(data_ + offset, out_dims, out_strides);
-    }
+    constexpr TensorImpl<T> subscript_no_check(std::tuple<MultiIndex...> const &index);
 
     template <typename... MultiIndex>
         requires(!std::is_integral_v<MultiIndex> || ... || false)
-    constexpr TensorImpl<T> const subscript_no_check(MultiIndex &&...index) const {
-        BufferVector<size_t> out_dims{}, out_strides{};
-
-        out_dims.reserve(rank_);
-        out_strides.reserve(rank_);
-
-        size_t offset = compute_view<false, 0>(out_dims, out_strides, std::forward<MultiIndex>(index)...);
-
-        return TensorImpl<T>(data_ + offset, out_dims, out_strides);
-    }
+    constexpr TensorImpl<T> const subscript_no_check(MultiIndex &&...index) const;
 
     template <typename... MultiIndex>
         requires(!std::is_integral_v<MultiIndex> || ... || false)
-    constexpr TensorImpl<T> const subscript_no_check(std::tuple<MultiIndex...> const &index) const {
-        BufferVector<size_t> out_dims{}, out_strides{};
-
-        out_dims.reserve(rank_);
-        out_strides.reserve(rank_);
-
-        size_t offset = compute_view<false, 0>(out_dims, out_strides, index);
-
-        return TensorImpl<T>(data_ + offset, out_dims, out_strides);
-    }
+    constexpr TensorImpl<T> const subscript_no_check(std::tuple<MultiIndex...> const &index) const;
 
     template <typename... MultiIndex>
         requires(!std::is_integral_v<MultiIndex> || ... || false)
-    constexpr TensorImpl<T> subscript(MultiIndex &&...index) {
-        BufferVector<size_t> out_dims{}, out_strides{};
-
-        out_dims.reserve(rank_);
-        out_strides.reserve(rank_);
-
-        size_t offset = compute_view<true, 0>(out_dims, out_strides, std::forward<MultiIndex>(index)...);
-
-        return TensorImpl<T>(data_ + offset, out_dims, out_strides);
-    }
+    constexpr TensorImpl<T> subscript(MultiIndex &&...index);
 
     template <typename... MultiIndex>
         requires(!std::is_integral_v<MultiIndex> || ... || false)
-    constexpr TensorImpl<T> subscript(std::tuple<MultiIndex...> const &index) {
-        BufferVector<size_t> out_dims{}, out_strides{};
-
-        out_dims.reserve(rank_);
-        out_strides.reserve(rank_);
-
-        size_t offset = compute_view<true, 0>(out_dims, out_strides, index);
-
-        return TensorImpl<T>(data_ + offset, out_dims, out_strides);
-    }
+    constexpr TensorImpl<T> subscript(std::tuple<MultiIndex...> const &index);
 
     template <typename... MultiIndex>
         requires(!std::is_integral_v<MultiIndex> || ... || false)
-    constexpr TensorImpl<T> const subscript(MultiIndex &&...index) const {
-        BufferVector<size_t> out_dims{}, out_strides{};
-
-        out_dims.reserve(rank_);
-        out_strides.reserve(rank_);
-
-        size_t offset = compute_view<true, 0>(out_dims, out_strides, std::forward<MultiIndex>(index)...);
-
-        return TensorImpl<T>(data_ + offset, out_dims, out_strides);
-    }
+    constexpr TensorImpl<T> const subscript(MultiIndex &&...index) const;
 
     template <typename... MultiIndex>
         requires(!std::is_integral_v<MultiIndex> || ... || false)
-    constexpr TensorImpl<T> const subscript(std::tuple<MultiIndex...> const &index) const {
-        BufferVector<size_t> out_dims{}, out_strides{};
-
-        out_dims.reserve(rank_);
-        out_strides.reserve(rank_);
-
-        size_t offset = compute_view<true, 0>(out_dims, out_strides, index);
-
-        return TensorImpl<T>(data_ + offset, out_dims, out_strides);
-    }
+    constexpr TensorImpl<T> const subscript(std::tuple<MultiIndex...> const &index) const;
 
     template <typename TOther>
-    void copy_from_both_contiguous(TensorImpl<TOther> const &other) {
-        if (other.rank() != rank()) {
-            EINSUMS_THROW_EXCEPTION(rank_error, "Can only copy data between tensors of the same rank!");
-        }
-
-        if (other.dims() != dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can only copy data between tensors with the same dimensions!");
-        }
-
-        if (other.data() == data() || data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < elems; i++) {
-            if constexpr (!IsComplexV<T>) {
-                data_[i] = T{std::real(other.data_[i])};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                auto val = other.data_[i];
-                data_[i] = T{std::real(val), std::imag(val)};
-            } else {
-                data_[i] = T{other.data_[i]};
-            }
-        }
-    }
+    void copy_from_both_contiguous(TensorImpl<TOther> const &other) ;
 
     template <typename TOther>
-    void copy_from(TensorImpl<TOther> const &other) {
-        if (other.is_contiguous() && is_contiguous()) {
-            copy_from_assume_contiguous(other);
-            return;
-        }
-
-        if (other.rank() != rank()) {
-            EINSUMS_THROW_EXCEPTION(rank_error, "Can only copy data between tensors of the same rank!");
-        }
-
-        if (other.dims() != dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can only copy data between tensors with the same dimensions!");
-        }
-
-        if (other.data() == data() || data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        BufferVector<size_t> index_strides;
-
-        dims_to_strides(dims(), index_strides);
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t i = 0; i < elems; i++) {
-            size_t this_sentinel, other_sentinel;
-
-            sentinel_to_sentinels(i, index_strides, strides(), this_sentinel, other.strides(), other_sentinel);
-
-            if constexpr (!IsComplexV<T>) {
-                data_[this_sentinel] = T{std::real(other.data_[other_sentinel])};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                auto val             = other.data_[other_sentinel];
-                data_[this_sentinel] = T{std::real(val), std::imag(val)};
-            } else {
-                data_[this_sentinel] = T{other.data_[other_sentinel]};
-            }
-        }
-    }
+    void copy_from(TensorImpl<TOther> const &other);
 
     template <typename TOther>
-    void add_assign_both_contiguous(TensorImpl<TOther> const &other) {
-        if (other.rank() != rank()) {
-            EINSUMS_THROW_EXCEPTION(rank_error, "Can only copy data between tensors of the same rank!");
-        }
-
-        if (other.dims() != dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can only copy data between tensors with the same dimensions!");
-        }
-
-        if (other.data() == data() || data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        if constexpr (std::is_same_v<TOther, T>) {
-#ifdef EINSUMS_COMPUTE_CODE
-            auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-            if (singleton.handle_is_allocated(gpu_handle_) && singleton.handle_is_allocated(other.gpu_handle_)) {
-                auto [this_ptr, test]   = singleton.get_pointer(gpu_handle_, size());
-                auto [other_ptr, test2] = singleton.get_pointer(other.gpu_handle_, size());
-                auto *one               = gpu::detail::Einsums_GPUMemory_vars::get_singleton().get_const(T{1.0});
-                hipblas_catch(hipblasSaxpy(gpu::get_blas_handle(), size(), one, other_ptr, 1, this_ptr, 1));
-
-                gpu::stream_wait();
-
-                copy_from_gpu(this_ptr);
-
-                singleton.release_handle(gpu_handle_);
-                singleton.release_handle(other.gpu_handle_);
-            } else {
-#endif
-                blas::axpy(size(), T{1.0}, other.data_, 1, data_, 1);
-#ifdef EINSUMS_COMPUTE_CODE
-            }
-#endif
-        } else {
-
-            size_t elems = size();
-
-            EINSUMS_OMP_PARALLEL_FOR_SIMD
-            for (size_t i = 0; i < elems; i++) {
-                if constexpr (!IsComplexV<T>) {
-                    data_[i] += T{std::real(other.data_[i])};
-                } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                    auto val = other.data_[i];
-                    data_[i] += T{std::real(val), std::imag(val)};
-                } else {
-                    data_[i] += T{other.data_[i]};
-                }
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void add_assign_both_contiguous(TensorImpl<TOther> const &other);
 
     template <typename TOther>
-    void add_assign(TensorImpl<TOther> const &other) {
-        if (other.is_contiguous() && is_contiguous()) {
-            add_assign_both_contiguous(other);
-            return;
-        }
-
-        if (other.rank() != rank()) {
-            EINSUMS_THROW_EXCEPTION(rank_error, "Can only copy data between tensors of the same rank!");
-        }
-
-        if (other.dims() != dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can only copy data between tensors with the same dimensions!");
-        }
-
-        if (other.data() == data() || data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        BufferVector<size_t> index_strides;
-
-        dims_to_strides(dims(), index_strides);
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t i = 0; i < elems; i++) {
-            size_t this_sentinel, other_sentinel;
-
-            sentinel_to_sentinels(i, index_strides, strides(), this_sentinel, other.strides(), other_sentinel);
-
-            if constexpr (!IsComplexV<T>) {
-                data_[this_sentinel] += T{std::real(other.data_[other_sentinel])};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                auto val = other.data_[other_sentinel];
-                data_[this_sentinel] += T{std::real(val), std::imag(val)};
-            } else {
-                data_[this_sentinel] += T{other.data_[other_sentinel]};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void add_assign(TensorImpl<TOther> const &other);
 
     template <typename TOther>
-    void sub_assign_both_contiguous(TensorImpl<TOther> const &other) {
-        if (other.rank() != rank()) {
-            EINSUMS_THROW_EXCEPTION(rank_error, "Can only copy data between tensors of the same rank!");
-        }
-
-        if (other.dims() != dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can only copy data between tensors with the same dimensions!");
-        }
-
-        if (other.data() == data() || data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        if constexpr (std::is_same_v<TOther, T>) {
-#ifdef EINSUMS_COMPUTE_CODE
-            auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-            if (singleton.handle_is_allocated(gpu_handle_) && singleton.handle_is_allocated(other.gpu_handle_)) {
-                auto [this_ptr, test]   = singleton.get_pointer(gpu_handle_, size());
-                auto [other_ptr, test2] = singleton.get_pointer(other.gpu_handle_, size());
-                auto *negative_one      = gpu::detail::Einsums_GPUMemory_vars::get_singleton().get_const(T{-1.0});
-                hipblas_catch(hipblasSaxpy(gpu::get_blas_handle(), size(), negative_one, other_ptr, 1, this_ptr, 1));
-
-                gpu::stream_wait();
-
-                copy_from_gpu(this_ptr);
-
-                singleton.release_handle(gpu_handle_);
-                singleton.release_handle(other.gpu_handle_);
-            } else {
-#endif
-                blas::axpy(size(), T{-1.0}, other.data_, 1, data_, 1);
-#ifdef EINSUMS_COMPUTE_CODE
-            }
-#endif
-        } else {
-
-            size_t elems = size();
-
-            EINSUMS_OMP_PARALLEL_FOR_SIMD
-            for (size_t i = 0; i < elems; i++) {
-                if constexpr (!IsComplexV<T>) {
-                    data_[i] -= T{std::real(other.data_[i])};
-                } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                    auto val = other.data_[i];
-                    data_[i] -= T{std::real(val), std::imag(val)};
-                } else {
-                    data_[i] -= T{other.data_[i]};
-                }
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void sub_assign_both_contiguous(TensorImpl<TOther> const &other);
 
     template <typename TOther>
-    void sub_assign(TensorImpl<TOther> const &other) {
-        if (other.is_contiguous() && is_contiguous()) {
-            sub_assign_both_contiguous(other);
-            return;
-        }
-
-        if (other.rank() != rank()) {
-            EINSUMS_THROW_EXCEPTION(rank_error, "Can only copy data between tensors of the same rank!");
-        }
-
-        if (other.dims() != dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can only copy data between tensors with the same dimensions!");
-        }
-
-        if (other.data() == data() || data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        BufferVector<size_t> index_strides;
-
-        dims_to_strides(dims(), index_strides);
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t i = 0; i < elems; i++) {
-            size_t this_sentinel, other_sentinel;
-
-            sentinel_to_sentinels(i, index_strides, strides(), this_sentinel, other.strides(), other_sentinel);
-
-            if constexpr (!IsComplexV<T>) {
-                data_[this_sentinel] -= T{std::real(other.data_[other_sentinel])};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                auto val = other.data_[other_sentinel];
-                data_[this_sentinel] -= T{std::real(val), std::imag(val)};
-            } else {
-                data_[this_sentinel] -= T{other.data_[other_sentinel]};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void sub_assign(TensorImpl<TOther> const &other);
 
     template <typename TOther>
-    void mul_assign_both_contiguous(TensorImpl<TOther> const &other) {
-        if (other.rank() != rank()) {
-            EINSUMS_THROW_EXCEPTION(rank_error, "Can only copy data between tensors of the same rank!");
-        }
-
-        if (other.dims() != dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can only copy data between tensors with the same dimensions!");
-        }
-
-        if (other.data() == data() || data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < elems; i++) {
-            if constexpr (!IsComplexV<T>) {
-                data_[i] *= T{std::real(other.data_[i])};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                auto val = other.data_[i];
-                data_[i] *= T{std::real(val), std::imag(val)};
-            } else {
-                data_[i] *= T{other.data_[i]};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void mul_assign_both_contiguous(TensorImpl<TOther> const &other);
 
     template <typename TOther>
-    void mul_assign(TensorImpl<TOther> const &other) {
-        if (other.is_contiguous() && is_contiguous()) {
-            mul_assign_both_contiguous(other);
-            return;
-        }
-
-        if (other.rank() != rank()) {
-            EINSUMS_THROW_EXCEPTION(rank_error, "Can only copy data between tensors of the same rank!");
-        }
-
-        if (other.dims() != dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can only copy data between tensors with the same dimensions!");
-        }
-
-        if (other.data() == data() || data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        BufferVector<size_t> index_strides;
-
-        dims_to_strides(dims(), index_strides);
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t i = 0; i < elems; i++) {
-            size_t this_sentinel, other_sentinel;
-
-            sentinel_to_sentinels(i, index_strides, strides(), this_sentinel, other.strides(), other_sentinel);
-
-            if constexpr (!IsComplexV<T>) {
-                data_[this_sentinel] *= T{std::real(other.data_[other_sentinel])};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                auto val = other.data_[other_sentinel];
-                data_[this_sentinel] *= T{std::real(val), std::imag(val)};
-            } else {
-                data_[this_sentinel] *= T{other.data_[other_sentinel]};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void mul_assign(TensorImpl<TOther> const &other);
+    template <typename TOther>
+    void div_assign_both_contiguous(TensorImpl<TOther> const &other);
 
     template <typename TOther>
-    void div_assign_both_contiguous(TensorImpl<TOther> const &other) {
-        if (other.rank() != rank()) {
-            EINSUMS_THROW_EXCEPTION(rank_error, "Can only copy data between tensors of the same rank!");
-        }
-
-        if (other.dims() != dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can only copy data between tensors with the same dimensions!");
-        }
-
-        if (other.data() == data() || data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < elems; i++) {
-            if constexpr (!IsComplexV<T>) {
-                data_[i] /= T{std::real(other.data_[i])};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                auto val = other.data_[i];
-                data_[i] /= T{std::real(val), std::imag(val)};
-            } else {
-                data_[i] /= T{other.data_[i]};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void div_assign(TensorImpl<TOther> const &other);
 
     template <typename TOther>
-    void div_assign(TensorImpl<TOther> const &other) {
-        if (other.is_contiguous() && is_contiguous()) {
-            div_assign_both_contiguous(other);
-            return;
-        }
-
-        if (other.rank() != rank()) {
-            EINSUMS_THROW_EXCEPTION(rank_error, "Can only copy data between tensors of the same rank!");
-        }
-
-        if (other.dims() != dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can only copy data between tensors with the same dimensions!");
-        }
-
-        if (other.data() == data() || data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        BufferVector<size_t> index_strides;
-
-        dims_to_strides(dims(), index_strides);
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t i = 0; i < elems; i++) {
-            size_t this_sentinel, other_sentinel;
-
-            sentinel_to_sentinels(i, index_strides, strides(), this_sentinel, other.strides(), other_sentinel);
-
-            if constexpr (!IsComplexV<T>) {
-                data_[this_sentinel] /= T{std::real(other.data_[other_sentinel])};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                auto val = other.data_[other_sentinel];
-                data_[this_sentinel] /= T{std::real(val), std::imag(val)};
-            } else {
-                data_[this_sentinel] /= T{other.data_[other_sentinel]};
-            }
-        }
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void add_assign_scalar_contiguous(TOther value);
 
     template <typename TOther>
-    void add_assign_scalar_contiguous(TOther value) {
-        if (data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < elems; i++) {
-            if constexpr (!IsComplexV<T>) {
-                data_[i] += T{value};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                data_[i] += T{std::real(value), std::imag(value)};
-            } else {
-                data_[i] += T{value};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void add_assign_scalar(TOther value);
 
     template <typename TOther>
-    void add_assign_scalar(TOther value) {
-        if (is_contiguous()) {
-            add_assign_scalar_contiguous(value);
-            return;
-        }
-
-        if (data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        BufferVector<size_t> index_strides;
-
-        dims_to_strides(dims(), index_strides);
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t i = 0; i < elems; i++) {
-            size_t this_sentinel;
-
-            sentinel_to_sentinels(i, index_strides, strides(), this_sentinel);
-
-            if constexpr (!IsComplexV<T>) {
-                data_[this_sentinel] += T{value};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                data_[this_sentinel] += T{std::real(value), std::imag(value)};
-            } else {
-                data_[this_sentinel] += T{value};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void sub_assign_scalar_contiguous(TOther value);
 
     template <typename TOther>
-    void sub_assign_scalar_contiguous(TOther value) {
-        if (data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < elems; i++) {
-            if constexpr (!IsComplexV<T>) {
-                data_[i] -= T{value};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                data_[i] -= T{std::real(value), std::imag(value)};
-            } else {
-                data_[i] -= T{value};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void sub_assign_scalar(TOther value);
 
     template <typename TOther>
-    void sub_assign_scalar(TOther value) {
-        if (is_contiguous()) {
-            sub_assign_scalar_contiguous(value);
-            return;
-        }
-
-        if (data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        BufferVector<size_t> index_strides;
-
-        dims_to_strides(dims(), index_strides);
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t i = 0; i < elems; i++) {
-            size_t this_sentinel;
-
-            sentinel_to_sentinels(i, index_strides, strides(), this_sentinel);
-
-            if constexpr (!IsComplexV<T>) {
-                data_[this_sentinel] -= T{value};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                data_[this_sentinel] -= T{std::real(value), std::imag(value)};
-            } else {
-                data_[this_sentinel] -= T{value};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void mul_assign_scalar_contiguous(TOther value);
 
     template <typename TOther>
-    void mul_assign_scalar_contiguous(TOther value) {
-        if (data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-        if constexpr (std::is_same_v<T, TOther>) {
-#ifdef EINSUMS_COMPUTE_CODE
-            auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-            if (singleton.handle_is_allocated(gpu_handle_)) {
-                size_t             value_handle = singleton.create_handle();
-                gpu::GPUPointer<T> value_ptr    = singleton.get_pointer<T>(value_handle, 1);
-
-                gpu::GPUPointer<T> self_ptr = singleton.get_pointer(gpu_handle_, size());
-
-                hip_catch(hipMemcpy(value_ptr, (void *)&value, sizeof(TOther), hipMemcpyHostToDevice));
-
-                blas::gpu::scal(gpu::get_blas_handle(), size(), (T *)value_ptr, self_ptr, 1);
-
-                singleton.release_handle(value_handle);
-                singleton.release_handle(gpu_handle_);
-            } else {
-#endif
-                blas::scal(size(), value, data_, 1);
-#ifdef EINSUMS_COMPUTE_CODE
-            }
-#endif
-        }
-
-        size_t elems = size();
-
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < elems; i++) {
-            if constexpr (!IsComplexV<T>) {
-                data_[i] *= T{value};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                data_[i] *= T{std::real(value), std::imag(value)};
-            } else {
-                data_[i] *= T{value};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void mul_assign_scalar(TOther value);
 
     template <typename TOther>
-    void mul_assign_scalar(TOther value) {
-        if (is_contiguous()) {
-            mul_assign_scalar_contiguous(value);
-            return;
-        }
-
-        if (data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        BufferVector<size_t> index_strides;
-
-        dims_to_strides(dims(), index_strides);
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t i = 0; i < elems; i++) {
-            size_t this_sentinel;
-
-            sentinel_to_sentinels(i, index_strides, strides(), this_sentinel);
-
-            if constexpr (!IsComplexV<T>) {
-                data_[this_sentinel] *= T{value};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                data_[this_sentinel] *= T{std::real(value), std::imag(value)};
-            } else {
-                data_[this_sentinel] *= T{value};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void div_assign_scalar_contiguous(TOther value);
 
     template <typename TOther>
-    void div_assign_scalar_contiguous(TOther value) {
-        if (data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-        if constexpr (std::is_same_v<T, TOther>) {
-#ifdef EINSUMS_COMPUTE_CODE
-            auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-            if (singleton.handle_is_allocated(gpu_handle_)) {
-                size_t             value_handle = singleton.create_handle();
-                gpu::GPUPointer<T> value_ptr    = singleton.get_pointer<T>(value_handle, 1);
-
-                gpu::GPUPointer<T> self_ptr = singleton.get_pointer(gpu_handle_, size());
-
-                T temp_val = T{1.0} / value;
-
-                hip_catch(hipMemcpy(value_ptr, (void *)&temp_val, sizeof(TOther), hipMemcpyHostToDevice));
-
-                blas::gpu::scal(gpu::get_blas_handle(), size(), (T *)value_ptr, self_ptr, 1);
-
-                singleton.release_handle(value_handle);
-                singleton.release_handle(gpu_handle_);
-            } else {
-#endif
-                blas::scal(size(), T{1.0} / value, data_, 1);
-#ifdef EINSUMS_COMPUTE_CODE
-            }
-#endif
-        }
-
-        size_t elems = size();
-
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < elems; i++) {
-            if constexpr (!IsComplexV<T>) {
-                data_[i] /= T{value};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                data_[i] /= T{std::real(value), std::imag(value)};
-            } else {
-                data_[i] /= T{value};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
-
-    template <typename TOther>
-    void div_assign_scalar(TOther value) {
-        if (is_contiguous()) {
-            div_assign_scalar_contiguous(value);
-            return;
-        }
-
-        if (data() == nullptr) {
-            // Don't copy.
-            return;
-        }
-
-        size_t elems = size();
-
-        BufferVector<size_t> index_strides;
-
-        dims_to_strides(dims(), index_strides);
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t i = 0; i < elems; i++) {
-            size_t this_sentinel;
-
-            sentinel_to_sentinels(i, index_strides, strides(), this_sentinel);
-
-            if constexpr (!IsComplexV<T>) {
-                data_[this_sentinel] /= T{value};
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther> && !std::is_same_v<T, TOther>) {
-                data_[this_sentinel] /= T{std::real(value), std::imag(value)};
-            } else {
-                data_[this_sentinel] /= T{value};
-            }
-        }
-
-#ifdef EINSUMS_COMPUTE_CODE
-        auto &singleton = gpu::GPUMemoryTracker::get_singleton();
-        if (singleton.handle_is_allocated(gpu_handle_)) {
-            auto [this_ptr, test] = singleton.get_pointer(gpu_handle_, size());
-            copy_to_gpu(this_ptr);
-            singleton.release_handle(gpu_handle_);
-        }
-#endif
-    }
+    void div_assign_scalar(TOther value);
 
 #ifdef EINSUMS_COMPUTE_CODE
 
