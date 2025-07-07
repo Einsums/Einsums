@@ -133,6 +133,10 @@ this is still a work in progress.
 
     Indicates that an invalid enum value was passed to a function.
 
+.. cpp:class:: rank_error
+
+    Indicates that a tensor argument had an invalid or incompatible rank.
+
 This module also contains exception classes for every HIP, hipBLAS, and hipSOLVER status code. To get the name of a HIP
 exception, take the :code:`hip` off of the beginning of the status code. For instance :code:`hipSuccess`
 becomes :code:`Success`. To get the hipBLAS or hipSOLVER exception, remove the :code:`HIPBLAS_STATUS` or

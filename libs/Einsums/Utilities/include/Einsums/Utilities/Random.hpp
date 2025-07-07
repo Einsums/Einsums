@@ -24,6 +24,7 @@ namespace detail {
 template <typename T>
 struct circle_distribution {};
 
+#ifndef DOXYGEN
 template <>
 struct circle_distribution<float> {
   public:
@@ -76,6 +77,7 @@ struct circle_distribution<std::complex<T>> {
     std::complex<T>                   center_;
     std::uniform_real_distribution<T> mag_dist_, angle_dist_;
 };
+#endif
 
 /**
  * @struct unit_circle_distribution
@@ -89,6 +91,7 @@ struct circle_distribution<std::complex<T>> {
 template <typename T>
 struct unit_circle_distribution {};
 
+#ifndef DOXYGEN
 template <>
 struct unit_circle_distribution<float> {
   public:
@@ -139,6 +142,7 @@ struct unit_circle_distribution<std::complex<T>> {
   private:
     std::uniform_real_distribution<T> mag_dist_, angle_dist_;
 };
+#endif
 
 } // namespace detail
 

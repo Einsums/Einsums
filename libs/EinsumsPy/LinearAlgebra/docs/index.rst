@@ -8,9 +8,7 @@
 EinsumsPy LinearAlgebra
 =======================
 
-.. todo::
-    
-    High-level description of the module.
+Contains bindings of linear algebra functions to Python.
 
 See the :ref:`API reference <modules_EinsumsPy_LinearAlgebra_api>` of this module for more
 details.

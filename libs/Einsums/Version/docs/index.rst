@@ -8,9 +8,7 @@
 Einsums Version
 ===============
 
-.. todo::
-    
-    High-level description of the module.
+Gives version information, such as macros for versioning and version strings.
 
 See the :ref:`API reference <modules_Einsums_Version_api>` of this module for more
 details.

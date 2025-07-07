@@ -13,7 +13,11 @@
 namespace einsums::detail {
 
 /**
- * Default assertion handler.
+ * @brief Handles assertion behavior, selecting between a user-defined handler or the default handler.
+ *
+ * @param loc The source location for constructing a message.
+ * @param expr A string representing the condition being evaluated.
+ * @param msg An extra message to print out.
  */
 EINSUMS_EXPORT void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) noexcept;
 

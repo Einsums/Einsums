@@ -210,8 +210,25 @@ struct BufferAllocator {
      */
     size_type available_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size; }
 
-    bool operator==(BufferAllocator<T> const &other) const { return true; }
-    bool operator!=(BufferAllocator<T> const &other) const { return false; }
+    /**
+     * @brief Test whether two buffer allocators are the same.
+     *
+     * All buffer allocators are considered to be the same, so this will always return true.
+     *
+     * @param other The allocator to compare to.
+     * @return Always returns true.
+     */
+    constexpr bool operator==(BufferAllocator<T> const &other) const { return true; }
+
+    /**
+     * @brief Test whether two buffer allocators are not the same.
+     *
+     * All buffer allocators are considered to be the same, so this will always return false.
+     *
+     * @param other The allocator to compare to.
+     * @return Always returns false.
+     */
+    constexpr bool operator!=(BufferAllocator<T> const &other) const { return false; }
 };
 
 #ifndef WINDOWS
