@@ -121,7 +121,7 @@ void init_logging(RuntimeConfiguration &config) {
             // Set the AMD log level to the Einsums log level, if it was not set before a call to Einsums.
             int log_level = global_config.get_int("log-level");
             if (5 - log_level >= 0 && 5 - log_level <= 5) {
-                int retval = setenv("AMD_LOG_LEVEL", amd_log_level_strs[5 - global_config.get_int("log-level")], 1);
+                int retval = setenv("AMD_LOG_LEVEL", amd_log_level_strs[5 - log_level], 1);
             }
         }
     }
