@@ -66,7 +66,7 @@ struct BufferAllocator {
     using const_void_pointer = void const *;
 
     /**
-     * @typedef T
+     * @typedef value_type
      *
      * The type of buffers this allocator makes.
      */
