@@ -67,7 +67,7 @@ einsums_find_package(TargetHDF5 REQUIRED)
 einsums_find_package(OpenMP MODULE COMPONENTS CXX)
 
 if (@EINSUMS_WITH_BACKTRACES@)
-  einsums_find_package(cpptrace 0.7 REQUIRED)
+  einsums_find_package(cpptrace 1 REQUIRED)
 endif ()
 
 if (NOT TARGET tgt::lapack)
