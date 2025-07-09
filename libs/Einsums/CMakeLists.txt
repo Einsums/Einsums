@@ -35,6 +35,7 @@ set(_Einsums_modules
   Tensor
   TensorAlgebra
   TensorBase
+  TensorImpl
   TensorUtilities
   TypeSupport
   Utilities
@@ -49,3 +50,4 @@ foreach(module ${_Einsums_modules})
   einsums_info("    ${module}")
   add_subdirectory(${module})
 endforeach()
+
