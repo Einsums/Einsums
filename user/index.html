@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 27, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
   </head>
   
   
@@ -281,7 +281,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLAS/docs/index.html">BLAS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLASBase/docs/index.html">BLASBase</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLASVendor/docs/index.html">BLASVendor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">Einsums BufferAllocator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">BufferAllocator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Config/docs/index.html">Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Debugging/docs/index.html">Debugging</a></li>
@@ -344,6 +344,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../reference/einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/einsums.core.globalconfigmap.html">GlobalConfigMap in Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/einsums.core.logging.html">Python Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/einsums.core.errors.html">Einsums Internal Errors</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/einsums.utils.html">Einsums Utilities Module</a></li>
@@ -480,7 +483,7 @@ The governing equation is this.</p>
 
 <span class="c1">// Compute the antisymmetrized two-electron integrals.</span>
 <span class="n">Tensor</span><span class="w"> </span><span class="n">TEI_antisym</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TEI</span><span class="p">;</span>
-<span class="n">permute</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">s</span><span class="p">},</span><span class="w"> </span><span class="o">&amp;</span><span class="n">TEI_antisym</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">r</span><span class="p">}</span><span class="w"> </span><span class="n">TEI</span><span class="p">);</span>
+<span class="n">permute</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">s</span><span class="p">},</span><span class="w"> </span><span class="o">&amp;</span><span class="n">TEI_antisym</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">r</span><span class="p">},</span><span class="w"> </span><span class="n">TEI</span><span class="p">);</span>
 
 <span class="c1">// Computing each term.</span>
 <span class="n">TensorView</span><span class="w"> </span><span class="n">Fia</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">F</span><span class="p">(</span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n_occ</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="n">n_occ</span><span class="p">,</span><span class="w"> </span><span class="n">n_orbs</span><span class="p">});</span>
@@ -536,7 +539,7 @@ The benchmark was performed on a system with the following specifications.</p>
 <td><p>Debian Bookworm</p></td>
 </tr>
 <tr class="row-even"><td><p>Einsums Version</p></td>
-<td><p>1.0-pre</p></td>
+<td><p>1.1-pre</p></td>
 </tr>
 <tr class="row-odd"><td><p>C++ Compiler</p></td>
 <td><p>Clang 19.7.1</p></td>
@@ -591,7 +594,6 @@ classes can parallelize certain operations.</p></li>
 it will use the generic algorithm rather than transpose indices until it can optimize the call.</p></li>
 <li><p>Most simple arithmetic does not work on <a class="reference internal" href="../libs/Einsums/Tensor/docs/index.html#_CPPv4I0_6size_tE11BlockTensor" title="BlockTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">BlockTensor</span></code></a>, <a class="reference internal" href="../libs/Einsums/Tensor/docs/index.html#_CPPv4I0_6size_tE11TiledTensor" title="TiledTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TiledTensor</span></code></a>, <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">FunctionTensor</span></code>,
 or any tensor for the GPU.</p></li>
-<li><p>The Python module does not have any exposed linear algebra routines. This will be fixed in the future.</p></li>
 <li><p>The Python module only supports contiguous tensors. It does not support block-sparse tensors, function tensors, or others.</p></li>
 <li><p>The Python module interacts with Einsums in a completely different way than C++. Be careful of pitfalls when working with
 interoperable code.</p></li>

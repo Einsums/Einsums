@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 27, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
   </head>
   
   
@@ -281,7 +281,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../BufferAllocator/docs/index.html">Einsums BufferAllocator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
@@ -344,6 +344,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.globalconfigmap.html">GlobalConfigMap in Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.logging.html">Python Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.errors.html">Einsums Internal Errors</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/einsums.utils.html">Einsums Utilities Module</a></li>
@@ -464,6 +467,9 @@ scaled and added back into the output.</p>
 <span class="pre">You</span> <span class="pre">may</span> <span class="pre">see</span> <span class="pre">slowdowns</span> <span class="pre">if</span> <span class="pre">you</span> <span class="pre">use</span> <span class="pre">this</span> <span class="pre">with</span> <span class="pre">:cpp:class:`TensorView`s,</span> <span class="pre">though</span> <span class="pre">we</span> <span class="pre">are</span> <span class="pre">trying</span> <span class="pre">to</span> <span class="pre">improve</span> <span class="pre">this.</span> <span class="pre">The</span> <span class="pre">best</span> <span class="pre">bet</span>
 <span class="pre">will</span> <span class="pre">probably</span> <span class="pre">be</span> <span class="pre">to</span> <span class="pre">copy</span> <span class="pre">the</span> <span class="pre">tensor</span> <span class="pre">view</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">:cpp:class:`Tensor</span></code> first, then permute the elements.</p>
 </div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.0.3: </span>This function now works with :cpp:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>TensorView`s.</p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -475,7 +481,7 @@ scaled and added back into the output.</p>
 we will be removing this in the future.</p>
 </div>
 <div class="versionremoved">
-<p><span class="versionmodified removed">Removed in version 1.1.0: </span>This will be removed in the next minor release.</p>
+<p><span class="versionmodified removed">Removed in version 1.1.0.</span></p>
 </div>
 </dd></dl>
 

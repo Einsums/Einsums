@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 27, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
   </head>
   
   
@@ -280,7 +280,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLAS/docs/index.html">BLAS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLASBase/docs/index.html">BLASBase</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLASVendor/docs/index.html">BLASVendor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">Einsums BufferAllocator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">BufferAllocator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Config/docs/index.html">Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Debugging/docs/index.html">Debugging</a></li>
@@ -343,6 +343,9 @@
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html">GlobalConfigMap in Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.logging.html">Python Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html">Einsums Internal Errors</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.utils.html">Einsums Utilities Module</a></li>
@@ -440,20 +443,9 @@ it is called when you import <code class="code docutils literal notranslate"><sp
 <dl class="py function">
 <dt class="sig sig-object py" id="einsums.core.finalize">
 <span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">finalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.finalize" title="Link to this definition">#</a></dt>
-<dd><p>Finalize the Einsums library, optionally printing timing info. See <a class="reference internal" href="python_module.html#einsums.set_finalize_arg" title="einsums.set_finalize_arg"><code class="xref py py-func docutils literal notranslate"><span class="pre">einsums.set_finalize_arg</span></code></a>
+<dd><p>Finalize the Einsums library, optionally printing timing info. See <code class="xref py py-func docutils literal notranslate"><span class="pre">einsums.set_finalize_arg</span></code>
 to change how the module calls this function. This does not need to be called directly, as it is
 registered with the <code class="code docutils literal notranslate"><span class="pre">atexit</span></code> module.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="einsums.core.report">
-<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">report</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">output_file:</span> <span class="pre">str</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.report" title="Link to this definition">#</a></dt>
-<dd><p>Print the timing report to standard output. If an output file is provided, print to that file instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>output_file</strong> – The file to optionally print to.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -535,6 +527,14 @@ registered with the <code class="code docutils literal notranslate"><span class=
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.__itruediv__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.__itruediv__</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.__iadd__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.__iadd__</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.__isub__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.__isub__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.__mul__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.__mul__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.__truediv__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.__truediv__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.__add__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.__add__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.__sub__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.__sub__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.__rmul__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.__rmul__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.__rtruediv__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.__rtruediv__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.__radd__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.__radd__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.__rsub__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.__rsub__</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.assign"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.assign</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.dim"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.dim</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensorX.dims"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorX.dims</span></code></a></li>
@@ -570,6 +570,14 @@ registered with the <code class="code docutils literal notranslate"><span class=
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.__itruediv__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.__itruediv__</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.__iadd__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.__iadd__</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.__isub__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.__isub__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.__mul__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.__mul__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.__truediv__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.__truediv__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.__add__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.__add__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.__sub__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.__sub__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.__rmul__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.__rmul__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.__rtruediv__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.__rtruediv__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.__radd__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.__radd__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.__rsub__"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.__rsub__</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.assign"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.assign</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.dim"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.dim</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html#einsums.core.RuntimeTensorViewX.dims"><code class="docutils literal notranslate"><span class="pre">RuntimeTensorViewX.dims</span></code></a></li>
@@ -629,6 +637,50 @@ registered with the <code class="code docutils literal notranslate"><span class=
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="einsums.core.globalconfigmap.html">GlobalConfigMap in Python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.get_singleton"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_singleton</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.emtpy"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.emtpy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.size"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.max_size"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.max_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.get_str"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_str</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.get_int"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_int</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.get_float"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_float</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.get_bool"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_bool</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.set_str"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.set_str</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.set_int"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.set_int</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.set_float"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.set_float</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.set_bool"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.set_bool</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="einsums.core.logging.html">Python Logging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log"><code class="docutils literal notranslate"><span class="pre">log</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_trace"><code class="docutils literal notranslate"><span class="pre">log_trace</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_debug"><code class="docutils literal notranslate"><span class="pre">log_debug</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_info"><code class="docutils literal notranslate"><span class="pre">log_info</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_warn"><code class="docutils literal notranslate"><span class="pre">log_warn</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_error"><code class="docutils literal notranslate"><span class="pre">log_error</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_critical"><code class="docutils literal notranslate"><span class="pre">log_critical</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="einsums.core.errors.html">Einsums Internal Errors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error"><code class="docutils literal notranslate"><span class="pre">rank_error</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.dimension_error"><code class="docutils literal notranslate"><span class="pre">dimension_error</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.tensor_compat_error"><code class="docutils literal notranslate"><span class="pre">tensor_compat_error</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.num_argument_error"><code class="docutils literal notranslate"><span class="pre">num_argument_error</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.not_enough_args"><code class="docutils literal notranslate"><span class="pre">not_enough_args</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.too_many_args"><code class="docutils literal notranslate"><span class="pre">too_many_args</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.access_denied"><code class="docutils literal notranslate"><span class="pre">access_denied</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.todo_error"><code class="docutils literal notranslate"><span class="pre">todo_error</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.not_implemented"><code class="docutils literal notranslate"><span class="pre">not_implemented</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.bad_logic"><code class="docutils literal notranslate"><span class="pre">bad_logic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.uninitialized_error"><code class="docutils literal notranslate"><span class="pre">uninitialized_error</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.system_error"><code class="docutils literal notranslate"><span class="pre">system_error</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html#einsums.core.enum_error"><code class="docutils literal notranslate"><span class="pre">enum_error</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -683,7 +735,6 @@ registered with the <code class="code docutils literal notranslate"><span class=
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.gpu_enabled"><code class="docutils literal notranslate"><span class="pre">gpu_enabled</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.initialize"><code class="docutils literal notranslate"><span class="pre">initialize</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.finalize"><code class="docutils literal notranslate"><span class="pre">finalize</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.report"><code class="docutils literal notranslate"><span class="pre">report</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.get_buffer_format"><code class="docutils literal notranslate"><span class="pre">get_buffer_format</span></code></a></li>
 </ul>
   </nav></div>

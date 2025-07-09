@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 27, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
   </head>
   
   
@@ -391,6 +391,16 @@ example:</p>
 <p>See <a class="reference internal" href="../generated/CMakeVariables.html#cmake-variables"><span class="std std-ref">the page on CMake variables</span></a> for a list of options that can be passed to
 CMake when configuring.</p>
 </section>
+<section id="building-for-gpu">
+<h2>Building for GPU<a class="headerlink" href="#building-for-gpu" title="Link to this heading">#</a></h2>
+<p>When building for GPU, special steps need to be taken. First, set the <code class="docutils literal notranslate"><span class="pre">-DEINSUMS_WITH_HIP=ON</span></code> or <code class="docutils literal notranslate"><span class="pre">-DEINSUMS_WITH_CUDA=ON</span></code> flag
+to enable GPU compilation. Then, a HIP-compatible compiler must be specified. AMD’s fork of Clang that comes with HIP is a good
+choice. Then, in order for CMake to find the appropriate libraries, <code class="docutils literal notranslate"><span class="pre">-DCMAKE_HIP_COMPILER_ROCM_ROOT</span></code> needs to be set to
+the root directory of the ROCm installation. On Linux, this is often <code class="docutils literal notranslate"><span class="pre">/opt/rocm</span></code>. Since this flag has a long name,
+Einsums provides an alias: <code class="docutils literal notranslate"><span class="pre">-DHIP_ROCM_ROOT</span></code>. You may set either one and the other will be populated. Then, simply configure
+and build. If you get configuration errors about being unable to find certain HIP/ROCm libraries, simply set the variables that
+CMake is asking for. The CMake files can be found under <code class="docutils literal notranslate"><span class="pre">${HIP_ROCM_ROOT}/lib/cmake</span></code>.</p>
+</section>
 </section>
 
 
@@ -433,6 +443,7 @@ CMake when configuring.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-a-specific-compiler">Selecting a specific compiler</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-build-type">Selecting build type</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-for-gpu">Building for GPU</a></li>
 </ul>
   </nav></div>
 

@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 27, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
   </head>
   
   
@@ -376,7 +376,8 @@
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator10value_typeE">
 <span id="_CPPv3N7einsums15BufferAllocator10value_typeE"></span><span id="_CPPv2N7einsums15BufferAllocator10value_typeE"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a35117bafa5e33bd83fe28717bf8a3330"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator10value_typeE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>The type of buffers this allocator makes. </p>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator9size_typeE">
@@ -484,13 +485,33 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums15BufferAllocatoreqERK15BufferAllocatorI1TE">
-<span id="_CPPv3NK7einsums15BufferAllocatoreqERK15BufferAllocatorI1TE"></span><span id="_CPPv2NK7einsums15BufferAllocatoreqERK15BufferAllocatorI1TE"></span><span id="einsums::BufferAllocator::eq-operator__BufferAllocator:T:CRC"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1ad6e56874ca8353dd3cd64565dba70384"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums15BufferAllocatoreqERK15BufferAllocatorI1TE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3NK7einsums15BufferAllocatoreqERK15BufferAllocatorI1TE"></span><span id="_CPPv2NK7einsums15BufferAllocatoreqERK15BufferAllocatorI1TE"></span><span id="einsums::BufferAllocator::eq-operator__BufferAllocator:T:CRC"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a670df2e885c5d4e5c62abc781e299d0e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums15BufferAllocatoreqERK15BufferAllocatorI1TE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Test whether two buffer allocators are the same. </p>
+<p>All buffer allocators are considered to be the same, so this will always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> – The allocator to compare to. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Always returns true. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums15BufferAllocatorneERK15BufferAllocatorI1TE">
-<span id="_CPPv3NK7einsums15BufferAllocatorneERK15BufferAllocatorI1TE"></span><span id="_CPPv2NK7einsums15BufferAllocatorneERK15BufferAllocatorI1TE"></span><span id="einsums::BufferAllocator::neq-operator__BufferAllocator:T:CRC"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a339545aa16124cf0ec6c9df37b7f1c97"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums15BufferAllocatorneERK15BufferAllocatorI1TE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3NK7einsums15BufferAllocatorneERK15BufferAllocatorI1TE"></span><span id="_CPPv2NK7einsums15BufferAllocatorneERK15BufferAllocatorI1TE"></span><span id="einsums::BufferAllocator::neq-operator__BufferAllocator:T:CRC"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a48f5b054cbfc790e568e46eceb7fc7a9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums15BufferAllocatorneERK15BufferAllocatorI1TE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Test whether two buffer allocators are not the same. </p>
+<p>All buffer allocators are considered to be the same, so this will always return false.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> – The allocator to compare to. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Always returns false. </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">

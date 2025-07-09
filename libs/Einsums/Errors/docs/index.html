@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 27, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
   </head>
   
   
@@ -281,7 +281,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../BufferAllocator/docs/index.html">Einsums BufferAllocator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
@@ -344,6 +344,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.globalconfigmap.html">GlobalConfigMap in Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.logging.html">Python Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.errors.html">Einsums Internal Errors</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/einsums.utils.html">Einsums Utilities Module</a></li>
@@ -573,6 +576,12 @@ it can be thrown when trying to find a file that doesn’t exist.</p>
 <dd><p>Indicates that an invalid enum value was passed to a function.</p>
 </dd></dl>
 
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv410rank_error">
+<span id="_CPPv310rank_error"></span><span id="_CPPv210rank_error"></span><span id="rank_error"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rank_error</span></span></span><a class="headerlink" href="#_CPPv410rank_error" title="Link to this definition">#</a><br /></dt>
+<dd><p>Indicates that a tensor argument had an invalid or incompatible rank.</p>
+</dd></dl>
+
 <p>This module also contains exception classes for every HIP, hipBLAS, and hipSOLVER status code. To get the name of a HIP
 exception, take the <code class="code docutils literal notranslate"><span class="pre">hip</span></code> off of the beginning of the status code. For instance <code class="code docutils literal notranslate"><span class="pre">hipSuccess</span></code>
 becomes <code class="code docutils literal notranslate"><span class="pre">Success</span></code>. To get the hipBLAS or hipSOLVER exception, remove the <code class="code docutils literal notranslate"><span class="pre">HIPBLAS_STATUS</span></code> or
@@ -644,6 +653,7 @@ can be found in the <a class="reference internal" href="../api/full_api.html#mod
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419uninitialized_error"><code class="docutils literal notranslate"><span class="pre">uninitialized_error</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412system_error"><code class="docutils literal notranslate"><span class="pre">system_error</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv410enum_error"><code class="docutils literal notranslate"><span class="pre">enum_error</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv410rank_error"><code class="docutils literal notranslate"><span class="pre">rank_error</span></code></a></li>
 </ul>
 </li>
 </ul>

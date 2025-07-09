@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums BufferAllocator &#8212; Einsums 1.1.0-trunk documentation</title>
+    <title>BufferAllocator &#8212; Einsums 1.1.0-trunk documentation</title>
   
   
   
@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 27, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
   </head>
   
   
@@ -280,7 +280,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
-<li class="toctree-l4 current active"><a class="current reference internal" href="#">Einsums BufferAllocator</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">BufferAllocator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
@@ -343,6 +343,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.globalconfigmap.html">GlobalConfigMap in Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.logging.html">Python Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.errors.html">Einsums Internal Errors</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/einsums.utils.html">Einsums Utilities Module</a></li>
@@ -405,7 +408,7 @@
     
     <li class="breadcrumb-item"><a href="../../modules.html" class="nav-link">Einsums Modules</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums BufferAllocator</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">BufferAllocator</span></li>
   </ul>
 </nav>
 </div>
@@ -422,15 +425,15 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="einsums-bufferallocator">
-<span id="modules-einsums-bufferallocator"></span><h1>Einsums BufferAllocator<a class="headerlink" href="#einsums-bufferallocator" title="Link to this heading">#</a></h1>
+  <section id="bufferallocator">
+<span id="modules-einsums-bufferallocator"></span><h1>BufferAllocator<a class="headerlink" href="#bufferallocator" title="Link to this heading">#</a></h1>
 <p>This module contains an allocator that keeps track of how much memory has been allocated for buffers.
 The allocator is controlled by global configuration options.</p>
 <p>See the <a class="reference internal" href="../api/full_api.html#modules-einsums-bufferallocator-api"><span class="std std-ref">API reference</span></a> of this module for more
 details.</p>
 <section id="interacting-with-the-allocator">
 <h2>Interacting with the Allocator<a class="headerlink" href="#interacting-with-the-allocator" title="Link to this heading">#</a></h2>
-<p>To modify the allocator’s maximum size, set the string option <cite>“buffer-size”</cite> in the <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">GlobalConfigMap</span></code> to
+<p>To modify the allocator’s maximum size, set the string option <cite>“buffer-size”</cite> in the <a class="reference internal" href="../../Config/docs/index.html#_CPPv415GlobalConfigMap" title="GlobalConfigMap"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">GlobalConfigMap</span></code></a> to
 a memory string. A memory string is a number, possibly a decimal, followed by an optional prefix and unit.
 The understood prefixes are <cite>k</cite>, <cite>M</cite>, <cite>G</cite>, and <cite>T</cite>, all case insensitive. The units can either be <cite>B</cite>, <cite>W</cite>, or <cite>o</cite>,
 also case insensitive. The <cite>B</cite> and <cite>o</cite> units represent bytes, with the <cite>o</cite> provided for people who use the

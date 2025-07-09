@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 27, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
   </head>
   
   
@@ -381,10 +381,11 @@ separated by underscores. Some examples.</p>
 </ul>
 </li>
 <li><p>Private and protected properties in a class should end in a single underscore. However,
-some code will have them end in a single underscore instead. Some examples.</p>
+some older code will have them begin in a single underscore instead. Some examples.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">this-&gt;dims_</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">this-&gt;_dims</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">this-&gt;dims_</span></code>: Preferred.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">this-&gt;_dims</span></code>: Sometimes, this will show up. This is discouraged due to the fact that anything that begins
+with an underscore and a capital letter may eventually be a reserved identifier.</p></li>
 </ul>
 </li>
 <li><p>Variables and parameters should usually be in <code class="docutils literal notranslate"><span class="pre">snake_case</span></code>. However, to be consistent with
@@ -435,7 +436,7 @@ This is a complicated return type. Use the <code class="docutils literal notrans
 This is fast, but can only be used on certain kinds of tensors, so be careful. It can be used when iterating over
 a tensor’s elements in order. If you are skipping around, it is better to use something else for better readability.</p></li>
 <li><p>Using <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">sentinel_to_sentinels</span></code> and <code class="code docutils literal notranslate"><span class="pre">tensor.data()[index]</span></code>. This should be faster than subscripting tensors,
-but be careful, since it can only be used on certain kinds of tensors. As the previous method, it can be used when iterating
+but be careful, since it can only be used on certain kinds of tensors. As with the previous method, it can be used when iterating
 over a tensor’s elements in order. It is still readable even when skipping around, but it will only work on :cpp:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>Tensor`s
 and :cpp:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>TensorView`s.</p></li>
 <li><p>Using <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">sentinel_to_indices</span></code> and <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">subscript_tensor</span></code>. This will make the choice between
@@ -474,7 +475,8 @@ is considered to be undefined behavior.</p></li>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">set_name(name)</span></code>: Bad.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">set_name(name:</span> <span class="pre">str)</span></code>: Good.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">iterate_elements(param)</span></code>: Fine.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">iterate_elements(param)</span></code>: Fine. <code class="docutils literal notranslate"><span class="pre">param</span></code> can be pretty much any type. <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">iterate_elements(param:</span> <span class="pre">Any)</span></code> would be preferred,
+but brevity is sometimes better than verbosity.</p></li>
 </ul>
 </li>
 <li><p>Prefer <code class="docutils literal notranslate"><span class="pre">PascalCase</span></code> for type names.</p></li>

@@ -1,0 +1,1296 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Linear Algebra Functions &#8212; Einsums 1.1.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=047b7709" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/einsums.core.linearalgebra';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.0" />
+    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Linear Algebra Functions</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="linear-algebra-functions">
+<span id="einsums-core-linearalgebra"></span><h1>Linear Algebra Functions<a class="headerlink" href="#linear-algebra-functions" title="Link to this heading">#</a></h1>
+<p>These are the linear algebra functions that have been made available to Python.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="einsums.core.Norm">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">Norm</span></span><a class="headerlink" href="#einsums.core.Norm" title="Link to this definition">#</a></dt>
+<dd><p>Enumeration of different types of matrix norms.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="einsums.core.Norm.MAXABS">
+<span class="sig-name descname"><span class="pre">MAXABS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'M'</span></em><a class="headerlink" href="#einsums.core.Norm.MAXABS" title="Link to this definition">#</a></dt>
+<dd><p>Finds the largest absolute value of the elements in a matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="einsums.core.Norm.ONE">
+<span class="sig-name descname"><span class="pre">ONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1'</span></em><a class="headerlink" href="#einsums.core.Norm.ONE" title="Link to this definition">#</a></dt>
+<dd><p>Finds the one-norm of a matrix. This is equivalent to finding the maximum column sum of the matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="einsums.core.Norm.INFINITY">
+<span class="sig-name descname"><span class="pre">INFINITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'I'</span></em><a class="headerlink" href="#einsums.core.Norm.INFINITY" title="Link to this definition">#</a></dt>
+<dd><p>Finds the infinity-norm of a matrix. This is equivalent to finding the maximum row sum of the matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="einsums.core.Norm.FROBENIUS">
+<span class="sig-name descname"><span class="pre">FROBENIUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F'</span></em><a class="headerlink" href="#einsums.core.Norm.FROBENIUS" title="Link to this definition">#</a></dt>
+<dd><p>Finds the Frobenius norm of a matrix. This is the square root of the sum of the squares of the elements.
+Similar to the vector norm, but applied to matrices.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="einsums.core.Vectors">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">Vectors</span></span><a class="headerlink" href="#einsums.core.Vectors" title="Link to this definition">#</a></dt>
+<dd><p>Enumerations of different operations for <a class="reference internal" href="#einsums.core.svd_dd" title="einsums.core.svd_dd"><code class="xref py py-func docutils literal notranslate"><span class="pre">einsums.core.svd_dd</span></code></a>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="einsums.core.Vectors.ALL">
+<span class="sig-name descname"><span class="pre">ALL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'A'</span></em><a class="headerlink" href="#einsums.core.Vectors.ALL" title="Link to this definition">#</a></dt>
+<dd><p>Gets all of the vectors from the singular value decomposition.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="einsums.core.Vectors.SOME">
+<span class="sig-name descname"><span class="pre">SOME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'S'</span></em><a class="headerlink" href="#einsums.core.Vectors.SOME" title="Link to this definition">#</a></dt>
+<dd><p>Only some of the vectors are returned. The number of vectors is the minimum of the dimensions of the
+input matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="einsums.core.Vectors.OVERWRITE">
+<span class="sig-name descname"><span class="pre">OVERWRITE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'O'</span></em><a class="headerlink" href="#einsums.core.Vectors.OVERWRITE" title="Link to this definition">#</a></dt>
+<dd><p>Overwrite some of the singular vectors into the input matrix. See the LAPACK documentation for <code class="docutils literal notranslate"><span class="pre">gesdd</span></code>
+for more details.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="einsums.core.Vectors.NONE">
+<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'N'</span></em><a class="headerlink" href="#einsums.core.Vectors.NONE" title="Link to this definition">#</a></dt>
+<dd><p>Do not compute the vectors for the singular value decomposition.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.sum_square">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">sum_square</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span></span></span><a class="headerlink" href="#einsums.core.sum_square" title="Link to this definition">#</a></dt>
+<dd><p>Computes the sum of the squares of the values in a vector without overflow. To use the return from this
+function, use the following.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ein</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sum_sq</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">ein</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">sum_square</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">actual</span> <span class="o">=</span> <span class="n">sum_sq</span> <span class="o">*</span> <span class="n">scale</span> <span class="o">**</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – The vector to analyze.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The square of the sum of the vector and the scale factor to apply to it to avoid overflow.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the tensor passed in is not rank-1.</p></li>
+<li><p><strong>ValueError</strong> – if the data stored by the vector is not real or complex floating point.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.gemm">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">gemm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transA</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transB</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.gemm" title="Link to this definition">#</a></dt>
+<dd><p>Performs a matrix multiplication.</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{C} := \beta \mathbf{C} + \alpha \mathbf{A B}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transA</strong> – Whether to transpose the <code class="docutils literal notranslate"><span class="pre">A</span></code> matrix. <code class="docutils literal notranslate"><span class="pre">'T'</span></code> transposes, <code class="docutils literal notranslate"><span class="pre">'N'</span></code> does not.</p></li>
+<li><p><strong>transB</strong> – Whether to transpose the <code class="docutils literal notranslate"><span class="pre">B</span></code> matrix. <code class="docutils literal notranslate"><span class="pre">'T'</span></code> transposes, <code class="docutils literal notranslate"><span class="pre">'N'</span></code> does not.</p></li>
+<li><p><strong>alpha</strong> – The scale factor for the matrix product.</p></li>
+<li><p><strong>A</strong> – The left matrix.</p></li>
+<li><p><strong>B</strong> – The right matrix.</p></li>
+<li><p><strong>beta</strong> – The scale factor on the accumulation matrix. If zero, then the output matrix will not be</p></li>
+</ul>
+</dd>
+</dl>
+<p>mixed into the matrix product.
+:param C: The output matrix.
+:raises einsums.core.rank_error: if any of the tensors is not rank-2.
+:raises einsums.core.tensor_compat_error: if the rows and columns of the matrices are incompatible.
+:raises ValueError: if the storage types of the matrices are not compatible.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.gemv">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">gemv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transA</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.gemv" title="Link to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Performs a matrix-vector multiplication.</p>
+</div></blockquote>
+<div class="math notranslate nohighlight">
+\[\mathbf{Y} := \beta \mathbf{Y} + \alpha \mathbf{A X}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transA</strong> – Whether to transpose the <code class="docutils literal notranslate"><span class="pre">A</span></code> matrix. <code class="docutils literal notranslate"><span class="pre">'T'</span></code> transposes, <code class="docutils literal notranslate"><span class="pre">'N'</span></code> does not.</p></li>
+<li><p><strong>alpha</strong> – The scale factor for the matrix product.</p></li>
+<li><p><strong>A</strong> – The matrix.</p></li>
+<li><p><strong>X</strong> – The input vector.</p></li>
+<li><p><strong>beta</strong> – The scale factor on the accumulation vector. If zero, then the output vector will not be</p></li>
+</ul>
+</dd>
+</dl>
+<p>mixed into the matrix-vector product.
+:param X: The output vector.
+:raises einsums.core.rank_error: if the <code class="docutils literal notranslate"><span class="pre">X</span></code> or <code class="docutils literal notranslate"><span class="pre">Y</span></code> tensors are not rank-1 or the
+<code class="docutils literal notranslate"><span class="pre">A</span></code> matrix is not rank-2.
+:raises einsums.core.tensor_compat_error: if the rows and columns of the matrix are incompatible with
+the vectors.
+:raises ValueError: if the storage types of the matrices are not compatible.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.syev">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">syev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.syev" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.heev">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">heev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.heev" title="Link to this definition">#</a></dt>
+<dd><p>Perform the eigendecomposition of a real symmetric or complex hermitian matrix. That is, solve the following.</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{Av} = \mathbf{v}\lambda\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The input matrix. At exit, it will be overwritten by the eigenvectors.</p></li>
+<li><p><strong>W</strong> – The output vector for the eigenvalues. This must hold only real values, since</p></li>
+</ul>
+</dd>
+</dl>
+<p>the eigenvalues of symmetric/hermitian matrices are always real.
+:raises einsums.core.rank_error: if <code class="docutils literal notranslate"><span class="pre">A</span></code> is not a matrix or <code class="docutils literal notranslate"><span class="pre">W</span></code> is not a vector.
+:raises ValueError: if the storage types of <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">W</span></code> are incompatible or one of the arguments
+passed to the underlying library call had an illegal value. This second case should hopefully never happen.
+:raisees RuntimeError: if the algorithm does not converge, or the memory for internal buffers could not
+be allocated.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.geev">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">geev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobvl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jobvr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.geev" title="Link to this definition">#</a></dt>
+<dd><p>Perform the eigendecomposition of a general matrix. The left and right eigenvectors are able to
+be computed. That is, solve the following to get the left eigenvectors.</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{uA} = \mathbf{u}\lambda\]</div>
+<p>And for the right eigenvectors, the following.</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{Av} = \mathbf{v}\lambda\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>jobvl</strong> – Whether to compute the left eigenvectors. Pass <code class="docutils literal notranslate"><span class="pre">'V'</span></code> to compute them, <code class="docutils literal notranslate"><span class="pre">'N'</span></code> to not.</p>
+</dd>
+</dl>
+<p>If the vectors are computed, then a tensor needs to be passed to <code class="docutils literal notranslate"><span class="pre">Vl</span></code>.
+:param jobvr: Whether to compute the right eigenvectors. Pass <code class="docutils literal notranslate"><span class="pre">'V'</span></code> to compute them, <code class="docutils literal notranslate"><span class="pre">'N'</span></code> to not.
+If the vectors are computed, then a tensor needs to be passed to <code class="docutils literal notranslate"><span class="pre">Vr</span></code>.
+:param A: The matrix to decompose.
+:param W: The output for the eigenvalues. This needs to be complex.
+:param Vl: The output for the left eigenvectors. If <code class="docutils literal notranslate"><span class="pre">jobvl</span> <span class="pre">=</span> <span class="pre">'N'</span></code>, then this is not referenced and can
+be set to <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+:param Vr: The output for the right eigenvectors. If <code class="docutils literal notranslate"><span class="pre">jobvr</span> <span class="pre">=</span> <span class="pre">'N'</span></code>, then this is not referenced and can
+be set to <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+:raises einsums.core.rank_error: if the input matrix or any of the referenced output matrices are not rank-2,
+or the <code class="docutils literal notranslate"><span class="pre">W</span></code> vector is not rank-1.
+:raises einsums.core.tensor_compat_error: if <code class="docutils literal notranslate"><span class="pre">A</span></code> is not a square matrix or any of the outputs don’t have
+the proper dimensions.
+:raises TypeError: if a set of eigenvectors is requested, but the output tensor is <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+:raises ValueError: if the storage types of any of the tensors is incompatible.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.gesv">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">gesv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.gesv" title="Link to this definition">#</a></dt>
+<dd><p>Solve a linear system like the following.</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{Ax} = \mathbf{B}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The coefficient matrix. Needs to be square.</p></li>
+<li><p><strong>B</strong> – The result matrix. It can have multiple columns representing different linear systems with</p></li>
+</ul>
+</dd>
+</dl>
+<p>the same coefficients. It will be overwritten by the values of <code class="docutils literal notranslate"><span class="pre">x</span></code> in the equation above.
+:raises einsums.core.rank_error: if <code class="docutils literal notranslate"><span class="pre">A</span></code> is not rank-2 or <code class="docutils literal notranslate"><span class="pre">B</span></code> is not rank-1 or rank-2.
+:raises einsums.core.dimension_error: if <code class="docutils literal notranslate"><span class="pre">A</span></code> is not square.
+:raises einsums.core.tensor_compat_error: if the number of rows in <code class="docutils literal notranslate"><span class="pre">B</span></code> does not match the number of
+rows in <code class="docutils literal notranslate"><span class="pre">A</span></code>.
+:raises ValueError: if the storage types of <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code> are invalid or an invalid value was passed
+to the underlying library function. This second case should not happen.
+:raises RuntimeError: if the input matrix is singular, meaning no solutions could be found.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.scale">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.scale" title="Link to this definition">#</a></dt>
+<dd><p>Scale a tensor by a scale factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> – The scale factor.</p></li>
+<li><p><strong>A</strong> – The tensor to scale.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if <code class="docutils literal notranslate"><span class="pre">A</span></code> does not store real or complex floating point data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.scale_row">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">scale_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.scale_row" title="Link to this definition">#</a></dt>
+<dd><p>Scales a row of a matrix by a scale factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>row</strong> – Which row to scale. If <code class="docutils literal notranslate"><span class="pre">row</span></code> is negative, it will be treated from the end of the matrix.</p>
+</dd>
+</dl>
+<p>For instance, <code class="docutils literal notranslate"><span class="pre">row</span> <span class="pre">=</span> <span class="pre">-1</span></code> will scale the last row.
+:param alpha: The scale factor.
+:param A: The matrix to scale.
+:raises einsums.core.rank_error: if <code class="docutils literal notranslate"><span class="pre">A</span></code> is not a matrix.
+:raises IndexError: if the requested row is outside of the range of the matrix.
+:raises ValueError: if the matrix does not store real or complex floating point data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.scale_column">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">scale_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.scale_column" title="Link to this definition">#</a></dt>
+<dd><p>Scales a column of a matrix by a scale factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>col</strong> – Which column to scale. If <code class="docutils literal notranslate"><span class="pre">col</span></code> is negative, it will be treated from the end of the matrix.</p>
+</dd>
+</dl>
+<p>For instance, <code class="docutils literal notranslate"><span class="pre">col</span> <span class="pre">=</span> <span class="pre">-1</span></code> will scale the last column.
+:param alpha: The scale factor.
+:param A: The matrix to scale.
+:raises einsums.core.rank_error: if <code class="docutils literal notranslate"><span class="pre">A</span></code> is not a matrix.
+:raises IndexError: if the requested column is outside of the range of the matrix.
+:raises ValueError: if the matrix does not store real or complex floating point data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.dot">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.dot" title="Link to this definition">#</a></dt>
+<dd><p>Performs the unconjugated dot product. For real arguments, this is the dot product.
+For complex arguments, it is not. This is equivalent to the following formula.
+The reason this is still called <code class="docutils literal notranslate"><span class="pre">dot</span></code> is because of how useful this function is,
+even if the result isn’t what mathematicians would call the dot product.</p>
+<div class="math notranslate nohighlight">
+\[out = \sum_i A_i B_i\]</div>
+<p>One thing to note is that if the same tensor is passed for both <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code>, then
+this will not return the norm-squared for complex arguments. It will for real arguments
+simply because real arguments don’t feel the effects of conjugation. This function is
+used when you want to take two tensors, multiply them element-wise, and sum the result.
+If you need the geometric dot product, consider using <a class="reference internal" href="#einsums.core.true_dot" title="einsums.core.true_dot"><code class="xref py py-func docutils literal notranslate"><span class="pre">true_dot</span></code></a> instead.
+This is not an inner product for complex arguments, since it does not follow
+conjugate symmetry or positive-definiteness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – One input tensor.</p></li>
+<li><p><strong>B</strong> – The other input tensor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The unconjugated dot product.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input tensors do not have the same rank.</p></li>
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.dimension_error" title="einsums.core.dimension_error"><strong>einsums.core.dimension_error</strong></a> – if the input tensors do not have the same dimensions.</p></li>
+<li><p><strong>ValueError</strong> – if the tensors do not store the same data type or the stored data type is</p></li>
+</ul>
+</dd>
+</dl>
+<p>not real or complex floating point.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.true_dot">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">true_dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.true_dot" title="Link to this definition">#</a></dt>
+<dd><p>Performs the possibly conjugated dot product. This is the true dot product. That is,
+if the same tensor is passed to both arguments, the norm-squared will be returned.
+This is equivalent to the following formula.</p>
+<div class="math notranslate nohighlight">
+\[out = \sum_i A_i^* B_i\]</div>
+<p>For real arguments, this is equivalent to <a class="reference internal" href="#einsums.core.dot" title="einsums.core.dot"><code class="xref py py-func docutils literal notranslate"><span class="pre">dot</span></code></a>. The difference lies in the
+complex behavior. This is a true inner product for complex arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – One input tensor. The values of this tensor will be conjugated before being used.</p>
+</dd>
+</dl>
+<p>This is done after accessing the elements, so there will be no change to this tensor.
+:param B: The other input tensor.
+:return: The true dot product.
+:raises einsums.core.rank_error: if the input tensors do not have the same rank.
+:raises einsums.core.dimension_error: if the input tensors do not have the same dimensions.
+:raises ValueError: if the tensors do not store the same data type or the stored data type is
+not real or complex floating point.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.axpy">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">axpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.axpy" title="Link to this definition">#</a></dt>
+<dd><p>Performs a scale and add operation. It is similar to <a class="reference internal" href="#einsums.core.axpby" title="einsums.core.axpby"><code class="xref py py-func docutils literal notranslate"><span class="pre">axpby</span></code></a> where the <code class="docutils literal notranslate"><span class="pre">beta</span></code>
+argument is set to 1. In mathematical notation, this performs the following.</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{y} := \mathbf{y} + \alpha \mathbf{x}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> – The scale factor for the input tensor.</p></li>
+<li><p><strong>x</strong> – The input tensor.</p></li>
+<li><p><strong>y</strong> – The output tensor. Its value is used as an input as well.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the tensors do not have the same rank.</p></li>
+<li><p><strong>ValueError</strong> – if the tensors do not have the same storage type or the tensors</p></li>
+</ul>
+</dd>
+</dl>
+<p>do not store real or complex floating point data.
+:raises einsums.core.tensor_compat_error: if the tensors do not have the same dimensions.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.axpby">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">axpby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.axpby" title="Link to this definition">#</a></dt>
+<dd><p>Performs a scale and add operation. It is similar to <a class="reference internal" href="#einsums.core.axpy" title="einsums.core.axpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">axpy</span></code></a>, but the <code class="docutils literal notranslate"><span class="pre">y</span></code> tensor
+is also scaled before being accumulated. In mathematical notation, this performs the following.</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{y} := \beta \mathbf{y} + \alpha \mathbf{x}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> – The scale factor for the input tensor.</p></li>
+<li><p><strong>x</strong> – The input tensor.</p></li>
+<li><p><strong>beta</strong> – The scale factor for the output tensor on input.</p></li>
+<li><p><strong>y</strong> – The output tensor. Its value is used as an input as well.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the tensors do not have the same rank.</p></li>
+<li><p><strong>ValueError</strong> – if the tensors do not have the same storage type or the tensors</p></li>
+</ul>
+</dd>
+</dl>
+<p>do not store real or complex floating point data.
+:raises einsums.core.tensor_compat_error: if the tensors do not have the same dimensions.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.ger">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">ger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.ger" title="Link to this definition">#</a></dt>
+<dd><p>Performs an outer product update. This is essentially equivalent to the following.</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{A} := \mathbf{A} + \alpha \mathbf{x} \mathbf{y}^T\]</div>
+<p>Or, in index notation, the following.</p>
+<div class="math notranslate nohighlight">
+\[A_{ij} := A_{ij} + \alpha x_i y_j\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> – The scale factor for the outer product.</p></li>
+<li><p><strong>x</strong> – The left input vector.</p></li>
+<li><p><strong>y</strong> – The right input vector.</p></li>
+<li><p><strong>A</strong> – The output matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are not rank-1 or <code class="docutils literal notranslate"><span class="pre">A</span></code> is not rank-2.</p></li>
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.dimension_error" title="einsums.core.dimension_error"><strong>einsums.core.dimension_error</strong></a> – if the inputs do not have compatible dimensions.</p></li>
+<li><p><strong>ValueError</strong> – if the inputs do not store the same data type or the data type stored</p></li>
+</ul>
+</dd>
+</dl>
+<p>is not real or complex floating point data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.getrf">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">getrf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#einsums.core.getrf" title="Link to this definition">#</a></dt>
+<dd><p>Performs LU decomposition. Essentially performs the following.</p>
+<div class="math notranslate nohighlight">
+\[A = PLU\]</div>
+<p>In the equation above, <code class="docutils literal notranslate"><span class="pre">P</span></code> is the pivot matrix, which is represented by the <code class="docutils literal notranslate"><span class="pre">pivot</span></code> argument,
+<code class="docutils literal notranslate"><span class="pre">L</span></code> is a lower triangular matrix with 1 in all diagonal entries, and <code class="docutils literal notranslate"><span class="pre">U</span></code> is an upper triangular
+matrix. On exit, the upper triangle of <code class="docutils literal notranslate"><span class="pre">A</span></code> will contain <code class="docutils literal notranslate"><span class="pre">U</span></code> and the lower triangle of <code class="docutils literal notranslate"><span class="pre">A</span></code>
+will contain <code class="docutils literal notranslate"><span class="pre">L</span></code>. The diagonal entries of <code class="docutils literal notranslate"><span class="pre">L</span></code> are not stored since they are all 1. The diagonal
+entries of <code class="docutils literal notranslate"><span class="pre">A</span></code> will be the diagonal entries of <code class="docutils literal notranslate"><span class="pre">U</span></code>. The pivot vector will contain a list of
+the pivots that took place. A pivot vector that looks like <code class="docutils literal notranslate"><span class="pre">[3,</span> <span class="pre">4,</span> <span class="pre">4,</span> <span class="pre">4]</span></code> means that first, the
+first row was swapped with the third row, then the second with the fourth, then the third with the
+fourth, and the fourth row was not moved. Since this ultimately calls Fortran, these pivot values
+are 1-indexed, the <code class="docutils literal notranslate"><span class="pre">3</span></code> in the list would actually refer to <code class="docutils literal notranslate"><span class="pre">A[2,</span> <span class="pre">:]</span></code>. To extract the data from
+this, use <a class="reference internal" href="#einsums.core.extract_plu" title="einsums.core.extract_plu"><code class="xref py py-func docutils literal notranslate"><span class="pre">extract_plu</span></code></a>.</p>
+<p>This function will give a warning if the matrix is singular.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – The matrix to decompose.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pivot list. Pass this into <a class="reference internal" href="#einsums.core.extract_plu" title="einsums.core.extract_plu"><code class="xref py py-func docutils literal notranslate"><span class="pre">extract_plu</span></code></a> to get the matrix factors.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the tensor is not rank-2.</p></li>
+<li><p><strong>ValueError</strong> – if the tensor does not store real or complex floating point data or if an invalid</p></li>
+</ul>
+</dd>
+</dl>
+<p>argument is passed to the internal <code class="docutils literal notranslate"><span class="pre">getrf</span></code> call. This last case should not happen.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.extract_plu">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">extract_plu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pivot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#einsums.core.extract_plu" title="Link to this definition">#</a></dt>
+<dd><p>Extracts the matrices from a call to <a class="reference internal" href="#einsums.core.getrf" title="einsums.core.getrf"><code class="xref py py-func docutils literal notranslate"><span class="pre">getrf</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The matrix to process after a call to <a class="reference internal" href="#einsums.core.getrf" title="einsums.core.getrf"><code class="xref py py-func docutils literal notranslate"><span class="pre">getrf</span></code></a>.</p></li>
+<li><p><strong>pivot</strong> – The return value from <a class="reference internal" href="#einsums.core.getrf" title="einsums.core.getrf"><code class="xref py py-func docutils literal notranslate"><span class="pre">getrf</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Gives the pivot matrix, the lower triangular factor, and the upper triangular factor</p>
+</dd>
+</dl>
+<p>in that order.
+:raises einsums.core.rank_error: if the input tensor is not a matrix.
+:raises RuntimeError: if the pivot list is not formatted correctly.
+:raises ValueError: if the matrix does not store real or complex floating point data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.getri">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">getri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pivot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.getri" title="Link to this definition">#</a></dt>
+<dd><p>Computes the matrix inverse based on the data returned from <a class="reference internal" href="#einsums.core.getrf" title="einsums.core.getrf"><code class="xref py py-func docutils literal notranslate"><span class="pre">getrf</span></code></a>. This does not
+take the inverse of <code class="docutils literal notranslate"><span class="pre">A</span></code>. The input must have been modified by <a class="reference internal" href="#einsums.core.getrf" title="einsums.core.getrf"><code class="xref py py-func docutils literal notranslate"><span class="pre">getrf</span></code></a> before
+calling this function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – The matrix output from <a class="reference internal" href="#einsums.core.getrf" title="einsums.core.getrf"><code class="xref py py-func docutils literal notranslate"><span class="pre">getrf</span></code></a>. After calling this function, this will</p>
+</dd>
+</dl>
+<p>contain the matrix inverse.
+:param pivot: The pivot list from <a class="reference internal" href="#einsums.core.getrf" title="einsums.core.getrf"><code class="xref py py-func docutils literal notranslate"><span class="pre">getrf</span></code></a>.
+:raises einsums.core.rank_error: if the input tensor is not a matrix.
+:raises einsums.core.dimension_error: if the matrix is not square.
+:raises ValueError: if the pivot list has not been formatted properly, the input tensor
+does not store real or complex floating point data, or an illegal argument is passed to
+the underlying <code class="docutils literal notranslate"><span class="pre">getri</span></code> call. This last one should not happen.
+:raises RuntimeError: if the matrix is singular.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.invert">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">invert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.invert" title="Link to this definition">#</a></dt>
+<dd><p>Computes the matrix inverse. This calls <a class="reference internal" href="#einsums.core.getrf" title="einsums.core.getrf"><code class="xref py py-func docutils literal notranslate"><span class="pre">getrf</span></code></a> and <a class="reference internal" href="#einsums.core.getri" title="einsums.core.getri"><code class="xref py py-func docutils literal notranslate"><span class="pre">getri</span></code></a> under the hood
+so that you don’t have to worry about them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – The matrix to invert. After calling this function, this will contain the inverse matrix.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input is not a matrix.</p></li>
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.dimension_error" title="einsums.core.dimension_error"><strong>einsums.core.dimension_error</strong></a> – if the input is not a square matrix.</p></li>
+<li><p><strong>ValueError</strong> – if the pivot list has not been formatted properly, the input tensor</p></li>
+</ul>
+</dd>
+</dl>
+<p>does not store real or complex floating point data, or an illegal argument is passed to
+one of the underlying LAPACK calls. This last one should not happen.
+:raises RuntimeError: if the matrix is singular.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.norm">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norm_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#einsums.core.Norm" title="einsums.core.Norm"><span class="pre">einsums.core.Norm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.norm" title="Link to this definition">#</a></dt>
+<dd><p>Computes the norm of a matrix. Does not handle vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>norm_type</strong> – The kind of norm to take.</p></li>
+<li><p><strong>A</strong> – The matrix to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The norm of the matrix.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input tensor is not a matrix.</p></li>
+<li><p><strong>ValueError</strong> – if the matrix does not store real or complex floating point data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.vec_norm">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">vec_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.vec_norm" title="Link to this definition">#</a></dt>
+<dd><p>Computes the norm of a vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – The vector to use.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The norm of the vector.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input is not a vector.</p></li>
+<li><p><strong>ValueError</strong> – if the vector does not store real or complex floating point data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.svd">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">svd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#einsums.core.svd" title="Link to this definition">#</a></dt>
+<dd><p>Performs singular value decomposition on a matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – The matrix to decompose.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The left singular vectors, the singular value vector, and the right singular vectors in a tuple.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input is not a matrix.</p></li>
+<li><p><strong>ValueError</strong> – if the matrix does not store real or complex floating point values, or an</p></li>
+</ul>
+</dd>
+</dl>
+<p>illegal argument is passed to the underlying LAPACK call. This last one should never happen.
+:raises RuntimeError: if the SVD iterations did not converge.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.svd_nullspace">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">svd_nullspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.svd_nullspace" title="Link to this definition">#</a></dt>
+<dd><p>Computes the nullspace of a matrix using singular value decomposition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – The matrix to use.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The nullspace basis as a matrix.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input tensor is not a matrix.</p></li>
+<li><p><strong>ValueError</strong> – if the matrix does not store real or complex floating point data, or an</p></li>
+</ul>
+</dd>
+</dl>
+<p>invalid argument was passed to the underlying LAPACK call. This last one should not happen.
+:raises RuntimeError: if the SVD iterations did not converge.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.svd_dd">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">svd_dd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#einsums.core.Vectors" title="einsums.core.Vectors"><span class="pre">einsums.core.Vectors</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">einsums.core.ALL</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#einsums.core.svd_dd" title="Link to this definition">#</a></dt>
+<dd><p>Performs singular value decomposition on a matrix using the divide and conquer algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The matrix to decompose.</p></li>
+<li><p><strong>job</strong> – Determines which vectors to compute.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The left singular vectors, the singular value vector, and the right singular vectors in a tuple.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input is not a matrix.</p></li>
+<li><p><strong>ValueError</strong> – if the matrix does not store real or complex floating point values, or an</p></li>
+</ul>
+</dd>
+</dl>
+<p>illegal argument is passed to the underlying LAPACK call. This last one should never happen.
+:raises RuntimeError: if the SVD iterations did not converge.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.truncated_svd">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">truncated_svd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#einsums.core.truncated_svd" title="Link to this definition">#</a></dt>
+<dd><p>Computes the singular value decomposition, but truncates the number of singular values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The matrix to decompose.</p></li>
+<li><p><strong>k</strong> – The number of singular values to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the left singular vectors, the list of singular values, and the right singular</p>
+</dd>
+</dl>
+<p>vectors.
+:raises einsums.core.rank_error: if the input is not a matrix.
+:raises ValueError: if the matrix does not store real or complex floating point data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.truncated_syev">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">truncated_syev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#einsums.core.truncated_syev" title="Link to this definition">#</a></dt>
+<dd><p>Computes the eigendecomposition, but truncates the number of eigenvalues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The matrix to decompose.</p></li>
+<li><p><strong>k</strong> – The number of eigenvalues to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the eigenvectors and the list of eigenvalues.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input is not a matrix.</p></li>
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.dimension_error" title="einsums.core.dimension_error"><strong>einsums.core.dimension_error</strong></a> – if the input is not a square matrix.</p></li>
+<li><p><strong>ValueError</strong> – if the matrix does not store real or complex floating point data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.pseudoinverse">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">pseudoinverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.pseudoinverse" title="Link to this definition">#</a></dt>
+<dd><p>Computes the pseudoinverse of a matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The matrix to pseudoinvert.</p></li>
+<li><p><strong>tol</strong> – The tolerance on the singular values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pseudoinverse of the input matrix.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input tensor is not a matrix.</p></li>
+<li><p><strong>ValueError</strong> – if the matrix does not store real or complex floating point data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.solve_continuous_lyapunov">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">solve_continuous_lyapunov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.solve_continuous_lyapunov" title="Link to this definition">#</a></dt>
+<dd><p>Solves a continuous Lyapunov equation. This is an equation of the following form.</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{AX} + \mathbf{XA}^H + \mathbf{Q} = 0\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The A matrix.</p></li>
+<li><p><strong>Q</strong> – The Q matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The <code class="docutils literal notranslate"><span class="pre">X</span></code> matrix that solves this equation.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if either input is not a matrix.</p></li>
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.dimension_error" title="einsums.core.dimension_error"><strong>einsums.core.dimension_error</strong></a> – if the inputs are not square matrices or are not compatible</p></li>
+</ul>
+</dd>
+</dl>
+<p>with each other.
+:raises ValueError: if the input tensors do not have the same storage type, the inputs do not store
+real or complex floating point data, or an invalid argument is passed to one of the underlying
+LAPACK functions. This last case should hopefully not happen.
+:raises RuntimeError: if the Schur decomposition step fails to converge.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.qr">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">qr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#einsums.core.qr" title="Link to this definition">#</a></dt>
+<dd><p>Perform QR decomposition. The information to get Q and R are returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – The matrix to decompose.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple to be passed to <a class="reference internal" href="#einsums.core.q" title="einsums.core.q"><code class="xref py py-func docutils literal notranslate"><span class="pre">q</span></code></a> and <a class="reference internal" href="#einsums.core.r" title="einsums.core.r"><code class="xref py py-func docutils literal notranslate"><span class="pre">r</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input is not a matrix.</p></li>
+<li><p><strong>ValueError</strong> – if the matrix input does not store real or complex floating point data,</p></li>
+</ul>
+</dd>
+</dl>
+<p>or an invalid value was passed to the underlying LAPACK call. The second case should not happen.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.q">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">q</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">QR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.q" title="Link to this definition">#</a></dt>
+<dd><p>Extract the Q factor from the return from <a class="reference internal" href="#einsums.core.qr" title="einsums.core.qr"><code class="xref py py-func docutils literal notranslate"><span class="pre">qr</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>QR</strong> – The first returned value from <a class="reference internal" href="#einsums.core.qr" title="einsums.core.qr"><code class="xref py py-func docutils literal notranslate"><span class="pre">qr</span></code></a>.</p></li>
+<li><p><strong>tau</strong> – The second returned value from <a class="reference internal" href="#einsums.core.qr" title="einsums.core.qr"><code class="xref py py-func docutils literal notranslate"><span class="pre">qr</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Q matrix from the decomposition.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input is not a matrix.</p></li>
+<li><p><strong>ValueError</strong> – if the matrix inputs do not store the same data type,</p></li>
+</ul>
+</dd>
+</dl>
+<p>do not store real or complex floating point data,
+or an invalid value was passed to the underlying LAPACK call. The second case should not happen.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.r">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">QR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.r" title="Link to this definition">#</a></dt>
+<dd><p>Extract the R factor from the return from <a class="reference internal" href="#einsums.core.qr" title="einsums.core.qr"><code class="xref py py-func docutils literal notranslate"><span class="pre">qr</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>QR</strong> – The first returned value from <a class="reference internal" href="#einsums.core.qr" title="einsums.core.qr"><code class="xref py py-func docutils literal notranslate"><span class="pre">qr</span></code></a>.</p></li>
+<li><p><strong>tau</strong> – The second returned value from <a class="reference internal" href="#einsums.core.qr" title="einsums.core.qr"><code class="xref py py-func docutils literal notranslate"><span class="pre">qr</span></code></a>. Unused, but present to make it look like</p></li>
+</ul>
+</dd>
+</dl>
+<p>the corresponding <a class="reference internal" href="#einsums.core.q" title="einsums.core.q"><code class="xref py py-func docutils literal notranslate"><span class="pre">q</span></code></a> call.
+:return: The R matrix from the decomposition.
+:raises einsums.core.rank_error: if the input is not a matrix.
+:raises ValueError: if the matrix inputs do not store real or complex floating point data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.direct_product">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">direct_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.direct_product" title="Link to this definition">#</a></dt>
+<dd><p>Performs the following formula.</p>
+<div class="math notranslate nohighlight">
+\[C_i := \beta C_i + \alpha A_i B_i\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> – The scale factor for the product.</p></li>
+<li><p><strong>A</strong> – The first tensor in the product.</p></li>
+<li><p><strong>B</strong> – The second tensor in the product.</p></li>
+<li><p><strong>beta</strong> – The scale factor for the accumulation tensor.</p></li>
+<li><p><strong>C</strong> – The accumulation tensor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the tensors do not have the same rank.</p></li>
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.dimension_error" title="einsums.core.dimension_error"><strong>einsums.core.dimension_error</strong></a> – if the tensors have different dimensions.</p></li>
+<li><p><strong>ValueError</strong> – if the tensors do not store the same data type or they do not</p></li>
+</ul>
+</dd>
+</dl>
+<p>store real or complex floating point data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.det">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">det</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.det" title="Link to this definition">#</a></dt>
+<dd><p>Computes the determinant of a matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – The matrix to use.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The determinant of the matrix.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error" title="einsums.core.rank_error"><strong>einsums.core.rank_error</strong></a> – if the input is not a matrix.</p></li>
+<li><p><a class="reference internal" href="einsums.core.errors.html#einsums.core.dimension_error" title="einsums.core.dimension_error"><strong>einsums.core.dimension_error</strong></a> – if the input is not a square matrix.</p></li>
+<li><p><strong>ValueError</strong> – if the matrix does not store real or complex floating point data, or an</p></li>
+</ul>
+</dd>
+</dl>
+<p>argument passed to the underlying LAPACK call was invalid. The second case should not happen.</p>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.Norm"><code class="docutils literal notranslate"><span class="pre">Norm</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.Norm.MAXABS"><code class="docutils literal notranslate"><span class="pre">Norm.MAXABS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.Norm.ONE"><code class="docutils literal notranslate"><span class="pre">Norm.ONE</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.Norm.INFINITY"><code class="docutils literal notranslate"><span class="pre">Norm.INFINITY</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.Norm.FROBENIUS"><code class="docutils literal notranslate"><span class="pre">Norm.FROBENIUS</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.Vectors"><code class="docutils literal notranslate"><span class="pre">Vectors</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.Vectors.ALL"><code class="docutils literal notranslate"><span class="pre">Vectors.ALL</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.Vectors.SOME"><code class="docutils literal notranslate"><span class="pre">Vectors.SOME</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.Vectors.OVERWRITE"><code class="docutils literal notranslate"><span class="pre">Vectors.OVERWRITE</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.Vectors.NONE"><code class="docutils literal notranslate"><span class="pre">Vectors.NONE</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.sum_square"><code class="docutils literal notranslate"><span class="pre">sum_square</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.gemm"><code class="docutils literal notranslate"><span class="pre">gemm</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.gemv"><code class="docutils literal notranslate"><span class="pre">gemv</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.syev"><code class="docutils literal notranslate"><span class="pre">syev</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.heev"><code class="docutils literal notranslate"><span class="pre">heev</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.geev"><code class="docutils literal notranslate"><span class="pre">geev</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.gesv"><code class="docutils literal notranslate"><span class="pre">gesv</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.scale"><code class="docutils literal notranslate"><span class="pre">scale</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.scale_row"><code class="docutils literal notranslate"><span class="pre">scale_row</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.scale_column"><code class="docutils literal notranslate"><span class="pre">scale_column</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.dot"><code class="docutils literal notranslate"><span class="pre">dot</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.true_dot"><code class="docutils literal notranslate"><span class="pre">true_dot</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.axpy"><code class="docutils literal notranslate"><span class="pre">axpy</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.axpby"><code class="docutils literal notranslate"><span class="pre">axpby</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.ger"><code class="docutils literal notranslate"><span class="pre">ger</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.getrf"><code class="docutils literal notranslate"><span class="pre">getrf</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.extract_plu"><code class="docutils literal notranslate"><span class="pre">extract_plu</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.getri"><code class="docutils literal notranslate"><span class="pre">getri</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.invert"><code class="docutils literal notranslate"><span class="pre">invert</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.norm"><code class="docutils literal notranslate"><span class="pre">norm</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.vec_norm"><code class="docutils literal notranslate"><span class="pre">vec_norm</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.svd"><code class="docutils literal notranslate"><span class="pre">svd</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.svd_nullspace"><code class="docutils literal notranslate"><span class="pre">svd_nullspace</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.svd_dd"><code class="docutils literal notranslate"><span class="pre">svd_dd</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.truncated_svd"><code class="docutils literal notranslate"><span class="pre">truncated_svd</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.truncated_syev"><code class="docutils literal notranslate"><span class="pre">truncated_syev</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.pseudoinverse"><code class="docutils literal notranslate"><span class="pre">pseudoinverse</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.solve_continuous_lyapunov"><code class="docutils literal notranslate"><span class="pre">solve_continuous_lyapunov</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.qr"><code class="docutils literal notranslate"><span class="pre">qr</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.q"><code class="docutils literal notranslate"><span class="pre">q</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.r"><code class="docutils literal notranslate"><span class="pre">r</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.direct_product"><code class="docutils literal notranslate"><span class="pre">direct_product</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.det"><code class="docutils literal notranslate"><span class="pre">det</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 27, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
   </head>
   
   
@@ -365,6 +365,7 @@ is the Einsums default; other variants include Apple Accelerate,
 <a class="reference external" href="https://www.netlib.org/lapack/index.hmtl">Netlib</a> ( or “Reference”)
 BLAS and LAPACK.</p></li>
 <li><p>CMake</p></li>
+<li><p>Ninja for building. Since cpptrace 1.0, Unix Makefiles are no longer supported.</p></li>
 </ul>
 <p>The following are also required, but will be downloaded if not given:</p>
 <ul class="simple">
@@ -373,14 +374,23 @@ BLAS and LAPACK.</p></li>
 <li><p>Einsums/h5cpp</p></li>
 <li><p>p-ranav/argparse</p></li>
 <li><p>gabime/spdlog &gt;= 1</p></li>
+<li><p>HDF5 for disk operations.</p></li>
+<li><p>ZLIB headers</p></li>
+</ul>
+<p>Recommended</p>
+<ul class="simple">
+<li><p>MIMalloc for faster memory allocation.</p></li>
 </ul>
 <p>Optional:</p>
 <ul class="simple">
+<li><p>jeremy-rifkin/cpptrace to create backtraces when errors occur.</p></li>
 <li><p>For the Fourier Transform abilities, you will need either <a class="reference external" href="https://www.fftw.org">FFTW3</a>
 or MKL.</p></li>
 <li><p>HIP for GPU support. If using an Nvidia platform, CUDA is also required.</p></li>
 <li><p>LibreTT for high-performance GPU tensor transposes.</p></li>
 <li><p>pybind11 for the Python extension module.</p></li>
+<li><p>SciPy for the Python tests.</p></li>
+<li><p>NumPy for the Python tests.</p></li>
 </ul>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">

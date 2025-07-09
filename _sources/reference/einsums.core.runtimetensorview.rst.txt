@@ -90,6 +90,23 @@ is reflected in the other.
 
         :param other: The object to operate with.
 
+    .. py:method:: __mul__(other)
+    .. py:method:: __truediv__(other)
+    .. py:method:: __add__(other)
+    .. py:method:: __sub__(other)
+    .. py:method:: __rmul__(other)
+    .. py:method:: __rtruediv__(other)
+    .. py:method:: __radd__(other)
+    .. py:method:: __rsub__(other)
+
+        Out-of-place arithmetic operators. These can accept either a single value or a buffer object.
+        If :code:`other` is a single value, it will operate every single element with that
+        value. If it is a buffer, then it must have the same dimensions as this tensor, and it
+        will then perform the element-wise operation between the elements of the tensor and the buffer.
+        These will create a new tensor before operating and will return that new tensor.
+
+        :param other: The object to operate with.
+
     .. py:method:: assign(buffer)
 
         Copy the buffer into this tensor. The tensor will resize and reshape to fit the buffer.

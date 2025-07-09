@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jun 27, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
   </head>
   
   
@@ -195,10 +195,6 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -280,7 +276,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLAS/docs/index.html">BLAS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLASBase/docs/index.html">BLASBase</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLASVendor/docs/index.html">BLASVendor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">Einsums BufferAllocator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">BufferAllocator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Config/docs/index.html">Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Debugging/docs/index.html">Debugging</a></li>
@@ -343,6 +339,9 @@
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html">GlobalConfigMap in Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.logging.html">Python Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html">Einsums Internal Errors</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.utils.html">Einsums Utilities Module</a></li>
@@ -417,32 +416,6 @@
 <span id="python-module"></span><h1>Einsums Python Module<a class="headerlink" href="#einsums-python-module" title="Link to this heading">#</a></h1>
 <p>This is the reference documentation for the Einsums Python module. It contains many sub-modules as well.</p>
 <p id="module-einsums">This module contains various facilities for interfacing with the Einsums library.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="einsums.set_finalize_arg">
-<span class="sig-prename descclassname"><span class="pre">einsums.</span></span><span class="sig-name descname"><span class="pre">set_finalize_arg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.set_finalize_arg" title="Link to this definition">#</a></dt>
-<dd><p>Sets the argument to pass to einsums.core.finalize. By default, the argument is False, which tells it not to print the
-timing file. If the argument is True, the timing information will be printed to standard output. If
-it is a file name, that will be used as the timing file, and the timing will be printed there on exit. Calling this
-function with a string, then again with <cite>True</cite> or <cite>False</cite> will override the behavior. For instance,</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">einsums</span><span class="o">.</span><span class="n">set_finalize_arg</span><span class="p">(</span><span class="s2">&quot;timings.txt&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">exit</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>will create a file called <code class="code docutils literal notranslate"><span class="pre">timings.txt</span></code> and put the timing information there. However, the following will have different behavior.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">einsums</span><span class="o">.</span><span class="n">set_finalize_arg</span><span class="p">(</span><span class="s2">&quot;timings.txt&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">einsums</span><span class="o">.</span><span class="n">set_finalize_arg</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># Overrides the previous.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">exit</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>This will not create the file and will instead print timing information to standard output.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>out</strong> – The output object. If <cite>out</cite> is a string, then this specifies the output file name. If it is <cite>True</cite>, then
-Einsums will output timing information to standard output. If it is false, then no timing information will be emitted.</p>
-</dd>
-</dl>
-</dd></dl>
-
 <p id="module-einsums.core">This module contains the C++ wrappings. It is documented in <a class="reference internal" href="einsums.core.html#einsums-core"><span class="std std-ref">Einsums Core Module</span></a>.</p>
 <p id="module-einsums.utils">This module contains several helpful classes and functions. It is documented in <a class="reference internal" href="einsums.utils.html#einsums-utils"><span class="std std-ref">Einsums Utilities Module</span></a>.</p>
 <p id="module-einsums.gpu_except">This module contains all of the possible exceptions that can be thrown by HIP, hipBlas, and hipSolver.
@@ -454,7 +427,6 @@ namespaces of the other modules.</p>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.gpu_enabled"><code class="docutils literal notranslate"><span class="pre">gpu_enabled</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.initialize"><code class="docutils literal notranslate"><span class="pre">initialize</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.finalize"><code class="docutils literal notranslate"><span class="pre">finalize</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.report"><code class="docutils literal notranslate"><span class="pre">report</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.get_buffer_format"><code class="docutils literal notranslate"><span class="pre">get_buffer_format</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.tensor_algebra.html">Einsums Python Tensor Algebra</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.tensor_algebra.html#einsums.core.compile_plan"><code class="docutils literal notranslate"><span class="pre">compile_plan</span></code></a></li>
@@ -495,17 +467,55 @@ namespaces of the other modules.</p>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.tensoriterator.html#einsums.core.PyTensorIteratorX"><code class="docutils literal notranslate"><span class="pre">PyTensorIteratorX</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.globalconfigmap.html">GlobalConfigMap in Python</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.logging.html">Python Logging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log"><code class="docutils literal notranslate"><span class="pre">log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_trace"><code class="docutils literal notranslate"><span class="pre">log_trace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_debug"><code class="docutils literal notranslate"><span class="pre">log_debug</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_info"><code class="docutils literal notranslate"><span class="pre">log_info</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_warn"><code class="docutils literal notranslate"><span class="pre">log_warn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_error"><code class="docutils literal notranslate"><span class="pre">log_error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.logging.html#einsums.core.log_critical"><code class="docutils literal notranslate"><span class="pre">log_critical</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.errors.html">Einsums Internal Errors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.rank_error"><code class="docutils literal notranslate"><span class="pre">rank_error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.dimension_error"><code class="docutils literal notranslate"><span class="pre">dimension_error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.tensor_compat_error"><code class="docutils literal notranslate"><span class="pre">tensor_compat_error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.num_argument_error"><code class="docutils literal notranslate"><span class="pre">num_argument_error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.not_enough_args"><code class="docutils literal notranslate"><span class="pre">not_enough_args</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.too_many_args"><code class="docutils literal notranslate"><span class="pre">too_many_args</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.access_denied"><code class="docutils literal notranslate"><span class="pre">access_denied</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.todo_error"><code class="docutils literal notranslate"><span class="pre">todo_error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.not_implemented"><code class="docutils literal notranslate"><span class="pre">not_implemented</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.bad_logic"><code class="docutils literal notranslate"><span class="pre">bad_logic</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.uninitialized_error"><code class="docutils literal notranslate"><span class="pre">uninitialized_error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.system_error"><code class="docutils literal notranslate"><span class="pre">system_error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.enum_error"><code class="docutils literal notranslate"><span class="pre">enum_error</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="einsums.utils.html">Einsums Utilities Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.TensorIndices"><code class="docutils literal notranslate"><span class="pre">TensorIndices</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="einsums.utils.html#einsums.utils.TensorIndices.__iter__"><code class="docutils literal notranslate"><span class="pre">TensorIndices.__iter__</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="einsums.utils.html#einsums.utils.TensorIndices.__reversed__"><code class="docutils literal notranslate"><span class="pre">TensorIndices.__reversed__</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="einsums.utils.html#einsums.utils.TensorIndices.__next__"><code class="docutils literal notranslate"><span class="pre">TensorIndices.__next__</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_tensor"><code class="docutils literal notranslate"><span class="pre">create_tensor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.TensorIndices"><code class="docutils literal notranslate"><span class="pre">TensorIndices</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.add_complex"><code class="docutils literal notranslate"><span class="pre">add_complex</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_random_definite"><code class="docutils literal notranslate"><span class="pre">create_random_definite</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_random_definite_numpy_array"><code class="docutils literal notranslate"><span class="pre">create_random_definite_numpy_array</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_random_numpy_array"><code class="docutils literal notranslate"><span class="pre">create_random_numpy_array</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_random_semidefinite"><code class="docutils literal notranslate"><span class="pre">create_random_semidefinite</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_random_semidefinite_numpy_array"><code class="docutils literal notranslate"><span class="pre">create_random_semidefinite_numpy_array</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_random_tensor"><code class="docutils literal notranslate"><span class="pre">create_random_tensor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_tensor"><code class="docutils literal notranslate"><span class="pre">create_tensor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.enumerate_many"><code class="docutils literal notranslate"><span class="pre">enumerate_many</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.labeled_section"><code class="docutils literal notranslate"><span class="pre">labeled_section</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.random_definite_tensor_factory"><code class="docutils literal notranslate"><span class="pre">random_definite_tensor_factory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.random_semidefinite_tensor_factory"><code class="docutils literal notranslate"><span class="pre">random_semidefinite_tensor_factory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.random_tensor_factory"><code class="docutils literal notranslate"><span class="pre">random_tensor_factory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.remove_complex"><code class="docutils literal notranslate"><span class="pre">remove_complex</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.tensor_factory"><code class="docutils literal notranslate"><span class="pre">tensor_factory</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="einsums.gpu_except.html">HIP Exceptions in Python</a><ul>
@@ -651,24 +661,6 @@ namespaces of the other modules.</p>
             </div>
             
             
-              
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.set_finalize_arg"><code class="docutils literal notranslate"><span class="pre">set_finalize_arg</span></code></a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

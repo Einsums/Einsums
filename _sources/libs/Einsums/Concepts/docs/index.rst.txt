@@ -19,6 +19,26 @@ details.
 Named Requirements
 ------------------
 
+Since many standard named requirements aren't given concepts in the standard library, this module provides them.
+Here are a few useful ones.
+
+Containers and Initializer Lists
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C++ containers have a standard set of operations that they need to be able to perform. Initializer lists
+also have some standard operations, but they are a subset of the operations for containers. To write
+container-agnostic code, you can use the :cpp:concept:`Container`, which will match all standard C++
+containers, including ``std::vector``, ``std::list``, and more. To include intializer lists in this
+definition, use the concept :cpp:concept:`ContainerOrInitializer`.
+
+
+Tensor Concepts
+---------------
+
+These are common tensor concepts for handling tensors with a specific interface. There are many more, so see the
+:ref:`API reference <modules_Einsums_Concepts_api>` for more details.
+
+
 Tensor
 ^^^^^^
 
