@@ -355,6 +355,24 @@ struct TensorImpl final {
         }
     }
 
+    constexpr size_t get_incx() const {
+        if (rank_ == 0) {
+            return 0;
+        } else if (rank_ == 1) {
+            return strides_[0];
+        } else {
+            return std::min(stride(0), stride(-1));
+        }
+    }
+
+    constexpr size_t get_lda() const {
+        if (rank_ != 2) {
+            EINSUMS_THROW_EXCEPTION(rank_error, "Can not get the leading dimension of a tensor whose rank is not 2!");
+        } else {
+            return std::max(stride(0), stride(1));
+        }
+    }
+
     constexpr bool is_row_major() const {
         if (rank_ <= 1) {
             return true;
@@ -372,20 +390,17 @@ struct TensorImpl final {
     }
 
     template <Container IndexStrides>
-    void query_vectorable_params(size_t *easy_size, size_t *hard_size, size_t *easy_rank, size_t *incx,
-                                 IndexStrides &all_index_strides) const {
-        all_index_strides.resize(rank_);
+    void query_vectorable_params(size_t *easy_size, size_t *hard_size, size_t *easy_rank, size_t *incx) const {
         if (rank_ == 0) {
             *easy_size = 0;
             *hard_size = 0;
             *easy_rank = 0;
             *incx      = 0;
         } else if (rank_ == 1) {
-            *easy_size           = size_;
-            *hard_size           = 0;
-            *easy_rank           = 1;
-            *incx                = strides_[0];
-            all_index_strides[0] = 1;
+            *easy_size = size_;
+            *hard_size = 0;
+            *easy_rank = 1;
+            *incx      = strides_[0];
         } else {
 
             *easy_size = 1;
@@ -396,7 +411,6 @@ struct TensorImpl final {
                 *incx       = stride(-1);
                 size_t size = 1;
                 for (int i = rank_ - 1; i >= 0; i--) {
-                    all_index_strides[i] = size;
 
                     if (size * *incx == strides_[i]) {
                         *easy_rank += 1;
@@ -409,7 +423,6 @@ struct TensorImpl final {
                 *incx       = stride(0);
                 size_t size = 1;
                 for (int i = 0; i < rank_; i++) {
-                    all_index_strides[i] = size;
 
                     if (size * *incx == strides_[i]) {
                         *easy_rank += 1;
