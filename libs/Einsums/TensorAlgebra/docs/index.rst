@@ -49,6 +49,10 @@ Public API
         This function uses HPTT to perform the tensor transpositions. However, HPTT does not work with :cpp:class:`TensorView`s.
         You may see slowdowns if you use this with :cpp:class:`TensorView`s, though we are trying to improve this. The best bet
         will probably be to copy the tensor view to a :cpp:class:`Tensor` first, then permute the elements.
+    
+    .. versionchanged:: 1.0.3
+
+        This function now works with :cpp:class:`TensorView`s.
 
 .. cpp:function:: template<typename... Args> sort(Args &&... args)
 
@@ -60,5 +64,3 @@ Public API
         we will be removing this in the future.
 
     .. versionremoved:: 1.1.0
-
-        This will be removed in the next minor release.

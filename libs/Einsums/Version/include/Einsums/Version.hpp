@@ -71,6 +71,6 @@ constexpr std::string_view copyright() {
     return copyright;
 }
 
-// Returns the full version string.
+/// Returns the full version string.
 EINSUMS_EXPORT std::string complete_version();
 } // namespace einsums

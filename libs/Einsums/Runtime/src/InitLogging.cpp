@@ -17,6 +17,8 @@
 
 namespace einsums::detail {
 
+static char const *amd_log_level_strs[] = {"0", "1", "2", "3", "4", "5"};
+
 namespace {
 /*
  * The desired output is "tid/description". Modern operating systems
@@ -62,6 +64,31 @@ struct HostnameFormatterFlag : spdlog::custom_flag_formatter {
     std::unique_ptr<custom_flag_formatter> clone() const override { return spdlog::details::make_unique<HostnameFormatterFlag>(); }
 };
 
+static void handle_loglevel_chages(config_mapping_type<std::int64_t> const &map) {
+    // Set log level
+    get_einsums_logger().set_level(static_cast<spdlog::level::level_enum>(map.at("log-level")));
+
+#ifdef EINSUMS_COMPUTE_CODE
+    // Check to see if setenv is available for your system.
+    constexpr bool check_for_posix = requires(char const *envname, char const *envval, int overwrite) {
+        { setenv(envname, envval, overwrite) } -> std::same_as<int>;
+    };
+
+    if constexpr (check_for_posix) {
+        // Get the AMD log level.
+        char const *amd_log_level = getenv("AMD_LOG_LEVEL");
+
+        if (amd_log_level == nullptr) {
+            // Set the AMD log level to the Einsums log level, if it was not set before a call to Einsums.
+            int log_level = map.at("log-level");
+            if (5 - log_level >= 0 && 5 - log_level <= 5) {
+                int retval = setenv("AMD_LOG_LEVEL", amd_log_level_strs[5 - log_level], 1);
+            }
+        }
+    }
+#endif
+}
+
 void init_logging(RuntimeConfiguration &config) {
     auto &global_config = GlobalConfigMap::get_singleton();
     // Set log destination
@@ -79,6 +106,26 @@ void init_logging(RuntimeConfiguration &config) {
 
     // Set log level
     get_einsums_logger().set_level(static_cast<spdlog::level::level_enum>(global_config.get_int("log-level")));
+
+#ifdef EINSUMS_COMPUTE_CODE
+    // Check to see if setenv is available for your system.
+    constexpr bool check_for_posix = requires(char const *envname, char const *envval, int overwrite) {
+        { setenv(envname, envval, overwrite) } -> std::same_as<int>;
+    };
+
+    if constexpr (check_for_posix) {
+        // Get the AMD log level.
+        char const *amd_log_level = getenv("AMD_LOG_LEVEL");
+
+        if (amd_log_level == nullptr) {
+            // Set the AMD log level to the Einsums log level, if it was not set before a call to Einsums.
+            int log_level = global_config.get_int("log-level");
+            if (5 - log_level >= 0 && 5 - log_level <= 5) {
+                int retval = setenv("AMD_LOG_LEVEL", amd_log_level_strs[5 - log_level], 1);
+            }
+        }
+    }
+#endif
 
     EINSUMS_LOG_INFO("logging submodule has been initialized");
     EINSUMS_LOG_INFO("log level: {} (0=TRACE,1=DEBUG,2=INFO,3=WARN,4=ERROR,5=CRITICAL)", global_config.get_int("log-level"));

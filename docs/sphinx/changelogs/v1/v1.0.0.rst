@@ -24,7 +24,7 @@ What's Changed
 --------------
 
 * The project has been restructured
-* `sort` is now `permute`
+* ``sort`` is now ``permute``
 * Several namespaces have been renamed
 
 What's Removed

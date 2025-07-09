@@ -26,6 +26,9 @@ constexpr bool is_in(T &&needle, Haystack const &haystack, std::index_sequence<I
 }
 } // namespace detail
 
+/**
+ * @brief Check to see if an element is contained in a container or tuple.
+ */
 template <typename T, typename Haystack>
     requires requires {
         { std::tuple_size_v<Haystack> };
@@ -36,6 +39,9 @@ constexpr bool is_in(T &&needle, Haystack const &haystack) {
                          std::make_index_sequence<std::tuple_size_v<Haystack>>());
 }
 
+/**
+ * @brief Check to see if an element is contained in a container.
+ */
 template <typename T, Container Haystack>
 constexpr bool is_in(T &&needle, Haystack const &haystack) {
     for (auto test : haystack) {
@@ -46,6 +52,9 @@ constexpr bool is_in(T &&needle, Haystack const &haystack) {
     return false;
 }
 
+/**
+ * @brief Check to see if an element is contained in an initializer list.
+ */
 template <typename T>
 constexpr bool is_in(T &&needle, std::initializer_list<std::decay_t<T>> haystack) {
     for (auto test : haystack) {
@@ -56,6 +65,9 @@ constexpr bool is_in(T &&needle, std::initializer_list<std::decay_t<T>> haystack
     return false;
 }
 
+/**
+ * @brief Check to see if an element is not contained in a container or tuple.
+ */
 template <typename T, typename Haystack>
     requires requires {
         { std::tuple_size_v<Haystack> };
@@ -66,6 +78,9 @@ constexpr bool not_in(T &&needle, Haystack const &haystack) {
                          std::make_index_sequence<std::tuple_size_v<Haystack>>());
 }
 
+/**
+ * @brief Check to see if an element is not contained in a container.
+ */
 template <typename T, Container Haystack>
 constexpr bool not_in(T &&needle, Haystack const &haystack) {
     for (auto test : haystack) {
@@ -76,6 +91,9 @@ constexpr bool not_in(T &&needle, Haystack const &haystack) {
     return true;
 }
 
+/**
+ * @brief Check to see if an element is not contained in an initializer list.
+ */
 template <typename T>
 constexpr bool not_in(T &&needle, std::initializer_list<std::decay_t<T>> haystack) {
     for (auto test : haystack) {

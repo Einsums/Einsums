@@ -361,11 +361,11 @@ def test_invert(a, dtype, array):
 def test_norm(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
-    assert ein.core.norm(ein.core.Frobenius, A) == pytest.approx(
+    assert ein.core.norm(ein.core.FROBENIUS, A) == pytest.approx(
         np.linalg.norm(A, "fro")
     )
-    assert ein.core.norm(ein.core.Infinity, A) == pytest.approx(np.linalg.norm(A, 1))
-    assert ein.core.norm(ein.core.One, A) == pytest.approx(
+    assert ein.core.norm(ein.core.INFINITY, A) == pytest.approx(np.linalg.norm(A, 1))
+    assert ein.core.norm(ein.core.ONE, A) == pytest.approx(
         np.linalg.norm(A, np.inf)
     )
 
@@ -469,22 +469,16 @@ def test_sdd(a, b, dtype, array) :
     for i in range(min(a, b)) :
         assert S[i] == pytest.approx(S_test[i])
 
-@pytest.mark.parametrize(["a", "b"], [(10, 10), (100, 100), (11, 13), (13, 11)])
+@pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13), (13, 11)])
 def test_qr(a, b, dtype, array) :
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
     A_copy = np.array(A.copy(), dtype = dtype)
 
-    R = ein.utils.tensor_factory("R", [min(a, b), b], dtype, array)
-    R[:, :] = 0
-
     QR, tau = ein.core.qr(A)
 
-    for i in range(min(a, b)) :
-        for j in range(i, b) :
-            R[i, j] = QR[i, j]
-
     Q = ein.core.q(QR, tau)
+    R = ein.core.r(QR, tau)
 
     Q_expected, R_expected = np.linalg.qr(A_copy)
 

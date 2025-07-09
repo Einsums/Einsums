@@ -24,6 +24,9 @@ namespace einsums {
 
 namespace detail {} // namespace detail
 
+/**
+ * @brief Add a function to the list of startup functions to add module-specific command line arguments.
+ */
 EINSUMS_EXPORT void register_arguments(std::function<void(argparse::ArgumentParser &)>);
 
 /**

@@ -5,8 +5,8 @@
 
 #include <Einsums/Config.hpp>
 
-#include <random>
 #include <numbers>
+#include <random>
 
 namespace einsums {
 
@@ -24,120 +24,37 @@ namespace detail {
 template <typename T>
 struct circle_distribution {};
 
+#ifndef DOXYGEN
 template <>
 struct circle_distribution<float> {
   public:
-    circle_distribution(float center, float radius)
-        : center_{center}, radius_{radius}, mag_dist_(0, std::numeric_limits<uint32_t>::max()) {}
+    circle_distribution(float center, float radius) : mag_dist_(center - radius, center + radius) {}
 
     ~circle_distribution() = default;
 
     template <typename Generator>
     float operator()(Generator &generator) {
-        union {
-            uint32_t integer;
-            float    floating;
-        } bitmanip;
-
-        bitmanip.integer = mag_dist_(generator);
-
-        // Clear the exponent.
-        bitmanip.integer &= 0x807fffffU;
-
-        // Set the exponent so that these numbers range from (-2,-1] and [1,2).
-        bitmanip.integer |= 0x3f800000U;
-
-        // Now, generate a second random number for backfilling.
-        uint32_t backfill = mag_dist_(generator);
-
-        // Compute the number of bits we will need.
-        uint32_t temp = bitmanip.integer;
-        // Clear the sign and exponent.
-        temp &= 0x007fffff;
-        // Now, count the number of leading zeros in the new value.
-        int fill_bits = std::countl_zero(temp);
-        // Shift a bitmask.
-        uint32_t mask = 0x007fffffU >> (31 - fill_bits);
-
-        // Now, mask the backfill.
-        backfill &= mask;
-
-        // Now, when we perform the subtraction, we can backfill these values in.
-        if (bitmanip.floating < 0.0f) {
-            bitmanip.floating += 1.0f;
-        } else {
-            bitmanip.floating -= 1.0f;
-        }
-
-        // Backfill. Use xor just to be fancy.
-        if ((bitmanip.integer & 0x7fffffffU) != 0) {
-            // Backfill. Use xor just to be fancy.
-            bitmanip.integer ^= backfill;
-        }
-
-        // Now, scale and recenter the value.
-        return bitmanip.floating * radius_ + center_;
+        return mag_dist_(generator);
     }
 
   private:
-    float                                   center_, radius_;
-    std::uniform_int_distribution<uint32_t> mag_dist_;
+    std::uniform_real_distribution<float> mag_dist_;
 };
 
 template <>
 struct circle_distribution<double> {
   public:
-    circle_distribution(double center, double radius)
-        : center_{center}, radius_{radius}, mag_dist_(0, std::numeric_limits<uint64_t>::max()) {}
+    circle_distribution(double center, double radius) : mag_dist_(center - radius, center + radius) {}
 
     ~circle_distribution() = default;
 
     template <typename Generator>
     double operator()(Generator &generator) {
-        union {
-            uint64_t integer;
-            double   floating;
-        } bitmanip;
-
-        bitmanip.integer = mag_dist_(generator);
-
-        // Clear the exponent.
-        bitmanip.integer &= 0x800fffffffffffffUL;
-        // Set the exponent so that these numbers range from (-2,-1] and [1,2).
-        bitmanip.integer |= 0x3ff0000000000000UL;
-
-        // Now, generate a second random number for backfilling.
-        uint64_t backfill = mag_dist_(generator);
-
-        // Compute the number of bits we will need.
-        uint64_t temp = bitmanip.integer;
-        // Clear the sign and exponent.
-        temp &= 0x000fffffffffffffUL;
-        // Now, count the number of leading zeros in the new value.
-        int fill_bits = std::countl_zero(temp);
-        // Shift a bitmask.
-        uint32_t mask = 0x000fffffffffffffUL >> (63 - fill_bits);
-        // Now, mask the backfill.
-        backfill &= mask;
-        // Now, when we perform the subtraction, we can backfill these values in.
-        if (bitmanip.floating < 0.0) {
-            bitmanip.floating += 1.0;
-        } else {
-            bitmanip.floating -= 1.0;
-        }
-
-        if ((bitmanip.integer & 0x7fffffffffffffffUL) != 0) {
-            // Backfill. Use xor just to be fancy.
-            bitmanip.integer ^= backfill;
-        }
-
-        // Now, scale and recenter the value.
-        return bitmanip.floating * radius_ + center_;
+        return mag_dist_(generator);
     }
 
   private:
-    double                                  center_, radius_;
-    std::uniform_int_distribution<uint64_t> mag_dist_;
+    std::uniform_real_distribution<double> mag_dist_;
 };
 
 // For this case, we can just use the normal uniform distribution. The boundary of the region will not be included.
@@ -160,6 +77,7 @@ struct circle_distribution<std::complex<T>> {
     std::complex<T>                   center_;
     std::uniform_real_distribution<T> mag_dist_, angle_dist_;
 };
+#endif
 
 /**
  * @struct unit_circle_distribution
@@ -173,116 +91,37 @@ struct circle_distribution<std::complex<T>> {
 template <typename T>
 struct unit_circle_distribution {};
 
+#ifndef DOXYGEN
 template <>
 struct unit_circle_distribution<float> {
   public:
-    unit_circle_distribution() : mag_dist_(0, std::numeric_limits<uint32_t>::max()) {}
+    unit_circle_distribution() : mag_dist_(-1.0f, 1.0f) {}
 
     ~unit_circle_distribution() = default;
 
     template <typename Generator>
     float operator()(Generator &generator) {
-        union {
-            uint32_t integer;
-            float    floating;
-        } bitmanip;
-
-        bitmanip.integer = mag_dist_(generator);
-
-        // Clear the exponent.
-        bitmanip.integer &= 0x807fffffU;
-
-        // Set the exponent so that these numbers range from (-2,-1] and [1,2).
-        bitmanip.integer |= 0x3f800000U;
-
-        // Now, generate a second random number for backfilling.
-        uint32_t backfill = mag_dist_(generator);
-
-        // Compute the number of bits we will need.
-        uint32_t temp = bitmanip.integer;
-        // Clear the sign and exponent.
-        temp &= 0x007fffff;
-        // Now, count the number of leading zeros in the new value.
-        int fill_bits = std::countl_zero(temp);
-        // Shift a bitmask.
-        uint32_t mask = 0x007fffffU >> (31 - fill_bits);
-
-        // Now, mask the backfill.
-        backfill &= mask;
-
-        // Now, when we perform the subtraction, we can backfill these values in.
-        if (bitmanip.floating < 0.0f) {
-            bitmanip.floating += 1.0f;
-        } else {
-            bitmanip.floating -= 1.0f;
-        }
-
-        // Backfill. Use xor just to be fancy.
-        if ((bitmanip.integer & 0x7fffffffU) != 0) {
-            // Backfill. Use xor just to be fancy.
-            bitmanip.integer ^= backfill;
-        }
-
-        // Now, scale and recenter the value.
-        return bitmanip.floating;
+        return mag_dist_(generator);
     }
 
   private:
-    std::uniform_int_distribution<uint32_t> mag_dist_;
+    std::uniform_real_distribution<float> mag_dist_;
 };
 
 template <>
 struct unit_circle_distribution<double> {
   public:
-    unit_circle_distribution() : mag_dist_(0, std::numeric_limits<uint64_t>::max()) {}
+    unit_circle_distribution() : mag_dist_(-1.0, 1.0) {}
 
     ~unit_circle_distribution() = default;
 
     template <typename Generator>
     double operator()(Generator &generator) {
-        union {
-            uint64_t integer;
-            double   floating;
-        } bitmanip;
-
-        bitmanip.integer = mag_dist_(generator);
-
-        // Clear the exponent.
-        bitmanip.integer &= 0x800fffffffffffffUL;
-        // Set the exponent so that these numbers range from (-2,-1] and [1,2).
-        bitmanip.integer |= 0x3ff0000000000000UL;
-
-        // Now, generate a second random number for backfilling.
-        uint64_t backfill = mag_dist_(generator);
-
-        // Compute the number of bits we will need.
-        uint64_t temp = bitmanip.integer;
-        // Clear the sign and exponent.
-        temp &= 0x000fffffffffffffUL;
-        // Now, count the number of leading zeros in the new value.
-        int fill_bits = std::countl_zero(temp);
-        // Shift a bitmask.
-        uint32_t mask = 0x000fffffffffffffUL >> (63 - fill_bits);
-        // Now, mask the backfill.
-        backfill &= mask;
-        // Now, when we perform the subtraction, we can backfill these values in.
-        if (bitmanip.floating < 0.0) {
-            bitmanip.floating += 1.0;
-        } else {
-            bitmanip.floating -= 1.0;
-        }
-
-        if ((bitmanip.integer & 0x7fffffffffffffffUL) != 0) {
-            // Backfill. Use xor just to be fancy.
-            bitmanip.integer ^= backfill;
-        }
-
-        // Now, scale and recenter the value.
-        return bitmanip.floating;
+        return mag_dist_(generator);
     }
 
   private:
-    std::uniform_int_distribution<uint64_t> mag_dist_;
+    std::uniform_real_distribution<double> mag_dist_;
 };
 
 // For this case, we can just use the normal uniform distribution. The boundary of the region will not be included.
@@ -303,6 +142,7 @@ struct unit_circle_distribution<std::complex<T>> {
   private:
     std::uniform_real_distribution<T> mag_dist_, angle_dist_;
 };
+#endif
 
 } // namespace detail
 

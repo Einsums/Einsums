@@ -95,6 +95,33 @@ size_t einsums::hashes::insensitive_hash<std::string>::operator()(std::string co
     return hash;
 }
 
+size_t einsums::hashes::insensitive_hash<char *>::operator()(char const *str) const noexcept {
+    size_t hash = 0;
+
+    // Calculate the mask. If size_t is N bytes, mask for the top N bits.
+    // The first part creates a Mersenne value with the appropriate number of bits.
+    // The second shifts it to the top.
+    constexpr size_t mask = (((size_t)1 << sizeof(size_t)) - 1) << (7 * sizeof(size_t));
+    size_t curr_index = 0;
+
+    while(str[curr_index] != 0) {
+        char upper = std::toupper(str[curr_index]);
+        if (upper == '-') { // Convert dashes to underscores.
+            upper = '_';
+        }
+
+        hash <<= sizeof(size_t); // Shift left a number of bits equal to the number of bytes in size_t.
+        hash += (uint8_t)upper;
+
+        if ((hash & mask) != (size_t)0) {
+            hash ^= mask >> (6 * sizeof(size_t));
+            hash &= ~mask;
+        }
+        curr_index++;
+    }
+    return hash;
+}
+
 void GlobalConfigMap::lock() {
     str_map_->lock();
     int_map_->lock();

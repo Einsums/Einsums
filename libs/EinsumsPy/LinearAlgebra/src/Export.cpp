@@ -30,17 +30,17 @@ using namespace einsums::python::detail;
 
 EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
     py::enum_<einsums::linear_algebra::Norm>(mod, "Norm")
-        .value("MaxAbs", einsums::linear_algebra::Norm::MaxAbs)
-        .value("One", einsums::linear_algebra::Norm::One)
-        .value("Infinity", einsums::linear_algebra::Norm::Infinity)
-        .value("Frobenius", einsums::linear_algebra::Norm::Frobenius)
+        .value("MAXABS", einsums::linear_algebra::Norm::MaxAbs)
+        .value("ONE", einsums::linear_algebra::Norm::One)
+        .value("INFINITY", einsums::linear_algebra::Norm::Infinity)
+        .value("FROBENIUS", einsums::linear_algebra::Norm::Frobenius)
         .export_values();
 
     py::enum_<einsums::linear_algebra::Vectors>(mod, "Vectors")
-        .value("All", einsums::linear_algebra::Vectors::All)
-        .value("Some", einsums::linear_algebra::Vectors::Some)
-        .value("Overwrite", einsums::linear_algebra::Vectors::Overwrite)
-        .value("None", einsums::linear_algebra::Vectors::None)
+        .value("ALL", einsums::linear_algebra::Vectors::All)
+        .value("SOME", einsums::linear_algebra::Vectors::Some)
+        .value("OVERWRITE", einsums::linear_algebra::Vectors::Overwrite)
+        .value("NONE", einsums::linear_algebra::Vectors::None)
         .export_values();
 
     mod.def("sum_square", &sum_square,
@@ -54,31 +54,38 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
              "Matrix vector multiplication. The first argument is whether to transpose the matrix. Then, the scale factor for the inputs. "
              "Then, the matrix, followed by the input vector. Then the scale factor for the output. Finally, the output vector.")
         .def("syev", &syev, "Computes the eigenvectors and eigenvalues of a symmetric or hermitian matrix.")
-        .def("heev", &syev)
-        .def("geev", &geev)
-        .def("gesv", &gesv)
-        .def("scale", &scale)
-        .def("scale_row", &scale_row)
-        .def("scale_column", &scale_column)
-        .def("dot", &dot)
-        .def("true_dot", &true_dot)
-        .def("axpy", &axpy)
-        .def("axpby", &axpby)
-        .def("ger", &ger)
-        .def("getrf", &getrf)
-        .def("getri", &getri)
-        .def("invert", &invert)
-        .def("norm", &norm)
-        .def("vec_norm", &vec_norm)
-        .def("svd", &svd)
-        .def("svd_nullspace", &svd_nullspace)
-        .def("svd_dd", &svd_dd, py::arg("A"), py::arg("job") = einsums::linear_algebra::Vectors::All)
-        .def("truncated_svd", &truncated_svd)
-        .def("truncated_syev", &truncated_syev)
-        .def("pseudoinverse", &pseudoinverse)
-        .def("solve_continuous_lyapunov", &solve_continuous_lyapunov)
-        .def("qr", &qr)
-        .def("q", &q)
-        .def("direct_product", &direct_product)
-        .def("det", &det);
+        .def("heev", &syev, "Computes the eigenvectors and eigenvalues of a symmetric or hermitian matrix.")
+        .def("geev", &geev, "Computes the eigenvalues and eigenvectors of a general matrix.")
+        .def("gesv", &gesv, "Solves a set of linear systems.")
+        .def("scale", &scale, "Scales a tensor.")
+        .def("scale_row", &scale_row, "Scales a row of a matrix.")
+        .def("scale_column", &scale_column, "Scales a column of a matrix.")
+        .def("dot", &dot,
+             "Computes the sum of products of elements. This is the dot product for real inputs, but not the true dot product for complex "
+             "inputs, as the true dot product uses the conjugate of the first tensor.")
+        .def("true_dot", &true_dot,
+             "Computes the true dot product. This means that the complex conjugate of the first tensor will be used. For real inputs, this "
+             "is the same as the other dot product function.")
+        .def("axpy", &axpy, "Scale a tensor and add it to another.")
+        .def("axpby", &axpby, "Scale two tensors and add them together.")
+        .def("ger", &ger, "Perform the rank-1 update.")
+        .def("getrf", &getrf, "Perform the setup for LU decomposition.")
+        .def("extract_plu", &extract_plu, "Extract the permutation, lower triangular, and upper triangular matrices after a call to getrf.")
+        .def("getri", &getri, "Find the matrix inverse after a call to getrf.")
+        .def("invert", &invert, "Compute the matrix inverse. Internally, this calls getrf then getri.")
+        .def("norm", &norm, "Compute the matrix norm.")
+        .def("vec_norm", &vec_norm, "Compute the vector norm.")
+        .def("svd", &svd, "Perform singular value decomposition.")
+        .def("svd_nullspace", &svd_nullspace, "Find the nullspace using singular value decomposition.")
+        .def("svd_dd", &svd_dd, py::arg("A"), py::arg("job") = einsums::linear_algebra::Vectors::All,
+             "Perform singular value decomposition using the divide and conquer algorithm.")
+        .def("truncated_svd", &truncated_svd, "Perform singular value decomposition but ignore some number of small singular values.")
+        .def("truncated_syev", &truncated_syev, "Perform symmetric/hermitian eigendecomposition but ignore some number of small eigenvalues.")
+        .def("pseudoinverse", &pseudoinverse, "Compute the pseudoinverse of a non-invertible matrix.")
+        .def("solve_continuous_lyapunov", &solve_continuous_lyapunov, "Solve a continuous Lyapunov equation.")
+        .def("qr", &qr, "Set up for QR decomposition of a matrix.")
+        .def("q", &q, "Extract the Q matrix after a call to qr.")
+        .def("r", &r, "Extract the R matrix after a call to qr.")
+        .def("direct_product", &direct_product, "Compute the direct product between two tensors.")
+        .def("det", &det, "Compute the matrix determinant.");
 }

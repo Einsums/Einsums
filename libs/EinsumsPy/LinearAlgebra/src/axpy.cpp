@@ -99,7 +99,7 @@ void axpy(pybind11::object const &alpha, pybind11::buffer const &x, pybind11::bu
                                                     (std::complex<double> const *)x_info.ptr, x_stride, (std::complex<double> *)y_info.ptr,
                                                     y_stride);
         } else {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform the dot product on real or complex floating point inputs!");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform the dot product on real or complex floating point inputs!");
         }
     } else {
         recalc_index_strides(&index_strides, easy);
@@ -116,7 +116,7 @@ void axpy(pybind11::object const &alpha, pybind11::buffer const &x, pybind11::bu
             axpy_work<std::complex<double>>(alpha.cast<std::complex<double>>(), x_info, y_info, index_strides, x_strides, y_strides, easy,
                                             easy_elems, hard_elems, x_stride, y_stride);
         } else {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform axpy on real or complex floating point inputs!");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform axpy on real or complex floating point inputs!");
         }
     }
 }
@@ -205,7 +205,7 @@ void axpby(pybind11::object const &alpha, pybind11::buffer const &x, pybind11::o
                                                      (std::complex<double> const *)x_info.ptr, x_stride, beta.cast<std::complex<double>>(),
                                                      (std::complex<double> *)y_info.ptr, y_stride);
         } else {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform the dot product on real or complex floating point inputs!");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform the dot product on real or complex floating point inputs!");
         }
     } else {
         recalc_index_strides(&index_strides, easy);
@@ -222,7 +222,7 @@ void axpby(pybind11::object const &alpha, pybind11::buffer const &x, pybind11::o
             axpby_work<std::complex<double>>(alpha.cast<std::complex<double>>(), x_info, beta.cast<std::complex<double>>(), y_info,
                                              index_strides, x_strides, y_strides, easy, easy_elems, hard_elems, x_stride, y_stride);
         } else {
-            EINSUMS_THROW_EXCEPTION(py::type_error, "Can only perform axpy on real or complex floating point inputs!");
+            EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform axpy on real or complex floating point inputs!");
         }
     }
 }
