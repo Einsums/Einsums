@@ -73,10 +73,11 @@ Names should follow these conventions.
   * ``A.full_view_of_underlying()``
 
 * Private and protected properties in a class should end in a single underscore. However,
-  some code will have them end in a single underscore instead. Some examples.
+  some older code will have them begin in a single underscore instead. Some examples.
 
-  * ``this->dims_``
-  * ``this->_dims``
+  * ``this->dims_``: Preferred.
+  * ``this->_dims``: Sometimes, this will show up. This is discouraged due to the fact that anything that begins
+    with an underscore and a capital letter may eventually be a reserved identifier.
 
 * Variables and parameters should usually be in ``snake_case``. However, to be consistent with
   mathematical notation, tensor variables and parameters are usually capitalized. This includes
@@ -119,7 +120,7 @@ Miscellaneous
     This is fast, but can only be used on certain kinds of tensors, so be careful. It can be used when iterating over
     a tensor's elements in order. If you are skipping around, it is better to use something else for better readability.
   * Using :cpp:func:`sentinel_to_sentinels` and :code:`tensor.data()[index]`. This should be faster than subscripting tensors,
-    but be careful, since it can only be used on certain kinds of tensors. As the previous method, it can be used when iterating
+    but be careful, since it can only be used on certain kinds of tensors. As with the previous method, it can be used when iterating
     over a tensor's elements in order. It is still readable even when skipping around, but it will only work on :cpp:class:`Tensor`s
     and :cpp:class:`TensorView`s.
   * Using :cpp:func:`sentinel_to_indices` and :cpp:func:`subscript_tensor`. This will make the choice between 
@@ -153,7 +154,8 @@ The approach to Python style is to generally follow the standard Python style gu
   
   * ``def set_name(name)``: Bad.
   * ``def set_name(name: str)``: Good.
-  * ``def iterate_elements(param)``: Fine.
+  * ``def iterate_elements(param)``: Fine. ``param`` can be pretty much any type. ``def iterate_elements(param: Any)`` would be preferred,
+    but brevity is sometimes better than verbosity.
 
 * Prefer ``PascalCase`` for type names.
 * Prefer ``snake_case`` for functions, methods, and variables.

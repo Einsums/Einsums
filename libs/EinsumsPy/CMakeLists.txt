@@ -14,6 +14,7 @@ set(_EinsumsPy_modules
   Core
   Errors
   GPU
+  LinearAlgebra
   Tensor
   TensorAlgebra
   TestUtils

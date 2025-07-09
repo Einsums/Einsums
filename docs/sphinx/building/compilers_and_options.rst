@@ -86,3 +86,14 @@ guaranteed to work.
 
 See :ref:`the page on CMake variables <cmake_variables>` for a list of options that can be passed to
 CMake when configuring.
+
+Building for GPU
+================
+
+When building for GPU, special steps need to be taken. First, set the ``-DEINSUMS_WITH_HIP=ON`` or ``-DEINSUMS_WITH_CUDA=ON`` flag
+to enable GPU compilation. Then, a HIP-compatible compiler must be specified. AMD's fork of Clang that comes with HIP is a good
+choice. Then, in order for CMake to find the appropriate libraries, ``-DCMAKE_HIP_COMPILER_ROCM_ROOT`` needs to be set to
+the root directory of the ROCm installation. On Linux, this is often ``/opt/rocm``. Since this flag has a long name, 
+Einsums provides an alias: ``-DHIP_ROCM_ROOT``. You may set either one and the other will be populated. Then, simply configure
+and build. If you get configuration errors about being unable to find certain HIP/ROCm libraries, simply set the variables that
+CMake is asking for. The CMake files can be found under ``${HIP_ROCM_ROOT}/lib/cmake``.

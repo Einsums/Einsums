@@ -31,12 +31,12 @@
 
 #pragma once
 
-#include <Einsums/HPTT/HPTTTypes.hpp>
-
 #include <cstdint>
 #include <iostream>
 #include <list>
 #include <vector>
+
+#include "HPTTTypes.hpp"
 
 namespace hptt {
 
@@ -93,7 +93,7 @@ constexpr inline double getZeroThreshold<FloatComplex>() {
 /**
  * @todo Figure this out.
  */
-void trashCache(double *A, double *B, int n);
+void trashCache(double *A, double *B, size_t n);
 
 /**
  * Check whether a vector contains an item.
@@ -188,7 +188,7 @@ std::uint64_t factorial(std::uint8_t n);
 /**
  * Reorders parameters to swap between row-major and column-major forms.
  */
-void accountForRowMajor(int const *sizeA, int const *outerSizeA, int const *outerSizeB, int const *offsetA, int const *offsetB,
-                        int const *perm, int *tmpSizeA, int *tmpOuterSizeA, int *tmpouterSizeB, int *tmpOffsetA, int *tmpOffsetB,
-                        int *tmpPerm, int const dim, bool const useRowMajor);
+void accountForRowMajor(size_t const *sizeA, size_t const *outerSizeA, size_t const *outerSizeB, size_t const *offsetA,
+                        size_t const *offsetB, int const *perm, size_t *tmpSizeA, size_t *tmpOuterSizeA, size_t *tmpouterSizeB,
+                        size_t *tmpOffsetA, size_t *tmpOffsetB, int *tmpPerm, int const dim, bool const useRowMajor);
 } // namespace hptt

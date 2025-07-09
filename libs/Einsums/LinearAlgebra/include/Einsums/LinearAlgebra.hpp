@@ -689,7 +689,7 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
     zero(S);
     auto V = create_tensor<T>("V", n, n);
     zero(V);
-    auto superb = create_tensor<T>("superb", std::min(m, n) - 2);
+    auto superb = create_tensor<T>("superb", std::min(m, n));
 
     int info = blas::gesvd('N', 'A', m, n, A.data(), lda, S.data(), U.data(), m, V.data(), n, superb.data());
 
@@ -758,10 +758,10 @@ auto svd_dd(AType const &_A, Vectors job = Vectors::All)
 
     if (info != 0) {
         if (info < 0) {
-            println_abort("svd_a: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
-                          m);
+            println_abort("svd_dd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n,
+                          n, m);
         } else {
-            println_abort("svd_a: error value {}", info);
+            println_abort("svd_dd: error value {}", info);
         }
     }
 
@@ -865,7 +865,7 @@ template <MatrixConcept AType, typename T>
 inline auto pseudoinverse(AType const &A, T tol) -> Tensor<T, 2> {
     LabeledSection0();
 
-    auto [U, S, Vh] = svd_a(A);
+    auto [U, S, Vh] = svd_dd(A);
 
     size_t new_dim{0};
     for (size_t v = 0; v < S.dim(0); v++) {
@@ -973,7 +973,13 @@ auto q(AType const &qr, TauType const &tau) -> Tensor<typename AType::ValueType,
 
     Tensor<T, 2> Q = qr;
 
-    blas::int_t info = blas::orgqr(m, m, p, Q.data(), m, tau.data());
+    blas::int_t info;
+    if constexpr (!IsComplexV<T>) {
+
+        info = blas::orgqr(m, m, p, Q.data(), m, tau.data());
+    } else {
+        info = blas::ungqr(m, m, p, Q.data(), m, tau.data());
+    }
     if (info != 0) {
         println_abort("{} parameter to orgqr has an illegal value. {} {} {}", -info, m, m, p);
     }
@@ -1012,24 +1018,9 @@ typename AType::ValueType det(AType const &A) {
     int parity = 0;
 
     // Calculate the effect of the pivots.
-#pragma omp parallel for simd reduction(+ : parity)
     for (int i = 0; i < A.dim(0); i++) {
-        int         temp_parity = 0;
-        blas::int_t curr        = pivots.at(i);
-
-        bool skip = false;
-
-        while (curr != i + 1) {
-            if (curr < i + 1) {
-                skip = true;
-                break;
-            }
-            temp_parity++;
-            curr = pivots.at(curr - 1);
-        }
-
-        if (!skip) {
-            parity += temp_parity;
+        if (pivots[i] != i + 1) {
+            parity++;
         }
     }
 

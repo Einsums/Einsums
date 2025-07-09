@@ -712,10 +712,14 @@ auto EINSUMS_EXPORT sgesvd(char jobu, char jobvt, int_t m, int_t n, float *a, in
                            int_t ldvt, float *superb) -> int_t;
 auto EINSUMS_EXPORT dgesvd(char jobu, char jobvt, int_t m, int_t n, double *a, int_t lda, double *s, double *u, int_t ldu, double *vt,
                            int_t ldvt, double *superb) -> int_t;
+auto EINSUMS_EXPORT cgesvd(char jobu, char jobvt, int_t m, int_t n, std::complex<float> *a, int_t lda, float *s, std::complex<float> *u,
+                           int_t ldu, std::complex<float> *vt, int_t ldvt, std::complex<float> *superb) -> int_t;
+auto EINSUMS_EXPORT zgesvd(char jobu, char jobvt, int_t m, int_t n, std::complex<double> *a, int_t lda, double *s, std::complex<double> *u,
+                           int_t ldu, std::complex<double> *vt, int_t ldvt, std::complex<double> *superb) -> int_t;
 } // namespace detail
 
 template <typename T>
-auto gesvd(char jobu, char jobvt, int_t m, int_t n, T *a, int_t lda, T *s, T *u, int_t ldu, T *vt, int_t ldvt, T *superb);
+auto gesvd(char jobu, char jobvt, int_t m, int_t n, T *a, int_t lda, RemoveComplexT<T> *s, T *u, int_t ldu, T *vt, int_t ldvt, T *superb);
 
 template <>
 inline auto gesvd<float>(char jobu, char jobvt, int_t m, int_t n, float *a, int_t lda, float *s, float *u, int_t ldu, float *vt, int_t ldvt,
@@ -729,9 +733,25 @@ inline auto gesvd<double>(char jobu, char jobvt, int_t m, int_t n, double *a, in
     return detail::dgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
 }
 
+template <>
+inline auto gesvd<std::complex<float>>(char jobu, char jobvt, int_t m, int_t n, std::complex<float> *a, int_t lda, float *s,
+                                       std::complex<float> *u, int_t ldu, std::complex<float> *vt, int_t ldvt,
+                                       std::complex<float> *superb) {
+    return detail::cgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+}
+
+template <>
+inline auto gesvd<std::complex<double>>(char jobu, char jobvt, int_t m, int_t n, std::complex<double> *a, int_t lda, double *s,
+                                        std::complex<double> *u, int_t ldu, std::complex<double> *vt, int_t ldvt,
+                                        std::complex<double> *superb) {
+    return detail::zgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+}
+
 namespace detail {
 auto EINSUMS_EXPORT sgees(char jobvs, int_t n, float *a, int_t lda, int_t *sdim, float *wr, float *wi, float *vs, int_t ldvs) -> int_t;
 auto EINSUMS_EXPORT dgees(char jobvs, int_t n, double *a, int_t lda, int_t *sdim, double *wr, double *wi, double *vs, int_t ldvs) -> int_t;
+auto EINSUMS_EXPORT cgees(char jobvs, int_t n, std::complex<float> *a, int_t lda, int_t *sdim, std::complex<float> *w, std::complex<float> *vs, int_t ldvs) -> int_t;
+auto EINSUMS_EXPORT zgees(char jobvs, int_t n, std::complex<double> *a, int_t lda, int_t *sdim, std::complex<double> *w, std::complex<double> *vs, int_t ldvs) -> int_t;
 } // namespace detail
 
 /*!
@@ -749,6 +769,19 @@ inline auto gees<float>(char jobvs, int_t n, float *a, int_t lda, int_t *sdim, f
 template <>
 inline auto gees<double>(char jobvs, int_t n, double *a, int_t lda, int_t *sdim, double *wr, double *wi, double *vs, int_t ldvs) -> int_t {
     return detail::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
+}
+
+template <typename T>
+auto gees(char jobvs, int_t n, T *a, int_t lda, int_t *sdim, T *w, T *vs, int_t ldvs) -> int_t;
+
+template <>
+inline auto gees<std::complex<float>>(char jobvs, int_t n, std::complex<float> *a, int_t lda, int_t *sdim, std::complex<float> *w, std::complex<float> *vs, int_t ldvs) -> int_t {
+    return detail::cgees(jobvs, n, a, lda, sdim, w, vs, ldvs);
+}
+
+template <>
+inline auto gees<std::complex<double>>(char jobvs, int_t n, std::complex<double> *a, int_t lda, int_t *sdim, std::complex<double> *w, std::complex<double> *vs, int_t ldvs) -> int_t {
+    return detail::zgees(jobvs, n, a, lda, sdim, w, vs, ldvs);
 }
 
 namespace detail {

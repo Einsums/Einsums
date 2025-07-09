@@ -96,7 +96,7 @@ This becomes the following code.
 
     // Compute the antisymmetrized two-electron integrals.
     Tensor TEI_antisym = TEI;
-    permute(1.0, index::Indices{index::p, index::q, index::r, index::s}, &TEI_antisym, -1.0, index::Indices{index::p, index::q, index::s, index::r} TEI);
+    permute(1.0, index::Indices{index::p, index::q, index::r, index::s}, &TEI_antisym, -1.0, index::Indices{index::p, index::q, index::s, index::r}, TEI);
 
     // Computing each term.
     TensorView Fia = F(Range{0, n_occ}, Range{n_occ, n_orbs});
@@ -146,7 +146,7 @@ The benchmark was performed on a system with the following specifications.
 |                         +------------------+------------------------+
 |                         | Operating System | Debian Bookworm        |
 |                         +------------------+------------------------+
-|                         | Einsums Version  | 1.0-pre                |
+|                         | Einsums Version  | 1.1-pre                |
 |                         +------------------+------------------------+
 |                         | C++ Compiler     | Clang 19.7.1           |
 |                         +------------------+------------------------+
@@ -203,7 +203,6 @@ The following is not supported, but may be supported in the future.
   it will use the generic algorithm rather than transpose indices until it can optimize the call.
 * Most simple arithmetic does not work on :cpp:class:`BlockTensor`, :cpp:class:`TiledTensor`, :cpp:class:`FunctionTensor`,
   or any tensor for the GPU.
-* The Python module does not have any exposed linear algebra routines. This will be fixed in the future.
 * The Python module only supports contiguous tensors. It does not support block-sparse tensors, function tensors, or others.
 * The Python module interacts with Einsums in a completely different way than C++. Be careful of pitfalls when working with
   interoperable code.

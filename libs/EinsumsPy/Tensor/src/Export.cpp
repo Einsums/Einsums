@@ -4,6 +4,7 @@
 //----------------------------------------------------------------------------------------------
 
 #include <EinsumsPy/Tensor/PyTensor.hpp>
+#include <EinsumsPy/Tensor/TensorExport.hpp>
 #include <complex>
 #include <pybind11/pybind11.h>
 

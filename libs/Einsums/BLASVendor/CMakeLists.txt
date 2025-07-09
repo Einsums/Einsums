@@ -41,6 +41,6 @@ einsums_add_module(
   SOURCES ${BLASVendorSources}
   HEADERS ${BLASVendorHeaders}
   DEPENDENCIES tgt::lapack
-  MODULE_DEPENDENCIES Einsums_Config Einsums_Print Einsums_Profile Einsums_BLASBase
+  MODULE_DEPENDENCIES Einsums_Assertion Einsums_Config Einsums_Print Einsums_Profile Einsums_BLASBase Einsums_HPTT
   CMAKE_SUBDIRS examples tests
 )

@@ -16,9 +16,17 @@ details.
 Public Symbols
 --------------
 
-Most symbols in this module are private. However, there is one that may be of use to users.
+Most symbols in this module are private. However, there are some that may be useful to the user.
 
 .. c:macro:: EINSUMS_COMPUTE_CODE
 
     This macro is only defined when Einsums is built with GPU capabilities. It is an easy way
     to determine when GPU support is available.
+
+.. c:macro:: EINSUMS_OMP_PARALLEL_FOR
+
+    This macro marks a loop as being parallelizable
+
+.. cpp:class:: GlobalConfigMap
+
+    Contains the mappings for all of the options passed to Einsums.

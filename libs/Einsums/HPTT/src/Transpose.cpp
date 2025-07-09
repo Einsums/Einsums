@@ -56,28 +56,34 @@
 
 namespace hptt {
 
-template <typename floatType, int betaIsZero, bool conjA>
+template <typename floatType, bool betaIsZero, bool conjA>
 struct micro_kernel {
-    static void execute(floatType const *A, size_t const lda, const size_t innerStrideA, floatType *B, size_t const ldb,
-                        const size_t innerStrideB, floatType const alpha, floatType const beta) {
-        constexpr int n = (REGISTER_BITS / 8) / sizeof(floatType);
+    static void execute(floatType const *A, size_t const lda, size_t const innerStrideA, floatType *B, size_t const ldb,
+                        size_t const innerStrideB, floatType const alpha, floatType const beta) {
+        constexpr size_t n = (REGISTER_BITS / 8) / sizeof(floatType);
 
-        if (betaIsZero)
-            for (int j = 0; j < n; ++j)
-                for (int i = 0; i < n; ++i)
-                    if (conjA)
+        if constexpr (betaIsZero) {
+            for (size_t j = 0; j < n; ++j) {
+                for (size_t i = 0; i < n; ++i) {
+                    if constexpr (conjA)
                         B[(i * innerStrideB) + (j * ldb)] = alpha * conj(A[(j * innerStrideA) + (lda * i)]);
                     else
                         B[(i * innerStrideB) + (j * ldb)] = alpha * A[(j * innerStrideA) + (lda * i)];
-        else
-            for (int j = 0; j < n; ++j)
-                for (int i = 0; i < n; ++i)
-                    if (conjA)
+                }
+            }
+        } else {
+            for (size_t j = 0; j < n; ++j) {
+                for (size_t i = 0; i < n; ++i) {
+                    if constexpr (conjA) {
                         B[(i * innerStrideB) + (j * ldb)] =
                             alpha * conj(A[(j * innerStrideA) + (lda * i)]) + beta * B[(i * innerStrideB) + (j * ldb)];
-                    else
+                    } else {
                         B[(i * innerStrideB) + (j * ldb)] =
                             alpha * A[(j * innerStrideA) + (lda * i)] + beta * B[(i * innerStrideB) + (j * ldb)];
+                    }
+                }
+            }
+        }
     }
 };
 
@@ -92,15 +98,15 @@ static void streamingStore(floatType *out, floatType const *in) {
 #    include <immintrin.h>
 
 template <typename floatType>
-static INLINE void prefetch(floatType const *A, int const lda) {
-    constexpr int blocking_micro_ = REGISTER_BITS / 8 / sizeof(floatType);
-    for (int i = 0; i < blocking_micro_; ++i)
+static INLINE void prefetch(floatType const *A, size_t const lda) {
+    constexpr size_t blocking_micro_ = REGISTER_BITS / 8 / sizeof(floatType);
+    for (size_t i = 0; i < blocking_micro_; ++i)
         _mm_prefetch((char *)(A + i * lda), _MM_HINT_T2);
 }
-template <int betaIsZero, bool conjA>
+template <bool betaIsZero, bool conjA>
 struct micro_kernel<double, betaIsZero, conjA> {
-    static void execute(double const *A, size_t const lda, const size_t innerStrideA, double *B, size_t const ldb,
-                        const size_t innerStrideB, double const alpha, double const beta) {
+    static void execute(double const *A, size_t const lda, size_t const innerStrideA, double *B, size_t const ldb,
+                        size_t const innerStrideB, double const alpha, double const beta) {
         __m256d reg_alpha = _mm256_set1_pd(alpha); // do not alter the content of B
         __m256d reg_beta  = _mm256_set1_pd(beta);  // do not alter the content of B
                                                    // Load A
@@ -138,7 +144,7 @@ struct micro_kernel<double, betaIsZero, conjA> {
         rowA3 = _mm256_mul_pd(rowA3, reg_alpha);
 
         // Load B
-        if (!betaIsZero) {
+        if constexpr (!betaIsZero) {
             __m256d rowB0, rowB1, rowB2, rowB3;
             __m256i indicesB;
             if (innerStrideB != 1) {
@@ -190,7 +196,7 @@ struct micro_kernel<double, betaIsZero, conjA> {
     }
 };
 
-template <int betaIsZero, bool conjA>
+template <bool betaIsZero, bool conjA>
 struct micro_kernel<float, betaIsZero, conjA> {
     static void execute(float const *A, size_t const lda, float *B, size_t const ldb, float const alpha, float const beta) {
         __m256 reg_alpha = _mm256_set1_ps(alpha); // do not alter the content of B
@@ -347,16 +353,16 @@ void streamingStore<double>(double *out, double const *in) {
 }
 #else
 template <typename floatType>
-static INLINE void prefetch(floatType const *A, int const lda) {
+static INLINE void prefetch(floatType const *A, size_t const lda) {
 }
 #endif
 
 #ifdef __aarch64__
 #    include <arm_neon.h>
 
-template <int betaIsZero, bool conjA>
+template <bool betaIsZero, bool conjA>
 struct micro_kernel<float, betaIsZero, conjA> {
-    static void execute(float const *A, size_t const lda, const size_t innerStrideA, float *B, size_t const ldb, const size_t innerStrideB,
+    static void execute(float const *A, size_t const lda, size_t const innerStrideA, float *B, size_t const ldb, size_t const innerStrideB,
                         float const alpha, float const beta) {
         float32x4_t reg_alpha = vdupq_n_f32(alpha);
         float32x4_t reg_beta  = vdupq_n_f32(beta);
@@ -424,7 +430,7 @@ struct micro_kernel<float, betaIsZero, conjA> {
         rowA3 = vmulq_f32(t3.val[1], reg_alpha);
 
         // Load B
-        if (!betaIsZero) {
+        if constexpr (!betaIsZero) {
             float32x4_t rowB0, rowB1, rowB2, rowB3;
             if (innerStrideB == 1) {
                 rowB0 = vld1q_f32((B + 0 * ldb));
@@ -486,18 +492,22 @@ struct micro_kernel<float, betaIsZero, conjA> {
             } else {
                 float tmp[4];
                 vst1q_f32(tmp, rowB0);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB] = tmp[i];
                 }
                 vst1q_f32(tmp, rowB1);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 1 * ldb] = tmp[i];
                 }
                 vst1q_f32(tmp, rowB2);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 2 * ldb] = tmp[i];
                 }
                 vst1q_f32(tmp, rowB3);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 3 * ldb] = tmp[i];
                 }
@@ -512,18 +522,22 @@ struct micro_kernel<float, betaIsZero, conjA> {
             } else {
                 float tmp[4];
                 vst1q_f32(tmp, rowA0);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB] = tmp[i];
                 }
                 vst1q_f32(tmp, rowA1);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 1 * ldb] = tmp[i];
                 }
                 vst1q_f32(tmp, rowA2);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 2 * ldb] = tmp[i];
                 }
                 vst1q_f32(tmp, rowA3);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 3 * ldb] = tmp[i];
                 }
@@ -602,23 +616,24 @@ struct micro_kernel<float, betaIsZero, conjA> {
 // };
 #endif
 
-template <int betaIsZero, typename floatType, bool conjA>
+template <bool betaIsZero, typename floatType, bool conjA>
 static INLINE void macro_kernel_scalar(floatType const *A, const size_t lda, int blockingA, size_t innerStrideA, floatType *B,
                                        const size_t ldb, int blockingB, size_t innerStrideB, const floatType alpha, const floatType beta) {
 #ifdef DEBUG
     assert(blockingA > 0 && blockingB > 0);
 #endif
 
-    if (betaIsZero)
-        for (int j = 0; j < blockingA; ++j)
+    if constexpr (betaIsZero) {
+        for (int j = 0; j < blockingA; ++j) {
             for (int i = 0; i < blockingB; ++i) {
                 if (conjA)
                     B[(i * innerStrideB) + (j * ldb)] = alpha * conj(A[(i * lda) + (j * innerStrideA)]);
                 else
                     B[(i * innerStrideB) + (j * ldb)] = alpha * A[(i * lda) + (j * innerStrideA)];
             }
-    else
-        for (int j = 0; j < blockingA; ++j)
+        }
+    } else {
+        for (int j = 0; j < blockingA; ++j) {
             for (int i = 0; i < blockingB; ++i) {
                 if (conjA)
                     B[(i * innerStrideB) + (j * ldb)] =
@@ -627,9 +642,11 @@ static INLINE void macro_kernel_scalar(floatType const *A, const size_t lda, int
                     B[(i * innerStrideB) + (j * ldb)] =
                         alpha * A[(i * lda) + (j * innerStrideA)] + beta * B[(i * innerStrideB) + (j * ldb)];
             }
+        }
+    }
 }
 
-template <int blockingA, int blockingB, int betaIsZero, typename floatType, bool useStreamingStores_, bool conjA>
+template <int blockingA, int blockingB, bool betaIsZero, typename floatType, bool useStreamingStores_, bool conjA>
 static INLINE void macro_kernel(floatType const *A, floatType const *Anext, size_t const lda, size_t innerStrideA, floatType *B,
                                 floatType const *Bnext, size_t const ldb, size_t innerStrideB, floatType const alpha,
                                 floatType const beta) {
@@ -647,7 +664,7 @@ static INLINE void macro_kernel(floatType const *A, floatType const *Anext, size
         ldb_tmp = blockingB;
     }
 
-    if (blockingA == blocking_ && blockingB == blocking_) {
+    if constexpr (blockingA == blocking_ && blockingB == blocking_) {
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (0 * ldb_tmp + 0), ldb_tmp);
         if (innerStrideA == 1)
@@ -727,7 +744,7 @@ static INLINE void macro_kernel(floatType const *A, floatType const *Anext, size
         micro_kernel<floatType, betaIsZero, conjA>::execute(
             A + (3 * blocking_micro_ * lda + (innerStrideA * 3 * blocking_micro_)), lda, innerStrideA,
             Btmp + (3 * blocking_micro_ * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
-    } else if (blockingA == 2 * blocking_micro_ && blockingB == blocking_) {
+    } else if constexpr (blockingA == 2 * blocking_micro_ && blockingB == blocking_) {
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (0 * ldb_tmp + 0), ldb_tmp);
         if (innerStrideA == 1)
@@ -767,7 +784,7 @@ static INLINE void macro_kernel(floatType const *A, floatType const *Anext, size
         micro_kernel<floatType, betaIsZero, conjA>::execute(
             A + (3 * blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
             Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
-    } else if (blockingA == blocking_ && blockingB == 2 * blocking_micro_) {
+    } else if constexpr (blockingA == blocking_ && blockingB == 2 * blocking_micro_) {
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (0 * ldb_tmp + 0), ldb_tmp);
         if (innerStrideA == 1)
@@ -899,23 +916,24 @@ static INLINE void macro_kernel(floatType const *A, floatType const *Anext, size
     }
 
     // write buffer to main-memory via non-temporal stores
-    if ((useStreamingStores_ && useStreamingStores && innerStrideB == 1))
+    if ((useStreamingStores_ && useStreamingStores && innerStrideB == 1)) {
         for (int i = 0; i < blockingA; i++) {
             for (int j = 0; j < blockingB; j += blocking_micro_)
                 streamingStore<floatType>(B + i * ldb + j, buffer + i * ldb_tmp + j);
         }
+    }
 }
 
-template <int betaIsZero, typename floatType, bool conjA>
-void transpose_int_scalar(floatType const *A, int sizeStride1A, size_t innerStrideA, floatType *B, int sizeStride1B, size_t innerStrideB,
-                          floatType const alpha, floatType const beta, ComputeNode const *plan) {
-    int32_t const end       = plan->end;
-    size_t const  lda       = plan->lda;
-    size_t const  ldb       = plan->ldb;
-    int32_t const offDiffAB = plan->offDiffAB;
+template <bool betaIsZero, typename floatType, bool conjA>
+void transpose_int_scalar(floatType const *A, size_t sizeStride1A, size_t innerStrideA, floatType *B, size_t sizeStride1B,
+                          size_t innerStrideB, floatType const alpha, floatType const beta, ComputeNode const *plan) {
+    ptrdiff_t const    end       = plan->end;
+    size_t const    lda       = plan->lda;
+    size_t const    ldb       = plan->ldb;
+    ptrdiff_t const offDiffAB = plan->offDiffAB;
     if (plan->next->next != nullptr) {
         // recurse
-        int i = plan->start;
+        ptrdiff_t i = plan->start;
         if (plan->indexA)
             transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], end - plan->start, innerStrideA, &B[i * ldb],
                                                                sizeStride1B, innerStrideB, alpha, beta, plan->next);
@@ -930,8 +948,8 @@ void transpose_int_scalar(floatType const *A, int sizeStride1A, size_t innerStri
         // macro-kernel
         size_t const lda_macro       = plan->next->lda;
         size_t const ldb_macro       = plan->next->ldb;
-        int          i               = plan->start;
-        size_t const scalarRemainder = plan->end - plan->start;
+        ptrdiff_t       i               = plan->start;
+        ptrdiff_t const scalarRemainder = plan->end - plan->start;
         if (scalarRemainder > 0) {
             if (lda == 1)
                 macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, scalarRemainder, innerStrideA,
@@ -946,11 +964,11 @@ void transpose_int_scalar(floatType const *A, int sizeStride1A, size_t innerStri
         }
     }
 }
-template <int blockingA, int blockingB, int betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
+template <int blockingA, int blockingB, bool betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
 void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrideA, floatType *B, floatType const *Bnext,
                    size_t innerStrideB, floatType const alpha, floatType const beta, ComputeNode const *plan) {
-    int32_t const end       = plan->end - (plan->inc - 1);
-    int32_t const inc       = plan->inc;
+    ptrdiff_t const  end       = plan->end - (plan->inc - 1);
+    ptrdiff_t const  inc       = plan->inc;
     size_t const  lda       = plan->lda;
     size_t const  ldb       = plan->ldb;
     int32_t const offDiffAB = plan->offDiffAB;
@@ -960,7 +978,7 @@ void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrid
 
     if (plan->next->next != nullptr) {
         // recurse
-        int32_t i;
+        ptrdiff_t i;
         for (i = plan->start; i < end; i += inc) {
             if (i + inc < end)
                 transpose_int<blockingA, blockingB, betaIsZero, floatType, useStreamingStores, conjA>(
@@ -993,7 +1011,7 @@ void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrid
                     &A[(i + offDiffAB) * lda], Anext, innerStrideA, &B[i * ldb], Bnext, innerStrideB, alpha, beta, plan->next);
             i += blocking_ / 4;
         }
-        size_t const scalarRemainder = plan->end - i;
+        ptrdiff_t const scalarRemainder = plan->end - i;
         if (scalarRemainder > 0) {
             if (plan->indexA)
                 transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], scalarRemainder, innerStrideA, &B[i * ldb],
@@ -1010,7 +1028,7 @@ void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrid
         size_t const ldb_macro = plan->next->ldb;
         // invoke macro-kernel
 
-        int32_t i;
+        ptrdiff_t i;
         for (i = plan->start; i < end; i += inc)
             if (i + inc < end)
                 macro_kernel<blockingA, blockingB, betaIsZero, floatType, useStreamingStores, conjA>(
@@ -1038,7 +1056,7 @@ void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrid
                     &A[(i + offDiffAB) * lda], Anext, lda_macro, innerStrideA, &B[i * ldb], Bnext, ldb_macro, innerStrideB, alpha, beta);
             i += blocking_ / 4;
         }
-        size_t const scalarRemainder = plan->end - i;
+        ptrdiff_t const scalarRemainder = plan->end - i;
         if (scalarRemainder > 0) {
             if (plan->indexA)
                 macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, scalarRemainder, innerStrideA,
@@ -1053,58 +1071,67 @@ void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrid
     }
 }
 
-template <int betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
+template <bool betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
 void transpose_int_constStride1(floatType const *A, floatType *B, floatType const alpha, floatType const beta, ComputeNode const *plan) {
-    int32_t const end = plan->end - (plan->inc - 1);
+    ptrdiff_t const end = plan->end - (plan->inc - 1);
     /// @todo Fix code.
-    constexpr int32_t inc       = 1;
+    constexpr ptrdiff_t inc       = 1;
     size_t const      lda       = plan->lda;
     size_t const      ldb       = plan->ldb;
-    int32_t const     offDiffAB = plan->offDiffAB;
+    ptrdiff_t const   offDiffAB = plan->offDiffAB;
 
-    if (plan->next != nullptr)
-        for (int i = plan->start; i < end; i += inc)
+    if (plan->next != nullptr) {
+        for (ptrdiff_t i = plan->start; i < end; i += inc) {
             // recurse
             transpose_int_constStride1<betaIsZero, floatType, useStreamingStores, conjA>(&A[(i + offDiffAB) * lda], &B[i * ldb], alpha,
                                                                                          beta, plan->next);
-    else if (!betaIsZero) {
-        for (int32_t i = plan->start; i < end; i += inc)
-            if (conjA)
+        }
+    } else if constexpr (!betaIsZero) {
+        for (ptrdiff_t i = plan->start; i < end; i += inc) {
+            if constexpr (conjA)
                 B[i * ldb] = alpha * conj(A[(i + offDiffAB) * lda]) + beta * B[i * ldb];
             else
                 B[i * ldb] = alpha * A[(i + offDiffAB) * lda] + beta * B[i * ldb];
+        }
     } else {
-        if (useStreamingStores)
-            if (conjA)
+        if constexpr (useStreamingStores) {
+            if constexpr (conjA) {
 #pragma vector nontemporal
-                for (int32_t i = plan->start; i < end; i += inc)
+                for (ptrdiff_t i = plan->start; i < end; i += inc) {
                     B[i * ldb] = alpha * conj(A[(i + offDiffAB) * lda]);
-            else
+                }
+            } else {
 #pragma vector nontemporal
-                for (int32_t i = plan->start; i < end; i += inc)
+                for (ptrdiff_t i = plan->start; i < end; i += inc) {
                     B[i * ldb] = alpha * A[(i + offDiffAB) * lda];
-        else if (conjA)
-            for (int32_t i = plan->start; i < end; i += inc)
+                }
+            }
+        } else if constexpr (conjA) {
+            for (ptrdiff_t i = plan->start; i < end; i += inc) {
                 B[i * ldb] = alpha * conj(A[(i + offDiffAB) * lda]);
-        else
-            for (int32_t i = plan->start; i < end; i += inc)
+            }
+        } else {
+            for (ptrdiff_t i = plan->start; i < end; i += inc) {
                 B[i * ldb] = alpha * A[(i + offDiffAB) * lda];
+            }
+        }
     }
 }
 
 template <typename floatType>
-Transpose<floatType>::Transpose(int const *sizeA, int const *perm, int const *outerSizeA, int const *outerSizeB, int const *offsetA,
-                                int const *offsetB, const size_t innerStrideA, const size_t innerStrideB, int const dim, floatType const *A,
-                                floatType const alpha, floatType *B, floatType const beta, SelectionMethod const selectionMethod,
-                                int const numThreads, int const *threadIds, bool const useRowMajor)
-    : A_(A), B_(B), alpha_(alpha), beta_(beta), dim_(-1), innerStrideA_(-1), innerStrideB_(-1), numThreads_(numThreads),
-      masterPlan_(nullptr), selectionMethod_(selectionMethod), maxAutotuningCandidates_(-1), selectedParallelStrategyId_(-1),
-      selectedLoopOrderId_(-1), conjA_(false) {
+Transpose<floatType>::Transpose(size_t const *sizeA, int const *perm, size_t const *outerSizeA, size_t const *outerSizeB,
+                                size_t const *offsetA, size_t const *offsetB, size_t const innerStrideA, size_t const innerStrideB,
+                                int const dim, floatType const *A, floatType const alpha, floatType *B, floatType const beta,
+                                SelectionMethod const selectionMethod, int const numThreads, int const *threadIds, bool const useRowMajor)
+    : A_(A), B_(B), alpha_(alpha), beta_(beta), dim_(-1), innerStrideA_(0), innerStrideB_(0), numThreads_(numThreads), masterPlan_(nullptr),
+      selectionMethod_(selectionMethod), maxAutotuningCandidates_(-1), selectedParallelStrategyId_(-1), selectedLoopOrderId_(-1),
+      conjA_(false) {
 #ifdef _OPENMP
     omp_init_lock(&writelock);
 #endif
 
-    std::vector<int> tmpPerm(dim), tmpSizeA(dim), tmpOuterSizeA(dim), tmpOuterSizeB(dim), tmpOffsetA(dim), tmpOffsetB(dim);
+    std::vector<int>    tmpPerm(dim);
+    std::vector<size_t> tmpSizeA(dim), tmpOuterSizeA(dim), tmpOuterSizeB(dim), tmpOffsetA(dim), tmpOffsetB(dim);
 
     accountForRowMajor(sizeA, outerSizeA, outerSizeB, offsetA, offsetB, perm, tmpSizeA.data(), tmpOuterSizeA.data(), tmpOuterSizeB.data(),
                        tmpOffsetA.data(), tmpOffsetB.data(), tmpPerm.data(), dim, useRowMajor);
@@ -1212,46 +1239,46 @@ void Transpose<floatType>::executeEstimate(Plan const *plan) noexcept {
         }
 }
 
-template <int betaIsZero, typename floatType, bool useStreamingStores, bool spawnThreads, bool conjA>
-static void axpy_1D(floatType const *A, floatType *B, int const myStart, int const myEnd, int const &offDiffAB_, const size_t lda,
-                    const size_t ldb, floatType const alpha, floatType const beta, int numThreads) {
-    if (!betaIsZero) {
-        HPTT_DUPLICATE(spawnThreads, for (int32_t i = myStart; i < myEnd; i++) if (conjA) B[i * ldb] =
+template <bool betaIsZero, typename floatType, bool useStreamingStores, bool spawnThreads, bool conjA>
+static void axpy_1D(floatType const *A, floatType *B, size_t const myStart, size_t const myEnd, ptrdiff_t const offDiffAB_,
+                    size_t const lda, size_t const ldb, floatType const alpha, floatType const beta, int numThreads) {
+    if constexpr (!betaIsZero) {
+        HPTT_DUPLICATE(spawnThreads, for (size_t i = myStart; i < myEnd; i++) if (conjA) B[i * ldb] =
                                          alpha * conj(A[(i + offDiffAB_) * lda]) + beta * B[i * ldb];
                        else B[i * ldb] = alpha * A[(i + offDiffAB_) * lda] + beta * B[i * ldb];)
     } else {
-        if (useStreamingStores)
-            HPTT_DUPLICATE(spawnThreads,
-                           for (int32_t i = myStart; i < myEnd; i++) if (conjA) B[i * ldb] = alpha * conj(A[(i + offDiffAB_) * lda]);
-                           else B[i * ldb]                                                 = alpha * A[(i + offDiffAB_) * lda];)
+        if constexpr (useStreamingStores)
+            HPTT_DUPLICATE(spawnThreads, for (size_t i = myStart; i < myEnd; i++) if constexpr (conjA) B[i * ldb] =
+                                             alpha * conj(A[(i + offDiffAB_) * lda]);
+                           else B[i * ldb] = alpha * A[(i + offDiffAB_) * lda];)
         else
-            HPTT_DUPLICATE(spawnThreads,
-                           for (int32_t i = myStart; i < myEnd; i++) if (conjA) B[i * ldb] = alpha * conj(A[(i + offDiffAB_) * lda]);
-                           else B[i * ldb]                                                 = alpha * A[(i + offDiffAB_) * lda];)
+            HPTT_DUPLICATE(spawnThreads, for (size_t i = myStart; i < myEnd; i++) if constexpr (conjA) B[i * ldb] =
+                                             alpha * conj(A[(i + offDiffAB_) * lda]);
+                           else B[i * ldb] = alpha * A[(i + offDiffAB_) * lda];)
     }
 }
 
-template <int betaIsZero, typename floatType, bool useStreamingStores, bool spawnThreads, bool conjA>
-static void axpy_2D(floatType const *A, size_t const (&lda)[2], floatType *B, size_t const (&ldb)[2], int const n0, int const myStart,
-                    int const myEnd, int const (&offDiffAB_)[2], int const offsetB_, floatType const alpha, floatType const beta,
+template <bool betaIsZero, typename floatType, bool useStreamingStores, bool spawnThreads, bool conjA>
+static void axpy_2D(floatType const *A, size_t const (&lda)[2], floatType *B, size_t const (&ldb)[2], size_t const n0, size_t const myStart,
+                    size_t const myEnd, ptrdiff_t const offDiffAB_[2], size_t const offsetB_, floatType const alpha, floatType const beta,
                     int numThreads) {
-    if (!betaIsZero) {
-        HPTT_DUPLICATE(spawnThreads, for (int32_t j = myStart; j < myEnd; j++) for (int32_t i = offsetB_; i < n0 + offsetB_; i++) if (conjA)
-                                         B[(i * ldb[0]) + j * ldb[1]] =
-                                             alpha * conj(A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]]) +
-                                             beta * B[(i * ldb[0]) + j * ldb[1]];
+    if constexpr (!betaIsZero) {
+        HPTT_DUPLICATE(spawnThreads,
+                       for (size_t j = myStart; j < myEnd; j++) for (size_t i = offsetB_; i < n0 + offsetB_; i++) if constexpr (conjA)
+                           B[(i * ldb[0]) + j * ldb[1]] = alpha * conj(A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]]) +
+                                                          beta * B[(i * ldb[0]) + j * ldb[1]];
                        else B[(i * ldb[0]) + j * ldb[1]] =
                            alpha * A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]] + beta * B[(i * ldb[0]) + j * ldb[1]];)
     } else {
-        if (useStreamingStores)
-            HPTT_DUPLICATE(spawnThreads, for (int32_t j = myStart; j < myEnd; j++)
-                                             _Pragma("vector nontemporal") for (int32_t i = offsetB_; i < n0 + offsetB_; i++) if (conjA)
-                                                 B[(i * ldb[0]) + j * ldb[1]] =
-                                                     alpha * conj(A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]]);
+        if constexpr (useStreamingStores)
+            HPTT_DUPLICATE(spawnThreads, for (size_t j = myStart; j < myEnd; j++)
+                                             _Pragma("vector nontemporal") for (size_t i = offsetB_; i < n0 + offsetB_;
+                                                                                i++) if constexpr (conjA) B[(i * ldb[0]) + j * ldb[1]] =
+                                                 alpha * conj(A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]]);
                            else B[(i * ldb[0]) + j * ldb[1]] = alpha * A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]];)
         else
-            HPTT_DUPLICATE(spawnThreads, for (int32_t j = myStart; j < myEnd; j++) for (int32_t i = offsetB_; i < n0 + offsetB_;
-                                                                                        i++) if (conjA) B[(i * ldb[0]) + j * ldb[1]] =
+            HPTT_DUPLICATE(spawnThreads, for (size_t j = myStart; j < myEnd; j++) for (size_t i = offsetB_; i < n0 + offsetB_;
+                                                                                       i++) if (conjA) B[(i * ldb[0]) + j * ldb[1]] =
                                              alpha * conj(A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]]);
                            else B[(i * ldb[0]) + j * ldb[1]] = alpha * A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]];)
     }
@@ -1259,7 +1286,7 @@ static void axpy_2D(floatType const *A, size_t const (&lda)[2], floatType *B, si
 
 template <typename floatType>
 template <bool spawnThreads>
-void Transpose<floatType>::getStartEnd(int n, int &myStart, int &myEnd) const {
+void Transpose<floatType>::getStartEnd(size_t n, size_t &myStart, size_t &myEnd) const {
 #ifdef _OPENMP
     int myLocalThreadId = getLocalThreadId(omp_get_thread_num());
 #else
@@ -1272,15 +1299,15 @@ void Transpose<floatType>::getStartEnd(int n, int &myStart, int &myEnd) const {
         myEnd   = n;
         return;
     }
-    if (spawnThreads) { // worksharing will be handled by the OpenMP runtime
+    if constexpr (spawnThreads) { // worksharing will be handled by the OpenMP runtime
         myStart = 0;
         myEnd   = n;
         return;
     }
 
-    int const workPerThread = (n + numThreads_ - 1) / numThreads_;
-    myStart                 = std::min(n, myLocalThreadId * workPerThread);
-    myEnd                   = std::min(n, (myLocalThreadId + 1) * workPerThread);
+    size_t const workPerThread = (n + numThreads_ - 1) / numThreads_;
+    myStart                    = std::min(n, myLocalThreadId * workPerThread);
+    myEnd                      = std::min(n, (myLocalThreadId + 1) * workPerThread);
 }
 
 template <typename floatType>
@@ -1300,12 +1327,12 @@ void Transpose<floatType>::execute_expert() noexcept {
         exit(-1);
     }
 
-    int myStart = 0;
-    int myEnd   = 0;
+    size_t myStart = 0;
+    size_t myEnd   = 0;
 
     if (dim_ == 1) {
         getStartEnd<spawnThreads>(sizeA_[0], myStart, myEnd);
-        int const offDiffAB_ = (int)offsetA_[0] - (int)offsetB_[0];
+        ptrdiff_t const offDiffAB_ = (ptrdiff_t)offsetA_[0] - (ptrdiff_t)offsetB_[0];
         if (conjA_)
             axpy_1D<betaIsZero, floatType, useStreamingStores, spawnThreads, true>(
                 A_, B_, myStart + offsetB_[0], myEnd + offsetB_[0], offDiffAB_, lda_[0], ldb_[0], alpha_, beta_, numThreads_);
@@ -1315,7 +1342,8 @@ void Transpose<floatType>::execute_expert() noexcept {
         return;
     } else if (dim_ == 2 && perm_[0] == 0) {
         getStartEnd<spawnThreads>(sizeA_[1], myStart, myEnd);
-        int const offDiffAB_[2] = {((int)offsetA_[0] - (int)offsetB_[0]), ((int)offsetA_[1] - (int)offsetB_[1])};
+        ptrdiff_t const offDiffAB_[2] = {((ptrdiff_t)offsetA_[0] - (ptrdiff_t)offsetB_[0]),
+                                         ((ptrdiff_t)offsetA_[1] - (ptrdiff_t)offsetB_[1])};
         if (conjA_)
             axpy_2D<betaIsZero, floatType, useStreamingStores, spawnThreads, true>(A_, {lda_[0], lda_[1]}, B_, {ldb_[0], ldb_[1]},
                                                                                    sizeA_[0], myStart + offsetB_[1], myEnd + offsetB_[1],
@@ -1380,8 +1408,8 @@ void Transpose<floatType>::print() noexcept {
 }
 
 template <typename floatType>
-int Transpose<floatType>::getIncrement(int loopIdx) const {
-    int inc = 1;
+size_t Transpose<floatType>::getIncrement(int loopIdx) const {
+    size_t inc = 1;
     if (perm_[0] != 0) {
         if (loopIdx == 0 || loopIdx == perm_[0])
             inc = blocking_;
@@ -1393,7 +1421,7 @@ template <typename floatType>
 void Transpose<floatType>::getAvailableParallelism(std::vector<int> &numTasksPerLoop) const {
     numTasksPerLoop.resize(dim_);
     for (int loopIdx = 0; loopIdx < dim_; ++loopIdx) {
-        int inc                  = this->getIncrement(loopIdx);
+        size_t inc               = this->getIncrement(loopIdx);
         numTasksPerLoop[loopIdx] = (sizeA_[loopIdx] + inc - 1) / inc;
     }
 }
@@ -1429,7 +1457,7 @@ void Transpose<floatType>::getAllParallelismStrategies(std::list<int> &primeFact
 // balancing if one tries to parallelize avail many tasks with req many threads
 // e.g., balancing(3,4) = 0.75
 static float getBalancing(int avail, int req) {
-    return ((float)(avail)) / (((avail + req - 1) / req) * req);
+    return ((float)(avail)) / (float)((int)((avail + req - 1) / req) * req);
 }
 
 template <typename floatType>
@@ -1438,10 +1466,10 @@ float Transpose<floatType>::getLoadBalance(std::vector<int> const &parallelismSt
     int   totalTasks   = 1;
     for (int i = 0; i < dim_; ++i) {
 
-        int inc = this->getIncrement(i);
+        size_t inc = this->getIncrement(i);
         while (sizeA_[i] < inc)
             inc /= 2;
-        int availableParallelism = (sizeA_[i] + inc - 1) / inc;
+        size_t availableParallelism = (sizeA_[i] + inc - 1) / inc;
 
         if (i == 0 || perm_[i] == 0)
             // account for the load-imbalancing due to blocking
@@ -1709,9 +1737,9 @@ void Transpose<floatType>::getParallelismStrategies(std::vector<std::vector<int>
 }
 
 template <typename floatType>
-void Transpose<floatType>::verifyParameter(int const *size, int const *perm, int const *outerSizeA, int const *outerSizeB,
-                                           int const *offsetA, int const *offsetB, const size_t innerStrideA, const size_t innerStrideB,
-                                           int const dim) const {
+void Transpose<floatType>::verifyParameter(size_t const *size, int const *perm, size_t const *outerSizeA, size_t const *outerSizeB,
+                                           size_t const *offsetA, size_t const *offsetB, size_t const innerStrideA,
+                                           size_t const innerStrideB, int const dim) const {
     if (dim < 1) {
         fprintf(stderr, "[HPTT] ERROR: dimensionality too low.\n");
         exit(-1);
@@ -1792,8 +1820,8 @@ void Transpose<floatType>::computeLeadingDimensions() {
 }
 
 template <typename floatType>
-void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int const *outerSizeA, int const *outerSizeB, int const *offsetA,
-                                       int const *offsetB, int const dim) {
+void Transpose<floatType>::skipIndices(size_t const *sizeA, int const *perm, size_t const *outerSizeA, size_t const *outerSizeB,
+                                       size_t const *offsetA, size_t const *offsetB, int const dim) {
     for (int i = 0; i < dim; ++i) {
         perm_[i]  = perm[i];
         sizeA_[i] = sizeA[i];
@@ -1815,7 +1843,7 @@ void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int co
             offsetB_[i] = 0;
     }
 
-    int skipped = 0;
+    size_t skipped = 0;
     for (int i = 0; i < dim; ++i) {
         int idxB = 0;
         for (; idxB < dim; ++idxB)
@@ -1898,7 +1926,7 @@ void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int co
         int currentValue = 0;
         for (int i = 0; i < dim_; ++i) {
             // find smallest element in perm_ and rename it to currentValue
-            int minValue = 1000000;
+            int minValue = std::numeric_limits<int>::max();
             int minPos   = -1;
             for (int pos = 0; pos < dim_; ++pos) {
                 if (perm_[pos] >= currentValue && perm_[pos] < minValue) {
@@ -1976,7 +2004,7 @@ void Transpose<floatType>::fuseIndices() {
         int currentValue = 0;
         for (int i = 0; i < perm_.size(); ++i) {
             // find smallest element in perm_ and rename it to currentValue
-            int minValue = 1000000;
+            int minValue = std::numeric_limits<int>::max();
             int minPos   = -1;
             for (int pos = 0; pos < perm_.size(); ++pos) {
                 if (perm_[pos] >= currentValue && perm_[pos] < minValue) {
@@ -2299,7 +2327,7 @@ void Transpose<floatType>::createPlans(std::vector<std::shared_ptr<Plan>> &plans
 
                         currentNode->lda       = lda_[index];
                         currentNode->ldb       = ldb_[findPos(index, perm_)];
-                        currentNode->offDiffAB = (int)offsetA_[index] - (int)offsetB_[findPos(index, perm_)];
+                        currentNode->offDiffAB = (ptrdiff_t)offsetA_[index] - (ptrdiff_t)offsetB_[findPos(index, perm_)];
 
                         if (perm_[0] != 0 || l != dim_ - 1) {
                             currentNode->next = new ComputeNode;
@@ -2316,7 +2344,7 @@ void Transpose<floatType>::createPlans(std::vector<std::shared_ptr<Plan>> &plans
                         currentNode->inc       = -1;
                         currentNode->lda       = lda_[posStride1B_inA];
                         currentNode->ldb       = ldb_[posStride1A_inB];
-                        currentNode->offDiffAB = (int)offsetA_[posStride1B_inA] - (int)offsetB_[posStride1A_inB];
+                        currentNode->offDiffAB = (ptrdiff_t)offsetA_[posStride1B_inA] - (ptrdiff_t)offsetB_[posStride1A_inB];
                         currentNode->next      = nullptr;
                     }
                 }
