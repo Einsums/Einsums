@@ -383,6 +383,104 @@ void impl_div(TensorImpl<T const> const &in, TensorImpl<T> &out) {
 }
 
 template <typename T>
+void impl_copy_contiguous(TensorImpl<T const> const &in, TensorImpl<T> &out) {
+    blas::copy(in.size(), in.data(), in.get_incx(), out.data(), out.get_incx());
+}
+
+template <typename T, Container HardDims, Container InStrides, Container OutStrides>
+void impl_copy_noncontiguous_vectorable(int depth, int hard_rank, size_t easy_size, HardDims const &dims, T const *in,
+                                       InStrides const &in_strides, size_t inc_in, T *out, OutStrides const &out_strides, size_t inc_out) {
+    if (depth == hard_rank) {
+        blas::copy(easy_size, in, inc_in, out, inc_out);
+    } else {
+        for (int i = 0; i < dims[depth]; i++) {
+            impl_copy_noncontiguous_vectorable(depth + 1, hard_rank, easy_size, dims, in + i * in_strides[depth], in_strides, inc_in,
+                                              out + i * out_strides[depth], out_strides, inc_out);
+        }
+    }
+}
+
+template <typename T, Container Dims, Container InStrides, Container OutStrides>
+void impl_copy_noncontiguous(int depth, int rank, Dims const &dims, T const *in, InStrides const &in_strides, T *out,
+                            OutStrides const &out_strides) {
+    if (depth == rank) {
+        *out = *in;
+    } else {
+        for (int i = 0; i < dims[depth]; i++) {
+            impl_copy_noncontiguous(depth + 1, rank, dims, in + i * in_strides[depth], in_strides, out + i * out_strides[depth],
+                                   out_strides);
+        }
+    }
+}
+
+template <typename T>
+void impl_copy(TensorImpl<T const> const &in, TensorImpl<T> &out) {
+    LabeledSection0();
+
+    if (in.rank() != out.rank()) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "Can not copy two tensors of different ranks!");
+    }
+
+    if (in.dims() != out.dims()) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Can not copy two tensors with different sizes!");
+    }
+
+    if (in.is_column_major() != out.is_column_major()) {
+        EINSUMS_LOG_DEBUG("Can't necessarily combine row major and column major tensors. Using the fallback algorithm.");
+
+        impl_copy_noncontiguous(0, in.rank(), in.dims(), in.data(), in.strides(), out.data(), out.strides());
+    } else if (in.is_totally_vectorable() && out.is_totally_vectorable()) {
+        EINSUMS_LOG_DEBUG("Inputs were able to be treated as vector inputs and have the same memory layout. Using axpy.");
+
+        impl_copy_contiguous(in, out);
+    } else {
+        EINSUMS_LOG_DEBUG("Inputs were not contiguous, but have the same layout. Using loops over axpy.");
+
+        size_t easy_size, in_easy_size, out_easy_size, hard_size, in_hard_size, out_hard_size, easy_rank, in_easy_rank, out_easy_rank,
+            in_incx, out_incx;
+        BufferVector<size_t> hard_dims, in_strides, out_strides;
+
+        in.query_vectorable_params(&in_easy_size, &in_hard_size, &in_easy_rank, &in_incx);
+        out.query_vectorable_params(&out_easy_size, &out_hard_size, &out_easy_rank, &out_incx);
+
+        if (in_easy_rank < out_easy_rank) {
+            easy_rank = in_easy_rank;
+            easy_size = in_easy_size;
+            hard_size = in_hard_size;
+        } else {
+            easy_rank = out_easy_rank;
+            easy_size = out_easy_size;
+            hard_size = out_hard_size;
+        }
+
+        hard_dims.resize(in.rank() - easy_rank);
+
+        if (in.stride(0) < in.stride(-1)) {
+            in_strides.resize(in.rank() - easy_rank);
+            out_strides.resize(in.rank() - easy_rank);
+
+            for (int i = 0; i < in.rank() - easy_rank; i++) {
+                in_strides[i]  = in.stride(i + easy_rank);
+                out_strides[i] = out.stride(i + easy_rank);
+                hard_dims[i]   = in.dim(i + easy_rank);
+            }
+        } else {
+            in_strides.resize(in.rank() - easy_rank);
+            out_strides.resize(in.rank() - easy_rank);
+
+            for (int i = 0; i < in.rank() - easy_rank; i++) {
+                in_strides[i]  = in.stride(i);
+                out_strides[i] = out.stride(i);
+                hard_dims[i]   = in.dim(i);
+            }
+        }
+
+        impl_copy_noncontiguous_vectorable(0, in.rank() - easy_rank, easy_size, hard_dims, in.data(), in_strides, in_incx, out.data(),
+                                          out_strides, out_incx);
+    }
+}
+
+template <typename T>
 void impl_scalar_add_contiguous(T &&alpha, TensorImpl<T> &out) {
     T           *out_data = out.data();
     size_t const size     = out.size();

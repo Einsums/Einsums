@@ -386,5 +386,21 @@ auto zungqr(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::
     return vendor::zungqr(m, n, k, a, lda, tau);
 }
 
+void scopy(int_t n, float const *x, int_t inc_x, float *y, int_t inc_y) {
+    vendor::scopy(n, x, inc_x, y, inc_y);
+}
+
+void dcopy(int_t n, double const *x, int_t inc_x, double *y, int_t inc_y) {
+    vendor::dcopy(n, x, inc_x, y, inc_y);
+}
+
+void ccopy(int_t n, std::complex<float> const *x, int_t inc_x, std::complex<float> *y, int_t inc_y) {
+    vendor::ccopy(n, x, inc_x, y, inc_y);
+}
+
+void zcopy(int_t n, std::complex<double> const *x, int_t inc_x, std::complex<double> *y, int_t inc_y) {
+    vendor::zcopy(n, x, inc_x, y, inc_y);
+}
+
 } // namespace detail
 } // namespace einsums::blas

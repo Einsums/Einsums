@@ -899,4 +899,38 @@ inline auto ungqr<std::complex<double>>(int_t m, int_t n, int_t k, std::complex<
     return detail::zungqr(m, n, k, a, lda, tau);
 }
 
+namespace detail {
+void EINSUMS_EXPORT scopy(int_t n, float const *x, int_t inc_x, float *y, int_t inc_y);
+void EINSUMS_EXPORT dcopy(int_t n, double const *x, int_t inc_x, double *y, int_t inc_y);
+void EINSUMS_EXPORT ccopy(int_t n, std::complex<float> const *x, int_t inc_x, std::complex<float> *y,
+                          int_t inc_y);
+void EINSUMS_EXPORT zcopy(int_t n, std::complex<double> const *x, int_t inc_x, std::complex<double> *y,
+                          int_t inc_y);
+} // namespace detail
+
+template <typename T>
+void copy(int_t n, T const *x, int_t inc_x, T *y, int_t inc_y);
+
+template <>
+inline void copy<float>(int_t n, float const *x, int_t inc_x, float *y, int_t inc_y) {
+    detail::scopy(n, x, inc_x, y, inc_y);
+}
+
+template <>
+inline void copy<double>(int_t n, double const *x, int_t inc_x, double *y, int_t inc_y) {
+    detail::dcopy(n, x, inc_x, y, inc_y);
+}
+
+template <>
+inline void copy<std::complex<float>>(int_t n, std::complex<float> const *x, int_t inc_x,
+                                      std::complex<float> *y, int_t inc_y) {
+    detail::ccopy(n, x, inc_x, y, inc_y);
+}
+
+template <>
+inline void copy<std::complex<double>>(int_t n, std::complex<double> const *x, int_t inc_x,
+                                       std::complex<double> *y, int_t inc_y) {
+    detail::zcopy(n, x, inc_x, y, inc_y);
+}
+
 } // namespace einsums::blas
