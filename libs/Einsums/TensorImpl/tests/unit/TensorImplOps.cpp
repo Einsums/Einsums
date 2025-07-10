@@ -305,66 +305,137 @@ TEMPLATE_TEST_CASE("View-View", "[tensor]", float, double, float const, int) {
         output_data[i] = 11 * (i + 1);
     }
 
-    detail::TensorImpl<TestType> input(input_data.data(), {3, 3, 3}, {16, 4, 1});
+    SECTION("Row Major") {
 
-    detail::TensorImpl<std::remove_cv_t<TestType>> output(output_data.data(), {3, 3, 3}, {16, 4, 1});
+        detail::TensorImpl<TestType> input(input_data.data(), {3, 3, 3}, {16, 4, 1});
 
-    SECTION("Add") {
-        detail::add_assign(input, output);
+        detail::TensorImpl<std::remove_cv_t<TestType>> output(output_data.data(), {3, 3, 3}, {16, 4, 1});
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(12 * (i * 16 + 4 * j + k + 1), 1e-6));
+        SECTION("Add") {
+            detail::add_assign(input, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(12 * (i * 16 + 4 * j + k + 1), 1e-6));
+                    }
+                }
+            }
+        }
+
+        SECTION("Subtract") {
+            detail::sub_assign(input, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(10 * (i * 16 + 4 * j + k + 1), 1e-6));
+                    }
+                }
+            }
+        }
+
+        SECTION("Multiply") {
+            detail::mult_assign(input, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(i, j, k),
+                                     Catch::Matchers::WithinAbsMatcher(11 * (i * 16 + 4 * j + k + 1) * (i * 16 + 4 * j + k + 1), 1e-6));
+                    }
+                }
+            }
+        }
+
+        SECTION("Divide") {
+            detail::div_assign(input, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(11, 1e-6));
+                    }
+                }
+            }
+        }
+
+        SECTION("Copy") {
+            detail::copy_to(input, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher((i * 16 + 4 * j + k + 1), 1e-6));
+                    }
                 }
             }
         }
     }
 
-    SECTION("Subtract") {
-        detail::sub_assign(input, output);
+    SECTION("Column Major") {
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(10 * (i * 16 + 4 * j + k + 1), 1e-6));
+        detail::TensorImpl<TestType> input(input_data.data(), {3, 3, 3}, {1, 4, 16});
+
+        detail::TensorImpl<std::remove_cv_t<TestType>> output(output_data.data(), {3, 3, 3}, {1, 4, 16});
+
+        SECTION("Add") {
+            detail::add_assign(input, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(k, j, i), Catch::Matchers::WithinAbsMatcher(12 * (i * 16 + 4 * j + k + 1), 1e-6));
+                    }
                 }
             }
         }
-    }
 
-    SECTION("Multiply") {
-        detail::mult_assign(input, output);
+        SECTION("Subtract") {
+            detail::sub_assign(input, output);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(output.subscript(i, j, k),
-                                 Catch::Matchers::WithinAbsMatcher(11 * (i * 16 + 4 * j + k + 1) * (i * 16 + 4 * j + k + 1), 1e-6));
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(k, j, i), Catch::Matchers::WithinAbsMatcher(10 * (i * 16 + 4 * j + k + 1), 1e-6));
+                    }
                 }
             }
         }
-    }
 
-    SECTION("Divide") {
-        detail::div_assign(input, output);
+        SECTION("Multiply") {
+            detail::mult_assign(input, output);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(11, 1e-6));
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(k, j, i),
+                                     Catch::Matchers::WithinAbsMatcher(11 * (i * 16 + 4 * j + k + 1) * (i * 16 + 4 * j + k + 1), 1e-6));
+                    }
                 }
             }
         }
-    }
 
-    SECTION("Copy") {
-        detail::copy_to(input, output);
+        SECTION("Divide") {
+            detail::div_assign(input, output);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher((i * 16 + 4 * j + k + 1), 1e-6));
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(k, j, i), Catch::Matchers::WithinAbsMatcher(11, 1e-6));
+                    }
+                }
+            }
+        }
+
+        SECTION("Copy") {
+            detail::copy_to(input, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(k, j, i), Catch::Matchers::WithinAbsMatcher((i * 16 + 4 * j + k + 1), 1e-6));
+                    }
                 }
             }
         }
@@ -518,64 +589,133 @@ TEMPLATE_TEST_CASE("View-Scalar", "[tensor]", float, double, int) {
         output_data[i] = (i + 1);
     }
 
-    detail::TensorImpl<std::remove_cv_t<TestType>> output(output_data.data(), {3, 3, 3}, {16, 4, 1});
+    SECTION("Row major") {
 
-    SECTION("Add") {
-        detail::add_assign(scalar, output);
+        detail::TensorImpl<std::remove_cv_t<TestType>> output(output_data.data(), {3, 3, 3}, {16, 4, 1});
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(11 + (i * 16 + 4 * j + k + 1), 1e-6));
+        SECTION("Add") {
+            detail::add_assign(scalar, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(11 + (i * 16 + 4 * j + k + 1), 1e-6));
+                    }
+                }
+            }
+        }
+
+        SECTION("Subtract") {
+            detail::sub_assign(scalar, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher((i * 16 + 4 * j + k + 1) - 11, 1e-6));
+                    }
+                }
+            }
+        }
+
+        SECTION("Multiply") {
+            detail::mult_assign(scalar, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(11 * (i * 16 + 4 * j + k + 1), 1e-6));
+                    }
+                }
+            }
+        }
+
+        SECTION("Divide") {
+            detail::div_assign(scalar, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(i, j, k),
+                                     Catch::Matchers::WithinAbsMatcher(((TestType)(i * 16 + 4 * j + k + 1)) / (TestType)11, 1e-6));
+                    }
+                }
+            }
+        }
+
+        SECTION("Copy") {
+            detail::copy_to(scalar, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(11, 1e-6));
+                    }
                 }
             }
         }
     }
 
-    SECTION("Subtract") {
-        detail::sub_assign(scalar, output);
+    SECTION("Column major") {
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher((i * 16 + 4 * j + k + 1) - 11, 1e-6));
+        detail::TensorImpl<std::remove_cv_t<TestType>> output(output_data.data(), {3, 3, 3}, {1, 4, 16});
+
+        SECTION("Add") {
+            detail::add_assign(scalar, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(k, j, i), Catch::Matchers::WithinAbsMatcher(11 + (i * 16 + 4 * j + k + 1), 1e-6));
+                    }
                 }
             }
         }
-    }
 
-    SECTION("Multiply") {
-        detail::mult_assign(scalar, output);
+        SECTION("Subtract") {
+            detail::sub_assign(scalar, output);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(11 * (i * 16 + 4 * j + k + 1), 1e-6));
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(k, j, i), Catch::Matchers::WithinAbsMatcher((i * 16 + 4 * j + k + 1) - 11, 1e-6));
+                    }
                 }
             }
         }
-    }
 
-    SECTION("Divide") {
-        detail::div_assign(scalar, output);
+        SECTION("Multiply") {
+            detail::mult_assign(scalar, output);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(output.subscript(i, j, k),
-                                 Catch::Matchers::WithinAbsMatcher(((TestType)(i * 16 + 4 * j + k + 1)) / (TestType)11, 1e-6));
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(k, j, i), Catch::Matchers::WithinAbsMatcher(11 * (i * 16 + 4 * j + k + 1), 1e-6));
+                    }
                 }
             }
         }
-    }
 
-    SECTION("Copy") {
-        detail::copy_to(scalar, output);
+        SECTION("Divide") {
+            detail::div_assign(scalar, output);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(output.subscript(i, j, k), Catch::Matchers::WithinAbsMatcher(11, 1e-6));
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(k, j, i),
+                                     Catch::Matchers::WithinAbsMatcher(((TestType)(i * 16 + 4 * j + k + 1)) / (TestType)11, 1e-6));
+                    }
+                }
+            }
+        }
+
+        SECTION("Copy") {
+            detail::copy_to(scalar, output);
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        REQUIRE_THAT(output.subscript(k, j, i), Catch::Matchers::WithinAbsMatcher(11, 1e-6));
+                    }
                 }
             }
         }

@@ -1334,6 +1334,247 @@ struct TensorImpl final {
         }
     }
 
+    /**
+     * @brief Create a row-major view.
+     *
+     * This does not permute the data. It only reverses the dimensions and strides,
+     * and only if the tensor is not already row major.
+     */
+    constexpr TensorImpl<T> to_row_major() {
+        if (strides(0) >= strides(-1)) {
+            return *this;
+        } else {
+            return TensorImpl<T>(ptr_, BufferVector<size_t>(dims_.rbegin(), dims_.rend()),
+                                 BufferVector<size_t>(strides_.rbegin(), strides_.rend()));
+        }
+    }
+
+    /**
+     * @brief Create a column-major view.
+     *
+     * This does not permute the data. It only reverses the dimensions and strides,
+     * and only if the tensor is not already column major.
+     */
+    constexpr TensorImpl<T> to_column_major() {
+        if (strides(0) <= strides(-1)) {
+            return *this;
+        } else {
+            return TensorImpl<T>(ptr_, BufferVector<size_t>(dims_.rbegin(), dims_.rend()),
+                                 BufferVector<size_t>(strides_.rbegin(), strides_.rend()));
+        }
+    }
+
+    /**
+     * @brief Create a row-major view.
+     *
+     * This does not permute the data. It only reverses the dimensions and strides,
+     * and only if the tensor is not already row major.
+     */
+    constexpr TensorImpl<std::add_const_t<T>> to_row_major() const {
+        if (strides(0) >= strides(-1)) {
+            return *this;
+        } else {
+            return TensorImpl<std::add_const_t<T>>(ptr_, BufferVector<size_t>(dims_.rbegin(), dims_.rend()),
+                                                   BufferVector<size_t>(strides_.rbegin(), strides_.rend()));
+        }
+    }
+
+    /**
+     * @brief Create a column-major view.
+     *
+     * This does not permute the data. It only reverses the dimensions and strides,
+     * and only if the tensor is not already column major.
+     */
+    constexpr TensorImpl<std::add_const_t<T>> to_column_major() const {
+        if (strides(0) <= strides(-1)) {
+            return *this;
+        } else {
+            return TensorImpl<std::add_const_t<T>>(ptr_, BufferVector<size_t>(dims_.rbegin(), dims_.rend()),
+                                                   BufferVector<size_t>(strides_.rbegin(), strides_.rend()));
+        }
+    }
+
+    /**
+     * @brief Creates a view with the given indices tied together.
+     *
+     * This could be useful for Hadamard indices.
+     *
+     * @param index The index positions to tie together. Negative numbers will be wrapped.
+     */
+    template <typename... MultiIndex>
+        requires(std::is_integral_v<MultiIndex> && ... && true)
+    constexpr TensorImpl<T> tie_indices(MultiIndex &&...index) {
+        if constexpr (sizeof...(MultiIndex) <= 1) {
+            return *this;
+        } else {
+            size_t new_stride = 0, new_dim = std::numeric_limits<size_t>::max();
+
+            auto index_array = std::to_array<ptrdiff_t>({(ptrdiff_t)index...});
+
+            BufferVector<size_t> new_strides(strides_), new_dims(dims_);
+
+            // Calculate the tied stride.
+            for (size_t i = 0; i < index_array.size(); i++) {
+                // Deal with negatives.
+                auto temp = index_array[i];
+                if (index_array[i] < 0) {
+                    index_array[i] += rank_;
+                }
+
+                if (index_array[i] < 0 || index_array[i] >= rank_) {
+                    EINSUMS_THROW_EXCEPTION(std::out_of_range,
+                                            "Attempting to tie indices that are out of bounds! Got {}, expected between {} and {}.", temp,
+                                            -(ptrdiff_t)rank_, rank_ - 1);
+                }
+
+                new_stride += strides_[index_array[i]];
+                new_strides[index_array[i]] = 0;
+
+                if (dims_[index_array[i]] < new_dim) {
+                    new_dim = dims_[index_array[i]];
+                }
+            }
+
+            // Insert the dim and stride.
+            if (is_row_major()) {
+                bool found = false;
+                for (int i = 0; i < rank_ - 1; i++) {
+                    if (new_strides[i] == 0 && new_stride >= strides_[i + 1]) {
+                        new_strides[i] = new_stride;
+                        new_dims[i]    = new_dim;
+                        found          = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    new_strides[rank_ - 1] = new_stride;
+                    new_dims[rank_ - 1]    = new_dim;
+                }
+            } else {
+                bool found = false;
+                for (int i = 0; i < rank_ - 1; i++) {
+                    if (new_strides[i] == 0 && new_stride < strides_[i + 1]) {
+                        new_strides[i] = new_stride;
+                        new_dims[i]    = new_dim;
+                        found          = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    new_strides[rank_ - 1] = new_stride;
+                    new_dims[rank_ - 1]    = new_dim;
+                }
+            }
+
+            // Remove all of the zero indices.
+            BufferVector<size_t> temp_strides, temp_dims;
+            temp_strides.reserve(rank_);
+            temp_dims.reserve(rank_);
+
+            for (int i = 0; i < rank_; i++) {
+                if (new_strides[i] != 0) {
+                    temp_strides.push_back(new_strides[i]);
+                    temp_dims.push_back(new_dims[i]);
+                }
+            }
+
+            return TensorImpl<T>(ptr_, temp_dims, temp_strides);
+        }
+    }
+
+    /**
+     * @brief Creates a view with the given indices tied together.
+     *
+     * This could be useful for Hadamard indices.
+     *
+     * @param index The index positions to tie together. Negative numbers will be wrapped.
+     */
+    template <typename... MultiIndex>
+        requires(std::is_integral_v<MultiIndex> && ... && true)
+    constexpr TensorImpl<std::add_const_t<T>> tie_indices(MultiIndex &&...index) const {
+        if constexpr (sizeof...(MultiIndex) <= 1) {
+            return *this;
+        } else {
+            size_t new_stride = 0, new_dim = std::numeric_limits<size_t>::max();
+
+            auto index_array = std::to_array<ptrdiff_t>({(ptrdiff_t)index...});
+
+            BufferVector<size_t> new_strides(strides_), new_dims(dims_);
+
+            // Calculate the tied stride.
+            for (size_t i = 0; i < index_array.size(); i++) {
+                // Deal with negatives.
+                auto temp = index_array[i];
+                if (index_array[i] < 0) {
+                    index_array[i] += rank_;
+                }
+
+                if (index_array[i] < 0 || index_array[i] >= rank_) {
+                    EINSUMS_THROW_EXCEPTION(std::out_of_range,
+                                            "Attempting to tie indices that are out of bounds! Got {}, expected between {} and {}.", temp,
+                                            -(ptrdiff_t)rank_, rank_ - 1);
+                }
+
+                // This takes care of duplicates.
+                new_stride += new_strides[index_array[i]];
+                new_strides[index_array[i]] = 0;
+
+                if (dims_[index_array[i]] < new_dim) {
+                    new_dim = dims_[index_array[i]];
+                }
+            }
+
+            // Insert the dim and stride.
+            if (is_row_major()) {
+                bool found = false;
+                for (int i = 0; i < rank_ - 1; i++) {
+                    if (new_strides[i] == 0 && new_stride >= strides_[i + 1]) {
+                        new_strides[i] = new_stride;
+                        new_dims[i]    = new_dim;
+                        found          = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    new_strides[rank_ - 1] = new_stride;
+                    new_dims[rank_ - 1]    = new_dim;
+                }
+            } else {
+                bool found = false;
+                for (int i = 0; i < rank_ - 1; i++) {
+                    if (new_strides[i] == 0 && new_stride < strides_[i + 1]) {
+                        new_strides[i] = new_stride;
+                        new_dims[i]    = new_dim;
+                        found          = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    new_strides[rank_ - 1] = new_stride;
+                    new_dims[rank_ - 1]    = new_dim;
+                }
+            }
+
+            // Remove all of the zero strides.
+            BufferVector<size_t> temp_strides, temp_dims;
+            temp_strides.reserve(rank_);
+            temp_dims.reserve(rank_);
+
+            for (int i = 0; i < rank_; i++) {
+                if (new_strides[i] != 0) {
+                    temp_strides.push_back(new_strides[i]);
+                    temp_dims.push_back(new_dims[i]);
+                }
+            }
+
+            return TensorImpl<std::add_const_t<T>>(ptr_, temp_dims, temp_strides);
+        }
+    }
+
   private:
     template <size_t I, typename... MultiIndex>
     constexpr void adjust_ranges(std::tuple<MultiIndex...> &indices) const {
