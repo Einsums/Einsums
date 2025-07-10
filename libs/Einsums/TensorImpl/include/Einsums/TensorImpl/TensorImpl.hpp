@@ -8,6 +8,7 @@
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/Concepts/NamedRequirements.hpp>
 #include <Einsums/TensorBase/Common.hpp>
+#include <Einsums/Logging.hpp>
 
 #include <type_traits>
 
@@ -49,19 +50,57 @@ struct TensorImpl final {
 
     constexpr TensorImpl() noexcept : ptr_{nullptr}, dims_(), strides_(), rank_{0}, size_{0} {};
 
-    template <typename TOther>
-        requires requires {
-            requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
-            requires std::is_const_v<T> || !std::is_const_v<T>; // We don't want to make a non-const copy of a const impl.
-        }
-    constexpr TensorImpl(TensorImpl<TOther> const &other)
+    constexpr TensorImpl(TensorImpl<T> const &other)
         : ptr_{other.ptr_}, rank_{other.rank_}, strides_{other.strides_}, dims_{other.dims_}, size_{other.size_} {}
 
-    template <typename TOther>
-        requires requires {
-            requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
-            requires std::is_const_v<T> || !std::is_const_v<T>; // We don't want to make a non-const copy of a const impl.
-        }
+
+    constexpr TensorImpl(TensorImpl<T> &&other) noexcept
+        : ptr_{other.ptr_}, rank_{other.rank_}, strides_{std::move(other.strides_)}, dims_{std::move(other.dims_)}, size_{other.size_} {
+        other.ptr_  = nullptr;
+        other.rank_ = 0;
+        other.strides_.clear();
+        other.dims_.clear();
+        other.size_ = 0;
+    }
+
+    constexpr TensorImpl<T> &operator=(TensorImpl<T> const &other) {
+        ptr_     = other.ptr_;
+        rank_    = other.rank_;
+        strides_ = other.strides_;
+        dims_    = other.dims_;
+        size_    = other.size_;
+        return *this;
+    }
+
+    constexpr TensorImpl<T> &operator=(TensorImpl<T> &&other) noexcept {
+        ptr_     = other.ptr_;
+        rank_    = other.rank_;
+        strides_ = std::move(other.strides_);
+        dims_    = std::move(other.dims_);
+        size_    = other.size_;
+
+        other.ptr_  = nullptr;
+        other.rank_ = 0;
+        other.strides_.clear();
+        other.dims_.clear();
+        other.size_ = 0;
+        return *this;
+    }
+
+    template<typename TOther>
+    requires requires {
+        requires !std::is_same_v<T, TOther>;
+        requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
+        requires std::is_const_v<T> || !std::is_const_v<TOther>;
+    }
+    constexpr TensorImpl(TensorImpl<TOther> const &other) : ptr_{other.ptr_}, rank_{other.rank_}, strides_{other.strides_}, dims_{other.dims_}, size_{other.size_} {}
+
+    template<typename TOther>
+    requires requires {
+        requires !std::is_same_v<T, TOther>;
+        requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
+        requires std::is_const_v<T> || !std::is_const_v<TOther>;
+    }
     constexpr TensorImpl(TensorImpl<TOther> &&other) noexcept
         : ptr_{other.ptr_}, rank_{other.rank_}, strides_{std::move(other.strides_)}, dims_{std::move(other.dims_)}, size_{other.size_} {
         other.ptr_  = nullptr;
@@ -71,11 +110,12 @@ struct TensorImpl final {
         other.size_ = 0;
     }
 
-    template <typename TOther>
-        requires requires {
-            requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
-            requires std::is_const_v<T> || !std::is_const_v<T>; // We don't want to make a non-const copy of a const impl.
-        }
+    template<typename TOther>
+    requires requires {
+        requires !std::is_same_v<T, TOther>;
+        requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
+        requires std::is_const_v<T> || !std::is_const_v<TOther>;
+    }
     constexpr TensorImpl<T> &operator=(TensorImpl<TOther> const &other) {
         ptr_     = other.ptr_;
         rank_    = other.rank_;
@@ -85,11 +125,12 @@ struct TensorImpl final {
         return *this;
     }
 
-    template <typename TOther>
-        requires requires {
-            requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
-            requires std::is_const_v<T> || !std::is_const_v<T>; // We don't want to make a non-const copy of a const impl.
-        }
+    template<typename TOther>
+    requires requires {
+        requires !std::is_same_v<T, TOther>;
+        requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
+        requires std::is_const_v<T> || !std::is_const_v<TOther>;
+    }
     constexpr TensorImpl<T> &operator=(TensorImpl<TOther> &&other) noexcept {
         ptr_     = other.ptr_;
         rank_    = other.rank_;
@@ -106,7 +147,7 @@ struct TensorImpl final {
     }
 
     // Other constructors.
-    template <ContainerOrInitializer Dims>
+    template <Container Dims>
     constexpr TensorImpl(pointer ptr, Dims const &dims, bool row_major = false)
         : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()) {
         strides_.resize(rank_);
@@ -126,8 +167,41 @@ struct TensorImpl final {
         }
     }
 
-    template <ContainerOrInitializer Dims, ContainerOrInitializer Strides>
+    template <Container Dims, Container Strides>
     constexpr TensorImpl(pointer ptr, Dims const &dims, Strides const &strides)
+        : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()), strides_(strides.begin(), strides.end()),
+          size_{std::accumulate(dims.begin(), dims.end(), (size_t)1, std::multiplies<size_t>())} {}
+
+    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, bool row_major = false)
+        : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()) {
+        strides_.resize(rank_);
+
+        size_ = 1;
+
+        if (row_major) {
+            for (int i = rank_ - 1; i >= 0; i--) {
+                strides_[i] = size_;
+                size_ *= dims_[i];
+            }
+        } else {
+            for (int i = 0; i < rank_; i++) {
+                strides_[i] = size_;
+                size_ *= dims_[i];
+            }
+        }
+    }
+
+    template <Container Strides>
+    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, Strides const &strides)
+        : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()), strides_(strides.begin(), strides.end()),
+          size_{std::accumulate(dims.begin(), dims.end(), (size_t)1, std::multiplies<size_t>())} {}
+
+    template <Container Dims>
+    constexpr TensorImpl(pointer ptr, Dims const &dims, std::initializer_list<size_t> const &strides)
+        : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()), strides_(strides.begin(), strides.end()),
+          size_{std::accumulate(dims.begin(), dims.end(), (size_t)1, std::multiplies<size_t>())} {}
+
+    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, std::initializer_list<size_t> const &strides)
         : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()), strides_(strides.begin(), strides.end()),
           size_{std::accumulate(dims.begin(), dims.end(), (size_t)1, std::multiplies<size_t>())} {}
 
