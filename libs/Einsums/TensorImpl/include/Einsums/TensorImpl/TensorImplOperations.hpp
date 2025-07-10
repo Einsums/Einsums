@@ -758,6 +758,12 @@ void impl_scalar_copy(U alpha, TensorImpl<T> &out) {
     }
 }
 
+/**
+ * @brief Add the data from the input to the output.
+ *
+ * @param in The input data.
+ * @param out The output data.
+ */
 template <typename T, typename TOther>
 void add_assign(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     if (in.rank() == 0) {
@@ -775,6 +781,12 @@ void add_assign(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     }
 }
 
+/**
+ * @brief Subtract the input data from the output data.
+ *
+ * @param in The input data.
+ * @param out The output data.
+ */
 template <typename T, typename TOther>
 void sub_assign(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     if (in.rank() == 0) {
@@ -792,6 +804,12 @@ void sub_assign(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     }
 }
 
+/**
+ * @brief Multiply the output data by the input data.
+ *
+ * @param in The input data.
+ * @param out The output data.
+ */
 template <typename T, typename TOther>
 void mult_assign(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     if (in.rank() == 0) {
@@ -805,6 +823,12 @@ void mult_assign(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     }
 }
 
+/**
+ * @brief Divide the output data by the input data.
+ *
+ * @param in The input data.
+ * @param out The output data.
+ */
 template <typename T, typename TOther>
 void div_assign(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     if (in.rank() == 0) {
@@ -818,6 +842,12 @@ void div_assign(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     }
 }
 
+/**
+ * @brief Copy the data from the input to the output.
+ *
+ * @param in The input data.
+ * @param out The output data.
+ */
 template <typename T, typename TOther>
 void copy_to(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     if (in.rank() == 0) {
@@ -831,6 +861,12 @@ void copy_to(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     }
 }
 
+/**
+ * @brief Add a scalar to the output.
+ *
+ * @param in The scalar.
+ * @param out The output data.
+ */
 template <typename T, typename U>
 void add_assign(U in, TensorImpl<T> &out) {
     if (out.rank() == 0) {
@@ -840,6 +876,12 @@ void add_assign(U in, TensorImpl<T> &out) {
     }
 }
 
+/**
+ * @brief Subtract a scalar from the output.
+ *
+ * @param in The scalar.
+ * @param out The output data.
+ */
 template <typename T, typename U>
 void sub_assign(U in, TensorImpl<T> &out) {
     if (out.rank() == 0) {
@@ -849,6 +891,12 @@ void sub_assign(U in, TensorImpl<T> &out) {
     }
 }
 
+/**
+ * @brief Multiply the output by a scalar.
+ *
+ * @param in The scalar.
+ * @param out The output data.
+ */
 template <typename T, typename U>
 void mult_assign(U in, TensorImpl<T> &out) {
     if (out.rank() == 0) {
@@ -858,6 +906,12 @@ void mult_assign(U in, TensorImpl<T> &out) {
     }
 }
 
+/**
+ * @brief Divide the output by a scalar.
+ *
+ * @param in The scalar.
+ * @param out The output data.
+ */
 template <typename T, typename U>
 void div_assign(U in, TensorImpl<T> &out) {
     if (out.rank() == 0) {
@@ -867,6 +921,12 @@ void div_assign(U in, TensorImpl<T> &out) {
     }
 }
 
+/**
+ * @brief Fill the output with a value.
+ *
+ * @param in The value to set.
+ * @param out The output data.
+ */
 template <typename T>
 void copy_to(T in, TensorImpl<T> &out) {
     if (out.rank() == 0) {
