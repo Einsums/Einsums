@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <Einsums/Iterator/Enumerate.hpp>
+
 #include <iterator>
 #include <memory>
 #include <numbers>
