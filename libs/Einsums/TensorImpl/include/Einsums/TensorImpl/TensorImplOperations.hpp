@@ -10,12 +10,14 @@
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 
+#include <type_traits>
+
 namespace einsums {
 namespace detail {
 
 template <typename T, typename TOther>
 void impl_axpy_contiguous(T &&alpha, TensorImpl<TOther> const &in, TensorImpl<T> &out) {
-    if constexpr (std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>) {
+    if constexpr (std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>> && blas::IsBlasableV<T>) {
         blas::axpy(in.size(), alpha, in.data(), in.get_incx(), out.data(), out.get_incx());
     } else {
         TOther const *in_data  = in.data();
@@ -32,7 +34,7 @@ template <typename T, typename TOther, Container HardDims, Container InStrides, 
 void impl_axpy_noncontiguous_vectorable(int depth, int hard_rank, size_t easy_size, T &&alpha, HardDims const &dims, TOther const *in,
                                         InStrides const &in_strides, size_t inc_in, T *out, OutStrides const &out_strides, size_t inc_out) {
     if (depth == hard_rank) {
-        if constexpr (std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>) {
+        if constexpr (std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>> && blas::IsBlasableV<T>) {
             blas::axpy(easy_size, alpha, in, inc_in, out, inc_out);
         } else {
             EINSUMS_OMP_PARALLEL_FOR_SIMD
@@ -130,14 +132,31 @@ void impl_axpy(T &&alpha, TensorImpl<TOther> const &in, TensorImpl<T> &out) {
 
 template <typename T>
 void impl_scal_contiguous(T &&alpha, TensorImpl<T> &out) {
-    blas::scal(out.size(), alpha, out.data(), out.get_incx());
+    if constexpr (blas::IsBlasableV<T>) {
+        blas::scal(out.size(), alpha, out.data(), out.get_incx());
+    } else {
+        T           *out_data = out.data();
+        size_t const size = out.size(), incx = out.get_incx();
+
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        for (size_t i = 0; i < size; i++) {
+            out[i * incx] *= alpha;
+        }
+    }
 }
 
 template <typename T, Container HardDims, Container InStrides, Container OutStrides>
 void impl_scal_noncontiguous_vectorable(int depth, int hard_rank, size_t easy_size, T &&alpha, HardDims const &dims, T *out,
                                         OutStrides const &out_strides, size_t inc_out) {
     if (depth == hard_rank) {
-        blas::scal(easy_size, alpha, out, inc_out);
+        if constexpr (blas::IsBlasableV<T>) {
+            blas::scal(easy_size, alpha, out, inc_out);
+        } else {
+            EINSUMS_OMP_PARALLEL_FOR_SIMD
+            for (size_t i = 0; i < easy_size; i++) {
+                out[i * inc_out] *= alpha;
+            }
+        }
     } else {
         for (int i = 0; i < dims[depth]; i++) {
             impl_scal_noncontiguous_vectorable(depth + 1, hard_rank, easy_size, std::forward(alpha), dims, out + i * out_strides[depth],
