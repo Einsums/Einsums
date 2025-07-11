@@ -97,7 +97,7 @@ auto parafac_reconstruct(std::vector<Tensor<TType, 2>> const &factors) -> Tensor
 }
 
 template <size_t TRank, typename TType>
-auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::vector<Tensor<TType, 2>> {
+auto initialize_cp(std::vector<Tensor<TType, 2>> const &folds, size_t rank) -> std::vector<Tensor<TType, 2>> {
     LabeledSection0();
 
     using namespace einsums::tensor_algebra;
@@ -246,7 +246,7 @@ auto parafac(TTensor<TType, TRank> const &tensor, size_t rank, int n_iter_max = 
         iter += 1;
     }
     if (!converged) {
-        println_warn("CP decomposition failed to converge in {} iterations", n_iter_max);
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "CP decomposition failed to converge in {} iterations", n_iter_max);
     }
 
     // Return **non-normalized** factors
