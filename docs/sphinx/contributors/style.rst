@@ -72,12 +72,11 @@ Names should follow these conventions.
   * ``einsum(...)``
   * ``A.full_view_of_underlying()``
 
-* Private and protected properties in a class should end in a single underscore. However,
+* Private and protected properties in a class should begin in a single underscore. However,
   some older code will have them begin in a single underscore instead. Some examples.
 
-  * ``this->dims_``: Preferred.
-  * ``this->_dims``: Sometimes, this will show up. This is discouraged due to the fact that anything that begins
-    with an underscore and a capital letter may eventually be a reserved identifier.
+  * ``this->dims_``: Discouraged for consistency.
+  * ``this->_dims``: Preferred.
 
 * Variables and parameters should usually be in ``snake_case``. However, to be consistent with
   mathematical notation, tensor variables and parameters are usually capitalized. This includes
