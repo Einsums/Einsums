@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -78,16 +78,16 @@ void impl_axpy(U alpha, TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     if (in.is_column_major() != out.is_column_major()) {
         EINSUMS_LOG_DEBUG("Can't necessarily combine row major and column major tensors. Using the fallback algorithm.");
 
-        impl_axpy_noncontiguous(0, in.rank(), (T)alpha, in.dims(), in.data(), in.strides(), out.data(), out.strides());
+        impl_axpy_noncontiguous(0, in.rank(), static_cast<T>(alpha), in.dims(), in.data(), in.strides(), out.data(), out.strides());
     } else if (in.is_totally_vectorable() && out.is_totally_vectorable()) {
         EINSUMS_LOG_DEBUG("Inputs were able to be treated as vector inputs and have the same memory layout. Using axpy.");
 
-        impl_axpy_contiguous((T)alpha, in, out);
+        impl_axpy_contiguous(static_cast<T>(alpha), in, out);
     } else {
         EINSUMS_LOG_DEBUG("Inputs were not contiguous, but have the same layout. Using loops over axpy.");
 
-        size_t easy_size, in_easy_size, out_easy_size, hard_size, in_hard_size, out_hard_size, easy_rank, in_easy_rank, out_easy_rank,
-            in_incx, out_incx;
+        size_t easy_size, in_easy_size, out_easy_size, in_hard_size, out_hard_size, easy_rank, in_easy_rank, out_easy_rank, in_incx,
+            out_incx;
         BufferVector<size_t> hard_dims, in_strides, out_strides;
 
         in.query_vectorable_params(&in_easy_size, &in_hard_size, &in_easy_rank, &in_incx);
@@ -96,11 +96,9 @@ void impl_axpy(U alpha, TensorImpl<TOther> const &in, TensorImpl<T> &out) {
         if (in_easy_rank < out_easy_rank) {
             easy_rank = in_easy_rank;
             easy_size = in_easy_size;
-            hard_size = in_hard_size;
         } else {
             easy_rank = out_easy_rank;
             easy_size = out_easy_size;
-            hard_size = out_hard_size;
         }
 
         hard_dims.resize(in.rank() - easy_rank);
@@ -125,8 +123,8 @@ void impl_axpy(U alpha, TensorImpl<TOther> const &in, TensorImpl<T> &out) {
             }
         }
 
-        impl_axpy_noncontiguous_vectorable(0, in.rank() - easy_rank, easy_size, (T)alpha, hard_dims, in.data(), in_strides, in_incx,
-                                           out.data(), out_strides, out_incx);
+        impl_axpy_noncontiguous_vectorable(0, in.rank() - easy_rank, easy_size, static_cast<T>(alpha), hard_dims, in.data(), in_strides,
+                                           in_incx, out.data(), out_strides, out_incx);
     }
 }
 
@@ -172,7 +170,7 @@ void impl_scal(U alpha, TensorImpl<T> &out) {
     if (out.is_totally_vectorable()) {
         EINSUMS_LOG_DEBUG("Inputs were able to be treated as vector inputs and have the same memory layout. Using scal.");
 
-        impl_scal_contiguous((T)alpha, out);
+        impl_scal_contiguous(static_cast<T>(alpha), out);
     } else {
         EINSUMS_LOG_DEBUG("Inputs were not contiguous, but have the same layout. Using loops over scal.");
 
@@ -199,7 +197,8 @@ void impl_scal(U alpha, TensorImpl<T> &out) {
             }
         }
 
-        impl_scal_noncontiguous_vectorable(0, out.rank() - easy_rank, easy_size, (T)alpha, hard_dims, out.data(), out_strides, out_incx);
+        impl_scal_noncontiguous_vectorable(0, out.rank() - easy_rank, easy_size, static_cast<T>(alpha), hard_dims, out.data(), out_strides,
+                                           out_incx);
     }
 }
 
@@ -245,7 +244,7 @@ void impl_div_scalar(U alpha, TensorImpl<T> &out) {
     if (out.is_totally_vectorable()) {
         EINSUMS_LOG_DEBUG("Inputs were able to be treated as vector inputs and have the same memory layout. Using scal.");
 
-        impl_div_scalar_contiguous((T)alpha, out);
+        impl_div_scalar_contiguous(static_cast<T>(alpha), out);
     } else {
         EINSUMS_LOG_DEBUG("Inputs were not contiguous, but have the same layout. Using loops over scal.");
 
@@ -272,8 +271,8 @@ void impl_div_scalar(U alpha, TensorImpl<T> &out) {
             }
         }
 
-        impl_div_scalar_noncontiguous_vectorable(0, out.rank() - easy_rank, easy_size, (T)alpha, hard_dims, out.data(), out_strides,
-                                                 out_incx);
+        impl_div_scalar_noncontiguous_vectorable(0, out.rank() - easy_rank, easy_size, static_cast<T>(alpha), hard_dims, out.data(),
+                                                 out_strides, out_incx);
     }
 }
 
@@ -340,8 +339,8 @@ void impl_mult(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     } else {
         EINSUMS_LOG_DEBUG("Inputs were not contiguous, but have the same layout. Using loops over axpy.");
 
-        size_t easy_size, in_easy_size, out_easy_size, hard_size, in_hard_size, out_hard_size, easy_rank, in_easy_rank, out_easy_rank,
-            in_incx, out_incx;
+        size_t easy_size, in_easy_size, out_easy_size, in_hard_size, out_hard_size, easy_rank, in_easy_rank, out_easy_rank, in_incx,
+            out_incx;
         BufferVector<size_t> hard_dims, in_strides, out_strides;
 
         in.query_vectorable_params(&in_easy_size, &in_hard_size, &in_easy_rank, &in_incx);
@@ -350,11 +349,9 @@ void impl_mult(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
         if (in_easy_rank < out_easy_rank) {
             easy_rank = in_easy_rank;
             easy_size = in_easy_size;
-            hard_size = in_hard_size;
         } else {
             easy_rank = out_easy_rank;
             easy_size = out_easy_size;
-            hard_size = out_hard_size;
         }
 
         hard_dims.resize(in.rank() - easy_rank);
@@ -447,8 +444,8 @@ void impl_div(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     } else {
         EINSUMS_LOG_DEBUG("Inputs were not contiguous, but have the same layout. Using loops over axpy.");
 
-        size_t easy_size, in_easy_size, out_easy_size, hard_size, in_hard_size, out_hard_size, easy_rank, in_easy_rank, out_easy_rank,
-            in_incx, out_incx;
+        size_t easy_size, in_easy_size, out_easy_size, in_hard_size, out_hard_size, easy_rank, in_easy_rank, out_easy_rank, in_incx,
+            out_incx;
         BufferVector<size_t> hard_dims, in_strides, out_strides;
 
         in.query_vectorable_params(&in_easy_size, &in_hard_size, &in_easy_rank, &in_incx);
@@ -457,11 +454,9 @@ void impl_div(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
         if (in_easy_rank < out_easy_rank) {
             easy_rank = in_easy_rank;
             easy_size = in_easy_size;
-            hard_size = in_hard_size;
         } else {
             easy_rank = out_easy_rank;
             easy_size = out_easy_size;
-            hard_size = out_hard_size;
         }
 
         hard_dims.resize(in.rank() - easy_rank);
@@ -562,8 +557,8 @@ void impl_copy(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     } else {
         EINSUMS_LOG_DEBUG("Inputs were not contiguous, but have the same layout. Using loops over axpy.");
 
-        size_t easy_size, in_easy_size, out_easy_size, hard_size, in_hard_size, out_hard_size, easy_rank, in_easy_rank, out_easy_rank,
-            in_incx, out_incx;
+        size_t easy_size, in_easy_size, out_easy_size, in_hard_size, out_hard_size, easy_rank, in_easy_rank, out_easy_rank, in_incx,
+            out_incx;
         BufferVector<size_t> hard_dims, in_strides, out_strides;
 
         in.query_vectorable_params(&in_easy_size, &in_hard_size, &in_easy_rank, &in_incx);
@@ -572,11 +567,9 @@ void impl_copy(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
         if (in_easy_rank < out_easy_rank) {
             easy_rank = in_easy_rank;
             easy_size = in_easy_size;
-            hard_size = in_hard_size;
         } else {
             easy_rank = out_easy_rank;
             easy_size = out_easy_size;
-            hard_size = out_hard_size;
         }
 
         hard_dims.resize(in.rank() - easy_rank);
@@ -650,7 +643,7 @@ void impl_scalar_add(U alpha, TensorImpl<T> &out) {
     if (out.is_totally_vectorable()) {
         EINSUMS_LOG_DEBUG("Inputs were able to be treated as vector inputs and have the same memory layout. Using scal.");
 
-        impl_scalar_add_contiguous((T)alpha, out);
+        impl_scalar_add_contiguous(static_cast<T>(alpha), out);
     } else {
         EINSUMS_LOG_DEBUG("Inputs were not contiguous, but have the same layout. Using loops over scal.");
 
@@ -677,8 +670,8 @@ void impl_scalar_add(U alpha, TensorImpl<T> &out) {
             }
         }
 
-        impl_scalar_add_noncontiguous_vectorable(0, out.rank() - easy_rank, easy_size, (T)alpha, hard_dims, out.data(), out_strides,
-                                                 out_incx);
+        impl_scalar_add_noncontiguous_vectorable(0, out.rank() - easy_rank, easy_size, static_cast<T>(alpha), hard_dims, out.data(),
+                                                 out_strides, out_incx);
     }
 }
 
@@ -726,7 +719,7 @@ void impl_scalar_copy(U alpha, TensorImpl<T> &out) {
     if (out.is_totally_vectorable()) {
         EINSUMS_LOG_DEBUG("Inputs were able to be treated as vector inputs and have the same memory layout. Using scal.");
 
-        impl_scalar_copy_contiguous((T)alpha, out);
+        impl_scalar_copy_contiguous(static_cast<T>(alpha), out);
     } else {
         EINSUMS_LOG_DEBUG("Inputs were not contiguous, but have the same layout. Using loops over scal.");
 
@@ -753,8 +746,8 @@ void impl_scalar_copy(U alpha, TensorImpl<T> &out) {
             }
         }
 
-        impl_scalar_copy_noncontiguous_vectorable(0, out.rank() - easy_rank, easy_size, (T)alpha, hard_dims, out.data(), out_strides,
-                                                  out_incx);
+        impl_scalar_copy_noncontiguous_vectorable(0, out.rank() - easy_rank, easy_size, static_cast<T>(alpha), hard_dims, out.data(),
+                                                  out_strides, out_incx);
     }
 }
 

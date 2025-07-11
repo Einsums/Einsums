@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -98,23 +98,23 @@ struct TensorImpl final {
     /**
      * @brief Default constructor.
      */
-    constexpr TensorImpl() noexcept : ptr_{nullptr}, dims_(), strides_(), rank_{0}, size_{0} {};
+    constexpr TensorImpl() noexcept : _ptr{nullptr}, _dims(), _strides(), _rank{0}, size_{0} {};
 
     /**
      * @brief Copy constructor.
      */
     constexpr TensorImpl(TensorImpl<T> const &other)
-        : ptr_{other.ptr_}, rank_{other.rank_}, strides_{other.strides_}, dims_{other.dims_}, size_{other.size_} {}
+        : _ptr{other._ptr}, _rank{other._rank}, _strides{other._strides}, _dims{other._dims}, size_{other.size_} {}
 
     /**
      * @brief Move constructor.
      */
     constexpr TensorImpl(TensorImpl<T> &&other) noexcept
-        : ptr_{other.ptr_}, rank_{other.rank_}, strides_{std::move(other.strides_)}, dims_{std::move(other.dims_)}, size_{other.size_} {
-        other.ptr_  = nullptr;
-        other.rank_ = 0;
-        other.strides_.clear();
-        other.dims_.clear();
+        : _ptr{other._ptr}, _rank{other._rank}, _strides{std::move(other._strides)}, _dims{std::move(other._dims)}, size_{other.size_} {
+        other._ptr  = nullptr;
+        other._rank = 0;
+        other._strides.clear();
+        other._dims.clear();
         other.size_ = 0;
     }
 
@@ -122,10 +122,10 @@ struct TensorImpl final {
      * @brief Copy assignment.
      */
     constexpr TensorImpl<T> &operator=(TensorImpl<T> const &other) {
-        ptr_     = other.ptr_;
-        rank_    = other.rank_;
-        strides_ = other.strides_;
-        dims_    = other.dims_;
+        _ptr     = other._ptr;
+        _rank    = other._rank;
+        _strides = other._strides;
+        _dims    = other._dims;
         size_    = other.size_;
         return *this;
     }
@@ -134,16 +134,16 @@ struct TensorImpl final {
      * @brief Move assignment.
      */
     constexpr TensorImpl<T> &operator=(TensorImpl<T> &&other) noexcept {
-        ptr_     = other.ptr_;
-        rank_    = other.rank_;
-        strides_ = std::move(other.strides_);
-        dims_    = std::move(other.dims_);
+        _ptr     = other._ptr;
+        _rank    = other._rank;
+        _strides = std::move(other._strides);
+        _dims    = std::move(other._dims);
         size_    = other.size_;
 
-        other.ptr_  = nullptr;
-        other.rank_ = 0;
-        other.strides_.clear();
-        other.dims_.clear();
+        other._ptr  = nullptr;
+        other._rank = 0;
+        other._strides.clear();
+        other._dims.clear();
         other.size_ = 0;
         return *this;
     }
@@ -158,7 +158,7 @@ struct TensorImpl final {
             requires std::is_const_v<T> || !std::is_const_v<TOther>;
         }
     constexpr TensorImpl(TensorImpl<TOther> const &other)
-        : ptr_{other.ptr_}, rank_{other.rank_}, strides_{other.strides_}, dims_{other.dims_}, size_{other.size_} {}
+        : _ptr{other._ptr}, _rank{other._rank}, _strides{other._strides}, _dims{other._dims}, size_{other.size_} {}
 
     /**
      * @brief Move constructor from a datatype with different constness.
@@ -170,11 +170,11 @@ struct TensorImpl final {
             requires std::is_const_v<T> || !std::is_const_v<TOther>;
         }
     constexpr TensorImpl(TensorImpl<TOther> &&other) noexcept
-        : ptr_{other.ptr_}, rank_{other.rank_}, strides_{std::move(other.strides_)}, dims_{std::move(other.dims_)}, size_{other.size_} {
-        other.ptr_  = nullptr;
-        other.rank_ = 0;
-        other.strides_.clear();
-        other.dims_.clear();
+        : _ptr{other._ptr}, _rank{other._rank}, _strides{std::move(other._strides)}, _dims{std::move(other._dims)}, size_{other.size_} {
+        other._ptr  = nullptr;
+        other._rank = 0;
+        other._strides.clear();
+        other._dims.clear();
         other.size_ = 0;
     }
 
@@ -188,10 +188,10 @@ struct TensorImpl final {
             requires std::is_const_v<T> || !std::is_const_v<TOther>;
         }
     constexpr TensorImpl<T> &operator=(TensorImpl<TOther> const &other) {
-        ptr_     = other.ptr_;
-        rank_    = other.rank_;
-        strides_ = other.strides_;
-        dims_    = other.dims_;
+        _ptr     = other._ptr;
+        _rank    = other._rank;
+        _strides = other._strides;
+        _dims    = other._dims;
         size_    = other.size_;
         return *this;
     }
@@ -206,16 +206,16 @@ struct TensorImpl final {
             requires std::is_const_v<T> || !std::is_const_v<TOther>;
         }
     constexpr TensorImpl<T> &operator=(TensorImpl<TOther> &&other) noexcept {
-        ptr_     = other.ptr_;
-        rank_    = other.rank_;
-        strides_ = std::move(other.strides_);
-        dims_    = std::move(other.dims_);
+        _ptr     = other._ptr;
+        _rank    = other._rank;
+        _strides = std::move(other._strides);
+        _dims    = std::move(other._dims);
         size_    = other.size_;
 
-        other.ptr_  = nullptr;
-        other.rank_ = 0;
-        other.strides_.clear();
-        other.dims_.clear();
+        other._ptr  = nullptr;
+        other._rank = 0;
+        other._strides.clear();
+        other._dims.clear();
         other.size_ = 0;
         return *this;
     }
@@ -233,20 +233,20 @@ struct TensorImpl final {
      */
     template <Container Dims>
     constexpr TensorImpl(pointer ptr, Dims const &dims, bool row_major = false)
-        : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()) {
-        strides_.resize(rank_);
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()) {
+        _strides.resize(_rank);
 
         size_ = 1;
 
         if (row_major) {
-            for (int i = rank_ - 1; i >= 0; i--) {
-                strides_[i] = size_;
-                size_ *= dims_[i];
+            for (int i = _rank - 1; i >= 0; i--) {
+                _strides[i] = size_;
+                size_ *= _dims[i];
             }
         } else {
-            for (int i = 0; i < rank_; i++) {
-                strides_[i] = size_;
-                size_ *= dims_[i];
+            for (int i = 0; i < _rank; i++) {
+                _strides[i] = size_;
+                size_ *= _dims[i];
             }
         }
     }
@@ -260,8 +260,8 @@ struct TensorImpl final {
      */
     template <Container Dims, Container Strides>
     constexpr TensorImpl(pointer ptr, Dims const &dims, Strides const &strides)
-        : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()), strides_(strides.begin(), strides.end()),
-          size_{std::accumulate(dims.begin(), dims.end(), (size_t)1, std::multiplies<size_t>())} {}
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
+          size_{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {}
 
     /**
      * @brief Create a tensor with the given pointer and dimensions.
@@ -273,20 +273,20 @@ struct TensorImpl final {
      * @param row_major Whether to compute the strides in row-major or column-major ordering.
      */
     constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, bool row_major = false)
-        : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()) {
-        strides_.resize(rank_);
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()) {
+        _strides.resize(_rank);
 
         size_ = 1;
 
         if (row_major) {
-            for (int i = rank_ - 1; i >= 0; i--) {
-                strides_[i] = size_;
-                size_ *= dims_[i];
+            for (int i = _rank - 1; i >= 0; i--) {
+                _strides[i] = size_;
+                size_ *= _dims[i];
             }
         } else {
-            for (int i = 0; i < rank_; i++) {
-                strides_[i] = size_;
-                size_ *= dims_[i];
+            for (int i = 0; i < _rank; i++) {
+                _strides[i] = size_;
+                size_ *= _dims[i];
             }
         }
     }
@@ -300,8 +300,8 @@ struct TensorImpl final {
      */
     template <Container Strides>
     constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, Strides const &strides)
-        : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()), strides_(strides.begin(), strides.end()),
-          size_{std::accumulate(dims.begin(), dims.end(), (size_t)1, std::multiplies<size_t>())} {}
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
+          size_{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {}
 
     /**
      * @brief Create a tensor with the given pointer, dimensions, and strides.
@@ -312,8 +312,8 @@ struct TensorImpl final {
      */
     template <Container Dims>
     constexpr TensorImpl(pointer ptr, Dims const &dims, std::initializer_list<size_t> const &strides)
-        : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()), strides_(strides.begin(), strides.end()),
-          size_{std::accumulate(dims.begin(), dims.end(), (size_t)1, std::multiplies<size_t>())} {}
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
+          size_{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {}
 
     /**
      * @brief Create a tensor with the given pointer, dimensions, and strides.
@@ -323,35 +323,35 @@ struct TensorImpl final {
      * @param strides The strides for the tensor.
      */
     constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, std::initializer_list<size_t> const &strides)
-        : ptr_{ptr}, rank_{dims.size()}, dims_(dims.begin(), dims.end()), strides_(strides.begin(), strides.end()),
-          size_{std::accumulate(dims.begin(), dims.end(), (size_t)1, std::multiplies<size_t>())} {}
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
+          size_{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {}
 
     // Getters and setters.
 
     /**
      * @brief Get the pointer being wrapped.
      */
-    constexpr pointer data() noexcept { return ptr_; }
+    constexpr pointer data() noexcept { return _ptr; }
 
     /**
      * @brief Get the pointer being wrapped.
      */
-    constexpr const_pointer data() const noexcept { return ptr_; }
+    constexpr const_pointer data() const noexcept { return _ptr; }
 
     /**
      * @brief Get the rank of the tensor.
      */
-    constexpr size_t rank() const noexcept { return rank_; }
+    constexpr size_t rank() const noexcept { return _rank; }
 
     /**
      * @brief Get the dimensions of the tensor.
      */
-    constexpr BufferVector<size_t> dims() const noexcept { return dims_; }
+    constexpr BufferVector<size_t> dims() const noexcept { return _dims; }
 
     /**
      * @brief Get the strides of the tensor.
      */
-    constexpr BufferVector<size_t> strides() const noexcept { return strides_; }
+    constexpr BufferVector<size_t> strides() const noexcept { return _strides; }
 
     /**
      * @brief Get the size of the tensor.
@@ -361,7 +361,7 @@ struct TensorImpl final {
     /**
      * @brief Change the pointer being wrapped by the tensor.
      */
-    constexpr void set_data(pointer *ptr) noexcept { ptr_ = ptr; }
+    constexpr void set_data(pointer *ptr) noexcept { _ptr = ptr; }
 
     // Indexed getters and setters.
 
@@ -375,17 +375,17 @@ struct TensorImpl final {
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
     constexpr pointer data(MultiIndex &&...index) {
-        if (sizeof...(MultiIndex) < rank_) {
+        if (sizeof...(MultiIndex) < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (sizeof...(MultiIndex) > rank_) {
+        } else if (sizeof...(MultiIndex) > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel_negative_check(strides_, dims_, BufferVector<size_t>{(size_t)index...});
+        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, BufferVector<size_t>{static_cast<size_t>(index)...});
     }
 
     /**
@@ -398,23 +398,23 @@ struct TensorImpl final {
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
     constexpr const_pointer data(MultiIndex &&...index) const {
-        if (sizeof...(MultiIndex) < rank_) {
+        if (sizeof...(MultiIndex) < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (sizeof...(MultiIndex) > rank_) {
+        } else if (sizeof...(MultiIndex) > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel_negative_check(strides_, dims_, BufferVector<size_t>{(size_t)index...});
+        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, BufferVector<size_t>{static_cast<size_t>(index)...});
     }
 
     /**
      * @brief Get the pointer to the given index.
      *
-     * Note that this does not do any checks, including index wrapping or bounds checking. Use only when
+     * Note that this does not do any checks, including index wrapping or bounds checking. Only use when
      * you are certain the indices will not go out of range.
      *
      * @param index The indices to use for the offset.
@@ -422,23 +422,23 @@ struct TensorImpl final {
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
     constexpr pointer data_no_check(MultiIndex &&...index) {
-        if (sizeof...(MultiIndex) < rank_) {
+        if (sizeof...(MultiIndex) < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (sizeof...(MultiIndex) > rank_) {
+        } else if (sizeof...(MultiIndex) > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel(strides_, BufferVector<size_t>{(size_t)index...});
+        return _ptr + indices_to_sentinel(_strides, BufferVector<size_t>{static_cast<size_t>(index)...});
     }
 
     /**
      * @brief Get the pointer to the given index.
      *
-     * Note that this does not do any checks, including index wrapping or bounds checking. Use only when
+     * Note that this does not do any checks, including index wrapping or bounds checking. Only use when
      * you are certain the indices will not go out of range.
      *
      * @param index The indices to use for the offset.
@@ -446,17 +446,17 @@ struct TensorImpl final {
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
     constexpr const_pointer data_no_check(MultiIndex &&...index) const {
-        if (sizeof...(MultiIndex) < rank_) {
+        if (sizeof...(MultiIndex) < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (sizeof...(MultiIndex) > rank_) {
+        } else if (sizeof...(MultiIndex) > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel(strides_, BufferVector<size_t>{(size_t)index...});
+        return _ptr + indices_to_sentinel(_strides, BufferVector<size_t>{static_cast<size_t>(index)...});
     }
 
     /**
@@ -468,17 +468,17 @@ struct TensorImpl final {
      */
     template <Container Index>
     constexpr pointer data(Index const &index) {
-        if (index.size() < rank_) {
+        if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (index.size() > rank_) {
+        } else if (index.size() > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel_negative_check(strides_, dims_, index);
+        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, index);
     }
 
     /**
@@ -490,63 +490,63 @@ struct TensorImpl final {
      */
     template <Container Index>
     constexpr const_pointer data(Index const &index) const {
-        if (index.size() < rank_) {
+        if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (index.size() > rank_) {
+        } else if (index.size() > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel_negative_check(strides_, dims_, index);
+        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, index);
     }
 
     /**
      * @brief Get the pointer to the given index.
      *
-     * Note that this does not do any checks, including index wrapping or bounds checking. Use only when
+     * Note that this does not do any checks, including index wrapping or bounds checking. Only use when
      * you are certain the indices will not go out of range.
      *
      * @param index The indices to use for the offset.
      */
     template <Container Index>
     constexpr pointer data_no_check(Index const &index) {
-        if (index.size() < rank_) {
+        if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (index.size() > rank_) {
+        } else if (index.size() > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel(strides_, index);
+        return _ptr + indices_to_sentinel(_strides, index);
     }
 
     /**
      * @brief Get the pointer to the given index.
      *
-     * Note that this does not do any checks, including index wrapping or bounds checking. Use only when
+     * Note that this does not do any checks, including index wrapping or bounds checking. Only use when
      * you are certain the indices will not go out of range.
      *
      * @param index The indices to use for the offset.
      */
     template <Container Index>
     constexpr const_pointer data_no_check(Index const &index) const {
-        if (index.size() < rank_) {
+        if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (index.size() > rank_) {
+        } else if (index.size() > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel(strides_, index);
+        return _ptr + indices_to_sentinel(_strides, index);
     }
 
     /**
@@ -558,17 +558,17 @@ struct TensorImpl final {
      */
     template <std::integral IntType>
     constexpr pointer data(std::initializer_list<IntType> const &index) {
-        if (index.size() < rank_) {
+        if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (index.size() > rank_) {
+        } else if (index.size() > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel_negative_check(strides_, dims_, index);
+        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, index);
     }
 
     /**
@@ -580,63 +580,63 @@ struct TensorImpl final {
      */
     template <std::integral IntType>
     constexpr const_pointer data(std::initializer_list<IntType> const &index) const {
-        if (index.size() < rank_) {
+        if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (index.size() > rank_) {
+        } else if (index.size() > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel_negative_check(strides_, dims_, index);
+        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, index);
     }
 
     /**
      * @brief Get the pointer to the given index.
      *
-     * Note that this does not do any checks, including index wrapping or bounds checking. Use only when
+     * Note that this does not do any checks, including index wrapping or bounds checking. Only use when
      * you are certain the indices will not go out of range.
      *
      * @param index The indices to use for the offset.
      */
     template <std::integral IntType>
     constexpr pointer data_no_check(std::initializer_list<IntType> const &index) {
-        if (index.size() < rank_) {
+        if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (index.size() > rank_) {
+        } else if (index.size() > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel(strides_, index);
+        return _ptr + indices_to_sentinel(_strides, index);
     }
 
     /**
      * @brief Get the pointer to the given index.
      *
-     * Note that this does not do any checks, including index wrapping or bounds checking. Use only when
+     * Note that this does not do any checks, including index wrapping or bounds checking. Only use when
      * you are certain the indices will not go out of range.
      *
      * @param index The indices to use for the offset.
      */
     template <std::integral IntType>
     constexpr const_pointer data_no_check(std::initializer_list<IntType> const &index) const {
-        if (index.size() < rank_) {
+        if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (index.size() > rank_) {
+        } else if (index.size() > _rank) {
             EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
         }
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return nullptr;
         }
 
-        return ptr_ + indices_to_sentinel(strides_, index);
+        return _ptr + indices_to_sentinel(_strides, index);
     }
 
     /**
@@ -647,20 +647,20 @@ struct TensorImpl final {
      * @param i The axis to check.
      */
     constexpr size_t dim(std::integral auto i) const {
-        if (rank_ == 0) {
+        if (_rank == 0) {
             return 1;
         }
         auto temp = i;
         if (temp < 0) {
-            temp += rank_;
+            temp += _rank;
         }
 
-        if (temp < 0 || temp >= rank_) {
+        if (temp < 0 || temp >= _rank) {
             EINSUMS_THROW_EXCEPTION(std::out_of_range, "The index passed to dim was out of range! Got {}, expected between {} and {}.", i,
-                                    -(ptrdiff_t)rank_, rank_ - 1);
+                                    -static_cast<ptrdiff_t>(_rank), _rank - 1);
         }
 
-        return dims_[temp];
+        return _dims[temp];
     }
 
     /**
@@ -671,20 +671,20 @@ struct TensorImpl final {
      * @param i The axis to check.
      */
     constexpr size_t stride(std::integral auto i) const {
-        if (rank_ == 0) {
+        if (_rank == 0) {
             return 0;
         }
         auto temp = i;
         if (temp < 0) {
-            temp += rank_;
+            temp += _rank;
         }
 
-        if (temp < 0 || temp >= rank_) {
+        if (temp < 0 || temp >= _rank) {
             EINSUMS_THROW_EXCEPTION(std::out_of_range, "The index passed to stride was out of range! Got {}, expected between {} and {}.",
-                                    i, -(ptrdiff_t)rank_, rank_ - 1);
+                                    i, -static_cast<ptrdiff_t>(_rank), _rank - 1);
         }
 
-        return strides_[temp];
+        return _strides[temp];
     }
 
     // More complicated getters.
@@ -696,7 +696,7 @@ struct TensorImpl final {
      * any data outside of any dimension. Views are often not contiguous, though they sometimes can be.
      */
     constexpr bool is_contiguous() const {
-        if (rank_ == 0) {
+        if (_rank == 0) {
             return true;
         }
         if (stride(0) < stride(-1)) {
@@ -712,12 +712,12 @@ struct TensorImpl final {
      * @param[out] incx If not nullptr, this will be set to contain the spacing between items.
      */
     bool is_totally_vectorable(size_t *incx = nullptr) const {
-        if (rank_ == 0) {
+        if (_rank == 0) {
             if (incx != nullptr) {
                 *incx = 0;
             }
             return false;
-        } else if (rank_ == 1) {
+        } else if (_rank == 1) {
             if (incx != nullptr) {
                 *incx = stride(0);
             }
@@ -745,13 +745,13 @@ struct TensorImpl final {
      * @param[out] lda The leading dimension which can be passed into gemm and similar calls.
      */
     bool is_gemmable(size_t *lda = nullptr) const {
-        if (rank_ != 2) {
+        if (_rank != 2) {
             return false;
-        } else if (strides_[0] != 1 && strides_[1] != 1) {
+        } else if (_strides[0] != 1 && _strides[1] != 1) {
             return false;
         } else {
             if (lda != nullptr) {
-                *lda = std::max(strides_[0], strides_[1]);
+                *lda = std::max(_strides[0], _strides[1]);
             }
             return true;
         }
@@ -761,10 +761,10 @@ struct TensorImpl final {
      * @brief Get the smallest stride for the tensor.
      */
     constexpr size_t get_incx() const {
-        if (rank_ == 0) {
+        if (_rank == 0) {
             return 0;
-        } else if (rank_ == 1) {
-            return strides_[0];
+        } else if (_rank == 1) {
+            return _strides[0];
         } else {
             return std::min(stride(0), stride(-1));
         }
@@ -774,7 +774,7 @@ struct TensorImpl final {
      * @brief Gets the largest stride for a rank-2 tensor only.
      */
     constexpr size_t get_lda() const {
-        if (rank_ != 2) {
+        if (_rank != 2) {
             EINSUMS_THROW_EXCEPTION(rank_error, "Can not get the leading dimension of a tensor whose rank is not 2!");
         } else {
             return std::max(stride(0), stride(1));
@@ -788,7 +788,7 @@ struct TensorImpl final {
      * are logically exclusive.
      */
     constexpr bool is_row_major() const {
-        if (rank_ <= 1) {
+        if (_rank <= 1) {
             return true;
         } else {
             return stride(-1) < stride(0);
@@ -802,7 +802,7 @@ struct TensorImpl final {
      * are logically exclusive.
      */
     constexpr bool is_column_major() const {
-        if (rank_ <= 1) {
+        if (_rank <= 1) {
             return true;
         } else {
             return stride(-1) > stride(0);
@@ -829,16 +829,16 @@ struct TensorImpl final {
      * @param[out] incx The spacing between elements for the BLAS call.
      */
     void query_vectorable_params(size_t *easy_size, size_t *hard_size, size_t *easy_rank, size_t *incx) const {
-        if (rank_ == 0) {
+        if (_rank == 0) {
             *easy_size = 0;
             *hard_size = 0;
             *easy_rank = 0;
             *incx      = 0;
-        } else if (rank_ == 1) {
+        } else if (_rank == 1) {
             *easy_size = size_;
             *hard_size = 0;
             *easy_rank = 1;
-            *incx      = strides_[0];
+            *incx      = _strides[0];
         } else {
 
             *easy_size = 1;
@@ -848,25 +848,25 @@ struct TensorImpl final {
             if (is_row_major()) {
                 *incx       = stride(-1);
                 size_t size = 1;
-                for (int i = rank_ - 1; i >= 0; i--) {
+                for (int i = _rank - 1; i >= 0; i--) {
 
-                    if (size * *incx == strides_[i]) {
+                    if (size * *incx == _strides[i]) {
                         *easy_rank += 1;
-                        *easy_size *= dims_[i];
+                        *easy_size *= _dims[i];
                     } else {
-                        *hard_size *= dims_[i];
+                        *hard_size *= _dims[i];
                     }
                 }
             } else {
                 *incx       = stride(0);
                 size_t size = 1;
-                for (int i = 0; i < rank_; i++) {
+                for (int i = 0; i < _rank; i++) {
 
-                    if (size * *incx == strides_[i]) {
+                    if (size * *incx == _strides[i]) {
                         *easy_rank += 1;
-                        *easy_size *= dims_[i];
+                        *easy_size *= _dims[i];
                     } else {
-                        *hard_size *= dims_[i];
+                        *hard_size *= _dims[i];
                     }
                 }
             }
@@ -876,7 +876,7 @@ struct TensorImpl final {
     /**
      * @brief Checks to see if the pointer is associated.
      */
-    constexpr bool is_empty_view() const { return ptr_ == nullptr; }
+    constexpr bool is_empty_view() const { return _ptr == nullptr; }
 
     // Subscript.
 
@@ -1031,15 +1031,15 @@ struct TensorImpl final {
 
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view<0>(new_dims, new_strides, index_tuple);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<T>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1064,15 +1064,15 @@ struct TensorImpl final {
 
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view<0>(new_dims, new_strides, index_tuple);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1091,15 +1091,15 @@ struct TensorImpl final {
 
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view(new_dims, new_strides, index_list);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<T>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1118,15 +1118,15 @@ struct TensorImpl final {
 
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view(new_dims, new_strides, index_list);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1143,15 +1143,15 @@ struct TensorImpl final {
 
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view(new_dims, new_strides, index_list);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<T>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1168,15 +1168,15 @@ struct TensorImpl final {
 
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view(new_dims, new_strides, index_list);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1199,15 +1199,15 @@ struct TensorImpl final {
 
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view<0>(new_dims, new_strides, index_tuple);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<T>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1230,15 +1230,15 @@ struct TensorImpl final {
 
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view<0>(new_dims, new_strides, index_tuple);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1254,15 +1254,15 @@ struct TensorImpl final {
     constexpr TensorImpl<T> subscript_no_check(MultiIndex const &index) {
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view(new_dims, new_strides, index);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<T>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1278,15 +1278,15 @@ struct TensorImpl final {
     constexpr TensorImpl<std::add_const_t<T>> subscript_no_check(MultiIndex const &index) const {
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view(new_dims, new_strides, index);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1300,15 +1300,15 @@ struct TensorImpl final {
     constexpr TensorImpl<T> subscript_no_check(std::initializer_list<Range> const &index) {
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view(new_dims, new_strides, index);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<T>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1322,15 +1322,15 @@ struct TensorImpl final {
     constexpr TensorImpl<std::add_const_t<T>> subscript_no_check(std::initializer_list<Range> const &index) const {
         BufferVector<size_t> new_dims, new_strides;
 
-        new_dims.reserve(rank_);
-        new_strides.reserve(rank_);
+        new_dims.reserve(_rank);
+        new_strides.reserve(_rank);
 
         size_t offset = compute_view(new_dims, new_strides, index);
 
-        if (ptr_ == nullptr) {
+        if (_ptr == nullptr) {
             return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(ptr_ + offset, new_dims, new_strides);
+            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1344,8 +1344,8 @@ struct TensorImpl final {
         if (strides(0) >= strides(-1)) {
             return *this;
         } else {
-            return TensorImpl<T>(ptr_, BufferVector<size_t>(dims_.rbegin(), dims_.rend()),
-                                 BufferVector<size_t>(strides_.rbegin(), strides_.rend()));
+            return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
+                                 BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
         }
     }
 
@@ -1359,8 +1359,8 @@ struct TensorImpl final {
         if (strides(0) <= strides(-1)) {
             return *this;
         } else {
-            return TensorImpl<T>(ptr_, BufferVector<size_t>(dims_.rbegin(), dims_.rend()),
-                                 BufferVector<size_t>(strides_.rbegin(), strides_.rend()));
+            return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
+                                 BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
         }
     }
 
@@ -1374,8 +1374,8 @@ struct TensorImpl final {
         if (strides(0) >= strides(-1)) {
             return *this;
         } else {
-            return TensorImpl<std::add_const_t<T>>(ptr_, BufferVector<size_t>(dims_.rbegin(), dims_.rend()),
-                                                   BufferVector<size_t>(strides_.rbegin(), strides_.rend()));
+            return TensorImpl<std::add_const_t<T>>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
+                                                   BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
         }
     }
 
@@ -1389,8 +1389,8 @@ struct TensorImpl final {
         if (strides(0) <= strides(-1)) {
             return *this;
         } else {
-            return TensorImpl<std::add_const_t<T>>(ptr_, BufferVector<size_t>(dims_.rbegin(), dims_.rend()),
-                                                   BufferVector<size_t>(strides_.rbegin(), strides_.rend()));
+            return TensorImpl<std::add_const_t<T>>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
+                                                   BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
         }
     }
 
@@ -1409,37 +1409,37 @@ struct TensorImpl final {
         } else {
             size_t new_stride = 0, new_dim = std::numeric_limits<size_t>::max();
 
-            auto index_array = std::to_array<ptrdiff_t>({(ptrdiff_t)index...});
+            auto index_array = std::to_array<ptrdiff_t>({static_cast<ptrdiff_t>(index)...});
 
-            BufferVector<size_t> new_strides(strides_), new_dims(dims_);
+            BufferVector<size_t> new_strides(_strides), new_dims(_dims);
 
             // Calculate the tied stride.
             for (size_t i = 0; i < index_array.size(); i++) {
                 // Deal with negatives.
                 auto temp = index_array[i];
                 if (index_array[i] < 0) {
-                    index_array[i] += rank_;
+                    index_array[i] += _rank;
                 }
 
-                if (index_array[i] < 0 || index_array[i] >= rank_) {
+                if (index_array[i] < 0 || index_array[i] >= _rank) {
                     EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                             "Attempting to tie indices that are out of bounds! Got {}, expected between {} and {}.", temp,
-                                            -(ptrdiff_t)rank_, rank_ - 1);
+                                            -static_cast<ptrdiff_t>(_rank), _rank - 1);
                 }
 
-                new_stride += strides_[index_array[i]];
+                new_stride += _strides[index_array[i]];
                 new_strides[index_array[i]] = 0;
 
-                if (dims_[index_array[i]] < new_dim) {
-                    new_dim = dims_[index_array[i]];
+                if (_dims[index_array[i]] < new_dim) {
+                    new_dim = _dims[index_array[i]];
                 }
             }
 
             // Insert the dim and stride.
             if (is_row_major()) {
                 bool found = false;
-                for (int i = 0; i < rank_ - 1; i++) {
-                    if (new_strides[i] == 0 && new_stride >= strides_[i + 1]) {
+                for (int i = 0; i < _rank - 1; i++) {
+                    if (new_strides[i] == 0 && new_stride >= _strides[i + 1]) {
                         new_strides[i] = new_stride;
                         new_dims[i]    = new_dim;
                         found          = true;
@@ -1448,13 +1448,13 @@ struct TensorImpl final {
                 }
 
                 if (!found) {
-                    new_strides[rank_ - 1] = new_stride;
-                    new_dims[rank_ - 1]    = new_dim;
+                    new_strides[_rank - 1] = new_stride;
+                    new_dims[_rank - 1]    = new_dim;
                 }
             } else {
                 bool found = false;
-                for (int i = 0; i < rank_ - 1; i++) {
-                    if (new_strides[i] == 0 && new_stride < strides_[i + 1]) {
+                for (int i = 0; i < _rank - 1; i++) {
+                    if (new_strides[i] == 0 && new_stride < _strides[i + 1]) {
                         new_strides[i] = new_stride;
                         new_dims[i]    = new_dim;
                         found          = true;
@@ -1463,24 +1463,24 @@ struct TensorImpl final {
                 }
 
                 if (!found) {
-                    new_strides[rank_ - 1] = new_stride;
-                    new_dims[rank_ - 1]    = new_dim;
+                    new_strides[_rank - 1] = new_stride;
+                    new_dims[_rank - 1]    = new_dim;
                 }
             }
 
-            // Remove all of the zero indices.
+            // Remove all the zero indices.
             BufferVector<size_t> temp_strides, temp_dims;
-            temp_strides.reserve(rank_);
-            temp_dims.reserve(rank_);
+            temp_strides.reserve(_rank);
+            temp_dims.reserve(_rank);
 
-            for (int i = 0; i < rank_; i++) {
+            for (int i = 0; i < _rank; i++) {
                 if (new_strides[i] != 0) {
                     temp_strides.push_back(new_strides[i]);
                     temp_dims.push_back(new_dims[i]);
                 }
             }
 
-            return TensorImpl<T>(ptr_, temp_dims, temp_strides);
+            return TensorImpl<T>(_ptr, temp_dims, temp_strides);
         }
     }
 
@@ -1499,38 +1499,38 @@ struct TensorImpl final {
         } else {
             size_t new_stride = 0, new_dim = std::numeric_limits<size_t>::max();
 
-            auto index_array = std::to_array<ptrdiff_t>({(ptrdiff_t)index...});
+            auto index_array = std::to_array<ptrdiff_t>({static_cast<ptrdiff_t>(index)...});
 
-            BufferVector<size_t> new_strides(strides_), new_dims(dims_);
+            BufferVector<size_t> new_strides(_strides), new_dims(_dims);
 
             // Calculate the tied stride.
             for (size_t i = 0; i < index_array.size(); i++) {
                 // Deal with negatives.
                 auto temp = index_array[i];
                 if (index_array[i] < 0) {
-                    index_array[i] += rank_;
+                    index_array[i] += _rank;
                 }
 
-                if (index_array[i] < 0 || index_array[i] >= rank_) {
+                if (index_array[i] < 0 || index_array[i] >= _rank) {
                     EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                             "Attempting to tie indices that are out of bounds! Got {}, expected between {} and {}.", temp,
-                                            -(ptrdiff_t)rank_, rank_ - 1);
+                                            -static_cast<ptrdiff_t>(_rank), _rank - 1);
                 }
 
                 // This takes care of duplicates.
                 new_stride += new_strides[index_array[i]];
                 new_strides[index_array[i]] = 0;
 
-                if (dims_[index_array[i]] < new_dim) {
-                    new_dim = dims_[index_array[i]];
+                if (_dims[index_array[i]] < new_dim) {
+                    new_dim = _dims[index_array[i]];
                 }
             }
 
             // Insert the dim and stride.
             if (is_row_major()) {
                 bool found = false;
-                for (int i = 0; i < rank_ - 1; i++) {
-                    if (new_strides[i] == 0 && new_stride >= strides_[i + 1]) {
+                for (int i = 0; i < _rank - 1; i++) {
+                    if (new_strides[i] == 0 && new_stride >= _strides[i + 1]) {
                         new_strides[i] = new_stride;
                         new_dims[i]    = new_dim;
                         found          = true;
@@ -1539,13 +1539,13 @@ struct TensorImpl final {
                 }
 
                 if (!found) {
-                    new_strides[rank_ - 1] = new_stride;
-                    new_dims[rank_ - 1]    = new_dim;
+                    new_strides[_rank - 1] = new_stride;
+                    new_dims[_rank - 1]    = new_dim;
                 }
             } else {
                 bool found = false;
-                for (int i = 0; i < rank_ - 1; i++) {
-                    if (new_strides[i] == 0 && new_stride < strides_[i + 1]) {
+                for (int i = 0; i < _rank - 1; i++) {
+                    if (new_strides[i] == 0 && new_stride < _strides[i + 1]) {
                         new_strides[i] = new_stride;
                         new_dims[i]    = new_dim;
                         found          = true;
@@ -1554,24 +1554,24 @@ struct TensorImpl final {
                 }
 
                 if (!found) {
-                    new_strides[rank_ - 1] = new_stride;
-                    new_dims[rank_ - 1]    = new_dim;
+                    new_strides[_rank - 1] = new_stride;
+                    new_dims[_rank - 1]    = new_dim;
                 }
             }
 
-            // Remove all of the zero strides.
+            // Remove all the zero strides.
             BufferVector<size_t> temp_strides, temp_dims;
-            temp_strides.reserve(rank_);
-            temp_dims.reserve(rank_);
+            temp_strides.reserve(_rank);
+            temp_dims.reserve(_rank);
 
-            for (int i = 0; i < rank_; i++) {
+            for (int i = 0; i < _rank; i++) {
                 if (new_strides[i] != 0) {
                     temp_strides.push_back(new_strides[i]);
                     temp_dims.push_back(new_dims[i]);
                 }
             }
 
-            return TensorImpl<std::add_const_t<T>>(ptr_, temp_dims, temp_strides);
+            return TensorImpl<std::add_const_t<T>>(_ptr, temp_dims, temp_strides);
         }
     }
 
@@ -1585,13 +1585,13 @@ struct TensorImpl final {
             auto  temp  = index;
 
             if (index < 0) {
-                index += dims_[I];
+                index += _dims[I];
             }
 
-            if (index < 0 || index >= dims_[I]) {
+            if (index < 0 || index >= _dims[I]) {
                 EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                         "Index passed to view creation is out of range! Got {}, expected between {} and {}.", temp,
-                                        -(ptrdiff_t)dims_[I], dims_[I] - 1);
+                                        -static_cast<ptrdiff_t>(_dims[I]), _dims[I] - 1);
             }
             adjust_ranges<I + 1>(indices);
         } else if constexpr (std::is_base_of_v<Range, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
@@ -1599,23 +1599,23 @@ struct TensorImpl final {
             auto  temp  = index;
 
             if (index[0] < 0) {
-                index[0] += dims_[I];
+                index[0] += _dims[I];
             }
 
             if (index[1] < 0) {
-                index[1] += dims_[I];
+                index[1] += _dims[I];
             }
 
-            if (index[0] < 0 || index[0] >= dims_[I]) {
+            if (index[0] < 0 || index[0] >= _dims[I]) {
                 EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                         "Lower bound of range passed to view creation is out of range! Got {}, expected between {} and {}.",
-                                        temp[0], -(ptrdiff_t)dims_[I], dims_[I] - 1);
+                                        temp[0], -static_cast<ptrdiff_t>(_dims[I]), _dims[I] - 1);
             }
 
-            if (index[1] < index[0] || index[1] > dims_[I]) {
+            if (index[1] < index[0] || index[1] > _dims[I]) {
                 EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                         "Upper bound of range passed to view creation is out of range! Got {}, expected between {} and {}.",
-                                        temp[1], index[0], dims_[I]);
+                                        temp[1], index[0], _dims[I]);
             }
             adjust_ranges<I + 1>(indices);
         } else {
@@ -1632,16 +1632,16 @@ struct TensorImpl final {
             return 0;
         } else {
             if constexpr (std::is_integral_v<std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                return std::get<I>(indices) * strides_[I] + compute_view<I + 1>(out_dims, out_strides, indices);
+                return std::get<I>(indices) * _strides[I] + compute_view<I + 1>(out_dims, out_strides, indices);
             } else if constexpr (std::is_base_of_v<Range, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
                 Range range = std::get<I>(indices);
 
                 out_dims.push_back(range[1] - range[0]);
-                out_strides.push_back(strides_[I]);
-                return range[0] * strides_[I] + compute_view<I + 1>(out_dims, out_strides, indices);
+                out_strides.push_back(_strides[I]);
+                return range[0] * _strides[I] + compute_view<I + 1>(out_dims, out_strides, indices);
             } else if constexpr (std::is_base_of_v<AllT, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                out_dims.push_back(dims_[I]);
-                out_strides.push_back(strides_[I]);
+                out_dims.push_back(_dims[I]);
+                out_strides.push_back(_strides[I]);
                 return compute_view<I + 1>(out_dims, out_strides, indices);
             }
         }
@@ -1650,7 +1650,7 @@ struct TensorImpl final {
     template <ContainerOrInitializer MultiIndex>
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
     constexpr void adjust_ranges(MultiIndex &indices) const {
-        for (auto &[item, dim] : Zip(indices, std::as_const(dims_))) {
+        for (auto &[item, dim] : Zip(indices, std::as_const(_dims))) {
             auto temp = item;
 
             if (item[0] < 0) {
@@ -1664,7 +1664,7 @@ struct TensorImpl final {
             if (item[0] < 0 || item[0] >= dim) {
                 EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                         "Lower bound of range passed to view creation is out of range! Got {}, expected between {} and {}.",
-                                        temp[0], -(ptrdiff_t)dim, dim - 1);
+                                        temp[0], -static_cast<ptrdiff_t>(dim), dim - 1);
             }
 
             if (item[1] < item[0] || item[1] > dim) {
@@ -1679,7 +1679,7 @@ struct TensorImpl final {
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
     constexpr size_t compute_view(BufferVector<size_t> &out_dims, BufferVector<size_t> &out_strides, MultiIndex const &indices) const {
         size_t out = 0;
-        for (auto [range, stride] : Zip(indices, strides_)) {
+        for (auto [range, stride] : Zip(indices, _strides)) {
 
             out_dims.push_back(range[1] - range[0]);
             out_strides.push_back(stride);
@@ -1689,9 +1689,9 @@ struct TensorImpl final {
         return out;
     }
 
-    pointer              ptr_{nullptr};
-    size_t               rank_, size_;
-    BufferVector<size_t> dims_, strides_;
+    pointer              _ptr{nullptr};
+    size_t               _rank, size_;
+    BufferVector<size_t> _dims, _strides;
 };
 
 } // namespace detail
