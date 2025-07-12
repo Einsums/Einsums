@@ -65,7 +65,9 @@
 
 #else
 
-#    define HPTT_DUPLICATE(condition, ...)   {__VA_ARGS__}
-#    define HPTT_DUPLICATE_2(condition, ...) {__VA_ARGS__}
+#    define HPTT_DUPLICATE(condition, ...)                                                                                                 \
+        { __VA_ARGS__ }
+#    define HPTT_DUPLICATE_2(condition, ...)                                                                                               \
+        { __VA_ARGS__ }
 
 #endif

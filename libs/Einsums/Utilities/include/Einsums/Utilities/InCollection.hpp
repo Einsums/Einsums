@@ -75,7 +75,7 @@ template <typename T, typename Haystack>
     }
 constexpr bool not_in(T &&needle, Haystack const &haystack) {
     return !detail::is_in(std::forward<T>(needle), std::forward<Haystack>(haystack),
-                         std::make_index_sequence<std::tuple_size_v<Haystack>>());
+                          std::make_index_sequence<std::tuple_size_v<Haystack>>());
 }
 
 /**
@@ -103,6 +103,5 @@ constexpr bool not_in(T &&needle, std::initializer_list<std::decay_t<T>> haystac
     }
     return true;
 }
-
 
 } // namespace einsums

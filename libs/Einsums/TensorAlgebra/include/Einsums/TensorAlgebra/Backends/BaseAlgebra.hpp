@@ -104,7 +104,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
     auto const B_link_strides   = tensor_algebra::get_stride_for(B, link_position_in_B, link_unique);
 
     if constexpr (sizeof...(CIndices) == 0 && sizeof...(LinkDims) != 0) {
-        if(C_prefactor == CDataType{0.0}) {
+        if (C_prefactor == CDataType{0.0}) {
             *C = CDataType{0.0};
         } else {
             *C *= C_prefactor;
@@ -114,7 +114,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
     } else {
         auto const C_target_strides = tensor_algebra::get_stride_for(*C, target_position_in_C, C_unique);
 
-        if(C_prefactor == CDataType{0.0}) {
+        if (C_prefactor == CDataType{0.0}) {
             C->zero();
         } else {
             *C *= C_prefactor;
@@ -125,4 +125,3 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
     }
 }
 } // namespace einsums::tensor_algebra::detail
-

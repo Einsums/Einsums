@@ -113,7 +113,7 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
                                     print::ordinal((size_t)n));
         }
 
-        if(C->dim((size_t) n) == 0) {
+        if (C->dim((size_t)n) == 0) {
             return;
         }
     });

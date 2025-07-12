@@ -1,10 +1,10 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
+#include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
-#include "Einsums/TensorAlgebra/Detail/Utilities.hpp"
 
 #include <Einsums/Testing.hpp>
 
@@ -42,8 +42,8 @@ TEMPLATE_TEST_CASE("einsum TensorView", "[tensor]", float, double, std::complex<
         // false, false
         {
             // einsum("ik=ij,jk", &result, view, view);
-            REQUIRE_NOTHROW(
-                einsum(Indices{index::i, index::k}, &result, Indices{index::i, index::j}, view, Indices{index::j, index::k}, view, &alg_choice));
+            REQUIRE_NOTHROW(einsum(Indices{index::i, index::k}, &result, Indices{index::i, index::j}, view, Indices{index::j, index::k},
+                                   view, &alg_choice));
             REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
             // gemm<false, false>(1.0, view, view, 0.0, &result);
 

@@ -1251,7 +1251,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             _strides[Rank - 1] = 1;
         }
 
-        for (ptrdiff_t i = (ptrdiff_t) Rank - 2; i >= 0; i--) {
+        for (ptrdiff_t i = (ptrdiff_t)Rank - 2; i >= 0; i--) {
             if (_strides[i] == 0) {
                 _strides[i] = _strides[i + 1];
             }

@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLAS.hpp>
@@ -104,7 +109,7 @@ void syev(std::string const &jobz, py::buffer &A, py::buffer &W) {
     } else if (A_info.format == py::format_descriptor<std::complex<double>>::format()) {
         std::complex<double> lwork_temp;
         info  = blas::heev<double>(jobz_ch, 'U', n, (std::complex<double> *)A_info.ptr, lda, (double *)W_info.ptr, &lwork_temp,
-                                   (blas::int_t)-1, (double *)nullptr);
+                                  (blas::int_t)-1, (double *)nullptr);
         lwork = lwork_temp.real();
     } else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform gemv on floating point matrices! Got type {}.", A_info.format);

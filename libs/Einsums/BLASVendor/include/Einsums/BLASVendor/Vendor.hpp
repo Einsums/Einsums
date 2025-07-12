@@ -193,4 +193,9 @@ auto sgeqrf(int_t m, int_t n, float *a, int_t lda, float *tau) -> int_t;
 auto cgeqrf(int_t m, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *tau) -> int_t;
 auto zgeqrf(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t;
 
+void scopy(int_t n, float const *x, int_t incx, float *y, int_t incy);
+void dcopy(int_t n, double const *x, int_t incx, double *y, int_t incy);
+void ccopy(int_t n, std::complex<float> const *x, int_t incx, std::complex<float> *y, int_t incy);
+void zcopy(int_t n, std::complex<double> const *x, int_t incx, std::complex<double> *y, int_t incy);
+
 } // namespace einsums::blas::vendor

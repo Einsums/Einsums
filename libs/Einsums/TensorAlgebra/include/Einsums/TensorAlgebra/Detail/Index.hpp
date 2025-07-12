@@ -197,7 +197,7 @@ constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, 
  * @tparam Args The indices to pass.
  */
 template <typename... Args>
-requires(std::is_base_of_v<index::LabelBase, Args> && ... && true)
+    requires(std::is_base_of_v<index::LabelBase, Args> && ... && true)
 struct Indices : std::tuple<Args...> {
     /**
      * Construct a new Indices object using the given indices.

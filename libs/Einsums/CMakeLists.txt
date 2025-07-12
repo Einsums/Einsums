@@ -35,6 +35,7 @@ set(_Einsums_modules
   Tensor
   TensorAlgebra
   TensorBase
+  TensorImpl
   TensorUtilities
   TypeSupport
   Utilities

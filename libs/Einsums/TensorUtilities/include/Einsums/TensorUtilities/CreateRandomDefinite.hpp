@@ -59,7 +59,8 @@ auto create_random_definite(std::string const &name, int rows, int cols, RemoveC
     std::default_random_engine engine;
 
     // Create random eigenvalues. Need to calculate the standard deviation from the mean.
-    auto normal = std::normal_distribution<Real>(0, std::abs(mean) / Real{2.0} / std::numbers::sqrt2_v<Real> / std::numbers::inv_sqrtpi_v<Real>);
+    auto normal =
+        std::normal_distribution<Real>(0, std::abs(mean) / Real{2.0} / std::numbers::sqrt2_v<Real> / std::numbers::inv_sqrtpi_v<Real>);
 
     Tensor<T, 1> Evals("name2", rows);
 

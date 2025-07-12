@@ -927,7 +927,7 @@ static INLINE void macro_kernel(floatType const *A, floatType const *Anext, size
 template <bool betaIsZero, typename floatType, bool conjA>
 void transpose_int_scalar(floatType const *A, size_t sizeStride1A, size_t innerStrideA, floatType *B, size_t sizeStride1B,
                           size_t innerStrideB, floatType const alpha, floatType const beta, ComputeNode const *plan) {
-    ptrdiff_t const    end       = plan->end;
+    ptrdiff_t const end       = plan->end;
     size_t const    lda       = plan->lda;
     size_t const    ldb       = plan->ldb;
     ptrdiff_t const offDiffAB = plan->offDiffAB;
@@ -946,8 +946,8 @@ void transpose_int_scalar(floatType const *A, size_t sizeStride1A, size_t innerS
                                                                    sizeStride1B, innerStrideB, alpha, beta, plan->next);
     } else {
         // macro-kernel
-        size_t const lda_macro       = plan->next->lda;
-        size_t const ldb_macro       = plan->next->ldb;
+        size_t const    lda_macro       = plan->next->lda;
+        size_t const    ldb_macro       = plan->next->ldb;
         ptrdiff_t       i               = plan->start;
         ptrdiff_t const scalarRemainder = plan->end - plan->start;
         if (scalarRemainder > 0) {
@@ -967,11 +967,11 @@ void transpose_int_scalar(floatType const *A, size_t sizeStride1A, size_t innerS
 template <int blockingA, int blockingB, bool betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
 void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrideA, floatType *B, floatType const *Bnext,
                    size_t innerStrideB, floatType const alpha, floatType const beta, ComputeNode const *plan) {
-    ptrdiff_t const  end       = plan->end - (plan->inc - 1);
-    ptrdiff_t const  inc       = plan->inc;
-    size_t const  lda       = plan->lda;
-    size_t const  ldb       = plan->ldb;
-    int32_t const offDiffAB = plan->offDiffAB;
+    ptrdiff_t const end       = plan->end - (plan->inc - 1);
+    ptrdiff_t const inc       = plan->inc;
+    size_t const    lda       = plan->lda;
+    size_t const    ldb       = plan->ldb;
+    int32_t const   offDiffAB = plan->offDiffAB;
 
     constexpr int blocking_micro_ = REGISTER_BITS / 8 / sizeof(floatType);
     constexpr int blocking_       = blocking_micro_ * 4;
@@ -1076,9 +1076,9 @@ void transpose_int_constStride1(floatType const *A, floatType *B, floatType cons
     ptrdiff_t const end = plan->end - (plan->inc - 1);
     /// @todo Fix code.
     constexpr ptrdiff_t inc       = 1;
-    size_t const      lda       = plan->lda;
-    size_t const      ldb       = plan->ldb;
-    ptrdiff_t const   offDiffAB = plan->offDiffAB;
+    size_t const        lda       = plan->lda;
+    size_t const        ldb       = plan->ldb;
+    ptrdiff_t const     offDiffAB = plan->offDiffAB;
 
     if (plan->next != nullptr) {
         for (ptrdiff_t i = plan->start; i < end; i += inc) {

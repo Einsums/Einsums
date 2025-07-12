@@ -53,7 +53,7 @@ struct GPUAllocator {
     using dev_datatype = std::conditional_t<
         std::is_same_v<std::remove_cv_t<T>, std::complex<float>>, hipFloatComplex,
         std::conditional_t<std::is_same_v<std::remove_cv_t<T>, std::complex<double>>, hipDoubleComplex, std::remove_cv_t<T>>>;
-    
+
     /**
      * @typedef pointer
      *
@@ -61,7 +61,7 @@ struct GPUAllocator {
      *
      * Required by the allocator protocol.
      */
-    using pointer            = GPUPointer<T>;
+    using pointer = GPUPointer<T>;
 
     /**
      * @typedef const_pointer
@@ -70,7 +70,7 @@ struct GPUAllocator {
      *
      * Required by the allocator protocol.
      */
-    using const_pointer      = GPUPointer<T const>;
+    using const_pointer = GPUPointer<T const>;
 
     /**
      * @typedef void_pointer
@@ -79,7 +79,7 @@ struct GPUAllocator {
      *
      * Required by the allocator protocol.
      */
-    using void_pointer       = GPUPointer<void>;
+    using void_pointer = GPUPointer<void>;
 
     /**
      * @typedef const_void_pointer
@@ -97,7 +97,7 @@ struct GPUAllocator {
      *
      * Required by the allocator protocol.
      */
-    using value_type         = dev_datatype;
+    using value_type = dev_datatype;
 
     /**
      * @typedef size_type
@@ -106,7 +106,7 @@ struct GPUAllocator {
      *
      * Required by the allocator protocol.
      */
-    using size_type          = size_t;
+    using size_type = size_t;
 
     /**
      * @typedef difference_type
@@ -115,7 +115,7 @@ struct GPUAllocator {
      *
      * Required by the allocator protocol.
      */
-    using difference_type    = ptrdiff_t;
+    using difference_type = ptrdiff_t;
 
     /**
      * @brief Allocate a number of elements.

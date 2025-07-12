@@ -37,6 +37,7 @@ Einsums Modules
     /libs/Einsums/Tensor/docs/index.rst
     /libs/Einsums/TensorAlgebra/docs/index.rst
     /libs/Einsums/TensorBase/docs/index.rst
+    /libs/Einsums/TensorImpl/docs/index.rst
     /libs/Einsums/TensorUtilities/docs/index.rst
     /libs/Einsums/TypeSupport/docs/index.rst
     /libs/Einsums/Utilities/docs/index.rst

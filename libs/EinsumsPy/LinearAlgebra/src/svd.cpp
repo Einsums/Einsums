@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLAS.hpp>
@@ -117,12 +122,12 @@ RuntimeTensor<T> svd_nullspace_work(pybind11::buffer const &_A) {
     auto nullspace      = RuntimeTensor<T>("Nullspace", {Vview.dim(1), Vview.dim(0)});
     auto nullspace_view = (TensorView<T, 2>)nullspace;
 
-    if(nullspace.dim(0) == 0 || nullspace.dim(1) == 0) {
+    if (nullspace.dim(0) == 0 || nullspace.dim(1) == 0) {
         return nullspace;
     }
 
     tensor_algebra::permute<true>(T{0.0}, Indices{index::i, index::j}, &nullspace_view, T{1.0}, Indices{index::j, index::i}, Vview);
-    
+
     // for (size_t i = 0; i < nullspace.dim(0); i++) {
     //     for (size_t j = 0; j < nullspace.dim(1); j++) {
     //         if constexpr (IsComplexV<T>) {
@@ -202,8 +207,9 @@ pybind11::tuple svd_dd_work(pybind11::buffer const &_A, linear_algebra::Vectors 
 
     if (info != 0) {
         if (info < 0) {
-            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "svd_dd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
-                          m);
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "svd_dd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}",
+                                    -info, m, n, n, m);
         } else {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd_dd did not converge!");
         }

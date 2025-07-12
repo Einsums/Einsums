@@ -8,6 +8,7 @@
 #include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Iterator/Zip.hpp>
 
 #include <cstdarg>
 #include <cstddef>
@@ -468,12 +469,12 @@ constexpr inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_
  * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
  */
 template <typename StorageType1, typename StorageType2>
-    requires(!std::is_integral_v<StorageType1> && !std::is_integral_v<StorageType2>)
+    requires(!std::is_arithmetic_v<StorageType1> && !std::is_arithmetic_v<StorageType2>)
 inline size_t indices_to_sentinel(StorageType1 const &unique_strides, StorageType2 const &inds) {
     size_t out = 0;
 
-    for (size_t i = 0; i < unique_strides.size(); i++) {
-        out += inds[i] * unique_strides[i];
+    for (auto [ind, stride] : Zip(inds, unique_strides)) {
+        out += ind * stride;
     }
 
     return out;
@@ -552,20 +553,24 @@ inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_stri
         EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices supplied!");
     }
 
-    for (size_t i = 0; i < inds.size(); i++) {
-        ptrdiff_t ind = inds[i];
+    auto ind_iter    = inds.begin();
+    auto dim_iter    = unique_dims.begin();
+    auto stride_iter = unique_strides.begin();
+
+    for (size_t i = 0; i < inds.size(); i++, ind_iter++, dim_iter++, stride_iter++) {
+        ptrdiff_t ind = *ind_iter;
 
         if (ind < 0) [[unlikely]] {
-            ind += unique_dims[i];
+            ind += *dim_iter;
         }
 
-        if (ind < 0 || ind >= unique_dims[i]) [[unlikely]] {
+        if (ind < 0 || ind >= *dim_iter) [[unlikely]] {
             EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                     "Index out of range! Index {} in rank {} was either greater than or equal to {} or less than {}",
-                                    inds[i], i, unique_dims[i], -(ptrdiff_t)unique_dims[i]);
+                                    *ind_iter, i, *dim_iter, -(ptrdiff_t)*dim_iter);
         }
 
-        out += ind * unique_strides[i];
+        out += ind * *stride_iter;
     }
 
     return out;

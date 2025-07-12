@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLAS.hpp>
@@ -16,11 +21,11 @@ namespace einsums {
 namespace python {
 namespace detail {
 
-int determine_easy_vector(pybind11::buffer const &X, size_t *easy_elems, size_t *incx, size_t *hard_elems,
-                           std::vector<size_t> *X_strides, std::vector<size_t> *hard_index_strides) {
+int determine_easy_vector(pybind11::buffer const &X, size_t *easy_elems, size_t *incx, size_t *hard_elems, std::vector<size_t> *X_strides,
+                          std::vector<size_t> *hard_index_strides) {
     py::buffer_info X_info = X.request(false);
 
-    int    easy_rank   =-1;
+    int    easy_rank   = -1;
     size_t total_elems = 1;
 
     *easy_elems = 1;
@@ -33,7 +38,7 @@ int determine_easy_vector(pybind11::buffer const &X, size_t *easy_elems, size_t 
 
     for (int i = X_info.ndim - 1; i >= 0; i--) {
         (*hard_index_strides)[i] = total_elems;
-        (*X_strides)[i]       = X_info.strides[i] / X_info.itemsize;
+        (*X_strides)[i]          = X_info.strides[i] / X_info.itemsize;
 
         if (total_elems * *incx == (*X_strides)[i]) {
             *easy_elems *= X_info.shape[i];
@@ -56,7 +61,7 @@ void recalc_index_strides(std::vector<size_t> *index_strides, int new_rank) {
 
     size_t div_val = index_strides->at(index_strides->size() - 1);
 
-    for(int i = 0; i < index_strides->size(); i++) {
+    for (int i = 0; i < index_strides->size(); i++) {
         index_strides->at(i) /= div_val;
     }
 }

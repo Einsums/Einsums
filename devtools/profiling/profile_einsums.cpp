@@ -86,7 +86,7 @@ void register_args(argparse::ArgumentParser &parser) {
     parser.add_argument("-c").flag().store_into(global_bools["c"]);
 }
 
-int main(int argc, char **argv) {
+int         main(int argc, char **argv) {
 #pragma omp parallel
     {
 #pragma omp single

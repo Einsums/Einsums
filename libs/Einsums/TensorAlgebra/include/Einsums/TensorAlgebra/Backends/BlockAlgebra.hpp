@@ -43,11 +43,10 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
-        if(A.block_dim(i) == 0 || B.block_dim(i) == 0 || C->block_dim(i) == 0) {
+        if (A.block_dim(i) == 0 || B.block_dim(i) == 0 || C->block_dim(i) == 0) {
             continue;
         }
         einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
-
     }
 }
 
@@ -77,7 +76,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
-        if(A.block_dim(i) == 0 || B.block_dim(i) == 0) {
+        if (A.block_dim(i) == 0 || B.block_dim(i) == 0) {
             continue;
         }
         std::array<Range, CType::Rank> view_index;
@@ -164,9 +163,9 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
         // Loop through and perform einsums.
 #pragma omp parallel for reduction(+ : temp)
         for (int i = 0; i < A.num_blocks(); i++) {
-            if(A.block_dim(i) == 0 || B.block_dim(i) == 0) {
-            continue;
-        }
+            if (A.block_dim(i) == 0 || B.block_dim(i) == 0) {
+                continue;
+            }
             CType temp_c = *C;
             einsum<OnlyUseGenericAlgorithm, false>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, A[i], B_indices, B[i]);
             temp += (CDataType)temp_c;
@@ -199,13 +198,13 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < B.num_blocks(); i++) {
-        if(B.block_dim(i) == 0 || C->block_dim(i) == 0) {
+        if (B.block_dim(i) == 0 || C->block_dim(i) == 0) {
             continue;
         }
         std::array<Range, AType::Rank> view_index;
         view_index.fill(B.block_range(i));
         einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, std::apply(A, view_index),
-                                        B_indices, B[i]);
+                                               B_indices, B[i]);
     }
 }
 
@@ -231,7 +230,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
         std::array<Range, AType::Rank> view_index_a;
         view_index_a.fill(B.block_range(i));
         einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(std::apply(*C, view_index_c)), AB_prefactor, A_indices,
-                                        std::apply(A, view_index_a), B_indices, B[i]);
+                                               std::apply(A, view_index_a), B_indices, B[i]);
     }
 }
 
@@ -260,7 +259,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             std::array<Range, AType::Rank> view_index;
             view_index.fill(B.block_range(i));
             einsum<OnlyUseGenericAlgorithm, false>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices,
-                                            std::apply(A, view_index), B_indices, B[i]);
+                                                   std::apply(A, view_index), B_indices, B[i]);
         }
 
         if (C_prefactor == CDataType{0.0}) {
@@ -292,7 +291,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             std::array<Range, AType::Rank> view_index;
             view_index.fill(B.block_range(i));
             einsum<OnlyUseGenericAlgorithm, false>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, std::apply(A, view_index),
-                                            B_indices, B[i]);
+                                                   B_indices, B[i]);
             temp += (CDataType)temp_c;
         }
         *C += temp;
@@ -323,13 +322,13 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
-        if(A.block_dim(i) == 0 || C->block_dim(i) == 0) {
+        if (A.block_dim(i) == 0 || C->block_dim(i) == 0) {
             continue;
         }
         std::array<Range, BType::Rank> view_index;
         view_index.fill(A.block_range(i));
         einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices,
-                                        std::apply(B, view_index));
+                                               std::apply(B, view_index));
     }
 }
 
@@ -354,8 +353,8 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
         view_index_c.fill(A.block_range(i));
         std::array<Range, BType::Rank> view_index_b;
         view_index_b.fill(A.block_range(i));
-        einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(std::apply(*C, view_index_c)), AB_prefactor, A_indices, A[i], B_indices,
-                                        std::apply(B, view_index_b));
+        einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(std::apply(*C, view_index_c)), AB_prefactor, A_indices, A[i],
+                                               B_indices, std::apply(B, view_index_b));
     }
 }
 
@@ -384,7 +383,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             std::array<Range, BType::Rank> view_index;
             view_index.fill(A.block_range(i));
             einsum<OnlyUseGenericAlgorithm, false>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices, A[i],
-                                            B_indices, std::apply(B, view_index));
+                                                   B_indices, std::apply(B, view_index));
         }
 
         if (C_prefactor == CDataType{0.0}) {
@@ -416,7 +415,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             std::array<Range, BType::Rank> view_index;
             view_index.fill(A.block_range(i));
             einsum<OnlyUseGenericAlgorithm, false>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, A[i], B_indices,
-                                            std::apply(B, view_index));
+                                                   std::apply(B, view_index));
             temp += temp_c;
         }
         *C += temp;

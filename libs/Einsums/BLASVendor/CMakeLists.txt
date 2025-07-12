@@ -14,6 +14,7 @@ set(BLASVendorHeaders Einsums/BLASVendor/Vendor.hpp)
 set(BLASVendorSources
     InitializeFinalize.cpp
     axpy.cpp
+    copy.cpp
     dot.cpp
     gees.cpp
     geev.cpp
@@ -41,6 +42,7 @@ einsums_add_module(
   SOURCES ${BLASVendorSources}
   HEADERS ${BLASVendorHeaders}
   DEPENDENCIES tgt::lapack
-  MODULE_DEPENDENCIES Einsums_Assertion Einsums_Config Einsums_Print Einsums_Profile Einsums_BLASBase Einsums_HPTT
+        MODULE_DEPENDENCIES Einsums_Assertion Einsums_Config Einsums_Print Einsums_Profile
+        Einsums_BLASBase Einsums_HPTT
   CMAKE_SUBDIRS examples tests
 )

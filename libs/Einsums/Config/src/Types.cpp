@@ -101,10 +101,10 @@ size_t einsums::hashes::insensitive_hash<char *>::operator()(char const *str) co
     // Calculate the mask. If size_t is N bytes, mask for the top N bits.
     // The first part creates a Mersenne value with the appropriate number of bits.
     // The second shifts it to the top.
-    constexpr size_t mask = (((size_t)1 << sizeof(size_t)) - 1) << (7 * sizeof(size_t));
-    size_t curr_index = 0;
+    constexpr size_t mask       = (((size_t)1 << sizeof(size_t)) - 1) << (7 * sizeof(size_t));
+    size_t           curr_index = 0;
 
-    while(str[curr_index] != 0) {
+    while (str[curr_index] != 0) {
         char upper = std::toupper(str[curr_index]);
         if (upper == '-') { // Convert dashes to underscores.
             upper = '_';

@@ -10,7 +10,21 @@
 #include <Einsums/BLAS/Types.hpp>
 #include <Einsums/Concepts/Complex.hpp>
 
+#include <type_traits>
+
 namespace einsums::blas {
+
+template <typename T>
+struct IsBlasable : std::is_floating_point<std::remove_cvref_t<T>> {};
+
+template <typename T>
+struct IsBlasable<std::complex<T>> : std::is_floating_point<T> {};
+
+template <typename T>
+constexpr bool IsBlasableV = IsBlasable<T>::value;
+
+template <typename T>
+concept Blasable = IsBlasableV<T>;
 
 #if !defined(DOXYGEN)
 namespace detail {
@@ -750,8 +764,10 @@ inline auto gesvd<std::complex<double>>(char jobu, char jobvt, int_t m, int_t n,
 namespace detail {
 auto EINSUMS_EXPORT sgees(char jobvs, int_t n, float *a, int_t lda, int_t *sdim, float *wr, float *wi, float *vs, int_t ldvs) -> int_t;
 auto EINSUMS_EXPORT dgees(char jobvs, int_t n, double *a, int_t lda, int_t *sdim, double *wr, double *wi, double *vs, int_t ldvs) -> int_t;
-auto EINSUMS_EXPORT cgees(char jobvs, int_t n, std::complex<float> *a, int_t lda, int_t *sdim, std::complex<float> *w, std::complex<float> *vs, int_t ldvs) -> int_t;
-auto EINSUMS_EXPORT zgees(char jobvs, int_t n, std::complex<double> *a, int_t lda, int_t *sdim, std::complex<double> *w, std::complex<double> *vs, int_t ldvs) -> int_t;
+auto EINSUMS_EXPORT cgees(char jobvs, int_t n, std::complex<float> *a, int_t lda, int_t *sdim, std::complex<float> *w,
+                          std::complex<float> *vs, int_t ldvs) -> int_t;
+auto EINSUMS_EXPORT zgees(char jobvs, int_t n, std::complex<double> *a, int_t lda, int_t *sdim, std::complex<double> *w,
+                          std::complex<double> *vs, int_t ldvs) -> int_t;
 } // namespace detail
 
 /*!
@@ -775,12 +791,14 @@ template <typename T>
 auto gees(char jobvs, int_t n, T *a, int_t lda, int_t *sdim, T *w, T *vs, int_t ldvs) -> int_t;
 
 template <>
-inline auto gees<std::complex<float>>(char jobvs, int_t n, std::complex<float> *a, int_t lda, int_t *sdim, std::complex<float> *w, std::complex<float> *vs, int_t ldvs) -> int_t {
+inline auto gees<std::complex<float>>(char jobvs, int_t n, std::complex<float> *a, int_t lda, int_t *sdim, std::complex<float> *w,
+                                      std::complex<float> *vs, int_t ldvs) -> int_t {
     return detail::cgees(jobvs, n, a, lda, sdim, w, vs, ldvs);
 }
 
 template <>
-inline auto gees<std::complex<double>>(char jobvs, int_t n, std::complex<double> *a, int_t lda, int_t *sdim, std::complex<double> *w, std::complex<double> *vs, int_t ldvs) -> int_t {
+inline auto gees<std::complex<double>>(char jobvs, int_t n, std::complex<double> *a, int_t lda, int_t *sdim, std::complex<double> *w,
+                                       std::complex<double> *vs, int_t ldvs) -> int_t {
     return detail::zgees(jobvs, n, a, lda, sdim, w, vs, ldvs);
 }
 
@@ -897,6 +915,36 @@ template <>
 inline auto ungqr<std::complex<double>>(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::complex<double> const *tau)
     -> int_t {
     return detail::zungqr(m, n, k, a, lda, tau);
+}
+
+namespace detail {
+void EINSUMS_EXPORT scopy(int_t n, float const *x, int_t inc_x, float *y, int_t inc_y);
+void EINSUMS_EXPORT dcopy(int_t n, double const *x, int_t inc_x, double *y, int_t inc_y);
+void EINSUMS_EXPORT ccopy(int_t n, std::complex<float> const *x, int_t inc_x, std::complex<float> *y, int_t inc_y);
+void EINSUMS_EXPORT zcopy(int_t n, std::complex<double> const *x, int_t inc_x, std::complex<double> *y, int_t inc_y);
+} // namespace detail
+
+template <typename T>
+void copy(int_t n, T const *x, int_t inc_x, T *y, int_t inc_y);
+
+template <>
+inline void copy<float>(int_t n, float const *x, int_t inc_x, float *y, int_t inc_y) {
+    detail::scopy(n, x, inc_x, y, inc_y);
+}
+
+template <>
+inline void copy<double>(int_t n, double const *x, int_t inc_x, double *y, int_t inc_y) {
+    detail::dcopy(n, x, inc_x, y, inc_y);
+}
+
+template <>
+inline void copy<std::complex<float>>(int_t n, std::complex<float> const *x, int_t inc_x, std::complex<float> *y, int_t inc_y) {
+    detail::ccopy(n, x, inc_x, y, inc_y);
+}
+
+template <>
+inline void copy<std::complex<double>>(int_t n, std::complex<double> const *x, int_t inc_x, std::complex<double> *y, int_t inc_y) {
+    detail::zcopy(n, x, inc_x, y, inc_y);
 }
 
 } // namespace einsums::blas

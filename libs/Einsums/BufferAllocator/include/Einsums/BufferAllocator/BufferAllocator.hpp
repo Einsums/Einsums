@@ -12,8 +12,11 @@
 #include <Einsums/StringUtil/MemoryString.hpp>
 
 #include <complex>
+#include <deque>
+#include <forward_list>
 #include <source_location>
 #include <type_traits>
+#include <unordered_set>
 
 namespace einsums {
 
@@ -240,5 +243,41 @@ extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<float>>;
 extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<double>>;
 
 #endif
+
+template <typename T>
+using BufferVector = std::vector<T, BufferAllocator<T>>;
+
+template <typename T>
+using BufferDeque = std::deque<T, BufferAllocator<T>>;
+
+template <typename T>
+using BufferForwardList = std::forward_list<T, BufferAllocator<T>>;
+
+template <typename T>
+using BufferList = std::list<T, BufferAllocator<T>>;
+
+template <typename Key, typename Compare = std::less<Key>>
+using BufferSet = std::set<Key, Compare, BufferAllocator<Key>>;
+
+template <typename Key, typename T, typename Compare = std::less<Key>>
+using BufferMap = std::map<Key, T, Compare, BufferAllocator<std::pair<Key const, T>>>;
+
+template <typename Key, typename Compare = std::less<Key>>
+using BufferMultiSet = std::multiset<Key, Compare, BufferAllocator<Key>>;
+
+template <typename Key, typename T, typename Compare = std::less<Key>>
+using BufferMultiMap = std::multimap<Key, T, Compare, BufferAllocator<std::pair<Key const, T>>>;
+
+template <typename Key, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+using BufferUnorderedSet = std::unordered_set<Key, Hash, KeyEqual, BufferAllocator<Key>>;
+
+template <typename Key, typename T, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+using BufferUnorderedMap = std::unordered_map<Key, T, Hash, KeyEqual, BufferAllocator<std::pair<Key const, T>>>;
+
+template <typename Key, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+using BufferUnorderedMultiSet = std::unordered_multiset<Key, Hash, KeyEqual, BufferAllocator<Key>>;
+
+template <typename Key, typename T, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+using BufferUnorderedMultiMap = std::unordered_multimap<Key, T, Hash, KeyEqual, BufferAllocator<std::pair<Key const, T>>>;
 
 } // namespace einsums

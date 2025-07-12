@@ -37,13 +37,15 @@ std::remove_cvref_t<T> einsums_generic_link_loop(std::tuple<LinkDims...> const &
 
         for (size_t i = 0; i < curr_dim; i++) {
             for_sequence<sizeof...(LinkPositionInA) / 2>([&](auto n) {
-                if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value, std::remove_cvref_t<decltype(link_position_in_A)>>>,
+                if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value,
+                                                                                      std::remove_cvref_t<decltype(link_position_in_A)>>>,
                                              std::remove_cvref_t<std::tuple_element_t<I, std::remove_cvref_t<decltype(link_unique)>>>>) {
                     A_indices[std::get<2 * decltype(n)::value + 1>(link_position_in_A)] = i;
                 }
             });
             for_sequence<sizeof...(LinkPositionInB) / 2>([&](auto n) {
-                if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value, std::remove_cvref_t<decltype(link_position_in_B)>>>,
+                if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value,
+                                                                                      std::remove_cvref_t<decltype(link_position_in_B)>>>,
                                              std::remove_cvref_t<std::tuple_element_t<I, std::remove_cvref_t<decltype(link_unique)>>>>) {
                     B_indices[std::get<2 * decltype(n)::value + 1>(link_position_in_B)] = i;
                 }
@@ -75,19 +77,22 @@ void einsums_generic_target_loop(std::tuple<TargetDims...> const &target_dims, s
 
         for (size_t i = 0; i < curr_dim; i++) {
             for_sequence<sizeof...(TargetPositionInC) / 2>([&](auto n) {
-                if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value, std::remove_cvref_t<decltype(target_position_in_C)>>>,
+                if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value,
+                                                                                      std::remove_cvref_t<decltype(target_position_in_C)>>>,
                                              std::remove_cvref_t<std::tuple_element_t<I, std::remove_cvref_t<decltype(C_unique)>>>>) {
                     C_indices[std::get<2 * decltype(n)::value + 1>(target_position_in_C)] = i;
                 }
             });
             for_sequence<sizeof...(TargetPositionInA) / 2>([&](auto n) {
-                if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value, std::remove_cvref_t<decltype(target_position_in_A)>>>,
+                if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value,
+                                                                                      std::remove_cvref_t<decltype(target_position_in_A)>>>,
                                              std::remove_cvref_t<std::tuple_element_t<I, std::remove_cvref_t<decltype(C_unique)>>>>) {
                     A_indices[std::get<2 * decltype(n)::value + 1>(target_position_in_A)] = i;
                 }
             });
             for_sequence<sizeof...(TargetPositionInB) / 2>([&](auto n) {
-                if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value, std::remove_cvref_t<decltype(target_position_in_B)>>>,
+                if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value,
+                                                                                      std::remove_cvref_t<decltype(target_position_in_B)>>>,
                                              std::remove_cvref_t<std::tuple_element_t<I, std::remove_cvref_t<decltype(C_unique)>>>>) {
                     B_indices[std::get<2 * decltype(n)::value + 1>(target_position_in_B)] = i;
                 }

@@ -80,7 +80,8 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .def("svd_dd", &svd_dd, py::arg("A"), py::arg("job") = einsums::linear_algebra::Vectors::All,
              "Perform singular value decomposition using the divide and conquer algorithm.")
         .def("truncated_svd", &truncated_svd, "Perform singular value decomposition but ignore some number of small singular values.")
-        .def("truncated_syev", &truncated_syev, "Perform symmetric/hermitian eigendecomposition but ignore some number of small eigenvalues.")
+        .def("truncated_syev", &truncated_syev,
+             "Perform symmetric/hermitian eigendecomposition but ignore some number of small eigenvalues.")
         .def("pseudoinverse", &pseudoinverse, "Compute the pseudoinverse of a non-invertible matrix.")
         .def("solve_continuous_lyapunov", &solve_continuous_lyapunov, "Solve a continuous Lyapunov equation.")
         .def("qr", &qr, "Set up for QR decomposition of a matrix.")
