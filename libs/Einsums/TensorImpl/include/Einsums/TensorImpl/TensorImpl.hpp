@@ -43,7 +43,6 @@ struct MakePointerLike<TemplateType const volatile, OutputType> {
  */
 template <typename T>
 struct TensorImpl final {
-  public:
     /**
      * @typedef pointer
      *

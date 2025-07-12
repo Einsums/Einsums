@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 #include <Einsums/TensorImpl/TensorImplOperations.hpp>
@@ -62,7 +62,8 @@ TEMPLATE_TEST_CASE("Scalars", "[tensor]", float, double, std::complex<float>, st
             SECTION("Divide") {
                 detail::div_assign(value2, tensor);
 
-                REQUIRE_THAT(std::real(tensor.subscript()), Catch::Matchers::WithinAbs(std::real(((TestType)11) / ((TestType)2)), 1e-6));
+                REQUIRE_THAT(std::real(tensor.subscript()),
+                             Catch::Matchers::WithinAbs(std::real(static_cast<TestType>(11) / static_cast<TestType>(2)), 1e-6));
             }
 
             SECTION("Copy") {

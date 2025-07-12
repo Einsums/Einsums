@@ -50,10 +50,10 @@ void transpose(int_t m, int_t n, T const *in, int_t ldin, T *out, int_t ldout) {
     std::vector<int>    perm{1, 0};
     std::vector<size_t> size_in{static_cast<unsigned long>(m), static_cast<unsigned long>(n)}, outer_size_in, outer_size_out;
     if constexpr (Order == OrderMajor::Row) {
-        outer_size_in = std::move(std::vector<size_t>{static_cast<unsigned long>(m), static_cast<unsigned long>(ldin)});
+        outer_size_in  = std::move(std::vector<size_t>{static_cast<unsigned long>(m), static_cast<unsigned long>(ldin)});
         outer_size_out = std::move(std::vector<size_t>{static_cast<unsigned long>(n), static_cast<unsigned long>(ldout)});
     } else {
-        outer_size_in = std::move(std::vector<size_t>{static_cast<unsigned long>(ldin), static_cast<unsigned long>(n)});
+        outer_size_in  = std::move(std::vector<size_t>{static_cast<unsigned long>(ldin), static_cast<unsigned long>(n)});
         outer_size_out = std::move(std::vector<size_t>{static_cast<unsigned long>(ldout), static_cast<unsigned long>(m)});
     }
 

@@ -9,7 +9,8 @@
 
 using namespace einsums;
 
-TEMPLATE_TEST_CASE("TensorImlp Creation", "[tensor]", float, double, std::complex<float>, std::complex<double>, int, float const, double const) {
+TEMPLATE_TEST_CASE("TensorImlp Creation", "[tensor]", float, double, std::complex<float>, std::complex<double>, int, float const,
+                   double const) {
     SECTION("Default constructor") {
         detail::TensorImpl<TestType> impl;
 
@@ -20,7 +21,7 @@ TEMPLATE_TEST_CASE("TensorImlp Creation", "[tensor]", float, double, std::comple
 
     SECTION("Row major constructor and copy constructor.") {
         std::vector<std::remove_cv_t<TestType>> test_data{(TestType)1.0, (TestType)2.0, (TestType)3.0, (TestType)4.0};
-        detail::TensorImpl<TestType> impl(test_data.data(), {2, 2}, true);
+        detail::TensorImpl<TestType>            impl(test_data.data(), {2, 2}, true);
 
         REQUIRE(impl.data() == test_data.data());
         REQUIRE(impl.rank() == 2);
@@ -54,7 +55,7 @@ TEMPLATE_TEST_CASE("TensorImlp Creation", "[tensor]", float, double, std::comple
 
     SECTION("Column major constructor and move constructor.") {
         std::vector<std::remove_cv_t<TestType>> test_data{(TestType)1.0, (TestType)2.0, (TestType)3.0, (TestType)4.0};
-        detail::TensorImpl<TestType> impl(test_data.data(), {2, 2}, false);
+        detail::TensorImpl<TestType>            impl(test_data.data(), {2, 2}, false);
 
         REQUIRE(impl.data() == test_data.data());
         REQUIRE(impl.rank() == 2);
@@ -85,7 +86,7 @@ TEMPLATE_TEST_CASE("TensorImlp Creation", "[tensor]", float, double, std::comple
 
     SECTION("Strides specified and assignments.") {
         std::vector<std::remove_cv_t<TestType>> test_data{(TestType)1.0, (TestType)2.0, (TestType)3.0, (TestType)4.0};
-        detail::TensorImpl<TestType> impl(test_data.data(), {2, 2}, {2, 1});
+        detail::TensorImpl<TestType>            impl(test_data.data(), {2, 2}, {2, 1});
 
         REQUIRE(impl.data() == test_data.data());
         REQUIRE(impl.rank() == 2);
@@ -137,12 +138,13 @@ TEMPLATE_TEST_CASE("TensorImlp Creation", "[tensor]", float, double, std::comple
     }
 }
 
-TEMPLATE_TEST_CASE("TensorImpl view creation", "[tensor]", float, double, std::complex<float>, std::complex<double>, int, float const, double const) {
+TEMPLATE_TEST_CASE("TensorImpl view creation", "[tensor]", float, double, std::complex<float>, std::complex<double>, int, float const,
+                   double const) {
     std::vector<std::remove_cv_t<TestType>> test_data(27);
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            for(int k = 0; k < 3; k++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++) {
                 test_data[i * 9 + j * 3 + k] = i * 9 + j * 3 + k;
             }
         }

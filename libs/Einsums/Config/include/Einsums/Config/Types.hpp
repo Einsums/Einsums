@@ -118,11 +118,11 @@ struct insensitive_equals {
         for (size_t i = 0; i < a.size(); i++) {
             char a_ch = std::toupper(a[i]), b_ch = std::toupper(b[i]);
 
-            if(a_ch == '-') {
+            if (a_ch == '-') {
                 a_ch = '_';
             }
 
-            if(b_ch == '-') {
+            if (b_ch == '-') {
                 b_ch = '_';
             }
 

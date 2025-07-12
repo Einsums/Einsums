@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLAS.hpp>
@@ -42,7 +47,7 @@ pybind11::object norm(einsums::linear_algebra::Norm type, pybind11::buffer const
 
     EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()),
                            (out = py::cast(blas::lange<Float>(static_cast<char>(type), m, n, (Float const *)A_info.ptr, lda,
-                                                             (RemoveComplexT<Float> *)work.data()))))
+                                                              (RemoveComplexT<Float> *)work.data()))))
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only take the matrix norm of real or complex floating point matrices!");
     }

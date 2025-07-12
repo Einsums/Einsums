@@ -16,8 +16,8 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
-#include <EinsumsPy/LinearAlgebra/LinearAlgebra.hpp>
 
+#include <EinsumsPy/LinearAlgebra/LinearAlgebra.hpp>
 #include <omp.h>
 
 #ifdef EINSUMS_COMPUTE_CODE
@@ -682,7 +682,7 @@ class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
             EINSUMS_THROW_EXCEPTION(num_argument_error, "Tensor ranks do not match the indices!");
         }
 
-        T       *C_data = (T *)C_info.ptr;
+        T *C_data = (T *)C_info.ptr;
 
         if (C_prefactor == T{0.0}) {
             *C_data = T{0.0};

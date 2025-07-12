@@ -5,7 +5,9 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(UtilitiesHeaders Einsums/Utilities/Tuple.hpp Einsums/Utilities/Random.hpp Einsums/Utilities/InitModule.hpp Einsums/Utilities/InCollection.hpp)
+set(UtilitiesHeaders Einsums/Utilities/Tuple.hpp Einsums/Utilities/Random.hpp
+        Einsums/Utilities/InitModule.hpp Einsums/Utilities/InCollection.hpp
+)
 
 set(UtilitiesSources Random.cpp InitModule.cpp)
 

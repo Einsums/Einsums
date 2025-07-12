@@ -46,7 +46,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
             }
         }
     }
-    
+
     SECTION("Rank 2 - axpy (2)") {
         Tensor A = create_incremented_tensor("A", 3, 3);
         Tensor C0{"C", 3, 3};

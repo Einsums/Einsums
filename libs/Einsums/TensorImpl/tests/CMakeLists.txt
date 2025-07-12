@@ -33,7 +33,7 @@ if(EINSUMS_WITH_TESTS)
       Modules.Einsums.TensorImpl
       HEADERS ${TensorImplHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
-      DEPENDENCIES Einsums_TensorImpl 
+            DEPENDENCIES Einsums_TensorImpl
     )
   endif()
 endif()

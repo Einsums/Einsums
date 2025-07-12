@@ -228,7 +228,7 @@ struct Zip final {
     /**
      * @brief Initialize the zip object.
      */
-    constexpr Zip(Containers &...containers) : containers_(std::tie(containers...)) {};
+    constexpr Zip(Containers &...containers) : containers_(std::tie(containers...)){};
 
     /**
      * @brief Copy assignment.

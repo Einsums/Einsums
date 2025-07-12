@@ -113,11 +113,12 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 
     einsums::for_sequence<ARank>([&](auto n) {
         if (C->dim((size_t)n) < A.dim(std::get<2 * (size_t)n + 1>(check_target_position_in_A))) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "The {} dimension of the output tensor is smaller than the {} dimension of the input tensor!",
-                                    print::ordinal((size_t)n), print::ordinal(std::get<2 * (size_t) n + 1>(check_target_position_in_A)));
+            EINSUMS_THROW_EXCEPTION(dimension_error,
+                                    "The {} dimension of the output tensor is smaller than the {} dimension of the input tensor!",
+                                    print::ordinal((size_t)n), print::ordinal(std::get<2 * (size_t)n + 1>(check_target_position_in_A)));
         }
 
-        if(C->dim((size_t) n) == 0) {
+        if (C->dim((size_t)n) == 0) {
             return;
         }
     });

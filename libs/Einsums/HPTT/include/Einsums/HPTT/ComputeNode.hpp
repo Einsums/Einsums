@@ -46,9 +46,9 @@ class ComputeNode {
             delete next;
     }
 
-    ptrdiff_t       start;     //!< start index for at the current loop
-    ptrdiff_t       end;       //!< end index for at the current loop
-    ptrdiff_t       inc;       //!< increment for at the current loop
+    ptrdiff_t    start;     //!< start index for at the current loop
+    ptrdiff_t    end;       //!< end index for at the current loop
+    ptrdiff_t    inc;       //!< increment for at the current loop
     size_t       lda;       //!< stride of A w.r.t. the loop index
     size_t       ldb;       //!< stride of B w.r.t. the loop index
     bool         indexA;    //!< true if index of A is innermost (0)

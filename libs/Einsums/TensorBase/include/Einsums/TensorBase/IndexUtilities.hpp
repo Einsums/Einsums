@@ -469,7 +469,7 @@ constexpr inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_
  * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
  */
 template <typename StorageType1, typename StorageType2>
-requires(!std::is_arithmetic_v<StorageType1> && !std::is_arithmetic_v<StorageType2>)
+    requires(!std::is_arithmetic_v<StorageType1> && !std::is_arithmetic_v<StorageType2>)
 inline size_t indices_to_sentinel(StorageType1 const &unique_strides, StorageType2 const &inds) {
     size_t out = 0;
 
@@ -540,11 +540,11 @@ inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_un
  * would be very slow.
  */
 template <typename StorageType1, typename StorageType2, typename StorageType3>
-requires requires {
-    requires !std::is_arithmetic_v<StorageType1>;
-    requires !std::is_arithmetic_v<StorageType2>;
-    requires !std::is_arithmetic_v<StorageType3>;
-}
+    requires requires {
+        requires !std::is_arithmetic_v<StorageType1>;
+        requires !std::is_arithmetic_v<StorageType2>;
+        requires !std::is_arithmetic_v<StorageType3>;
+    }
 inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_strides, StorageType2 const &unique_dims,
                                                  StorageType3 const &inds) {
     size_t out = 0;

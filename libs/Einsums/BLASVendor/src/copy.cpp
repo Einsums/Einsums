@@ -17,8 +17,7 @@ extern "C" {
 extern void FC_GLOBAL(scopy, SCOPY)(int_t *, float const *, int_t *, float *, int_t *);
 extern void FC_GLOBAL(dcopy, DCOPY)(int_t *, double const *, int_t *, double *, int_t *);
 extern void FC_GLOBAL(ccopy, CCOPY)(int_t *, std::complex<float> const *, int_t *, std::complex<float> *, int_t *);
-extern void FC_GLOBAL(zcopy, ZCOPY)(int_t *, std::complex<double> const *, int_t *, std::complex<double> *,
-                                    int_t *);
+extern void FC_GLOBAL(zcopy, ZCOPY)(int_t *, std::complex<double> const *, int_t *, std::complex<double> *, int_t *);
 }
 
 void scopy(int_t n, float const *x, int_t inc_x, float *y, int_t inc_y) {

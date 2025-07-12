@@ -71,7 +71,7 @@ struct Switch<SwitchType, Case<Result, SwitchType, Rest...>, Cases...> final {
 
 // Fourth possibility: We meet a default case, but there are still cases to process.
 // This is an error.
-template<typename SwitchType, typename Result, typename... Cases>
+template <typename SwitchType, typename Result, typename... Cases>
 struct Switch<SwitchType, Default<Result>, Cases...> final {
     using type = void;
     static void func() { static_assert(false, "Type Switch has a default case, but there are still cases left to process!"); }
@@ -79,7 +79,7 @@ struct Switch<SwitchType, Default<Result>, Cases...> final {
 
 // Fifth possibility: We meet a default case, and there are no more cases to process. We use the
 // result of the default case.
-template<typename SwitchType, typename Result>
+template <typename SwitchType, typename Result>
 struct Switch<SwitchType, Default<Result>> final {
     using type = Result;
 };
@@ -89,7 +89,7 @@ struct Switch<SwitchType, Default<Result>> final {
  *
  * @brief Equivalent to <tt>typename Switch<...>::type</tt>.
  */
-template<typename... Args>
+template <typename... Args>
 using SwitchT = typename Switch<Args...>::type;
 
 } // namespace einsums
