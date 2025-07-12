@@ -1,0 +1,848 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/Iterator/Zip.hpp &#8212; Einsums 1.1.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=047b7709" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/Iterator/api/Zip';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.0" />
+    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Iterator/Zip.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Enumerate.html">Einsums/Iterator/Enumerate.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/Iterator/Zip.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-iterator-zip-hpp">
+<span id="modules-einsums-einsums-iterator-zip-hpp-api"></span><h1>Einsums/Iterator/Zip.hpp<a class="headerlink" href="#einsums-iterator-zip-hpp" title="Link to this heading">#</a></h1>
+<p>Defined in header Einsums/Iterator/Zip.hpp.</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../../todo.html#todo_1_todo000013"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd></dd></dl>
+
+</p>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums3ZipE">
+<span id="_CPPv3IDpEN7einsums3ZipE"></span><span id="_CPPv2IDpEN7einsums3ZipE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Containers</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_zip"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Zip</span></span></span><a class="headerlink" href="#_CPPv4IDpEN7einsums3ZipE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Zip.hpp&gt;</em></div>
+<p>Works like Python’s <code class="docutils literal notranslate"><span class="pre">zip()</span></code> function. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip10value_typeE">
+<span id="_CPPv3N7einsums3Zip10value_typeE"></span><span id="_CPPv2N7einsums3Zip10value_typeE"></span><span class="target" id="structeinsums_1_1_zip_1ace906052a0540be553cbe3d3c688b807"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums3Zip10value_typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The type of data this zip holds. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip9referenceE">
+<span id="_CPPv3N7einsums3Zip9referenceE"></span><span id="_CPPv2N7einsums3Zip9referenceE"></span><span class="target" id="structeinsums_1_1_zip_1a5e5bf8ba2daaf2c7f9b7e9292bd870b6"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reference</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&amp;</span></span><a class="headerlink" href="#_CPPv4N7einsums3Zip9referenceE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A reference to the value type. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip15const_referenceE">
+<span id="_CPPv3N7einsums3Zip15const_referenceE"></span><span id="_CPPv2N7einsums3Zip15const_referenceE"></span><span class="target" id="structeinsums_1_1_zip_1ae977dd67f07466a85d2328ff5eda74df"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_reference</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">const_reference</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><a class="headerlink" href="#_CPPv4N7einsums3Zip15const_referenceE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A const reference to the value type. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip8iteratorE">
+<span id="_CPPv3N7einsums3Zip8iteratorE"></span><span id="_CPPv2N7einsums3Zip8iteratorE"></span><span class="target" id="structeinsums_1_1_zip_1ab1418902a090ad5b58050bd9f3c041ca"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iterator</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">declval</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">.</span></span><span class="n"><span class="pre">begin</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums3Zip8iteratorE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The iterator type. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip14const_iteratorE">
+<span id="_CPPv3N7einsums3Zip14const_iteratorE"></span><span id="_CPPv2N7einsums3Zip14const_iteratorE"></span><span class="target" id="structeinsums_1_1_zip_1aa0cddf2692b243f7ac9e788ede57c5e8"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_iterator</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">const_iterator</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4N7einsums3Zip14const_iteratorE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The const iterator type. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip15difference_typeE">
+<span id="_CPPv3N7einsums3Zip15difference_typeE"></span><span id="_CPPv2N7einsums3Zip15difference_typeE"></span><span class="target" id="structeinsums_1_1_zip_1a93903f6268b7b64910fa19c2a1783d09"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">difference_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">ptrdiff_t</span></span><a class="headerlink" href="#_CPPv4N7einsums3Zip15difference_typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The type for distances between objects. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip9size_typeE">
+<span id="_CPPv3N7einsums3Zip9size_typeE"></span><span id="_CPPv2N7einsums3Zip9size_typeE"></span><span class="target" id="structeinsums_1_1_zip_1af3bebf3e3f17c719dba7851d5269ac0a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><a class="headerlink" href="#_CPPv4N7einsums3Zip9size_typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The type used for container sizes. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip3ZipEv">
+<span id="_CPPv3N7einsums3Zip3ZipEv"></span><span id="_CPPv2N7einsums3Zip3ZipEv"></span><span id="einsums::Zip::ZipCE"></span><span class="target" id="structeinsums_1_1_zip_1aaac815e95783ae1f933b85f42f900ee4"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Zip</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums3Zip3ZipEv" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip3ZipERK3Zip">
+<span id="_CPPv3N7einsums3Zip3ZipERK3Zip"></span><span id="_CPPv2N7einsums3Zip3ZipERK3Zip"></span><span id="einsums::Zip::Zip__ZipCRCE"></span><span class="target" id="structeinsums_1_1_zip_1a8a60e047b354d2473df1ce67f477e028"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Zip</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3Zip3ZipERK3Zip" title="einsums::Zip::Zip"><span class="n"><span class="pre">Zip</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3Zip3ZipERK3Zip" title="Link to this definition">#</a><br /></dt>
+<dd><p>Copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip3ZipEDpR10Containers">
+<span id="_CPPv3N7einsums3Zip3ZipEDpR10Containers"></span><span id="_CPPv2N7einsums3Zip3ZipEDpR10Containers"></span><span id="einsums::Zip::Zip__ContainersRDpCE"></span><span class="target" id="structeinsums_1_1_zip_1a624c583ce6a8b60772cd5c3e50381777"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Zip</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">containers</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3Zip3ZipEDpR10Containers" title="Link to this definition">#</a><br /></dt>
+<dd><p>Initialize the zip object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3ZipaSERK3Zip">
+<span id="_CPPv3N7einsums3ZipaSERK3Zip"></span><span id="_CPPv2N7einsums3ZipaSERK3Zip"></span><span id="einsums::Zip::assign-operator__ZipCR"></span><span class="target" id="structeinsums_1_1_zip_1aef5e7696d642f15217ab17bd4639d53d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip"><span class="n"><span class="pre">Zip</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip"><span class="n"><span class="pre">Zip</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3ZipaSERK3Zip" title="Link to this definition">#</a><br /></dt>
+<dd><p>Copy assignment. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip5beginEv">
+<span id="_CPPv3N7einsums3Zip5beginEv"></span><span id="_CPPv2N7einsums3Zip5beginEv"></span><span id="einsums::Zip::begin"></span><span class="target" id="structeinsums_1_1_zip_1a6d9371a09a57656c5902cd9926947579"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3Zip8iteratorE" title="einsums::Zip::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3Zip5beginEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>The iterator pointing to the beginning of the container. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip3endEv">
+<span id="_CPPv3N7einsums3Zip3endEv"></span><span id="_CPPv2N7einsums3Zip3endEv"></span><span id="einsums::Zip::end"></span><span class="target" id="structeinsums_1_1_zip_1ad82162b91399e097676c7e635b034607"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3Zip8iteratorE" title="einsums::Zip::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3Zip3endEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>The iterator pointing to the end of the container. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3Zip5beginEv">
+<span id="_CPPv3NK7einsums3Zip5beginEv"></span><span id="_CPPv2NK7einsums3Zip5beginEv"></span><span id="einsums::Zip::beginC"></span><span class="target" id="structeinsums_1_1_zip_1a0e08bffda839fbd2ebf5ce07153ad779"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3Zip14const_iteratorE" title="einsums::Zip::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3Zip5beginEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>The iterator pointing to the beginning of the container. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3Zip3endEv">
+<span id="_CPPv3NK7einsums3Zip3endEv"></span><span id="_CPPv2NK7einsums3Zip3endEv"></span><span id="einsums::Zip::endC"></span><span class="target" id="structeinsums_1_1_zip_1acfb366487e16236d017787a5fe4ebf25"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3Zip14const_iteratorE" title="einsums::Zip::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3Zip3endEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>The iterator pointing to the end of the container. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3Zip6cbeginEv">
+<span id="_CPPv3NK7einsums3Zip6cbeginEv"></span><span id="_CPPv2NK7einsums3Zip6cbeginEv"></span><span id="einsums::Zip::cbeginC"></span><span class="target" id="structeinsums_1_1_zip_1a739fadd73e64bba8b791e1e9a199b456"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3Zip14const_iteratorE" title="einsums::Zip::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cbegin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3Zip6cbeginEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>The const iterator pointing to the beginning of the container. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3Zip4cendEv">
+<span id="_CPPv3NK7einsums3Zip4cendEv"></span><span id="_CPPv2NK7einsums3Zip4cendEv"></span><span id="einsums::Zip::cendC"></span><span class="target" id="structeinsums_1_1_zip_1ab76ee71490c0ff90fb36d297924fc7a4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3Zip14const_iteratorE" title="einsums::Zip::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cend</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3Zip4cendEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>The const iterator pointing to the end of the container. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3ZipeqERK3ZipIDp10ContainersE">
+<span id="_CPPv3NK7einsums3ZipeqERK3ZipIDp10ContainersE"></span><span id="_CPPv2NK7einsums3ZipeqERK3ZipIDp10ContainersE"></span><span id="einsums::Zip::eq-operator__Zip:ContainersDp:CRC"></span><span class="target" id="structeinsums_1_1_zip_1ae11fee19d8bc777b21b9d0b467ea8cac"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip"><span class="n"><span class="pre">Zip</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3ZipeqERK3ZipIDp10ContainersE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compare two zip objects. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3ZipneERK3ZipIDp10ContainersE">
+<span id="_CPPv3NK7einsums3ZipneERK3ZipIDp10ContainersE"></span><span id="_CPPv2NK7einsums3ZipneERK3ZipIDp10ContainersE"></span><span id="einsums::Zip::neq-operator__Zip:ContainersDp:CRC"></span><span class="target" id="structeinsums_1_1_zip_1a723470b1c50d5d480cee7be55a55e755"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip"><span class="n"><span class="pre">Zip</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3ZipneERK3ZipIDp10ContainersE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compare two zip objects. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip4swapER3Zip">
+<span id="_CPPv3N7einsums3Zip4swapER3Zip"></span><span id="_CPPv2N7einsums3Zip4swapER3Zip"></span><span id="einsums::Zip::swap__ZipR"></span><span class="target" id="structeinsums_1_1_zip_1af3c45eb12a048552c31f6d20cd0bea11"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">swap</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip"><span class="n"><span class="pre">Zip</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3Zip4swapER3Zip" title="Link to this definition">#</a><br /></dt>
+<dd><p>Swap the contents of two zip objects. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3Zip4sizeEv">
+<span id="_CPPv3NK7einsums3Zip4sizeEv"></span><span id="_CPPv2NK7einsums3Zip4sizeEv"></span><span id="einsums::Zip::sizeC"></span><span class="target" id="structeinsums_1_1_zip_1af7402f426c0b3d3e379e1cc285692d34"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3Zip4sizeEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Get the size of the zip object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3Zip8max_sizeEv">
+<span id="_CPPv3NK7einsums3Zip8max_sizeEv"></span><span id="_CPPv2NK7einsums3Zip8max_sizeEv"></span><span id="einsums::Zip::max_sizeC"></span><span class="target" id="structeinsums_1_1_zip_1a027bf2eaa7e139712103e76f07f769d9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3Zip8max_sizeEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Get the maximum possible size for the zip object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3Zip5emptyEv">
+<span id="_CPPv3NK7einsums3Zip5emptyEv"></span><span id="_CPPv2NK7einsums3Zip5emptyEv"></span><span id="einsums::Zip::emptyC"></span><span class="target" id="structeinsums_1_1_zip_1adf3cf56122de03d11171357810db8d93"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">empty</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3Zip5emptyEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Check whether the zip object contains data. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp6size_tEN7einsums3Zip10begin_implE8iteratorRKNSt14index_sequenceIDp1IEE">
+<span id="_CPPv3I_Dp6size_tEN7einsums3Zip10begin_implERKNSt14index_sequenceIDp1IEE"></span><span id="_CPPv2I_Dp6size_tEN7einsums3Zip10begin_implERKNSt14index_sequenceIDp1IEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">I</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_zip_1a3806d71fd4fe363c553bccb6ef4a07c3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3Zip8iteratorE" title="einsums::Zip::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin_impl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_Dp6size_tEN7einsums3Zip10begin_implE8iteratorRKNSt14index_sequenceIDp1IEE" title="einsums::Zip::begin_impl::I"><span class="n"><span class="pre">I</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_Dp6size_tEN7einsums3Zip10begin_implE8iteratorRKNSt14index_sequenceIDp1IEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp6size_tEN7einsums3Zip8end_implE8iteratorRKNSt14index_sequenceIDp1IEE">
+<span id="_CPPv3I_Dp6size_tEN7einsums3Zip8end_implERKNSt14index_sequenceIDp1IEE"></span><span id="_CPPv2I_Dp6size_tEN7einsums3Zip8end_implERKNSt14index_sequenceIDp1IEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">I</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_zip_1a7a92fea589a78ccaf62434306ae598d4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3Zip8iteratorE" title="einsums::Zip::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end_impl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_Dp6size_tEN7einsums3Zip8end_implE8iteratorRKNSt14index_sequenceIDp1IEE" title="einsums::Zip::end_impl::I"><span class="n"><span class="pre">I</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_Dp6size_tEN7einsums3Zip8end_implE8iteratorRKNSt14index_sequenceIDp1IEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp6size_tENK7einsums3Zip11cbegin_implE14const_iteratorRKNSt14index_sequenceIDp1IEE">
+<span id="_CPPv3I_Dp6size_tENK7einsums3Zip11cbegin_implERKNSt14index_sequenceIDp1IEE"></span><span id="_CPPv2I_Dp6size_tENK7einsums3Zip11cbegin_implERKNSt14index_sequenceIDp1IEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">I</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_zip_1a5a327c8c087e5bff4bddb3fa46bc9b67"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3Zip14const_iteratorE" title="einsums::Zip::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cbegin_impl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_Dp6size_tENK7einsums3Zip11cbegin_implE14const_iteratorRKNSt14index_sequenceIDp1IEE" title="einsums::Zip::cbegin_impl::I"><span class="n"><span class="pre">I</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I_Dp6size_tENK7einsums3Zip11cbegin_implE14const_iteratorRKNSt14index_sequenceIDp1IEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp6size_tENK7einsums3Zip9cend_implE14const_iteratorRKNSt14index_sequenceIDp1IEE">
+<span id="_CPPv3I_Dp6size_tENK7einsums3Zip9cend_implERKNSt14index_sequenceIDp1IEE"></span><span id="_CPPv2I_Dp6size_tENK7einsums3Zip9cend_implERKNSt14index_sequenceIDp1IEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">I</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_zip_1a2aa74ebe87d57e632ba7f5a800ece6dc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3Zip14const_iteratorE" title="einsums::Zip::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cend_impl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_Dp6size_tENK7einsums3Zip9cend_implE14const_iteratorRKNSt14index_sequenceIDp1IEE" title="einsums::Zip::cend_impl::I"><span class="n"><span class="pre">I</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I_Dp6size_tENK7einsums3Zip9cend_implE14const_iteratorRKNSt14index_sequenceIDp1IEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp6size_tENK7einsums3Zip10equal_implEbRK3ZipRKNSt14index_sequenceIDp1IEE">
+<span id="_CPPv3I_Dp6size_tENK7einsums3Zip10equal_implERK3ZipRKNSt14index_sequenceIDp1IEE"></span><span id="_CPPv2I_Dp6size_tENK7einsums3Zip10equal_implERK3ZipRKNSt14index_sequenceIDp1IEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">I</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_zip_1a87dcd14e7556a28bb4c71c52b1099bee"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">equal_impl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip"><span class="n"><span class="pre">Zip</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_Dp6size_tENK7einsums3Zip10equal_implEbRK3ZipRKNSt14index_sequenceIDp1IEE" title="einsums::Zip::equal_impl::I"><span class="n"><span class="pre">I</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I_Dp6size_tENK7einsums3Zip10equal_implEbRK3ZipRKNSt14index_sequenceIDp1IEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3Zip11containers_E">
+<span id="_CPPv3N7einsums3Zip11containers_E"></span><span id="_CPPv2N7einsums3Zip11containers_E"></span><span id="einsums::Zip::containers___std::tuple:ContainersRDp:"></span><span class="target" id="structeinsums_1_1_zip_1ad61d3842990d053340a556f2af87925d"></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">containers_</span></span></span><a class="headerlink" href="#_CPPv4N7einsums3Zip11containers_E" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums7ZipIterE">
+<span id="_CPPv3IDpEN7einsums7ZipIterE"></span><span id="_CPPv2IDpEN7einsums7ZipIterE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">ContainerIters</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_zip_iter"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZipIter</span></span></span><a class="headerlink" href="#_CPPv4IDpEN7einsums7ZipIterE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Zip.hpp&gt;</em></div>
+<p>An iterator that iterates over several containers simultaneously. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIter15difference_typeE">
+<span id="_CPPv3N7einsums7ZipIter15difference_typeE"></span><span id="_CPPv2N7einsums7ZipIter15difference_typeE"></span><span class="target" id="structeinsums_1_1_zip_iter_1a94957e3a4c9c4a2bdb871e3bcc9720c9"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">difference_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">ptrdiff_t</span></span><a class="headerlink" href="#_CPPv4N7einsums7ZipIter15difference_typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The type indicating the distance between two iterators. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIter10value_typeE">
+<span id="_CPPv3N7einsums7ZipIter10value_typeE"></span><span id="_CPPv2N7einsums7ZipIter10value_typeE"></span><span class="target" id="structeinsums_1_1_zip_iter_1a0ff2a5271324067447030de5efd32165"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">iterator_traits</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter::ContainerIters"><span class="n"><span class="pre">ContainerIters</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums7ZipIter10value_typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The values returned by the iterator. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIter9referenceE">
+<span id="_CPPv3N7einsums7ZipIter9referenceE"></span><span id="_CPPv2N7einsums7ZipIter9referenceE"></span><span class="target" id="structeinsums_1_1_zip_iter_1a9f2853e4b88fd9687ff1ba3c5829bc2e"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reference</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">iterator_traits</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter::ContainerIters"><span class="n"><span class="pre">ContainerIters</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums7ZipIter9referenceE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Modifiable version of the return value of the iterator. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIter17iterator_categoryE">
+<span id="_CPPv3N7einsums7ZipIter17iterator_categoryE"></span><span id="_CPPv2N7einsums7ZipIter17iterator_categoryE"></span><span class="target" id="structeinsums_1_1_zip_iter_1a72a9b8ace2b335ff87239bd454159981"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iterator_category</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">forward_iterator_tag</span></span><a class="headerlink" href="#_CPPv4N7einsums7ZipIter17iterator_categoryE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Indicates that this is a forward iterator. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIter7ZipIterEv">
+<span id="_CPPv3N7einsums7ZipIter7ZipIterEv"></span><span id="_CPPv2N7einsums7ZipIter7ZipIterEv"></span><span id="einsums::ZipIter::ZipIterCE"></span><span class="target" id="structeinsums_1_1_zip_iter_1ac55a32b8b51d9ca747e81998b08c734c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZipIter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7ZipIter7ZipIterEv" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIter7ZipIterERK7ZipIter">
+<span id="_CPPv3N7einsums7ZipIter7ZipIterERK7ZipIter"></span><span id="_CPPv2N7einsums7ZipIter7ZipIterERK7ZipIter"></span><span id="einsums::ZipIter::ZipIter__ZipIterCRCE"></span><span class="target" id="structeinsums_1_1_zip_iter_1a0754b7b48f2f528c7f3630ef50a771b6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZipIter</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums7ZipIter7ZipIterERK7ZipIter" title="einsums::ZipIter::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7ZipIter7ZipIterERK7ZipIter" title="Link to this definition">#</a><br /></dt>
+<dd><p>Copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIteraSERK7ZipIter">
+<span id="_CPPv3N7einsums7ZipIteraSERK7ZipIter"></span><span id="_CPPv2N7einsums7ZipIteraSERK7ZipIter"></span><span id="einsums::ZipIter::assign-operator__ZipIterCR"></span><span class="target" id="structeinsums_1_1_zip_iter_1af0f485f019acd30438240c02dc3114f3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7ZipIteraSERK7ZipIter" title="Link to this definition">#</a><br /></dt>
+<dd><p>Copy assignment. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIter7ZipIterERKNSt5tupleIDpR14ContainerItersEE">
+<span id="_CPPv3N7einsums7ZipIter7ZipIterERKNSt5tupleIDpR14ContainerItersEE"></span><span id="_CPPv2N7einsums7ZipIter7ZipIterERKNSt5tupleIDpR14ContainerItersEE"></span><span id="einsums::ZipIter::ZipIter__std::tuple:ContainerItersRDp:CRCE"></span><span class="target" id="structeinsums_1_1_zip_iter_1a71bc9e3f03f218bc9eb77f6dcaf76035"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZipIter</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter::ContainerIters"><span class="n"><span class="pre">ContainerIters</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">containers</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7ZipIter7ZipIterERKNSt5tupleIDpR14ContainerItersEE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Initialize the iterator with the given iterators. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIter7ZipIterEDpRK14ContainerIters">
+<span id="_CPPv3N7einsums7ZipIter7ZipIterEDpRK14ContainerIters"></span><span id="_CPPv2N7einsums7ZipIter7ZipIterEDpRK14ContainerIters"></span><span id="einsums::ZipIter::ZipIter__ContainerItersCRDpCE"></span><span class="target" id="structeinsums_1_1_zip_iter_1a9afe9a23ef9f9f384d7ea6e54e3b37bd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZipIter</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter::ContainerIters"><span class="n"><span class="pre">ContainerIters</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">containers</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7ZipIter7ZipIterEDpRK14ContainerIters" title="Link to this definition">#</a><br /></dt>
+<dd><p>Initialize the iterator with the given iterators. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums7ZipItermlEv">
+<span id="_CPPv3NK7einsums7ZipItermlEv"></span><span id="_CPPv2NK7einsums7ZipItermlEv"></span><span id="einsums::ZipIter::mul-operatorC"></span><span class="target" id="structeinsums_1_1_zip_iter_1a18a379ec2b109cad4c1edbc7a3c1a7b9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums7ZipIter10value_typeE" title="einsums::ZipIter::value_type"><span class="n"><span class="pre">value_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums7ZipItermlEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Dereference the iterator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipItermlEv">
+<span id="_CPPv3N7einsums7ZipItermlEv"></span><span id="_CPPv2N7einsums7ZipItermlEv"></span><span id="einsums::ZipIter::mul-operator"></span><span class="target" id="structeinsums_1_1_zip_iter_1a5e39923b4cf51fa7e757618fb0fe74c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums7ZipIter9referenceE" title="einsums::ZipIter::reference"><span class="n"><span class="pre">reference</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7ZipItermlEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Dereference the iterator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIterppEv">
+<span id="_CPPv3N7einsums7ZipIterppEv"></span><span id="_CPPv2N7einsums7ZipIterppEv"></span><span id="einsums::ZipIter::inc-operator"></span><span class="target" id="structeinsums_1_1_zip_iter_1a340989b350551f20f8923d400de6ec19"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7ZipIterppEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Increment the iterator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIterppEi">
+<span id="_CPPv3N7einsums7ZipIterppEi"></span><span id="_CPPv2N7einsums7ZipIterppEi"></span><span id="einsums::ZipIter::inc-operator__i"></span><span class="target" id="structeinsums_1_1_zip_iter_1a1ea4f88e2a8653af57b2f69ae46fe47f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7ZipIterppEi" title="Link to this definition">#</a><br /></dt>
+<dd><p>Increment the iterator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums7ZipItereqERK7ZipIter">
+<span id="_CPPv3NK7einsums7ZipItereqERK7ZipIter"></span><span id="_CPPv2NK7einsums7ZipItereqERK7ZipIter"></span><span id="einsums::ZipIter::eq-operator__ZipIterCRC"></span><span class="target" id="structeinsums_1_1_zip_iter_1a04e46e6f87b563de4c4aefbd080b0def"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums7ZipItereqERK7ZipIter" title="Link to this definition">#</a><br /></dt>
+<dd><p>Check whether any of the iterators are equal. </p>
+<p>This uses an or mask to make sure that we don’t go past any of the ends of any of the iterators. If we used an and mask and we compared with the iterator containing the ends of the containers, then comparison will fail if any iterator is not finished. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums7ZipIterneERK7ZipIter">
+<span id="_CPPv3NK7einsums7ZipIterneERK7ZipIter"></span><span id="_CPPv2NK7einsums7ZipIterneERK7ZipIter"></span><span id="einsums::ZipIter::neq-operator__ZipIterCRC"></span><span class="target" id="structeinsums_1_1_zip_iter_1a6cef46f29fc5004e2eeb882da97ecc42"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums7ZipIterneERK7ZipIter" title="Link to this definition">#</a><br /></dt>
+<dd><p>Check whether all of the iterators are not equal. </p>
+<p>This uses an and mask to make sure that we don’t go past any of the ends of any of the iterators. If we used an or mask and we compared with the iterator containing the ends of the containers, then comparison will fail if any iterator is not finished. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIter4swapER7ZipIter">
+<span id="_CPPv3N7einsums7ZipIter4swapER7ZipIter"></span><span id="_CPPv2N7einsums7ZipIter4swapER7ZipIter"></span><span id="einsums::ZipIter::swap__ZipIterR"></span><span class="target" id="structeinsums_1_1_zip_iter_1a673a281360ac5b029bc079a1d89f8345"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">swap</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums7ZipIter4swapER7ZipIter" title="Link to this definition">#</a><br /></dt>
+<dd><p>Swap the contents of two iterators. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp6size_tEN7einsums7ZipIter9init_implEvRKNSt5tupleIDpR14ContainerItersEERKNSt14index_sequenceIDp1IEE">
+<span id="_CPPv3I_Dp6size_tEN7einsums7ZipIter9init_implERKNSt5tupleIDpR14ContainerItersEERKNSt14index_sequenceIDp1IEE"></span><span id="_CPPv2I_Dp6size_tEN7einsums7ZipIter9init_implERKNSt5tupleIDpR14ContainerItersEERKNSt14index_sequenceIDp1IEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">I</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_zip_iter_1ad0901e05d7730beb7446edb9e4668cd0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_impl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter::ContainerIters"><span class="n"><span class="pre">ContainerIters</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">containers</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_Dp6size_tEN7einsums7ZipIter9init_implEvRKNSt5tupleIDpR14ContainerItersEERKNSt14index_sequenceIDp1IEE" title="einsums::ZipIter::init_impl::I"><span class="n"><span class="pre">I</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_Dp6size_tEN7einsums7ZipIter9init_implEvRKNSt5tupleIDpR14ContainerItersEERKNSt14index_sequenceIDp1IEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp6size_tENK7einsums7ZipIter10deref_implE10value_typeRKNSt14index_sequenceIDp1IEE">
+<span id="_CPPv3I_Dp6size_tENK7einsums7ZipIter10deref_implERKNSt14index_sequenceIDp1IEE"></span><span id="_CPPv2I_Dp6size_tENK7einsums7ZipIter10deref_implERKNSt14index_sequenceIDp1IEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">I</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_zip_iter_1a2c55a91b0ad5e0306af27ae73e06ab9d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums7ZipIter10value_typeE" title="einsums::ZipIter::value_type"><span class="n"><span class="pre">value_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deref_impl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_Dp6size_tENK7einsums7ZipIter10deref_implE10value_typeRKNSt14index_sequenceIDp1IEE" title="einsums::ZipIter::deref_impl::I"><span class="n"><span class="pre">I</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I_Dp6size_tENK7einsums7ZipIter10deref_implE10value_typeRKNSt14index_sequenceIDp1IEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp6size_tEN7einsums7ZipIter14deref_impl_refE9referenceRKNSt14index_sequenceIDp1IEE">
+<span id="_CPPv3I_Dp6size_tEN7einsums7ZipIter14deref_impl_refERKNSt14index_sequenceIDp1IEE"></span><span id="_CPPv2I_Dp6size_tEN7einsums7ZipIter14deref_impl_refERKNSt14index_sequenceIDp1IEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">I</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_zip_iter_1a9000f0fe782493a11c82b5f5ff0d9680"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums7ZipIter9referenceE" title="einsums::ZipIter::reference"><span class="n"><span class="pre">reference</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deref_impl_ref</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_Dp6size_tEN7einsums7ZipIter14deref_impl_refE9referenceRKNSt14index_sequenceIDp1IEE" title="einsums::ZipIter::deref_impl_ref::I"><span class="n"><span class="pre">I</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_Dp6size_tEN7einsums7ZipIter14deref_impl_refE9referenceRKNSt14index_sequenceIDp1IEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp6size_tENK7einsums7ZipIter10equal_implEbRK7ZipIterRKNSt14index_sequenceIDp1IEE">
+<span id="_CPPv3I_Dp6size_tENK7einsums7ZipIter10equal_implERK7ZipIterRKNSt14index_sequenceIDp1IEE"></span><span id="_CPPv2I_Dp6size_tENK7einsums7ZipIter10equal_implERK7ZipIterRKNSt14index_sequenceIDp1IEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">I</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_zip_iter_1ab533e5fce4f6cfcbb179080b6ebce1c1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">equal_impl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_Dp6size_tENK7einsums7ZipIter10equal_implEbRK7ZipIterRKNSt14index_sequenceIDp1IEE" title="einsums::ZipIter::equal_impl::I"><span class="n"><span class="pre">I</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I_Dp6size_tENK7einsums7ZipIter10equal_implEbRK7ZipIterRKNSt14index_sequenceIDp1IEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums7ZipIter8current_E">
+<span id="_CPPv3N7einsums7ZipIter8current_E"></span><span id="_CPPv2N7einsums7ZipIter8current_E"></span><span id="einsums::ZipIter::current___std::tuple:ContainerItersDp:"></span><span class="target" id="structeinsums_1_1_zip_iter_1a7cb9ba688a3621906b0bc48515f7aa3a"></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter::ContainerIters"><span class="n"><span class="pre">ContainerIters</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">current_</span></span></span><a class="headerlink" href="#_CPPv4N7einsums7ZipIter8current_E" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4St">
+<span id="_CPPv3St"></span><span id="_CPPv2St"></span><span id="std"></span><span class="target" id="namespacestd"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">std</span></span></span><br /></dt>
+<dd><p>Overload for swap. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpENSt4swapEvRN7einsums7ZipIterIDp10ContainersEERN7einsums7ZipIterIDp10ContainersEE">
+<span id="_CPPv3IDpENSt4swapERN7einsums7ZipIterIDp10ContainersEERN7einsums7ZipIterIDp10ContainersEE"></span><span id="_CPPv2IDpENSt4swapERN7einsums7ZipIterIDp10ContainersEERN7einsums7ZipIterIDp10ContainersEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Containers</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacestd_1a4c06af2613b031856247a02af7947006"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">swap</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpENSt4swapEvRN7einsums7ZipIterIDp10ContainersEERN7einsums7ZipIterIDp10ContainersEE" title="std::swap::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">first</span></span>, <a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums7ZipIterE" title="einsums::ZipIter"><span class="n"><span class="pre">ZipIter</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpENSt4swapEvRN7einsums7ZipIterIDp10ContainersEERN7einsums7ZipIterIDp10ContainersEE" title="std::swap::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">second</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpENSt4swapEvRN7einsums7ZipIterIDp10ContainersEERN7einsums7ZipIterIDp10ContainersEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpENSt4swapEvRN7einsums3ZipIDp10ContainersEERN7einsums3ZipIDp10ContainersEE">
+<span id="_CPPv3IDpENSt4swapERN7einsums3ZipIDp10ContainersEERN7einsums3ZipIDp10ContainersEE"></span><span id="_CPPv2IDpENSt4swapERN7einsums3ZipIDp10ContainersEERN7einsums3ZipIDp10ContainersEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Containers</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacestd_1a8f3c87760404519662fa9aa91833e630"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">swap</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip"><span class="n"><span class="pre">Zip</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpENSt4swapEvRN7einsums3ZipIDp10ContainersEERN7einsums3ZipIDp10ContainersEE" title="std::swap::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">first</span></span>, <a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums3ZipE" title="einsums::Zip"><span class="n"><span class="pre">Zip</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpENSt4swapEvRN7einsums3ZipIDp10ContainersEERN7einsums3ZipIDp10ContainersEE" title="std::swap::Containers"><span class="n"><span class="pre">Containers</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">second</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpENSt4swapEvRN7einsums3ZipIDp10ContainersEERN7einsums3ZipIDp10ContainersEE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Overload for swap. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv47einsums"><code class="docutils literal notranslate"><span class="pre">einsums</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7einsums3ZipE"><code class="docutils literal notranslate"><span class="pre">einsums::Zip</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip10value_typeE"><code class="docutils literal notranslate"><span class="pre">value_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip9referenceE"><code class="docutils literal notranslate"><span class="pre">reference</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip15const_referenceE"><code class="docutils literal notranslate"><span class="pre">const_reference</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip8iteratorE"><code class="docutils literal notranslate"><span class="pre">iterator</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip14const_iteratorE"><code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip15difference_typeE"><code class="docutils literal notranslate"><span class="pre">difference_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip9size_typeE"><code class="docutils literal notranslate"><span class="pre">size_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip3ZipEv"><code class="docutils literal notranslate"><span class="pre">Zip()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip3ZipERK3Zip"><code class="docutils literal notranslate"><span class="pre">Zip()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip3ZipEDpR10Containers"><code class="docutils literal notranslate"><span class="pre">Zip()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3ZipaSERK3Zip"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip5beginEv"><code class="docutils literal notranslate"><span class="pre">begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip3endEv"><code class="docutils literal notranslate"><span class="pre">end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3Zip5beginEv"><code class="docutils literal notranslate"><span class="pre">begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3Zip3endEv"><code class="docutils literal notranslate"><span class="pre">end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3Zip6cbeginEv"><code class="docutils literal notranslate"><span class="pre">cbegin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3Zip4cendEv"><code class="docutils literal notranslate"><span class="pre">cend()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3ZipeqERK3ZipIDp10ContainersE"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3ZipneERK3ZipIDp10ContainersE"><code class="docutils literal notranslate"><span class="pre">operator!=()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip4swapER3Zip"><code class="docutils literal notranslate"><span class="pre">swap()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3Zip4sizeEv"><code class="docutils literal notranslate"><span class="pre">size()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3Zip8max_sizeEv"><code class="docutils literal notranslate"><span class="pre">max_size()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3Zip5emptyEv"><code class="docutils literal notranslate"><span class="pre">empty()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp6size_tEN7einsums3Zip10begin_implE8iteratorRKNSt14index_sequenceIDp1IEE"><code class="docutils literal notranslate"><span class="pre">begin_impl()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp6size_tEN7einsums3Zip8end_implE8iteratorRKNSt14index_sequenceIDp1IEE"><code class="docutils literal notranslate"><span class="pre">end_impl()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp6size_tENK7einsums3Zip11cbegin_implE14const_iteratorRKNSt14index_sequenceIDp1IEE"><code class="docutils literal notranslate"><span class="pre">cbegin_impl()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp6size_tENK7einsums3Zip9cend_implE14const_iteratorRKNSt14index_sequenceIDp1IEE"><code class="docutils literal notranslate"><span class="pre">cend_impl()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp6size_tENK7einsums3Zip10equal_implEbRK3ZipRKNSt14index_sequenceIDp1IEE"><code class="docutils literal notranslate"><span class="pre">equal_impl()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3Zip11containers_E"><code class="docutils literal notranslate"><span class="pre">containers_</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7einsums7ZipIterE"><code class="docutils literal notranslate"><span class="pre">einsums::ZipIter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIter15difference_typeE"><code class="docutils literal notranslate"><span class="pre">difference_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIter10value_typeE"><code class="docutils literal notranslate"><span class="pre">value_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIter9referenceE"><code class="docutils literal notranslate"><span class="pre">reference</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIter17iterator_categoryE"><code class="docutils literal notranslate"><span class="pre">iterator_category</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIter7ZipIterEv"><code class="docutils literal notranslate"><span class="pre">ZipIter()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIter7ZipIterERK7ZipIter"><code class="docutils literal notranslate"><span class="pre">ZipIter()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIteraSERK7ZipIter"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIter7ZipIterERKNSt5tupleIDpR14ContainerItersEE"><code class="docutils literal notranslate"><span class="pre">ZipIter()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIter7ZipIterEDpRK14ContainerIters"><code class="docutils literal notranslate"><span class="pre">ZipIter()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums7ZipItermlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipItermlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIterppEv"><code class="docutils literal notranslate"><span class="pre">operator++()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIterppEi"><code class="docutils literal notranslate"><span class="pre">operator++()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums7ZipItereqERK7ZipIter"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums7ZipIterneERK7ZipIter"><code class="docutils literal notranslate"><span class="pre">operator!=()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIter4swapER7ZipIter"><code class="docutils literal notranslate"><span class="pre">swap()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp6size_tEN7einsums7ZipIter9init_implEvRKNSt5tupleIDpR14ContainerItersEERKNSt14index_sequenceIDp1IEE"><code class="docutils literal notranslate"><span class="pre">init_impl()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp6size_tENK7einsums7ZipIter10deref_implE10value_typeRKNSt14index_sequenceIDp1IEE"><code class="docutils literal notranslate"><span class="pre">deref_impl()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp6size_tEN7einsums7ZipIter14deref_impl_refE9referenceRKNSt14index_sequenceIDp1IEE"><code class="docutils literal notranslate"><span class="pre">deref_impl_ref()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp6size_tENK7einsums7ZipIter10equal_implEbRK7ZipIterRKNSt14index_sequenceIDp1IEE"><code class="docutils literal notranslate"><span class="pre">equal_impl()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums7ZipIter8current_E"><code class="docutils literal notranslate"><span class="pre">current_</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4St"><code class="docutils literal notranslate"><span class="pre">std</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpENSt4swapEvRN7einsums7ZipIterIDp10ContainersEERN7einsums7ZipIterIDp10ContainersEE"><code class="docutils literal notranslate"><span class="pre">swap()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpENSt4swapEvRN7einsums3ZipIDp10ContainersEERN7einsums3ZipIDp10ContainersEE"><code class="docutils literal notranslate"><span class="pre">swap()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

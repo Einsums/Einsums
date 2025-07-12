@@ -1,0 +1,660 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/TypeSupport/TypeSwitch.hpp &#8212; Einsums 1.1.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=047b7709" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/TypeSupport/api/TypeSwitch';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.0" />
+    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Singleton.html">Einsums/TypeSupport/Singleton.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPUCast.html">Einsums/TypeSupport/GPUCast.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AreAllConvertible.html">Einsums/TypeSupport/AreAllConvertible.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Lockable.html">Einsums/TypeSupport/Lockable.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Arguments.html">Einsums/TypeSupport/Arguments.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TypeName.html">Einsums/TypeSupport/TypeName.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPUComplex.html">Einsums/TypeSupport/GPUComplex.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TypeSupport/TypeSwitch.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StringLiteral.html">Einsums/TypeSupport/StringLiteral.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Observable.html">Einsums/TypeSupport/Observable.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CountOfType.html">Einsums/TypeSupport/CountOfType.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/TypeSupport/TypeSwitch.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-typesupport-typeswitch-hpp">
+<span id="modules-einsums-einsums-typesupport-typeswitch-hpp-api"></span><h1>Einsums/TypeSupport/TypeSwitch.hpp<a class="headerlink" href="#einsums-typesupport-typeswitch-hpp" title="Link to this heading">#</a></h1>
+<p>Defined in header Einsums/TypeSupport/TypeSwitch.hpp.</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../../todo.html#todo_1_todo000013"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd></dd></dl>
+
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-typedefs">Typedefs</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums7SwitchTE">
+<span id="_CPPv3IDpEN7einsums7SwitchTE"></span><span id="_CPPv2IDpEN7einsums7SwitchTE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1ae36a636c1992145858265861113fcb06"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SwitchT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0DpEN7einsums6SwitchE" title="einsums::Switch"><span class="n"><span class="pre">Switch</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums7SwitchTE" title="einsums::SwitchT::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><a class="headerlink" href="#_CPPv4IDpEN7einsums7SwitchTE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">typename</span> <span class="pre">Switch&lt;...&gt;::type</span></code>. </p>
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums4CaseE">
+<span id="_CPPv3I0DpEN7einsums4CaseE"></span><span id="_CPPv2I0DpEN7einsums4CaseE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Result</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Conditions</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_case"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Case</span></span></span><a class="headerlink" href="#_CPPv4I0DpEN7einsums4CaseE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;TypeSwitch.hpp&gt;</em></div>
+<p>Represents a case in a type switch. </p>
+<p>If the type switch matches any of the conditions, then the <code class="docutils literal notranslate"><span class="pre">Result</span></code> parameter will be used. </p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums7DefaultE">
+<span id="_CPPv3I0EN7einsums7DefaultE"></span><span id="_CPPv2I0EN7einsums7DefaultE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Result</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_default"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Default</span></span></span><a class="headerlink" href="#_CPPv4I0EN7einsums7DefaultE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;TypeSwitch.hpp&gt;</em></div>
+<p>Represents the default case. </p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums6SwitchE">
+<span id="_CPPv3I0DpEN7einsums6SwitchE"></span><span id="_CPPv2I0DpEN7einsums6SwitchE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SwitchType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Cases</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_switch"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Switch</span></span></span><a class="headerlink" href="#_CPPv4I0DpEN7einsums6SwitchE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6Switch4typeE">
+<span id="_CPPv3N7einsums6Switch4typeE"></span><span id="_CPPv2N7einsums6Switch4typeE"></span><span class="target" id="structeinsums_1_1_switch_1aab112355040870b2a206b41fd61027bb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><a class="headerlink" href="#_CPPv4N7einsums6Switch4typeE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6Switch4funcEv">
+<span id="_CPPv3N7einsums6Switch4funcEv"></span><span id="_CPPv2N7einsums6Switch4funcEv"></span><span id="einsums::Switch::func"></span><span class="target" id="structeinsums_1_1_switch_1ad75f02758097d0b84051d7ef2ab7f6ff"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">func</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6Switch4funcEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE">
+<span id="_CPPv3I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE"></span><span id="_CPPv2I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SwitchType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Result</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FirstCond</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Rest</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Cases</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_switch_3_01_switch_type_00_01_case_3_01_result_00_01_first_cond_00_01_rest_8_8_8_01_4_00_01_cases_8_8_8_01_4"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Switch</span></span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, FirstCond, Rest...&gt;, Cases...&gt;::SwitchType"><span class="n"><span class="pre">SwitchType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0DpEN7einsums4CaseE" title="einsums::Case"><span class="n"><span class="pre">Case</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, FirstCond, Rest...&gt;, Cases...&gt;::Result"><span class="n"><span class="pre">Result</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, FirstCond, Rest...&gt;, Cases...&gt;::FirstCond"><span class="n"><span class="pre">FirstCond</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, FirstCond, Rest...&gt;, Cases...&gt;::Rest"><span class="n"><span class="pre">Rest</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, FirstCond, Rest...&gt;, Cases...&gt;::Cases"><span class="n"><span class="pre">Cases</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesE4typeE">
+<span id="_CPPv3N7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesE4typeE"></span><span id="_CPPv2N7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesE4typeE"></span><span class="target" id="structeinsums_1_1_switch_3_01_switch_type_00_01_case_3_01_result_00_01_first_cond_00_01_rest_8_8_8_01_4_00_01_cases_8_8_8_01_4_1aba82029bf051ce6a0f890622f0d5e84e"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">Switch</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, FirstCond, Rest...&gt;, Cases...&gt;::SwitchType"><span class="n"><span class="pre">SwitchType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0DpEN7einsums4CaseE" title="einsums::Case"><span class="n"><span class="pre">Case</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, FirstCond, Rest...&gt;, Cases...&gt;::Result"><span class="n"><span class="pre">Result</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, FirstCond, Rest...&gt;, Cases...&gt;::Rest"><span class="n"><span class="pre">Rest</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, FirstCond, Rest...&gt;, Cases...&gt;::Cases"><span class="n"><span class="pre">Cases</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><a class="headerlink" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesE4typeE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1_switch_1aab112355040870b2a206b41fd61027bb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesE4funcEv">
+<span id="_CPPv3N7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesE4funcEv"></span><span id="_CPPv2N7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesE4funcEv"></span><span id="einsums::Switch:SwitchType.Case:Result.FirstCond.RestDp:.CasesDp:::func"></span><span class="target" id="structeinsums_1_1_switch_1ad75f02758097d0b84051d7ef2ab7f6ff"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">func</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesE4funcEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I000DpEN7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesEE">
+<span id="_CPPv3I000DpEN7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesEE"></span><span id="_CPPv2I000DpEN7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SwitchType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Result</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LastCond</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Cases</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_switch_3_01_switch_type_00_01_case_3_01_result_00_01_last_cond_01_4_00_01_cases_8_8_8_01_4"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Switch</span></span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000DpEN7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, LastCond&gt;, Cases...&gt;::SwitchType"><span class="n"><span class="pre">SwitchType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0DpEN7einsums4CaseE" title="einsums::Case"><span class="n"><span class="pre">Case</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000DpEN7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, LastCond&gt;, Cases...&gt;::Result"><span class="n"><span class="pre">Result</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000DpEN7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, LastCond&gt;, Cases...&gt;::LastCond"><span class="n"><span class="pre">LastCond</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000DpEN7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, LastCond&gt;, Cases...&gt;::Cases"><span class="n"><span class="pre">Cases</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I000DpEN7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesEE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesE4typeE">
+<span id="_CPPv3N7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesE4typeE"></span><span id="_CPPv2N7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesE4typeE"></span><span class="target" id="structeinsums_1_1_switch_3_01_switch_type_00_01_case_3_01_result_00_01_last_cond_01_4_00_01_cases_8_8_8_01_4_1aac04003a2cf3c5ecd5585fa679e44a45"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">Switch</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000DpEN7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, LastCond&gt;, Cases...&gt;::SwitchType"><span class="n"><span class="pre">SwitchType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000DpEN7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, LastCond&gt;, Cases...&gt;::Cases"><span class="n"><span class="pre">Cases</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><a class="headerlink" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesE4typeE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1_switch_1aab112355040870b2a206b41fd61027bb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesE4funcEv">
+<span id="_CPPv3N7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesE4funcEv"></span><span id="_CPPv2N7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesE4funcEv"></span><span id="einsums::Switch:SwitchType.Case:Result.LastCond:.CasesDp:::func"></span><span class="target" id="structeinsums_1_1_switch_1ad75f02758097d0b84051d7ef2ab7f6ff"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">func</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesE4funcEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I00DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesEE">
+<span id="_CPPv3I00DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesEE"></span><span id="_CPPv2I00DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SwitchType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Result</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Rest</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Cases</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_switch_3_01_switch_type_00_01_case_3_01_result_00_01_switch_type_00_01_rest_8_8_8_01_4_00_01_cases_8_8_8_01_4"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Switch</span></span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, SwitchType, Rest...&gt;, Cases...&gt;::SwitchType"><span class="n"><span class="pre">SwitchType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0DpEN7einsums4CaseE" title="einsums::Case"><span class="n"><span class="pre">Case</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, SwitchType, Rest...&gt;, Cases...&gt;::Result"><span class="n"><span class="pre">Result</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, SwitchType, Rest...&gt;, Cases...&gt;::SwitchType"><span class="n"><span class="pre">SwitchType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, SwitchType, Rest...&gt;, Cases...&gt;::Rest"><span class="n"><span class="pre">Rest</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, SwitchType, Rest...&gt;, Cases...&gt;::Cases"><span class="n"><span class="pre">Cases</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I00DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesEE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesE4typeE">
+<span id="_CPPv3N7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesE4typeE"></span><span id="_CPPv2N7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesE4typeE"></span><span class="target" id="structeinsums_1_1_switch_3_01_switch_type_00_01_case_3_01_result_00_01_switch_type_00_01_rest_8_8_8_01_4_00_01_cases_8_8_8_01_4_1a929d5e97843864013ced1b94cf0a7d3f"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Case&lt;Result, SwitchType, Rest...&gt;, Cases...&gt;::Result"><span class="n"><span class="pre">Result</span></span></a><a class="headerlink" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesE4typeE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1_switch_1aab112355040870b2a206b41fd61027bb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesE4funcEv">
+<span id="_CPPv3N7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesE4funcEv"></span><span id="_CPPv2N7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesE4funcEv"></span><span id="einsums::Switch:SwitchType.Case:Result.SwitchType.RestDp:.CasesDp:::func"></span><span class="target" id="structeinsums_1_1_switch_1ad75f02758097d0b84051d7ef2ab7f6ff"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">func</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesE4funcEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN7einsums6SwitchI10SwitchType7DefaultI6ResultEEE">
+<span id="_CPPv3I00EN7einsums6SwitchI10SwitchType7DefaultI6ResultEEE"></span><span id="_CPPv2I00EN7einsums6SwitchI10SwitchType7DefaultI6ResultEEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SwitchType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Result</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_switch_3_01_switch_type_00_01_default_3_01_result_01_4_01_4"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Switch</span></span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums6SwitchI10SwitchType7DefaultI6ResultEEE" title="einsums::Switch&lt;SwitchType, Default&lt;Result&gt;&gt;::SwitchType"><span class="n"><span class="pre">SwitchType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums7DefaultE" title="einsums::Default"><span class="n"><span class="pre">Default</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums6SwitchI10SwitchType7DefaultI6ResultEEE" title="einsums::Switch&lt;SwitchType, Default&lt;Result&gt;&gt;::Result"><span class="n"><span class="pre">Result</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I00EN7einsums6SwitchI10SwitchType7DefaultI6ResultEEE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEE4typeE">
+<span id="_CPPv3N7einsums6SwitchI10SwitchType7DefaultI6ResultEE4typeE"></span><span id="_CPPv2N7einsums6SwitchI10SwitchType7DefaultI6ResultEE4typeE"></span><span class="target" id="structeinsums_1_1_switch_3_01_switch_type_00_01_default_3_01_result_01_4_01_4_1af724781301a9d03c5c5eae0ed820fbe7"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7einsums6SwitchI10SwitchType7DefaultI6ResultEEE" title="einsums::Switch&lt;SwitchType, Default&lt;Result&gt;&gt;::Result"><span class="n"><span class="pre">Result</span></span></a><a class="headerlink" href="#_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEE4typeE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1_switch_1aab112355040870b2a206b41fd61027bb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEE4funcEv">
+<span id="_CPPv3N7einsums6SwitchI10SwitchType7DefaultI6ResultEE4funcEv"></span><span id="_CPPv2N7einsums6SwitchI10SwitchType7DefaultI6ResultEE4funcEv"></span><span id="einsums::Switch:SwitchType.Default:Result::::func"></span><span class="target" id="structeinsums_1_1_switch_1ad75f02758097d0b84051d7ef2ab7f6ff"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">func</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEE4funcEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I00DpEN7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesEE">
+<span id="_CPPv3I00DpEN7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesEE"></span><span id="_CPPv2I00DpEN7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SwitchType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Result</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Cases</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_switch_3_01_switch_type_00_01_default_3_01_result_01_4_00_01_cases_8_8_8_01_4"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Switch</span></span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00DpEN7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Default&lt;Result&gt;, Cases...&gt;::SwitchType"><span class="n"><span class="pre">SwitchType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums7DefaultE" title="einsums::Default"><span class="n"><span class="pre">Default</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00DpEN7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Default&lt;Result&gt;, Cases...&gt;::Result"><span class="n"><span class="pre">Result</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00DpEN7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesEE" title="einsums::Switch&lt;SwitchType, Default&lt;Result&gt;, Cases...&gt;::Cases"><span class="n"><span class="pre">Cases</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I00DpEN7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesEE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesE4typeE">
+<span id="_CPPv3N7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesE4typeE"></span><span id="_CPPv2N7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesE4typeE"></span><span class="target" id="structeinsums_1_1_switch_3_01_switch_type_00_01_default_3_01_result_01_4_00_01_cases_8_8_8_01_4_1ad4633f8848f48bba06565646253d98fe"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><a class="headerlink" href="#_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesE4typeE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1_switch_1aab112355040870b2a206b41fd61027bb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesE4funcEv">
+<span id="_CPPv3N7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesE4funcEv"></span><span id="_CPPv2N7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesE4funcEv"></span><span id="einsums::Switch:SwitchType.Default:Result:.CasesDp:::func"></span><span class="target" id="structeinsums_1_1_switch_3_01_switch_type_00_01_default_3_01_result_01_4_00_01_cases_8_8_8_01_4_1a2319b64405ab99c7282a91f01d1dcdd2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">func</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesE4funcEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1_switch_1ad75f02758097d0b84051d7ef2ab7f6ff"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">func</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv47einsums"><code class="docutils literal notranslate"><span class="pre">einsums</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7einsums7SwitchTE"><code class="docutils literal notranslate"><span class="pre">SwitchT</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0DpEN7einsums4CaseE"><code class="docutils literal notranslate"><span class="pre">einsums::Case</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums7DefaultE"><code class="docutils literal notranslate"><span class="pre">einsums::Default</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0DpEN7einsums6SwitchE"><code class="docutils literal notranslate"><span class="pre">einsums::Switch</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6Switch4typeE"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6Switch4funcEv"><code class="docutils literal notranslate"><span class="pre">func()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I000DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesEE"><code class="docutils literal notranslate"><span class="pre">einsums::Switch&lt;</span> <span class="pre">SwitchType,</span> <span class="pre">Case&lt;</span> <span class="pre">Result,</span> <span class="pre">FirstCond,</span> <span class="pre">Rest...</span> <span class="pre">&gt;,</span> <span class="pre">Cases...</span> <span class="pre">&gt;</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesE4typeE"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result9FirstCondDp4RestEDp5CasesE4funcEv"><code class="docutils literal notranslate"><span class="pre">func()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I000DpEN7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesEE"><code class="docutils literal notranslate"><span class="pre">einsums::Switch&lt;</span> <span class="pre">SwitchType,</span> <span class="pre">Case&lt;</span> <span class="pre">Result,</span> <span class="pre">LastCond</span> <span class="pre">&gt;,</span> <span class="pre">Cases...</span> <span class="pre">&gt;</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesE4typeE"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result8LastCondEDp5CasesE4funcEv"><code class="docutils literal notranslate"><span class="pre">func()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00DpDpEN7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesEE"><code class="docutils literal notranslate"><span class="pre">einsums::Switch&lt;</span> <span class="pre">SwitchType,</span> <span class="pre">Case&lt;</span> <span class="pre">Result,</span> <span class="pre">SwitchType,</span> <span class="pre">Rest...</span> <span class="pre">&gt;,</span> <span class="pre">Cases...</span> <span class="pre">&gt;</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesE4typeE"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6SwitchI10SwitchType4CaseI6Result10SwitchTypeDp4RestEDp5CasesE4funcEv"><code class="docutils literal notranslate"><span class="pre">func()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN7einsums6SwitchI10SwitchType7DefaultI6ResultEEE"><code class="docutils literal notranslate"><span class="pre">einsums::Switch&lt;</span> <span class="pre">SwitchType,</span> <span class="pre">Default&lt;</span> <span class="pre">Result</span> <span class="pre">&gt;</span> <span class="pre">&gt;</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEE4typeE"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEE4funcEv"><code class="docutils literal notranslate"><span class="pre">func()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00DpEN7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesEE"><code class="docutils literal notranslate"><span class="pre">einsums::Switch&lt;</span> <span class="pre">SwitchType,</span> <span class="pre">Default&lt;</span> <span class="pre">Result</span> <span class="pre">&gt;,</span> <span class="pre">Cases...</span> <span class="pre">&gt;</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesE4typeE"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums6SwitchI10SwitchType7DefaultI6ResultEDp5CasesE4funcEv"><code class="docutils literal notranslate"><span class="pre">func()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

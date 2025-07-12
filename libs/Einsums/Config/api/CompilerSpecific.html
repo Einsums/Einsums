@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
   </head>
   
   
@@ -265,14 +265,14 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="Config.html">Einsums/Config.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Config/CompilerSpecific.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BranchHints.html">Einsums/Config/BranchHints.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ForceInline.html">Einsums/Config/ForceInline.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Types.html">Einsums/Config/Types.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Namespace.html">Einsums/Config/Namespace.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Alias.html">Einsums/Config/Alias.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ExportDefinitions.html">Einsums/Config/ExportDefinitions.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Debug.html">Einsums/Config/Debug.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Types.html">Einsums/Config/Types.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ForceInline.html">Einsums/Config/ForceInline.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BranchHints.html">Einsums/Config/BranchHints.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Namespace.html">Einsums/Config/Namespace.hpp</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Config/CompilerSpecific.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Alias.html">Einsums/Config/Alias.hpp</a></li>
 </ul>
 </div>
 </nav></div>
@@ -338,6 +338,26 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
 <dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_PRAGMA">
+<span class="target" id="_compiler_specific_8hpp_1a9027aeea06bffadae90e9d15a85a0986"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_PRAGMA</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">stuff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_PRAGMA" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_OMP_PRAGMA">
+<span class="target" id="_compiler_specific_8hpp_1a79a083db8b5c3fe353508adc01c65c18"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_PRAGMA</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">stuff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_OMP_PRAGMA" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_OMP_SIMD_PRAGMA">
+<span class="target" id="_compiler_specific_8hpp_1abb6fc14dc83198140e038fde5530b11b"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_SIMD_PRAGMA</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">stuff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_OMP_SIMD_PRAGMA" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_OMP_SIMD">
+<span class="target" id="_compiler_specific_8hpp_1ae4f0162b19a7aa3a28eb79cebf1580af"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_SIMD</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_SIMD" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_PARALLEL_FOR_SIMD">
 <span class="target" id="_compiler_specific_8hpp_1abf128a4496bde0a06dc92e92ed129caa"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_PARALLEL_FOR_SIMD</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_PARALLEL_FOR_SIMD" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
@@ -348,11 +368,6 @@
 <dd></dd></dl>
 
 <dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.EINSUMS_OMP_SIMD">
-<span class="target" id="_compiler_specific_8hpp_1ae4f0162b19a7aa3a28eb79cebf1580af"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_SIMD</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_SIMD" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_PARALLEL">
 <span class="target" id="_compiler_specific_8hpp_1ad4adb9b58ced747d3b8a1f2d21460fa7"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_PARALLEL</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_PARALLEL" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
@@ -360,6 +375,11 @@
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_TASK_FOR">
 <span class="target" id="_compiler_specific_8hpp_1a83b5c440419d07f1332a7bb6d4d315c6"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_TASK_FOR</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_TASK_FOR" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_OMP_TASK_FOR_SIMD">
+<span class="target" id="_compiler_specific_8hpp_1a5d5b23d06f45d30ad6a3889f905f9314"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_TASK_FOR_SIMD</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_TASK_FOR_SIMD" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp macro">
@@ -475,11 +495,15 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_PRAGMA"><code class="docutils literal notranslate"><span class="pre">EINSUMS_PRAGMA</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_PRAGMA"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_PRAGMA</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_SIMD_PRAGMA"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_SIMD_PRAGMA</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_SIMD"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_SIMD</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_PARALLEL_FOR_SIMD"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_PARALLEL_FOR_SIMD</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_PARALLEL_FOR"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_PARALLEL_FOR</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_SIMD"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_SIMD</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_PARALLEL"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_PARALLEL</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_TASK_FOR"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_TASK_FOR</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_TASK_FOR_SIMD"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_TASK_FOR_SIMD</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_TASK"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_TASK</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_FOR_NOWAIT"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_FOR_NOWAIT</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_CRITICAL"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_CRITICAL</span></code></a></li>

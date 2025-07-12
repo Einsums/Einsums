@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
   </head>
   
   
@@ -264,15 +264,15 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="H5.html">Einsums/Tensor/H5.hpp</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Tensor/Tensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="DeviceTensor.html">Einsums/Tensor/DeviceTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RuntimeTensor.html">Einsums/Tensor/RuntimeTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DiskTensor.html">Einsums/Tensor/DiskTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArithmeticTensor.html">Einsums/Tensor/ArithmeticTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="TensorForward.html">Einsums/Tensor/TensorForward.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BlockTensor.html">Einsums/Tensor/BlockTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="DiskTensor.html">Einsums/Tensor/DiskTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="H5.html">Einsums/Tensor/H5.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="TiledTensor.html">Einsums/Tensor/TiledTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RuntimeTensor.html">Einsums/Tensor/RuntimeTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BlockTensor.html">Einsums/Tensor/BlockTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DeviceTensor.html">Einsums/Tensor/DeviceTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FunctionTensor.html">Einsums/Tensor/FunctionTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Backends_DeviceTensor.html">Einsums/Tensor/Backends/DeviceTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeviceTensorView.html">Einsums/Tensor/Backends/DeviceTensorView.hpp</a></li>
@@ -343,7 +343,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000005"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000013"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -373,7 +373,7 @@
 <dd><p>Read data from a disk and put it into a tensor.</p>
 <p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000004"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd><p>This needs to be expanded to handle the various h5 parameters like above. </p>
 </dd></dl>
 
@@ -484,13 +484,13 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6Tensor6TensorEv">
 <span id="_CPPv3N7einsums6Tensor6TensorEv"></span><span id="_CPPv2N7einsums6Tensor6TensorEv"></span><span id="einsums::Tensor::Tensor"></span><span class="target" id="structeinsums_1_1_tensor_1a0957cefb711b94d72ef4d1a4b4fc254e"></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums6Tensor6TensorEv" title="Link to this definition">#</a><br /></dt>
-<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> object. Default constructor. </p>
+<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> object. <a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6Tensor6TensorERK6Tensor">
 <span id="_CPPv3N7einsums6Tensor6TensorERK6Tensor"></span><span id="_CPPv2N7einsums6Tensor6TensorERK6Tensor"></span><span id="einsums::Tensor::Tensor__TensorCR"></span><span class="target" id="structeinsums_1_1_tensor_1a37b3e86dad50c903c78420f9a25e3044"></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums6Tensor6TensorERK6Tensor" title="einsums::Tensor::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums6Tensor6TensorERK6Tensor" title="Link to this definition">#</a><br /></dt>
-<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> object. Default copy constructor. </p>
+<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> object. <a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> copy constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -502,13 +502,13 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6Tensor6TensorERR6Tensor">
 <span id="_CPPv3N7einsums6Tensor6TensorERR6Tensor"></span><span id="_CPPv2N7einsums6Tensor6TensorERR6Tensor"></span><span id="einsums::Tensor::Tensor__TensorRR"></span><span class="target" id="structeinsums_1_1_tensor_1a220ff7b91681ad36a824c701c2504624"></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums6Tensor6TensorERR6Tensor" title="einsums::Tensor::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums6Tensor6TensorERR6Tensor" title="Link to this definition">#</a><br /></dt>
-<dd><p>Default move constructor. </p>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6TensoraSERR6Tensor">
 <span id="_CPPv3N7einsums6TensoraSERR6Tensor"></span><span id="_CPPv2N7einsums6TensoraSERR6Tensor"></span><span id="einsums::Tensor::assign-operator__TensorRR"></span><span class="target" id="structeinsums_1_1_tensor_1ad9c59c8e604c7de0a260cb7772def8ed"></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums6TensoraSERR6Tensor" title="Link to this definition">#</a><br /></dt>
-<dd><p>Default move assignment. </p>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> move assignment. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1039,25 +1039,25 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6TensorI1TXL0EEE6TensorEv">
 <span id="_CPPv3N7einsums6TensorI1TXL0EEE6TensorEv"></span><span id="_CPPv2N7einsums6TensorI1TX0EE6TensorEv"></span><span id="einsums::Tensor:T.0:::Tensor"></span><span class="target" id="structeinsums_1_1_tensor_3_01_t_00_010_01_4_1aa60c0f557feb7fb908254a40930a0cb0"></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums6TensorI1TXL0EEE6TensorEv" title="Link to this definition">#</a><br /></dt>
-<dd><p>Default constructor </p>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> constructor </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6TensorI1TXL0EEE6TensorERK6Tensor">
 <span id="_CPPv3N7einsums6TensorI1TXL0EEE6TensorERK6Tensor"></span><span id="_CPPv2N7einsums6TensorI1TX0EE6TensorERK6Tensor"></span><span id="einsums::Tensor:T.0:::Tensor__TensorCR"></span><span class="target" id="structeinsums_1_1_tensor_3_01_t_00_010_01_4_1a045ac631bf3ff752c950309599d061a8"></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums6TensorI1TXL0EEE6TensorERK6Tensor" title="einsums::Tensor&lt;T, 0&gt;::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums6TensorI1TXL0EEE6TensorERK6Tensor" title="Link to this definition">#</a><br /></dt>
-<dd><p>Default copy constructor </p>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> copy constructor </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6TensorI1TXL0EEE6TensorERR6Tensor">
 <span id="_CPPv3N7einsums6TensorI1TXL0EEE6TensorERR6Tensor"></span><span id="_CPPv2N7einsums6TensorI1TX0EE6TensorERR6Tensor"></span><span id="einsums::Tensor:T.0:::Tensor__TensorRR"></span><span class="target" id="structeinsums_1_1_tensor_3_01_t_00_010_01_4_1a0df3e6c117437614019b8dcca7952dfd"></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums6TensorI1TXL0EEE6TensorERR6Tensor" title="einsums::Tensor&lt;T, 0&gt;::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums6TensorI1TXL0EEE6TensorERR6Tensor" title="Link to this definition">#</a><br /></dt>
-<dd><p>Default move constructor </p>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> move constructor </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6TensorI1TXL0EEED0Ev">
 <span id="_CPPv3N7einsums6TensorI1TXL0EEED0Ev"></span><span id="_CPPv2N7einsums6TensorI1TX0EED0Ev"></span><span id="einsums::Tensor:T.0:::~Tensor"></span><span class="target" id="structeinsums_1_1_tensor_3_01_t_00_010_01_4_1a137df21039b023e3ee92164e65b5d52c"></span><span class="sig-name descname"><span class="n"><span class="pre">~Tensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums6TensorI1TXL0EEED0Ev" title="Link to this definition">#</a><br /></dt>
-<dd><p>Default destructor </p>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> destructor </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1153,19 +1153,19 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp">
 <span class="target" id="structeinsums_1_1_tensor_1a0957cefb711b94d72ef4d1a4b4fc254e"></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
-<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> object. Default constructor. </p>
+<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> object. <a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp">
 <span class="target" id="structeinsums_1_1_tensor_1a37b3e86dad50c903c78420f9a25e3044"></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums6TensorI1TXL0EEE6TensorERK6Tensor" title="einsums::Tensor&lt;T, 0&gt;::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
-<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> object. Default copy constructor. </p>
+<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> object. <a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> copy constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp">
 <span class="target" id="structeinsums_1_1_tensor_1a220ff7b91681ad36a824c701c2504624"></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums6TensorI1TXL0EEE6TensorERR6Tensor" title="einsums::Tensor&lt;T, 0&gt;::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
-<dd><p>Default move constructor. </p>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1254,7 +1254,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6TensorI1TXL0EEEaSERR6Tensor">
 <span id="_CPPv3N7einsums6TensorI1TXL0EEEaSERR6Tensor"></span><span id="_CPPv2N7einsums6TensorI1TX0EEaSERR6Tensor"></span><span id="einsums::Tensor:T.0:::assign-operator__TensorRR"></span><span class="target" id="structeinsums_1_1_tensor_1ad9c59c8e604c7de0a260cb7772def8ed"></span><a class="reference internal" href="#_CPPv4N7einsums6TensorI1TXL0EEE6TensorEv" title="einsums::Tensor&lt;T, 0&gt;::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums6TensorI1TXL0EEE6TensorEv" title="einsums::Tensor&lt;T, 0&gt;::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums6TensorI1TXL0EEEaSERR6Tensor" title="Link to this definition">#</a><br /></dt>
-<dd><p>Default move assignment. </p>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> move assignment. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1475,14 +1475,14 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums6TensorI1TXL0EEEclERK9Container">
 <span id="_CPPv3N7einsums6TensorI1TXL0EEEclERK9Container"></span><span id="_CPPv2N7einsums6TensorI1TX0EEclERK9Container"></span><span id="einsums::Tensor:T.0:::call-operator__ContainerCR"></span><span class="target" id="structeinsums_1_1_tensor_1a6e6a20213b82564b7f4afa3f53f2fe68"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums6TensorI1TXL0EEEE" title="einsums::Tensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Container</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums6TensorI1TXL0EEEclERK9Container" title="Link to this definition">#</a><br /></dt>
 <dd><p>Rank&gt;::operator(MultiIndex…) -&gt; T&amp; </p>
-<p>Default constructor    Rank&gt;::operator(MultiIndex…) -&gt; T&amp; </p>
+<p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> constructor    Rank&gt;::operator(MultiIndex…) -&gt; T&amp; </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums6TensorI1TXL0EEEclERK9Container">
 <span id="_CPPv3NK7einsums6TensorI1TXL0EEEclERK9Container"></span><span id="_CPPv2NK7einsums6TensorI1TX0EEclERK9Container"></span><span id="einsums::Tensor:T.0:::call-operator__ContainerCRC"></span><span class="target" id="structeinsums_1_1_tensor_1af0b7b1bd0072314309038457091dc7ff"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums6TensorI1TXL0EEEE" title="einsums::Tensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Container</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums6TensorI1TXL0EEEclERK9Container" title="Link to this definition">#</a><br /></dt>
 <dd><p>Rank&gt;::operator(MultiIndex…) -&gt; T&amp; </p>
-<p>Default constructor    Rank&gt;::operator(MultiIndex…) -&gt; T&amp; </p>
+<p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> constructor    Rank&gt;::operator(MultiIndex…) -&gt; T&amp; </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1728,13 +1728,13 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10TensorView10TensorViewERK10TensorView">
 <span id="_CPPv3N7einsums10TensorView10TensorViewERK10TensorView"></span><span id="_CPPv2N7einsums10TensorView10TensorViewERK10TensorView"></span><span id="einsums::TensorView::TensorView__TensorViewCR"></span><span class="target" id="structeinsums_1_1_tensor_view_1ad15b0a6dbe03ffa9372f5e47bf43edd6"></span><span class="sig-name descname"><span class="n"><span class="pre">TensorView</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums10TensorView10TensorViewERK10TensorView" title="einsums::TensorView::TensorView"><span class="n"><span class="pre">TensorView</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums10TensorView10TensorViewERK10TensorView" title="Link to this definition">#</a><br /></dt>
-<dd><p>Default copy constructor. </p>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> copy constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums10TensorViewD0Ev">
 <span id="_CPPv3N7einsums10TensorViewD0Ev"></span><span id="_CPPv2N7einsums10TensorViewD0Ev"></span><span id="einsums::TensorView::~TensorView"></span><span class="target" id="structeinsums_1_1_tensor_view_1af32e05817add5b20d8ced3d3599fd6e0"></span><span class="sig-name descname"><span class="n"><span class="pre">~TensorView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums10TensorViewD0Ev" title="Link to this definition">#</a><br /></dt>
-<dd><p>Default destructor. </p>
+<dd><p><a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_default"><span class="std std-ref">Default</span></a> destructor. </p>
 </dd></dl>
 
 <dl class="cpp function">

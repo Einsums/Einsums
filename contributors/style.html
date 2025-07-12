@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 09, 2025"/>
+    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
   </head>
   
   
@@ -326,8 +326,8 @@ The main purpose of these guidelines is to get contributors to think more deeply
 code, and to provide a single style to make our code more consistent to read. All files should begin
 with the following statement.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="o">----------------------------------------------------------------------------------------------</span>
-<span class="w">  </span><span class="n">Copyright</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">Einsums</span><span class="w"> </span><span class="n">Developers</span><span class="p">.</span><span class="w"> </span><span class="n">All</span><span class="w"> </span><span class="n">rights</span><span class="w"> </span><span class="n">reserved</span><span class="p">.</span>
-<span class="w">  </span><span class="n">Licensed</span><span class="w"> </span><span class="n">under</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">MIT</span><span class="w"> </span><span class="n">License</span><span class="p">.</span><span class="w"> </span><span class="n">See</span><span class="w"> </span><span class="n">LICENSE</span><span class="p">.</span><span class="n">txt</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">project</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">license</span><span class="w"> </span><span class="n">information</span><span class="p">.</span>
+<span class="w"> </span><span class="n">Copyright</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">Einsums</span><span class="w"> </span><span class="n">Developers</span><span class="p">.</span><span class="w"> </span><span class="n">All</span><span class="w"> </span><span class="n">rights</span><span class="w"> </span><span class="n">reserved</span><span class="p">.</span>
+<span class="w"> </span><span class="n">Licensed</span><span class="w"> </span><span class="n">under</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">MIT</span><span class="w"> </span><span class="n">License</span><span class="p">.</span><span class="w"> </span><span class="n">See</span><span class="w"> </span><span class="n">LICENSE</span><span class="p">.</span><span class="n">txt</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">project</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">license</span><span class="w"> </span><span class="n">information</span><span class="p">.</span>
 <span class="o">----------------------------------------------------------------------------------------------</span>
 </pre></div>
 </div>
@@ -380,12 +380,11 @@ separated by underscores. Some examples.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">A.full_view_of_underlying()</span></code></p></li>
 </ul>
 </li>
-<li><p>Private and protected properties in a class should end in a single underscore. However,
-some older code will have them begin in a single underscore instead. Some examples.</p>
+<li><p>Private and protected properties in a class should begin in a single underscore. However,
+some older code will have them end in a single underscore instead. Some examples.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">this-&gt;dims_</span></code>: Preferred.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">this-&gt;_dims</span></code>: Sometimes, this will show up. This is discouraged due to the fact that anything that begins
-with an underscore and a capital letter may eventually be a reserved identifier.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">this-&gt;dims_</span></code>: Discouraged for consistency.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">this-&gt;_dims</span></code>: Preferred.</p></li>
 </ul>
 </li>
 <li><p>Variables and parameters should usually be in <code class="docutils literal notranslate"><span class="pre">snake_case</span></code>. However, to be consistent with
@@ -418,7 +417,7 @@ compromise we have to make. Some examples.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">size_t</span> <span class="pre">size()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Tensor&lt;double,</span> <span class="pre">2&gt;</span> <span class="pre">&amp;create_tensor()</span></code> or <code class="docutils literal notranslate"><span class="pre">auto</span> <span class="pre">create_tensor()</span> <span class="pre">-&gt;</span> <span class="pre">Tensor&lt;double,</span> <span class="pre">2&gt;</span> <span class="pre">&amp;</span></code>
-are both alright. Use your best jugement here.</p></li>
+are both alright. Use your best judgement here.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">auto</span> <span class="pre">common_initialization(TensorType&lt;T,</span> <span class="pre">OtherRank&gt;</span> <span class="pre">const</span> <span class="pre">&amp;other,</span> <span class="pre">Args</span> <span class="pre">&amp;&amp;...args)</span> <span class="pre">-&gt;</span> <span class="pre">std::enable_if_t&lt;std::is_base_of_v&lt;::einsums::tensor_base::Tensor&lt;T,</span> <span class="pre">OtherRank&gt;,</span> <span class="pre">TensorType&lt;T,</span> <span class="pre">OtherRank&gt;&gt;&gt;</span></code>
 This is a complicated return type. Use the <code class="docutils literal notranslate"><span class="pre">auto</span></code> keyword for readability.</p></li>
 </ul>
@@ -490,6 +489,117 @@ and any reference to a tensor variable in a non-tensor variable should match the
 </li>
 </ul>
 </section>
+<section id="cmake-style">
+<h2>CMake Style<a class="headerlink" href="#cmake-style" title="Link to this heading">#</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">.cmake-format.py</span></code> file is provided to ensure consist formatting of CMake files. You may need to
+install the package cmake-format to use it.</p>
+</section>
+</section>
+<section id="using-pre-commit-with-einsums">
+<h1>Using pre-commit with Einsums<a class="headerlink" href="#using-pre-commit-with-einsums" title="Link to this heading">#</a></h1>
+<p>Einsums uses <a class="reference external" href="https://pre-commit.com/">pre-commit</a> to enforce consistent code style, license headers, and formatting standards for C++, CMake, and Python files. This helps maintain code quality and reduces stylistic differences across contributors.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
+<p>First, install the <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> Python package:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+<p>Alternatively, you may use <code class="docutils literal notranslate"><span class="pre">conda</span></code> or <code class="docutils literal notranslate"><span class="pre">pipx</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>pre-commit
+<span class="c1"># or</span>
+pipx<span class="w"> </span>install<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+</section>
+<section id="enabling-pre-commit-hooks">
+<h2>Enabling pre-commit Hooks<a class="headerlink" href="#enabling-pre-commit-hooks" title="Link to this heading">#</a></h2>
+<p>Once installed, enable the hooks in your local clone of the Einsums repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/path/to/Einsums
+pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+<p>This installs Git hook scripts so that <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> runs automatically when you commit.</p>
+<p>To manually run checks on all files (useful before a PR):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+</pre></div>
+</div>
+</section>
+<section id="hook-summary">
+<h2>Hook Summary<a class="headerlink" href="#hook-summary" title="Link to this heading">#</a></h2>
+<p>The following hooks are configured in <code class="docutils literal notranslate"><span class="pre">.pre-commit-config.yaml</span></code>:</p>
+<p><strong>C++ formatting</strong></p>
+<ul class="simple">
+<li><p><strong>Hook</strong>: <code class="docutils literal notranslate"><span class="pre">clang-format</span></code> (<a class="reference external" href="https://github.com/pre-commit/mirrors-clang-format">v16.0.6</a>)</p></li>
+<li><p><strong>Files checked</strong>: <code class="docutils literal notranslate"><span class="pre">.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">.hpp</span></code></p></li>
+<li><p><strong>Config</strong>: Uses project’s <code class="docutils literal notranslate"><span class="pre">.clang-format</span></code> style</p></li>
+<li><p><strong>Purpose</strong>: Ensures consistent formatting of C++ source and header files.</p></li>
+</ul>
+<p><strong>CMake formatting</strong></p>
+<ul class="simple">
+<li><p><strong>Hook</strong>: <code class="docutils literal notranslate"><span class="pre">cmake-format</span></code> (<a class="reference external" href="https://github.com/cheshirekow/cmake-format-precommit">v0.6.10</a>)</p></li>
+<li><p><strong>Files checked</strong>: <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">*.cmake</span></code></p></li>
+<li><p><strong>Purpose</strong>: Applies consistent formatting to all CMake files.</p></li>
+</ul>
+<p><strong>License header checks</strong></p>
+<ul class="simple">
+<li><p><strong>Hook</strong>: <code class="docutils literal notranslate"><span class="pre">insert-license</span></code> (<a class="reference external" href="https://github.com/Lucas-C/pre-commit-hooks">v1.5.4</a>)</p></li>
+<li><p><strong>Files checked</strong>:
+- C++: <code class="docutils literal notranslate"><span class="pre">.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">.hpp</span></code> (C++-style comments)
+- CMake: <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">*.cmake</span></code> (hash comments)
+- Python: <code class="docutils literal notranslate"><span class="pre">.py</span></code> (hash comments)</p></li>
+<li><p><strong>License template</strong>: <code class="docutils literal notranslate"><span class="pre">devtools/LicenseHeader.txt</span></code></p></li>
+<li><p><strong>Purpose</strong>: Verifies that all relevant files begin with a consistent license header.</p></li>
+</ul>
+<p>All hooks are configured to <strong>exclude build directories</strong> such as <code class="docutils literal notranslate"><span class="pre">build/</span></code> and <code class="docutils literal notranslate"><span class="pre">cmake-build-*</span></code> automatically.</p>
+</section>
+<section id="updating-hooks">
+<h2>Updating Hooks<a class="headerlink" href="#updating-hooks" title="Link to this heading">#</a></h2>
+<p>To update all hooks to their latest compatible versions:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>autoupdate
+</pre></div>
+</div>
+<p>To update a specific hook:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>autoupdate<span class="w"> </span>--repo<span class="w"> </span>&lt;repo-url&gt;
+</pre></div>
+</div>
+<p>If you encounter caching or hook resolution issues, you can clear the cache:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>clean
+</pre></div>
+</div>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
+<p><strong>Common tasks</strong>:</p>
+<ul>
+<li><p>Run a specific hook manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>run<span class="w"> </span>clang-format<span class="w"> </span>--all-files
+</pre></div>
+</div>
+</li>
+<li><p>Temporarily skip hooks (not recommended unless necessary):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>--no-verify
+</pre></div>
+</div>
+</li>
+<li><p>Reinstall hooks:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>uninstall
+pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">#</a></h2>
+<p>All contributors to Einsums are expected to run <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> before pushing code or submitting a pull request.</p>
+<p>The typical workflow is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Apply pre-commit fixes&quot;</span>
+</pre></div>
+</div>
+<p>This minimizes unnecessary review cycles and helps maintain code consistency.</p>
+</section>
 </section>
 
 
@@ -521,6 +631,7 @@ and any reference to a tensor variable in a non-tensor variable should match the
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Coding Style</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c-style">C++ Style</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coding-conventions">Coding Conventions</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#names">Names</a></li>
@@ -531,7 +642,20 @@ and any reference to a tensor variable in a non-tensor variable should match the
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-style">Python Style</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cmake-style">CMake Style</a></li>
 </ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pre-commit-with-einsums">Using pre-commit with Einsums</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enabling-pre-commit-hooks">Enabling pre-commit Hooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hook-summary">Hook Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-hooks">Updating Hooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contributing">Contributing</a></li>
+</ul>
+</li>
+</ul>
+
   </nav></div>
 
 </div></div>

@@ -19,18 +19,18 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
    :maxdepth: 1
 
    /libs/Einsums/TensorAlgebra/api/TensorAlgebra.rst
-   /libs/Einsums/TensorAlgebra/api/Permute.rst
    /libs/Einsums/TensorAlgebra/api/TensorAlgebra_TensorAlgebra.rst
-   /libs/Einsums/TensorAlgebra/api/Dispatch.rst
-   /libs/Einsums/TensorAlgebra/api/TileAlgebra.rst
-   /libs/Einsums/TensorAlgebra/api/BlockAlgebra.rst
-   /libs/Einsums/TensorAlgebra/api/DevicePermute.rst
-   /libs/Einsums/TensorAlgebra/api/GenericAlgorithm.rst
-   /libs/Einsums/TensorAlgebra/api/BlockTileAlgebra.rst
-   /libs/Einsums/TensorAlgebra/api/KhatriRao.rst
-   /libs/Einsums/TensorAlgebra/api/BaseAlgebra.rst
-   /libs/Einsums/TensorAlgebra/api/ElementTransform.rst
-   /libs/Einsums/TensorAlgebra/api/GPUTensorAlgebra.rst
-   /libs/Einsums/TensorAlgebra/api/Unfold.rst
+   /libs/Einsums/TensorAlgebra/api/Permute.rst
    /libs/Einsums/TensorAlgebra/api/Utilities.rst
    /libs/Einsums/TensorAlgebra/api/Index.rst
+   /libs/Einsums/TensorAlgebra/api/BlockAlgebra.rst
+   /libs/Einsums/TensorAlgebra/api/ElementTransform.rst
+   /libs/Einsums/TensorAlgebra/api/Unfold.rst
+   /libs/Einsums/TensorAlgebra/api/GPUTensorAlgebra.rst
+   /libs/Einsums/TensorAlgebra/api/BaseAlgebra.rst
+   /libs/Einsums/TensorAlgebra/api/KhatriRao.rst
+   /libs/Einsums/TensorAlgebra/api/TileAlgebra.rst
+   /libs/Einsums/TensorAlgebra/api/Dispatch.rst
+   /libs/Einsums/TensorAlgebra/api/BlockTileAlgebra.rst
+   /libs/Einsums/TensorAlgebra/api/DevicePermute.rst
+   /libs/Einsums/TensorAlgebra/api/GenericAlgorithm.rst

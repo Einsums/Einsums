@@ -21,6 +21,11 @@ refer to the full documentation below.
 .. toctree::
    :maxdepth: 1
    
+   /libs/EinsumsPy/GPU/api/full_api.rst
+   /libs/EinsumsPy/LinearAlgebra/api/full_api.rst
+   /libs/EinsumsPy/Tensor/api/full_api.rst
+   /libs/EinsumsPy/TensorAlgebra/api/full_api.rst
+   /libs/EinsumsPy/TestUtils/api/full_api.rst
    /libs/Einsums/Assertion/api/full_api.rst
    /libs/Einsums/BLAS/api/full_api.rst
    /libs/Einsums/BLASBase/api/full_api.rst
@@ -47,15 +52,11 @@ refer to the full documentation below.
    /libs/Einsums/Tensor/api/full_api.rst
    /libs/Einsums/TensorAlgebra/api/full_api.rst
    /libs/Einsums/TensorBase/api/full_api.rst
+   /libs/Einsums/TensorImpl/api/full_api.rst
    /libs/Einsums/TensorUtilities/api/full_api.rst
    /libs/Einsums/TypeSupport/api/full_api.rst
    /libs/Einsums/Utilities/api/full_api.rst
    /libs/Einsums/Version/api/full_api.rst
-   /libs/EinsumsPy/GPU/api/full_api.rst
-   /libs/EinsumsPy/LinearAlgebra/api/full_api.rst
-   /libs/EinsumsPy/Tensor/api/full_api.rst
-   /libs/EinsumsPy/TensorAlgebra/api/full_api.rst
-   /libs/EinsumsPy/TestUtils/api/full_api.rst
 
 
 .. _libs_unmodularized:
