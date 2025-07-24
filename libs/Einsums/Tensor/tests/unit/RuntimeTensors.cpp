@@ -153,7 +153,7 @@ TEST_CASE("Runtime Tensor Assignment") {
 
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
-            REQUIRE(A(i, j) == std::get<double>(C_const(i, j)));
+            REQUIRE(A(i, j) == C_const(i, j));
         }
     }
 
@@ -229,10 +229,10 @@ TEST_CASE("Runtime Tensor View Creation") {
                 REQUIRE(B(i * 10 + j, k) == Base(i, j, k));
                 REQUIRE(E(i, j, k) == rank_base(i, j, k));
                 REQUIRE(F(i, j, k) == rank_base(i, j, k));
-                REQUIRE(std::get<double>(G(i, j * 10 + k)) == Base(i, j, k));
-                REQUIRE(std::get<double>(H(i * 10 + j, k)) == Base(i, j, k));
-                REQUIRE(std::get<double>(I(i, j, k)) == rank_base(i, j, k));
-                REQUIRE(std::get<double>(J(i, j, k)) == rank_base(i, j, k));
+                REQUIRE(G(i, j * 10 + k) == Base(i, j, k));
+                REQUIRE(H(i * 10 + j, k) == Base(i, j, k));
+                REQUIRE(I(i, j, k) == rank_base(i, j, k));
+                REQUIRE(J(i, j, k) == rank_base(i, j, k));
             }
         }
     }
@@ -249,7 +249,7 @@ TEST_CASE("Runtime Tensor View Creation") {
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
             REQUIRE(K(i, j) == A(i, j));
-            REQUIRE(std::get<double>(L(i, j)) == std::get<double>(G(i, j)));
+            REQUIRE(L(i, j) == G(i, j));
         }
     }
 }

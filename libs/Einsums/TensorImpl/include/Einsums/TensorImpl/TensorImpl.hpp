@@ -360,7 +360,7 @@ struct TensorImpl final {
     /**
      * @brief Change the pointer being wrapped by the tensor.
      */
-    constexpr void set_data(pointer *ptr) noexcept { _ptr = ptr; }
+    constexpr void set_data(pointer ptr) noexcept { _ptr = ptr; }
 
     // Indexed getters and setters.
 
