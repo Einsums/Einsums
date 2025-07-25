@@ -788,9 +788,13 @@ struct TensorImpl final {
     /**
      * @brief Checks to see if the pointer is associated.
      */
-    constexpr bool is_empty_view() const { return _ptr == nullptr; }
+    constexpr bool is_empty_view() const noexcept { return _ptr == nullptr; }
 
     // Subscript.
+
+    constexpr reference subscript() noexcept { return *_ptr; }
+
+    constexpr const_reference subscript() const noexcept { return *_ptr; }
 
     /**
      * @brief Subscript the tensor.
@@ -1086,7 +1090,7 @@ struct TensorImpl final {
      *
      * @param index The slice parameters for the view.
      */
-    template<bool IgnoreRemoveRange = false>
+    template <bool IgnoreRemoveRange = false>
     constexpr TensorImpl<T> const subscript(std::initializer_list<Range> const &index) const {
         BufferVector<Range> index_list{index.begin(), index.end()};
         adjust_ranges(index_list);

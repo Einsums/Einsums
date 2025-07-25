@@ -10,6 +10,8 @@
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/LinearAlgebra/Bases/gemm.hpp>
+#include <Einsums/LinearAlgebra/Bases/sum_square.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
@@ -17,12 +19,129 @@
 
 namespace einsums::linear_algebra::detail {
 
+template <typename T>
+void sum_square(einsums::detail::TensorImpl<T> const &a, RemoveComplexT<T> *scale, RemoveComplexT<T> *sumsq) {
+    impl_sum_square(a, scale, sumsq);
+}
+
 template <CoreBasicTensorConcept AType>
-    requires(RankTensorConcept<AType, 1>)
 void sum_square(AType const &a, RemoveComplexT<typename AType::ValueType> *scale, RemoveComplexT<typename AType::ValueType> *sumsq) {
-    int n    = a.dim(0);
-    int incx = a.stride(0);
-    blas::lassq(n, a.data(), incx, scale, sumsq);
+    sum_square(a.impl(), scale, sumsq);
+}
+
+template <bool TransA, bool TransB, typename AType, typename BType, typename CType, typename AlphaType, typename BetaType>
+void gemm(AlphaType const alpha, einsums::detail::TensorImpl<AType> const &A, einsums::detail::TensorImpl<BType> const &B,
+          BetaType const beta, einsums::detail::TensorImpl<CType> *C) {
+    // Check for gemmability.
+    if constexpr (!TransA && !TransB) {
+        if (A.dim(1) != B.dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(1), B.dim(0));
+        }
+
+        if (A.dim(0) != C->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(0), C->dim(0));
+        }
+
+        if (B.dim(1) != C->dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(1), C->dim(1));
+        }
+    } else if constexpr (TransA && !TransB) {
+        if (A.dim(0) != B.dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(0), B.dim(0));
+        }
+
+        if (A.dim(1) != C->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(1), C->dim(0));
+        }
+
+        if (B.dim(1) != C->dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(1), C->dim(1));
+        }
+    } else if constexpr (!TransA && TransB) {
+        if (A.dim(1) != B.dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(1), B.dim(1));
+        }
+
+        if (A.dim(0) != C->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(0), C->dim(0));
+        }
+
+        if (B.dim(0) != C->dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(0), C->dim(1));
+        }
+    } else if constexpr (TransA && TransB) {
+        if (A.dim(0) != B.dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(0), B.dim(1));
+        }
+
+        if (A.dim(1) != C->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(1), C->dim(0));
+        }
+
+        if (B.dim(0) != C->dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(0), C->dim(1));
+        }
+    }
+
+    impl_gemm_no_conjugate(TransA ? 't' : 'n', TransB ? 't' : 'n', alpha, A, B, beta, C);
+}
+
+template <typename AType, typename BType, typename CType, typename AlphaType, typename BetaType>
+void gemm(char transA, char transB, AlphaType const alpha, einsums::detail::TensorImpl<AType> const &A,
+          einsums::detail::TensorImpl<BType> const &B, BetaType const beta, einsums::detail::TensorImpl<CType> *C) {
+    char const tA = std::tolower(transA), tB = std::tolower(transB);
+    // Check for gemmability.
+    if (tA == 'n' && tB == 'n') {
+        if (A.dim(1) != B.dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(1), B.dim(0));
+        }
+
+        if (A.dim(0) != C->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(0), C->dim(0));
+        }
+
+        if (B.dim(1) != C->dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(1), C->dim(1));
+        }
+    } else if (tA != 'n' && tB == 'n') {
+        if (A.dim(0) != B.dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(0), B.dim(0));
+        }
+
+        if (A.dim(1) != C->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(1), C->dim(0));
+        }
+
+        if (B.dim(1) != C->dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(1), C->dim(1));
+        }
+    } else if (tA == 'n' && tB != 'n') {
+        if (A.dim(1) != B.dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(1), B.dim(1));
+        }
+
+        if (A.dim(0) != C->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(0), C->dim(0));
+        }
+
+        if (B.dim(0) != C->dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(0), C->dim(1));
+        }
+    } else if (tA != 'n' && tB != 'n') {
+        if (A.dim(0) != B.dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(0), B.dim(1));
+        }
+
+        if (A.dim(1) != C->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(1), C->dim(0));
+        }
+
+        if (B.dim(0) != C->dim(1)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(0), C->dim(1));
+        }
+    }
+
+    impl_gemm(transA, transB, alpha, A, B, beta, C);
 }
 
 template <bool TransA, bool TransB, typename U, CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
@@ -32,11 +151,7 @@ template <bool TransA, bool TransB, typename U, CoreBasicTensorConcept AType, Co
         requires(std::convertible_to<U, typename AType::ValueType>);
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
-    auto m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
-    auto lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
-
-    blas::gemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, static_cast<typename AType::ValueType>(alpha), A.data(), lda, B.data(), ldb,
-               static_cast<typename AType::ValueType>(beta), C->data(), ldc);
+    gemm<TransA, TransB>(alpha, A.impl(), B.impl(), beta, &C->impl());
 }
 
 template <bool TransA, typename U, CoreBasicTensorConcept AType, CoreBasicTensorConcept XType, CoreBasicTensorConcept YType>

@@ -265,7 +265,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      */
     template <Container Storage>
     ConstReference operator()(Storage const &index) const {
-        return _impl.subscript();
+        return _impl.subscript(index);
     }
 
     /**
@@ -780,7 +780,8 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param dims The new dimensions for the view.
      */
     template <Container Dim>
-    RuntimeTensorView(RuntimeTensor<T> const &other, Dim const &dims) : _impl{const_cast<Pointer>(other.data()), dims} {}
+    RuntimeTensorView(RuntimeTensor<T> const &other, Dim const &dims)
+        : _impl{const_cast<Pointer>(other.data()), dims, other.impl().is_row_major()} {}
 
     /**
      * @brief Creates a view of a tensor with new dimensions specified.
@@ -790,7 +791,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      */
     template <Container Dim>
     RuntimeTensorView(RuntimeTensorView<T> const &other, Dim const &dims)
-        : _impl(const_cast<Pointer>(other.data()), dims, other.strides()) {}
+        : _impl(const_cast<Pointer>(other.data()), dims, other.impl().is_row_major()) {}
 
     /**
      * @brief Creates a view of a tensor with new dimensions, strides, and offsets specified.

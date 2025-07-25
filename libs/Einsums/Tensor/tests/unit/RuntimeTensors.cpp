@@ -225,12 +225,12 @@ TEST_CASE("Runtime Tensor View Creation") {
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
             for (int k = 0; k < 10; k++) {
-                REQUIRE(A(i, j * 10 + k) == Base(i, j, k));
-                REQUIRE(B(i * 10 + j, k) == Base(i, j, k));
+                REQUIRE(A(i, j + k * 10) == Base(i, j, k));
+                REQUIRE(B(i + j * 10, k) == Base(i, j, k));
                 REQUIRE(E(i, j, k) == rank_base(i, j, k));
                 REQUIRE(F(i, j, k) == rank_base(i, j, k));
-                REQUIRE(G(i, j * 10 + k) == Base(i, j, k));
-                REQUIRE(H(i * 10 + j, k) == Base(i, j, k));
+                REQUIRE(G(i, j + k * 10) == Base(i, j, k));
+                REQUIRE(H(i + j * 10, k) == Base(i, j, k));
                 REQUIRE(I(i, j, k) == rank_base(i, j, k));
                 REQUIRE(J(i, j, k) == rank_base(i, j, k));
             }
@@ -240,8 +240,8 @@ TEST_CASE("Runtime Tensor View Creation") {
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 5; j++) {
             for (int k = 0; k < 5; k++) {
-                REQUIRE(C(i, j, k) == Base(i + 1, j + 2, k + 3));
-                REQUIRE(D(i, j, k) == Base(i + 1, j + 2, k + 3));
+                REQUIRE(C(i, j, k) == Base(k + 1, j + 2, i + 3));
+                REQUIRE(D(i, j, k) == Base(k + 1, j + 2, i + 3));
             }
         }
     }
