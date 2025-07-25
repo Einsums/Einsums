@@ -1198,7 +1198,7 @@ void add_assign(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
                 impl_scalar_add(*in.data(), out);
             }
         } else {
-            impl_axpy(convert<TOther, T>(1.0), in, out);
+            impl_axpy(convert<double, T>(1.0), in, out);
         }
     }
 }
@@ -1222,7 +1222,7 @@ void sub_assign(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
                 impl_scalar_add(-*in.data(), out);
             }
         } else {
-            impl_axpy(convert<TOther, T>(-1.0), in, out);
+            impl_axpy(convert<double, T>(-1.0), in, out);
         }
     }
 }
