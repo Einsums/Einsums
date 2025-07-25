@@ -42,6 +42,7 @@ einsums_add_module(
     Einsums_Profile
     Einsums_Tensor
     Einsums_TensorUtilities
+    Einsums_TensorImpl
     Einsums_TypeSupport
   CMAKE_SUBDIRS examples tests
 )

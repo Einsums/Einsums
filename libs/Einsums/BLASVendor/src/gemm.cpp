@@ -31,7 +31,7 @@ void sgemm(char transa, char transb, int_t m, int_t n, int_t k, float alpha, flo
 
     if (m == 0 || n == 0 || k == 0)
         return;
-    FC_GLOBAL(sgemm, SGEMM)(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
+    FC_GLOBAL(sgemm, SGEMM)(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
 }
 
 void dgemm(char transa, char transb, int_t m, int_t n, int_t k, double alpha, double const *a, int_t lda, double const *b, int_t ldb,
@@ -40,7 +40,7 @@ void dgemm(char transa, char transb, int_t m, int_t n, int_t k, double alpha, do
 
     if (m == 0 || n == 0 || k == 0)
         return;
-    FC_GLOBAL(dgemm, DGEMM)(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
+    FC_GLOBAL(dgemm, DGEMM)(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
 }
 
 void cgemm(char transa, char transb, int_t m, int_t n, int_t k, std::complex<float> alpha, std::complex<float> const *a, int_t lda,
@@ -49,7 +49,7 @@ void cgemm(char transa, char transb, int_t m, int_t n, int_t k, std::complex<flo
 
     if (m == 0 || n == 0 || k == 0)
         return;
-    FC_GLOBAL(cgemm, CGEMM)(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
+    FC_GLOBAL(cgemm, CGEMM)(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
 }
 
 void zgemm(char transa, char transb, int_t m, int_t n, int_t k, std::complex<double> alpha, std::complex<double> const *a, int_t lda,
@@ -58,7 +58,7 @@ void zgemm(char transa, char transb, int_t m, int_t n, int_t k, std::complex<dou
 
     if (m == 0 || n == 0 || k == 0)
         return;
-    FC_GLOBAL(zgemm, ZGEMM)(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
+    FC_GLOBAL(zgemm, ZGEMM)(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
 }
 
 } // namespace einsums::blas::vendor

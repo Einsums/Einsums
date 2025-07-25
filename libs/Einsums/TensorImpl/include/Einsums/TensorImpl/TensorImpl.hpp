@@ -78,35 +78,38 @@ struct TensorImpl final {
     /**
      * @brief Default constructor.
      */
-    constexpr TensorImpl() noexcept : _ptr{nullptr}, _dims(), _strides(), _rank{0}, size_{0} {};
+    constexpr TensorImpl() noexcept : _ptr{nullptr}, _dims(), _strides(), _rank{0}, _size{0}, _row_major{false} {};
 
     /**
      * @brief Copy constructor.
      */
     constexpr TensorImpl(TensorImpl<T> const &other)
-        : _ptr{other._ptr}, _rank{other._rank}, _strides{other._strides}, _dims{other._dims}, size_{other.size_} {}
+        : _ptr{other._ptr}, _rank{other._rank}, _strides{other._strides}, _dims{other._dims}, _size{other._size},
+          _row_major{other._row_major} {}
 
     /**
      * @brief Move constructor.
      */
     constexpr TensorImpl(TensorImpl<T> &&other) noexcept
-        : _ptr{other._ptr}, _rank{other._rank}, _strides{std::move(other._strides)}, _dims{std::move(other._dims)}, size_{other.size_} {
+        : _ptr{other._ptr}, _rank{other._rank}, _strides{std::move(other._strides)}, _dims{std::move(other._dims)}, _size{other._size},
+          _row_major{other._row_major} {
         other._ptr  = nullptr;
         other._rank = 0;
         other._strides.clear();
         other._dims.clear();
-        other.size_ = 0;
+        other._size = 0;
     }
 
     /**
      * @brief Copy assignment.
      */
     constexpr TensorImpl<T> &operator=(TensorImpl<T> const &other) {
-        _ptr     = other._ptr;
-        _rank    = other._rank;
-        _strides = other._strides;
-        _dims    = other._dims;
-        size_    = other.size_;
+        _ptr       = other._ptr;
+        _rank      = other._rank;
+        _strides   = other._strides;
+        _dims      = other._dims;
+        _size      = other._size;
+        _row_major = other._row_major;
         return *this;
     }
 
@@ -114,17 +117,18 @@ struct TensorImpl final {
      * @brief Move assignment.
      */
     constexpr TensorImpl<T> &operator=(TensorImpl<T> &&other) noexcept {
-        _ptr     = other._ptr;
-        _rank    = other._rank;
-        _strides = std::move(other._strides);
-        _dims    = std::move(other._dims);
-        size_    = other.size_;
+        _ptr       = other._ptr;
+        _rank      = other._rank;
+        _strides   = std::move(other._strides);
+        _dims      = std::move(other._dims);
+        _size      = other._size;
+        _row_major = other._row_major;
 
         other._ptr  = nullptr;
         other._rank = 0;
         other._strides.clear();
         other._dims.clear();
-        other.size_ = 0;
+        other._size = 0;
         return *this;
     }
 
@@ -141,20 +145,20 @@ struct TensorImpl final {
      */
     template <Container Dims>
     constexpr TensorImpl(pointer ptr, Dims const &dims, bool row_major = false)
-        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()) {
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _row_major{row_major} {
         _strides.resize(_rank);
 
-        size_ = 1;
+        _size = 1;
 
         if (row_major) {
             for (int i = _rank - 1; i >= 0; i--) {
-                _strides[i] = size_;
-                size_ *= _dims[i];
+                _strides[i] = _size;
+                _size *= _dims[i];
             }
         } else {
             for (int i = 0; i < _rank; i++) {
-                _strides[i] = size_;
-                size_ *= _dims[i];
+                _strides[i] = _size;
+                _size *= _dims[i];
             }
         }
     }
@@ -169,7 +173,17 @@ struct TensorImpl final {
     template <Container Dims, Container Strides>
     constexpr TensorImpl(pointer ptr, Dims const &dims, Strides const &strides)
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
-          size_{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {}
+          _size{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {
+        if (_rank < 2) {
+            _row_major = true;
+        } else if (stride(0) > stride(-1)) {
+            _row_major = true;
+        } else if (stride(0) == stride(-1)) {
+            _row_major = (dim(0) > dim(-1));
+        } else {
+            _row_major = false;
+        }
+    }
 
     /**
      * @brief Create a tensor with the given pointer and dimensions.
@@ -181,20 +195,20 @@ struct TensorImpl final {
      * @param row_major Whether to compute the strides in row-major or column-major ordering.
      */
     constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, bool row_major = false)
-        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()) {
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _row_major{row_major} {
         _strides.resize(_rank);
 
-        size_ = 1;
+        _size = 1;
 
         if (row_major) {
             for (int i = _rank - 1; i >= 0; i--) {
-                _strides[i] = size_;
-                size_ *= _dims[i];
+                _strides[i] = _size;
+                _size *= _dims[i];
             }
         } else {
             for (int i = 0; i < _rank; i++) {
-                _strides[i] = size_;
-                size_ *= _dims[i];
+                _strides[i] = _size;
+                _size *= _dims[i];
             }
         }
     }
@@ -209,7 +223,17 @@ struct TensorImpl final {
     template <Container Strides>
     constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, Strides const &strides)
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
-          size_{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {}
+          _size{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {
+        if (_rank < 2) {
+            _row_major = true;
+        } else if (stride(0) > stride(-1)) {
+            _row_major = true;
+        } else if (stride(0) == stride(-1)) {
+            _row_major = (dim(0) > dim(-1));
+        } else {
+            _row_major = false;
+        }
+    }
 
     /**
      * @brief Create a tensor with the given pointer, dimensions, and strides.
@@ -221,7 +245,17 @@ struct TensorImpl final {
     template <Container Dims>
     constexpr TensorImpl(pointer ptr, Dims const &dims, std::initializer_list<size_t> const &strides)
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
-          size_{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {}
+          _size{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {
+        if (_rank < 2) {
+            _row_major = true;
+        } else if (stride(0) > stride(-1)) {
+            _row_major = true;
+        } else if (stride(0) == stride(-1)) {
+            _row_major = (dim(0) > dim(-1));
+        } else {
+            _row_major = false;
+        }
+    }
 
     /**
      * @brief Create a tensor with the given pointer, dimensions, and strides.
@@ -232,7 +266,17 @@ struct TensorImpl final {
      */
     constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, std::initializer_list<size_t> const &strides)
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
-          size_{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {}
+          _size{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {
+        if (_rank < 2) {
+            _row_major = true;
+        } else if (stride(0) > stride(-1)) {
+            _row_major = true;
+        } else if (stride(0) == stride(-1)) {
+            _row_major = (dim(0) > dim(-1));
+        } else {
+            _row_major = false;
+        }
+    }
 
     // Getters and setters.
 
@@ -264,7 +308,7 @@ struct TensorImpl final {
     /**
      * @brief Get the size of the tensor.
      */
-    constexpr size_t size() const noexcept { return size_; }
+    constexpr size_t size() const noexcept { return _size; }
 
     /**
      * @brief Change the pointer being wrapped by the tensor.
@@ -612,9 +656,9 @@ struct TensorImpl final {
             return true;
         }
         if (stride(0) < stride(-1)) {
-            return dim(-1) * stride(-1) == size_;
+            return dim(-1) * stride(-1) == _size;
         } else {
-            return dim(0) * stride(0) == size_;
+            return dim(0) * stride(0) == _size;
         }
     }
 
@@ -639,12 +683,12 @@ struct TensorImpl final {
                 if (incx != nullptr) {
                     *incx = stride(0);
                 }
-                return dim(-1) * stride(-1) == size_ * stride(0);
+                return dim(-1) * stride(-1) == _size * stride(0);
             } else {
                 if (incx != nullptr) {
                     *incx = stride(-1);
                 }
-                return dim(0) * stride(0) == size_ * stride(-1);
+                return dim(0) * stride(0) == _size * stride(-1);
             }
         }
     }
@@ -703,7 +747,7 @@ struct TensorImpl final {
         if (_rank <= 1) {
             return true;
         } else {
-            return stride(-1) < stride(0);
+            return _row_major;
         }
     }
 
@@ -717,7 +761,7 @@ struct TensorImpl final {
         if (_rank <= 1) {
             return true;
         } else {
-            return stride(-1) > stride(0);
+            return !_row_major;
         }
     }
 
@@ -747,7 +791,7 @@ struct TensorImpl final {
             *easy_rank = 0;
             *incx      = 0;
         } else if (_rank == 1) {
-            *easy_size = size_;
+            *easy_size = _size;
             *hard_size = 0;
             *easy_rank = 1;
             *incx      = _strides[0];
@@ -1635,8 +1679,9 @@ struct TensorImpl final {
     }
 
     pointer              _ptr{nullptr};
-    size_t               _rank, size_;
+    size_t               _rank, _size;
     BufferVector<size_t> _dims, _strides;
+    bool                 _row_major;
 };
 
 } // namespace detail

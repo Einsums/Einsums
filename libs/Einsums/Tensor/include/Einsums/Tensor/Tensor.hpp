@@ -135,7 +135,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * @brief Construct a new Tensor object. Default copy constructor
      */
-    Tensor(Tensor const &) = default;
+    Tensor(Tensor const &other) : _data(other._data), _impl(other._impl) { _impl.set_data(_data.data()); }
 
     /**
      * @brief Destroy the Tensor object.

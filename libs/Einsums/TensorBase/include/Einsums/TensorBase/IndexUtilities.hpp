@@ -154,13 +154,25 @@ template <size_t num_unique_inds>
 EINSUMS_HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *unique_strides, size_t *out_inds) {
     size_t hold = sentinel;
 
+    if (unique_strides[0] < unique_strides[num_unique_inds - 1]) {
 #pragma unroll
-    for (ptrdiff_t i = 0; i < num_unique_inds; i++) {
-        if (unique_strides[i] != 0) {
-            out_inds[i] = hold / unique_strides[i];
-            hold %= unique_strides[i];
-        } else {
-            [[unlikely]] out_inds[i] = 0;
+        for (ptrdiff_t i = num_unique_inds - 1; i >= 0; i--) {
+            if (unique_strides[i] != 0) {
+                out_inds[i] = hold / unique_strides[i];
+                hold %= unique_strides[i];
+            } else {
+                [[unlikely]] out_inds[i] = 0;
+            }
+        }
+    } else {
+#pragma unroll
+        for (ptrdiff_t i = 0; i < num_unique_inds; i++) {
+            if (unique_strides[i] != 0) {
+                out_inds[i] = hold / unique_strides[i];
+                hold %= unique_strides[i];
+            } else {
+                [[unlikely]] out_inds[i] = 0;
+            }
         }
     }
 }
@@ -171,13 +183,25 @@ void sentinel_to_indices(size_t sentinel, std::array<stride_int1, num_unique_ind
                          std::array<stride_int2, num_unique_inds> &out_inds) {
     size_t hold = sentinel;
 
+    if (unique_strides[0] < unique_strides[num_unique_inds - 1]) {
 #    pragma unroll
-    for (ptrdiff_t i = 0; i < num_unique_inds; i++) {
-        if (unique_strides[i] != 0) {
-            out_inds[i] = hold / unique_strides[i];
-            hold %= unique_strides[i];
-        } else {
-            [[unlikely]] out_inds[i] = 0;
+        for (ptrdiff_t i = num_unique_inds - 1; i >= 0; i--) {
+            if (unique_strides[i] != 0) {
+                out_inds[i] = hold / unique_strides[i];
+                hold %= unique_strides[i];
+            } else {
+                [[unlikely]] out_inds[i] = 0;
+            }
+        }
+    } else {
+#    pragma unroll
+        for (ptrdiff_t i = 0; i < num_unique_inds; i++) {
+            if (unique_strides[i] != 0) {
+                out_inds[i] = hold / unique_strides[i];
+                hold %= unique_strides[i];
+            } else {
+                [[unlikely]] out_inds[i] = 0;
+            }
         }
     }
 }
@@ -190,12 +214,23 @@ void sentinel_to_indices(size_t sentinel, StorageType1 const &unique_strides, St
     //     out_inds.resize(unique_strides.size());
     // }
 
-    for (ptrdiff_t i = 0; i < unique_strides.size(); i++) {
-        if (unique_strides[i] != 0) {
-            out_inds[i] = hold / unique_strides[i];
-            hold %= unique_strides[i];
-        } else {
-            [[unlikely]] out_inds[i] = 0;
+    if (unique_strides[0] < unique_strides[unique_strides.size() - 1]) {
+        for (ptrdiff_t i = unique_strides.size() - 1; i >= 0; i--) {
+            if (unique_strides[i] != 0) {
+                out_inds[i] = hold / unique_strides[i];
+                hold %= unique_strides[i];
+            } else {
+                [[unlikely]] out_inds[i] = 0;
+            }
+        }
+    } else {
+        for (ptrdiff_t i = 0; i < unique_strides.size(); i++) {
+            if (unique_strides[i] != 0) {
+                out_inds[i] = hold / unique_strides[i];
+                hold %= unique_strides[i];
+            } else {
+                [[unlikely]] out_inds[i] = 0;
+            }
         }
     }
 }
@@ -236,17 +271,32 @@ template <size_t num_indices, typename StorageType, typename... StridesInds>
 EINSUMS_HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *index_strides, StridesInds &&...strides_inds) {
     size_t hold = sentinel;
 
+    if (index_strides[0] < index_strides[num_indices - 1]) {
 #pragma unroll
-    for (ptrdiff_t i = 0; i < num_indices; i++) {
-        size_t ordinal;
-        if (index_strides[i] != 0) {
-            ordinal = hold / index_strides[i];
-            hold %= index_strides[i];
-        } else {
-            [[unlikely]] ordinal = 0;
-        }
+        for (ptrdiff_t i = num_indices - 1; i >= 0; i--) {
+            size_t ordinal;
+            if (index_strides[i] != 0) {
+                ordinal = hold / index_strides[i];
+                hold %= index_strides[i];
+            } else {
+                [[unlikely]] ordinal = 0;
+            }
 
-        sentinel_to_indices_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+            sentinel_to_indices_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
+    } else {
+#pragma unroll
+        for (ptrdiff_t i = 0; i < num_indices; i++) {
+            size_t ordinal;
+            if (index_strides[i] != 0) {
+                ordinal = hold / index_strides[i];
+                hold %= index_strides[i];
+            } else {
+                [[unlikely]] ordinal = 0;
+            }
+
+            sentinel_to_indices_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
     }
 }
 
@@ -256,17 +306,32 @@ template <size_t num_indices, typename StorageType, typename... StridesInds>
 void sentinel_to_indices(size_t sentinel, std::array<size_t, num_indices> const &index_strides, StridesInds &&...strides_inds) {
     size_t hold = sentinel;
 
+    if (index_strides[0] < index_strides[num_indices - 1]) {
 #    pragma unroll
-    for (ptrdiff_t i = 0; i < num_indices; i++) {
-        size_t ordinal;
-        if (index_strides[i] != 0) {
-            ordinal = hold / index_strides[i];
-            hold %= index_strides[i];
-        } else {
-            [[unlikely]] ordinal = 0;
-        }
+        for (ptrdiff_t i = num_indices - 1; i >= 0; i--) {
+            size_t ordinal;
+            if (index_strides[i] != 0) {
+                ordinal = hold / index_strides[i];
+                hold %= index_strides[i];
+            } else {
+                [[unlikely]] ordinal = 0;
+            }
 
-        sentinel_to_indices_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+            sentinel_to_indices_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
+    } else {
+#    pragma unroll
+        for (ptrdiff_t i = 0; i < num_indices; i++) {
+            size_t ordinal;
+            if (index_strides[i] != 0) {
+                ordinal = hold / index_strides[i];
+                hold %= index_strides[i];
+            } else {
+                [[unlikely]] ordinal = 0;
+            }
+
+            sentinel_to_indices_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
     }
 }
 
@@ -275,16 +340,30 @@ template <typename StorageType, typename... StridesInds>
 void sentinel_to_indices(size_t sentinel, StorageType const &index_strides, StridesInds &&...strides_inds) {
     size_t hold = sentinel;
 
-    for (ptrdiff_t i = 0; i < index_strides.size(); i++) {
-        size_t ordinal;
-        if (index_strides[i] != 0) {
-            ordinal = hold / index_strides[i];
-            hold %= index_strides[i];
-        } else {
-            [[unlikely]] ordinal = 0;
-        }
+    if (index_strides[0] < index_strides[index_strides.size() - 1]) {
+        for (ptrdiff_t i = index_strides.size() - 1; i >= 0; i--) {
+            size_t ordinal;
+            if (index_strides[i] != 0) {
+                ordinal = hold / index_strides[i];
+                hold %= index_strides[i];
+            } else {
+                [[unlikely]] ordinal = 0;
+            }
 
-        sentinel_to_indices_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+            sentinel_to_indices_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
+    } else {
+        for (ptrdiff_t i = 0; i < index_strides.size(); i++) {
+            size_t ordinal;
+            if (index_strides[i] != 0) {
+                ordinal = hold / index_strides[i];
+                hold %= index_strides[i];
+            } else {
+                [[unlikely]] ordinal = 0;
+            }
+
+            sentinel_to_indices_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
     }
 }
 
@@ -345,12 +424,22 @@ EINSUMS_HOSTDEV inline void sentinel_to_sentinels(size_t sentinel, size_t const 
 
     sentinel_to_sentinels_zero_imp(std::forward<StridesInds>(strides_inds)...);
 
+    if (index_strides[0] < index_strides[num_indices - 1]) {
 #pragma unroll
-    for (ptrdiff_t i = 0; i < num_indices; i++) {
-        size_t ordinal = hold / index_strides[i];
-        hold %= index_strides[i];
+        for (ptrdiff_t i = num_indices - 1; i >= 0; i--) {
+            size_t ordinal = hold / index_strides[i];
+            hold %= index_strides[i];
 
-        sentinel_to_sentinels_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+            sentinel_to_sentinels_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
+    } else {
+#pragma unroll
+        for (ptrdiff_t i = 0; i < num_indices; i++) {
+            size_t ordinal = hold / index_strides[i];
+            hold %= index_strides[i];
+
+            sentinel_to_sentinels_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
     }
 }
 
@@ -362,12 +451,22 @@ void sentinel_to_sentinels(size_t sentinel, std::array<int64_t, num_indices> con
 
     sentinel_to_sentinels_zero_imp(std::forward<StridesInds>(strides_inds)...);
 
+    if (index_strides[0] < index_strides[num_indices - 1]) {
 #    pragma unroll
-    for (ptrdiff_t i = 0; i < num_indices; i++) {
-        size_t ordinal = hold / index_strides[i];
-        hold %= index_strides[i];
+        for (ptrdiff_t i = num_indices - 1; i >= 0; i--) {
+            size_t ordinal = hold / index_strides[i];
+            hold %= index_strides[i];
 
-        sentinel_to_sentinels_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+            sentinel_to_sentinels_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
+    } else {
+#    pragma unroll
+        for (ptrdiff_t i = 0; i < num_indices; i++) {
+            size_t ordinal = hold / index_strides[i];
+            hold %= index_strides[i];
+
+            sentinel_to_sentinels_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
     }
 }
 
@@ -378,11 +477,20 @@ void sentinel_to_sentinels(size_t sentinel, StorageType const &index_strides, St
 
     sentinel_to_sentinels_zero_imp(std::forward<StridesInds>(strides_inds)...);
 
-    for (ptrdiff_t i = 0; i < index_strides.size(); i++) {
-        size_t ordinal = hold / index_strides[i];
-        hold %= index_strides[i];
+    if (index_strides[0] < index_strides[index_strides.size() - 1]) {
+        for (ptrdiff_t i = index_strides.size() - 1; i >= 0; i--) {
+            size_t ordinal = hold / index_strides[i];
+            hold %= index_strides[i];
 
-        sentinel_to_sentinels_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+            sentinel_to_sentinels_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
+    } else {
+        for (ptrdiff_t i = 0; i < index_strides.size(); i++) {
+            size_t ordinal = hold / index_strides[i];
+            hold %= index_strides[i];
+
+            sentinel_to_sentinels_mult_imp(ordinal, i, std::forward<StridesInds>(strides_inds)...);
+        }
     }
 }
 #endif
