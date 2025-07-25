@@ -13,6 +13,10 @@ pytestmark = [
 ]
 
 
+@pytest.fixture
+def set_big_memory() :
+    ein.core.GlobalConfigMap.get_singleton().set_str("buffer-size", "1GB")
+
 @pytest.mark.parametrize(["length"], [(10,), (1000,)])
 def test_sumsq(length, dtype, array):
     lst = ein.utils.random_tensor_factory("vector", [length, 2], dtype, array)
@@ -32,7 +36,7 @@ def test_sumsq(length, dtype, array):
     ["a", "b", "c"],
     [(10, 10, 10), pytest.param(100, 100, 100, marks=pytest.mark.slow), (11, 13, 17)],
 )
-def test_gemm(a, b, c, dtype, array):
+def test_gemm(set_big_memory, a, b, c, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b + 2, c + 2], dtype, array)
     C = ein.utils.tensor_factory("C", [a + 2, c + 2], dtype, array)
@@ -59,7 +63,7 @@ def test_gemm(a, b, c, dtype, array):
 @pytest.mark.parametrize(
     ["a", "b"], [(10, 10), pytest.param(1000, 1000, marks=pytest.mark.slow), (11, 13)]
 )
-def test_mat_vec_prod(a, b, dtype, array):
+def test_mat_vec_prod(set_big_memory, a, b, dtype, array):
 
     A = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b + 2, 2], dtype, array)

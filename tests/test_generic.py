@@ -16,6 +16,11 @@ pytestmark = [
     pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
 ]
 
+@pytest.fixture
+def set_big_memory() :
+    ein.core.GlobalConfigMap.get_singleton().set_str("buffer-size", "1GB")
+    ein.core.GlobalConfigMap.get_singleton().set_str("gpu-buffer-size", "1GB")
+
 
 def test_generic(a: int, b: int, dtype, array):
     A = ein.utils.random_tensor_factory("A", [b, a], dtype, array)

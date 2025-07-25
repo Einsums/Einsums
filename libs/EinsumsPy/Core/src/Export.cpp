@@ -13,6 +13,7 @@
 
 #include <exception>
 #include <mutex>
+#include <pybind11/detail/common.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
@@ -52,7 +53,7 @@ void export_Core(py::module_ &mod) {
     auto config_map = py::class_<einsums::GlobalConfigMap, std::shared_ptr<einsums::GlobalConfigMap>>(
         mod, "GlobalConfigMap", "Contains all of the options handled by Einsums.");
 
-    config_map.def_static("get_singleton", einsums::GlobalConfigMap::get_singleton, "Get the single unique instance.")
+    config_map.def_static("get_singleton", einsums::GlobalConfigMap::get_singleton, "Get the single unique instance.", py::return_value_policy::reference)
         .def(
             "empty", [](GlobalConfigMap &self) { return self.empty(); }, "Check to see if the map is empty.")
         .def(

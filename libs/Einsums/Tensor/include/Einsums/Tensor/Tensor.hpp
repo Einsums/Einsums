@@ -355,7 +355,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
     auto data(MultiIndex &&...index) -> Pointer {
 #if !defined(DOXYGEN)
-        assert(sizeof...(MultiIndex) <= _dims.size());
+        assert(sizeof...(MultiIndex) <= Rank);
 
         return _impl.data(std::forward<MultiIndex>(index)...);
 #endif
