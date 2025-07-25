@@ -55,7 +55,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @brief Represents how the data is stored in the tensor.
      */
-    using Vector = BufferVector<T>;
+    using Vector = BufferVector<std::remove_cv_t<T>>;
 
     /**
      * @typedef ValueType
@@ -69,35 +69,35 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @brief Type for pointers contained by this object.
      */
-    using Pointer = T *;
+    using Pointer = typename detail::TensorImpl<T>::pointer;
 
     /**
      * @typedef ConstPointer
      *
      * @brief Type for const pointers contained by this object.
      */
-    using ConstPointer = T const *;
+    using ConstPointer = typename detail::TensorImpl<T>::const_pointer;
 
     /**
      * @typedef Reference
      *
      * @brief Type for references to items in the object.
      */
-    using Reference = T &;
+    using Reference = typename detail::TensorImpl<T>::reference;
 
     /**
      * @typedef ConstReference
      *
      * @brief Type for const references to items in the object.
      */
-    using ConstReference = T const &;
+    using ConstReference = typename detail::TensorImpl<T>::const_reference;
 
-    RuntimeTensor() = default;
+    RuntimeTensor() noexcept = default;
 
     /**
      * @brief Default copy constructor.
      */
-    RuntimeTensor(RuntimeTensor<T> const &copy) = default;
+    RuntimeTensor(RuntimeTensor<T> const &copy) : _impl(copy.impl()), _data(copy.vector_data()) { _impl.set_data(_data.data()); }
 
     /**
      * @brief Create a new runtime tensor with the given name and dimensions.
@@ -130,14 +130,16 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param name the new name of the tensor.
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    RuntimeTensor(std::string name, std::initializer_list<size_t> dims) : RuntimeTensor(name, std::vector<size_t>(dims)) {}
+    RuntimeTensor(std::string name, std::initializer_list<size_t> dims, bool row_major = false)
+        : RuntimeTensor(name, std::vector<size_t>(dims), row_major) {}
 
     /**
      * @brief Create a new runtime tensor with the given dimensions using an initializer list.
      *
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    explicit RuntimeTensor(std::initializer_list<size_t> dims) : RuntimeTensor(std::vector<size_t>(dims)) {}
+    explicit RuntimeTensor(std::initializer_list<size_t> dims, bool row_major = false)
+        : RuntimeTensor(std::vector<size_t>(dims), row_major) {}
 
     /**
      * @brief Copy a tensor into a runtime tensor.
@@ -157,7 +159,8 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     }
 
     template <size_t Rank>
-    RuntimeTensor(Tensor<T, Rank> &&copy) : _name{copy.name()}, _impl(copy.impl()), _data{std::move(copy.vector_data())} {
+    RuntimeTensor(Tensor<T, Rank> &&copy) noexcept
+        : _name{std::move(copy.name())}, _impl{std::move(copy.impl())}, _data{std::move(copy.vector_data())} {
         _impl.set_data(_data.data());
     }
 
@@ -210,12 +213,12 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     /**
      * @brief Get the pointer to the stored data.
      */
-    Pointer data() { return _data.data(); }
+    Pointer data() noexcept { return _data.data(); }
 
     /**
      * @copydoc data()
      */
-    ConstPointer data() const { return _data.data(); }
+    ConstPointer data() const noexcept { return _data.data(); }
 
     /**
      * @brief Get the pointer to the stored data starting at the given index.
@@ -305,6 +308,10 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         return _impl.data(args...);
     }
 
+    Reference operator()() { return *_impl.data(); }
+
+    ConstReference operator()() const { return *_impl.data(); }
+
     /**
      * @brief Subscript into the tensor, checking for validity of the index.
      *
@@ -333,7 +340,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param args The index to use for the subscript.
      */
     template <std::integral... Args>
-    T operator()(Args const &...args) const {
+    ConstReference operator()(Args const &...args) const {
         return _impl.subscript(args...);
     }
 
@@ -381,7 +388,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
             requires(std::is_same_v<Range, Args> || ... || false) || (std::is_same_v<AllT, Args> || ... || false);
             requires !(std::is_integral_v<Args> && ... && true);
         }
-    RuntimeTensorView<T> operator()(Args const &...args) const {
+    RuntimeTensorView<T> const operator()(Args const &...args) const {
         return RuntimeTensorView<T>(_impl.subscript(args...));
     }
 
@@ -609,10 +616,9 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     }
 
     template <size_t Rank>
-    operator TensorView<T, Rank>() const {
+    operator TensorView<T, Rank> const() const {
         return TensorView<T, Rank>(_impl);
     }
-
     /**
      * @brief Get the length of the tensor along a given axis.
      *
@@ -726,28 +732,28 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      *
      * @brief Type for pointers contained by this object.
      */
-    using Pointer = T *;
+    using Pointer = typename detail::TensorImpl<T>::pointer;
 
     /**
      * @typedef ConstPointer
      *
      * @brief Type for const pointers contained by this object.
      */
-    using ConstPointer = T const *;
+    using ConstPointer = typename detail::TensorImpl<T>::const_pointer;
 
     /**
      * @typedef Reference
      *
      * @brief Type for references to items in the object.
      */
-    using Reference = T &;
+    using Reference = typename detail::TensorImpl<T>::reference;
 
     /**
      * @typedef ConstReference
      *
      * @brief Type for const references to items in the object.
      */
-    using ConstReference = T const &;
+    using ConstReference = typename detail::TensorImpl<T>::const_reference;
 
     RuntimeTensorView() = default;
 
@@ -765,13 +771,6 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      *
      * @param view The tensor to view.
      */
-    RuntimeTensorView(RuntimeTensor<T> &view) : _impl{view.impl()}, _name{view.name()} {}
-
-    /**
-     * @brief Creates a view of a tensor.
-     *
-     * @param view The tensor to view.
-     */
     RuntimeTensorView(RuntimeTensor<T> const &view) : _impl{view.impl()}, _name{view.name()} {}
 
     /**
@@ -781,7 +780,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param dims The new dimensions for the view.
      */
     template <Container Dim>
-    RuntimeTensorView(RuntimeTensor<T> const &other, Dim const &dims) : _impl{other.data(), dims} {}
+    RuntimeTensorView(RuntimeTensor<T> const &other, Dim const &dims) : _impl{const_cast<Pointer>(other.data()), dims} {}
 
     /**
      * @brief Creates a view of a tensor with new dimensions specified.
@@ -790,37 +789,8 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param dims The new dimensions for the view.
      */
     template <Container Dim>
-    RuntimeTensorView(RuntimeTensor<T> &other, Dim const &dims) : _impl{other.data(), dims} {}
-
-    /**
-     * @brief Creates a view of a tensor with new dimensions specified.
-     *
-     * @param other The tensor to view.
-     * @param dims The new dimensions for the view.
-     */
-    template <Container Dim>
-    RuntimeTensorView(RuntimeTensorView<T> &other, Dim const &dims) : _impl(other.data(), dims, other.strides()) {}
-
-    /**
-     * @brief Creates a view of a tensor with new dimensions specified.
-     *
-     * @param other The tensor to view.
-     * @param dims The new dimensions for the view.
-     */
-    template <Container Dim>
-    RuntimeTensorView(RuntimeTensorView<T> const &other, Dim const &dims) : _impl(other.data(), dims, other.strides()) {}
-
-    /**
-     * @brief Creates a view of a tensor with new dimensions, strides, and offsets specified.
-     *
-     * @param other The tensor to view.
-     * @param dims The new dimensions for the view.
-     * @param strides The new strides for the view.
-     * @param offsets The offsets for the view.
-     */
-    template <Container Dim, Container Stride, Container Offset>
-    RuntimeTensorView(RuntimeTensor<T> &other, Dim const &dims, Stride const &strides, Offset const &offsets)
-        : _impl(other.data(offsets), dims, strides) {}
+    RuntimeTensorView(RuntimeTensorView<T> const &other, Dim const &dims)
+        : _impl(const_cast<Pointer>(other.data()), dims, other.strides()) {}
 
     /**
      * @brief Creates a view of a tensor with new dimensions, strides, and offsets specified.
@@ -832,19 +802,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      */
     template <Container Dim, Container Stride, Container Offset>
     RuntimeTensorView(RuntimeTensor<T> const &other, Dim const &dims, Stride const &strides, Offset const &offsets)
-        : _impl(other.data(offsets), dims, strides) {}
-
-    /**
-     * @brief Creates a view of a tensor with new dimensions, strides, and offsets specified.
-     *
-     * @param other The tensor to view.
-     * @param dims The new dimensions for the view.
-     * @param strides The new strides for the view.
-     * @param offsets The offsets for the view.
-     */
-    template <Container Dim, Container Stride, Container Offset>
-    RuntimeTensorView(RuntimeTensorView<T> &other, Dim const &dims, Stride const &strides, Offset const &offsets)
-        : _impl(other.data(offsets), dims, strides) {}
+        : _impl(const_cast<Pointer>(other.data(offsets)), dims, strides) {}
 
     /**
      * @brief Creates a view of a tensor with new dimensions, strides, and offsets specified.
@@ -856,15 +814,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      */
     template <Container Dim, Container Stride, Container Offset>
     RuntimeTensorView(RuntimeTensorView<T> const &other, Dim const &dims, Stride const &strides, Offset const &offsets)
-        : _impl(other.data(offsets), dims, strides) {}
-
-    /**
-     * @brief Creates a view of a tensor with compile-time rank.
-     *
-     * @param copy The tensor to view.
-     */
-    template <size_t Rank>
-    RuntimeTensorView(TensorView<T, Rank> &copy) : _impl(copy.impl()) {}
+        : _impl(const_cast<Pointer>(other.data(offsets)), dims, strides) {}
 
     /**
      * @brief Creates a view of a tensor with compile-time rank.
@@ -873,14 +823,6 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      */
     template <size_t Rank>
     RuntimeTensorView(TensorView<T, Rank> const &copy) : _impl(copy.impl()) {}
-
-    /**
-     * @brief Creates a view of a tensor with compile-time rank.
-     *
-     * @param copy The tensor to view.
-     */
-    template <size_t Rank>
-    RuntimeTensorView(Tensor<T, Rank> &copy) : _impl(copy.impl()) {}
 
     /**
      * @brief Creates a view of a tensor with compile-time rank.
@@ -936,14 +878,19 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
         return _impl.data(index);
     }
 
+    Reference operator()() { return *_impl.data(); }
+
+    ConstReference operator()() const { return *_impl.data(); }
+
     /**
      * @brief Subscript into the tensor.
      *
-     * This version checks for negative values and does boudns checking.
+     * This version checks for negative values and does bounds checking.
      *
      * @param index The index to use for subscripting.
      */
     template <Container Storage>
+        requires(!std::is_base_of_v<Range, typename Storage::value_type>)
     Reference operator()(Storage const &index) {
         return _impl.subscript(index);
     }
@@ -951,13 +898,40 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
     /**
      * @brief Subscript into the tensor.
      *
-     * This version checks for negative values and does boudns checking.
+     * This version checks for negative values and does bounds checking.
      *
      * @param index The index to use for subscripting.
      */
     template <Container Storage>
+        requires(!std::is_base_of_v<Range, typename Storage::value_type>)
     ConstReference operator()(Storage const &index) const {
         return _impl.subscript(index);
+    }
+
+    /**
+     * @brief Subscript into the tensor.
+     *
+     * This version checks for negative values and does bounds checking.
+     *
+     * @param index The index to use for subscripting.
+     */
+    template <Container Storage>
+        requires(std::is_base_of_v<Range, typename Storage::value_type>)
+    RuntimeTensorView<T> operator()(Storage const &index) {
+        return RuntimeTensorView<T>(_impl.subscript(index));
+    }
+
+    /**
+     * @brief Subscript into the tensor.
+     *
+     * This version checks for negative values and does bounds checking.
+     *
+     * @param index The index to use for subscripting.
+     */
+    template <Container Storage>
+        requires(std::is_base_of_v<Range, typename Storage::value_type>)
+    RuntimeTensorView<T> const operator()(Storage const &index) const {
+        return RuntimeTensorView<T>(_impl.subscript(index));
     }
 
     /**
@@ -1059,7 +1033,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
             requires !(std::is_integral_v<Args> && ... && true);
         }
     RuntimeTensorView<T> const operator()(Args const &...args) const {
-        return _impl.subscript(args...);
+        return RuntimeTensorView<T>(_impl.subscript(args...));
     }
 
     /**
@@ -1157,28 +1131,28 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
     }
 
     template <typename TOther>
-    RuntimeTensor<T> &operator+=(TOther const &b) {
+    RuntimeTensorView<T> &operator+=(TOther const &b) {
         detail::add_assign(b, _impl);
 
         return *this;
     }
 
     template <typename TOther>
-    RuntimeTensor<T> &operator-=(TOther const &b) {
+    RuntimeTensorView<T> &operator-=(TOther const &b) {
         detail::sub_assign(b, _impl);
 
         return *this;
     }
 
     template <typename TOther>
-    RuntimeTensor<T> &operator*=(TOther const &b) {
+    RuntimeTensorView<T> &operator*=(TOther const &b) {
         detail::mult_assign(b, _impl);
 
         return *this;
     }
 
     template <typename TOther>
-    RuntimeTensor<T> &operator/=(TOther const &b) {
+    RuntimeTensorView<T> &operator/=(TOther const &b) {
         detail::div_assign(b, _impl);
 
         return *this;
@@ -1188,7 +1162,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
         requires requires(TOther t) {
             { t.impl() };
         }
-    RuntimeTensor<T> &operator+=(TOther const &b) {
+    RuntimeTensorView<T> &operator+=(TOther const &b) {
         detail::add_assign(b.impl(), _impl);
 
         return *this;
@@ -1198,7 +1172,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
         requires requires(TOther t) {
             { t.impl() };
         }
-    RuntimeTensor<T> &operator-=(TOther const &b) {
+    RuntimeTensorView<T> &operator-=(TOther const &b) {
         detail::sub_assign(b.impl(), _impl);
 
         return *this;
@@ -1208,7 +1182,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
         requires requires(TOther t) {
             { t.impl() };
         }
-    RuntimeTensor<T> &operator*=(TOther const &b) {
+    RuntimeTensorView<T> &operator*=(TOther const &b) {
         detail::mult_assign(b.impl(), _impl);
 
         return *this;
@@ -1218,7 +1192,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
         requires requires(TOther t) {
             { t.impl() };
         }
-    RuntimeTensor<T> &operator/=(TOther const &b) {
+    RuntimeTensorView<T> &operator/=(TOther const &b) {
         detail::div_assign(b.impl(), _impl);
 
         return *this;
@@ -1391,7 +1365,7 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
             fprintln(fp);
 
             if (Rank == 0) {
-                T value = std::get<std::remove_cvref_t<T>>(A());
+                T value = *A.data();
 
                 std::ostringstream oss;
                 oss << "              ";

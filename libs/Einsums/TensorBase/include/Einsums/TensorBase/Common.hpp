@@ -10,7 +10,9 @@
 #include <fmt/format.h>
 
 #include <array>
+#include <concepts>
 #include <sstream>
+#include <type_traits>
 
 namespace einsums {
 
@@ -40,7 +42,24 @@ struct Dim : std ::array<std ::int64_t, Rank> {
      * @brief Aggregate constructor.
      */
     template <typename... Args>
+        requires(std::is_integral_v<std::remove_cvref_t<Args>> && ...)
     constexpr explicit Dim(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
+
+    template <typename Iterator>
+        requires requires(Iterator it) {
+            { *it };
+            { it++ };
+        }
+    constexpr Dim(Iterator start, Iterator end) {
+        auto this_it  = this->begin();
+        auto other_it = start;
+
+        while (this_it != this->end() && other_it != end) {
+            *this_it = static_cast<std::int64_t>(*other_it);
+            this_it++;
+            other_it++;
+        }
+    }
 };
 
 /**
@@ -54,7 +73,24 @@ struct Stride : std ::array<std ::int64_t, Rank> {
      * @brief Aggregate constructor.
      */
     template <typename... Args>
+        requires(std::is_integral_v<std::remove_cvref_t<Args>> && ...)
     constexpr explicit Stride(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
+
+    template <typename Iterator>
+        requires requires(Iterator it) {
+            { *it };
+            { it++ };
+        }
+    constexpr Stride(Iterator start, Iterator end) {
+        auto this_it  = this->begin();
+        auto other_it = start;
+
+        while (this_it != this->end() && other_it != end) {
+            *this_it = static_cast<std::int64_t>(*other_it);
+            this_it++;
+            other_it++;
+        }
+    }
 };
 
 /**
@@ -64,11 +100,29 @@ struct Stride : std ::array<std ::int64_t, Rank> {
  */
 template <std ::size_t Rank>
 struct Offset : std ::array<std ::int64_t, Rank> {
+    using std::array<std::int64_t, Rank>::array;
     /**
      * @brief Aggregate constructor.
      */
     template <typename... Args>
+        requires(std::is_integral_v<std::remove_cvref_t<Args>> && ...)
     constexpr explicit Offset(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
+
+    template <typename Iterator>
+        requires requires(Iterator it) {
+            { *it };
+            { it++ };
+        }
+    constexpr Offset(Iterator start, Iterator end) {
+        auto this_it  = this->begin();
+        auto other_it = start;
+
+        while (this_it != this->end() && other_it != end) {
+            *this_it = static_cast<std::int64_t>(*other_it);
+            this_it++;
+            other_it++;
+        }
+    }
 };
 
 /**
@@ -122,11 +176,31 @@ Chunk(Args... args) -> Chunk<sizeof...(Args)>;
  * Holds two values: a starting value and an ending value.
  */
 struct Range : std::array<std::int64_t, 2> {
+    constexpr Range() = default;
+
     /**
      * Initialize a range.
      */
-    template <typename... Args>
-    constexpr explicit Range(Args... args) : std::array<std::int64_t, 2>{static_cast<std::int64_t>(args)...} {}
+    template <std::integral First, std::integral Second>
+    constexpr explicit Range(First first, Second second)
+        : std::array<std::int64_t, 2>{static_cast<std::int64_t>(first), static_cast<std::int64_t>(second)} {}
+
+    [[nodiscard]] virtual bool is_removable() const noexcept { return false; }
+};
+
+/**
+ * @struct Range
+ *
+ * Holds two values: a starting value and an ending value. It will be treated as a single value if the start and end are the same.
+ */
+struct RemovableRange : Range {
+    /**
+     * Initialize a range.
+     */
+    template <std::integral First, std::integral Second>
+    constexpr explicit RemovableRange(First first, Second second) : Range{first, second} {}
+
+    [[nodiscard]] bool is_removable() const noexcept override { return true; }
 };
 
 struct AllT {};

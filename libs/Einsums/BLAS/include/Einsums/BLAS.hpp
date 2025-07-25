@@ -320,13 +320,18 @@ void EINSUMS_EXPORT cscal(int_t n, std::complex<float> alpha, std::complex<float
 void EINSUMS_EXPORT zscal(int_t n, std::complex<double> alpha, std::complex<double> *vec, int_t inc);
 void EINSUMS_EXPORT csscal(int_t n, float alpha, std::complex<float> *vec, int_t inc);
 void EINSUMS_EXPORT zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc);
+
+void EINSUMS_EXPORT srscl(int_t n, float alpha, float *vec, int_t inc);
+void EINSUMS_EXPORT drscl(int_t n, double alpha, double *vec, int_t inc);
+void EINSUMS_EXPORT csrscl(int_t n, float alpha, std::complex<float> *vec, int_t inc);
+void EINSUMS_EXPORT zdrscl(int_t n, double alpha, std::complex<double> *vec, int_t inc);
 } // namespace detail
 
 template <typename T>
-void scal(int_t n, T alpha, T *vec, int_t inc);
+void scal(int_t n, T const alpha, T *vec, int_t inc);
 
 template <Complex T>
-void scal(int_t n, RemoveComplexT<T> alpha, T *vec, int_t inc);
+void scal(int_t n, RemoveComplexT<T> const alpha, T *vec, int_t inc);
 
 template <>
 inline void scal<float>(int_t n, float const alpha, float *vec, int_t inc) {
@@ -356,6 +361,42 @@ inline void scal<std::complex<float>>(int_t n, float const alpha, std::complex<f
 template <>
 inline void scal<std::complex<double>>(int_t n, double const alpha, std::complex<double> *vec, int_t inc) {
     detail::zdscal(n, alpha, vec, inc);
+}
+
+template <typename T>
+void rscl(int_t n, T const alpha, T *vec, int_t inc);
+
+template <Complex T>
+void rscl(int_t n, RemoveComplexT<T> const alpha, T *vec, int_t inc);
+
+template <>
+inline void rscl<float>(int_t n, float const alpha, float *vec, int_t inc) {
+    detail::srscl(n, alpha, vec, inc);
+}
+
+template <>
+inline void rscl<double>(int_t n, double const alpha, double *vec, int_t inc) {
+    detail::drscl(n, alpha, vec, inc);
+}
+
+template <>
+inline void rscl<std::complex<float>>(int_t n, std::complex<float> const alpha, std::complex<float> *vec, int_t inc) {
+    detail::cscal(n, std::complex<float>{1.0} / alpha, vec, inc);
+}
+
+template <>
+inline void rscl<std::complex<double>>(int_t n, std::complex<double> const alpha, std::complex<double> *vec, int_t inc) {
+    detail::zscal(n, std::complex<double>{1.0} / alpha, vec, inc);
+}
+
+template <>
+inline void rscl<std::complex<float>>(int_t n, float const alpha, std::complex<float> *vec, int_t inc) {
+    detail::csrscl(n, alpha, vec, inc);
+}
+
+template <>
+inline void rscl<std::complex<double>>(int_t n, double const alpha, std::complex<double> *vec, int_t inc) {
+    detail::zdrscl(n, alpha, vec, inc);
 }
 
 namespace detail {

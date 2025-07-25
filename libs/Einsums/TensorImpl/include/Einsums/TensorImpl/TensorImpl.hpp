@@ -16,32 +16,13 @@
 namespace einsums {
 namespace detail {
 
-template <typename TemplateType, typename OutputType>
-struct MakePointerLike {
-    using type = OutputType *;
-};
-
-template <typename TemplateType, typename OutputType>
-struct MakePointerLike<TemplateType const, OutputType> {
-    using type = std::add_const_t<OutputType> *;
-};
-
-template <typename TemplateType, typename OutputType>
-struct MakePointerLike<TemplateType volatile, OutputType> {
-    using type = std::add_volatile_t<OutputType> *;
-};
-
-template <typename TemplateType, typename OutputType>
-struct MakePointerLike<TemplateType const volatile, OutputType> {
-    using type = std::add_cv_t<OutputType> *;
-};
-
 /**
  * @struct TensorImpl
  *
  * @brief Underlying implementation details for tensor objects.
  */
 template <typename T>
+    requires(!std::is_const_v<T>)
 struct TensorImpl final {
     /**
      * @typedef pointer
@@ -55,21 +36,21 @@ struct TensorImpl final {
      *
      * @brief The type for const pointers returned by this class.
      */
-    using const_pointer = std::add_const_t<T> *;
+    using const_pointer = T const *;
 
     /**
      * @typedef void_pointer
      *
      * @brief The type for void pointers returned by this class.
      */
-    using void_pointer = typename MakePointerLike<T, void>::type;
+    using void_pointer = void *;
 
     /**
      * @typedef const_void_pointer
      *
      * @brief The type for const void pointers returned by this class.
      */
-    using const_void_pointer = typename MakePointerLike<std::add_const_t<T>, void>::type;
+    using const_void_pointer = void const *;
 
     /**
      * @typedef value_type
@@ -90,7 +71,7 @@ struct TensorImpl final {
      *
      * @brief The const reference type returned by this class.
      */
-    using const_reference = std::add_const_t<T> &;
+    using const_reference = T const &;
 
     // Rule of five methods.
 
@@ -133,78 +114,6 @@ struct TensorImpl final {
      * @brief Move assignment.
      */
     constexpr TensorImpl<T> &operator=(TensorImpl<T> &&other) noexcept {
-        _ptr     = other._ptr;
-        _rank    = other._rank;
-        _strides = std::move(other._strides);
-        _dims    = std::move(other._dims);
-        size_    = other.size_;
-
-        other._ptr  = nullptr;
-        other._rank = 0;
-        other._strides.clear();
-        other._dims.clear();
-        other.size_ = 0;
-        return *this;
-    }
-
-    /**
-     * @brief Copy constructor from a datatype with different constness.
-     */
-    template <typename TOther>
-        requires requires {
-            requires !std::is_same_v<T, TOther>;
-            requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
-            requires std::is_const_v<T> || !std::is_const_v<TOther>;
-        }
-    constexpr TensorImpl(TensorImpl<TOther> const &other)
-        : _ptr{other._ptr}, _rank{other._rank}, _strides{other._strides}, _dims{other._dims}, size_{other.size_} {}
-
-    /**
-     * @brief Move constructor from a datatype with different constness.
-     */
-    template <typename TOther>
-        requires requires {
-            requires !std::is_same_v<T, TOther>;
-            requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
-            requires std::is_const_v<T> || !std::is_const_v<TOther>;
-        }
-    constexpr TensorImpl(TensorImpl<TOther> &&other) noexcept
-        : _ptr{other._ptr}, _rank{other._rank}, _strides{std::move(other._strides)}, _dims{std::move(other._dims)}, size_{other.size_} {
-        other._ptr  = nullptr;
-        other._rank = 0;
-        other._strides.clear();
-        other._dims.clear();
-        other.size_ = 0;
-    }
-
-    /**
-     * @brief Copy assignment from a datatype with different constness.
-     */
-    template <typename TOther>
-        requires requires {
-            requires !std::is_same_v<T, TOther>;
-            requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
-            requires std::is_const_v<T> || !std::is_const_v<TOther>;
-        }
-    constexpr TensorImpl<T> &operator=(TensorImpl<TOther> const &other) {
-        _ptr     = other._ptr;
-        _rank    = other._rank;
-        _strides = other._strides;
-        _dims    = other._dims;
-        size_    = other.size_;
-        return *this;
-    }
-
-    /**
-     * @brief Move assignment from a datatype with different constness.
-     */
-    template <typename TOther>
-        requires requires {
-            requires !std::is_same_v<T, TOther>;
-            requires std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>>;
-            requires std::is_const_v<T> || !std::is_const_v<TOther>;
-        }
-    constexpr TensorImpl<T> &operator=(TensorImpl<TOther> &&other) noexcept {
         _ptr     = other._ptr;
         _rank    = other._rank;
         _strides = std::move(other._strides);
@@ -466,6 +375,7 @@ struct TensorImpl final {
      * @param index The indices to use for the offset.
      */
     template <Container Index>
+        requires(!std::is_same_v<Range, Index>)
     constexpr pointer data(Index const &index) {
         if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
@@ -488,6 +398,7 @@ struct TensorImpl final {
      * @param index The indices to use for the offset.
      */
     template <Container Index>
+        requires(!std::is_same_v<Range, Index>)
     constexpr const_pointer data(Index const &index) const {
         if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
@@ -511,6 +422,7 @@ struct TensorImpl final {
      * @param index The indices to use for the offset.
      */
     template <Container Index>
+        requires(!std::is_same_v<Range, Index>)
     constexpr pointer data_no_check(Index const &index) {
         if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
@@ -534,6 +446,7 @@ struct TensorImpl final {
      * @param index The indices to use for the offset.
      */
     template <Container Index>
+        requires(!std::is_same_v<Range, Index>)
     constexpr const_pointer data_no_check(Index const &index) const {
         if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
@@ -884,7 +797,7 @@ struct TensorImpl final {
      *
      * @param index The indices for the subscript.
      */
-    template <typename... MultiIndex>
+    template <bool IgnoreRemoveRange = false, typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
     constexpr reference subscript(MultiIndex &&...index) {
         return *data(std::forward<MultiIndex>(index)...);
@@ -895,7 +808,7 @@ struct TensorImpl final {
      *
      * @param index The indices for the subscript.
      */
-    template <typename... MultiIndex>
+    template <bool IgnoreRemoveRange = false, typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
     constexpr const_reference subscript(MultiIndex &&...index) const {
         return *data(std::forward<MultiIndex>(index)...);
@@ -906,8 +819,11 @@ struct TensorImpl final {
      *
      * @param index The indices for the subscript.
      */
-    template <Container MultiIndex>
-        requires(std::is_integral_v<typename MultiIndex::value_type>)
+    template <bool IgnoreRemoveRange = false, Container MultiIndex>
+        requires requires {
+            requires std::is_integral_v<typename MultiIndex::value_type>;
+            requires !std::is_same_v<Range, MultiIndex>;
+        }
     constexpr reference subscript(MultiIndex const &index) {
         return *data(index);
     }
@@ -917,8 +833,11 @@ struct TensorImpl final {
      *
      * @param index The indices for the subscript.
      */
-    template <Container MultiIndex>
-        requires(std::is_integral_v<typename MultiIndex::value_type>)
+    template <bool IgnoreRemoveRange = false, Container MultiIndex>
+        requires requires {
+            requires std::is_integral_v<typename MultiIndex::value_type>;
+            requires !std::is_same_v<Range, MultiIndex>;
+        }
     constexpr const_reference subscript(MultiIndex const &index) const {
         return *data(index);
     }
@@ -951,7 +870,10 @@ struct TensorImpl final {
      * @param index The indices for the subscript.
      */
     template <Container MultiIndex>
-        requires(std::is_integral_v<typename MultiIndex::value_type>)
+        requires requires {
+            requires std::is_integral_v<typename MultiIndex::value_type>;
+            requires !std::is_same_v<Range, MultiIndex>;
+        }
     constexpr reference subscript_no_check(MultiIndex const &index) {
         return *data_no_check(index);
     }
@@ -962,7 +884,10 @@ struct TensorImpl final {
      * @param index The indices for the subscript.
      */
     template <Container MultiIndex>
-        requires(std::is_integral_v<typename MultiIndex::value_type>)
+        requires requires {
+            requires std::is_integral_v<typename MultiIndex::value_type>;
+            requires !std::is_same_v<Range, MultiIndex>;
+        }
     constexpr const_reference subscript_no_check(MultiIndex const &index) const {
         return *data_no_check(index);
     }
@@ -972,7 +897,7 @@ struct TensorImpl final {
      *
      * @param index The indices for the subscript.
      */
-    template <std::integral IntType>
+    template <bool IgnoreRemoveRange = false, std::integral IntType>
     constexpr reference subscript(std::initializer_list<IntType> const &index) {
         return *data(index);
     }
@@ -982,7 +907,7 @@ struct TensorImpl final {
      *
      * @param index The indices for the subscript.
      */
-    template <std::integral IntType>
+    template <bool IgnoreRemoveRange = false, std::integral IntType>
     constexpr const_reference subscript(std::initializer_list<IntType> const &index) const {
         return *data(index);
     }
@@ -1016,7 +941,7 @@ struct TensorImpl final {
      *
      * @param index The slice parameters for the view.
      */
-    template <typename... MultiIndex>
+    template <bool IgnoreRemoveRange = false, typename... MultiIndex>
         requires requires {
             requires((std::is_integral_v<std::remove_cvref_t<MultiIndex>> || std::is_base_of_v<Range, std::remove_cvref_t<MultiIndex>> ||
                       std::is_base_of_v<AllT, std::remove_cvref_t<MultiIndex>>) &&
@@ -1033,7 +958,7 @@ struct TensorImpl final {
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view<0>(new_dims, new_strides, index_tuple);
+        size_t offset = compute_view<IgnoreRemoveRange, 0>(new_dims, new_strides, index_tuple);
 
         if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
@@ -1049,14 +974,14 @@ struct TensorImpl final {
      *
      * @param index The slice parameters for the view.
      */
-    template <typename... MultiIndex>
+    template <bool IgnoreRemoveRange = false, typename... MultiIndex>
         requires requires {
             requires((std::is_integral_v<std::remove_cvref_t<MultiIndex>> || std::is_base_of_v<Range, std::remove_cvref_t<MultiIndex>> ||
                       std::is_base_of_v<AllT, std::remove_cvref_t<MultiIndex>>) &&
                      ... && true);
             requires(!std::is_integral_v<std::remove_cvref_t<MultiIndex>> || ... || false);
         }
-    constexpr TensorImpl<std::add_const_t<T>> subscript(MultiIndex &&...index) const {
+    constexpr TensorImpl<T> const subscript(MultiIndex &&...index) const {
         auto index_tuple = std::make_tuple(std::forward<MultiIndex>(index)...);
 
         adjust_ranges<0>(index_tuple);
@@ -1066,12 +991,12 @@ struct TensorImpl final {
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view<0>(new_dims, new_strides, index_tuple);
+        size_t offset = compute_view<IgnoreRemoveRange, 0>(new_dims, new_strides, index_tuple);
 
         if (_ptr == nullptr) {
-            return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
+            return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1082,7 +1007,7 @@ struct TensorImpl final {
      *
      * @param index The slice parameters for the view.
      */
-    template <Container MultiIndex>
+    template <bool IgnoreRemoveRange = false, Container MultiIndex>
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
     constexpr TensorImpl<T> subscript(MultiIndex const &index) {
         BufferVector<Range> index_list{index.begin(), index.end()};
@@ -1093,7 +1018,7 @@ struct TensorImpl final {
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view(new_dims, new_strides, index_list);
+        size_t offset = compute_view<IgnoreRemoveRange>(new_dims, new_strides, index_list);
 
         if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
@@ -1109,9 +1034,9 @@ struct TensorImpl final {
      *
      * @param index The slice parameters for the view.
      */
-    template <Container MultiIndex>
+    template <bool IgnoreRemoveRange = false, Container MultiIndex>
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
-    constexpr TensorImpl<std::add_const_t<T>> subscript(MultiIndex const &index) const {
+    constexpr TensorImpl<T> const subscript(MultiIndex const &index) const {
         BufferVector<Range> index_list{index.begin(), index.end()};
         adjust_ranges(index_list);
 
@@ -1120,12 +1045,12 @@ struct TensorImpl final {
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view(new_dims, new_strides, index_list);
+        size_t offset = compute_view<IgnoreRemoveRange>(new_dims, new_strides, index_list);
 
         if (_ptr == nullptr) {
-            return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
+            return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1145,7 +1070,7 @@ struct TensorImpl final {
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view(new_dims, new_strides, index_list);
+        size_t offset = compute_view<true>(new_dims, new_strides, index_list);
 
         if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
@@ -1161,7 +1086,8 @@ struct TensorImpl final {
      *
      * @param index The slice parameters for the view.
      */
-    constexpr TensorImpl<std::add_const_t<T>> subscript(std::initializer_list<Range> const &index) const {
+    template<bool IgnoreRemoveRange = false>
+    constexpr TensorImpl<T> const subscript(std::initializer_list<Range> const &index) const {
         BufferVector<Range> index_list{index.begin(), index.end()};
         adjust_ranges(index_list);
 
@@ -1170,12 +1096,12 @@ struct TensorImpl final {
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view(new_dims, new_strides, index_list);
+        size_t offset = compute_view<true>(new_dims, new_strides, index_list);
 
         if (_ptr == nullptr) {
-            return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
+            return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1201,7 +1127,7 @@ struct TensorImpl final {
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view<0>(new_dims, new_strides, index_tuple);
+        size_t offset = compute_view<true, 0>(new_dims, new_strides, index_tuple);
 
         if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
@@ -1224,7 +1150,7 @@ struct TensorImpl final {
                      ... && true);
             requires(!std::is_integral_v<std::remove_cvref_t<MultiIndex>> || ... || false);
         }
-    constexpr TensorImpl<std::add_const_t<T>> subscript_no_check(MultiIndex &&...index) const {
+    constexpr TensorImpl<T> const subscript_no_check(MultiIndex &&...index) const {
         auto index_tuple = std::make_tuple(std::forward<MultiIndex>(index)...);
 
         BufferVector<size_t> new_dims, new_strides;
@@ -1232,12 +1158,12 @@ struct TensorImpl final {
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view<0>(new_dims, new_strides, index_tuple);
+        size_t offset = compute_view<true, 0>(new_dims, new_strides, index_tuple);
 
         if (_ptr == nullptr) {
-            return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
+            return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1256,7 +1182,7 @@ struct TensorImpl final {
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view(new_dims, new_strides, index);
+        size_t offset = compute_view<true>(new_dims, new_strides, index);
 
         if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
@@ -1274,18 +1200,18 @@ struct TensorImpl final {
      */
     template <Container MultiIndex>
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
-    constexpr TensorImpl<std::add_const_t<T>> subscript_no_check(MultiIndex const &index) const {
+    constexpr TensorImpl<T> const subscript_no_check(MultiIndex const &index) const {
         BufferVector<size_t> new_dims, new_strides;
 
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view(new_dims, new_strides, index);
+        size_t offset = compute_view<true>(new_dims, new_strides, index);
 
         if (_ptr == nullptr) {
-            return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
+            return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1302,7 +1228,7 @@ struct TensorImpl final {
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view(new_dims, new_strides, index);
+        size_t offset = compute_view<true>(new_dims, new_strides, index);
 
         if (_ptr == nullptr) {
             return TensorImpl<T>(nullptr, new_dims, new_strides);
@@ -1318,18 +1244,18 @@ struct TensorImpl final {
      *
      * @param index The slice parameters for the view.
      */
-    constexpr TensorImpl<std::add_const_t<T>> subscript_no_check(std::initializer_list<Range> const &index) const {
+    constexpr TensorImpl<T> const subscript_no_check(std::initializer_list<Range> const &index) const {
         BufferVector<size_t> new_dims, new_strides;
 
         new_dims.reserve(_rank);
         new_strides.reserve(_rank);
 
-        size_t offset = compute_view(new_dims, new_strides, index);
+        size_t offset = compute_view<true>(new_dims, new_strides, index);
 
         if (_ptr == nullptr) {
-            return TensorImpl<std::add_const_t<T>>(nullptr, new_dims, new_strides);
+            return TensorImpl<T>(nullptr, new_dims, new_strides);
         } else {
-            return TensorImpl<std::add_const_t<T>>(_ptr + offset, new_dims, new_strides);
+            return TensorImpl<T>(_ptr + offset, new_dims, new_strides);
         }
     }
 
@@ -1369,12 +1295,12 @@ struct TensorImpl final {
      * This does not permute the data. It only reverses the dimensions and strides,
      * and only if the tensor is not already row major.
      */
-    constexpr TensorImpl<std::add_const_t<T>> to_row_major() const {
+    constexpr TensorImpl<T> const to_row_major() const {
         if (strides(0) >= strides(-1)) {
             return *this;
         } else {
-            return TensorImpl<std::add_const_t<T>>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
-                                                   BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
+            return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
+                                 BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
         }
     }
 
@@ -1384,12 +1310,12 @@ struct TensorImpl final {
      * This does not permute the data. It only reverses the dimensions and strides,
      * and only if the tensor is not already column major.
      */
-    constexpr TensorImpl<std::add_const_t<T>> to_column_major() const {
+    constexpr TensorImpl<T> const to_column_major() const {
         if (strides(0) <= strides(-1)) {
             return *this;
         } else {
-            return TensorImpl<std::add_const_t<T>>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
-                                                   BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
+            return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
+                                 BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
         }
     }
 
@@ -1492,7 +1418,7 @@ struct TensorImpl final {
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<MultiIndex> && ... && true)
-    constexpr TensorImpl<std::add_const_t<T>> tie_indices(MultiIndex &&...index) const {
+    constexpr TensorImpl<T> const tie_indices(MultiIndex &&...index) const {
         if constexpr (sizeof...(MultiIndex) <= 1) {
             return *this;
         } else {
@@ -1570,7 +1496,7 @@ struct TensorImpl final {
                 }
             }
 
-            return TensorImpl<std::add_const_t<T>>(_ptr, temp_dims, temp_strides);
+            return TensorImpl<T>(_ptr, temp_dims, temp_strides);
         }
     }
 
@@ -1622,7 +1548,7 @@ struct TensorImpl final {
         }
     }
 
-    template <size_t I, typename... MultiIndex>
+    template <bool IgnoreRemoveRange, size_t I, typename... MultiIndex>
         requires((std::is_integral_v<MultiIndex> || std::is_base_of_v<Range, MultiIndex> || std::is_base_of_v<AllT, MultiIndex>) && ... &&
                  true)
     constexpr size_t compute_view(BufferVector<size_t> &out_dims, BufferVector<size_t> &out_strides,
@@ -1631,17 +1557,26 @@ struct TensorImpl final {
             return 0;
         } else {
             if constexpr (std::is_integral_v<std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                return std::get<I>(indices) * _strides[I] + compute_view<I + 1>(out_dims, out_strides, indices);
+                return std::get<I>(indices) * _strides[I] + compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
+            } else if constexpr (!IgnoreRemoveRange &&
+                                 std::is_base_of_v<RemovableRange, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
+                auto range = std::get<I>(indices);
+
+                if (range[0] != range[1] && range.is_removable()) {
+                    out_dims.push_back(range[1] - range[0]);
+                    out_strides.push_back(_strides[I]);
+                }
+                return range[0] * _strides[I] + compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
             } else if constexpr (std::is_base_of_v<Range, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                Range range = std::get<I>(indices);
+                auto range = std::get<I>(indices);
 
                 out_dims.push_back(range[1] - range[0]);
                 out_strides.push_back(_strides[I]);
-                return range[0] * _strides[I] + compute_view<I + 1>(out_dims, out_strides, indices);
+                return range[0] * _strides[I] + compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
             } else if constexpr (std::is_base_of_v<AllT, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
                 out_dims.push_back(_dims[I]);
                 out_strides.push_back(_strides[I]);
-                return compute_view<I + 1>(out_dims, out_strides, indices);
+                return compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
             }
         }
     }
@@ -1649,7 +1584,7 @@ struct TensorImpl final {
     template <ContainerOrInitializer MultiIndex>
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
     constexpr void adjust_ranges(MultiIndex &indices) const {
-        for (auto &[item, dim] : Zip(indices, std::as_const(_dims))) {
+        for (auto &&[item, dim] : Zip(indices, std::as_const(_dims))) {
             auto temp = item;
 
             if (item[0] < 0) {
@@ -1674,15 +1609,22 @@ struct TensorImpl final {
         }
     }
 
-    template <ContainerOrInitializer MultiIndex>
+    template <bool IgnoreRemoveRange, ContainerOrInitializer MultiIndex>
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
     constexpr size_t compute_view(BufferVector<size_t> &out_dims, BufferVector<size_t> &out_strides, MultiIndex const &indices) const {
         size_t out = 0;
         for (auto [range, stride] : Zip(indices, _strides)) {
-
-            out_dims.push_back(range[1] - range[0]);
-            out_strides.push_back(stride);
-            out += range[0] * stride;
+            if constexpr (IgnoreRemoveRange) {
+                out_dims.push_back(range[1] - range[0]);
+                out_strides.push_back(stride);
+                out += range[0] * stride;
+            } else {
+                if (!range.is_removable() || range[1] - range[0] != 0) {
+                    out_dims.push_back(range[1] - range[0]);
+                    out_strides.push_back(stride);
+                }
+                out += range[0] * stride;
+            }
         }
 
         return out;

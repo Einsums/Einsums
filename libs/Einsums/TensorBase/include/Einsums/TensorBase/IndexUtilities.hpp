@@ -583,7 +583,19 @@ inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_stri
  * @param out The calculated strides.
  * @return The size calculated from the dimensions. Can be safely ignored.
  */
-EINSUMS_EXPORT size_t dims_to_strides(std::vector<size_t> const &dims, std::vector<size_t> &out);
+template <typename Alloc1, typename Alloc2>
+size_t dims_to_strides(std::vector<size_t, Alloc1> const &dims, std::vector<size_t, Alloc2> &out) {
+    size_t stride = 1;
+
+    out.resize(dims.size());
+
+    for (int i = dims.size() - 1; i >= 0; i--) {
+        out[i] = stride;
+        stride *= dims[i];
+    }
+
+    return stride;
+}
 
 /**
  * @brief Compute the strides for turning a sentinel into a list of indices.

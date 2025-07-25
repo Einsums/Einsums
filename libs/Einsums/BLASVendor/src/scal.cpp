@@ -20,6 +20,10 @@ extern void FC_GLOBAL(cscal, CSCAL)(int_t *, std::complex<float> *, std::complex
 extern void FC_GLOBAL(zscal, ZSCAL)(int_t *, std::complex<double> *, std::complex<double> *, int_t *);
 extern void FC_GLOBAL(csscal, CSSCAL)(int_t *, float *, std::complex<float> *, int_t *);
 extern void FC_GLOBAL(zdscal, ZDSCAL)(int_t *, double *, std::complex<double> *, int_t *);
+extern void FC_GLOBAL(srscl, SRSCL)(int_t *, float *, float *, int_t *);
+extern void FC_GLOBAL(drscl, DRSCL)(int_t *, double *, double *, int_t *);
+extern void FC_GLOBAL(csrscl, CSRSCL)(int_t *, float *, std::complex<float> *, int_t *);
+extern void FC_GLOBAL(zdrscl, ZDRSCL)(int_t *, double *, std::complex<double> *, int_t *);
 }
 
 void sscal(int_t n, float alpha, float *vec, int_t inc) {
@@ -56,6 +60,30 @@ void zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
     LabeledSection0();
 
     FC_GLOBAL(zdscal, ZDSCAL)(&n, &alpha, vec, &inc);
+}
+
+void srscl(int_t n, float alpha, float *vec, int_t inc) {
+    LabeledSection0();
+
+    FC_GLOBAL(srscl, SRSCL)(&n, &alpha, vec, &inc);
+}
+
+void drscl(int_t n, double alpha, double *vec, int_t inc) {
+    LabeledSection0();
+
+    FC_GLOBAL(drscl, DRSCL)(&n, &alpha, vec, &inc);
+}
+
+void csrscl(int_t n, float alpha, std::complex<float> *vec, int_t inc) {
+    LabeledSection0();
+
+    FC_GLOBAL(csrscl, CSRSCL)(&n, &alpha, vec, &inc);
+}
+
+void zdrscl(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
+    LabeledSection0();
+
+    FC_GLOBAL(zdrscl, ZDRSCL)(&n, &alpha, vec, &inc);
 }
 
 } // namespace einsums::blas::vendor

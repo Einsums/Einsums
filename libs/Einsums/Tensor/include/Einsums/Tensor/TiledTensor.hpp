@@ -1337,7 +1337,17 @@ struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums:
      *
      * This does not add a tile to the viewed tensor, only to the view.
      */
-    void insert_tile(std::array<int, Rank> pos, einsums::TensorView<T, Rank> &&view) {
+    void insert_tile(std::array<int, Rank> pos, einsums::TensorView<T, Rank> &view) {
+        std::lock_guard lock(*this);
+        this->_tiles.emplace(pos, view);
+    }
+
+    /**
+     * @brief Add a tile to the view.
+     *
+     * This does not add a tile to the viewed tensor, only to the view.
+     */
+    void insert_tile(std::array<int, Rank> pos, einsums::TensorView<T, Rank> const &view) {
         std::lock_guard lock(*this);
         this->_tiles.emplace(pos, view);
     }

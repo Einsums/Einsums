@@ -9,8 +9,7 @@
 
 using namespace einsums;
 
-TEMPLATE_TEST_CASE("TensorImlp Creation", "[tensor]", float, double, std::complex<float>, std::complex<double>, int, float const,
-                   double const) {
+TEMPLATE_TEST_CASE("TensorImlp Creation", "[tensor]", float, double, std::complex<float>, std::complex<double>, int) {
     SECTION("Default constructor") {
         detail::TensorImpl<TestType> impl;
 
@@ -138,8 +137,7 @@ TEMPLATE_TEST_CASE("TensorImlp Creation", "[tensor]", float, double, std::comple
     }
 }
 
-TEMPLATE_TEST_CASE("TensorImpl view creation", "[tensor]", float, double, std::complex<float>, std::complex<double>, int, float const,
-                   double const) {
+TEMPLATE_TEST_CASE("TensorImpl view creation", "[tensor]", float, double, std::complex<float>, std::complex<double>, int) {
     std::vector<std::remove_cv_t<TestType>> test_data(27);
 
     for (int i = 0; i < 3; i++) {

@@ -28,6 +28,7 @@ void export_Errors(py::module_ &mod) {
     EXCEPTION(uninitialized_error);
     EXCEPTION(system_error);
     EXCEPTION(enum_error);
+    EXCEPTION(complex_conversion_error);
 
 #ifdef EINSUMS_COMPUTE_CODE
     py::register_exception<einsums::Success>(error_mod, "Success");

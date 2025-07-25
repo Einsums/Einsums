@@ -126,6 +126,22 @@ void zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
     vendor::zdscal(n, alpha, vec, inc);
 }
 
+void srscl(int_t n, float alpha, float *vec, int_t inc) {
+    vendor::srscl(n, alpha, vec, inc);
+}
+
+void drscl(int_t n, double alpha, double *vec, int_t inc) {
+    vendor::drscl(n, alpha, vec, inc);
+}
+
+void csrscl(int_t n, float alpha, std::complex<float> *vec, int_t inc) {
+    vendor::csrscl(n, alpha, vec, inc);
+}
+
+void zdrscl(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
+    vendor::zdrscl(n, alpha, vec, inc);
+}
+
 auto sdot(int_t n, float const *x, int_t incx, float const *y, int_t incy) -> float {
     return vendor::sdot(n, x, incx, y, incy);
 }

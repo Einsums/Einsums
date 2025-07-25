@@ -64,8 +64,8 @@ TEST_CASE("Tensor GEMMs", "[tensor]") {
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
     REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
 
-    A.vector_data() = einsums::VectorData<double>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    B.vector_data() = einsums::VectorData<double>{11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
+    A.vector_data() = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    B.vector_data() = {11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
 
     einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
     CHECK_THAT(C.vector_data(),
@@ -93,8 +93,8 @@ TEST_CASE("Tensor GEMVs", "[tensor]") {
     REQUIRE((x.dim(0) == 3));
     REQUIRE((y.dim(0) == 3));
 
-    A.vector_data() = einsums::VectorData<double>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    x.vector_data() = einsums::VectorData<double>{11.0, 22.0, 33.0};
+    A.vector_data() = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    x.vector_data() = {11.0, 22.0, 33.0};
 
     einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
     CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0}));
@@ -110,7 +110,7 @@ TEST_CASE("Tensor SYEVs", "[tensor]") {
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
 
-    A.vector_data() = einsums::VectorData<double>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+    A.vector_data() = {1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
 
     einsums::linear_algebra::syev(&A, &x);
 

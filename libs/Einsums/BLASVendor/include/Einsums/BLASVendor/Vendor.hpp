@@ -87,6 +87,11 @@ void zscal(int_t n, std::complex<double> alpha, std::complex<double> *vec, int_t
 void csscal(int_t n, float alpha, std::complex<float> *vec, int_t inc);
 void zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc);
 
+void srscl(int_t n, float alpha, float *vec, int_t inc);
+void drscl(int_t n, double alpha, double *vec, int_t inc);
+void csrscl(int_t n, float alpha, std::complex<float> *vec, int_t inc);
+void zdrscl(int_t n, double alpha, std::complex<double> *vec, int_t inc);
+
 auto sdot(int_t n, float const *x, int_t incx, float const *y, int_t incy) -> float;
 auto ddot(int_t n, double const *x, int_t incx, double const *y, int_t incy) -> double;
 auto cdot(int_t n, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy) -> std::complex<float>;
