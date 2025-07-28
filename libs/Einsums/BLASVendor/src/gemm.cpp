@@ -6,6 +6,8 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
+#include <Einsums/Errors/Error.hpp>
+#include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 
@@ -25,12 +27,74 @@ extern void FC_GLOBAL(zgemm, ZGEMM)(char *, char *, int_t *, int_t *, int_t *, s
                                     int_t *);
 }
 
+#define GEMM_CHECK(transa, transb, m, n, k, lda, ldb, ldc)                                                                                 \
+    bool  notA = (std::tolower(transa) == 'n'), notB = (std::tolower(transb) == 'n');                                                      \
+    int_t nrowa, nrowb;                                                                                                                    \
+                                                                                                                                           \
+    if (notA) {                                                                                                                            \
+        nrowa = m;                                                                                                                         \
+    } else {                                                                                                                               \
+        nrowa = k;                                                                                                                         \
+    }                                                                                                                                      \
+                                                                                                                                           \
+    if (notB) {                                                                                                                            \
+        nrowb = k;                                                                                                                         \
+    } else {                                                                                                                               \
+        nrowb = n;                                                                                                                         \
+    }                                                                                                                                      \
+                                                                                                                                           \
+    if (!notA && std::tolower(transa) != 'c' && std::tolower(transa) != 't') {                                                             \
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument,                                                                                     \
+                                "The first argument (transA) to gemm call was invalid! Expected n, t, or c, case-insensitive, got {}.",    \
+                                transa);                                                                                                   \
+    }                                                                                                                                      \
+                                                                                                                                           \
+    if (!notB && std::tolower(transb) != 'c' && std::tolower(transb) != 't') {                                                             \
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument,                                                                                     \
+                                "The second argument (transB) to gemm call was invalid! Expected n, t, or c, case-insensitive, got {}.",   \
+                                transb);                                                                                                   \
+    }                                                                                                                                      \
+                                                                                                                                           \
+    if ((m) < 0) {                                                                                                                         \
+        EINSUMS_THROW_EXCEPTION(std::domain_error,                                                                                         \
+                                "The third argument (m) to gemm call was invalid! It must be greater than or equal to zero. Got {}.", m);  \
+    }                                                                                                                                      \
+    if ((n) < 0) {                                                                                                                         \
+        EINSUMS_THROW_EXCEPTION(std::domain_error,                                                                                         \
+                                "The fourth argument (n) to gemm call was invalid! It must be greater than or equal to zero. Got {}.", n); \
+    }                                                                                                                                      \
+    if ((k) < 0) {                                                                                                                         \
+        EINSUMS_THROW_EXCEPTION(std::domain_error,                                                                                         \
+                                "The fifth argument (k) to gemm call was invalid! It must be greater than or equal to zero. Got {}.", k);  \
+    }                                                                                                                                      \
+    if ((lda) < std::max((int_t)1, nrowa)) {                                                                                               \
+        EINSUMS_THROW_EXCEPTION(                                                                                                           \
+            std::domain_error,                                                                                                             \
+            "The eighth argument (lda) to gemm call was invalid! It must be at least 1 and at least the number of rows ({}). Got {}.",     \
+            nrowa, lda);                                                                                                                   \
+    }                                                                                                                                      \
+    if ((ldb) < std::max((int_t)1, nrowb)) {                                                                                               \
+        EINSUMS_THROW_EXCEPTION(                                                                                                           \
+            std::domain_error,                                                                                                             \
+            "The tenth argument (ldb) to gemm call was invalid! It must be at least 1 and at least the number of rows ({}). Got {}.",      \
+            nrowb, ldb);                                                                                                                   \
+    }                                                                                                                                      \
+    if ((ldc) < std::max((int_t)1, m)) {                                                                                                   \
+        EINSUMS_THROW_EXCEPTION(                                                                                                           \
+            std::domain_error,                                                                                                             \
+            "The thirteenth argument (ldc) to gemm call was invalid! It must be at least 1 and at least the number of rows ({}). Got {}.", \
+            m, ldc);                                                                                                                       \
+    }
+
 void sgemm(char transa, char transb, int_t m, int_t n, int_t k, float alpha, float const *a, int_t lda, float const *b, int_t ldb,
            float beta, float *c, int_t ldc) {
     LabeledSection0();
 
     if (m == 0 || n == 0 || k == 0)
         return;
+
+    GEMM_CHECK(transa, transb, m, n, k, lda, ldb, ldc)
+
     FC_GLOBAL(sgemm, SGEMM)(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
 }
 
@@ -40,6 +104,9 @@ void dgemm(char transa, char transb, int_t m, int_t n, int_t k, double alpha, do
 
     if (m == 0 || n == 0 || k == 0)
         return;
+
+    GEMM_CHECK(transa, transb, m, n, k, lda, ldb, ldc)
+
     FC_GLOBAL(dgemm, DGEMM)(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
 }
 
@@ -49,6 +116,9 @@ void cgemm(char transa, char transb, int_t m, int_t n, int_t k, std::complex<flo
 
     if (m == 0 || n == 0 || k == 0)
         return;
+
+    GEMM_CHECK(transa, transb, m, n, k, lda, ldb, ldc)
+
     FC_GLOBAL(cgemm, CGEMM)(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
 }
 
@@ -58,6 +128,9 @@ void zgemm(char transa, char transb, int_t m, int_t n, int_t k, std::complex<dou
 
     if (m == 0 || n == 0 || k == 0)
         return;
+
+    GEMM_CHECK(transa, transb, m, n, k, lda, ldb, ldc)
+
     FC_GLOBAL(zgemm, ZGEMM)(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
 }
 

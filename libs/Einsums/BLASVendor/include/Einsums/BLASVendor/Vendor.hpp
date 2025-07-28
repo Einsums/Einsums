@@ -6,13 +6,14 @@
 #pragma once
 
 #include <Einsums/BLAS/Types.hpp>
+#include <Einsums/Config/ExportDefinitions.hpp>
 
 #include <complex>
 
 namespace einsums::blas::vendor {
 
-void initialize();
-void finalize();
+EINSUMS_EXPORT void initialize();
+EINSUMS_EXPORT void finalize();
 
 /*!
  * Performs matrix multiplication for general square matrices of type double.
@@ -187,6 +188,10 @@ auto dtrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, double const *
             int_t ldc, double *scale) -> int_t;
 auto strsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, float const *a, int_t lda, float const *b, int_t ldb, float *c, int_t ldc,
             float *scale) -> int_t;
+auto ztrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, std::complex<double> const *a, int_t lda, std::complex<double> const *b,
+            int_t ldb, std::complex<double> *c, int_t ldc, double *scale) -> int_t;
+auto ctrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, std::complex<float> const *a, int_t lda, std::complex<float> const *b,
+            int_t ldb, std::complex<float> *c, int_t ldc, float *scale) -> int_t;
 
 auto sorgqr(int_t m, int_t n, int_t k, float *a, int_t lda, float const *tau) -> int_t;
 auto dorgqr(int_t m, int_t n, int_t k, double *a, int_t lda, double const *tau) -> int_t;

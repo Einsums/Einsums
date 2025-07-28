@@ -63,18 +63,18 @@ void transpose(int_t m, int_t n, T const *in, int_t ldin, T *out, int_t ldout) {
     plan->execute();
 }
 
-template <OrderMajor Order, typename T>
-void transpose(int_t m, int_t n, std::vector<T> const &in, int_t ldin, T *out, int_t ldout) {
+template <OrderMajor Order, typename T, typename Alloc1>
+void transpose(int_t m, int_t n, std::vector<T, Alloc1> const &in, int_t ldin, T *out, int_t ldout) {
     transpose<Order>(m, n, in.data(), ldin, out, ldout);
 }
 
-template <OrderMajor Order, typename T>
-void transpose(int_t m, int_t n, T const *in, int_t ldin, std::vector<T> &out, int_t ldout) {
+template <OrderMajor Order, typename T, typename Alloc2>
+void transpose(int_t m, int_t n, T const *in, int_t ldin, std::vector<T, Alloc2> &out, int_t ldout) {
     transpose<Order>(m, n, in, ldin, out.data(), ldout);
 }
 
-template <OrderMajor Order, typename T>
-void transpose(int_t m, int_t n, std::vector<T> const &in, int_t ldin, std::vector<T> &out, int_t ldout) {
+template <OrderMajor Order, typename T, typename Alloc1, typename Alloc2>
+void transpose(int_t m, int_t n, std::vector<T, Alloc1> const &in, int_t ldin, std::vector<T, Alloc2> &out, int_t ldout) {
     transpose<Order>(m, n, in.data(), ldin, out.data(), ldout);
 }
 } // namespace einsums::blas::vendor
