@@ -80,7 +80,7 @@ auto initialize_tucker(std::vector<TTensor> &folds, std::vector<size_t> &ranks) 
 
         if (folds[i].dim(0) < rank) {
             // i is an std::integral_constant the "()" obtains the underlying value.
-            println_warn("dimension {} size {} is less than the requested decomposition rank {}", i(), folds[i].dim(0), rank);
+            EINSUMS_LOG_WARN("dimension {} size {} is less than the requested decomposition rank {}", i(), folds[i].dim(0), rank);
             /// @todo Need to pad U up to rank
         }
 
@@ -251,7 +251,7 @@ auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, std::vector<size_t> &rank
         iter += 1;
     }
     if (!converged) {
-        println_warn("Tucker HO-OI decomposition failed to converge in {} iterations", n_iter_max);
+        EINSUMS_LOG_WARN("Tucker HO-OI decomposition failed to converge in {} iterations", n_iter_max);
     }
 
     return std::make_tuple(g_tensor, factors);

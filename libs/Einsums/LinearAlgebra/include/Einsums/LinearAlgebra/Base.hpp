@@ -520,7 +520,7 @@ void direct_product(typename AType::ValueType alpha, AType const &A, BType const
 
     // Ensure the various tensors passed in are the same dimensionality
     if (((C->dims() != A.dims()) || C->dims() != B.dims())) {
-        println_abort("direct_product: at least one tensor does not have same dimensionality as destination");
+        EINSUMS_THROW_EXCEPTION(dimension_error, "direct_product: at least one tensor does not have same dimensionality as destination");
     }
 
     // Horrible hack. For some reason, in the for loop below, the result could be

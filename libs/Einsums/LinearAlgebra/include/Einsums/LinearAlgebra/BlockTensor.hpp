@@ -168,7 +168,7 @@ auto gesv(AType *A, BType *B) -> int {
         info_out |= info;
 
         if (info != 0) {
-            println_warn("gesv: Got non-zero return: %d", info);
+            EINSUMS_LOG_WARN("gesv: Got non-zero return: %d", info);
         }
     }
 

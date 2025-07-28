@@ -31,7 +31,7 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
     LabeledSection0();
 
     if (tensor.dim(0) != weights.dim(0)) {
-        println_abort("The first dimension of the tensor and the dimension of the weight DO NOT match");
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The first dimension of the tensor and the dimension of the weight DO NOT match");
     }
 
     auto weighted_tensor = create_tensor_like(tensor);
@@ -136,7 +136,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
         // println(U);
 
         if (folds[i].dim(0) < rank) {
-            // println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
+            // EINSUMS_LOG_WARN("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
             /// @todo Need to padd U up to rank
             Tensor<TType, 2> Unew  = create_random_tensor<TType>("Padded SVD Left Vectors", folds[i].dim(0), rank);
             Unew(All, Range{0, m}) = U(All, All);
@@ -246,7 +246,7 @@ auto parafac(TTensor<TType, TRank> const &tensor, size_t rank, int n_iter_max = 
         iter += 1;
     }
     if (!converged) {
-        println_warn("CP decomposition failed to converge in {} iterations", n_iter_max);
+        EINSUMS_LOG_WARN("CP decomposition failed to converge in {} iterations", n_iter_max);
     }
 
     // Return **non-normalized** factors
@@ -365,7 +365,7 @@ auto weighted_parafac(TTensor<TType, TRank> const &tensor, TTensor<TType, 1> con
         iter += 1;
     }
     if (!converged) {
-        println_warn("CP decomposition failed to converge in {} iterations", n_iter_max);
+        EINSUMS_LOG_WARN("CP decomposition failed to converge in {} iterations", n_iter_max);
     }
 
     // Return **non-normalized** factors

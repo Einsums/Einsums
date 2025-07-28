@@ -506,8 +506,7 @@ auto getrf(TensorType *A, std::vector<blas::int_t> *pivot) -> int {
     int result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
 
     if (result < 0) {
-        println_warn("getrf: argument {} has an invalid value", -result);
-        abort();
+        EINSUMS_LOG_WARN("getrf: argument {} has an invalid value", -result);
     }
 
     return result;
@@ -532,7 +531,7 @@ auto getri(TensorType *A, std::vector<blas::int_t> const &pivot) -> int {
     int result = blas::getri(A->dim(0), A->data(), A->stride(0), pivot.data());
 
     if (result < 0) {
-        println_warn("getri: argument {} has an invalid value", -result);
+        EINSUMS_LOG_WARN("getri: argument {} has an invalid value", -result);
     }
     return result;
 }
@@ -559,14 +558,16 @@ void invert(TensorType *A) {
         std::vector<blas::int_t> pivot(A->dim(0));
         int                      result = getrf(A, &pivot);
         if (result > 0) {
-            println_abort("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result,
-                          result);
+            EINSUMS_THROW_EXCEPTION(
+                std::runtime_error,
+                "invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result, result);
         }
 
         result = getri(A, pivot);
         if (result > 0) {
-            println_abort("invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed", result,
-                          result);
+            EINSUMS_THROW_EXCEPTION(
+                std::runtime_error,
+                "invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed", result, result);
         }
     }
 }
@@ -660,10 +661,11 @@ auto svd(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Te
 
     if (info != 0) {
         if (info < 0) {
-            println_abort("svd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
-                          m);
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "svd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info,
+                                    m, n, n, m);
         } else {
-            println_abort("svd: error value {}", info);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
         }
     }
 
@@ -695,10 +697,11 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
 
     if (info != 0) {
         if (info < 0) {
-            println_abort("svd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
-                          m);
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "svd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info,
+                                    m, n, n, m);
         } else {
-            println_abort("svd: error value {}", info);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
         }
     }
 
@@ -758,10 +761,11 @@ auto svd_dd(AType const &_A, Vectors job = Vectors::All)
 
     if (info != 0) {
         if (info < 0) {
-            println_abort("svd_dd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n,
-                          n, m);
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "svd_dd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}",
+                                    -info, m, n, n, m);
         } else {
-            println_abort("svd_dd: error value {}", info);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd_dd: error value {}", info);
         }
     }
 
@@ -817,7 +821,7 @@ auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename ATyp
     LabeledSection0();
 
     if (A.dim(0) != A.dim(1)) {
-        println_abort("Non-square matrix used as input of truncated_syev!");
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Non-square matrix used as input of truncated_syev!");
     }
 
     size_t n = A.dim(0);
@@ -898,14 +902,14 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
     LabeledSection0();
 
     if (A.dim(0) != A.dim(1)) {
-        println_abort("solve_continuous_lyapunov: Dimensions of A ({} x {}), do not match", A.dim(0), A.dim(1));
+        EINSUMS_THROW_EXCEPTION(dimension_error, "solve_continuous_lyapunov: Dimensions of A ({} x {}), do not match", A.dim(0), A.dim(1));
     }
     if (Q.dim(0) != Q.dim(1)) {
-        println_abort("solve_continuous_lyapunov: Dimensions of Q ({} x {}), do not match", Q.dim(0), Q.dim(1));
+        EINSUMS_THROW_EXCEPTION(dimension_error, "solve_continuous_lyapunov: Dimensions of Q ({} x {}), do not match", Q.dim(0), Q.dim(1));
     }
     if (A.dim(0) != Q.dim(0)) {
-        println_abort("solve_continuous_lyapunov: Dimensions of A ({} x {}) and Q ({} x {}), do not match", A.dim(0), A.dim(1), Q.dim(0),
-                      Q.dim(1));
+        EINSUMS_THROW_EXCEPTION(dimension_error, "solve_continuous_lyapunov: Dimensions of A ({} x {}) and Q ({} x {}), do not match",
+                                A.dim(0), A.dim(1), Q.dim(0), Q.dim(1));
     }
 
     size_t n = A.dim(0);
@@ -952,7 +956,7 @@ auto qr(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Ten
     blas::int_t info = blas::geqrf(m, n, A.data(), n, tau.data());
 
     if (info != 0) {
-        println_abort("{} parameter to geqrf has an illegal value.", -info);
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "{} parameter to geqrf has an illegal value.", -info);
     }
 
     // Extract Matrix Q out of QR factorization
@@ -981,7 +985,8 @@ auto q(AType const &qr, TauType const &tau) -> Tensor<typename AType::ValueType,
         info = blas::ungqr(m, m, p, Q.data(), m, tau.data());
     }
     if (info != 0) {
-        println_abort("{} parameter to orgqr has an illegal value. {} {} {}", -info, m, m, p);
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "{} parameter to orgqr has an illegal value. {} {} {}", print::ordinal(-info), m, m,
+                                p);
     }
 
     return Q;
