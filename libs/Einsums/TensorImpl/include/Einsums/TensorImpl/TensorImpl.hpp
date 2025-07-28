@@ -727,6 +727,13 @@ struct TensorImpl final {
     }
 
     /**
+     * @brief Get the smallest stride for the tensor. Equivalent to get_incx.
+     */
+    constexpr size_t get_incy() const {
+        return get_incx();
+    }
+
+    /**
      * @brief Gets the largest stride for a rank-2 tensor only.
      */
     constexpr size_t get_lda() const {
@@ -735,6 +742,20 @@ struct TensorImpl final {
         } else {
             return std::max(stride(0), stride(1));
         }
+    }
+
+    /**
+     * @brief Gets the largest stride for a rank-2 tensor only. Equivalent to get_lda
+     */
+    constexpr size_t get_ldb() const {
+        return get_lda();
+    }
+    
+    /**
+     * @brief Gets the largest stride for a rank-2 tensor only. Equivalent to get_lda.
+     */
+    constexpr size_t get_ldc() const {
+        return get_lda();
     }
 
     /**

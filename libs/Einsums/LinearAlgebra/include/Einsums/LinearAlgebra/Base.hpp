@@ -11,11 +11,15 @@
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/LinearAlgebra/Bases/gemm.hpp>
+#include <Einsums/LinearAlgebra/Bases/gemv.hpp>
 #include <Einsums/LinearAlgebra/Bases/sum_square.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
+
+#include "Einsums/Errors/Error.hpp"
+#include "Einsums/TensorImpl/TensorImpl.hpp"
 
 namespace einsums::linear_algebra::detail {
 
@@ -29,68 +33,15 @@ void sum_square(AType const &a, RemoveComplexT<typename AType::ValueType> *scale
     sum_square(a.impl(), scale, sumsq);
 }
 
-template <bool TransA, bool TransB, typename AType, typename BType, typename CType, typename AlphaType, typename BetaType>
-void gemm(AlphaType const alpha, einsums::detail::TensorImpl<AType> const &A, einsums::detail::TensorImpl<BType> const &B,
-          BetaType const beta, einsums::detail::TensorImpl<CType> *C) {
-    // Check for gemmability.
-    if constexpr (!TransA && !TransB) {
-        if (A.dim(1) != B.dim(0)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(1), B.dim(0));
-        }
-
-        if (A.dim(0) != C->dim(0)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(0), C->dim(0));
-        }
-
-        if (B.dim(1) != C->dim(1)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(1), C->dim(1));
-        }
-    } else if constexpr (TransA && !TransB) {
-        if (A.dim(0) != B.dim(0)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(0), B.dim(0));
-        }
-
-        if (A.dim(1) != C->dim(0)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(1), C->dim(0));
-        }
-
-        if (B.dim(1) != C->dim(1)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(1), C->dim(1));
-        }
-    } else if constexpr (!TransA && TransB) {
-        if (A.dim(1) != B.dim(1)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(1), B.dim(1));
-        }
-
-        if (A.dim(0) != C->dim(0)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(0), C->dim(0));
-        }
-
-        if (B.dim(0) != C->dim(1)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(0), C->dim(1));
-        }
-    } else if constexpr (TransA && TransB) {
-        if (A.dim(0) != B.dim(1)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(0), B.dim(1));
-        }
-
-        if (A.dim(1) != C->dim(0)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The first target dimensions do not match! Got {} and {}.", A.dim(1), C->dim(0));
-        }
-
-        if (B.dim(0) != C->dim(1)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The second target dimensions do not match! Got {} and {}.", B.dim(0), C->dim(1));
-        }
-    }
-
-    impl_gemm_no_conjugate(TransA ? 't' : 'n', TransB ? 't' : 'n', alpha, A, B, beta, C);
-}
-
 template <typename AType, typename BType, typename CType, typename AlphaType, typename BetaType>
 void gemm(char transA, char transB, AlphaType const alpha, einsums::detail::TensorImpl<AType> const &A,
           einsums::detail::TensorImpl<BType> const &B, BetaType const beta, einsums::detail::TensorImpl<CType> *C) {
     char const tA = std::tolower(transA), tB = std::tolower(transB);
     // Check for gemmability.
+    if (A.rank() != 2 || B.rank() != 2 || C->rank() != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "The inputs to gemm need to be matrices! Got ranks {}, {}, and {}.", A.rank(), B.rank(),
+                                C->rank());
+    }
     if (tA == 'n' && tB == 'n') {
         if (A.dim(1) != B.dim(0)) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The link dimensions do not match! Got {} and {}.", A.dim(1), B.dim(0));
@@ -144,32 +95,151 @@ void gemm(char transA, char transB, AlphaType const alpha, einsums::detail::Tens
     impl_gemm(transA, transB, alpha, A, B, beta, C);
 }
 
+template <bool TransA, bool TransB, typename AType, typename BType, typename CType, typename AlphaType, typename BetaType>
+void gemm(AlphaType const alpha, einsums::detail::TensorImpl<AType> const &A, einsums::detail::TensorImpl<BType> const &B,
+          BetaType const beta, einsums::detail::TensorImpl<CType> *C) {
+    gemm(TransA ? 't' : 'n', TransB ? 't' : 'n', alpha, A, B, beta, C);
+}
+
 template <bool TransA, bool TransB, typename U, CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
     requires requires {
-        requires RankTensorConcept<AType, 2>;
-        requires SameUnderlyingAndRank<AType, BType, CType>;
+        requires CoreBasicTensorConcept<AType>;
+        requires SameUnderlying<AType, BType, CType>;
         requires(std::convertible_to<U, typename AType::ValueType>);
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
     gemm<TransA, TransB>(alpha, A.impl(), B.impl(), beta, &C->impl());
 }
 
+template <typename U, CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
+    requires requires {
+        requires CoreBasicTensorConcept<AType>;
+        requires SameUnderlying<AType, BType, CType>;
+        requires(std::convertible_to<U, typename AType::ValueType>);
+    }
+void gemm(char transA, char transB, U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
+    gemm(transA, transB, alpha, A.impl(), B.impl(), beta, &C->impl());
+}
+
+template <typename AType, typename XType, typename YType, typename AlphaType, typename BetaType>
+void gemv(char transA, AlphaType alpha, einsums::detail::TensorImpl<AType> const &A, einsums::detail::TensorImpl<XType> const &X,
+          BetaType beta, einsums::detail::TensorImpl<YType> *Y) {
+    if (A.rank() != 2 || X.rank() != 1 || Y->rank() != 1) {
+        EINSUMS_THROW_EXCEPTION(
+            rank_error, "The ranks of the tensors passed to gemv are incompatible! Requires a matrix and to vectors. Got {}, {}, and {}.",
+            A.rank(), X.rank(), Y->rank());
+    }
+    if (std::tolower(transA) == 'n') {
+        if (A.dim(1) != Y->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error,
+                                    "The dimensions of the input matrix and output tensor do not match! Got {} and {}.", A.dim(1),
+                                    Y->dim(0));
+        }
+        if (A.dim(0) != X.dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The dimensions of the input matrix and input tensor do not match! Got {} and {}.",
+                                    A.dim(0), X.dim(0));
+        }
+    } else {
+        if (A.dim(0) != Y->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error,
+                                    "The dimensions of the input matrix and output tensor do not match! Got {} and {}.", A.dim(0),
+                                    Y->dim(0));
+        }
+        if (A.dim(1) != X.dim(0)) {
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The dimensions of the input matrix and input tensor do not match! Got {} and {}.",
+                                    A.dim(1), X.dim(0));
+        }
+    }
+    impl_gemv(transA, alpha, A, X, beta, Y);
+}
+
+template <bool TransA, typename AType, typename XType, typename YType, typename AlphaType, typename BetaType>
+void gemv(AlphaType alpha, einsums::detail::TensorImpl<AType> const &A, einsums::detail::TensorImpl<XType> const &X, BetaType beta,
+          einsums::detail::TensorImpl<YType> *Y) {
+
+    gemv((TransA) ? 't' : 'n', alpha, A, X, beta, Y);
+}
+
 template <bool TransA, typename U, CoreBasicTensorConcept AType, CoreBasicTensorConcept XType, CoreBasicTensorConcept YType>
     requires requires {
         requires SameUnderlying<AType, XType, YType>;
-        requires RankTensorConcept<AType, 2>;
-        requires RankTensorConcept<XType, 1>;
-        requires RankTensorConcept<YType, 1>;
+        requires CoreBasicTensorConcept<AType>;
+        requires CoreBasicTensorConcept<XType>;
+        requires CoreBasicTensorConcept<YType>;
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
-    auto m = A.dim(0), n = A.dim(1);
-    auto lda  = A.stride(0);
-    auto incx = z.stride(0);
-    auto incy = y->stride(0);
+    gemv<TransA>(alpha, A.impl(), z.impl(), beta, &y->impl());
+}
 
-    blas::gemv(TransA ? 't' : 'n', m, n, static_cast<typename AType::ValueType>(alpha), A.data(), lda, z.data(), incx,
-               static_cast<typename AType::ValueType>(beta), y->data(), incy);
+template <typename U, CoreBasicTensorConcept AType, CoreBasicTensorConcept XType, CoreBasicTensorConcept YType>
+    requires requires {
+        requires SameUnderlying<AType, XType, YType>;
+        requires CoreBasicTensorConcept<AType>;
+        requires CoreBasicTensorConcept<XType>;
+        requires CoreBasicTensorConcept<YType>;
+        requires std::convertible_to<U, typename AType::ValueType>;
+    }
+void gemv(char transA, U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
+    gemv(transA, alpha, A.impl(), z.impl(), beta, &y->impl());
+}
+
+template <bool ComputeEigenvectors = true, typename AType>
+void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<RemoveComplexT<AType>> *W) {
+    if (A->rank() != 2 || W->rank() != 1) {
+        EINSUMS_THROW_EXCEPTION(rank_error,
+                                "The inputs to syev/heev need to be a pointer to a matrix and a pointer to a vector. Got ranks {} and {}.",
+                                A->rank(), W->rank());
+    }
+
+    if (A->dim(0) != A->dim(1)) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The input matrix to syev/heev needs to be square and symmetric.");
+    }
+
+    if (A->dim(0) != W->dim(0)) {
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The input and output to syev/heev have incompatible dimensions.");
+    }
+
+    if (A->dim(0) == 0) {
+        return;
+    }
+
+    auto n     = A->dim(0);
+    auto lda   = A->stride(0);
+    int  lwork = 3 * n;
+
+    BufferVector<AType> work(lwork);
+
+    if constexpr (IsComplexV<AType>) {
+        BufferVector<RemoveComplexT<AType>> rwork(std::max((ptrdiff_t)1, 3 * (ptrdiff_t)n - 2));
+        if (A->is_gemmable(&lda)) {
+            blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
+        } else {
+            // Could make our own QR algorithm. Too lazy right now.
+            Tensor<AType, 2> temp{"heev Temporary", A->dim(0), A->dim(1)};
+
+            einsums::detail::copy_to(*A, temp.impl());
+
+            blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, temp.data(), temp.impl().get_lda(), W->data(), work.data(), lwork,
+                       rwork.data());
+        }
+    } else {
+        if (A->is_gemmable(&lda)) {
+            blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+        } else {
+            // Could make our own QR algorithm. Too lazy right now.
+            Tensor<AType, 2> temp{"syev Temporary", A->dim(0), A->dim(1)};
+
+            einsums::detail::copy_to(*A, temp.impl());
+
+            blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, temp.data(), temp.impl().get_lda(), W->data(), work.data(), lwork);
+        }
+    }
+}
+
+template <bool ComputeEigenvectors = true, typename AType>
+void heev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<AType> *W) {
+    syev(A, W);
 }
 
 template <bool ComputeEigenvectors = true, CoreBasicTensorConcept AType, CoreBasicTensorConcept WType>
@@ -180,14 +250,7 @@ template <bool ComputeEigenvectors = true, CoreBasicTensorConcept AType, CoreBas
         requires NotComplex<AType>;
     }
 void syev(AType *A, WType *W) {
-    assert(A->dim(0) == A->dim(1));
-
-    auto                                   n     = A->dim(0);
-    auto                                   lda   = A->stride(0);
-    int                                    lwork = 3 * n;
-    std::vector<typename AType::ValueType> work(lwork);
-
-    blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+    syev<ComputeEigenvectors>(&A->impl(), &W->impl());
 }
 
 template <bool ComputeLeftRightEigenvectors = true, CoreBasicTensorConcept AType, CoreBasicTensorConcept WType>
@@ -216,15 +279,7 @@ template <bool ComputeEigenvectors = true, CoreBasicTensorConcept AType, CoreBas
         requires VectorConcept<WType>;
     }
 void heev(AType *A, WType *W) {
-    EINSUMS_ASSERT(A->dim(0) == A->dim(1));
-
-    auto                                   n     = A->dim(0);
-    auto                                   lda   = A->stride(0);
-    int                                    lwork = 2 * n;
-    std::vector<typename AType::ValueType> work(lwork);
-    std::vector<typename WType::ValueType> rwork(3 * n);
-
-    blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
+    syev<ComputeEigenvectors>(&A->impl(), &W->impl());
 }
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
