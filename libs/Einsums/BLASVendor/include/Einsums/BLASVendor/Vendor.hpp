@@ -52,6 +52,12 @@ void zaxpby(int_t const n, std::complex<double> const a, std::complex<double> co
 auto ssyev(char job, char uplo, int_t n, float *a, int_t lda, float *w, float *work, int_t lwork) -> int_t;
 auto dsyev(char job, char uplo, int_t n, double *a, int_t lda, double *w, double *work, int_t lwork) -> int_t;
 
+/**
+ * Other diagonalization routines.
+ */
+auto ssterf(int_t n, float *d, float *e) -> int_t;
+auto dsterf(int_t n, double *d, double *e) -> int_t;
+
 /*!
  * Computes all eigenvalues and left and right eigenvectors of a general matrix.
  */

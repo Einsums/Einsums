@@ -209,6 +209,27 @@ inline auto syev<double>(char job, char uplo, int_t n, double *a, int_t lda, dou
     return detail::dsyev(job, uplo, n, a, lda, w, work, lwork);
 }
 
+/**
+ * Performs diagonalization on symmetric tridiagonal matrices.
+ */
+namespace detail {
+auto EINSUMS_EXPORT ssterf(int_t n, float *d, float *e) -> int_t;
+auto EINSUMS_EXPORT dsterf(int_t n, double *d, double *e) -> int_t;
+} // namespace detail
+
+template <typename T>
+auto sterf(int_t n, T *d, T *e) -> int_t;
+
+template <>
+inline auto sterf<float>(int_t n, float *d, float *e) -> int_t {
+    return detail::ssterf(n, d, e);
+}
+
+template <>
+inline auto sterf<double>(int_t n, double *d, double *e) -> int_t {
+    return detail::dsterf(n, d, e);
+}
+
 /*!
  * Performs matrix diagonalization on a general matrix.
  */

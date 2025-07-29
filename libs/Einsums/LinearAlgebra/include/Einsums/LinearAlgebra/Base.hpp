@@ -13,6 +13,7 @@
 #include <Einsums/LinearAlgebra/Bases/gemm.hpp>
 #include <Einsums/LinearAlgebra/Bases/gemv.hpp>
 #include <Einsums/LinearAlgebra/Bases/sum_square.hpp>
+#include <Einsums/LinearAlgebra/Bases/syev.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
@@ -215,24 +216,13 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
         if (A->is_gemmable(&lda)) {
             blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
         } else {
-            // Could make our own QR algorithm. Too lazy right now.
-            Tensor<AType, 2> temp{"heev Temporary", A->dim(0), A->dim(1)};
-
-            einsums::detail::copy_to(*A, temp.impl());
-
-            blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, temp.data(), temp.impl().get_lda(), W->data(), work.data(), lwork,
-                       rwork.data());
+            impl_strided_heev((ComputeEigenvectors) ? 'v' : 'n', A, W);
         }
     } else {
         if (A->is_gemmable(&lda)) {
             blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
         } else {
-            // Could make our own QR algorithm. Too lazy right now.
-            Tensor<AType, 2> temp{"syev Temporary", A->dim(0), A->dim(1)};
-
-            einsums::detail::copy_to(*A, temp.impl());
-
-            blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, temp.data(), temp.impl().get_lda(), W->data(), work.data(), lwork);
+            impl_strided_syev((ComputeEigenvectors) ? 'v' : 'n', A, W);
         }
     }
 }

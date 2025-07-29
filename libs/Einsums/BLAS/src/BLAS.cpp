@@ -56,6 +56,14 @@ auto dsyev(char job, char uplo, int_t n, double *a, int_t lda, double *w, double
     return vendor::dsyev(job, uplo, n, a, lda, w, work, lwork);
 }
 
+auto ssterf(int_t n, float *d, float *e) -> int_t {
+    return vendor::ssterf(n, d, e);
+}
+
+auto dsterf(int_t n, double *d, double *e) -> int_t {
+    return vendor::dsterf(n, d, e);
+}
+
 auto sgeev(char jobvl, char jobvr, int_t n, float *a, int_t lda, std::complex<float> *w, float *vl, int_t ldvl, float *vr, int_t ldvr)
     -> int_t {
     return vendor::sgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
