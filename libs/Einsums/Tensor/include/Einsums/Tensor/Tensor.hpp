@@ -2033,190 +2033,51 @@ auto create_tensor(Args... args) {
     return Tensor<Type, sizeof...(Args)>{"Temporary", args...};
 }
 
-namespace detail {
-
-/**
- * Count the number of digits in a number.
- */
-template <std::integral T>
-auto ndigits(T number) -> int {
-    int digits{0};
-    if (number < 0)
-        digits = 1; // Remove this line if '-' counts as a digit
-    while (number) {
-        number /= 10;
-        digits++;
-    }
-    return digits;
-}
-} // namespace detail
-
 #ifndef DOXYGEN
 template <FileOrOStream Output, RankTensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
-    using T                    = typename AType::ValueType;
-    constexpr std::size_t Rank = AType::Rank;
-
     fprintln(fp, "Name: {}", A.name());
     {
-        print::Indent const indent{};
+        print::Indent indent;
+        if constexpr (!TensorViewConcept<AType>)
+            fprintln(fp, "Type: In Core Tensor");
+        else
+            fprintln(fp, "Type: In Core Tensor View");
+    }
 
-        if constexpr (CoreTensorConcept<AType>) {
-            if constexpr (!TensorViewConcept<AType>)
-                fprintln(fp, "Type: In Core Tensor");
-            else
-                fprintln(fp, "Type: In Core Tensor View");
-#    if defined(EINSUMS_COMPUTE_CODE)
-        } else if constexpr (DeviceTensorConcept<AType>) {
-            if constexpr (!TensorViewConcept<AType>)
-                fprintln(fp, "Type: Device Tensor");
-            else
-                fprintln(fp, "Type: Device Tensor View");
-#    endif
-        } else if constexpr (DiskTensorConcept<AType>) {
-            fprintln(fp, "Type: Disk Tensor");
-        } else {
-            fprintln(fp, "Type: {}", type_name<AType>());
-        }
+    if constexpr (AType::Rank == 0) {
+        {
+            print::Indent const indent{};
 
-        fprintln(fp, "Data Type: {}", type_name<typename AType::ValueType>());
+            fprintln(fp, "Data Type: {}", type_name<typename AType::ValueType>());
 
-        if constexpr (Rank > 0) {
-            std::ostringstream oss;
-            for (size_t i = 0; i < Rank; i++) {
-                oss << A.dim(i) << " ";
-            }
-            fprintln(fp, "Dims{{{}}}", oss.str().c_str());
-        }
+            if (options.full_output) {
+                fprintln(fp);
 
-        if constexpr (Rank > 0 && einsums::BasicTensorConcept<AType>) {
-            std::ostringstream oss;
-            for (size_t i = 0; i < Rank; i++) {
-                oss << A.stride(i) << " ";
-            }
-            fprintln(fp, "Strides{{{}}}", oss.str());
-        }
-
-        if (options.full_output) {
-            fprintln(fp);
-
-            if constexpr (Rank == 0) {
-                T value = A;
+                typename AType::ValueType value = A;
 
                 std::ostringstream oss;
                 oss << "              ";
-                if constexpr (std::is_floating_point_v<T>) {
+                if constexpr (std::is_floating_point_v<typename AType::ValueType>) {
                     if (std::abs(value) < 1.0E-4) {
                         oss << fmt::format("{:14.4e} ", value);
                     } else {
                         oss << fmt::format("{:14.8f} ", value);
                     }
-                } else if constexpr (IsComplexV<T>) {
+                } else if constexpr (IsComplexV<typename AType::ValueType>) {
                     oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                 } else
                     oss << fmt::format("{:14} ", value);
 
                 fprintln(fp, "{}", oss.str());
                 fprintln(fp);
-#    if !defined(EINSUMS_COMPUTE_CODE)
-            } else if constexpr (Rank > 1 && einsums::CoreTensorConcept<AType>) {
-#    else
-            } else if constexpr (Rank > 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
-#    endif
-
-                Stride<Rank - 1> index_strides;
-                size_t           elements = dims_to_strides(einsums::slice_array<Rank - 1>(A.dims()), index_strides);
-
-                auto final_dim = A.dim(Rank - 1);
-                auto ndigits   = detail::ndigits(final_dim);
-
-                for (size_t item = 0; item < elements; item++) {
-                    std::array<int64_t, Rank - 1> target_combination;
-
-                    sentinel_to_indices(item, index_strides, target_combination);
-
-                    std::ostringstream oss;
-                    for (int j = 0; j < final_dim; j++) {
-                        if (j % options.width == 0) {
-                            std::ostringstream tmp;
-                            tmp << fmt::format("{}", fmt::join(target_combination, ", "));
-                            if (final_dim >= j + options.width)
-                                oss << fmt::format(
-                                    "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
-                            else
-                                oss << fmt::format("{:<14}",
-                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
-                        }
-                        auto new_tuple = std::tuple_cat(target_combination, std::tuple(j));
-                        T    value     = std::apply(A, new_tuple);
-                        if (std::abs(value) > 1.0E+10) {
-                            if constexpr (std::is_floating_point_v<T>)
-                                oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
-                            else if constexpr (IsComplexV<T>)
-                                oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
-                                    << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
-                            else
-                                oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
-                        } else {
-                            if constexpr (std::is_floating_point_v<T>) {
-                                if (std::abs(value) < 1.0E-4) {
-                                    oss << fmt::format("{:14.4e} ", value);
-                                } else {
-                                    oss << fmt::format("{:14.8f} ", value);
-                                }
-                            } else if constexpr (IsComplexV<T>) {
-                                oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
-                            } else
-                                oss << fmt::format("{:14} ", value);
-                        }
-                        if (j % options.width == options.width - 1 && j != final_dim - 1) {
-                            oss << "\n";
-                        }
-                    }
-                    fprintln(fp, "{}", oss.str());
-                    fprintln(fp);
-                }
-#    if !defined(EINSUMS_COMPUTE_CODE)
-            } else if constexpr (Rank == 1 && einsums::CoreTensorConcept<AType>) {
-#    else
-            } else if constexpr (Rank == 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
-#    endif
-                size_t elements = A.size();
-
-                for (size_t item = 0; item < elements; item++) {
-                    std::ostringstream oss;
-                    oss << "(";
-                    oss << fmt::format("{}, ", item);
-                    oss << "): ";
-
-                    T value = A(item);
-                    if (std::abs(value) > 1.0E+5) {
-                        if constexpr (std::is_floating_point_v<T>)
-                            oss << fmt::format(fg(fmt::color::white) | bg(fmt::color::red), "{:14.8f} ", value);
-                        else if constexpr (IsComplexV<T>) {
-                            oss << fmt::format(fg(color::white) | bg(color::red), "({:14.8f} + {:14.8f})", value.real(), value.imag());
-                        } else
-                            oss << fmt::format(fg(color::white) | bg(color::red), "{:14} ", value);
-                    } else {
-                        if constexpr (std::is_floating_point_v<T>)
-                            if (std::abs(value) < 1.0E-4) {
-                                oss << fmt::format("{:14.4e} ", value);
-                            } else {
-                                oss << fmt::format("{:14.8f} ", value);
-                            }
-                        else if constexpr (IsComplexV<T>) {
-                            oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
-                        } else
-                            oss << fmt::format("{:14} ", value);
-                    }
-
-                    fprintln(fp, "{}", oss.str());
-                }
             }
         }
+        fprintln(fp);
+    } else {
+        fprintln(fp, A.impl(), options);
     }
-    fprintln(fp);
 }
 
 template <RankTensorConcept AType>

@@ -19,7 +19,7 @@ void test_syev() {
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
 
-    //A.vector_data() = VectorData<T>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+    // A.vector_data() = VectorData<T>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
 
     A(0, 0) = 1.0;
     A(0, 1) = 2.0;
@@ -48,16 +48,36 @@ void test_strided_syev() {
 
     TensorView<T, 2> A{data.data(), Dim<2>{3, 3}, Stride<2>{6, 2}};
 
+    auto data2 = VectorData<T>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+
+    TensorView<T, 2> A2{data2.data(), Dim<2>{3, 3}, Stride<2>{3, 1}};
+
     REQUIRE(A.stride(0) == 6);
 
     REQUIRE(A(1, 1) == 4.0);
     REQUIRE(A(2, 1) == 5.0);
 
-    einsums::linear_algebra::syev(&A, &x);
+    einsums::linear_algebra::syev<true>(&A2, &x);
+    println(A2);
+
+    einsums::linear_algebra::syev<true>(&A, &x);
 
     CHECK_THAT(x(0), Catch::Matchers::WithinRel(-0.515729, 0.00001));
     CHECK_THAT(x(1), Catch::Matchers::WithinRel(+0.170915, 0.00001));
     CHECK_THAT(x(2), Catch::Matchers::WithinRel(+11.344814, 0.00001));
+
+    auto check = VectorData<double>{-0.73697623, 0.59100905, -0.32798528, -0.32798528, -0.73697623,
+                                    -0.59100905, 0.59100905, 0.32798528,  -0.73697623};
+
+    CHECK_THAT(A(0, 0), Catch::Matchers::WithinRel(check[0], 0.00001));
+    CHECK_THAT(A(0, 1), Catch::Matchers::WithinRel(check[1], 0.00001));
+    CHECK_THAT(A(0, 2), Catch::Matchers::WithinRel(check[2], 0.00001));
+    CHECK_THAT(A(1, 0), Catch::Matchers::WithinRel(check[3], 0.00001));
+    CHECK_THAT(A(1, 1), Catch::Matchers::WithinRel(check[4], 0.00001));
+    CHECK_THAT(A(1, 2), Catch::Matchers::WithinRel(check[5], 0.00001));
+    CHECK_THAT(A(2, 0), Catch::Matchers::WithinRel(check[6], 0.00001));
+    CHECK_THAT(A(2, 1), Catch::Matchers::WithinRel(check[7], 0.00001));
+    CHECK_THAT(A(2, 2), Catch::Matchers::WithinRel(check[8], 0.00001));
 }
 
 TEMPLATE_TEST_CASE("syev", "[linear-algebra]", float, double) {

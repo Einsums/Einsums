@@ -6,14 +6,34 @@
 #pragma once
 
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
+#include <Einsums/Concepts/File.hpp>
 #include <Einsums/Concepts/NamedRequirements.hpp>
 #include <Einsums/Logging.hpp>
+#include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
 #include <type_traits>
 
+#include "Einsums/Concepts/Complex.hpp"
+#include "Einsums/Print.hpp"
+
 namespace einsums {
+
+namespace detail {
+template <typename T>
+    requires(!std::is_const_v<T>)
+struct TensorImpl;
+}
+
+#ifndef DOXYGEN
+// Forward declaration of the Tensor printing function.
+template <typename T>
+void println(detail::TensorImpl<T> const &A, TensorPrintOptions options = {});
+
+template <FileOrOStream Output, typename T>
+void fprintln(Output &fp, detail::TensorImpl<T> const &A, TensorPrintOptions options = {});
+#endif
 namespace detail {
 
 /**
@@ -298,12 +318,12 @@ struct TensorImpl final {
     /**
      * @brief Get the dimensions of the tensor.
      */
-    constexpr BufferVector<size_t> dims() const noexcept { return _dims; }
+    constexpr BufferVector<size_t> const &dims() const noexcept { return _dims; }
 
     /**
      * @brief Get the strides of the tensor.
      */
-    constexpr BufferVector<size_t> strides() const noexcept { return _strides; }
+    constexpr BufferVector<size_t> const &strides() const noexcept { return _strides; }
 
     /**
      * @brief Get the size of the tensor.
@@ -729,9 +749,7 @@ struct TensorImpl final {
     /**
      * @brief Get the smallest stride for the tensor. Equivalent to get_incx.
      */
-    constexpr size_t get_incy() const {
-        return get_incx();
-    }
+    constexpr size_t get_incy() const { return get_incx(); }
 
     /**
      * @brief Gets the largest stride for a rank-2 tensor only.
@@ -747,16 +765,12 @@ struct TensorImpl final {
     /**
      * @brief Gets the largest stride for a rank-2 tensor only. Equivalent to get_lda
      */
-    constexpr size_t get_ldb() const {
-        return get_lda();
-    }
-    
+    constexpr size_t get_ldb() const { return get_lda(); }
+
     /**
      * @brief Gets the largest stride for a rank-2 tensor only. Equivalent to get_lda.
      */
-    constexpr size_t get_ldc() const {
-        return get_lda();
-    }
+    constexpr size_t get_ldc() const { return get_lda(); }
 
     /**
      * @brief Checks to see if a tensor is general row-major.
@@ -1706,4 +1720,167 @@ struct TensorImpl final {
 };
 
 } // namespace detail
+
+namespace detail {
+
+/**
+ * Count the number of digits in a number.
+ */
+template <std::integral T>
+auto ndigits(T number) -> int {
+    int digits{0};
+    if (number < 0)
+        digits = 1; // Remove this line if '-' counts as a digit
+    while (number) {
+        number /= 10;
+        digits++;
+    }
+    return digits;
+}
+} // namespace detail
+
+#ifndef DOXYGEN
+template <FileOrOStream Output, typename T>
+void fprintln(Output &fp, detail::TensorImpl<T> const &A, TensorPrintOptions options) {
+    size_t Rank = A.rank();
+
+    {
+        print::Indent const indent{};
+
+        fprintln(fp, "Data Type: {}", type_name<T>());
+
+        if (Rank > 0) {
+            std::ostringstream oss;
+            for (size_t i = 0; i < Rank; i++) {
+                oss << A.dim(i) << " ";
+            }
+            fprintln(fp, "Dims{{{}}}", oss.str().c_str());
+        }
+
+        if (Rank > 0) {
+            std::ostringstream oss;
+            for (size_t i = 0; i < Rank; i++) {
+                oss << A.stride(i) << " ";
+            }
+            fprintln(fp, "Strides{{{}}}", oss.str());
+        }
+
+        if (options.full_output) {
+            fprintln(fp);
+
+            if (Rank == 0) {
+                T value = A.subscript();
+
+                std::ostringstream oss;
+                oss << "              ";
+                if constexpr (std::is_floating_point_v<T>) {
+                    if (std::abs(value) < 1.0E-4) {
+                        oss << fmt::format("{:14.4e} ", value);
+                    } else {
+                        oss << fmt::format("{:14.8f} ", value);
+                    }
+                } else if constexpr (IsComplexV<T>) {
+                    oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                } else
+                    oss << fmt::format("{:14} ", value);
+
+                fprintln(fp, "{}", oss.str());
+                fprintln(fp);
+            } else if (Rank > 1) {
+                BufferVector<size_t> index_strides(Rank - 1);
+                size_t elements = dims_to_strides(BufferVector<size_t>(A.dims().begin(), std::prev(A.dims().end())), index_strides);
+
+                auto                 final_dim = A.dim(Rank - 1);
+                auto                 ndigits   = detail::ndigits(final_dim);
+                BufferVector<size_t> target_combination(Rank);
+
+                for (size_t item = 0; item < elements; item++) {
+                    sentinel_to_indices(item, index_strides, target_combination);
+
+                    std::ostringstream oss;
+                    for (int j = 0; j < final_dim; j++) {
+                        if (j % options.width == 0) {
+                            std::ostringstream tmp;
+                            tmp << fmt::format("{}", fmt::join(target_combination.begin(), std::prev(target_combination.end()), ", "));
+                            if (final_dim >= j + options.width)
+                                oss << fmt::format(
+                                    "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
+                            else
+                                oss << fmt::format("{:<14}",
+                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
+                        }
+                        target_combination.at(Rank - 1) = j;
+                        T value                         = A.subscript(target_combination);
+                        if (std::abs(value) > 1.0E+10) {
+                            if constexpr (std::is_floating_point_v<T>)
+                                oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
+                            else if constexpr (IsComplexV<T>)
+                                oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
+                                    << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
+                            else
+                                oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
+                        } else {
+                            if constexpr (std::is_floating_point_v<T>) {
+                                if (std::abs(value) < 1.0E-4) {
+                                    oss << fmt::format("{:14.4e} ", value);
+                                } else {
+                                    oss << fmt::format("{:14.8f} ", value);
+                                }
+                            } else if constexpr (IsComplexV<T>) {
+                                oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                            } else
+                                oss << fmt::format("{:14} ", value);
+                        }
+                        if (j % options.width == options.width - 1 && j != final_dim - 1) {
+                            oss << "\n";
+                        }
+                    }
+                    fprintln(fp, "{}", oss.str());
+                    fprintln(fp);
+                }
+            } else if (Rank == 1) {
+
+                size_t elements = A.size();
+
+                for (size_t item = 0; item < elements; item++) {
+                    std::ostringstream oss;
+                    oss << "(";
+                    oss << fmt::format("{}, ", item);
+                    oss << "): ";
+
+                    T value = A.subscript(item);
+                    if (std::abs(value) > 1.0E+5) {
+                        if constexpr (std::is_floating_point_v<T>)
+                            oss << fmt::format(fg(fmt::color::white) | bg(fmt::color::red), "{:14.8f} ", value);
+                        else if constexpr (IsComplexV<T>) {
+                            oss << fmt::format(fg(color::white) | bg(color::red), "({:14.8f} + {:14.8f})", value.real(), value.imag());
+                        } else
+                            oss << fmt::format(fg(color::white) | bg(color::red), "{:14} ", value);
+                    } else {
+                        if constexpr (std::is_floating_point_v<T>)
+                            if (std::abs(value) < 1.0E-4) {
+                                oss << fmt::format("{:14.4e} ", value);
+                            } else {
+                                oss << fmt::format("{:14.8f} ", value);
+                            }
+                        else if constexpr (IsComplexV<T>) {
+                            oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                        } else
+                            oss << fmt::format("{:14} ", value);
+                    }
+
+                    fprintln(fp, "{}", oss.str());
+                }
+            }
+        }
+    }
+    fprintln(fp);
+}
+
+template <typename T>
+void println(detail::TensorImpl<T> const &A, TensorPrintOptions options) {
+    fprintln(std::cout, A, options);
+}
+#endif
+
 } // namespace einsums
