@@ -19,7 +19,39 @@ void test_syev() {
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
 
-    A.vector_data() = VectorData<T>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+    //A.vector_data() = VectorData<T>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+
+    A(0, 0) = 1.0;
+    A(0, 1) = 2.0;
+    A(0, 2) = 3.0;
+    A(1, 0) = 2.0;
+    A(1, 1) = 4.0;
+    A(1, 2) = 5.0;
+    A(2, 0) = 3.0;
+    A(2, 1) = 5.0;
+    A(2, 2) = 6.0;
+
+    REQUIRE(A(0, 0) == 1.0);
+
+    einsums::linear_algebra::syev(&A, &x);
+
+    CHECK_THAT(x(0), Catch::Matchers::WithinRel(-0.515729, 0.00001));
+    CHECK_THAT(x(1), Catch::Matchers::WithinRel(+0.170915, 0.00001));
+    CHECK_THAT(x(2), Catch::Matchers::WithinRel(+11.344814, 0.00001));
+}
+
+template <typename T>
+void test_strided_syev() {
+    auto x = create_tensor<T>("x", 3);
+
+    auto data = VectorData<T>{1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 2.0, 0.0, 4.0, 0.0, 5.0, 0.0, 3.0, 0.0, 5.0, 0.0, 6.0, 0.0};
+
+    TensorView<T, 2> A{data.data(), Dim<2>{3, 3}, Stride<2>{6, 2}};
+
+    REQUIRE(A.stride(0) == 6);
+
+    REQUIRE(A(1, 1) == 4.0);
+    REQUIRE(A(2, 1) == 5.0);
 
     einsums::linear_algebra::syev(&A, &x);
 
@@ -30,6 +62,7 @@ void test_syev() {
 
 TEMPLATE_TEST_CASE("syev", "[linear-algebra]", float, double) {
     test_syev<TestType>();
+    test_strided_syev<TestType>();
 }
 
 TEMPLATE_TEST_CASE("definite and semidefinite", "[linear-algebra]", float, double) {

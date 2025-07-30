@@ -214,15 +214,33 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
     if constexpr (IsComplexV<AType>) {
         BufferVector<RemoveComplexT<AType>> rwork(std::max((ptrdiff_t)1, 3 * (ptrdiff_t)n - 2));
         if (A->is_gemmable(&lda)) {
-            blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
+            if (W->get_incx() != 1) {
+                BufferVector<RemoveComplexT<AType>> temp(A->dim(0));
+                blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, temp.data(), work.data(), lwork, rwork.data());
+
+                for (int i = 0; i < W->dim(0); i++) {
+                    W->subscript(i) = temp[i];
+                }
+            } else {
+                blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
+            }
         } else {
-            impl_strided_heev((ComputeEigenvectors) ? 'v' : 'n', A, W);
+            impl_strided_heev((ComputeEigenvectors) ? 'v' : 'n', A, W, work.data(), rwork.data());
         }
     } else {
         if (A->is_gemmable(&lda)) {
-            blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+            if (W->get_incx() != 1) {
+                BufferVector<RemoveComplexT<AType>> temp(A->dim(0));
+                blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, temp.data(), work.data(), lwork);
+
+                for (int i = 0; i < W->dim(0); i++) {
+                    W->subscript(i) = temp[i];
+                }
+            } else {
+                blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+            }
         } else {
-            impl_strided_syev((ComputeEigenvectors) ? 'v' : 'n', A, W);
+            impl_strided_syev((ComputeEigenvectors) ? 'v' : 'n', A, W, work.data());
         }
     }
 }

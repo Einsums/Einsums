@@ -28,7 +28,7 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
         }
         blas::lassq(dim - k - 1, A->data(k + 1, k), col_stride, &scale, &alpha_sq);
 
-        alpha *= std::sqrt(alpha) * scale;
+        alpha *= std::sqrt(alpha_sq) * scale;
 
         // Calculate r.
         T r = std::sqrt((alpha_sq * scale * scale - key * alpha) / 2);
@@ -134,11 +134,11 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
         // key.
         blas::lassq(dim - k - 1, A->data(k + 1, k), col_stride, &scale, &alpha_sq);
 
-        alpha *= std::sqrt(alpha) * scale;
+        alpha *= std::sqrt(alpha_sq) * scale;
 
         // Calculate tau.
         RemoveComplexT<T> r = std::sqrt(alpha_sq * scale * scale - std::abs(key) * alpha);
-        tau[k]              = -((std::conj(key) + alpha) / (key + alpha) + 1) / (r * r);
+        tau[k]              = -((std::conj(key) + alpha) / (key + alpha) + T{1.0}) / (r * r);
 
         // Now, we need to calculate the values of the vectors.
 
@@ -169,7 +169,7 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
         }
 
         // Scale by the scale factor.
-        blas::scal(dim, std::conj(tau), vec2, 1);
+        blas::scal(dim, std::conj(tau[k]), vec2, 1);
 
         // Next, update A to be A - tau^* Avv^H.
         // The result of Avv^H is that the first k + 1 elements of vec1 are zero,
@@ -197,7 +197,7 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
         }
 
         // Scale by the scale factor.
-        blas::scal(dim, tau, vec2, 1);
+        blas::scal(dim, tau[k], vec2, 1);
 
         // Finally, update A to be (A - 2Avv^T) - 2vv^T(A - 2Avv^T), which is (I - 2vv^T)A(I - 2vv^T).
         EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
@@ -343,7 +343,7 @@ void givens_params(T x, T y, T *s, T *c, T *r) {
 template <typename T>
 void impl_compute_2by2_eigen(T *Q, size_t row_stride, size_t col_stride, RemoveComplexT<T> *diag, RemoveComplexT<T> *subdiag) {
     // Truly diagonal matrix.
-    if (*subdiag == T{0.0}) {
+    if (*subdiag == RemoveComplexT<T>{0.0}) {
         // Check if we need to swap the eigenvalues.
         if (diag[0] > diag[1]) {
             std::swap(diag[0], diag[1]);
@@ -355,17 +355,18 @@ void impl_compute_2by2_eigen(T *Q, size_t row_stride, size_t col_stride, RemoveC
     }
 
     // Set up as a polynomial.
-    T const b = diag[0] + diag[1], c = diag[0] * diag[1] - subdiag[0] * subdiag[0];
+    RemoveComplexT<T> const b = diag[0] + diag[1], c = diag[0] * diag[1] - subdiag[0] * subdiag[0];
 
     // Find the eigenvalues using the quadratic formula.
-    T const l1 = (-b - std::sqrt(b * b - 4 * c)) / 2;
-    T const l2 = (-b + std::sqrt(b * b - 4 * c)) / 2;
+    RemoveComplexT<T> const l1 = (-b - std::sqrt(b * b - 4 * c)) / 2;
+    RemoveComplexT<T> const l2 = (-b + std::sqrt(b * b - 4 * c)) / 2;
 
     // Now, find the eigenvectors.
-    T v1x = T{1.0}, v1y = (l1 - diag[0]) / subdiag[0], v2x = T{1.0}, v2y = (l2 - diag[0]) / subdiag[0];
+    RemoveComplexT<T> v1x = RemoveComplexT<T>{1.0}, v1y = (l1 - diag[0]) / subdiag[0], v2x = RemoveComplexT<T>{1.0},
+                      v2y = (l2 - diag[0]) / subdiag[0];
 
     // Normalize.
-    T v1norm = std::hypot(v1x, v1y), v2norm = std::hypot(v2x, v2y);
+    RemoveComplexT<T> v1norm = std::hypot(v1x, v1y), v2norm = std::hypot(v2x, v2y);
     v1x /= v1norm;
     v1y /= v1norm;
     v2x /= v2norm;
@@ -390,9 +391,9 @@ void impl_qr_tridiag_eigen_step(size_t dim, T *Q, size_t Q_rows, size_t row_stri
 
     // If the matrix is not 2x2, then do the shifted qr algorithm.
     // Start by computing the shifts.
-    T const b = diag[dim - 2] + diag[dim - 1], c = diag[dim - 2] * diag[dim - 1] - subdiag[dim - 2] * subdiag[dim - 2];
+    RemoveComplexT<T> const b = diag[dim - 2] + diag[dim - 1], c = diag[dim - 2] * diag[dim - 1] - subdiag[dim - 2] * subdiag[dim - 2];
 
-    T shift, s1 = (-b + std::sqrt(b * b - 4 * c)) / 2, s2 = (-b - std::sqrt(b * b - 4 * c)) / 2;
+    RemoveComplexT<T> shift, s1 = (-b + std::sqrt(b * b - 4 * c)) / 2, s2 = (-b - std::sqrt(b * b - 4 * c)) / 2;
 
     if (std::abs(diag[dim - 1] - s1) < std::abs(diag[dim - 1] - s2)) {
         shift = s1;
@@ -406,24 +407,25 @@ void impl_qr_tridiag_eigen_step(size_t dim, T *Q, size_t Q_rows, size_t row_stri
         diag[i] -= shift;
     }
 
-    T x = diag[0], y = subdiag[0];
+    RemoveComplexT<T> x = diag[0], y = subdiag[0];
 
     // Use Givens rotations to compute the next step.
     for (size_t i = 0; i < dim - 1; i++) {
-        T r, s, c;
+        RemoveComplexT<T> r, s, c;
         givens_params(x, y, &s, &c, &r);
 
-        T d = diag[i] - diag[i + 1];
-        T z = (2 * c * subdiag[i] + d * s) * s;
+        RemoveComplexT<T> w = c * x - s * y;
+        RemoveComplexT<T> d = diag[i] - diag[i + 1];
+        RemoveComplexT<T> z = (2 * c * subdiag[i] + d * s) * s;
         diag[i] -= z;
         diag[i + 1] += z;
         subdiag[i] = d * c * s + (c * c - s * s) * subdiag[i];
 
-        if (i > 0) {
-            subdiag[i - 1] = c * x - s * y;
-        }
-
         x = subdiag[i];
+
+        if (i > 0) {
+            subdiag[i - 1] = w;
+        }
 
         if (i < dim - 2) {
             y = -s * subdiag[i + 1];
@@ -436,6 +438,20 @@ void impl_qr_tridiag_eigen_step(size_t dim, T *Q, size_t Q_rows, size_t row_stri
             Q[j * row_stride + i * col_stride]       = A * c - B * s;
             Q[j * row_stride + (i + 1) * col_stride] = A * s + B * c;
         }
+    }
+
+    for (size_t i = 0; i < dim; i++) {
+        diag[i] += shift;
+    }
+
+    EINSUMS_LOG_INFO("Diagonal elements:");
+    for (int i = 0; i < dim; i++) {
+        EINSUMS_LOG_INFO("{}", diag[i]);
+    }
+
+    EINSUMS_LOG_INFO("Off-diagonal elements:");
+    for (int i = 0; i < dim - 1; i++) {
+        EINSUMS_LOG_INFO("{}", subdiag[i]);
     }
 }
 
@@ -461,7 +477,7 @@ void impl_qr_tridiag_iterate(size_t dim, T *Q, size_t Q_rows, size_t row_stride,
         return;
     }
 
-    T constexpr eps = std::numeric_limits<T>::epsilon();
+    RemoveComplexT<T> constexpr eps = std::numeric_limits<RemoveComplexT<T>>::epsilon();
 
     // Now, do the iteration.
     for (int iter = 0; iter < 30 * dim; iter++) {
@@ -471,11 +487,11 @@ void impl_qr_tridiag_iterate(size_t dim, T *Q, size_t Q_rows, size_t row_stride,
         // Now, we can iterate. First, start by finding small values in the subdiagonal.
         for (size_t i = 0; i < dim - 1; i++) {
             if (std::abs(subdiag[i]) <= std::sqrt(std::abs(diag[i]) * std::abs(diag[i + 1])) * eps) {
-                subdiag[i] = T{0.0};
+                subdiag[i] = RemoveComplexT<T>{0.0};
                 split      = i;
                 break;
             }
-            if (std::abs(subdiag[i]) == T{0.0}) {
+            if (std::abs(subdiag[i]) == RemoveComplexT<T>{0.0}) {
                 split = i;
                 break;
             }
@@ -487,25 +503,26 @@ void impl_qr_tridiag_iterate(size_t dim, T *Q, size_t Q_rows, size_t row_stride,
         } else {
             // Otherwise, split and reiterate.
             impl_qr_tridiag_iterate(split + 1, Q, Q_rows, row_stride, col_stride, diag, subdiag);
-            impl_qr_tridiag_iterate(dim - split - 1, Q + (split + 1) * row_stride + (split + 1) * col_stride, Q_rows, row_stride,
-                                    col_stride, diag + split + 1, subdiag + split + 1);
+            impl_qr_tridiag_iterate(dim - split - 1, Q + (split + 1) * col_stride, Q_rows, row_stride, col_stride, diag + split + 1,
+                                    subdiag + split + 1);
             return;
         }
     }
+
+    EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not converge QR iterations for syev/heev!");
 }
 
 template <NotComplex T>
-void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<T> *W) {
-    BufferVector<T> work(std::max((ptrdiff_t)1, 3 * (ptrdiff_t)A->dim(0) - 1));
-    size_t const    row_stride = A->stride(0), col_stride = A->stride(1), dim = A->dim(0);
-    T              *A_data = A->data();
+void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<T> *W, T *work) {
+    size_t const row_stride = A->stride(0), col_stride = A->stride(1), dim = A->dim(0);
+    T           *A_data = A->data();
 
     // Reduce to tridiagonal form.
-    impl_tridagonal_reduce(A, work.data());
+    impl_tridagonal_reduce(A, work);
 
     // Compute the eigenvalues and eigenvectors of the tridiagonal form.
     if (std::tolower(jobz) == 'n') {
-        T *diagonal = work.data() + dim, *subdiagonal = work.data() + 2 * dim;
+        T *diagonal = work + dim, *subdiagonal = work + 2 * dim;
 
         EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t i = 0; i < dim; i++) {
@@ -518,7 +535,7 @@ void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
         }
 
         // Just the eigenvalues. We can use LAPACK's sterf to compute the eigenvalues of a tridiagonal matrix.
-        auto info = blas::sterf(A->dim(0), work.data(), work.data() + A->dim(0));
+        auto info = blas::sterf(A->dim(0), work, work + A->dim(0));
 
         if (info == -1) {
             EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The length argument to sterf was invalid! It must be non-negative, got {}.",
@@ -553,23 +570,26 @@ void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
         }
 
         // Compute the Q matrix.
-        impl_compute_q(A, work.data(), work.data() + 2 * A->dim(0));
+        impl_compute_q(A, work, work + 2 * A->dim(0));
 
         impl_qr_tridiag_iterate(A->dim(0), A->data(), A->dim(0), A->stride(0), A->stride(1), diag.data(), subdiag.data());
+
+        for (size_t i = 0; i < dim; i++) {
+            W->subscript(i) = diag[i];
+        }
     }
 }
 
 template <Complex T>
-void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<RemoveComplexT<T>> *W) {
-    BufferVector<T>                 work(std::max((ptrdiff_t)1, 3 * (ptrdiff_t)A->dim(0) - 1));
-    BufferVector<RemoveComplexT<T>> rwork(std::max((ptrdiff_t)1, 2 * (ptrdiff_t)A->dim(0) - 1));
-    size_t const                    row_stride = A->stride(0), col_stride = A->stride(1), dim = A->dim(0);
-    T                              *A_data = A->data();
+void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<RemoveComplexT<T>> *W, T *work,
+                       RemoveComplexT<T> *rwork) {
+    size_t const row_stride = A->stride(0), col_stride = A->stride(1), dim = A->dim(0);
+    T           *A_data = A->data();
 
-    RemoveComplexT<T> *diag = rwork.data(), *subdiag = rwork.data() + dim;
+    RemoveComplexT<T> *diag = rwork, *subdiag = rwork + dim;
 
     // Reduce to tridiagonal form.
-    impl_tridagonal_reduce(A, work.data());
+    impl_tridagonal_reduce(A, work);
 
     // Compute the eigenvalues and eigenvectors of the tridiagonal form.
     if (std::tolower(jobz) == 'n') {
@@ -617,9 +637,13 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
         }
 
         // Compute the Q matrix.
-        impl_compute_q(A, work.data(), work.data() + 2 * A->dim(0));
+        impl_compute_q(A, work, work + 2 * A->dim(0));
 
         impl_qr_tridiag_iterate(A->dim(0), A->data(), A->dim(0), A->stride(0), A->stride(1), diag, subdiag);
+
+        for (size_t i = 0; i < dim; i++) {
+            W->subscript(i) = diag[i];
+        }
     }
 }
 
