@@ -12,9 +12,8 @@ namespace linear_algebra {
 namespace detail {
 
 template <NotComplex T>
-void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
+void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2, T *tau, bool keep_tau) {
     size_t const dim = A->dim(0), row_stride = A->stride(0), col_stride = A->stride(1);
-    T           *vec1 = work, *vec2 = work + dim, *tau = work + 2 * dim;
 
     T *A_data = A->data();
 
@@ -82,41 +81,21 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
 
         // In this case, the first k columns of A - Avv^T should be zero when vec1 is non-zero.
         // This means that the first k entries of vec2 will be zero.
-        if (k == 0) {
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
-            for (size_t j = k + 1; j < dim; j++) {
-                for (size_t i = k; i < dim; i++) {
-                    vec2[i] += A_data[j * row_stride + i * col_stride] * vec1[j];
-                }
+        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        for (size_t j = k + 1; j < dim; j++) {
+            for (size_t i = k; i < dim; i++) {
+                vec2[i] += A_data[j * row_stride + i * col_stride] * vec1[j];
             }
+        }
 
-            // Scale by 2.
-            blas::scal(dim, T{2.0}, vec2, 1);
+        // Scale by 2.
+        blas::scal(dim, T{2.0}, vec2, 1);
 
-            // Finally, update A to be (A - 2Avv^T) - 2vv^T(A - 2Avv^T), which is (I - 2vv^T)A(I - 2vv^T).
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
-            for (size_t i = k + 1; i < dim; i++) {
-                for (size_t j = k; j < dim; j++) {
-                    A_data[i * row_stride + j * col_stride] -= vec2[j] * vec1[i];
-                }
-            }
-        } else {
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
-            for (size_t j = k + 1; j < dim; j++) {
-                for (size_t i = k; i < dim; i++) {
-                    vec2[i] += A_data[j * row_stride + i * col_stride] * vec1[j];
-                }
-            }
-
-            // Scale by 2.
-            blas::scal(dim, T{2.0}, vec2, 1);
-
-            // Finally, update A to be (A - 2Avv^T) - 2vv^T(A - 2Avv^T), which is (I - 2vv^T)A(I - 2vv^T).
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
-            for (size_t i = k + 1; i < dim; i++) {
-                for (size_t j = k; j < dim; j++) {
-                    A_data[i * row_stride + j * col_stride] -= vec2[j] * vec1[i];
-                }
+        // Finally, update A to be (A - 2Avv^T) - 2vv^T(A - 2Avv^T), which is (I - 2vv^T)A(I - 2vv^T).
+        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        for (size_t i = k + 1; i < dim; i++) {
+            for (size_t j = k; j < dim; j++) {
+                A_data[i * row_stride + j * col_stride] -= vec2[j] * vec1[i];
             }
         }
 
@@ -131,22 +110,26 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
             A_data[i * row_stride + k * col_stride] = vec1[i] / vec1[k + 1];
         }
 
-        // Set tau.
-        tau[k] = 2 * vec1[k + 1] * vec1[k + 1];
+        if (keep_tau) {
+            // Set tau.
+            tau[k] = 2 * vec1[k + 1] * vec1[k + 1];
+        }
     }
 
-    tau[dim - 2] = T{1.0};
+    if (keep_tau) {
+        tau[dim - 2] = T{1.0};
+    }
 }
 
 template <Complex T>
-void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
+void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2, T *tau, bool keep_tau) {
     size_t const dim = A->dim(0), row_stride = A->stride(0), col_stride = A->stride(1);
-    T           *vec1 = work, *vec2 = work + dim, *tau = work + 2 * dim;
 
     T *A_data = A->data();
 
-    for (size_t k = 0; k < dim - 2; k++) {
+    for (size_t k = 0; k < dim - 1; k++) {
         RemoveComplexT<T> alpha_sq = 0.0, scale = 0.0, alpha = 0.0;
+        T                 tau_val;
 
         T key = A->subscript(k + 1, k);
 
@@ -154,24 +137,23 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
         // the key.
         blas::lassq(dim - k - 1, A->data(k + 1, k), row_stride, &scale, &alpha_sq);
 
-        alpha *= std::sqrt(alpha_sq) * scale;
+        alpha = std::sqrt(alpha_sq) * scale;
+        if (std::real(key) < 0) {
+            alpha = -alpha;
+        }
 
         // Calculate tau.
-        RemoveComplexT<T> r = std::sqrt(alpha_sq * scale * scale - std::abs(key) * alpha);
-        tau[k]              = -((std::conj(key) + alpha) / (key + alpha) + T{1.0}) / (r * r);
+        tau_val = (key + alpha) / alpha;
 
         // Now, we need to calculate the values of the vectors.
+        for (size_t i = 0; i < k; i++) {
+            vec1[i] = RemoveComplexT<T>{0.0};
+        }
 
-        // Don't do this. We never need these elements, so they will be used for tau.
-        // for (size_t i = 0; i < k; i++) {
-        //     vec1[i] = T{0.0};
-        // }
-
-        // Since we never clear the first set of elements, this will set the value for tau on output.
-        vec1[k + 1] = (A_data[(k + 1) * row_stride + k * col_stride] - alpha) / r;
+        vec1[k + 1] = RemoveComplexT<T>{1.0};
 
         for (size_t i = k + 2; i < dim; i++) {
-            vec1[i] = A_data[i * row_stride + k * col_stride] / r;
+            vec1[i] = A_data[i * row_stride + k * col_stride] / (key + alpha);
         }
 
         // Now, we need to calculate Av.
@@ -189,11 +171,9 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
         }
 
         // Scale by the scale factor.
-        blas::scal(dim, std::conj(tau[k]), vec2, 1);
+        blas::scal(dim, tau_val, vec2, 1);
 
-        // Next, update A to be A - tau^* Avv^H.
-        // The result of Avv^H is that the first k + 1 elements of vec1 are zero,
-        // and the first k elements of vec2 are zero. This means that only the current row will be modified.
+        // Next, update A to be A - tau Avv^H.
         EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
         for (size_t i = 0; i < dim; i++) {
             for (size_t j = k + 1; j < dim; j++) {
@@ -210,19 +190,19 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
         // In this case, the first k columns of A - tau^* Avv^H should be zero when vec1 is non-zero.
         // This means that the first k entries of vec2 will be zero.
         EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
-        for (size_t i = 0; i < dim; i++) {
+        for (size_t i = k; i < dim; i++) {
             for (size_t j = k + 1; j < dim; j++) {
                 vec2[i] += A_data[j * row_stride + i * col_stride] * std::conj(vec1[j]);
             }
         }
 
         // Scale by the scale factor.
-        blas::scal(dim, tau[k], vec2, 1);
+        blas::scal(dim, std::conj(tau_val), vec2, 1);
 
         // Finally, update A to be (A - 2Avv^T) - 2vv^T(A - 2Avv^T), which is (I - 2vv^T)A(I - 2vv^T).
         EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
-        for (size_t i = 0; i < dim; i++) {
-            for (size_t j = k + 1; j < dim; j++) {
+        for (size_t i = k + 1; i < dim; i++) {
+            for (size_t j = k; j < dim; j++) {
                 A_data[i * row_stride + j * col_stride] -= vec2[j] * vec1[i];
             }
         }
@@ -235,33 +215,30 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *work) {
 
         EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t i = k + 2; i < dim; i++) {
-            A_data[i * row_stride + k * col_stride] = vec1[i] / vec1[k + 1];
+            A_data[i * row_stride + k * col_stride] = vec1[i];
         }
 
-        // Set tau.
-        tau[k] *= vec1[k + 1] * vec1[k + 1];
+        if (keep_tau) {
+            // Set tau.
+            tau[k] = tau_val;
+        }
     }
-
-    tau[dim - 2] = T{1.0};
 }
 
 template <typename T>
-void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *work, T *tau) {
+void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *vec1, T *vec2, T *tau) {
 #pragma omp parallel
     {
 #pragma omp single
         {
             T           *Q_data = Q->data();
             size_t const dim = Q->dim(0), row_stride = Q->stride(0), col_stride = Q->stride(1);
-            T           *vec1 = work, *vec2 = work + dim;
-            println(*Q);
 
             // Set up the first level.
             Q->subscript(-1, -1) = T{1.0};
             Q->subscript(-2, -2) = T{1.0};
             Q->subscript(-1, -2) = T{0.0};
             Q->subscript(-2, -1) = T{0.0};
-            println(*Q);
 
             // Loop.
             for (int n = dim - 3; n >= 0; n--) {
@@ -278,10 +255,6 @@ void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *work, T *tau) {
                 EINSUMS_OMP_PARALLEL_FOR_SIMD
                 for (int k = n + 2; k < dim; k++) {
                     vec1[k] = Q_data[k * row_stride + n * col_stride];
-                }
-
-                for (int i = 0; i < dim; i++) {
-                    println("{}", vec1[i]);
                 }
 
 // Now, set up the next level of the matrix.
@@ -304,8 +277,6 @@ void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *work, T *tau) {
                     Q_data[n * (row_stride + col_stride)] = T{1.0};
                 }
 #pragma omp taskgroup
-
-                println(*Q);
 
                 // Next, find Qv.
                 EINSUMS_OMP_PARALLEL_FOR_SIMD
@@ -337,8 +308,6 @@ void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *work, T *tau) {
                         }
                     }
                 }
-
-                println(*Q);
             }
         }
     }
@@ -421,13 +390,12 @@ void impl_compute_2by2_eigen(T *Q, size_t Q_rows, size_t row_stride, size_t col_
         sine   = (l1 - diag[0]) / norm;
         cosine = subdiag[0] / norm;
     }
-    println("sine: {}, cosine: {}", sine, cosine);
 
     // Now, we can multiply Q on the left by this.
     for (size_t i = 0; i < Q_rows; i++) {
         T A = Q[i * row_stride], B = Q[i * row_stride + col_stride];
-        Q[i * row_stride]              = A * cosine - B * sine;
-        Q[i * row_stride + col_stride] = A * sine + B * cosine;
+        Q[i * row_stride]              = A * cosine + B * sine;
+        Q[i * row_stride + col_stride] = -A * sine + B * cosine;
     }
 
     diag[0]    = l1;
@@ -459,9 +427,9 @@ void impl_qr_tridiag_eigen_step(size_t dim, T *Q, size_t Q_rows, size_t row_stri
         auto temp2 = std::hypot(RemoveComplexT<T>{1.0}, temp1);
 
         if (std::abs(temp1) < std::numeric_limits<RemoveComplexT<T>>::epsilon()) {
-            shift = diag[dim - 1] - std::abs(subdiag[0]);
+            shift = diag[1] - std::abs(subdiag[0]);
         } else {
-            shift = diag[dim - 1] - subdiag[0] / (temp1 + std::copysign(temp2, temp1));
+            shift = diag[1] - subdiag[0] / (temp1 + std::copysign(temp2, temp1));
         }
     }
 
@@ -554,8 +522,6 @@ void impl_qr_tridiag_iterate(size_t dim, T *Q, size_t Q_rows, size_t row_stride,
     ptrdiff_t      lower_bound = 0;
 
     for (size_t iters = 1; iters <= dim * 30; iters++) {
-        println(einsums::detail::TensorImpl<T>(Q, {Q_rows, dim}, {row_stride, col_stride}));
-        println("{}", fmt::join(subdiag, subdiag + dim - 1, ", "));
         // We have solved the matrix, so exit.
         if (lower_bound >= dim - 1) {
             break;
@@ -612,7 +578,7 @@ void impl_qr_tridiag_iterate(size_t dim, T *Q, size_t Q_rows, size_t row_stride,
                 }
 
                 // Clear the small element.
-                if (small_elem > end) {
+                if (small_elem < end) {
                     subdiag[small_elem] = Real{0.0};
                 }
 
@@ -625,18 +591,14 @@ void impl_qr_tridiag_iterate(size_t dim, T *Q, size_t Q_rows, size_t row_stride,
                 if (small_elem == l + 1) {
                     impl_compute_2by2_eigen(Q + l * col_stride, Q_rows, row_stride, col_stride, diag + l, subdiag + l);
                     l += 2;
-                    println(einsums::detail::TensorImpl<T>(Q, {Q_rows, dim}, {row_stride, col_stride}));
-                    println("{}", fmt::join(subdiag, subdiag + dim - 1, ", "));
                     if (l <= end) {
                         continue;
                     }
                     // Continue on with the next block.
                     break;
                 } else {
-                    impl_qr_tridiag_eigen_step<false>(l + 1 - small_elem, Q + l * col_stride, Q_rows, row_stride, col_stride, diag + l,
+                    impl_qr_tridiag_eigen_step<false>(small_elem + 1 - l, Q + l * col_stride, Q_rows, row_stride, col_stride, diag + l,
                                                       subdiag + l);
-                    println(einsums::detail::TensorImpl<T>(Q, {Q_rows, dim}, {row_stride, col_stride}));
-                    println("{}", fmt::join(subdiag, subdiag + dim - 1, ", "));
                 }
             }
         } else {
@@ -670,8 +632,6 @@ void impl_qr_tridiag_iterate(size_t dim, T *Q, size_t Q_rows, size_t row_stride,
                     impl_compute_2by2_eigen(Q + small_elem * col_stride, Q_rows, row_stride, col_stride, diag + small_elem,
                                             subdiag + small_elem);
                     l -= 2;
-                    println(einsums::detail::TensorImpl<T>(Q, {Q_rows, dim}, {row_stride, col_stride}));
-                    println("{}", fmt::join(subdiag, subdiag + dim - 1, ", "));
                     if (l >= end) {
                         continue;
                     }
@@ -680,8 +640,6 @@ void impl_qr_tridiag_iterate(size_t dim, T *Q, size_t Q_rows, size_t row_stride,
                 } else {
                     impl_qr_tridiag_eigen_step<true>(l + 1 - small_elem, Q + small_elem * col_stride, Q_rows, row_stride, col_stride,
                                                      diag + small_elem, subdiag + small_elem);
-                    println(einsums::detail::TensorImpl<T>(Q, {Q_rows, dim}, {row_stride, col_stride}));
-                    println("{}", fmt::join(subdiag, subdiag + dim - 1, ", "));
                 }
             }
         }
@@ -721,11 +679,53 @@ void impl_eig_sort(einsums::detail::TensorImpl<T> *Q, RemoveComplexT<T> *work) {
 }
 
 template <NotComplex T>
+size_t impl_syev_get_work_length(char jobz, einsums::detail::TensorImpl<T> const *A, einsums::detail::TensorImpl<T> const *W) {
+    size_t const dim = A->dim(0);
+
+    if (dim <= 1) {
+        return 0;
+    }
+    if (dim == 2) {
+        return 3;
+    }
+
+    if (std::tolower(jobz) == 'n') {
+        return 2 * dim;
+    } else {
+        return 5 * dim - 2;
+    }
+}
+
+template <Complex T>
+size_t impl_heev_get_work_length(char jobz, einsums::detail::TensorImpl<T> const *A,
+                                 einsums::detail::TensorImpl<RemoveComplexT<T>> const *W) {
+    size_t const dim = A->dim(0);
+
+    if (dim <= 1) {
+        return 0;
+    }
+    if (dim == 2) {
+        return 3;
+    }
+
+    if (std::tolower(jobz) == 'n') {
+        return 2 * dim;
+    } else {
+        return 3 * dim - 1;
+    }
+}
+
+template <NotComplex T>
 void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<T> *W, T *work) {
     size_t const row_stride = A->stride(0), col_stride = A->stride(1), dim = A->dim(0);
     T           *A_data = A->data();
+
+    // Tau is only referenced when jobz != 'n', so it may point to past the end of the work array.
+    T *vec1 = work, *vec2 = work + dim, *tau = work + 2 * dim;
+    T *diag = work, *subdiag = work + dim;
+
     if (dim == 1) {
-        W->subscript(0) = std::real(A->subscript(0));
+        W->subscript(0) = A->subscript(0, 0);
         A->subscript(0) = T{1.0};
     } else if (dim == 2) {
         work[0]            = A->subscript(0, 0);
@@ -741,24 +741,22 @@ void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
     } else {
 
         // Reduce to tridiagonal form.
-        impl_tridagonal_reduce(A, work);
+        impl_tridagonal_reduce(A, vec1, vec2, tau, std::tolower(jobz) != 'n');
 
         // Compute the eigenvalues and eigenvectors of the tridiagonal form.
         if (std::tolower(jobz) == 'n') {
-            T *diagonal = work, *subdiagonal = work + dim;
-
             EINSUMS_OMP_PARALLEL_FOR_SIMD
             for (size_t i = 0; i < dim; i++) {
-                diagonal[i] = A_data[i * (row_stride + col_stride)];
+                diag[i] = A_data[i * (row_stride + col_stride)];
             }
 
             EINSUMS_OMP_PARALLEL_FOR_SIMD
             for (size_t i = 0; i < dim - 1; i++) {
-                subdiagonal[i] = A_data[i * (row_stride + col_stride) + row_stride];
+                subdiag[i] = A_data[i * (row_stride + col_stride) + row_stride];
             }
 
             // Just the eigenvalues. We can use LAPACK's sterf to compute the eigenvalues of a tridiagonal matrix.
-            auto info = blas::sterf(A->dim(0), work, work + A->dim(0));
+            auto info = blas::sterf(A->dim(0), diag, subdiag);
 
             if (info == -1) {
                 EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The length argument to sterf was invalid! It must be non-negative, got {}.",
@@ -778,10 +776,12 @@ void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
             // Copy the eigenvalues.
             EINSUMS_OMP_PARALLEL_FOR_SIMD
             for (size_t i = 0; i < A->dim(0); i++) {
-                W->subscript(i) = work[i];
+                W->subscript(i) = diag[i];
             }
         } else {
-            BufferVector<T> diag(A->dim(0)), subdiag(A->dim(0) - 1);
+            // Change where diag and subdiag point.
+            diag    = work + 3 * dim - 1;
+            subdiag = work + 4 * dim - 1;
 
             EINSUMS_OMP_PARALLEL_FOR_SIMD
             for (size_t i = 0; i < dim; i++) {
@@ -794,17 +794,11 @@ void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
             }
 
             // Compute the Q matrix.
-            impl_compute_q(A, work, work + 2 * A->dim(0));
+            impl_compute_q(A, vec1, vec2, tau);
 
-            println(*A);
+            impl_qr_tridiag_iterate(A->dim(0), A->data(), A->dim(0), A->stride(0), A->stride(1), diag, subdiag);
 
-            impl_qr_tridiag_iterate(A->dim(0), A->data(), A->dim(0), A->stride(0), A->stride(1), diag.data(), subdiag.data());
-
-            println(*A);
-
-            impl_eig_sort(A, diag.data());
-
-            println(*A);
+            impl_eig_sort(A, diag);
 
             for (size_t i = 0; i < dim; i++) {
                 W->subscript(i) = diag[i];
@@ -819,46 +813,58 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
     size_t const row_stride = A->stride(0), col_stride = A->stride(1), dim = A->dim(0);
     T           *A_data = A->data();
 
-    RemoveComplexT<T> *diag = rwork, *subdiag = rwork + dim;
+    T                 *vec1 = work, *vec2 = work + dim, *tau = work + (2 * dim - 1);
+    RemoveComplexT<T> *diag = rwork, *subdiag = rwork + dim + 1;
 
-    // Reduce to tridiagonal form.
-    impl_tridagonal_reduce(A, work);
+    if (dim == 1) {
+        W->subscript(0) = std::real(A->subscript(0, 0));
+        A->subscript(0) = T{1.0};
+    } else if (dim == 2) {
+        RemoveComplexT<T> a = std::real(A->subscript(0, 0)), c = std::real(A->subscript(1, 1));
+        T                 b = A->subscript(0, 1);
 
-    // Compute the eigenvalues and eigenvectors of the tridiagonal form.
-    if (std::tolower(jobz) == 'n') {
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < dim; i++) {
-            diag[i] = std::real(A_data[i * (row_stride + col_stride)]);
+        RemoveComplexT<T> b_mag2 = std::real(b) * std::real(b) + std::imag(b) * std::imag(b);
+        RemoveComplexT<T> B      = -a - c;
+        RemoveComplexT<T> C      = a * c - b_mag2;
+        RemoveComplexT<T> l1 = (-B - std::sqrt(B * B - 4 * C)) / 2, l2 = (-B + std::sqrt(B * B - 4 * C));
+
+        // Now, find the eigenvectors.
+        RemoveComplexT<T> norm;
+        T                 sine, cosine;
+
+        // Avoid roundoff errors. If we get too close to a diagonal matrix, there can be some issues.
+        if (std::abs(l1 - a) < std::numeric_limits<RemoveComplexT<T>>::epsilon() * std::abs(l1)) {
+            if (std::abs(l1 - c) < std::numeric_limits<RemoveComplexT<T>>::epsilon() * std::abs(l1)) {
+                if (std::abs(l2 - a) < std::numeric_limits<RemoveComplexT<T>>::epsilon() * std::abs(l2)) {
+                    norm   = std::sqrt((a - c) * (l2 - c) + 2 * b_mag2);
+                    cosine = std::conj(b) / norm;
+                    sine   = -(l2 - c) / norm;
+                } else {
+                    norm   = std::sqrt((c - a) * (l2 - a) + 2 * b_mag2);
+                    sine   = -b / norm;
+                    cosine = (l2 - a) / norm;
+                }
+            } else {
+                norm   = std::sqrt((a - c) * (l1 - c) + 2 * b_mag2);
+                cosine = (l1 - c) / norm;
+                sine   = std::conj(b) / norm;
+            }
+        } else {
+            norm   = std::sqrt((c - a) * (l1 - a) + 2 * b_mag2);
+            sine   = (l1 - a) / norm;
+            cosine = b / norm;
         }
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < dim - 1; i++) {
-            subdiag[i] = std::real(A_data[i * (row_stride + col_stride) + row_stride]);
-        }
-
-        // Just the eigenvalues. We can use LAPACK's sterf to compute the eigenvalues of a tridiagonal matrix.
-        auto info = blas::sterf(A->dim(0), diag, subdiag);
-
-        if (info == -1) {
-            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The length argument to sterf was invalid! It must be non-negative, got {}.",
-                                    A->dim(0));
-        } else if (info < 0) {
-            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
-                                    "The {} argument to sterf was invalid! This is likely due to being passed a null pointer.",
-                                    print::ordinal(-info));
-        } else if (info > 0) {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error,
-                                    "The algorithm failed to find all of the eigenvalues within {} iterations (30 times the dimension). A "
-                                    "total of {} elements have not converged to zero.",
-                                    30 * A->dim(0), info);
-        }
-
-        // Copy the eigenvalues.
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < A->dim(0); i++) {
-            W->subscript(i) = rwork[i];
-        }
+        A->subscript(0, 0) = cosine;
+        A->subscript(0, 1) = -sine;
+        A->subscript(1, 0) = sine;
+        A->subscript(1, 1) = cosine;
+        W->subscript(0)    = l1;
+        W->subscript(1)    = l2;
     } else {
+        // Reduce to tridiagonal form.
+        impl_tridagonal_reduce(A, vec1, vec2, tau, std::tolower(jobz) != 'n');
+
         EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t i = 0; i < dim; i++) {
             diag[i] = std::real(A_data[i * (row_stride + col_stride)]);
@@ -869,15 +875,43 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
             subdiag[i] = std::real(A_data[i * (row_stride + col_stride) + row_stride]);
         }
 
-        // Compute the Q matrix.
-        impl_compute_q(A, work, work + 2 * A->dim(0));
+        // Compute the eigenvalues and eigenvectors of the tridiagonal form.
+        if (std::tolower(jobz) == 'n') {
 
-        impl_qr_tridiag_iterate(A->dim(0), A->data(), A->dim(0), A->stride(0), A->stride(1), diag, subdiag);
+            // Just the eigenvalues. We can use LAPACK's sterf to compute the eigenvalues of a tridiagonal matrix.
+            auto info = blas::sterf(A->dim(0), diag, subdiag);
 
-        impl_eig_sort(A, diag);
+            if (info == -1) {
+                EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The length argument to sterf was invalid! It must be non-negative, got {}.",
+                                        A->dim(0));
+            } else if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                        "The {} argument to sterf was invalid! This is likely due to being passed a null pointer.",
+                                        print::ordinal(-info));
+            } else if (info > 0) {
+                EINSUMS_THROW_EXCEPTION(
+                    std::runtime_error,
+                    "The algorithm failed to find all of the eigenvalues within {} iterations (30 times the dimension). A "
+                    "total of {} elements have not converged to zero.",
+                    30 * A->dim(0), info);
+            }
 
-        for (size_t i = 0; i < dim; i++) {
-            W->subscript(i) = diag[i];
+            // Copy the eigenvalues.
+            EINSUMS_OMP_PARALLEL_FOR_SIMD
+            for (size_t i = 0; i < A->dim(0); i++) {
+                W->subscript(i) = rwork[i];
+            }
+        } else {
+            // Compute the Q matrix.
+            impl_compute_q(A, vec1, vec2, tau);
+
+            impl_qr_tridiag_iterate(A->dim(0), A->data(), A->dim(0), A->stride(0), A->stride(1), diag, subdiag);
+
+            impl_eig_sort(A, diag);
+
+            for (size_t i = 0; i < dim; i++) {
+                W->subscript(i) = diag[i];
+            }
         }
     }
 }

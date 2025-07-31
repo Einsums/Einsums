@@ -205,42 +205,90 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
         return;
     }
 
-    auto n     = A->dim(0);
-    auto lda   = A->stride(0);
-    int  lwork = 3 * n;
+    size_t const n   = A->dim(0);
+    size_t       lda = 0;
 
-    BufferVector<AType> work(lwork);
+    blas::int_t lwork;
+
+    BufferVector<AType> work;
+
+    constexpr char jobz = (ComputeEigenvectors) ? 'v' : 'n';
 
     if constexpr (IsComplexV<AType>) {
-        BufferVector<RemoveComplexT<AType>> rwork(std::max((ptrdiff_t)1, 3 * (ptrdiff_t)n - 2));
+        // Check if we can use LAPACK.
         if (A->is_gemmable(&lda)) {
+            // Query buffer params.
+            AType lwork_complex = AType{(RemoveComplexT<AType>)(2 * n - 1)};
+
+            blas::heev(jobz, 'u', n, A->data(), lda, (RemoveComplexT<AType> *)nullptr, &lwork_complex, -1,
+                       (RemoveComplexT<AType> *)nullptr);
+
+            lwork = (blas::int_t)std::real(lwork_complex);
+
+            work.resize(lwork);
+
+            // Set up real work buffer.
+            BufferVector<RemoveComplexT<AType>> rwork(std::max((ptrdiff_t)1, 3 * (ptrdiff_t)n - 2));
+
+            // Check if we need to make a temporary buffer for the eigenvalues.
             if (W->get_incx() != 1) {
-                BufferVector<RemoveComplexT<AType>> temp(A->dim(0));
-                blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, temp.data(), work.data(), lwork, rwork.data());
+
+                // Make a temporary buffer for the eigenvalues, then copy after.
+                BufferVector<RemoveComplexT<AType>> temp_vals(A->dim(0));
+                blas::heev(jobz, 'u', n, A->data(), lda, temp_vals.data(), work.data(), lwork, rwork.data());
 
                 for (int i = 0; i < W->dim(0); i++) {
-                    W->subscript(i) = temp[i];
+                    W->subscript(i) = temp_vals[i];
                 }
             } else {
-                blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
+                // No temporary buffer needed.
+                blas::heev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
             }
         } else {
-            impl_strided_heev((ComputeEigenvectors) ? 'v' : 'n', A, W, work.data(), rwork.data());
+            // We can't use LAPACK, so use our own version. Note that the eigenvectors may be off by some complex phase factor.
+            // They are still eigenvectors, they just don't match when directly compared with the results of LAPACK.
+            // Also, the sizes of the buffers are different.
+            lwork = impl_heev_get_work_length(jobz, A, W);
+
+            work.resize(lwork);
+            BufferVector<RemoveComplexT<AType>> rwork(std::max((ptrdiff_t)1, 2 * (ptrdiff_t)n + 2));
+            rwork[n] = 0.0;
+            rwork[2 * n] = 0.0;
+            rwork[2 * n + 1] = 0.0;
+
+            impl_strided_heev(jobz, A, W, work.data(), rwork.data());
         }
     } else {
+        // Check if we can use LAPACK.
         if (A->is_gemmable(&lda)) {
+            // Query buffer params.
+            AType lwork_real = (AType)(3 * n - 2);
+
+            blas::syev(jobz, 'u', n, A->data(), lda, (AType *)nullptr, &lwork_real, -1);
+
+            lwork = (blas::int_t)lwork_real;
+
+            work.resize(lwork);
+
+            // Check
             if (W->get_incx() != 1) {
                 BufferVector<RemoveComplexT<AType>> temp(A->dim(0));
-                blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, temp.data(), work.data(), lwork);
+                blas::syev(jobz, 'u', n, A->data(), lda, temp.data(), work.data(), lwork);
 
                 for (int i = 0; i < W->dim(0); i++) {
                     W->subscript(i) = temp[i];
                 }
             } else {
-                blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+                blas::syev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork);
             }
         } else {
-            impl_strided_syev((ComputeEigenvectors) ? 'v' : 'n', A, W, work.data());
+            // We can't use LAPACK, so use our own version. Note that the eigenvectors may be off by some complex phase factor.
+            // They are still eigenvectors, they just don't match when directly compared with the results of LAPACK.
+            // Also, the sizes of the buffers are different.
+            lwork = impl_syev_get_work_length(jobz, A, W);
+
+            work.resize(lwork);
+            impl_strided_syev(jobz, A, W, work.data());
         }
     }
 }
