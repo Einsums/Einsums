@@ -217,6 +217,17 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
     if constexpr (IsComplexV<AType>) {
         // Check if we can use LAPACK.
         if (A->is_gemmable(&lda)) {
+            // Transpose A if necessary.
+            if constexpr (ComputeEigenvectors) {
+                if (A->is_row_major()) {
+                    for (size_t i = 0; i < n; i++) {
+                        for (size_t j = i + 1; j < n; j++) {
+                            std::swap(A->subscript(i, j), A->subscript(j, i));
+                        }
+                    }
+                }
+            }
+
             // Query buffer params.
             AType lwork_complex = AType{(RemoveComplexT<AType>)(2 * n - 1)};
 
@@ -252,8 +263,8 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
 
             work.resize(lwork);
             BufferVector<RemoveComplexT<AType>> rwork(std::max((ptrdiff_t)1, 2 * (ptrdiff_t)n + 2));
-            rwork[n] = 0.0;
-            rwork[2 * n] = 0.0;
+            rwork[n]         = 0.0;
+            rwork[2 * n]     = 0.0;
             rwork[2 * n + 1] = 0.0;
 
             impl_strided_heev(jobz, A, W, work.data(), rwork.data());

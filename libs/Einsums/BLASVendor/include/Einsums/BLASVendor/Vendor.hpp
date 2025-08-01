@@ -214,4 +214,7 @@ void dcopy(int_t n, double const *x, int_t incx, double *y, int_t incy);
 void ccopy(int_t n, std::complex<float> const *x, int_t incx, std::complex<float> *y, int_t incy);
 void zcopy(int_t n, std::complex<double> const *x, int_t incx, std::complex<double> *y, int_t incy);
 
+int_t slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int_t n, float *vec, int_t lda);
+int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, int_t n, double *vec, int_t lda);
+
 } // namespace einsums::blas::vendor

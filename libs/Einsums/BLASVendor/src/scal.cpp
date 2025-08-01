@@ -24,6 +24,8 @@ extern void FC_GLOBAL(srscl, SRSCL)(int_t *, float *, float *, int_t *);
 extern void FC_GLOBAL(drscl, DRSCL)(int_t *, double *, double *, int_t *);
 extern void FC_GLOBAL(csrscl, CSRSCL)(int_t *, float *, std::complex<float> *, int_t *);
 extern void FC_GLOBAL(zdrscl, ZDRSCL)(int_t *, double *, std::complex<double> *, int_t *);
+extern void FC_GLOBAL(slascl, SLASCL)(char *, int_t *, int_t *, float *, float *, int_t *, int_t *, float *, int_t *, int_t *);
+extern void FC_GLOBAL(dlascl, DLASCL)(char *, int_t *, int_t *, double *, double *, int_t *, int_t *, double *, int_t *, int_t *);
 }
 
 void sscal(int_t n, float alpha, float *vec, int_t inc) {
@@ -84,6 +86,22 @@ void zdrscl(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
     LabeledSection0();
 
     FC_GLOBAL(zdrscl, ZDRSCL)(&n, &alpha, vec, &inc);
+}
+
+int_t slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int_t n, float *vec, int_t lda) {
+    LabeledSection0();
+
+    int_t info = 0;
+    FC_GLOBAL(slascl, SLASCL)(&type, &kl, &ku, &cfrom, &cto, &m, &n, vec, &lda, &info);
+    return info;
+}
+
+int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, int_t n, double *vec, int_t lda) {
+    LabeledSection0();
+
+    int_t info = 0;
+    FC_GLOBAL(dlascl, DLASCL)(&type, &kl, &ku, &cfrom, &cto, &m, &n, vec, &lda, &info);
+    return info;
 }
 
 } // namespace einsums::blas::vendor

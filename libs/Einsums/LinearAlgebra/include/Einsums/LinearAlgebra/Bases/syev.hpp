@@ -1,9 +1,12 @@
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/LinearAlgebra/Bases/high_precision.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 
 #include <fmt/ranges.h>
+
+#include <stdexcept>
 
 #include "Einsums/BLAS.hpp"
 
@@ -58,7 +61,7 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
         for (size_t i = 0; i < dim; i++) {
             for (size_t j = k + 1; j < dim; j++) {
-                vec2[i] += A_data[i * row_stride + j * col_stride] * vec1[j];
+                vec2[i] = std::fma(A_data[i * row_stride + j * col_stride], vec1[j], vec2[i]);
             }
         }
 
@@ -69,7 +72,7 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
         for (size_t i = 0; i < dim; i++) {
             for (size_t j = k + 1; j < dim; j++) {
-                A_data[i * row_stride + j * col_stride] -= vec2[i] * vec1[j];
+                A_data[i * row_stride + j * col_stride] = std::fma(-vec2[i], vec1[j], A_data[i * row_stride + j * col_stride]);
             }
         }
 
@@ -84,7 +87,7 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
         for (size_t j = k + 1; j < dim; j++) {
             for (size_t i = k; i < dim; i++) {
-                vec2[i] += A_data[j * row_stride + i * col_stride] * vec1[j];
+                vec2[i] = std::fma(A_data[j * row_stride + i * col_stride], vec1[j], vec2[i]);
             }
         }
 
@@ -95,7 +98,7 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
         for (size_t i = k + 1; i < dim; i++) {
             for (size_t j = k; j < dim; j++) {
-                A_data[i * row_stride + j * col_stride] -= vec2[j] * vec1[i];
+                A_data[i * row_stride + j * col_stride] = std::fma(-vec2[j], vec1[i], A_data[i * row_stride + j * col_stride]);
             }
         }
 
@@ -117,15 +120,22 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
     }
 
     if (keep_tau) {
-        tau[dim - 2] = T{1.0};
+        tau[dim - 2] = T{0.0};
     }
 }
 
 template <Complex T>
 void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2, T *tau, bool keep_tau) {
+    using Real = RemoveComplexT<T>;
+
     size_t const dim = A->dim(0), row_stride = A->stride(0), col_stride = A->stride(1);
 
     T *A_data = A->data();
+
+    constexpr Real epsilon = std::numeric_limits<Real>::epsilon();
+    constexpr Real small   = Real{1.0} / std::numeric_limits<Real>::max();
+    constexpr Real safe_min =
+        (small >= std::numeric_limits<Real>::min()) ? small * (1.0 + epsilon) / epsilon : std::numeric_limits<Real>::min() / epsilon;
 
     for (size_t k = 0; k < dim - 1; k++) {
         RemoveComplexT<T> alpha_sq = 0.0, scale = 0.0, alpha = 0.0;
@@ -138,12 +148,40 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         blas::lassq(dim - k - 1, A->data(k + 1, k), row_stride, &scale, &alpha_sq);
 
         alpha = std::sqrt(alpha_sq) * scale;
+
+        // Check to see if the current column is already solved.
+        if (alpha == Real{0.0}) {
+            if (keep_tau) {
+                tau[k] = T{0.0};
+            }
+            continue;
+        }
+
+        int tries = 0;
+
+        // If the alpha value is too small, we need to rescale.
+        for (tries = 0; tries < 10 && alpha < safe_min; tries++) {
+            blas::scal(dim - k - 1, Real{1.0} / safe_min, A->data(k + 1, k), row_stride);
+            alpha /= safe_min;
+        }
+
+        if (tries != 0) {
+            blas::lassq(dim - k - 1, A->data(k + 1, k), row_stride, &scale, &alpha_sq);
+
+            alpha = std::sqrt(alpha_sq) * scale;
+        }
+
         if (std::real(key) < 0) {
             alpha = -alpha;
         }
 
         // Calculate tau.
         tau_val = (key + alpha) / alpha;
+        println("{}", tau_val);
+
+        for (int undo = 0; undo < tries; undo++) {
+            tau_val *= safe_min;
+        }
 
         // Now, we need to calculate the values of the vectors.
         for (size_t i = 0; i < k; i++) {
@@ -213,6 +251,12 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         // LAPACK: the elements above the first super diagonal are overwritten by the elements of the elementary reflectors.
         // The way it defines it is that the first non-zero element is 1, so we need to rescale the reflectors.
 
+        for (int i = 0; i < tries; i++) {
+            alpha *= safe_min;
+        }
+
+        A_data[(k + 1) * row_stride + k * col_stride] = alpha;
+
         EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t i = k + 2; i < dim; i++) {
             A_data[i * row_stride + k * col_stride] = vec1[i];
@@ -236,12 +280,9 @@ void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *vec1, T *vec2, T *tau)
 
             // Set up the first level.
             Q->subscript(-1, -1) = T{1.0};
-            Q->subscript(-2, -2) = T{1.0};
-            Q->subscript(-1, -2) = T{0.0};
-            Q->subscript(-2, -1) = T{0.0};
 
             // Loop.
-            for (int n = dim - 3; n >= 0; n--) {
+            for (int n = dim - 2; n >= 0; n--) {
                 // Set up the vector.
                 EINSUMS_OMP_PARALLEL_FOR_SIMD
                 for (int k = 0; k < dim; k++) {
@@ -257,26 +298,19 @@ void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *vec1, T *vec2, T *tau)
                     vec1[k] = Q_data[k * row_stride + n * col_stride];
                 }
 
-// Now, set up the next level of the matrix.
-#pragma omp task
-                {
-                    EINSUMS_OMP_PARALLEL_FOR_SIMD
-                    for (int k = n + 1; k < dim; k++) {
-                        Q_data[k * row_stride + n * col_stride] = T{0.0};
-                    }
+                // Now, set up the next level of the matrix.
+
+                EINSUMS_OMP_PARALLEL_FOR_SIMD
+                for (int k = n + 1; k < dim; k++) {
+                    Q_data[k * row_stride + n * col_stride] = T{0.0};
                 }
-#pragma omp task
-                {
-                    EINSUMS_OMP_PARALLEL_FOR_SIMD
-                    for (int k = n + 1; k < dim; k++) {
-                        Q_data[n * row_stride + k * col_stride] = T{0.0};
-                    }
+
+                EINSUMS_OMP_PARALLEL_FOR_SIMD
+                for (int k = n + 1; k < dim; k++) {
+                    Q_data[n * row_stride + k * col_stride] = T{0.0};
                 }
-#pragma omp task
-                {
-                    Q_data[n * (row_stride + col_stride)] = T{1.0};
-                }
-#pragma omp taskgroup
+
+                Q_data[n * (row_stride + col_stride)] = T{1.0};
 
                 // Next, find Qv.
                 EINSUMS_OMP_PARALLEL_FOR_SIMD
@@ -284,23 +318,29 @@ void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *vec1, T *vec2, T *tau)
                     vec2[i] = T{0.0};
                 }
 
-                EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
-                for (int i = n; i < dim; i++) {
-                    for (int j = n; j < dim; j++) {
-                        vec2[i] += Q_data[i * row_stride + j * col_stride] * vec1[j];
-                    }
-                }
-
                 // Next, find Q - Qvv^H.
                 if constexpr (IsComplexV<T>) {
+
+                    EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+                    for (int i = n; i < dim; i++) {
+                        for (int j = n; j < dim; j++) {
+                            vec2[i] += Q_data[i * row_stride + j * col_stride] * vec1[j];
+                        }
+                    }
                     EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
                     for (int i = n; i < dim; i++) {
                         for (int j = n; j < dim; j++) {
                             // Might need conj(tau).
-                            Q_data[i * row_stride + j * col_stride] -= tau[n] * vec2[i] * std::conj(vec1[j]);
+                            Q_data[i * row_stride + j * col_stride] -= tau[n] * vec2[j] * std::conj(vec1[i]);
                         }
                     }
                 } else {
+                    EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+                    for (int i = n; i < dim; i++) {
+                        for (int j = n; j < dim; j++) {
+                            vec2[i] += Q_data[i * row_stride + j * col_stride] * vec1[j];
+                        }
+                    }
                     EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
                     for (int i = n; i < dim; i++) {
                         for (int j = n; j < dim; j++) {
@@ -405,7 +445,7 @@ void impl_compute_2by2_eigen(T *Q, size_t Q_rows, size_t row_stride, size_t col_
     return;
 }
 
-template <bool QR, typename T>
+template <typename T>
 void impl_qr_tridiag_eigen_step(size_t dim, T *Q, size_t Q_rows, size_t row_stride, size_t col_stride, RemoveComplexT<T> *diag,
                                 RemoveComplexT<T> *subdiag) {
 
@@ -413,24 +453,13 @@ void impl_qr_tridiag_eigen_step(size_t dim, T *Q, size_t Q_rows, size_t row_stri
     // Start by computing the shift.
     RemoveComplexT<T> shift;
 
-    if constexpr (QR) {
-        auto temp1 = (diag[dim - 2] - diag[dim - 1]) / (2.0 * subdiag[dim - 2]);
-        auto temp2 = std::hypot(RemoveComplexT<T>{1.0}, temp1);
+    auto temp1 = (diag[dim - 2] - diag[dim - 1]) / (2.0 * subdiag[dim - 2]);
+    auto temp2 = std::hypot(RemoveComplexT<T>{1.0}, temp1);
 
-        if (std::abs(temp1) < std::numeric_limits<RemoveComplexT<T>>::epsilon()) {
-            shift = diag[dim - 1] - std::abs(subdiag[dim - 2]);
-        } else {
-            shift = diag[dim - 1] - subdiag[dim - 2] / (temp1 + std::copysign(temp2, temp1));
-        }
+    if (std::abs(temp1) < std::numeric_limits<RemoveComplexT<T>>::epsilon()) {
+        shift = diag[dim - 1] - std::abs(subdiag[dim - 2]);
     } else {
-        auto temp1 = (diag[0] - diag[1]) / (2.0 * subdiag[0]);
-        auto temp2 = std::hypot(RemoveComplexT<T>{1.0}, temp1);
-
-        if (std::abs(temp1) < std::numeric_limits<RemoveComplexT<T>>::epsilon()) {
-            shift = diag[1] - std::abs(subdiag[0]);
-        } else {
-            shift = diag[1] - subdiag[0] / (temp1 + std::copysign(temp2, temp1));
-        }
+        shift = diag[dim - 1] - subdiag[dim - 2] / (temp1 + std::copysign(temp2, temp1));
     }
 
     // Shift the diagonal elements.
@@ -439,71 +468,36 @@ void impl_qr_tridiag_eigen_step(size_t dim, T *Q, size_t Q_rows, size_t row_stri
         diag[i] -= shift;
     }
 
-    if constexpr (QR) {
-        RemoveComplexT<T> x = diag[0], y = subdiag[0];
+    RemoveComplexT<T> x = diag[0], y = subdiag[0];
 
-        // Use Givens rotations to compute the next step.
-        for (size_t i = 0; i < dim - 1; i++) {
-            RemoveComplexT<T> r, s, c;
-            givens_params(x, y, &s, &c, &r);
+    // Use Givens rotations to compute the next step.
+    for (size_t i = 0; i < dim - 1; i++) {
+        RemoveComplexT<T> r, s, c;
+        givens_params(x, y, &s, &c, &r);
 
-            RemoveComplexT<T> w = c * x - s * y;
-            RemoveComplexT<T> d = diag[i] - diag[i + 1];
-            RemoveComplexT<T> z = (2 * c * subdiag[i] + d * s) * s;
-            diag[i] -= z;
-            diag[i + 1] += z;
-            subdiag[i] = d * c * s + (c * c - s * s) * subdiag[i];
+        RemoveComplexT<T> w = c * x - s * y;
+        RemoveComplexT<T> d = diag[i] - diag[i + 1];
+        RemoveComplexT<T> z = (2 * c * subdiag[i] + d * s) * s;
+        diag[i] -= z;
+        diag[i + 1] += z;
+        subdiag[i] = d * c * s + (c * c - s * s) * subdiag[i];
 
-            x = subdiag[i];
+        x = subdiag[i];
 
-            if (i > 0) {
-                subdiag[i - 1] = w;
-            }
-
-            if (i < dim - 2) {
-                y = -s * subdiag[i + 1];
-                subdiag[i + 1] *= c;
-            }
-
-            // Operate on the eigenvectors.
-            for (size_t j = 0; j < Q_rows; j++) {
-                T A = Q[j * row_stride + i * col_stride], B = Q[j * row_stride + (i + 1) * col_stride];
-                Q[j * row_stride + i * col_stride]       = A * c - B * s;
-                Q[j * row_stride + (i + 1) * col_stride] = A * s + B * c;
-            }
+        if (i > 0) {
+            subdiag[i - 1] = w;
         }
-    } else {
-        RemoveComplexT<T> x = diag[dim - 1], y = subdiag[dim - 2];
 
-        // Use Givens rotations to compute the next step.
-        for (size_t i = dim - 1; i > 0; i--) {
-            RemoveComplexT<T> r, s, c;
-            givens_params(x, y, &s, &c, &r);
+        if (i < dim - 2) {
+            y = -s * subdiag[i + 1];
+            subdiag[i + 1] *= c;
+        }
 
-            RemoveComplexT<T> w = c * x - s * y;
-            RemoveComplexT<T> d = diag[i - 1] - diag[i];
-            RemoveComplexT<T> z = (2 * c * subdiag[i - 1] + d * s) * s;
-            diag[i - 1] -= z;
-            diag[i] += z;
-            subdiag[i - 1] = d * c * s + (c * c - s * s) * subdiag[i - 1];
-
-            x = subdiag[i - 1];
-
-            if (i < dim - 2) {
-                subdiag[i + 1] = w;
-            }
-
-            if (i > 0) {
-                y = -s * subdiag[i - 1];
-                subdiag[i - 1] *= c;
-            }
-
-            // Operate on the eigenvectors.
-            for (size_t j = 0; j < Q_rows; j++) {
-                T A = Q[j * row_stride + (i - 1) * col_stride], B = Q[j * row_stride + i * col_stride];
-                Q[j * row_stride + (i - 1) * col_stride] = A * c - B * s;
-                Q[j * row_stride + i * col_stride]       = A * s + B * c;
-            }
+        // Operate on the eigenvectors.
+        for (size_t j = 0; j < Q_rows; j++) {
+            T A = Q[j * row_stride + i * col_stride], B = Q[j * row_stride + (i + 1) * col_stride];
+            Q[j * row_stride + i * col_stride]       = A * c - B * s;
+            Q[j * row_stride + (i + 1) * col_stride] = A * s + B * c;
         }
     }
 
@@ -518,8 +512,13 @@ void impl_qr_tridiag_iterate(size_t dim, T *Q, size_t Q_rows, size_t row_stride,
 
     using Real = RemoveComplexT<T>;
 
-    constexpr Real epsilon     = std::numeric_limits<Real>::epsilon();
-    ptrdiff_t      lower_bound = 0;
+    constexpr Real epsilon  = std::numeric_limits<Real>::epsilon();
+    constexpr Real small    = Real{1.0} / std::numeric_limits<Real>::max();
+    constexpr Real safe_min = (small >= std::numeric_limits<Real>::min()) ? small * (1.0 + epsilon) : std::numeric_limits<Real>::min();
+    Real           safe_scale_min = std::sqrt(safe_min) / (epsilon * epsilon);
+    Real           safe_scale_max = std::sqrt(Real{1.0} / safe_min) / Real{3.0}; // This is what LAPACK uses. Seems good enough.
+
+    ptrdiff_t lower_bound = 0;
 
     for (size_t iters = 1; iters <= dim * 30; iters++) {
         // We have solved the matrix, so exit.
@@ -548,99 +547,113 @@ void impl_qr_tridiag_iterate(size_t dim, T *Q, size_t Q_rows, size_t row_stride,
             }
         }
 
-        ptrdiff_t l = lower_bound, end = split;
+        ptrdiff_t l = split, end = lower_bound;
         lower_bound = split + 1;
 
         if (end == 1) {
             continue;
         }
 
-        // Scale here, maybe?
+        // Scale here.
 
-        // Choose algorithm.
-        if (std::abs(diag[end]) < std::abs(diag[l])) {
-            std::swap(l, end);
+        Real norm = diag[split - 1];
+        for (size_t i = end; i < split; i++) {
+            if (diag[i] + subdiag[i] > norm) {
+                norm = diag[i] + subdiag[i];
+            }
         }
 
-        if (l < end) {
-            // Perform QL iteration.
-            while (l <= end) {
-                // Look for a small subdiagonal element.
-                ptrdiff_t small_elem = end;
-                if (l != end) {
-                    for (ptrdiff_t m = l; m < end - 1; m++) {
-                        Real test = std::abs(subdiag[m]);
-                        if (test < std::sqrt(std::abs(diag[m]) * std::abs(diag[m + 1])) * epsilon) {
-                            small_elem = m;
-                            break;
-                        }
+        if (norm == Real{0.0}) {
+            continue;
+        }
+
+        enum { NO_SCALE, SCALED_UP, SCALED_DOWN } did_scale = NO_SCALE;
+
+        if (norm > safe_scale_max) {
+            did_scale = SCALED_DOWN;
+
+            blas::int_t info = blas::lascl('G', 0, 0, norm, safe_scale_max, split - end + 1, 1, diag + end, dim);
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to lascl had an invalid value!", print::ordinal(-info));
+            }
+
+            info = blas::lascl('G', 0, 0, norm, safe_scale_max, split - end, 1, subdiag + end, dim);
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to lascl had an invalid value!", print::ordinal(-info));
+            }
+        } else if (norm < safe_scale_min) {
+            did_scale = SCALED_UP;
+
+            blas::int_t info = blas::lascl('G', 0, 0, norm, safe_scale_min, split - end + 1, 1, diag + end, dim);
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to lascl had an invalid value!", print::ordinal(-info));
+            }
+
+            info = blas::lascl('G', 0, 0, norm, safe_scale_min, split - end, 1, subdiag + end, dim);
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to lascl had an invalid value!", print::ordinal(-info));
+            }
+        }
+
+        // Perform QR iteration.
+        while (l >= end) {
+            // Look for a small subdiagonal element.
+            ptrdiff_t small_elem = end;
+            if (l != end) {
+                for (ptrdiff_t m = l; m > end; m--) {
+                    Real test = std::abs(subdiag[m - 1]);
+                    if (test < std::sqrt(std::abs(diag[m]) * std::abs(diag[m - 1])) * epsilon) {
+                        small_elem = m;
+                        break;
                     }
-                }
-
-                // Clear the small element.
-                if (small_elem < end) {
-                    subdiag[small_elem] = Real{0.0};
-                }
-
-                if (small_elem == l) {
-                    l++;
-                    continue;
-                }
-
-                // Check to see if the remaining matrix is 2x2.
-                if (small_elem == l + 1) {
-                    impl_compute_2by2_eigen(Q + l * col_stride, Q_rows, row_stride, col_stride, diag + l, subdiag + l);
-                    l += 2;
-                    if (l <= end) {
-                        continue;
-                    }
-                    // Continue on with the next block.
-                    break;
-                } else {
-                    impl_qr_tridiag_eigen_step<false>(small_elem + 1 - l, Q + l * col_stride, Q_rows, row_stride, col_stride, diag + l,
-                                                      subdiag + l);
                 }
             }
-        } else {
 
-            // Perform QR iteration.
-            while (l >= end) {
-                // Look for a small subdiagonal element.
-                ptrdiff_t small_elem = end;
-                if (l != end) {
-                    for (ptrdiff_t m = l; m > end; m--) {
-                        Real test = std::abs(subdiag[m - 1]);
-                        if (test < std::sqrt(std::abs(diag[m]) * std::abs(diag[m - 1])) * epsilon) {
-                            small_elem = m;
-                            break;
-                        }
-                    }
-                }
+            // Clear the small element.
+            if (small_elem > end) {
+                subdiag[small_elem - 1] = Real{0.0};
+            }
 
-                // Clear the small element.
-                if (small_elem > end) {
-                    subdiag[small_elem - 1] = Real{0.0};
-                }
+            if (small_elem == l) {
+                l--;
+                continue;
+            }
 
-                if (small_elem == l) {
-                    l--;
+            // Check to see if the remaining matrix is 2x2.
+            if (small_elem == l - 1) {
+                impl_compute_2by2_eigen(Q + small_elem * col_stride, Q_rows, row_stride, col_stride, diag + small_elem,
+                                        subdiag + small_elem);
+                l -= 2;
+                if (l >= end) {
                     continue;
                 }
+                // Continue on with the next block.
+                break;
+            } else {
+                impl_qr_tridiag_eigen_step(l + 1 - small_elem, Q + small_elem * col_stride, Q_rows, row_stride, col_stride,
+                                           diag + small_elem, subdiag + small_elem);
+            }
+        }
 
-                // Check to see if the remaining matrix is 2x2.
-                if (small_elem == l - 1) {
-                    impl_compute_2by2_eigen(Q + small_elem * col_stride, Q_rows, row_stride, col_stride, diag + small_elem,
-                                            subdiag + small_elem);
-                    l -= 2;
-                    if (l >= end) {
-                        continue;
-                    }
-                    // Continue on with the next block.
-                    break;
-                } else {
-                    impl_qr_tridiag_eigen_step<true>(l + 1 - small_elem, Q + small_elem * col_stride, Q_rows, row_stride, col_stride,
-                                                     diag + small_elem, subdiag + small_elem);
-                }
+        if (did_scale == SCALED_UP) {
+            blas::int_t info = blas::lascl('G', 0, 0, safe_scale_min, norm, split - end + 1, 1, diag + end, dim);
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to lascl had an invalid value!", print::ordinal(-info));
+            }
+
+            info = blas::lascl('G', 0, 0, safe_scale_min, norm, split - end, 1, subdiag + end, dim);
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to lascl had an invalid value!", print::ordinal(-info));
+            }
+        } else if (did_scale == SCALED_DOWN) {
+            blas::int_t info = blas::lascl('G', 0, 0, safe_scale_max, norm, split - end + 1, 1, diag + end, dim);
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to lascl had an invalid value!", print::ordinal(-info));
+            }
+
+            info = blas::lascl('G', 0, 0, safe_scale_max, norm, split - end, 1, subdiag + end, dim);
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to lascl had an invalid value!", print::ordinal(-info));
             }
         }
     }
@@ -865,6 +878,8 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
         // Reduce to tridiagonal form.
         impl_tridagonal_reduce(A, vec1, vec2, tau, std::tolower(jobz) != 'n');
 
+        println(*A);
+
         EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t i = 0; i < dim; i++) {
             diag[i] = std::real(A_data[i * (row_stride + col_stride)]);
@@ -904,6 +919,8 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
         } else {
             // Compute the Q matrix.
             impl_compute_q(A, vec1, vec2, tau);
+
+            println(*A);
 
             impl_qr_tridiag_iterate(A->dim(0), A->data(), A->dim(0), A->stride(0), A->stride(1), diag, subdiag);
 

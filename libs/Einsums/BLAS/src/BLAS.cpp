@@ -426,5 +426,12 @@ void zcopy(int_t n, std::complex<double> const *x, int_t inc_x, std::complex<dou
     vendor::zcopy(n, x, inc_x, y, inc_y);
 }
 
+int_t slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int_t n, float *vec, int_t lda) {
+    return vendor::slascl(type, kl, ku, cfrom, cto, m, n, vec, lda);
+}
+int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, int_t n, double *vec, int_t lda) {
+    return vendor::dlascl(type, kl, ku, cfrom, cto, m, n, vec, lda);
+}
+
 } // namespace detail
 } // namespace einsums::blas

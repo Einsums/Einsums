@@ -1009,4 +1009,22 @@ inline void copy<std::complex<double>>(int_t n, std::complex<double> const *x, i
     detail::zcopy(n, x, inc_x, y, inc_y);
 }
 
+namespace detail {
+int_t EINSUMS_EXPORT slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int_t n, float *vec, int_t lda);
+int_t EINSUMS_EXPORT dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, int_t n, double *vec, int_t lda);
+} // namespace detail
+
+template <typename T>
+int_t lascl(char type, int_t kl, int_t ku, T cfrom, T cto, int_t m, int_t n, T *vec, int_t lda);
+
+template <>
+inline int_t lascl<float>(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int_t n, float *vec, int_t lda) {
+    return detail::slascl(type, kl, ku, cfrom, cto, m, n, vec, lda);
+}
+
+template <>
+inline int_t lascl<double>(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, int_t n, double *vec, int_t lda) {
+    return detail::dlascl(type, kl, ku, cfrom, cto, m, n, vec, lda);
+}
+
 } // namespace einsums::blas
