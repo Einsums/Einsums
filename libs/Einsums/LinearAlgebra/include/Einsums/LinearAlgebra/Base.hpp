@@ -10,17 +10,19 @@
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Errors/Error.hpp>
+#include <Einsums/LinearAlgebra/Bases/direct_product.hpp>
+#include <Einsums/LinearAlgebra/Bases/dot.hpp>
 #include <Einsums/LinearAlgebra/Bases/gemm.hpp>
 #include <Einsums/LinearAlgebra/Bases/gemv.hpp>
+#include <Einsums/LinearAlgebra/Bases/ger.hpp>
 #include <Einsums/LinearAlgebra/Bases/sum_square.hpp>
 #include <Einsums/LinearAlgebra/Bases/syev.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
+#include <Einsums/TensorImpl/TensorImpl.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
-
-#include "Einsums/Errors/Error.hpp"
-#include "Einsums/TensorImpl/TensorImpl.hpp"
 
 namespace einsums::linear_algebra::detail {
 
@@ -356,8 +358,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
     }
 auto gesv(AType *A, BType *B) -> int {
     auto n   = A->dim(0);
-    auto lda = A->dim(0);
-    auto ldb = B->dim(1);
+    auto lda = A->impl().get_lda();
+    auto ldb = B->impl().get_lda();
 
     auto nrhs = B->dim(0);
 
@@ -368,222 +370,122 @@ auto gesv(AType *A, BType *B) -> int {
     return info;
 }
 
+template <typename T>
+void scale(T scale, einsums::detail::TensorImpl<T> *A) {
+    einsums::detail::impl_scal(scale, *A);
+}
+
 template <CoreBasicTensorConcept AType>
 void scale(typename AType::ValueType scale, AType *A) {
-    blas::scal(A->dim(0) * A->stride(0), scale, A->data(), 1);
+    detail::scale(scale, &A->impl());
+}
+
+template <typename T>
+void scale_row(ptrdiff_t row, T scale, einsums::detail::TensorImpl<T> *A) {
+    if (A->rank() != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "The input to scale_row needs to be a rank-2 tensor!");
+    }
+    blas::scal(A->dim(1), scale, A->data(row, 0), A->stride(1));
 }
 
 template <CoreBasicTensorConcept AType>
     requires(MatrixConcept<AType>)
-void scale_row(size_t row, typename AType::ValueType scale, AType *A) {
+void scale_row(ptrdiff_t row, typename AType::ValueType scale, AType *A) {
     blas::scal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
 }
 
+template <typename T>
+void scale_column(ptrdiff_t col, T scale, einsums::detail::TensorImpl<T> *A) {
+    if (A->rank() != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "The input to scale_column needs to be a rank-2 tensor!");
+    }
+    blas::scal(A->dim(1), scale, A->data(0, col), A->stride(1));
+}
+
 template <CoreBasicTensorConcept AType>
-void scale_column(size_t col, typename AType::ValueType scale, AType *A) {
-    blas::scal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
+void scale_column(ptrdiff_t col, typename AType::ValueType scale, AType *A) {
+    blas::scal(A->dim(0), scale, A->data(0, col), A->stride(0));
+}
+
+template <typename T, typename TOther>
+BiggestTypeT<T, TOther> dot(einsums::detail::TensorImpl<T> const &A, einsums::detail::TensorImpl<TOther> const &B) {
+    if (A.rank() != B.rank()) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "The ranks of the tensors passed to dot must be the same!");
+    }
+
+    if (A.dims() != B.dims()) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of the tensors passed to dot must be the same!");
+    }
+
+    return impl_dot(A, B);
 }
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
-    requires requires {
-        requires VectorConcept<AType>;
-        requires SameUnderlyingAndRank<AType, BType>;
-    }
-auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
-    EINSUMS_ASSERT(A.dim(0) == B.dim(0));
-
-    auto result = blas::dot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
-    return result;
-}
-
-template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
-    requires requires {
-        requires VectorConcept<AType>;
-        requires SameRank<AType, BType>;
-        requires !SameUnderlying<AType, BType>;
-    }
+    requires requires { requires SameRank<AType, BType>; }
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
-    EINSUMS_ASSERT(A.dim(0) == B.dim(0));
+    return dot(A.impl(), B.impl());
+}
 
-    using OutType = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
-
-    OutType result = OutType{0.0};
-
-    auto const *A_data   = A.data();
-    auto const *B_data   = B.data();
-    auto const  A_stride = A.stride(0);
-    auto const  B_stride = B.stride(0);
-
-    EINSUMS_OMP_SIMD
-    for (size_t i = 0; i < A.dim(0); i++) {
-        result += A_data[A_stride * i] * B_data[B_stride * i];
+template <typename T>
+T true_dot(einsums::detail::TensorImpl<T> const &A, einsums::detail::TensorImpl<T> const &B) {
+    if (A.rank() != B.rank()) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "The ranks of the tensors passed to true_dot must be the same!");
     }
 
-    return result;
+    if (A.dims() != B.dims()) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of the tensors passed to true_dot must be the same!");
+    }
+
+    return impl_true_dot(A, B);
 }
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
-    requires requires {
-        requires SameUnderlyingAndRank<AType, BType>;
-        requires !VectorConcept<AType>;
-    }
-auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
-    using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
-
-    if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
-        Dim<1> dim{1};
-
-        for (size_t i = 0; i < AType::Rank; i++) {
-            assert(A.dim(i) == B.dim(i));
-            dim[0] *= A.dim(i);
-        }
-
-        return dot(TensorView<typename AType::ValueType, 1>(const_cast<AType &>(A), dim),
-                   TensorView<typename BType::ValueType, 1>(const_cast<BType &>(B), dim));
-    } else {
-        auto dims = A.dims();
-
-        std::array<size_t, AType::Rank> strides;
-        strides[AType::Rank - 1] = 1;
-        std::array<size_t, AType::Rank> index;
-
-        for (int i = AType::Rank - 1; i > 0; i--) {
-            strides[i - 1] = strides[i] * dims[i];
-        }
-
-        T out{0.0};
-
-        for (size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
-            sentinel_to_indices(sentinel, strides, index);
-            out += subscript_tensor(A, index) * subscript_tensor(B, index);
-        }
-
-        return out;
-    }
-}
-
-template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
-    requires requires {
-        requires SameUnderlyingAndRank<AType, BType>;
-        requires VectorConcept<AType>;
-    }
-auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
-    assert(A.dim(0) == B.dim(0));
-
-    if constexpr (IsComplexV<AType>) {
-        return blas::dotc(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
-    } else {
-        return blas::dot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
-    }
-}
-
-template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
-    requires requires {
-        requires VectorConcept<AType>;
-        requires SameRank<AType, BType>;
-        requires !SameUnderlying<AType, BType>;
-    }
+    requires requires { requires SameRank<AType, BType>; }
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
-    EINSUMS_ASSERT(A.dim(0) == B.dim(0));
-
-    using OutType = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
-
-    OutType result = OutType{0.0};
-
-    auto const *A_data   = A.data();
-    auto const *B_data   = B.data();
-    auto const  A_stride = A.stride(0);
-    auto const  B_stride = B.stride(0);
-
-    EINSUMS_OMP_SIMD
-    for (size_t i = 0; i < A.dim(0); i++) {
-        if constexpr (IsComplexV<typename AType::ValueType>) {
-            result += A_data[A_stride * i].conj() * B_data[B_stride * i];
-        } else {
-            result += A_data[A_stride * i] * B_data[B_stride * i];
-        }
-    }
-
-    return result;
+    return true_dot(A.impl(), B.impl());
 }
 
-template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
-    requires requires {
-        requires SameRank<AType, BType>;
-        requires !VectorConcept<AType>;
-    }
-auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
-    if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
-        Dim<1> dim{1};
-
-        for (size_t i = 0; i < AType::Rank; i++) {
-            assert(A.dim(i) == B.dim(i));
-            dim[0] *= A.dim(i);
-        }
-
-        return true_dot(TensorView<typename AType::ValueType, 1>(const_cast<AType &>(A), dim),
-                        TensorView<typename BType::ValueType, 1>(const_cast<BType &>(B), dim));
-    } else {
-        auto dims = A.dims();
-
-        std::array<size_t, AType::Rank> strides;
-        strides[AType::Rank - 1] = 1;
-        std::array<size_t, AType::Rank> index;
-
-        for (int i = AType::Rank - 1; i > 0; i--) {
-            strides[i - 1] = strides[i] * dims[i];
-        }
-
-        BiggestTypeT<typename AType::ValueType, typename BType::ValueType> out{0.0};
-
-        for (size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
-            sentinel_to_indices(sentinel, strides, index);
-
-            if constexpr (IsComplexV<AType>) {
-                out += std::conj(subscript_tensor(A, index)) * subscript_tensor(B, index);
-            } else {
-                out += subscript_tensor(A, index) * subscript_tensor(B, index);
-            }
-        }
-
-        return out;
-    }
+template <typename AType, typename BType, typename CType>
+auto dot(einsums::detail::TensorImpl<AType> const &A, einsums::detail::TensorImpl<BType> const &B,
+         einsums::detail::TensorImpl<CType> const &C) -> BiggestTypeT<AType, BType, CType> {
+    return impl_dot(A, B, C);
 }
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
     requires SameRank<AType, BType, CType>
 auto dot(AType const &A, BType const &B, CType const &C)
     -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType> {
-    Dim<1> dim{1};
-    using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType>;
 
-    for (size_t i = 0; i < AType::Rank; i++) {
-        assert(A.dim(i) == B.dim(i) && A.dim(i) == C.dim(i));
-        dim[0] *= A.dim(i);
-    }
+    return dot(A.impl(), B.impl(), C.impl());
+}
 
-    auto vA = TensorView<T, 1>(const_cast<AType &>(A), dim);
-    auto vB = TensorView<T, 1>(const_cast<BType &>(B), dim);
-    auto vC = TensorView<T, 1>(const_cast<CType &>(C), dim);
-
-    T result{0};
-#pragma omp parallel for reduction(+ : result)
-    for (size_t i = 0; i < dim[0]; i++) {
-        result += subscript_tensor(vA, i) * subscript_tensor(vB, i) * subscript_tensor(vC, i);
-    }
-    return result;
+template <typename T>
+void axpy(T alpha, einsums::detail::TensorImpl<T> const &X, einsums::detail::TensorImpl<T> *Y) {
+    einsums::detail::impl_axpy(alpha, X, *Y);
 }
 
 template <CoreBasicTensorConcept XType, CoreBasicTensorConcept YType>
     requires SameUnderlyingAndRank<XType, YType>
 void axpy(typename XType::ValueType alpha, XType const &X, YType *Y) {
-    blas::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
+    axpy(alpha, X.impl(), &Y->impl());
+}
+
+template <typename T>
+void axpby(T alpha, einsums::detail::TensorImpl<T> const &X, T beta, einsums::detail::TensorImpl<T> *Y) {
+    einsums::detail::impl_scal(beta, *Y);
+    einsums::detail::impl_axpy(alpha, X, *Y);
 }
 
 template <CoreBasicTensorConcept XType, CoreBasicTensorConcept YType>
     requires SameUnderlyingAndRank<XType, YType>
 void axpby(typename XType::ValueType alpha, XType const &X, typename YType::ValueType beta, YType *Y) {
-    blas::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
+    axpby(alpha, X.impl(), beta, &Y->impl());
+}
+
+template <typename T>
+
+void ger(T alpha, einsums::detail::TensorImpl<T> const &X, einsums::detail::TensorImpl<T> const &Y, einsums::detail::TensorImpl<T> *A) {
+    impl_ger(alpha, X, Y, *A);
 }
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept XYType>
@@ -593,7 +495,7 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept XYType>
         requires SameUnderlying<AType, XYType>;
     }
 void ger(typename XYType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
-    blas::ger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
+    ger(alpha, X.impl(), Y.impl(), &A->impl());
 }
 
 template <bool TransA, bool TransB, CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
@@ -633,50 +535,16 @@ void symm_gemm(AType const &A, BType const &B, CType *C) {
     gemm<!TransB, false>(typename AType::ValueType{1.0}, B, temp, typename CType::ValueType{0.0}, C);
 }
 
+template <typename AType, typename BType, typename CType>
+void direct_product(CType alpha, einsums::detail::TensorImpl<AType> const &A, einsums::detail::TensorImpl<BType> const &B, CType beta,
+                    einsums::detail::TensorImpl<CType> *C) {
+    impl_direct_product(alpha, A, B, beta, C);
+}
+
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
 void direct_product(typename AType::ValueType alpha, AType const &A, BType const &B, typename CType::ValueType beta, CType *C) {
-    LabeledSection0();
-
-    using T = typename AType::ValueType;
-
-    // Ensure the various tensors passed in are the same dimensionality
-    if (((C->dims() != A.dims()) || C->dims() != B.dims())) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "direct_product: at least one tensor does not have same dimensionality as destination");
-    }
-
-    // Horrible hack. For some reason, in the for loop below, the result could be
-    // NAN if the target_value is initially a trash value.
-    if constexpr (IsComplexV<typename CType::ValueType>) {
-        if (beta == typename CType::ValueType{0.0, 0.0}) {
-            C->zero();
-        }
-    } else {
-        if (beta == T(0)) {
-            C->zero();
-        }
-    }
-
-    std::array<size_t, AType::Rank> index_strides;
-
-    size_t elements = dims_to_strides(A.dims(), index_strides);
-
-    if (!A.full_view_of_underlying() || !B.full_view_of_underlying() || !C->full_view_of_underlying()) {
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t item = 0; item < elements; item++) {
-
-            size_t A_ord, B_ord, C_ord;
-
-            sentinel_to_sentinels(item, index_strides, A.strides(), A_ord, B.strides(), B_ord, C->strides(), C_ord);
-
-            C->data()[C_ord] = beta * C->data()[C_ord] + alpha * (A.data()[A_ord] * B.data()[B_ord]);
-        }
-    } else {
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t item = 0; item < elements; item++) {
-            C->data()[item] = beta * C->data()[item] + alpha * (A.data()[item] * B.data()[item]);
-        }
-    }
+    direct_product(alpha, A.impl(), B.impl(), beta, &C->impl());
 }
 
 template <CoreBasicTensorConcept AType>

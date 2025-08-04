@@ -1,4 +1,9 @@
-#include <cmath>
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
+#pragma once
 #include <complex>
 namespace einsums {
 namespace linear_algebra {
@@ -69,21 +74,21 @@ constexpr std::complex<double> fma(std::complex<double> const &x, double const &
 }
 
 constexpr std::complex<float> fma(float const &x, std::complex<float> const &y, std::complex<float> const &sum) {
-    return fma(y, x, sum);
+    return detail::fma(y, x, sum);
 }
 
 constexpr std::complex<double> fma(double const &x, std::complex<double> const &y, std::complex<double> const &sum) {
-    return fma(y, x, sum);
+    return detail::fma(y, x, sum);
 }
 
 template <typename T>
 constexpr T triple_product(T const &x, T const &y, T const &z) {
     T first_prod  = x * y;
-    T first_error = fma(x, y, -first_prod);
+    T first_error = detail::fma(x, y, -first_prod);
 
     T second_prod  = z * first_prod;
     T second_error = z * first_error;
-    T third_error  = fma(z, first_prod, -second_prod);
+    T third_error  = detail::fma(z, first_prod, -second_prod);
 
     T error = second_error + third_error;
 

@@ -180,6 +180,33 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     }
 
     /**
+     * @brief Construct a new Tensor object with the given name and dimensions.
+     *
+     * Constructs a new Tensor object using the information provided in \p name and \p dims .
+     *
+     * @code
+     * auto A = Tensor("A", 3, 3);
+     * @endcode
+     *
+     * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     *
+     * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
+     * @param name Name of the new tensor.
+     * @param dims The dimensions of each rank of the tensor.
+     */
+    template <std::integral... Dims>
+    Tensor(bool row_major, std::string name, Dims... dims)
+        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, row_major) {
+        static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
+
+        // Resize the data structure
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+    }
+
+    /**
      * @brief Construct a new Tensor object. Moving \p existingTensor data to the new tensor.
      *
      * This constructor is useful for reshaping a tensor. It does not modify the underlying
@@ -1733,7 +1760,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         }
 
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
-        _data = &(other.data()[ordinal]);
+        _data = &(other.data()[_offset_ordinal]);
 
         _impl = detail::TensorImpl<T>(_data, _dims, _strides);
     }
@@ -1999,10 +2026,10 @@ TensorView(std::string, Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> T
  * @param args The arguments needed to construct the tensor.
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
-template <typename Type = double, typename... Args>
+template <typename Type = double, bool RowMajor = false, typename... Args>
 auto create_tensor(std::string const &name, Args... args) {
     EINSUMS_LOG_TRACE("creating tensor {}, {}", name, std::forward_as_tuple(args...));
-    return Tensor<Type, sizeof...(Args)>{name, args...};
+    return Tensor<Type, sizeof...(Args)>{RowMajor, name, args...};
 }
 
 /**
@@ -2028,9 +2055,9 @@ auto create_tensor(std::string const &name, Args... args) {
  * @param args The arguments needed to construct the tensor.
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
-template <typename Type = double, std::integral... Args>
+template <typename Type = double, bool RowMajor = false, std::integral... Args>
 auto create_tensor(Args... args) {
-    return Tensor<Type, sizeof...(Args)>{"Temporary", args...};
+    return Tensor<Type, sizeof...(Args)>{RowMajor, "Temporary", args...};
 }
 
 #ifndef DOXYGEN

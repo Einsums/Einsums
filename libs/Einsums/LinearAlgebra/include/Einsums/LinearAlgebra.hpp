@@ -503,7 +503,7 @@ auto getrf(TensorType *A, std::vector<blas::int_t> *pivot) -> int {
         // println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
         pivot->resize(std::min(A->dim(0), A->dim(1)));
     }
-    int result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
+    int result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->impl().get_lda(), pivot->data());
 
     if (result < 0) {
         EINSUMS_LOG_WARN("getrf: argument {} has an invalid value", -result);
@@ -528,7 +528,7 @@ template <MatrixConcept TensorType>
 auto getri(TensorType *A, std::vector<blas::int_t> const &pivot) -> int {
     LabeledSection0();
 
-    int result = blas::getri(A->dim(0), A->data(), A->stride(0), pivot.data());
+    int result = blas::getri(A->dim(0), A->data(), A->impl().get_lda(), pivot.data());
 
     if (result < 0) {
         EINSUMS_LOG_WARN("getri: argument {} has an invalid value", -result);
@@ -623,12 +623,23 @@ auto norm(Norm norm_type, AType const &a) -> RemoveComplexT<typename AType::Valu
     LabeledSection0();
 
     std::vector<RemoveComplexT<typename AType::ValueType>> work(4 * a.dim(0), 0.0);
-    return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
+    auto                                                   norm_type_adjusted = norm_type;
+
+    if (norm_type == Norm::One && a.impl().is_row_major()) {
+        norm_type_adjusted = Norm::Infinity;
+    } else if (norm_type == Norm::Infinity && a.impl().is_row_major()) {
+        norm_type_adjusted = Norm::One;
+    }
+    return blas::lange(static_cast<char>(norm_type_adjusted), a.dim(0), a.dim(1), a.data(), a.impl().get_lda(), work.data());
 }
 
 template <TensorConcept AType>
 auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::ValueType> {
-    return std::sqrt(std::abs(true_dot(a, a)));
+    RemoveComplexT<typename AType::ValueType> norm = 0.0, scale = 1.0;
+
+    sum_square(a, &scale, &norm);
+
+    return std::sqrt(norm) * scale;
 }
 
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
@@ -644,7 +655,7 @@ auto svd(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Te
 
     size_t m   = A.dim(0);
     size_t n   = A.dim(1);
-    size_t lda = A.stride(0);
+    size_t lda = A.impl().get_lda();
 
     // Test if it is absolutely necessary to zero out these tensors first.
     auto U = create_tensor<T>("U (stored columnwise)", m, m);
@@ -657,13 +668,15 @@ auto svd(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Te
     superb.zero();
 
     //    int info{0};
-    int info = blas::gesvd('A', 'A', m, n, A.data(), lda, S.data(), U.data(), m, Vt.data(), n, superb.data());
+    int info =
+        blas::gesvd('A', 'A', m, n, A.data(), lda, S.data(), U.data(), U.impl().get_lda(), Vt.data(), Vt.impl().get_lda(), superb.data());
 
     if (info != 0) {
         if (info < 0) {
-            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
-                                    "svd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info,
-                                    m, n, n, m);
+            EINSUMS_THROW_EXCEPTION(
+                std::invalid_argument,
+                "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #6 (lda) = {}, #8 (m) = {}", -info, m, n,
+                lda, U.impl().get_lda(), Vt.impl().get_lda());
         } else {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
         }
@@ -681,25 +694,27 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
     // Calling svd will destroy the original data. Make a copy of it.
     Tensor<T, 2> A = _A;
 
-    blas::int_t m   = A.dim(0);
-    blas::int_t n   = A.dim(1);
-    blas::int_t lda = A.stride(0);
+    size_t m   = A.dim(0);
+    size_t n   = A.dim(1);
+    size_t lda = A.impl().get_lda();
 
-    auto U = create_tensor<T>("U", m, m);
-    zero(U);
-    auto S = create_tensor<T>("S", n);
-    zero(S);
-    auto V = create_tensor<T>("V", n, n);
-    zero(V);
+    // Test if it is absolutely necessary to zero out these tensors first.
+    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
+    S.zero();
+    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
+    Vt.zero();
     auto superb = create_tensor<T>("superb", std::min(m, n));
+    superb.zero();
 
-    int info = blas::gesvd('N', 'A', m, n, A.data(), lda, S.data(), U.data(), m, V.data(), n, superb.data());
+    //    int info{0};
+    int info = blas::gesvd('N', 'A', m, n, A.data(), lda, S.data(), nullptr, 1, Vt.data(), Vt.impl().get_lda(), superb.data());
 
     if (info != 0) {
         if (info < 0) {
-            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
-                                    "svd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info,
-                                    m, n, n, m);
+            EINSUMS_THROW_EXCEPTION(
+                std::invalid_argument,
+                "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #6 (lda) = {}, #8 (m) = {}", -info, m, n,
+                lda, 1, Vt.impl().get_lda());
         } else {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
         }
@@ -714,17 +729,13 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
     }
 
     // println("rank {}", rank);
-    auto Vview     = V(Range{rank, V.dim(0)}, All);
-    auto nullspace = Tensor(V);
+    auto Vview     = Vt(Range{rank, Vt.dim(0)}, All);
+    auto nullspace = Tensor(Vview);
 
     // Normalize nullspace. LAPACK does not guarentee them to be orthonormal
     for (int i = 0; i < nullspace.dim(0); i++) {
-        T sum{0};
-        for (int j = 0; j < nullspace.dim(1); j++) {
-            sum += std::pow(nullspace(i, j), 2.0);
-        }
-        sum = std::sqrt(sum);
-        scale_row(i, sum, &nullspace);
+        T norm = vec_norm(nullspace(i, All));
+        scale_row(i, T{1.0} / norm, &nullspace);
     }
 
     return nullspace;
@@ -756,14 +767,15 @@ auto svd_dd(AType const &_A, Vectors job = Vectors::All)
     auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
     zero(Vt);
 
-    int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), static_cast<int>(n), S.data(),
-                           U.data(), static_cast<int>(m), Vt.data(), static_cast<int>(n));
+    int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), A.impl().get_lda(), S.data(),
+                           U.data(), U.impl().get_lda(), Vt.data(), Vt.impl().get_lda());
 
     if (info != 0) {
         if (info < 0) {
-            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
-                                    "svd_dd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}",
-                                    -info, m, n, n, m);
+            EINSUMS_THROW_EXCEPTION(
+                std::invalid_argument,
+                "svd_dd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info,
+                m, n, A.impl().get_lda(), U.impl().get_lda(), Vt.impl().get_lda());
         } else {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd_dd: error value {}", info);
         }
@@ -792,12 +804,12 @@ auto truncated_svd(AType const &_A, size_t k)
 
     Tensor<T, 1> tau("tau", std::min(m, k + 5));
     // Compute QR factorization of Y
-    int info1 = blas::geqrf(m, k + 5, Y.data(), k + 5, tau.data());
+    int info1 = blas::geqrf(m, k + 5, Y.data(), Y.impl().get_lda(), tau.data());
     // Extract Matrix Q out of QR factorization
     if constexpr (!IsComplexV<T>) {
-        int info2 = blas::orgqr(m, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<T const *>(tau.data()));
+        int info2 = blas::orgqr(m, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
     } else {
-        int info2 = blas::ungqr(m, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<T const *>(tau.data()));
+        int info2 = blas::ungqr(m, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
     }
 
     // Cast the matrix A into a smaller rank (B)
@@ -835,9 +847,9 @@ auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename ATyp
 
     Tensor<T, 1> tau("tau", std::min(n, k + 5));
     // Compute QR factorization of Y
-    blas::int_t const info1 = blas::geqrf(n, k + 5, Y.data(), k + 5, tau.data());
+    blas::int_t const info1 = blas::geqrf(n, k + 5, Y.data(), Y.impl().get_lda(), tau.data());
     // Extract Matrix Q out of QR factorization
-    blas::int_t const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<T const *>(tau.data()));
+    blas::int_t const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
 
     Tensor<T, 2> &Q1 = Y;
 
@@ -921,7 +933,7 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
     Tensor<T, 2>             wi("Schur Imaginary Buffer", n, n);
     Tensor<T, 2>             U("Lyapunov U", n, n);
     std::vector<blas::int_t> sdim(1);
-    blas::gees('V', n, R.data(), n, sdim.data(), wr.data(), wi.data(), U.data(), n);
+    blas::gees('V', n, R.data(), R.impl().get_lda(), sdim.data(), wr.data(), wi.data(), U.data(), U.impl().get_lda());
 
     // Compute F = U^T * Q * U
     Tensor<T, 2> Fbuff = gemm<true, false>(1.0, U, Q);
@@ -929,7 +941,8 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
 
     // Call the Sylvester Solve
     std::vector<T> scale(1);
-    blas::trsyl('N', 'N', 1, n, n, const_cast<T const *>(R.data()), n, const_cast<T const *>(R.data()), n, F.data(), n, scale.data());
+    blas::trsyl('N', 'N', 1, n, n, const_cast<T const *>(R.data()), R.impl().get_lda(), const_cast<T const *>(R.data()), R.impl().get_lda(),
+                F.data(), F.impl().get_lda(), scale.data());
 
     Tensor<T, 2> Xbuff = gemm<false, false>(scale[0], U, F);
     Tensor<T, 2> X     = gemm<false, true>(1.0, Xbuff, U);
@@ -953,7 +966,7 @@ auto qr(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Ten
 
     Tensor<T, 1> tau("tau", std::min(m, n));
     // Compute QR factorization of Y
-    blas::int_t info = blas::geqrf(m, n, A.data(), n, tau.data());
+    blas::int_t info = blas::geqrf(m, n, A.data(), A.impl().get_lda(), tau.data());
 
     if (info != 0) {
         EINSUMS_THROW_EXCEPTION(std::invalid_argument, "{} parameter to geqrf has an illegal value.", -info);
@@ -980,13 +993,13 @@ auto q(AType const &qr, TauType const &tau) -> Tensor<typename AType::ValueType,
     blas::int_t info;
     if constexpr (!IsComplexV<T>) {
 
-        info = blas::orgqr(m, m, p, Q.data(), m, tau.data());
+        info = blas::orgqr(m, m, p, Q.data(), Q.impl().get_lda(), tau.data());
     } else {
-        info = blas::ungqr(m, m, p, Q.data(), m, tau.data());
+        info = blas::ungqr(m, m, p, Q.data(), Q.impl().get_lda(), tau.data());
     }
     if (info != 0) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "{} parameter to orgqr has an illegal value. {} {} {}", print::ordinal(-info), m, m,
-                                p);
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "{} parameter to orgqr has an illegal value. 1: {}, 2: {}, 3: {}, 5: {}",
+                                print::ordinal(-info), m, m, p, Q.impl().get_lda());
     }
 
     return Q;

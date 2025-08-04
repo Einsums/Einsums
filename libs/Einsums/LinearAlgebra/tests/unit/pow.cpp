@@ -27,11 +27,12 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
                 A(i, j) = A(j, i);
             }
         }
-
-        Tensor B = linear_algebra::pow(A, TestType{2.0});
+        
         Tensor C = create_tensor_like(A);
 
         linear_algebra::gemm<false, false>(1.0, A, A, 0.0, &C);
+
+        Tensor B = linear_algebra::pow(A, TestType{2.0});
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {

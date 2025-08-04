@@ -1,4 +1,9 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
 
+#pragma once
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
@@ -14,6 +19,7 @@ void impl_sum_square_contiguous(einsums::detail::TensorImpl<T> const &a, RemoveC
     } else {
         T const     *a_data = a.data();
         size_t const size = a.size(), incx = a.get_incx();
+        *scale = T{1.0};
 
         EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: *sumsq))
         for (size_t i = 0; i < size; i++) {
@@ -30,6 +36,7 @@ void impl_sum_square_noncontiguous_vectorable(int depth, int hard_rank, size_t e
         if constexpr (blas::IsBlasableV<T>) {
             blas::lassq(easy_size, in, inc_in, scale, sumsq);
         } else {
+            *scale = T{1.0};
             EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: *sumsq))
             for (size_t i = 0; i < easy_size; i++) {
                 *sumsq += in[i * inc_in] * in[i * inc_in];
