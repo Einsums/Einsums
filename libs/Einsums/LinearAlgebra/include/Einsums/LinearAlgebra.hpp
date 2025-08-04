@@ -533,6 +533,14 @@ auto getri(TensorType *A, std::vector<blas::int_t> const &pivot) -> int {
     if (result < 0) {
         EINSUMS_LOG_WARN("getri: argument {} has an invalid value", -result);
     }
+
+    if(A->impl().is_column_major()) {
+        for (int i = 0; i < A->dim(0); i++) {
+            for (int j = i + 1; j < A->dim(1); j++) {
+                std::swap((*A)(i, j), (*A)(j, i));
+            }
+        }
+    }
     return result;
 }
 

@@ -135,7 +135,13 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * @brief Construct a new Tensor object. Default copy constructor
      */
-    Tensor(Tensor const &other) : _data(other._data), _impl(other._impl) { _impl.set_data(_data.data()); }
+    Tensor(Tensor const &other) : _data(other._data), _impl(other._impl) {
+        _impl.set_data(_data.data());
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+    }
 
     /**
      * @brief Destroy the Tensor object.
@@ -177,6 +183,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -204,6 +215,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -269,6 +285,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
 
         _impl = detail::TensorImpl<T>(_data.data(), _dims, existingTensor.impl().is_row_major());
 
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+
         // Check size
         if (_data.size() != _impl.size()) {
             EINSUMS_THROW_EXCEPTION(dimension_error, "Provided dims to not match size of parent tensor");
@@ -285,6 +306,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -301,6 +327,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         _impl.set_data(_data.data());
 
         detail::copy_to(other.impl(), _impl);
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -319,6 +350,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -582,6 +618,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             _impl.set_data(_data.data());
         }
 
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+
         std::copy(other._data.begin(), other._data.end(), _data.begin());
 
         return *this;
@@ -611,6 +652,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         }
 
         detail::copy_to(other.impl(), _impl);
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
 
         return *this;
     }
@@ -677,6 +723,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         }
 
         hip_catch(hipMemcpy(_data.data(), other.gpu_data(), _impl.size() * sizeof(T), hipMemcpyDeviceToHost));
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
 
         return *this;
     }
@@ -786,7 +837,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * Get all the dimensions of the tensor.
      */
-    Dim<Rank> dims() const { return Dim<Rank>(_impl.dims().begin(), _impl.dims().end()); }
+    Dim<Rank> const &dims() const { return _dim_array; }
 
     /**
      * Get the internal vector containing the tensor's data.
@@ -804,7 +855,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * Get the strides of this tensor.
      */
-    Stride<Rank> strides() const { return Stride<Rank>(_impl.strides().begin(), _impl.strides().end()); }
+    Stride<Rank> const &strides() const { return _stride_array; }
 
     /**
      * Flatten out the tensor.
@@ -851,6 +902,9 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     BufferVector<T> _data{};
 
     detail::TensorImpl<T> _impl{};
+
+    Dim<Rank>    _dim_array;
+    Stride<Rank> _stride_array;
 
     template <typename T_, size_t Rank_>
     friend struct TensorView;
@@ -1525,12 +1579,12 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Get the dimensions of the view.
      */
-    Dim<Rank> dims() const { return Dim<Rank>(_impl.dims().begin(), _impl.dims().end()); }
+    Dim<Rank> const &dims() const { return _dim_array; }
 
     /**
      * Get the dimensions of the original tensor.
      */
-    Dim<Rank> source_dims() const { return _source_dims; }
+    Dim<Rank> const &source_dims() const { return _source_dims; }
 
     /**
      * Get the name of the view.
@@ -1554,7 +1608,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Get the strides of the tensor.
      */
-    Stride<Rank> strides() const noexcept { return Stride<Rank>(_impl.strides().begin(), _impl.strides().end()); }
+    Stride<Rank> const &strides() const noexcept { return _stride_array; }
 
     /**
      * Get the offset of the view along a given axis.
@@ -1692,7 +1746,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         } else {
             if (std::accumulate(_dims.begin(), _dims.end(), 1.0, std::multiplies()) ==
                 std::accumulate(other.dims().begin(), other.dims().end(), 1.0, std::multiplies())) {
-                dims_to_strides(_dims, default_strides);
+                dims_to_strides(_dims, default_strides, other.impl().is_row_major());
             } else {
                 // Stride information cannot be automatically deduced.  It must be provided.
                 default_strides = arguments::get(error_strides, args...);
@@ -1725,26 +1779,51 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             // In decreasing strides when matching the correct dimension is reached (dim[i] = 1 is neglected)
             // Where dimenions less than the outermost are skipped these are incorporated into the dimension inner to it
             // If there are no further inner strides, the inner stride is non-zero to account for missing dimensionality.
-            size_t current_stride    = 1;
-            size_t tensor_index      = 0;
-            size_t cumulative_stride = 1;
-            for (int i = 0; i < Rank; i++) {
-                _source_dims[i]   = 0;
-                cumulative_stride = 1;
-                current_stride    = _strides[i];
-                while (_source_dims[i] == 0) {
-                    cumulative_stride *= other.dim(tensor_index);
-                    if (other.stride(tensor_index) == current_stride) {
-                        _source_dims[i] = cumulative_stride;
-                        _offsets[i]     = temp_offsets[tensor_index];
+
+            if (other.impl().is_column_major()) {
+                size_t current_stride    = 1;
+                size_t tensor_index      = 0;
+                size_t cumulative_stride = 1;
+                for (int i = 0; i < Rank; i++) {
+                    _source_dims[i]   = 0;
+                    cumulative_stride = 1;
+                    current_stride    = _strides[i];
+                    while (_source_dims[i] == 0) {
+                        if (other.stride(tensor_index) == current_stride) {
+                            _source_dims[i] = cumulative_stride;
+                            _offsets[i]     = temp_offsets[tensor_index];
+                        }
+                        cumulative_stride *= other.dim(tensor_index);
+                        tensor_index++;
                     }
-                    tensor_index++;
+                    if (_source_dims[i] == 0) {
+                        EINSUMS_THROW_EXCEPTION(bad_logic,
+                                                "Unable to deduce source dimensions. Stride does not follow source tensor dimensions.");
+                    }
                 }
-                if (_source_dims[i] == 0) {
-                    EINSUMS_THROW_EXCEPTION(bad_logic,
-                                            "Unable to deduce source dimensions. Stride does not follow source tensor dimensions.");
+            } else {
+                size_t current_stride    = 1;
+                size_t tensor_index      = 0;
+                size_t cumulative_stride = 1;
+                for (int i = 0; i < Rank; i++) {
+                    _source_dims[i]   = 0;
+                    cumulative_stride = 1;
+                    current_stride    = _strides[i];
+                    while (_source_dims[i] == 0) {
+                        cumulative_stride *= other.dim(tensor_index);
+                        if (other.stride(tensor_index) == current_stride) {
+                            _source_dims[i] = cumulative_stride;
+                            _offsets[i]     = temp_offsets[tensor_index];
+                        }
+                        tensor_index++;
+                    }
+                    if (_source_dims[i] == 0) {
+                        EINSUMS_THROW_EXCEPTION(bad_logic,
+                                                "Unable to deduce source dimensions. Stride does not follow source tensor dimensions.");
+                    }
                 }
             }
+
             _offset_ordinal = indices_to_sentinel(_strides, _offsets); // Only counts offsets that are in the view
             ordinal -= _offset_ordinal;
         }
@@ -1763,6 +1842,11 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         _data = &(other.data()[_offset_ordinal]);
 
         _impl = detail::TensorImpl<T>(_data, _dims, _strides);
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -1798,6 +1882,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     Offset<Rank> _offsets;
     size_t       _offset_ordinal{0};
+    Dim<Rank>    _dim_array;
+    Stride<Rank> _stride_array;
 
     T *_parent{nullptr};
 
@@ -1974,11 +2060,17 @@ void zero(TensorType<T, Rank> &A) {
 template <typename... Args>
 Tensor(std::string const &, Args...) -> Tensor<double, sizeof...(Args)>;
 
+template <typename... Args>
+Tensor(bool, std::string const &, Args...) -> Tensor<double, sizeof...(Args)>;
+
 template <typename T, size_t OtherRank, typename... Dims>
 explicit Tensor(Tensor<T, OtherRank> &&otherTensor, std::string name, Dims... dims) -> Tensor<T, sizeof...(dims)>;
 
 template <size_t Rank, typename... Args>
 explicit Tensor(Dim<Rank> const &, Args...) -> Tensor<double, Rank>;
+
+template <size_t Rank, typename... Args>
+explicit Tensor(bool, Dim<Rank> const &, Args...) -> Tensor<double, Rank>;
 
 template <typename T, size_t Rank, size_t OtherRank, typename... Args>
 TensorView(Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;

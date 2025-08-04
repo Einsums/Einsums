@@ -257,6 +257,18 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
                 // No temporary buffer needed.
                 blas::heev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
             }
+
+            // We might need to transpose the eigenvectors.
+            if (A->is_row_major()) {
+                for (size_t i = 0; i < A->dim(0); i++) {
+                    A->subscript_no_check(i, i) = std::conj(A->subscript_no_check(i, i));
+                    for (size_t j = i + 1; j < A->dim(1); j++) {
+                        AType temp                  = A->subscript_no_check(i, j);
+                        A->subscript_no_check(i, j) = std::conj(A->subscript_no_check(j, i));
+                        A->subscript_no_check(j, i) = std::conj(temp);
+                    }
+                }
+            }
         } else {
             // We can't use LAPACK, so use our own version. Note that the eigenvectors may be off by some complex phase factor.
             // They are still eigenvectors, they just don't match when directly compared with the results of LAPACK.
@@ -293,6 +305,15 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
                 }
             } else {
                 blas::syev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+            }
+
+            // We might need to transpose the eigenvectors.
+            if (A->is_row_major()) {
+                for (size_t i = 0; i < A->dim(0); i++) {
+                    for (size_t j = i + 1; j < A->dim(1); j++) {
+                        std::swap(A->subscript_no_check(i, j), A->subscript_no_check(j, i));
+                    }
+                }
             }
         } else {
             // We can't use LAPACK, so use our own version. Note that the eigenvectors may be off by some complex phase factor.
@@ -592,10 +613,10 @@ auto pow(AType const &a, typename AType::ValueType alpha,
             }
         }
 
-        scale_row(i, e(i), &a2);
+        scale_column(i, e(i), &a2);
     }
 
-    gemm<true, false>(1.0, a2, a1, 0.0, &result);
+    gemm('n', 'c', 1.0, a2, a1, 0.0, &result);
 
     return result;
 }

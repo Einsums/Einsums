@@ -17,11 +17,16 @@ void getrf_and_getri_test() {
     auto                     A = create_tensor<T>("A", 4, 4);
     std::vector<blas::int_t> pivot(4);
 
-    A.vector_data() =
-        VectorData<T>{1.80, 2.88, 2.05, -0.89, 5.25, -2.95, -0.95, -3.80, 1.58, -2.69, -2.90, -1.04, -1.11, -0.66, -0.59, 0.80};
+    A.vector_data() = {1.80, 2.88, 2.05, -0.89, 5.25, -2.95, -0.95, -3.80, 1.58, -2.69, -2.90, -1.04, -1.11, -0.66, -0.59, 0.80};
 
     einsums::linear_algebra::getrf(&A, &pivot);
     einsums::linear_algebra::getri(&A, pivot);
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = i + 1; j < 4; j++) {
+            std::swap(A(i, j), A(j, i));
+        }
+    }
 
     CHECK_THAT(A.vector_data(),
                Catch::Matchers::Approx(VectorData<T>{1.77199817, 0.57569082, 0.08432537, 4.81550236, -0.11746607, -0.44561501, 0.41136261,

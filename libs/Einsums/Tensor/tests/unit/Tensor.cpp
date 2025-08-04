@@ -96,10 +96,10 @@ TEST_CASE("Tensor GEMVs", "[tensor]") {
     A.vector_data() = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     x.vector_data() = {11.0, 22.0, 33.0};
 
-    einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
+    einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
     CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0}));
 
-    einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
+    einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
     CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0}));
 }
 
@@ -120,7 +120,7 @@ TEST_CASE("Tensor SYEVs", "[tensor]") {
 }
 
 TEST_CASE("Tensor Invert") {
-    einsums::Tensor A("A", 3, 3);
+    einsums::Tensor A(true, "A", 3, 3);
     A(0, 0) = 1.0;
     A(0, 1) = 2.0;
     A(0, 2) = 3.0;
@@ -158,7 +158,7 @@ TEST_CASE("TensorView creation", "[tensor]") {
 
     for (int i = 0, ij = 0; i < 3; i++)
         for (int j = 0; j < 9; j++, ij++)
-            REQUIRE(viewA(i, j) == ij);
+            REQUIRE(viewA(i, j) == A(i, j % 3, j / 3));
 
     double *array = new double[100];
 
@@ -174,8 +174,8 @@ TEST_CASE("TensorView creation", "[tensor]") {
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                REQUIRE(view1(i, j) == array[10 * i + j]);
-                REQUIRE(const_view1(i, j) == array[10 * i + j]);
+                REQUIRE(view1(i, j) == array[i + j * 10]);
+                REQUIRE(const_view1(i, j) == array[i + j * 10]);
                 REQUIRE(view2(i, j) == array[10 * i + j]);
                 REQUIRE(const_view2(i, j) == array[10 * i + j]);
             }
@@ -284,8 +284,8 @@ TEST_CASE("TensorView Ranges") {
         // einsums::println("C strides: %zu %zu\n", C.strides()[0], C.strides()[1]);
 
         REQUIRE(C(1, 1) == viewC(0, 0));
-        REQUIRE(C(1, 2) == viewC(0, 1));
-        REQUIRE(C(2, 1) == viewC(1, 0));
+        REQUIRE(C(1, 2) == viewC(1, 0));
+        REQUIRE(C(2, 1) == viewC(0, 1));
         REQUIRE(C(2, 2) == viewC(1, 1));
     }
 

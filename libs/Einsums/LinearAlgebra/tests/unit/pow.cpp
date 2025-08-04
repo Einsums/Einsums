@@ -16,18 +16,17 @@ using namespace einsums;
 
 TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
 
-    //    using TestType = double;
-
     SECTION("Integer power") {
 
         Tensor A = create_random_tensor<TestType>("A", 10, 10);
+
         // Can only handle symmetric matrices.
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < i; j++) {
                 A(i, j) = A(j, i);
             }
         }
-        
+
         Tensor C = create_tensor_like(A);
 
         linear_algebra::gemm<false, false>(1.0, A, A, 0.0, &C);
