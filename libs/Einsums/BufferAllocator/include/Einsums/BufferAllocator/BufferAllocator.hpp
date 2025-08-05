@@ -15,6 +15,7 @@
 #include <deque>
 #include <forward_list>
 #include <source_location>
+#include <string>
 #include <type_traits>
 #include <unordered_set>
 
@@ -279,5 +280,10 @@ using BufferUnorderedMultiSet = std::unordered_multiset<Key, Hash, KeyEqual, Buf
 
 template <typename Key, typename T, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
 using BufferUnorderedMultiMap = std::unordered_multimap<Key, T, Hash, KeyEqual, BufferAllocator<std::pair<Key const, T>>>;
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+using BufferBasicString = std::basic_string<CharT, Traits, BufferAllocator<CharT>>;
+
+using BufferString = BufferBasicString<char>;
 
 } // namespace einsums

@@ -182,7 +182,7 @@ class EINSUMS_EXPORT PyGPUView {
     /**
      * @brief Get the dimensions of each axis.
      */
-    std::vector<size_t> dims() const noexcept;
+    BufferVector<size_t> dims() const noexcept;
 
     /**
      * @brief Get the dimension of the given axis. Supports negative indexing.
@@ -195,7 +195,7 @@ class EINSUMS_EXPORT PyGPUView {
      * This is different from how the C++ side works, which is in elements. To get
      * the equivalent C++ stride, you must divide by PyGPUView::itemsize().
      */
-    std::vector<size_t> strides() const noexcept;
+    BufferVector<size_t> strides() const noexcept;
 
     /**
      * @brief Get the strides of the given axis in bytes. Supports negative indexing.
@@ -266,7 +266,7 @@ class EINSUMS_EXPORT PyGPUView {
     void *_host_data;
     void *_dev_data;
 
-    std::vector<size_t> _dims, _strides;
+    BufferVector<size_t> _dims, _strides;
     size_t             *_gpu_dims, *_gpu_strides;
     size_t              _rank;
     size_t              _itemsize;

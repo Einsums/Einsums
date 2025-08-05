@@ -499,7 +499,7 @@ void sentinel_to_sentinels(size_t sentinel, StorageType const &index_strides, St
  * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
  */
 template <size_t num_unique_inds>
-EINSUMS_HOSTDEV inline size_t indices_to_sentinel(size_t const *unique_strides, size_t const *inds) {
+EINSUMS_HOSTDEV inline size_t indices_to_sentinel(size_t const *unique_strides, size_t const *inds) noexcept {
     size_t out = 0;
 
 #pragma unroll
@@ -515,7 +515,7 @@ EINSUMS_HOSTDEV inline size_t indices_to_sentinel(size_t const *unique_strides, 
  */
 template <size_t num_unique_inds>
 inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> const &unique_strides,
-                                  std::array<size_t, num_unique_inds> const       &inds) {
+                                  std::array<size_t, num_unique_inds> const       &inds) noexcept {
     size_t out = 0;
 
 #pragma unroll
@@ -531,7 +531,7 @@ inline size_t indices_to_sentinel(std::array<std::int64_t, num_unique_inds> cons
  */
 template <size_t num_unique_inds>
 inline size_t indices_to_sentinel(std::array<size_t, num_unique_inds> const &unique_strides,
-                                  std::array<size_t, num_unique_inds> const &inds) {
+                                  std::array<size_t, num_unique_inds> const &inds) noexcept {
     size_t out = 0;
 
 #pragma unroll

@@ -623,7 +623,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             _stride_array[i] = _impl.stride(i);
         }
 
-        std::copy(other._data.begin(), other._data.end(), _data.begin());
+        detail::copy_to(other.impl(), _impl);
 
         return *this;
     }
@@ -767,10 +767,18 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
 
     template <typename TOther>
     Tensor &operator+=(Tensor<TOther, rank> const &other) {
-        if constexpr (std::is_integral_v<T>) {
-            detail::impl_axpy_contiguous(T{1}, other.impl(), _impl);
+        if (_impl.is_column_major() == other.impl().is_column_major()) {
+            if constexpr (std::is_integral_v<T>) {
+                detail::impl_axpy_contiguous(T{1}, other.impl(), _impl);
+            } else {
+                detail::impl_axpy_contiguous(T{1.0}, other.impl(), _impl);
+            }
         } else {
-            detail::impl_axpy_contiguous(T{1.0}, other.impl(), _impl);
+            if constexpr (std::is_integral_v<T>) {
+                detail::impl_axpy(T{1}, other.impl(), _impl);
+            } else {
+                detail::impl_axpy(T{1.0}, other.impl(), _impl);
+            }
         }
 
         return *this;
@@ -778,10 +786,18 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
 
     template <typename TOther>
     Tensor &operator-=(Tensor<TOther, rank> const &other) {
-        if constexpr (std::is_integral_v<T>) {
-            detail::impl_axpy_contiguous(T{-1}, other.impl(), _impl);
+        if (_impl.is_column_major() == other.impl().is_column_major()) {
+            if constexpr (std::is_integral_v<T>) {
+                detail::impl_axpy_contiguous(T{-1}, other.impl(), _impl);
+            } else {
+                detail::impl_axpy_contiguous(T{-1.0}, other.impl(), _impl);
+            }
         } else {
-            detail::impl_axpy_contiguous(T{-1.0}, other.impl(), _impl);
+            if constexpr (std::is_integral_v<T>) {
+                detail::impl_axpy(T{-1}, other.impl(), _impl);
+            } else {
+                detail::impl_axpy(T{-1.0}, other.impl(), _impl);
+            }
         }
 
         return *this;
@@ -789,14 +805,22 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
 
     template <typename TOther>
     Tensor &operator*=(Tensor<TOther, rank> const &other) {
-        detail::impl_mult_contiguous(other.impl(), _impl);
+        if (_impl.is_column_major() == other.impl().is_column_major()) {
+            detail::impl_mult_contiguous(other.impl(), _impl);
+        } else {
+            detail::impl_mult(other.impl(), _impl);
+        }
 
         return *this;
     }
 
     template <typename TOther>
     Tensor &operator/=(Tensor<TOther, rank> const &other) {
-        detail::impl_div_contiguous(other.impl(), _impl);
+        if (_impl.is_column_major() == other.impl().is_column_major()) {
+            detail::impl_div_contiguous(other.impl(), _impl);
+        } else {
+            detail::impl_div(other.impl(), _impl);
+        }
 
         return *this;
     }
@@ -1195,6 +1219,10 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         : _impl(const_cast<T *>(data), dims, row_major), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
         _source_dims = dims;
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -1207,6 +1235,10 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         : _impl(const_cast<T *>(data), dims, row_major), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
         _source_dims = dims;
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -1220,6 +1252,10 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         : _impl(const_cast<T *>(data), dims, strides), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
         _source_dims = dims;
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -1233,20 +1269,36 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         : _impl(const_cast<T *>(data), dims, strides), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
         _source_dims = dims;
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     explicit TensorView(detail::TensorImpl<T> const &impl) : _impl(impl), _parent{const_cast<T *>(impl.data())} {
         _offsets.fill(0);
         _source_dims = Dim<Rank>(impl.dims().begin(), impl.dims().end());
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
     explicit TensorView(detail::TensorImpl<T> const &impl, T *parent) : _impl(impl), _parent{parent} {
         _offsets.fill(0);
         _source_dims = Dim<Rank>(impl.dims().begin(), impl.dims().end());
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     explicit TensorView(detail::TensorImpl<T> const &impl, T const *parent) : _impl(impl), _parent{const_cast<T *>(parent)} {
         _offsets.fill(0);
         _source_dims = Dim<Rank>(impl.dims().begin(), impl.dims().end());
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**

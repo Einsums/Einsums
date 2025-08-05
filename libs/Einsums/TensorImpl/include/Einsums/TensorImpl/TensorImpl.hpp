@@ -579,15 +579,6 @@ struct TensorImpl final {
      */
     template <std::integral IntType>
     constexpr pointer data_no_check(std::initializer_list<IntType> const &index) {
-        if (index.size() < _rank) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (index.size() > _rank) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
-        }
-
-        if (_ptr == nullptr) {
-            return nullptr;
-        }
 
         return _ptr + indices_to_sentinel(_strides, index);
     }
@@ -602,15 +593,6 @@ struct TensorImpl final {
      */
     template <std::integral IntType>
     constexpr const_pointer data_no_check(std::initializer_list<IntType> const &index) const {
-        if (index.size() < _rank) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
-        } else if (index.size() > _rank) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to data!");
-        }
-
-        if (_ptr == nullptr) {
-            return nullptr;
-        }
 
         return _ptr + indices_to_sentinel(_strides, index);
     }

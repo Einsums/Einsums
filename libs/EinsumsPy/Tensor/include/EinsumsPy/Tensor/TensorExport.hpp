@@ -43,7 +43,7 @@ void rdiv(RuntimeTensorView<T> &out, U const &numerator) {
 
     auto *data = out.data();
 
-    std::vector<size_t> index_strides;
+    BufferVector<size_t> index_strides;
 
     auto strides = out.strides();
 

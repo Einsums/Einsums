@@ -34,13 +34,13 @@ extern "C" void xerbla(char const *srname, int const *info, int const /*len*/) {
 
 } // namespace
 
-EINSUMS_EXPORT void initialize() {
+void initialize() {
 #if defined(EINSUMS_HAVE_MKL)
     mkl_set_xerbla(&xerbla);
 #endif
 }
 
-EINSUMS_EXPORT void finalize() {
+void finalize() {
 }
 
 } // namespace einsums::blas::vendor

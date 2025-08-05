@@ -15,7 +15,7 @@ void getrf_and_getri_test() {
     using namespace einsums::linear_algebra;
 
     auto                     A = create_tensor<T>("A", 4, 4);
-    std::vector<blas::int_t> pivot(4);
+    BufferVector<blas::int_t> pivot(4);
 
     A.vector_data() = {1.80, 2.88, 2.05, -0.89, 5.25, -2.95, -0.95, -3.80, 1.58, -2.69, -2.90, -1.04, -1.11, -0.66, -0.59, 0.80};
 

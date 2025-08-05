@@ -42,8 +42,8 @@ struct LabelBase {};
             return index;                                                                                                                  \
         }                                                                                                                                  \
                                                                                                                                            \
-        template <typename T>                                                                                                              \
-        size_t operator()(std::vector<T> *args) const {                                                                                    \
+        template <typename T, typename Alloc>                                                                                              \
+        size_t operator()(std::vector<T, Alloc> *args) const {                                                                             \
             size_t out = args->at(0);                                                                                                      \
             args->erase(args->begin());                                                                                                    \
                                                                                                                                            \
@@ -202,7 +202,7 @@ struct Indices : std::tuple<Args...> {
     /**
      * Construct a new Indices object using the given indices.
      */
-    Indices(Args... args) : std::tuple<Args...>(args...){};
+    Indices(Args... args) : std::tuple<Args...>(args...) {};
 };
 
 } // namespace einsums
