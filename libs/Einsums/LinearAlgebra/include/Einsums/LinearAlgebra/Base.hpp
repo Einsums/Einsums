@@ -283,10 +283,7 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
             lwork = impl_heev_get_work_length(jobz, A, W);
 
             work.resize(lwork);
-            BufferVector<RemoveComplexT<AType>> rwork(std::max((ptrdiff_t)1, 2 * (ptrdiff_t)n + 2));
-            rwork[n]         = 0.0;
-            rwork[2 * n]     = 0.0;
-            rwork[2 * n + 1] = 0.0;
+            BufferVector<RemoveComplexT<AType>> rwork(std::max((ptrdiff_t)1, 2 * (ptrdiff_t)n - 1));
 
             impl_strided_heev(jobz, A, W, work.data(), rwork.data());
         }

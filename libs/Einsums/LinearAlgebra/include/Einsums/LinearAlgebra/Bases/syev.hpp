@@ -824,7 +824,7 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
     T           *A_data = A->data();
 
     T                 *vec1 = work, *vec2 = work + dim, *tau = work + (2 * dim);
-    RemoveComplexT<T> *diag = rwork, *subdiag = rwork + dim + 1;
+    RemoveComplexT<T> *diag = rwork, *subdiag = rwork + dim;
 
     if (dim == 1) {
         W->subscript(0) = std::real(A->subscript(0, 0));
