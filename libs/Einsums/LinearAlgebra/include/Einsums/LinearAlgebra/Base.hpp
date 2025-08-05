@@ -328,7 +328,7 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
             // Also, the sizes of the buffers are different.
             if (jobz == 'v' && std::is_same_v<float, AType>) {
                 EINSUMS_LOG_WARN("Computing eigenvectors of single-precision matrices with non-unit smallest stride is not fully stable. "
-                                 "It works, but there may be some deviation from LAPACK. The stability is likely to improve in the future."
+                                 "It works, but there may be some deviation from LAPACK. The stability is likely to improve in the future. "
                                  "Consider copying the data into a freshly constructed Tensor<float,2> and rerunning.");
             }
             lwork = impl_syev_get_work_length(jobz, A, W);
