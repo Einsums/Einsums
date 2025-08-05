@@ -18,6 +18,7 @@
 #include <Einsums/LinearAlgebra/Bases/ger.hpp>
 #include <Einsums/LinearAlgebra/Bases/sum_square.hpp>
 #include <Einsums/LinearAlgebra/Bases/syev.hpp>
+#include <Einsums/LinearAlgebra/Bases/triangular.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
@@ -372,23 +373,52 @@ void heev(AType *A, WType *W) {
     syev<ComputeEigenvectors>(&A->impl(), &W->impl());
 }
 
+template <typename T>
+auto gesv(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<T> *B) -> int {
+    if (A->rank() != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "The coefficient matrix needs to be rank-2!");
+    }
+    if (B->rank() > 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "The output matrix needs to be rank 1 or 2!");
+    }
+
+    if (A->dim(0) != A->dim(1) || A->dim(0) != B->dim(0)) {
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error,
+                                "The coefficient matrix needs to be square and the number of rows of the result matrix needs to match!");
+    }
+
+    if (A->is_column_major() && B->is_column_major() && A->is_gemmable() && (B->rank() == 1 || B->is_gemmable())) {
+        auto n   = A->dim(0);
+        auto lda = A->get_lda();
+
+        size_t nrhs, ldb;
+
+        if (B->rank() == 1) {
+            nrhs = 1;
+            ldb  = B->get_incx();
+        } else {
+            nrhs = B->dim(1);
+            ldb  = B->get_ldb();
+        }
+
+        int                       lwork = n;
+        BufferVector<blas::int_t> ipiv(lwork);
+
+        int info = blas::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
+        return info;
+    } else {
+        BufferVector<blas::int_t> ipiv(A->dim(0));
+        return impl_solve(*A, *B, ipiv);
+    }
+}
+
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
     requires requires {
         requires SameUnderlyingAndRank<AType, BType>;
         requires MatrixConcept<AType>;
     }
 auto gesv(AType *A, BType *B) -> int {
-    auto n   = A->dim(0);
-    auto lda = A->impl().get_lda();
-    auto ldb = B->impl().get_lda();
-
-    auto nrhs = B->dim(0);
-
-    int                      lwork = n;
-    std::vector<blas::int_t> ipiv(lwork);
-
-    int info = blas::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
-    return info;
+    return gesv(&A->impl(), &B->impl());
 }
 
 template <typename T>

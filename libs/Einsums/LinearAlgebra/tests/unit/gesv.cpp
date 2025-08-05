@@ -76,12 +76,18 @@ void gesv_test() {
 
     using namespace einsums;
 
-    auto a = create_tensor<T, true>("a", N, LDA);
-    auto b = create_tensor<T, true>("b", NRHS, N);
+    auto a = create_tensor<T>("a", N, LDA);
+    auto b = create_tensor<T>("b", N, NRHS);
 
     a.vector_data() = {6.80, -2.11, 5.66, 5.97, 8.23, -6.05, -3.30, 5.36,  -4.44, 1.08,  -0.45, 2.58, -2.70,
-                                    0.27, 9.04,  8.32, 2.71, 4.35, -7.17, 2.14,  -9.67, -5.14, -7.26, 6.08,  -6.87};
+                       0.27, 9.04,  8.32, 2.71, 4.35, -7.17, 2.14,  -9.67, -5.14, -7.26, 6.08,  -6.87};
     b.vector_data() = {4.02, 6.19, -8.22, -7.57, -3.03, -1.56, 4.00, -8.67, 1.75, 2.86, 9.81, -4.09, -4.57, -8.61, 8.99};
+
+    auto a_swap = create_tensor<T, true>("a_swap", N, LDA);
+    auto b_swap = create_tensor<T, true>("b_swap", N, NRHS);
+
+    a_swap = a;
+    b_swap = b;
 
     linear_algebra::gesv(&a, &b);
 
@@ -95,6 +101,17 @@ void gesv_test() {
                                                                       -0.38962139, -0.55442713, 0.84222739, -0.10380185, 0.10571095,
                                                                       0.95546491, 0.22065963, 1.90063673, 5.35766149, 4.04060266})
                                     .margin(0.00001));
+
+    linear_algebra::gesv(&a_swap, &b_swap);
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            CHECK_THAT(a_swap(i, j), Catch::Matchers::WithinRel(a(i, j)));
+        }
+        for (int j = 0; j < NRHS; j++) {
+            CHECK_THAT(b_swap(i, j), Catch::Matchers::WithinRel(b(i, j)));
+        }
+    }
 }
 
 TEST_CASE("gesv") {
