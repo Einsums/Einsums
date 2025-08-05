@@ -183,7 +183,6 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
 
         // Calculate tau.
         tau_val = (key + alpha) / alpha;
-        println("{}", tau_val);
 
         for (int undo = 0; undo < tries; undo++) {
             tau_val *= safe_min;
@@ -261,8 +260,6 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
             alpha *= safe_min;
         }
 
-        A_data[(k + 1) * row_stride + k * col_stride] = alpha;
-
         EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t i = k + 2; i < dim; i++) {
             A_data[i * row_stride + k * col_stride] = vec1[i];
@@ -277,82 +274,76 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
 
 template <typename T>
 void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *vec1, T *vec2, T *tau) {
-#pragma omp parallel
-    {
-#pragma omp single
-        {
-            T           *Q_data = Q->data();
-            size_t const dim = Q->dim(0), row_stride = Q->stride(0), col_stride = Q->stride(1);
+    T           *Q_data = Q->data();
+    size_t const dim = Q->dim(0), row_stride = Q->stride(0), col_stride = Q->stride(1);
 
-            // Set up the first level.
-            Q->subscript(-1, -1) = T{1.0};
+    // Set up the first level.
+    Q->subscript(-1, -1) = T{1.0};
 
-            // Loop.
-            for (int n = dim - 2; n >= 0; n--) {
-                // Set up the vector.
-                EINSUMS_OMP_PARALLEL_FOR_SIMD
-                for (int k = 0; k < dim; k++) {
-                    vec1[k] = T{0.0};
+    // Loop.
+    for (int n = dim - 2; n >= 0; n--) {
+        // Set up the vector.
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        for (int k = 0; k < dim; k++) {
+            vec1[k] = T{0.0};
+        }
+
+        // Put a 1 in the next element.
+        vec1[n + 1] = T{1.0};
+
+        // Fill the rest of the elements.
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        for (int k = n + 2; k < dim; k++) {
+            vec1[k] = Q_data[k * row_stride + n * col_stride];
+        }
+
+        // Now, set up the next level of the matrix.
+
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        for (int k = n + 1; k < dim; k++) {
+            Q_data[k * row_stride + n * col_stride] = T{0.0};
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        for (int k = n + 1; k < dim; k++) {
+            Q_data[n * row_stride + k * col_stride] = T{0.0};
+        }
+
+        Q_data[n * (row_stride + col_stride)] = T{1.0};
+
+        // Next, find Qv.
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        for (int i = 0; i < dim; i++) {
+            vec2[i] = T{0.0};
+        }
+
+        // Next, find Q - Qvv^H.
+        if constexpr (IsComplexV<T>) {
+
+            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            for (int i = n; i < dim; i++) {
+                for (int j = n; j < dim; j++) {
+                    vec2[i] += Q_data[i * row_stride + j * col_stride] * std::conj(vec1[j]);
                 }
-
-                // Put a 1 in the next element.
-                vec1[n + 1] = T{1.0};
-
-                // Fill the rest of the elements.
-                EINSUMS_OMP_PARALLEL_FOR_SIMD
-                for (int k = n + 2; k < dim; k++) {
-                    vec1[k] = Q_data[k * row_stride + n * col_stride];
+            }
+            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            for (int i = n; i < dim; i++) {
+                for (int j = n; j < dim; j++) {
+                    // Might need conj(tau).
+                    Q_data[i * row_stride + j * col_stride] -= tau[n] * vec2[j] * vec1[i];
                 }
-
-                // Now, set up the next level of the matrix.
-
-                EINSUMS_OMP_PARALLEL_FOR_SIMD
-                for (int k = n + 1; k < dim; k++) {
-                    Q_data[k * row_stride + n * col_stride] = T{0.0};
+            }
+        } else {
+            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            for (int i = n; i < dim; i++) {
+                for (int j = n; j < dim; j++) {
+                    vec2[i] += Q_data[i * row_stride + j * col_stride] * vec1[j];
                 }
-
-                EINSUMS_OMP_PARALLEL_FOR_SIMD
-                for (int k = n + 1; k < dim; k++) {
-                    Q_data[n * row_stride + k * col_stride] = T{0.0};
-                }
-
-                Q_data[n * (row_stride + col_stride)] = T{1.0};
-
-                // Next, find Qv.
-                EINSUMS_OMP_PARALLEL_FOR_SIMD
-                for (int i = 0; i < dim; i++) {
-                    vec2[i] = T{0.0};
-                }
-
-                // Next, find Q - Qvv^H.
-                if constexpr (IsComplexV<T>) {
-
-                    EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
-                    for (int i = n; i < dim; i++) {
-                        for (int j = n; j < dim; j++) {
-                            vec2[i] += Q_data[i * row_stride + j * col_stride] * vec1[j];
-                        }
-                    }
-                    EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
-                    for (int i = n; i < dim; i++) {
-                        for (int j = n; j < dim; j++) {
-                            // Might need conj(tau).
-                            Q_data[i * row_stride + j * col_stride] -= tau[n] * vec2[j] * std::conj(vec1[i]);
-                        }
-                    }
-                } else {
-                    EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
-                    for (int i = n; i < dim; i++) {
-                        for (int j = n; j < dim; j++) {
-                            vec2[i] += Q_data[i * row_stride + j * col_stride] * vec1[j];
-                        }
-                    }
-                    EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
-                    for (int i = n; i < dim; i++) {
-                        for (int j = n; j < dim; j++) {
-                            Q_data[i * row_stride + j * col_stride] -= tau[n] * vec2[i] * vec1[j];
-                        }
-                    }
+            }
+            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            for (int i = n; i < dim; i++) {
+                for (int j = n; j < dim; j++) {
+                    Q_data[i * row_stride + j * col_stride] -= tau[n] * vec2[i] * vec1[j];
                 }
             }
         }
@@ -832,7 +823,7 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
     size_t const row_stride = A->stride(0), col_stride = A->stride(1), dim = A->dim(0);
     T           *A_data = A->data();
 
-    T                 *vec1 = work, *vec2 = work + dim, *tau = work + (2 * dim - 1);
+    T                 *vec1 = work, *vec2 = work + dim, *tau = work + (2 * dim);
     RemoveComplexT<T> *diag = rwork, *subdiag = rwork + dim + 1;
 
     if (dim == 1) {
@@ -884,8 +875,6 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
         // Reduce to tridiagonal form.
         impl_tridagonal_reduce(A, vec1, vec2, tau, std::tolower(jobz) != 'n');
 
-        println(*A);
-
         EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t i = 0; i < dim; i++) {
             diag[i] = std::real(A_data[i * (row_stride + col_stride)]);
@@ -924,9 +913,8 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
             }
         } else {
             // Compute the Q matrix.
-            impl_compute_q(A, vec1, vec2, tau);
 
-            println(*A);
+            impl_compute_q(A, vec1, vec2, tau);
 
             impl_qr_tridiag_iterate(A->dim(0), A->data(), A->dim(0), A->stride(0), A->stride(1), diag, subdiag);
 

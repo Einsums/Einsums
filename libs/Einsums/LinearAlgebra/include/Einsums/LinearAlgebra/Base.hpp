@@ -274,6 +274,12 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
             // We can't use LAPACK, so use our own version. Note that the eigenvectors may be off by some complex phase factor.
             // They are still eigenvectors, they just don't match when directly compared with the results of LAPACK.
             // Also, the sizes of the buffers are different.
+
+            if (jobz == 'v' && std::is_same_v<std::complex<float>, AType>) {
+                EINSUMS_LOG_WARN("Computing eigenvectors of single-precision matrices with non-unit smallest stride is not fully stable. "
+                                 "It works, but there may be some deviation from LAPACK. The stability is likely to improve in the future."
+                                 "Consider copying the data into a freshly constructed Tensor<std::complex<float>,2> and rerunning.");
+            }
             lwork = impl_heev_get_work_length(jobz, A, W);
 
             work.resize(lwork);
@@ -320,6 +326,11 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
             // We can't use LAPACK, so use our own version. Note that the eigenvectors may be off by some complex phase factor.
             // They are still eigenvectors, they just don't match when directly compared with the results of LAPACK.
             // Also, the sizes of the buffers are different.
+            if (jobz == 'v' && std::is_same_v<float, AType>) {
+                EINSUMS_LOG_WARN("Computing eigenvectors of single-precision matrices with non-unit smallest stride is not fully stable. "
+                                 "It works, but there may be some deviation from LAPACK. The stability is likely to improve in the future."
+                                 "Consider copying the data into a freshly constructed Tensor<float,2> and rerunning.");
+            }
             lwork = impl_syev_get_work_length(jobz, A, W);
 
             work.resize(lwork);

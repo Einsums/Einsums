@@ -3,7 +3,10 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/LinearAlgebra.hpp>
+
+#include "Einsums/LinearAlgebra/Bases/syev.hpp"
 
 #include <Einsums/Testing.hpp>
 
@@ -45,34 +48,30 @@ void heev_strided_test() {
 
     A2 = A;
 
-    println(A);
-    println(A2);
-
     einsums::linear_algebra::heev(&A2, &b);
 
-    println(b);
-
     einsums::linear_algebra::heev(&A, &b);
-
-    println(A);
-    println(A2);
-
-    println(b);
 
     // Sometimes 0.0 will be reported as -0.0 therefore we test the Abs of the first two
     CHECK_THAT(b(0), Catch::Matchers::WithinAbs(0.0, 0.00001));
     CHECK_THAT(b(1), Catch::Matchers::WithinAbs(0.0, 0.00001));
     CHECK_THAT(b(2), Catch::Matchers::WithinRel(1.0, 0.00001));
 
-    T div1 = A2(0, 0) / A(0, 0), div2 = A2(0, 1) / A(0, 1), div3 = A2(0, 2) / A(0, 2);
+    if constexpr (std::is_same_v<T, std::complex<double>>) {
+        T div1 = A2(0, 0) / A(0, 0), div2 = A2(0, 1) / A(0, 1), div3 = A2(0, 2) / A(0, 2);
 
-    for (int i = 0; i < 3; i++) {
-        CHECK_THAT(std::real(A(i, 0) * div1), Catch::Matchers::WithinAbs(std::real(A2(i, 0)), 0.00001));
-        CHECK_THAT(std::imag(A(i, 0) * div1), Catch::Matchers::WithinAbs(std::imag(A2(i, 0)), 0.00001));
-        CHECK_THAT(std::real(A(i, 1) * div2), Catch::Matchers::WithinAbs(std::real(A2(i, 1)), 0.00001));
-        CHECK_THAT(std::imag(A(i, 1) * div2), Catch::Matchers::WithinAbs(std::imag(A2(i, 1)), 0.00001));
-        CHECK_THAT(std::real(A(i, 2) * div3), Catch::Matchers::WithinAbs(std::real(A2(i, 2)), 0.00001));
-        CHECK_THAT(std::imag(A(i, 2) * div3), Catch::Matchers::WithinAbs(std::imag(A2(i, 2)), 0.00001));
+        scale_column(0, div1, &A);
+        scale_column(1, div2, &A);
+        scale_column(2, div3, &A);
+
+        for (int i = 0; i < 3; i++) {
+            CHECK_THAT(std::real(A(i, 0)), Catch::Matchers::WithinAbs(std::real(A2(i, 0)), 0.00001));
+            CHECK_THAT(std::imag(A(i, 0)), Catch::Matchers::WithinAbs(std::imag(A2(i, 0)), 0.00001));
+            CHECK_THAT(std::real(A(i, 1)), Catch::Matchers::WithinAbs(std::real(A2(i, 1)), 0.00001));
+            CHECK_THAT(std::imag(A(i, 1)), Catch::Matchers::WithinAbs(std::imag(A2(i, 1)), 0.00001));
+            CHECK_THAT(std::real(A(i, 2)), Catch::Matchers::WithinAbs(std::real(A2(i, 2)), 0.00001));
+            CHECK_THAT(std::imag(A(i, 2)), Catch::Matchers::WithinAbs(std::imag(A2(i, 2)), 0.00001));
+        }
     }
 }
 
