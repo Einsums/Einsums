@@ -96,6 +96,10 @@ void gemm(char transA, char transB, AlphaType const alpha, einsums::detail::Tens
         }
     }
 
+    if (A.dim(0) == 0 || A.dim(1) == 0 || B.dim(0) == 0 || B.dim(1) == 0 || C->dim(0) == 0 || C->dim(1) == 0) {
+        return;
+    }
+
     impl_gemm(transA, transB, alpha, A, B, beta, C);
 }
 
@@ -153,6 +157,10 @@ void gemv(char transA, AlphaType alpha, einsums::detail::TensorImpl<AType> const
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The dimensions of the input matrix and input tensor do not match! Got {} and {}.",
                                     A.dim(1), X.dim(0));
         }
+    }
+
+    if (A.dim(0) == 0 || A.dim(1) == 0 || X.dim(0) == 0 || Y->dim(0) == 0) {
+        return;
     }
     impl_gemv(transA, alpha, A, X, beta, Y);
 }
@@ -361,6 +369,10 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
     if (A->dim(0) != A->dim(1) || (ComputeLeftRightEigenvectors && (lvecs->dim(0) != lvecs->dim(1) || rvecs->dim(0) != rvecs->dim(1)))) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "The input tensor and eigenvector outputs need to be square!");
     }
+    if (A->dim(0) == 0) {
+        return;
+    }
+
     T              *lvec_data = nullptr, *rvec_data = nullptr, *A_data = A->data();
     AddComplexT<T> *W_data = W->data();
     size_t          lda = A->get_lda(), ldvl = 1, ldvr = 1;
@@ -538,6 +550,10 @@ auto gesv(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<T> *B) 
                                 "The coefficient matrix needs to be square and the number of rows of the result matrix needs to match!");
     }
 
+    if (A->dim(0) == 0) {
+        return 0;
+    }
+
     if (A->is_column_major() && B->is_column_major() && A->is_gemmable() && (B->rank() == 1 || B->is_gemmable())) {
         auto n   = A->dim(0);
         auto lda = A->get_lda();
@@ -559,6 +575,9 @@ auto gesv(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<T> *B) 
         return info;
     } else {
         BufferVector<blas::int_t> ipiv(A->dim(0));
+        if (B->rank() == 2 && B->dim(1) == 0) {
+            return impl_lu_decomp(*A, ipiv);
+        }
         return impl_solve(*A, *B, ipiv);
     }
 }
@@ -756,11 +775,22 @@ auto pow(AType const &a, typename AType::ValueType alpha,
     -> Tensor<typename AType::ValueType, 2> {
     assert(a.dim(0) == a.dim(1));
 
+    if (a.dim(0) == 0) {
+        return Tensor<typename AType::ValueType, 2>{"pow result", 0, 0};
+    }
+
+    if (a.dim(0) == 1) {
+        Tensor<typename AType::ValueType, 2> out{"pow result", 1, 1};
+
+        out(0, 0) = std::pow(a(0, 0), alpha);
+        return out;
+    }
+
     using T = typename AType::ValueType;
 
-    size_t             n      = a.dim(0);
-    RemoveViewT<AType> a1     = a;
-    RemoveViewT<AType> result = create_tensor_like(a);
+    size_t                               n      = a.dim(0);
+    Tensor<typename AType::ValueType, 2> a1     = a;
+    Tensor<typename AType::ValueType, 2> result = create_tensor_like(a);
     result.set_name("pow result");
     Tensor<RemoveComplexT<T>, 1> e{"e", n};
     result.zero();
@@ -772,7 +802,7 @@ auto pow(AType const &a, typename AType::ValueType alpha,
         syev<true>(&a1, &e);
     }
 
-    RemoveViewT<AType> a2(a1);
+    Tensor<typename AType::ValueType, 2> a2(a1);
 
     // Determine the largest magnitude of the eigenvalues to use as a scaling factor for the cutoff.
 
@@ -800,6 +830,178 @@ auto pow(AType const &a, typename AType::ValueType alpha,
     gemm('n', 'c', 1.0, a2, a1, 0.0, &result);
 
     return result;
+}
+
+template <typename T, ContiguousContainerOf<blas::int_t> Pivots>
+auto getrf(einsums::detail::TensorImpl<T> *A, Pivots *pivot) -> int {
+    LabeledSection0();
+
+    if (A->rank() != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "Can only decompose rank-2 tensors!");
+    }
+
+    if (A->dim(0) == 0 || A->dim(1) == 0) {
+        return 0;
+    }
+
+    if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
+        // println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
+        pivot->resize(std::min(A->dim(0), A->dim(1)));
+    }
+
+    int result;
+
+    if (A->is_gemmable() && A->is_column_major()) {
+        result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->get_lda(), pivot->data());
+    } else {
+        result = impl_lu_decomp(*A, *pivot);
+    }
+
+    if (result < 0) {
+        EINSUMS_LOG_WARN("getrf: argument {} has an invalid value", -result);
+    }
+
+    return result;
+}
+
+/**
+ * @brief Computes the LU factorization of a general m-by-n matrix.
+ *
+ * The routine computes the LU factorization of a general m-by-n matrix A as
+ * \f[
+ * A = P*L*U
+ * \f]
+ * where P is a permutation matrix, L is lower triangular with unit diagonal elements and U is upper triangular. The routine uses
+ * partial pivoting, with row interchanges.
+ *
+ * @tparam TensorType
+ * @param A
+ * @param pivot
+ * @return
+ */
+template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
+    requires(CoreTensorConcept<TensorType>)
+auto getrf(TensorType *A, Pivots *pivot) -> int {
+    return getrf(&A->impl(), pivot);
+}
+
+/**
+ * @brief Computes the inverse of a matrix using the LU factorization computed by getrf.
+ *
+ * The routine computes the inverse \f$inv(A)\f$ of a general matrix \f$A\f$. Before calling this routine, call getrf to factorize
+ * \f$A\f$.
+ *
+ * @tparam TensorType The type of the tensor
+ * @param A The matrix to invert
+ * @param pivot The pivot vector from getrf
+ * @return int If 0, the execution is successful.
+ */
+template <typename T, ContiguousContainerOf<blas::int_t> Pivots>
+auto getri(einsums::detail::TensorImpl<T> *A, Pivots const &pivot) -> int {
+    LabeledSection0();
+
+    if (A->rank() != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "Can only compute the inverses of matrices.");
+    }
+
+    if (A->dim(0) != A->dim(1)) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Can only compute the inverses of square matrices.");
+    }
+
+    int result;
+
+    if (A->is_gemmable() && A->is_column_major()) {
+        result = blas::getri(A->dim(0), A->data(), A->get_lda(), pivot.data());
+    } else {
+        BufferVector<T> work(A->dim(0));
+        result = impl_invert_lu(*A, pivot, work.data());
+    }
+
+    if (result < 0) {
+        EINSUMS_LOG_WARN("getri: argument {} has an invalid value", -result);
+    }
+
+    return result;
+}
+
+/**
+ * @brief Computes the inverse of a matrix using the LU factorization computed by getrf.
+ *
+ * The routine computes the inverse \f$inv(A)\f$ of a general matrix \f$A\f$. Before calling this routine, call getrf to factorize
+ * \f$A\f$.
+ *
+ * @tparam TensorType The type of the tensor
+ * @param A The matrix to invert
+ * @param pivot The pivot vector from getrf
+ * @return int If 0, the execution is successful.
+ */
+template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
+    requires(CoreTensorConcept<TensorType>)
+auto getri(TensorType *A, Pivots const &pivot) -> int {
+    return getri(&A->impl(), pivot);
+}
+
+template <typename T>
+void invert(einsums::detail::TensorImpl<T> *A) {
+    LabeledSection0();
+
+    if (A->rank() != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "Can only compute the inverses of matrices.");
+    }
+
+    if (A->dim(0) != A->dim(1)) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Can only compute the inverses of square matrices.");
+    }
+
+    BufferVector<blas::int_t> pivot(A->dim(0));
+    int                       result;
+
+    if (A->is_gemmable()) {
+        result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->get_lda(), pivot.data());
+    } else {
+        result = impl_lu_decomp(*A, pivot);
+    }
+
+    if (result < 0) {
+        EINSUMS_LOG_WARN("getrf: argument {} has an invalid value", -result);
+    }
+
+    if (result > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error,
+                                "invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed",
+                                result - 1, result - 1);
+    }
+
+    if (A->is_gemmable()) {
+        result = blas::getri(A->dim(0), A->data(), A->get_lda(), pivot.data());
+    } else {
+        BufferVector<T> work(A->dim(0));
+        result = impl_invert_lu(*A, pivot, work.data());
+    }
+
+    if (result < 0) {
+        EINSUMS_LOG_WARN("getri: argument {} has an invalid value", -result);
+    }
+
+    if (result > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error,
+                                "invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed",
+                                result - 1, result - 1);
+    }
+}
+
+/**
+ * @brief Inverts a matrix.
+ *
+ * Utilizes the LAPACK routines getrf and getri to invert a matrix.
+ *
+ * @tparam TensorType The type of the tensor
+ * @param A Matrix to invert. On exit, the inverse of A.
+ */
+template <MatrixConcept TensorType>
+    requires(CoreTensorConcept<TensorType>)
+void invert(TensorType *A) {
+    invert(&A->impl());
 }
 
 } // namespace einsums::linear_algebra::detail

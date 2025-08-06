@@ -54,6 +54,10 @@ template <typename T>
 void impl_sum_square(einsums::detail::TensorImpl<T> const &in, RemoveComplexT<T> *scale, RemoveComplexT<T> *sumsq) {
     LabeledSection0();
 
+    if(in.size() == 0) {
+        return;
+    }
+
     if (in.is_totally_vectorable()) {
         EINSUMS_LOG_DEBUG("Inputs were able to be treated as vector inputs and have the same memory layout. Using lassq.");
 

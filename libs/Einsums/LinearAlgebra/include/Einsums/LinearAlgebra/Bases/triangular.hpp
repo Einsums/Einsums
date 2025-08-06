@@ -29,7 +29,7 @@ int impl_lu_decomp(einsums::detail::TensorImpl<T> &A, Pivots &pivot) {
 
         // If the current column only has zeros, then skip this iteration.
         if (max_elem == T{0.0}) {
-            ret = (int)k;
+            ret = (int)k + 1;
             continue;
         }
 
@@ -143,26 +143,74 @@ int impl_solve(einsums::detail::TensorImpl<T> &A, einsums::detail::TensorImpl<T>
 }
 
 template <typename T, Container Pivots>
-int impl_invert_lu(einsums::detail::TensorImpl<T> &A_lu, Pivots const &pivot) {
+int impl_invert_lu(einsums::detail::TensorImpl<T> &A_lu, Pivots const &pivot, T *work) {
     // Assume A_lu has been already put into impl_lu_decomp, and pivot is the result.
     size_t const m = A_lu.dim(0), n = A_lu.dim(1), min_dim = std::min(m, n);
 
-    // First, compute the inverse of U.
-    for (size_t k = 0; k < n - 1; k++) {
-        // Reduce rows from the current.
-        for (size_t i = k + 1; k < n; k++) {
-            T scale = -A_lu.subscript_no_check(k, i);
-
-            // Reduce.
-            for (size_t j = i + 1; j < n; j++) {
-                A_lu.subscript_no_check(k, j) += scale * A_lu.subscript_no_check(i, j);
-            }
-
-            // Set the value in A_lu to be the scale.
-            A_lu(k, i) = scale;
+    // Check for singular values.
+    for (size_t i = 0; i < n; i++) {
+        if (A_lu.subscript_no_check(i, i) == T{0.0}) {
+            return (int)i + 1;
         }
     }
 
-    // Next, solve for the inverse of A.
+    // First, compute the inverse of U.
+    /*
+     * The idea:
+     * Pretend that we have the identity matrix in A.
+     * Do Gaussian elimination starting from the lower right corner.
+     * If we do it like this, we can ignore the elements to the right since in the full
+     * calculation, these would be zeroed in U. We can then replace these with the calculated
+     * elements of the inverse matrix.
+     */
+    for (ptrdiff_t k = (ptrdiff_t)n - 1; k >= 0; k--) {
+        // Get the row scale.
+        T row_scale                   = A_lu.subscript_no_check(k, k);
+        A_lu.subscript_no_check(k, k) = T{1.0};
+
+        // Eliminate the rows above.
+        for (size_t i = 0; i < k; i++) {
+            T scale                       = A_lu.subscript_no_check(i, k);
+            A_lu.subscript_no_check(i, k) = -scale / row_scale;
+            for (size_t j = k + 1; j < n; j++) {
+                A_lu.subscript_no_check(i, j) =
+                    (row_scale * A_lu.subscript_no_check(i, j) - scale * A_lu.subscript_no_check(k, j)) / row_scale;
+            }
+        }
+
+        // Scale the current row.
+        for (size_t j = k; j < n; j++) {
+            A_lu.subscript_no_check(k, j) /= row_scale;
+        }
+    }
+
+    // Next, solve for A^-1 column by column.
+    for (ptrdiff_t k = n - 2; k >= 0; k--) {
+        // Copy a column of L into the work array.
+        // We don't need the 1 entry, since when you work it out, this will be the part
+        // we are solving for.
+        for (size_t i = k + 1; i < n; i++) {
+            work[i]                       = A_lu.subscript_no_check(i, k);
+            A_lu.subscript_no_check(i, k) = T{0.0};
+        }
+
+        // Now, do a matrix-vector multiply. Don't clear the column first, we need the values already there.
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = k + 1; j < n; j++) {
+                A_lu.subscript_no_check(i, k) -= A_lu.subscript_no_check(i, j) * work[j];
+            }
+        }
+    }
+
+    // Undo the permutes.
+    for (ptrdiff_t i = n - 1; i >= 0; i--) {
+        if (pivot[i] != i + 1) {
+            for (size_t j = 0; j < m; j++) {
+                std::swap(A_lu.subscript_no_check(j, pivot[i] - 1), A_lu.subscript_no_check(j, i));
+            }
+        }
+    }
+
+    return 0;
 }
 } // namespace einsums::linear_algebra::detail

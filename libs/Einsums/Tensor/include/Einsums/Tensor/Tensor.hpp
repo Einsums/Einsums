@@ -175,6 +175,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @param dims The dimensions of each rank of the tensor.
      */
     template <std::integral... Dims>
+        requires(sizeof...(Dims) == Rank)
     Tensor(std::string name, Dims... dims)
         : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}) {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
@@ -207,6 +208,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @param dims The dimensions of each rank of the tensor.
      */
     template <std::integral... Dims>
+        requires(sizeof...(Dims) == Rank)
     Tensor(bool row_major, std::string name, Dims... dims)
         : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, row_major) {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");

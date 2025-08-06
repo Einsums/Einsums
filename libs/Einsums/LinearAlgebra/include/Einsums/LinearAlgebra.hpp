@@ -497,19 +497,7 @@ void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, ATyp
 template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
     requires(CoreTensorConcept<TensorType>)
 auto getrf(TensorType *A, Pivots *pivot) -> int {
-    LabeledSection0();
-
-    if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
-        // println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
-        pivot->resize(std::min(A->dim(0), A->dim(1)));
-    }
-    int result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->impl().get_lda(), pivot->data());
-
-    if (result < 0) {
-        EINSUMS_LOG_WARN("getrf: argument {} has an invalid value", -result);
-    }
-
-    return result;
+    return detail::getrf(A, pivot);
 }
 
 /**
@@ -526,22 +514,7 @@ auto getrf(TensorType *A, Pivots *pivot) -> int {
 template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
     requires(CoreTensorConcept<TensorType>)
 auto getri(TensorType *A, Pivots const &pivot) -> int {
-    LabeledSection0();
-
-    int result = blas::getri(A->dim(0), A->data(), A->impl().get_lda(), pivot.data());
-
-    if (result < 0) {
-        EINSUMS_LOG_WARN("getri: argument {} has an invalid value", -result);
-    }
-
-    if (A->impl().is_column_major()) {
-        for (int i = 0; i < A->dim(0); i++) {
-            for (int j = i + 1; j < A->dim(1); j++) {
-                std::swap((*A)(i, j), (*A)(j, i));
-            }
-        }
-    }
-    return result;
+    return detail::getri(A, pivot);
 }
 
 /**
@@ -555,29 +528,7 @@ auto getri(TensorType *A, Pivots const &pivot) -> int {
 template <MatrixConcept TensorType>
     requires(CoreTensorConcept<TensorType>)
 void invert(TensorType *A) {
-    if constexpr (IsIncoreBlockTensorV<TensorType>) {
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A->num_blocks(); i++) {
-            linear_algebra::invert(&(A->block(i)));
-        }
-    } else {
-        LabeledSection0();
-
-        BufferVector<blas::int_t> pivot(A->dim(0));
-        int                      result = getrf(A, &pivot);
-        if (result > 0) {
-            EINSUMS_THROW_EXCEPTION(
-                std::runtime_error,
-                "invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result, result);
-        }
-
-        result = getri(A, pivot);
-        if (result > 0) {
-            EINSUMS_THROW_EXCEPTION(
-                std::runtime_error,
-                "invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed", result, result);
-        }
-    }
+    return detail::invert(A);
 }
 
 #if !defined(DOXYGEN)
@@ -631,7 +582,7 @@ auto norm(Norm norm_type, AType const &a) -> RemoveComplexT<typename AType::Valu
     LabeledSection0();
 
     BufferVector<RemoveComplexT<typename AType::ValueType>> work(4 * a.dim(0), 0.0);
-    auto                                                   norm_type_adjusted = norm_type;
+    auto                                                    norm_type_adjusted = norm_type;
 
     if (norm_type == Norm::One && a.impl().is_row_major()) {
         norm_type_adjusted = Norm::Infinity;
@@ -936,10 +887,10 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
 
     //// @todo Break this off into a separate schur function
     // Compute Schur Decomposition of A
-    Tensor<T, 2>             R = A; // R is a copy of A
-    Tensor<T, 2>             wr("Schur Real Buffer", n, n);
-    Tensor<T, 2>             wi("Schur Imaginary Buffer", n, n);
-    Tensor<T, 2>             U("Lyapunov U", n, n);
+    Tensor<T, 2>              R = A; // R is a copy of A
+    Tensor<T, 2>              wr("Schur Real Buffer", n, n);
+    Tensor<T, 2>              wi("Schur Imaginary Buffer", n, n);
+    Tensor<T, 2>              U("Lyapunov U", n, n);
     BufferVector<blas::int_t> sdim(1);
     blas::gees('V', n, R.data(), R.impl().get_lda(), sdim.data(), wr.data(), wi.data(), U.data(), U.impl().get_lda());
 
@@ -1034,7 +985,7 @@ typename AType::ValueType det(AType const &A) {
     RemoveViewT<AType> temp = A;
 
     BufferVector<blas::int_t> pivots;
-    int                      singular = getrf(&temp, &pivots);
+    int                       singular = getrf(&temp, &pivots);
     if (singular > 0) {
         return T{0.0}; // Matrix is singular, so it has a determinant of zero.
     }

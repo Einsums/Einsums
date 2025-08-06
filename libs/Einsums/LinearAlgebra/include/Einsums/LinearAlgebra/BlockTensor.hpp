@@ -353,4 +353,56 @@ auto pow(AType const &a, typename AType::ValueType alpha,
     return out;
 }
 
+template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
+    requires(BlockTensorConcept<TensorType>)
+auto getrf(TensorType *A, Pivots *pivot) -> int {
+    for (size_t i = 0; i < A->num_blocks(); i++) {
+        if (A->block_dim(i) == 0) {
+            continue;
+        }
+        BufferVector<blas::int_t> hold_pivot(A->block().dim(0));
+        int                       ret = getrf(A->block(i), &hold_pivot);
+
+        for (int j = 0; j < A->block().dim(0); j++) {
+            pivot->at(j + A->block_range(i)[0]) = hold_pivot[j];
+        }
+
+        if (ret != 0) {
+            return ret + A->block_range(i)[0];
+        }
+    }
+}
+
+template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
+    requires(BlockTensorConcept<TensorType>)
+auto getri(TensorType *A, Pivots const &pivot) -> int {
+    for (size_t i = 0; i < A->num_blocks(); i++) {
+        if (A->block_dim(i) == 0) {
+            continue;
+        }
+        BufferVector<blas::int_t> hold_pivot(A->block().dim(0));
+
+        for (int j = 0; j < A->block().dim(0); j++) {
+            hold_pivot[j] = pivot->at(j + A->block_range(i)[0]);
+        }
+
+        int ret = getri(A->block(i), hold_pivot);
+        if (ret != 0) {
+            return ret + A->block_range(i)[0];
+        }
+    }
+}
+
+template <MatrixConcept TensorType>
+    requires(BlockTensorConcept<TensorType>)
+void invert(TensorType *A) {
+    EINSUMS_OMP_PARALLEL_FOR
+    for (size_t i = 0; i < A->num_blocks(); i++) {
+        if (A->block_dim(i) == 0) {
+            continue;
+        }
+        invert(A->block(i));
+    }
+}
+
 } // namespace einsums::linear_algebra::detail
