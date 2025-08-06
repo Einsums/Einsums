@@ -21,7 +21,7 @@ namespace linear_algebra {
 namespace detail {
 
 template <NotComplex T>
-void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2, T *tau, bool keep_tau) {
+void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2, T *tau, bool keep_tau) {
     size_t const dim = A->dim(0), row_stride = A->stride(0), col_stride = A->stride(1);
 
     T *A_data = A->data();
@@ -131,7 +131,7 @@ void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
 }
 
 template <Complex T>
-void impl_tridagonal_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2, T *tau, bool keep_tau) {
+void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2, T *tau, bool keep_tau) {
     using Real = RemoveComplexT<T>;
 
     size_t const dim = A->dim(0), row_stride = A->stride(0), col_stride = A->stride(1);
@@ -751,7 +751,7 @@ void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
     } else {
 
         // Reduce to tridiagonal form.
-        impl_tridagonal_reduce(A, vec1, vec2, tau, std::tolower(jobz) != 'n');
+        impl_hessenberg_reduce(A, vec1, vec2, tau, std::tolower(jobz) != 'n');
 
         // Compute the eigenvalues and eigenvectors of the tridiagonal form.
         if (std::tolower(jobz) == 'n') {
@@ -873,7 +873,7 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
         W->subscript(1)    = l2;
     } else {
         // Reduce to tridiagonal form.
-        impl_tridagonal_reduce(A, vec1, vec2, tau, std::tolower(jobz) != 'n');
+        impl_hessenberg_reduce(A, vec1, vec2, tau, std::tolower(jobz) != 'n');
 
         EINSUMS_OMP_PARALLEL_FOR_SIMD
         for (size_t i = 0; i < dim; i++) {
