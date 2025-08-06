@@ -730,4 +730,27 @@ struct CUnique {
 template <class T>
 using CUniqueT = typename CUnique<T>::type;
 
+/**
+ * @struct Reverse
+ *
+ * Reverses the elements of a tuple.
+ */
+template <typename First, typename... Args>
+struct Reverse {
+    using type = decltype(std::tuple_cat(std::declval<typename Reverse<Args...>::type>(), std::declval<std::tuple<First>>()));
+};
+
+template <typename First>
+struct Reverse<First> {
+    using type = std::tuple<First>;
+};
+
+/**
+ * @typedef ReverseT
+ *
+ * Reverses the elements of a tuple.
+ */
+template <typename... Args>
+using ReverseT = Reverse<Args...>::type;
+
 } // namespace einsums::tensor_algebra

@@ -138,22 +138,22 @@ void gemv(char transA, AlphaType alpha, einsums::detail::TensorImpl<AType> const
             A.rank(), X.rank(), Y->rank());
     }
     if (std::tolower(transA) == 'n') {
-        if (A.dim(1) != Y->dim(0)) {
+        if (A.dim(0) != Y->dim(0)) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error,
                                     "The dimensions of the input matrix and output tensor do not match! Got {} and {}.", A.dim(1),
                                     Y->dim(0));
         }
-        if (A.dim(0) != X.dim(0)) {
+        if (A.dim(1) != X.dim(0)) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The dimensions of the input matrix and input tensor do not match! Got {} and {}.",
                                     A.dim(0), X.dim(0));
         }
     } else {
-        if (A.dim(0) != Y->dim(0)) {
+        if (A.dim(1) != Y->dim(0)) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error,
                                     "The dimensions of the input matrix and output tensor do not match! Got {} and {}.", A.dim(0),
                                     Y->dim(0));
         }
-        if (A.dim(1) != X.dim(0)) {
+        if (A.dim(0) != X.dim(0)) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The dimensions of the input matrix and input tensor do not match! Got {} and {}.",
                                     A.dim(1), X.dim(0));
         }

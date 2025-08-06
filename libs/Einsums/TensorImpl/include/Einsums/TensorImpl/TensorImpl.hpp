@@ -1331,7 +1331,7 @@ struct TensorImpl final {
      * and only if the tensor is not already row major.
      */
     constexpr TensorImpl<T> to_row_major() {
-        if (strides(0) >= strides(-1)) {
+        if (stride(0) >= stride(-1)) {
             return *this;
         } else {
             return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
@@ -1346,7 +1346,7 @@ struct TensorImpl final {
      * and only if the tensor is not already column major.
      */
     constexpr TensorImpl<T> to_column_major() {
-        if (strides(0) <= strides(-1)) {
+        if (stride(0) <= stride(-1)) {
             return *this;
         } else {
             return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
@@ -1361,7 +1361,7 @@ struct TensorImpl final {
      * and only if the tensor is not already row major.
      */
     constexpr TensorImpl<T> const to_row_major() const {
-        if (strides(0) >= strides(-1)) {
+        if (stride(0) >= stride(-1)) {
             return *this;
         } else {
             return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
@@ -1376,7 +1376,7 @@ struct TensorImpl final {
      * and only if the tensor is not already column major.
      */
     constexpr TensorImpl<T> const to_column_major() const {
-        if (strides(0) <= strides(-1)) {
+        if (stride(0) <= stride(-1)) {
             return *this;
         } else {
             return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
