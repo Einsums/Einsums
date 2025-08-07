@@ -25,18 +25,27 @@
 
 namespace einsums::linear_algebra::detail {
 
-template <bool TransA, bool TransB, BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename U>
+template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename U>
     requires requires {
         requires SameUnderlyingAndRank<AType, BType, CType>;
         requires MatrixConcept<AType>;
         requires std::convertible_to<U, typename AType::ValueType>;
     }
-void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
+void gemm(char transA, char transB, U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "gemm: Tensors need the same number of blocks.");
     }
 
     using T = typename AType::ValueType;
+
+    bool tA = std::tolower(transA) != 'n', tB = std::tolower(transB) != 'n';
+
+    if (!strchr("CNTcnt", transA) || !strchr("CNTcnt", transB)) {
+        EINSUMS_THROW_EXCEPTION(
+            std::invalid_argument,
+            "The transposition parameters were invalid! They must be either n, c, or t, case insensitive. Got transA: {} and transB: {}.",
+            transA, transB);
+    }
 
 #if defined(EINSUMS_COMPUTE_CODE)
     if constexpr (IsDeviceTensorV<AType>) {
@@ -53,7 +62,7 @@ void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C)
             if (A.block_dim(i) == 0) {
                 continue;
             }
-            gemm<TransA, TransB>((T *)alpha_gpu, A.block(i), B.block(i), (T *)beta_gpu, &(C->block(i)));
+            gemm(transA, transB, (T *)alpha_gpu, A.block(i), B.block(i), (T *)beta_gpu, &(C->block(i)));
         }
 
         hip_catch(hipFree((void *)alpha_gpu));
@@ -66,11 +75,21 @@ void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C)
             if (A.block_dim(i) == 0) {
                 continue;
             }
-            gemm<TransA, TransB>(static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(beta), &(C->block(i)));
+            gemm(transA, transB, static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(beta), &(C->block(i)));
         }
 #if defined(EINSUMS_COMPUTE_CODE)
     }
 #endif
+}
+
+template <bool TransA, bool TransB, BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename U>
+    requires requires {
+        requires SameUnderlyingAndRank<AType, BType, CType>;
+        requires MatrixConcept<AType>;
+        requires std::convertible_to<U, typename AType::ValueType>;
+    }
+void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
+    gemm((TransA) ? 't' : 'n', (TransB) ? 't' : 'n', alpha, A, B, beta, C);
 }
 
 template <bool TransA, BlockTensorConcept AType, VectorConcept XType, VectorConcept YType, typename U>
@@ -93,6 +112,29 @@ void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y)
             continue;
         }
         gemv<TransA>(static_cast<T>(alpha), A.block(i), x(A.block_range(i)), static_cast<T>(1.0), &((*y)(A.block_range(i))));
+    }
+}
+
+template <BlockTensorConcept AType, VectorConcept XType, VectorConcept YType, typename U>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires SameUnderlying<AType, XType, YType>;
+        requires std::convertible_to<U, typename AType::ValueType>;
+    }
+void gemv(char transA, U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
+    using T = typename AType::ValueType;
+    if (beta == U(0.0)) {
+        y->zero();
+    } else {
+        *y *= beta;
+    }
+
+    EINSUMS_OMP_PARALLEL_FOR
+    for (int i = 0; i < A.num_blocks(); i++) {
+        if (A.block_dim(i) == 0) {
+            continue;
+        }
+        gemv(transA, static_cast<T>(alpha), A.block(i), x(A.block_range(i)), static_cast<T>(1.0), &((*y)(A.block_range(i))));
     }
 }
 
@@ -164,6 +206,68 @@ auto gesv(AType *A, BType *B) -> int {
             continue;
         }
         int info = gesv(&(A->block(i)), &(B->block(i)));
+
+        info_out |= info;
+
+        if (info != 0) {
+            EINSUMS_LOG_WARN("gesv: Got non-zero return: %d", info);
+        }
+    }
+
+    return info_out;
+}
+
+template <BlockTensorConcept AType, MatrixConcept BType>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires SameUnderlying<AType, BType>;
+    }
+auto gesv(AType *A, BType *B) -> int {
+
+    if (A->dim(0) != B->dim(0)) {
+        EINSUMS_THROW_EXCEPTION(dimension_error,
+                                "The result matrix for gesv needs to have the same number of rows as the coefficient matrix.");
+    }
+
+    int info_out = 0;
+
+    EINSUMS_OMP_PARALLEL_FOR
+    for (int i = 0; i < A->num_blocks(); i++) {
+        if (A->block_dim(i) == 0) {
+            continue;
+        }
+        int info = gesv(&(A->block(i)), &((*B)(A->block_range(i), All)));
+
+        info_out |= info;
+
+        if (info != 0) {
+            EINSUMS_LOG_WARN("gesv: Got non-zero return: %d", info);
+        }
+    }
+
+    return info_out;
+}
+
+template <BlockTensorConcept AType, VectorConcept BType>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires SameUnderlying<AType, BType>;
+    }
+auto gesv(AType *A, BType *B) -> int {
+
+    if (A->dim(0) != B->dim(0)) {
+        EINSUMS_THROW_EXCEPTION(dimension_error,
+                                "The result matrix for gesv needs to have the same number of rows as the coefficient matrix.");
+    }
+
+    int info_out = 0;
+
+    EINSUMS_OMP_PARALLEL_FOR
+    for (int i = 0; i < A->num_blocks(); i++) {
+        if (A->block_dim(i) == 0) {
+            continue;
+        }
+        int info = gesv(&(A->block(i)), &((*B)(A->block_range(i))));
 
         info_out |= info;
 

@@ -226,6 +226,16 @@ void zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> con
     vendor::zger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
 }
 
+void cgerc(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x, std::complex<float> const *y,
+           int_t inc_y, std::complex<float> *a, int_t lda) {
+    vendor::cgerc(m, n, alpha, x, inc_x, y, inc_y, a, lda);
+}
+
+void zgerc(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
+           int_t inc_y, std::complex<double> *a, int_t lda) {
+    vendor::zgerc(m, n, alpha, x, inc_x, y, inc_y, a, lda);
+}
+
 auto sgetrf(int_t m, int_t n, float *a, int_t lda, int_t *ipiv) -> int_t {
     return vendor::sgetrf(m, n, a, lda, ipiv);
 }

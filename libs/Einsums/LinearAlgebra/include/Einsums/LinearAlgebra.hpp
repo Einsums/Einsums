@@ -95,6 +95,16 @@ void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C)
     detail::gemm<TransA, TransB>(alpha, A, B, beta, C);
 }
 
+template <MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U>
+    requires requires {
+        requires InSamePlace<AType, BType, CType>;
+        requires std::convertible_to<U, typename AType::ValueType>;
+        requires SameUnderlying<AType, BType, CType>;
+    }
+void gemm(char transA, char transB, U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
+    detail::gemm(transA, transB, alpha, A, B, beta, C);
+}
+
 /**
  * @brief General matrix multiplication. Returns new tensor.
  *
@@ -183,6 +193,18 @@ void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y)
     detail::gemv<TransA>(alpha, A, z, beta, y);
 }
 
+template <MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U>
+    requires requires {
+        requires InSamePlace<AType, XType, YType>;
+        requires SameUnderlying<AType, XType, YType>;
+        requires std::convertible_to<U, typename AType::ValueType>;
+    }
+void gemv(char transA, U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
+    LabeledSection1(fmt::format("<transA={}>", transA));
+
+    detail::gemv(transA, alpha, A, z, beta, y);
+}
+
 /**
  * Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
  *
@@ -253,10 +275,11 @@ void heev(AType *A, WType *W) {
     detail::heev<ComputeEigenvectors>(A, W);
 }
 
-template <MatrixConcept AType, MatrixConcept BType>
+template <MatrixConcept AType, TensorConcept BType>
     requires requires {
         requires InSamePlace<AType, BType>;
         requires SameUnderlying<AType, BType>;
+        requires MatrixConcept<BType> || VectorConcept<BType>;
     }
 auto gesv(AType *A, BType *B) -> int {
 
@@ -477,6 +500,17 @@ void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, ATyp
     LabeledSection0();
 
     detail::ger(alpha, X, Y, A);
+}
+
+template <MatrixConcept AType, VectorConcept XYType>
+    requires requires {
+        requires SameUnderlying<AType, XYType>;
+        requires InSamePlace<AType, XYType>;
+    }
+void gerc(typename AType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
+    LabeledSection0();
+
+    detail::gerc(alpha, X, Y, A);
 }
 
 /**

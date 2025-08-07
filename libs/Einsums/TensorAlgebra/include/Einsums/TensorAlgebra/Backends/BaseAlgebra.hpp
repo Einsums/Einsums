@@ -7,6 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Logging.hpp>
@@ -20,13 +21,23 @@
 
 namespace einsums::tensor_algebra::detail {
 
-template <size_t I, typename T, typename... LinkDims, CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
+template <size_t I, typename T, bool ConjA, bool ConjB, typename... LinkDims, CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
 std::remove_cvref_t<T> einsums_generic_link_loop(std::tuple<LinkDims...> const                 &link_dims,
                                                  std::array<size_t, sizeof...(LinkDims)> const &A_link_strides,
                                                  std::array<size_t, sizeof...(LinkDims)> const &B_link_strides, size_t A_index,
                                                  size_t B_index, AType const &A, BType const &B) {
     if constexpr (sizeof...(LinkDims) == I) {
-        return A.data()[A_index] * B.data()[B_index];
+        auto A_val = A.data()[A_index];
+        auto B_val = B.data()[B_index];
+
+        if constexpr (IsComplexV<std::remove_cvref_t<decltype(A_val)>> && ConjA) {
+            A_val = std::conj(A_val);
+        }
+        if constexpr (IsComplexV<std::remove_cvref_t<decltype(B_val)>> && ConjB) {
+            B_val = std::conj(B_val);
+        }
+
+        return A_val * B_val;
     } else {
         size_t const curr_dim = std::get<I>(link_dims);
         size_t const A_stride = A_link_strides[I];
@@ -36,15 +47,15 @@ std::remove_cvref_t<T> einsums_generic_link_loop(std::tuple<LinkDims...> const  
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = 0; i < curr_dim; i++) {
-            sum += einsums_generic_link_loop<I + 1, T>(link_dims, A_link_strides, B_link_strides, A_index + i * A_stride,
-                                                       B_index + i * B_stride, A, B);
+            sum += einsums_generic_link_loop<I + 1, T, ConjA, ConjB>(link_dims, A_link_strides, B_link_strides, A_index + i * A_stride,
+                                                                     B_index + i * B_stride, A, B);
         }
         return sum;
     }
 }
 
-template <size_t I, typename... TargetDims, typename... LinkDims, CoreBasicTensorConcept CType, CoreBasicTensorConcept AType,
-          CoreBasicTensorConcept BType, typename T>
+template <size_t I, bool ConjA, bool ConjB, typename... TargetDims, typename... LinkDims, CoreBasicTensorConcept CType,
+          CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, typename T>
 void einsums_generic_target_loop(std::tuple<TargetDims...> const &target_dims, std::tuple<LinkDims...> const &link_dims,
                                  std::array<size_t, sizeof...(TargetDims)> const &C_target_strides,
                                  std::array<size_t, sizeof...(TargetDims)> const &A_target_strides,
@@ -54,7 +65,7 @@ void einsums_generic_target_loop(std::tuple<TargetDims...> const &target_dims, s
                                  size_t B_index, T &&C_prefactor, CType *C, T &&AB_prefactor, AType const &A, BType const &B) {
     if constexpr (sizeof...(TargetDims) == I) {
         C->data()[C_index] +=
-            AB_prefactor * einsums_generic_link_loop<0, T>(link_dims, A_link_strides, B_link_strides, A_index, B_index, A, B);
+            AB_prefactor * einsums_generic_link_loop<0, T, ConjA, ConjB>(link_dims, A_link_strides, B_link_strides, A_index, B_index, A, B);
     } else {
         size_t const curr_dim = std::get<I>(target_dims);
         size_t const A_stride = A_target_strides[I];
@@ -63,16 +74,17 @@ void einsums_generic_target_loop(std::tuple<TargetDims...> const &target_dims, s
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = 0; i < curr_dim; i++) {
-            einsums_generic_target_loop<I + 1>(target_dims, link_dims, C_target_strides, A_target_strides, B_target_strides, A_link_strides,
-                                               B_link_strides, C_index + i * C_stride, A_index + i * A_stride, B_index + i * B_stride,
-                                               std::forward<T>(C_prefactor), C, std::forward<T>(AB_prefactor), A, B);
+            einsums_generic_target_loop<I + 1, ConjA, ConjB>(target_dims, link_dims, C_target_strides, A_target_strides, B_target_strides,
+                                                             A_link_strides, B_link_strides, C_index + i * C_stride, A_index + i * A_stride,
+                                                             B_index + i * B_stride, std::forward<T>(C_prefactor), C,
+                                                             std::forward<T>(AB_prefactor), A, B);
         }
     }
 }
 
-template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices,
-          typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
-          typename... TargetPositionInC, typename... LinkPositionInLink, typename CType, CoreBasicTensorConcept AType,
+template <bool ConjA, bool ConjB, typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices,
+          typename... LinkUniqueIndices, typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims,
+          typename... LinkDims, typename... TargetPositionInC, typename... LinkPositionInLink, typename CType, CoreBasicTensorConcept AType,
           CoreBasicTensorConcept BType>
     requires(CoreBasicTensorConcept<CType> || (!TensorConcept<CType> && sizeof...(CIndices) == 0))
 void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std::tuple<AUniqueIndices...> const & /*A_unique*/,
@@ -110,7 +122,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
             *C *= C_prefactor;
         }
 
-        *C += AB_prefactor * einsums_generic_link_loop<0, CDataType>(link_dims, A_link_strides, B_link_strides, 0, 0, A, B);
+        *C += AB_prefactor * einsums_generic_link_loop<0, CDataType, ConjA, ConjB>(link_dims, A_link_strides, B_link_strides, 0, 0, A, B);
     } else {
         auto const C_target_strides = tensor_algebra::get_stride_for(*C, target_position_in_C, C_unique);
 
@@ -120,8 +132,9 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
             *C *= C_prefactor;
         }
 
-        einsums_generic_target_loop<0>(target_dims, link_dims, C_target_strides, A_target_strides, B_target_strides, A_link_strides,
-                                       B_link_strides, 0, 0, 0, (CDataType)C_prefactor, C, (CDataType)AB_prefactor, A, B);
+        einsums_generic_target_loop<0, ConjA, ConjB>(target_dims, link_dims, C_target_strides, A_target_strides, B_target_strides,
+                                                     A_link_strides, B_link_strides, 0, 0, 0, (CDataType)C_prefactor, C,
+                                                     (CDataType)AB_prefactor, A, B);
     }
 }
 } // namespace einsums::tensor_algebra::detail

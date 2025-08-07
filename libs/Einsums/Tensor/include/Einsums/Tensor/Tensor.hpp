@@ -177,7 +177,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     template <std::integral... Dims>
         requires(sizeof...(Dims) == Rank)
     Tensor(std::string name, Dims... dims)
-        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}) {
+        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, false) {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
         // Resize the data structure
@@ -322,7 +322,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param other The tensor view to copy.
      */
-    Tensor(TensorView<T, rank> const &other) : _name{other.name()}, _impl(nullptr, other.dims()) {
+    Tensor(TensorView<T, rank> const &other) : _name{other.name()}, _impl(nullptr, other.dims(), false) {
         // Resize the data structure
         _data.resize(_impl.size());
 
@@ -346,7 +346,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             return;
         }
 
-        _impl = detail::TensorImpl<T>(nullptr, dims);
+        _impl = detail::TensorImpl<T>(nullptr, dims, _impl.is_row_major());
 
         // Resize the data structure
         _data.resize(_impl.size());

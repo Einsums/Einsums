@@ -605,6 +605,9 @@ struct TensorImpl final {
      * @param i The axis to check.
      */
     constexpr size_t dim(std::integral auto i) const {
+        if (_ptr == nullptr) {
+            return 0;
+        }
         if (_rank == 0) {
             return 1;
         }

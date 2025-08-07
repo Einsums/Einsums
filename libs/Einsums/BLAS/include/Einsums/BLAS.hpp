@@ -560,6 +560,10 @@ void EINSUMS_EXPORT cger(int_t m, int_t n, std::complex<float> alpha, std::compl
                          std::complex<float> const *y, int_t inc_y, std::complex<float> *a, int_t lda);
 void EINSUMS_EXPORT zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x,
                          std::complex<double> const *y, int_t inc_y, std::complex<double> *a, int_t lda);
+void EINSUMS_EXPORT cgerc(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x,
+                          std::complex<float> const *y, int_t inc_y, std::complex<float> *a, int_t lda);
+void EINSUMS_EXPORT zgerc(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x,
+                          std::complex<double> const *y, int_t inc_y, std::complex<double> *a, int_t lda);
 } // namespace detail
 
 /*!
@@ -575,6 +579,9 @@ void EINSUMS_EXPORT zger(int_t m, int_t n, std::complex<double> alpha, std::comp
  */
 template <typename T>
 void ger(int_t m, int_t n, T alpha, T const *x, int_t inc_x, T const *y, int_t inc_y, T *a, int_t lda);
+
+template <typename T>
+void gerc(int_t m, int_t n, T alpha, T const *x, int_t inc_x, T const *y, int_t inc_y, T *a, int_t lda);
 
 template <>
 inline void ger<float>(int_t m, int_t n, float alpha, float const *x, int_t inc_x, float const *y, int_t inc_y, float *a, int_t lda) {
@@ -596,6 +603,28 @@ template <>
 inline void ger<std::complex<double>>(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x,
                                       std::complex<double> const *y, int_t inc_y, std::complex<double> *a, int_t lda) {
     detail::zger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
+}
+
+template <>
+inline void gerc<float>(int_t m, int_t n, float alpha, float const *x, int_t inc_x, float const *y, int_t inc_y, float *a, int_t lda) {
+    detail::sger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
+}
+
+template <>
+inline void gerc<double>(int_t m, int_t n, double alpha, double const *x, int_t inc_x, double const *y, int_t inc_y, double *a, int_t lda) {
+    detail::dger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
+}
+
+template <>
+inline void gerc<std::complex<float>>(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x,
+                                      std::complex<float> const *y, int_t inc_y, std::complex<float> *a, int_t lda) {
+    detail::cgerc(m, n, alpha, x, inc_x, y, inc_y, a, lda);
+}
+
+template <>
+inline void gerc<std::complex<double>>(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x,
+                                       std::complex<double> const *y, int_t inc_y, std::complex<double> *a, int_t lda) {
+    detail::zgerc(m, n, alpha, x, inc_x, y, inc_y, a, lda);
 }
 
 namespace detail {

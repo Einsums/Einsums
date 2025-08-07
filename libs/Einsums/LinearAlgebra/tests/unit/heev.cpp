@@ -23,9 +23,19 @@ void heev_test() {
     A.vector_data() = {{0.199889, 0.0},         {-0.330816, -0.127778},  {-0.0546237, 0.176589}, {-0.330816, 0.127778}, {0.629179, 0.0},
                        {-0.0224813, -0.327171}, {-0.0546237, -0.176589}, {-0.0224813, 0.327171}, {0.170931, 0.0}};
 
+    auto A2 = create_tensor<T, true>("a2", 3, 3);
+
+    A2 = A;
+
     einsums::linear_algebra::heev(&A, &b);
 
     // Sometimes 0.0 will be reported as -0.0 therefore we test the Abs of the first two
+    CHECK_THAT(b(0), Catch::Matchers::WithinAbs(0.0, 0.00001));
+    CHECK_THAT(b(1), Catch::Matchers::WithinAbs(0.0, 0.00001));
+    CHECK_THAT(b(2), Catch::Matchers::WithinRel(1.0, 0.00001));
+
+    einsums::linear_algebra::heev(&A2, &b);
+
     CHECK_THAT(b(0), Catch::Matchers::WithinAbs(0.0, 0.00001));
     CHECK_THAT(b(1), Catch::Matchers::WithinAbs(0.0, 0.00001));
     CHECK_THAT(b(2), Catch::Matchers::WithinRel(1.0, 0.00001));
@@ -44,11 +54,13 @@ void heev_strided_test() {
 
     TensorView<T, 2> A{data.data(), Dim<2>{3, 3}, Stride<2>{6, 2}};
 
-    Tensor<T, 2> A2{"test", 3, 3};
+    Tensor<T, 2> A2{"test", 3, 3}, A3{true, "test 2", 3, 3};
 
     A2 = A;
+    A3 = A;
 
     einsums::linear_algebra::heev(&A2, &b);
+    einsums::linear_algebra::heev(&A3, &b);
 
     einsums::linear_algebra::heev(&A, &b);
 
@@ -71,6 +83,12 @@ void heev_strided_test() {
             CHECK_THAT(std::imag(A(i, 1)), Catch::Matchers::WithinAbs(std::imag(A2(i, 1)), 0.00001));
             CHECK_THAT(std::real(A(i, 2)), Catch::Matchers::WithinAbs(std::real(A2(i, 2)), 0.00001));
             CHECK_THAT(std::imag(A(i, 2)), Catch::Matchers::WithinAbs(std::imag(A2(i, 2)), 0.00001));
+            CHECK_THAT(std::real(A(i, 0)), Catch::Matchers::WithinAbs(std::real(A3(i, 0)), 0.00001));
+            CHECK_THAT(std::imag(A(i, 0)), Catch::Matchers::WithinAbs(std::imag(A3(i, 0)), 0.00001));
+            CHECK_THAT(std::real(A(i, 1)), Catch::Matchers::WithinAbs(std::real(A3(i, 1)), 0.00001));
+            CHECK_THAT(std::imag(A(i, 1)), Catch::Matchers::WithinAbs(std::imag(A3(i, 1)), 0.00001));
+            CHECK_THAT(std::real(A(i, 2)), Catch::Matchers::WithinAbs(std::real(A3(i, 2)), 0.00001));
+            CHECK_THAT(std::imag(A(i, 2)), Catch::Matchers::WithinAbs(std::imag(A3(i, 2)), 0.00001));
         }
     }
 }

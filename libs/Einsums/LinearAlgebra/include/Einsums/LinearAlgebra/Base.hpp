@@ -270,11 +270,10 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
             // We might need to transpose the eigenvectors.
             if (A->is_row_major()) {
                 for (size_t i = 0; i < A->dim(0); i++) {
-                    A->subscript_no_check(i, i) = std::conj(A->subscript_no_check(i, i));
                     for (size_t j = i + 1; j < A->dim(1); j++) {
                         AType temp                  = A->subscript_no_check(i, j);
-                        A->subscript_no_check(i, j) = std::conj(A->subscript_no_check(j, i));
-                        A->subscript_no_check(j, i) = std::conj(temp);
+                        A->subscript_no_check(i, j) = A->subscript_no_check(j, i);
+                        A->subscript_no_check(j, i) = temp;
                     }
                 }
             }
@@ -554,6 +553,17 @@ auto gesv(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<T> *B) 
         return 0;
     }
 
+    if (A->dim(0) == 1) {
+        if (B->rank() == 1) {
+            B->subscript(0) /= A->subscript(0, 0);
+        } else {
+            for (int i = 0; i < B->dim(1); i++) {
+                B->subscript(0, i) /= A->subscript(0, 0);
+            }
+        }
+        return 0;
+    }
+
     if (A->is_column_major() && B->is_column_major() && A->is_gemmable() && (B->rank() == 1 || B->is_gemmable())) {
         auto n   = A->dim(0);
         auto lda = A->get_lda();
@@ -562,7 +572,7 @@ auto gesv(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<T> *B) 
 
         if (B->rank() == 1) {
             nrhs = 1;
-            ldb  = B->get_incx();
+            ldb  = n;
         } else {
             nrhs = B->dim(1);
             ldb  = B->get_ldb();
@@ -584,8 +594,9 @@ auto gesv(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<T> *B) 
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
     requires requires {
-        requires SameUnderlyingAndRank<AType, BType>;
+        requires SameUnderlying<AType, BType>;
         requires MatrixConcept<AType>;
+        requires MatrixConcept<BType> || VectorConcept<BType>;
     }
 auto gesv(AType *A, BType *B) -> int {
     return gesv(&A->impl(), &B->impl());
@@ -704,7 +715,6 @@ void axpby(typename XType::ValueType alpha, XType const &X, typename YType::Valu
 }
 
 template <typename T>
-
 void ger(T alpha, einsums::detail::TensorImpl<T> const &X, einsums::detail::TensorImpl<T> const &Y, einsums::detail::TensorImpl<T> *A) {
     impl_ger(alpha, X, Y, *A);
 }
@@ -717,6 +727,21 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept XYType>
     }
 void ger(typename XYType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
     ger(alpha, X.impl(), Y.impl(), &A->impl());
+}
+
+template <typename T>
+void gerc(T alpha, einsums::detail::TensorImpl<T> const &X, einsums::detail::TensorImpl<T> const &Y, einsums::detail::TensorImpl<T> *A) {
+    impl_gerc(alpha, X, Y, *A);
+}
+
+template <CoreBasicTensorConcept AType, CoreBasicTensorConcept XYType>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires VectorConcept<XYType>;
+        requires SameUnderlying<AType, XYType>;
+    }
+void gerc(typename XYType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
+    gerc(alpha, X.impl(), Y.impl(), &A->impl());
 }
 
 template <bool TransA, bool TransB, CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>

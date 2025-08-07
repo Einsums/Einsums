@@ -435,7 +435,7 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
                         C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, A.impl().is_row_major());
     } else
 #endif
-        if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
+        if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)> && !(ConjA && IsComplexV<T>)) {
         // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
         if (C_prefactor == T{0.0}) {
             *C = T{0.0};

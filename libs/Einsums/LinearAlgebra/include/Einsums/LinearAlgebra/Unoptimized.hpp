@@ -249,6 +249,28 @@ void ger(U alpha, XType const &X, YType const &Y, AType *A) {
     }
 }
 
+template <MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U>
+    requires requires { requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<XType> || !AlgebraTensorConcept<YType>; }
+void gerc(U alpha, XType const &X, YType const &Y, AType *A) {
+    if (A->dim(0) != X.dim(0) || A->dim(1) != Y.dim(0)) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Incompatible matrix and vector sizes!");
+    }
+
+    size_t rows = A->dim(0);
+    size_t cols = A->dim(1);
+
+#pragma omp parallel for collapse(2) default(none)
+    for (size_t i = 0; i < rows; i++) {
+        for (size_t j = 0; j < cols; j++) {
+            if constexpr (IsComplex<typename YType::ValueType>) {
+                (*A)(i, j) += alpha * X(i) * std::conj(Y(j));
+            } else {
+                (*A)(i, j) += alpha * X(i) * Y(j);
+            }
+        }
+    }
+}
+
 template <TensorConcept AType>
     requires(!AlgebraTensorConcept<AType>)
 void scale(typename AType::ValueType alpha, AType *A) {

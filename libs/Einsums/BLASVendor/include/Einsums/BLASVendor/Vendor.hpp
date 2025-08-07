@@ -128,6 +128,10 @@ void cger(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const
           std::complex<float> *a, int_t lda);
 void zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
           int_t inc_y, std::complex<double> *a, int_t lda);
+void cgerc(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x, std::complex<float> const *y, int_t inc_y,
+          std::complex<float> *a, int_t lda);
+void zgerc(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
+          int_t inc_y, std::complex<double> *a, int_t lda);
 
 /*!
  * Computes the LU factorization of a general M-by-N matrix A

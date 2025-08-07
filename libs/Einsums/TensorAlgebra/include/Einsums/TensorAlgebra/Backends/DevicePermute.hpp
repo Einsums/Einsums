@@ -149,7 +149,7 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         }
     }
 #endif
-    if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
+    if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)> && !(ConjA && IsComplexV<T>)) {
         einsums::linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
     } else {
         int *index_table = new int[sizeof...(AIndices)];

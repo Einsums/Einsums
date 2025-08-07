@@ -13,8 +13,8 @@
 TEST_CASE("Tensor creation", "[tensor]") {
     using namespace einsums;
 
-    Tensor A("A", 1, 1);
-    Tensor B("B", 1, 1);
+    Tensor A(true, "A", 1, 1);
+    Tensor B(true, "B", 1, 1);
 
     REQUIRE((A.dim(0) == 1 && A.dim(1) == 1));
     REQUIRE((B.dim(0) == 1 && B.dim(1) == 1));
@@ -22,7 +22,7 @@ TEST_CASE("Tensor creation", "[tensor]") {
     A.resize(einsums::Dim{3, 3});
     B.resize(einsums::Dim{3, 3});
 
-    auto C = create_tensor<double>("C", 3, 3);
+    auto C = create_tensor<double, true>("C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -56,9 +56,9 @@ TEST_CASE("Tensor creation", "[tensor]") {
 }
 
 TEST_CASE("Tensor GEMMs", "[tensor]") {
-    einsums::Tensor A("A", 3, 3);
-    einsums::Tensor B("B", 3, 3);
-    einsums::Tensor C("C", 3, 3);
+    einsums::Tensor A( "A", 3, 3);
+    einsums::Tensor B( "B", 3, 3);
+    einsums::Tensor C( "C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -85,9 +85,9 @@ TEST_CASE("Tensor GEMMs", "[tensor]") {
 }
 
 TEST_CASE("Tensor GEMVs", "[tensor]") {
-    einsums::Tensor A("A", 3, 3);
-    einsums::Tensor x("x", 3);
-    einsums::Tensor y("y", 3);
+    einsums::Tensor A( "A", 3, 3);
+    einsums::Tensor x( "x", 3);
+    einsums::Tensor y( "y", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
@@ -104,8 +104,8 @@ TEST_CASE("Tensor GEMVs", "[tensor]") {
 }
 
 TEST_CASE("Tensor SYEVs", "[tensor]") {
-    einsums::Tensor A("A", 3, 3);
-    einsums::Tensor x("x", 3);
+    einsums::Tensor A(true, "A", 3, 3);
+    einsums::Tensor x(true, "x", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));

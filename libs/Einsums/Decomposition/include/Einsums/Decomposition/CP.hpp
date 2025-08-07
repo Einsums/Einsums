@@ -122,15 +122,15 @@ auto initialize_cp(std::vector<Tensor<TType, 2>, Alloc> &folds, size_t rank) -> 
         linear_algebra::syev(&fold_squared, &S);
 
         // // Reorder into row major form
-        // Tensor U = create_tensor<TType>("Left Singular Vectors", m, m);
-        // permute(Indices{index::M, index::N}, &U, Indices{index::N, index::M}, fold_squared);
+        Tensor U = create_tensor<TType>("Left Singular Vectors", m, m);
+        permute(Indices{index::M, index::N}, &U, Indices{index::N, index::M}, fold_squared);
 
         // If (i == 0), Scale U by the singular values
         if (i == 0) {
             for (size_t v = 0; v < S.dim(0); v++) {
                 TType const scaling_factor = std::sqrt(S(v));
                 if (std::abs(scaling_factor) > 1.0e-14)
-                    linear_algebra::scale_column(v, scaling_factor, &fold_squared);
+                    linear_algebra::scale_column(v, scaling_factor, &U);
             }
         }
 
@@ -141,13 +141,17 @@ auto initialize_cp(std::vector<Tensor<TType, 2>, Alloc> &folds, size_t rank) -> 
             // EINSUMS_LOG_WARN("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
             /// @todo Need to padd U up to rank
             Tensor<TType, 2> Unew  = create_random_tensor<TType>("Padded SVD Left Vectors", folds[i].dim(0), rank);
-            Unew(Range{0, m}, All) = fold_squared(All, All);
+            Unew(All, Range{0, m}) = U(All, All);
+
+            EINSUMS_LOG_DEBUG("m: {}", m);
+
+            println(Unew);
 
             // Need to save the factors
             factors.push_back(Unew);
         } else {
             // Need to save the factors
-            factors.emplace_back(Tensor<TType, 2>{fold_squared(All, Range{m - rank, m})});
+            factors.emplace_back(Tensor<TType, 2>{U(All, Range{m - rank, m})});
         }
 
         // println("latest factor added");

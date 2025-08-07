@@ -7,11 +7,11 @@
 
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/TensorBase/Common.hpp>
+#include <Einsums/TensorImpl/TensorImpl.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
+#include <Einsums/TypeSupport/TypeName.hpp>
 
 #include <tuple>
-
-#include "Einsums/TypeSupport/TypeName.hpp"
 
 namespace einsums::tensor_algebra {
 
@@ -383,7 +383,20 @@ constexpr auto is_same_dims(std::tuple<PositionsInX...> const &indices, XType co
 
 template <TensorConcept XType, typename... PositionsInX>
 constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, XType const &X) -> size_t {
-    return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
+    if (X.impl().is_row_major()) {
+        return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
+    } else {
+        return X.stride(std::get<1>(indices));
+    }
+}
+
+template <TensorConcept XType, typename... PositionsInX>
+constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, einsums::detail::TensorImpl<XType> const &X) -> size_t {
+    if (X.is_row_major()) {
+        return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
+    } else {
+        return X.stride(std::get<1>(indices));
+    }
 }
 
 template <typename XType, typename... PositionsInX>

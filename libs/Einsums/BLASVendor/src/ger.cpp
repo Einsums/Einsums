@@ -21,6 +21,10 @@ extern void FC_GLOBAL(cgeru, CGERU)(int_t *, int_t *, std::complex<float> *, std
                                     std::complex<float> const *, int_t *, std::complex<float> *, int_t *);
 extern void FC_GLOBAL(zgeru, ZGERU)(int_t *, int_t *, std::complex<double> *, std::complex<double> const *, int_t *,
                                     std::complex<double> const *, int_t *, std::complex<double> *, int_t *);
+extern void FC_GLOBAL(cgerc, CGERC)(int_t *, int_t *, std::complex<float> *, std::complex<float> const *, int_t *,
+                                    std::complex<float> const *, int_t *, std::complex<float> *, int_t *);
+extern void FC_GLOBAL(zgerc, ZGERC)(int_t *, int_t *, std::complex<double> *, std::complex<double> const *, int_t *,
+                                    std::complex<double> const *, int_t *, std::complex<double> *, int_t *);
 }
 
 #define ger_parameter_check(m, n, inc_x, inc_y, lda)                                                                                       \
@@ -69,6 +73,23 @@ void zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> con
     ger_parameter_check(m, n, inc_x, inc_y, lda);
 
     FC_GLOBAL(zgeru, ZGERU)(&m, &n, &alpha, x, &inc_x, y, &inc_y, a, &lda);
+}
+
+void cgerc(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x, std::complex<float> const *y,
+           int_t inc_y, std::complex<float> *a, int_t lda) {
+    LabeledSection0();
+
+    ger_parameter_check(m, n, inc_x, inc_y, lda);
+    FC_GLOBAL(cgerc, CGERC)(&m, &n, &alpha, x, &inc_x, y, &inc_y, a, &lda);
+}
+
+void zgerc(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
+           int_t inc_y, std::complex<double> *a, int_t lda) {
+    LabeledSection0();
+
+    ger_parameter_check(m, n, inc_x, inc_y, lda);
+
+    FC_GLOBAL(zgerc, ZGERC)(&m, &n, &alpha, x, &inc_x, y, &inc_y, a, &lda);
 }
 
 } // namespace einsums::blas::vendor

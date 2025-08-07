@@ -149,17 +149,23 @@ static void compute_diis_coefs(std::vector<einsums::BlockTensor<double, 2>> cons
         }
     }
 
-    einsums::Tensor<double, 2> res_mat("DIIS result matrix", 1, errors.size() + 1);
+    einsums::Tensor<double, 1> res_mat("DIIS result matrix", errors.size() + 1);
 
     res_mat.zero();
-    res_mat(0, errors.size()) = 1.0;
+    res_mat(errors.size()) = 1.0;
 
-    einsums::linear_algebra::gesv(B_mat, &res_mat);
+    auto info = einsums::linear_algebra::gesv(B_mat, &res_mat);
+
+    if (info < 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "The {} parameter to gesv was invalid!", einsums::print::ordinal(-info));
+    } else if(info > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "The {} diagonal element went to zero when solving the system!", einsums::print::ordinal(info));
+    }
 
     out->resize(errors.size());
 
     for (int i = 0; i < errors.size(); i++) {
-        out->at(i) = res_mat(0, i);
+        out->at(i) = res_mat(i);
     }
 
     delete B_mat;
@@ -256,7 +262,7 @@ TEST_CASE("RHF No symmetry", "[qchem]") {
         REQUIRE(Evals(i) <= Evals(i + 1));
     }
 
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::j, index::k}, Ct, Indices{index::k, index::i}, X));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::k, index::j}, Ct, Indices{index::i, index::k}, X));
 
     // Form the density matrix.
     auto Cocc = C(All, Range{0, 5});
@@ -298,7 +304,7 @@ TEST_CASE("RHF No symmetry", "[qchem]") {
         Ct = Ft;
         syev(&Ct, &Evals);
 
-        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::j, index::k}, Ct, Indices{index::k, index::i}, X));
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::k, index::j}, Ct, Indices{index::k, index::i}, X));
 
         // Form the density matrix.
         Cocc = C(All, Range{0, 5});
@@ -618,7 +624,7 @@ TEST_CASE("RHF symmetry") {
     syev(&Ct, &Evals);
 
     // Transform back.
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::j, index::k}, Ct, Indices{index::i, index::k}, X_sym));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::k, index::j}, Ct, Indices{index::i, index::k}, X_sym));
 
     // Compute the occupied orbitals.
     update_Cocc(Evals, &Cocc, C, occ_per_irrep);
@@ -656,7 +662,7 @@ TEST_CASE("RHF symmetry") {
         syev(&Ct, &Evals);
 
         // Transform back.
-        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::j, index::k}, Ct, Indices{index::i, index::k}, X_sym));
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::k, index::j}, Ct, Indices{index::i, index::k}, X_sym));
 
         // Compute the occupied orbitals.
         update_Cocc(Evals, &Cocc, C, occ_per_irrep);

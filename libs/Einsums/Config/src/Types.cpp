@@ -28,13 +28,22 @@ size_t GlobalConfigMap::max_size() const noexcept {
     return str_map_->get_value().max_size() + int_map_->get_value().max_size() + double_map_->get_value().max_size();
 }
 
-std::string const &GlobalConfigMap::get_string(std::string const &key, std::string const &dephault) const {
+std::string GlobalConfigMap::get_string(std::string const &key) const {
+    if (str_map_->get_value().contains(key)) {
+        return str_map_->get_value().at(key);
+    } else {
+        return "";
+    }
+}
+
+std::string GlobalConfigMap::get_string(std::string const &key, std::string const &dephault) const {
     if (str_map_->get_value().contains(key)) {
         return str_map_->get_value().at(key);
     } else {
         return dephault;
     }
 }
+
 std::int64_t GlobalConfigMap::get_int(std::string const &key, std::int64_t dephault) const {
     if (int_map_->get_value().contains(key)) {
         return int_map_->get_value().at(key);
@@ -55,6 +64,22 @@ bool GlobalConfigMap::get_bool(std::string const &key, bool dephault) const {
     } else {
         return dephault;
     }
+}
+
+void GlobalConfigMap::set_string(std::string const &key, std::string const &value) {
+    (*str_map_).get_value()[key] = value;
+}
+
+void GlobalConfigMap::set_int(std::string const &key, std::int64_t value) {
+    (*int_map_).get_value()[key] = value;
+}
+
+void GlobalConfigMap::set_double(std::string const &key, double value) {
+    (*double_map_).get_value()[key] = value;
+}
+
+void GlobalConfigMap::set_bool(std::string const &key, bool value) {
+    (*bool_map_).get_value()[key] = value;
 }
 
 std::shared_ptr<ConfigMap<std::string>> GlobalConfigMap::get_string_map() {
