@@ -42,7 +42,7 @@ set(BLASVendorSources
 
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64)
   set(BLASVendorx64Sources direct_prod_kernels/sdirprod-x86_64-avx2.S direct_prod_kernels/ddirprod-x86_64-avx2.S
-      direct_prod_kernels/cdirprod-x86_64-avx2.S direct_prod_kernels/zdirprod-x86_64-avx2.S) 
+      direct_prod_kernels/cdirprod-x86_64-avx2.S direct_prod_kernels/zdirprod-x86_64-avx2.S)
   list(APPEND BLASVendorSources ${BLASVendorx64Sources})
 endif()
 
@@ -53,6 +53,6 @@ einsums_add_module(
   HEADERS ${BLASVendorHeaders}
   DEPENDENCIES tgt::lapack
         MODULE_DEPENDENCIES Einsums_Assertion Einsums_Config Einsums_Print Einsums_Profile
-        Einsums_BLASBase Einsums_HPTT Einsums_Errors Einsums_Logging Einsums_BufferAllocator
+                            Einsums_BLASBase Einsums_HPTT Einsums_Errors Einsums_Logging Einsums_BufferAllocator
   CMAKE_SUBDIRS examples tests
 )
