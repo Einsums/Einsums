@@ -19,6 +19,8 @@
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 
+#include "Einsums/TensorAlgebra/Detail/Index.hpp"
+
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/TensorAlgebra/Backends/DevicePermute.hpp>
 #endif
@@ -603,5 +605,10 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     }
 }
 #endif
+
+template <bool ConjA = false, MatrixConcept CType, MatrixConcept AType>
+void transpose(CType *C, AType const &A) {
+    permute<ConjA>(0.0, einsums::Indices{index::i, index::j}, C, 1.0, einsums::Indices{index::j, index::i}, A);
+}
 
 } // namespace einsums::tensor_algebra

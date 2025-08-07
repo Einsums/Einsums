@@ -70,7 +70,7 @@ TEMPLATE_TEST_CASE("TensorImlp Creation", "[tensor]", float, double, std::comple
         REQUIRE(impl.data() == nullptr);
         REQUIRE(impl.rank() == 0);
         REQUIRE(impl.size() == 0);
-        REQUIRE(impl.dim(0) == 1);
+        REQUIRE(impl.dim(0) == 0);
         REQUIRE(impl.stride(0) == 0);
 
         REQUIRE(impl_copy.data() == test_data.data());
@@ -123,7 +123,7 @@ TEMPLATE_TEST_CASE("TensorImlp Creation", "[tensor]", float, double, std::comple
         REQUIRE(impl.data() == nullptr);
         REQUIRE(impl.rank() == 0);
         REQUIRE(impl.size() == 0);
-        REQUIRE(impl.dim(0) == 1);
+        REQUIRE(impl.dim(0) == 0);
         REQUIRE(impl.stride(0) == 0);
 
         REQUIRE(impl_copy.data() == test_data.data());

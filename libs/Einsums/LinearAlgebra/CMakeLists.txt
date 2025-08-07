@@ -13,7 +13,7 @@ set(LinearAlgebraHeaders
     Einsums/LinearAlgebra/Bases/syev.hpp
 )
 
-set(LinearAlgebraSources LinearAlgebra.cpp)
+set(LinearAlgebraSources LinearAlgebra.cpp ForwardDeclarations.cpp)
 
 if(EINSUMS_WITH_GPU_SUPPORT)
   list(APPEND LinearAlgebraHeaders Einsums/LinearAlgebra/GPULinearAlgebra.hpp)

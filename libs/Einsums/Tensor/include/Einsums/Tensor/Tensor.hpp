@@ -316,6 +316,23 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     }
 
     /**
+     * @brief Construct a new Tensor object using the dimensions given by Dim object.
+     *
+     * @param dims The dimensions of the new tensor in Dim form.
+     */
+    explicit Tensor(bool row_major, Dim<Rank> dims) : _impl(nullptr, dims, row_major) {
+        // Resize the data structure
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+    }
+
+    /**
      * @brief Construct a new Tensor object from a TensorView.
      *
      * Data is explicitly copied from the view to the new tensor.

@@ -21,6 +21,16 @@ static void check_requirements() {
 #ifndef WINDOWS
 
 template struct BufferAllocator<void>;
+template struct BufferAllocator<signed char>;
+template struct BufferAllocator<signed short>;
+template struct BufferAllocator<signed int>;
+template struct BufferAllocator<signed long>;
+template struct BufferAllocator<signed long long>;
+template struct BufferAllocator<unsigned char>;
+template struct BufferAllocator<unsigned short>;
+template struct BufferAllocator<unsigned int>;
+template struct BufferAllocator<unsigned long>;
+template struct BufferAllocator<unsigned long long>;
 template struct BufferAllocator<float>;
 template struct BufferAllocator<double>;
 template struct BufferAllocator<std::complex<float>>;

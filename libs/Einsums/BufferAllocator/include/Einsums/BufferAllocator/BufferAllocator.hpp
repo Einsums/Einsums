@@ -238,6 +238,16 @@ struct BufferAllocator {
 #ifndef WINDOWS
 
 extern template struct EINSUMS_EXPORT BufferAllocator<void>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed char>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed short>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed int>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed long>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed long long>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned char>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned short>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned int>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned long>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned long long>;
 extern template struct EINSUMS_EXPORT BufferAllocator<float>;
 extern template struct EINSUMS_EXPORT BufferAllocator<double>;
 extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<float>>;

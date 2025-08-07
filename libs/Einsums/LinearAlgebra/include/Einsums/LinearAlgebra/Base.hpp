@@ -546,7 +546,9 @@ auto gesv(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<T> *B) 
 
     if (A->dim(0) != A->dim(1) || A->dim(0) != B->dim(0)) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error,
-                                "The coefficient matrix needs to be square and the number of rows of the result matrix needs to match!");
+                                "The coefficient matrix needs to be square and the number of rows of the result matrix needs to match! A "
+                                "dims: ({}, {}), B dim: {}.",
+                                A->dim(0), A->dim(1), B->dim(0));
     }
 
     if (A->dim(0) == 0) {
