@@ -25,6 +25,8 @@
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
 
+#include <stdexcept>
+
 namespace einsums::linear_algebra::detail {
 
 template <typename T>
@@ -359,15 +361,28 @@ void syev(AType *A, WType *W) {
     syev<ComputeEigenvectors>(&A->impl(), &W->impl());
 }
 
-template <bool ComputeLeftRightEigenvectors = true, typename T>
+template <typename T>
 void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComplexT<T>> *W, einsums::detail::TensorImpl<T> *lvecs,
           einsums::detail::TensorImpl<T> *rvecs) {
-    if (A->rank() != 2 || W->rank() != 1 || (ComputeLeftRightEigenvectors && (lvecs->rank() != 2 || rvecs->rank() != 2))) {
+    bool A_rank_fail    = A->rank() != 2;
+    bool W_rank_fail    = W->rank() != 1;
+    bool do_jobvl       = (lvecs != nullptr);
+    bool do_jobvr       = (rvecs != nullptr);
+    bool lvec_rank_fail = do_jobvl && lvecs->rank() != 2;
+    bool rvec_rank_fail = do_jobvr && rvecs->rank() != 2;
+    char jobvl = (do_jobvl) ? 'v' : 'n', jobvr = (do_jobvr) ? 'v' : 'n';
+    if (A_rank_fail || W_rank_fail || lvec_rank_fail || rvec_rank_fail) {
         EINSUMS_THROW_EXCEPTION(rank_error, "The inputs to geev do not have the correct ranks!");
     }
-    if (A->dim(0) != A->dim(1) || (ComputeLeftRightEigenvectors && (lvecs->dim(0) != lvecs->dim(1) || rvecs->dim(0) != rvecs->dim(1)))) {
+
+    if (A->dim(0) != A->dim(1) || (do_jobvl && lvecs->dim(0) != lvecs->dim(1)) || (do_jobvr && rvecs->dim(0) != rvecs->dim(1))) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "The input tensor and eigenvector outputs need to be square!");
     }
+
+    if (A->dim(0) != W->dim(0) || (do_jobvl && lvecs->dim(0) != A->dim(0)) || (do_jobvr && rvecs->dim(0) != A->dim(0))) {
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The tensors passed to geev need to have compatible dimensions!");
+    }
+
     if (A->dim(0) == 0) {
         return;
     }
@@ -393,17 +408,19 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
         W_data = W_temp.data();
     }
 
-    if constexpr (ComputeLeftRightEigenvectors) {
+    if (do_jobvl) {
         lvec_data = lvecs->data();
         ldvl      = lvecs->get_lda();
-        rvec_data = rvecs->data();
-        ldvr      = rvecs->get_lda();
-
         if (!lvecs->is_gemmable()) {
             lvecs_temp = Tensor<T, 2>{"lvecs temp tensor", lvecs->dim(0), lvecs->dim(1)};
             lvec_data  = lvecs_temp.data();
             ldvl       = lvecs_temp.impl().get_lda();
         }
+    }
+
+    if (do_jobvr) {
+        rvec_data = rvecs->data();
+        ldvr      = rvecs->get_lda();
 
         if (!rvecs->is_gemmable()) {
             rvecs_temp = Tensor<T, 2>{"rvecs temp tensor", rvecs->dim(0), rvecs->dim(1)};
@@ -413,14 +430,12 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
     }
     if (A_column_major) {
 
-        blas::geev(ComputeLeftRightEigenvectors ? 'v' : 'n', ComputeLeftRightEigenvectors ? 'v' : 'n', A->dim(0), A_data, lda, W_data,
-                   lvec_data, ldvl, rvec_data, ldvr);
+        blas::geev(jobvl, jobvr, A->dim(0), A_data, lda, W_data, lvec_data, ldvl, rvec_data, ldvr);
     } else {
-        blas::geev(ComputeLeftRightEigenvectors ? 'v' : 'n', ComputeLeftRightEigenvectors ? 'v' : 'n', A->dim(0), A_data, lda, W_data,
-                   rvec_data, ldvr, lvec_data, ldvl);
+        blas::geev(jobvl, jobvr, A->dim(0), A_data, lda, W_data, rvec_data, ldvr, lvec_data, ldvl);
     }
 
-    if constexpr (ComputeLeftRightEigenvectors) {
+    if (do_jobvl) {
         if (lvecs->is_row_major() && lvec_data == lvecs->data()) {
             for (int i = 0; i < lvecs->dim(0); i++) {
                 for (int j = i + 1; j < lvecs->dim(1); j++) {
@@ -430,7 +445,8 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
         } else if (lvec_data != lvecs->data()) {
             einsums::detail::copy_to(lvecs_temp.impl(), *lvecs);
         }
-
+    }
+    if (do_jobvr) {
         if (rvecs->is_row_major() && rvec_data == rvecs->data()) {
             for (int i = 0; i < rvecs->dim(0); i++) {
                 for (int j = i + 1; j < rvecs->dim(1); j++) {
@@ -443,14 +459,24 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
     }
 }
 
-template <bool ComputeLeftRightEigenvectors = true, CoreBasicTensorConcept AType, CoreBasicTensorConcept WType>
+template <CoreBasicTensorConcept AType, CoreBasicTensorConcept WType>
     requires requires {
         requires std::is_same_v<AddComplexT<typename AType::ValueType>, typename WType::ValueType>;
         requires RankTensorConcept<AType, 2>;
         requires RankTensorConcept<WType, 1>;
     }
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
-    geev(&A->impl(), &W->impl(), &lvecs->impl(), &rvecs->impl());
+    einsums::detail::TensorImpl<typename AType::ValueType> *lvec_ptr = nullptr, *rvec_ptr = nullptr;
+
+    if (lvecs != nullptr) {
+        lvec_ptr = &lvecs->impl();
+    }
+
+    if (rvecs != nullptr) {
+        rvec_ptr = &rvecs->impl();
+    }
+
+    geev(&A->impl(), &W->impl(), lvec_ptr, rvec_ptr);
 }
 
 /**
@@ -465,39 +491,69 @@ void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
  * don't need to pack the eigenvectors in this way.
  */
 template <NotComplex T>
-void process_geev_vectors(einsums::detail::TensorImpl<AddComplexT<T>> const &evals, einsums::detail::TensorImpl<T> const &lvecs_in,
-                          einsums::detail::TensorImpl<T> const &rvecs_in, einsums::detail::TensorImpl<AddComplexT<T>> *lvecs_out,
+void process_geev_vectors(einsums::detail::TensorImpl<AddComplexT<T>> const &evals, einsums::detail::TensorImpl<T> const *lvecs_in,
+                          einsums::detail::TensorImpl<T> const *rvecs_in, einsums::detail::TensorImpl<AddComplexT<T>> *lvecs_out,
                           einsums::detail::TensorImpl<AddComplexT<T>> *rvecs_out) {
 
-    std::array<size_t, 8> dims{lvecs_in.dim(0),   lvecs_in.dim(1),   rvecs_in.dim(0),   rvecs_in.dim(1),
-                               lvecs_out->dim(0), lvecs_out->dim(1), rvecs_out->dim(0), rvecs_out->dim(1)};
+    if (lvecs_in != nullptr && lvecs_out == nullptr) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The left output tensor should not be NULL if the left input is not NULL.");
+    }
 
-    if (evals.rank() != 1 || lvecs_in.rank() != 2 || rvecs_in.rank() != 2 || lvecs_out->rank() != 2 || rvecs_out->rank() != 2) {
+    if (rvecs_in != nullptr && rvecs_out == nullptr) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The right output tensor should not be NULL if the right input is not NULL.");
+    }
+    if (lvecs_in == nullptr && rvecs_in == nullptr) {
+        return;
+    }
+
+    if (evals.rank() != 1 || (lvecs_in != nullptr && lvecs_in->rank() != 2) || (rvecs_in != nullptr && rvecs_in->rank() != 2) ||
+        (lvecs_out != nullptr && lvecs_out->rank() != 2) || (rvecs_out != nullptr && rvecs_out->rank() != 2)) {
         EINSUMS_THROW_EXCEPTION(rank_error, "The ranks of the tensors passed to process_geev_vectors are incorrect! the eigenvalues need "
                                             "to have rank 1, and the rest need rank 2.");
     }
-    if (std::any_of(dims.begin(), dims.end(), [&](size_t dim) -> bool { return evals.dim(0) != dim; })) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of the tensors passed to process_geev_vectors do not match!");
+    if (lvecs_in != nullptr && (evals.dim(0) != lvecs_in->dim(0) || evals.dim(0) != lvecs_in->dim(1))) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of left eigenvector input do not match the eigenvalues!");
+    }
+    if (rvecs_in != nullptr && (evals.dim(0) != rvecs_in->dim(0) || evals.dim(0) != rvecs_in->dim(1))) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of right eigenvector input do not match the eigenvalues!");
+    }
+    if (lvecs_out != nullptr && (evals.dim(0) != lvecs_out->dim(0) || evals.dim(0) != lvecs_out->dim(1))) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of left eigenvector output do not match the eigenvalues!");
+    }
+    if (rvecs_out != nullptr && (evals.dim(0) != rvecs_out->dim(0) || evals.dim(0) != rvecs_out->dim(1))) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of right eigenvector output do not match the eigenvalues!");
     }
 
     int i = 0;
     while (i < evals.dim(0)) {
         if (std::imag(evals.subscript_no_check(i)) != T{0.0}) {
-            for (int j = 0; j < evals.dim(0); j++) {
-                lvecs_out->subscript_no_check(j, i) =
-                    AddComplexT<T>{lvecs_in.subscript_no_check(j, i), lvecs_in.subscript_no_check(j, i + 1)};
-                rvecs_out->subscript_no_check(j, i) =
-                    AddComplexT<T>{rvecs_in.subscript_no_check(j, i), rvecs_in.subscript_no_check(j, i + 1)};
-                lvecs_out->subscript_no_check(j, i + 1) =
-                    AddComplexT<T>{lvecs_in.subscript_no_check(j, i), -lvecs_in.subscript_no_check(j, i + 1)};
-                rvecs_out->subscript_no_check(j, i + 1) =
-                    AddComplexT<T>{rvecs_in.subscript_no_check(j, i), -rvecs_in.subscript_no_check(j, i + 1)};
+            if (lvecs_out != nullptr) {
+                for (int j = 0; j < evals.dim(0); j++) {
+                    lvecs_out->subscript_no_check(j, i) =
+                        AddComplexT<T>{lvecs_in->subscript_no_check(j, i), lvecs_in->subscript_no_check(j, i + 1)};
+                    lvecs_out->subscript_no_check(j, i + 1) =
+                        AddComplexT<T>{lvecs_in->subscript_no_check(j, i), -lvecs_in->subscript_no_check(j, i + 1)};
+                }
+            }
+            if (rvecs_out != nullptr) {
+                for (int j = 0; j < evals.dim(0); j++) {
+                    rvecs_out->subscript_no_check(j, i) =
+                        AddComplexT<T>{rvecs_in->subscript_no_check(j, i), rvecs_in->subscript_no_check(j, i + 1)};
+                    rvecs_out->subscript_no_check(j, i + 1) =
+                        AddComplexT<T>{rvecs_in->subscript_no_check(j, i), -rvecs_in->subscript_no_check(j, i + 1)};
+                }
             }
             i += 2;
         } else {
-            for (int j = 0; j < evals.dim(0); j++) {
-                lvecs_out->subscript_no_check(j, i) = AddComplexT<T>{lvecs_in.subscript_no_check(j, i)};
-                rvecs_out->subscript_no_check(j, i) = AddComplexT<T>{rvecs_in.subscript_no_check(j, i)};
+            if (lvecs_out != nullptr) {
+                for (int j = 0; j < evals.dim(0); j++) {
+                    lvecs_out->subscript_no_check(j, i) = AddComplexT<T>{lvecs_in->subscript_no_check(j, i)};
+                }
+            }
+            if (rvecs_out != nullptr) {
+                for (int j = 0; j < evals.dim(0); j++) {
+                    rvecs_out->subscript_no_check(j, i) = AddComplexT<T>{rvecs_in->subscript_no_check(j, i)};
+                }
             }
             i++;
         }
@@ -520,8 +576,8 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept WType, CoreBasicT
         requires RankTensorConcept<OutType, 2>;
         requires RankTensorConcept<WType, 1>;
     }
-void process_geev_vectors(WType const &evals, AType const &lvecs_in, AType const &rvecs_in, OutType *lvecs_out, OutType *rvecs_out) {
-    process_geev_vectors(evals.impl(), lvecs_in.impl(), rvecs_in.impl(), &lvecs_out->impl(), &rvecs_out->impl());
+void process_geev_vectors(WType const &evals, AType const *lvecs_in, AType const *rvecs_in, OutType *lvecs_out, OutType *rvecs_out) {
+    process_geev_vectors(evals.impl(), &lvecs_in->impl(), &rvecs_in->impl(), &lvecs_out->impl(), &rvecs_out->impl());
 }
 
 template <bool ComputeEigenvectors = true, CoreBasicTensorConcept AType, CoreBasicTensorConcept WType>

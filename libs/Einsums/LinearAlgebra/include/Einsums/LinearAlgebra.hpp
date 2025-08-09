@@ -247,20 +247,28 @@ void syev(AType *A, WType *W) {
 
 /**
  * @brief Compute the general eigendecomposition of a matrix.
- *
- * Can only be used to compute both left and right eigenvectors or neither.
- *
- * @todo I think it would be neat if we had a way to choose.
  */
-template <bool ComputeLeftRightEigenvectors = true, MatrixConcept AType, VectorConcept WType>
+template <MatrixConcept AType, VectorConcept WType>
     requires requires {
         requires InSamePlace<AType, WType>;
         requires std::is_same_v<typename WType::ValueType, AddComplexT<typename AType::ValueType>>;
     }
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
-    LabeledSection1(fmt::format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
+    char jobvl = (lvecs == nullptr) ? 'n' : 'v';
+    char jobvr = (rvecs == nullptr) ? 'n' : 'v';
+    LabeledSection1(fmt::format("<jobvl = {}, jobvr = {}>", jobvl, jobvr));
 
-    detail::geev<ComputeLeftRightEigenvectors>(A, W, lvecs, rvecs);
+    detail::geev(A, W, lvecs, rvecs);
+}
+
+template <MatrixConcept InType, MatrixConcept OutType, VectorConcept WType>
+    requires requires {
+        requires InSamePlace<InType, OutType, WType>;
+        requires std::is_same_v<AddComplexT<typename InType::ValueType>, typename OutType::ValueType>;
+        requires std::is_same_v<typename OutType::ValueType, typename WType::ValueType>;
+    }
+void process_geev_vectors(WType const &W, InType const *lvecs_in, InType const *rvecs_in, OutType *lvecs_out, OutType *rvecs_out) {
+    detail::process_geev_vectors(W, lvecs_in, rvecs_in, lvecs_out, rvecs_out);
 }
 
 template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WType>

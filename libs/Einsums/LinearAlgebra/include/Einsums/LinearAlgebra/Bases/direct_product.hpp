@@ -7,6 +7,7 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
+#include <Einsums/BLASVendor.hpp>
 
 namespace einsums {
 namespace linear_algebra {
@@ -15,15 +16,19 @@ namespace detail {
 template <typename AType, typename BType, typename CType>
 void impl_direct_product_contiguous(CType alpha, einsums::detail::TensorImpl<AType> const &a, einsums::detail::TensorImpl<BType> const &b,
                                     CType beta, einsums::detail::TensorImpl<CType> *c) {
-    AType const *a_data = a.data();
-    BType const *b_data = b.data();
-    CType       *c_data = c->data();
+    if constexpr (std::is_same_v<AType, float> && std::is_same_v<BType, float> && std::is_same_v<CType, float>) {
+        sdirprod(a.size(), alpha, a.data(), a.get_incx(), b.data(), b.get_incx(), beta, c->data(), c->get_incx());
+    } else {
+        AType const *a_data = a.data();
+        BType const *b_data = b.data();
+        CType       *c_data = c->data();
 
-    size_t const inca = a.get_incx(), incb = b.get_incx(), incc = c->get_incx(), elems = a.size();
+        size_t const inca = a.get_incx(), incb = b.get_incx(), incc = c->get_incx(), elems = a.size();
 
-    EINSUMS_OMP_PARALLEL_FOR_SIMD
-    for (size_t i = 0; i < elems; i++) {
-        c_data[i * incc] = c_data[i * incc] * beta + alpha * a_data[i * inca] * b_data[i * incb];
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        for (size_t i = 0; i < elems; i++) {
+            c_data[i * incc] = c_data[i * incc] * beta + alpha * a_data[i * inca] * b_data[i * incb];
+        }
     }
 }
 

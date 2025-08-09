@@ -1681,7 +1681,7 @@ struct TensorImpl final {
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
     constexpr size_t compute_view(BufferVector<size_t> &out_dims, BufferVector<size_t> &out_strides, MultiIndex const &indices) const {
         size_t out = 0;
-        for (auto [range, stride] : Zip(indices, _strides)) {
+        for (auto const &[range, stride] : Zip(indices, _strides)) {
             if constexpr (IgnoreRemoveRange) {
                 out_dims.push_back(range[1] - range[0]);
                 out_strides.push_back(stride);

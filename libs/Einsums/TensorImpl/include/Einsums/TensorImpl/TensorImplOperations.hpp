@@ -845,7 +845,7 @@ void impl_div(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
 
         impl_div_noncontiguous(0, in.rank(), in.dims(), in.data(), in.strides(), out.data(), out.strides());
     } else if (in.is_totally_vectorable() && out.is_totally_vectorable()) {
-        EINSUMS_LOG_DEBUG("Inputs were able to be treated as vector inputs and have the same memory layout. Using axpy.");
+        EINSUMS_LOG_DEBUG("Inputs were able to be treated as vector inputs and have the same memory layout. Using a flat loop.");
 
         impl_div_contiguous(in, out);
     } else {

@@ -14,8 +14,9 @@ pytestmark = [
 
 
 @pytest.fixture
-def set_big_memory() :
+def set_big_memory():
     ein.core.GlobalConfigMap.get_singleton().set_str("buffer-size", "1GB")
+
 
 @pytest.mark.parametrize(["length"], [(10,), (1000,)])
 def test_sumsq(length, dtype, array):
@@ -170,7 +171,7 @@ def test_geev(width, dtype, array):
         "Test eigenvectors", [width, width], ein.utils.add_complex(dtype), array
     )
 
-    ein.core.geev("N", "V", A_view, got_vals, None, A_vecs)
+    ein.core.geev(A_view, got_vals, None, A_vecs)
 
     expected_vals, expected_vecs = np.linalg.eig(A_copy)
 

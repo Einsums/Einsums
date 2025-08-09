@@ -155,7 +155,7 @@ void syev(AType *A, WType *W) {
     }
 }
 
-template <bool ComputeEigenvectors = true, BlockTensorConcept AType, VectorConcept WType>
+template <BlockTensorConcept AType, VectorConcept WType>
     requires requires {
         requires std::is_same_v<AddComplexT<typename AType::ValueType>, typename WType::ValueType>;
         requires MatrixConcept<AType>;
@@ -163,11 +163,102 @@ template <bool ComputeEigenvectors = true, BlockTensorConcept AType, VectorConce
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
+        decltype(lvecs->block(0)) *lvec_block = nullptr;
+        decltype(rvecs->block(0)) *rvec_block = nullptr;
         if (A->block_dim(i) == 0) {
             continue;
         }
+
+        if (lvecs != nullptr) {
+            lvec_block = &(lvecs->block(i));
+        }
+        if (rvecs != nullptr) {
+            rvec_block = &(rvecs->block(i));
+        }
         auto out_block = (*W)(A->block_range(i));
-        geev<ComputeEigenvectors>(&(A->block(i)), &out_block, lvecs, rvecs);
+        geev(&(A->block(i)), &out_block, lvec_block, rvec_block);
+    }
+}
+
+template <BlockTensorConcept InType, BlockTensorConcept OutType, VectorConcept WType>
+    requires requires {
+        requires InSamePlace<InType, OutType, WType>;
+        requires std::is_same_v<AddComplexT<typename InType::ValueType>, typename OutType::ValueType>;
+        requires std::is_same_v<typename OutType::ValueType, typename WType::ValueType>;
+        requires MatrixConcept<InType>;
+        requires MatrixConcept<OutType>;
+    }
+void process_geev_vectors(WType const &evals, InType const *lvecs_in, InType const *rvecs_in, OutType *lvecs_out, OutType *rvecs_out) {
+    int num_blocks = 0;
+    if (lvecs_in != nullptr && lvecs_out == nullptr) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The left output tensor should not be NULL if the left input is not NULL.");
+    }
+
+    if (rvecs_in != nullptr && rvecs_out == nullptr) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The right output tensor should not be NULL if the right input is not NULL.");
+    }
+
+    if (lvecs_in == nullptr && rvecs_in == nullptr) {
+        return;
+    }
+
+    if (lvecs_in != nullptr && (evals.dim(0) != lvecs_in->dim(0) || evals.dim(0) != lvecs_in->dim(1))) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of left eigenvector input do not match the eigenvalues!");
+    }
+    if (rvecs_in != nullptr && (evals.dim(0) != rvecs_in->dim(0) || evals.dim(0) != rvecs_in->dim(1))) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of right eigenvector input do not match the eigenvalues!");
+    }
+    if (lvecs_out != nullptr && (evals.dim(0) != lvecs_out->dim(0) || evals.dim(0) != lvecs_out->dim(1))) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of left eigenvector output do not match the eigenvalues!");
+    }
+    if (rvecs_out != nullptr && (evals.dim(0) != rvecs_out->dim(0) || evals.dim(0) != rvecs_out->dim(1))) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of right eigenvector output do not match the eigenvalues!");
+    }
+
+    if (lvecs_in != nullptr && lvecs_in->num_blocks() != lvecs_out->num_blocks()) {
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The numbers of blocks of the left input and output tensors need to be the same!");
+    }
+    if (rvecs_in != nullptr && rvecs_in->num_blocks() != rvecs_out->num_blocks()) {
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The numbers of blocks of the left input and output tensors need to be the same!");
+    }
+    if (lvecs_in != nullptr && rvecs_in != nullptr && lvecs_in->num_blocks() != rvecs_in->num_blocks()) {
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error,
+                                "The numbers of blocks of the input tensors need to be the same if they are both present!");
+    }
+
+    if (lvecs_in != nullptr) {
+        num_blocks = lvecs_in->num_blocks();
+    }
+
+    if (rvecs_in != nullptr) {
+        num_blocks = rvecs_in->num_blocks();
+    }
+
+    EINSUMS_OMP_PARALLEL_FOR
+    for (int i = 0; i < num_blocks; i++) {
+        if (lvecs_in != nullptr && lvecs_in->block_dim(i) == 0) {
+            continue;
+        }
+        if (rvecs_in != nullptr && rvecs_in->block_dim(i) == 0) {
+            continue;
+        }
+        Range                         evals_range;
+        typename InType::StoredType  *lin_block = nullptr, *lout_block = nullptr;
+        typename OutType::StoredType *rin_block = nullptr, *rout_block = nullptr;
+
+        if (lvecs_in != nullptr) {
+            evals_range = lvecs_in->block_range(i);
+            lin_block   = &lvecs_in->block(i);
+            lout_block  = &lvecs_out->block(i);
+        }
+
+        if (rvecs_in != nullptr) {
+            evals_range = rvecs_in->block_range(i);
+            rin_block   = &rvecs_in->block(i);
+            rout_block  = &rvecs_in->block(i);
+        }
+
+        process_geev_vectors(evals(evals_range), lin_block, rin_block, lout_block, rout_block);
     }
 }
 

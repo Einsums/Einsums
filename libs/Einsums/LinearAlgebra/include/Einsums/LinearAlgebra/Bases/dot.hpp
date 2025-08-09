@@ -416,6 +416,28 @@ BiggestTypeT<A, B, C> impl_dot(einsums::detail::TensorImpl<A> const &a, einsums:
                                                  b_strides, b_incx, c.data(), c_strides, c_incx);
     }
 }
+
+extern template EINSUMS_EXPORT float  impl_dot<float, float>(einsums::detail::TensorImpl<float> const &a,
+                                                             einsums::detail::TensorImpl<float> const &b);
+extern template EINSUMS_EXPORT double impl_dot<double, double>(einsums::detail::TensorImpl<double> const &a,
+                                                               einsums::detail::TensorImpl<double> const &b);
+extern template EINSUMS_EXPORT        std::complex<float>
+                               impl_dot<std::complex<float>, std::complex<float>>(einsums::detail::TensorImpl<std::complex<float>> const &a,
+                                                                                  einsums::detail::TensorImpl<std::complex<float>> const &b);
+extern template EINSUMS_EXPORT std::complex<double>
+impl_dot<std::complex<double>, std::complex<double>>(einsums::detail::TensorImpl<std::complex<double>> const &a,
+                                                     einsums::detail::TensorImpl<std::complex<double>> const &b);
+
+extern template EINSUMS_EXPORT float  impl_true_dot<float, float>(einsums::detail::TensorImpl<float> const &a,
+                                                                  einsums::detail::TensorImpl<float> const &b);
+extern template EINSUMS_EXPORT double impl_true_dot<double, double>(einsums::detail::TensorImpl<double> const &a,
+                                                                    einsums::detail::TensorImpl<double> const &b);
+extern template EINSUMS_EXPORT        std::complex<float>
+impl_true_dot<std::complex<float>, std::complex<float>>(einsums::detail::TensorImpl<std::complex<float>> const &a,
+                                                        einsums::detail::TensorImpl<std::complex<float>> const &b);
+extern template EINSUMS_EXPORT std::complex<double>
+impl_true_dot<std::complex<double>, std::complex<double>>(einsums::detail::TensorImpl<std::complex<double>> const &a,
+                                                          einsums::detail::TensorImpl<std::complex<double>> const &b);
 } // namespace detail
 } // namespace linear_algebra
 } // namespace einsums

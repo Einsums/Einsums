@@ -36,6 +36,14 @@ set(BLASVendorSources
     trsyl.cpp
 )
 
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64)
+  set(BLASVendorx64Sources direct_prod_kernels/dirprod-x86_64-avx2.asm)
+  list(APPEND BLASVendorSources ${BLASVendorx64Sources})
+else()
+  set(BLASVendorDefaultSources direct_prod.c)
+  list(APPEND BLASVendorSources ${BLASVendorDefaultSources})
+endif()
+
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums BLASVendor

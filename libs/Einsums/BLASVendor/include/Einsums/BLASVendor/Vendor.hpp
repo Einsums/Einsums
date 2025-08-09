@@ -128,10 +128,10 @@ void cger(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const
           std::complex<float> *a, int_t lda);
 void zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
           int_t inc_y, std::complex<double> *a, int_t lda);
-void cgerc(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x, std::complex<float> const *y, int_t inc_y,
-          std::complex<float> *a, int_t lda);
+void cgerc(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x, std::complex<float> const *y,
+           int_t inc_y, std::complex<float> *a, int_t lda);
 void zgerc(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
-          int_t inc_y, std::complex<double> *a, int_t lda);
+           int_t inc_y, std::complex<double> *a, int_t lda);
 
 /*!
  * Computes the LU factorization of a general M-by-N matrix A
@@ -222,3 +222,7 @@ int_t slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int
 int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, int_t n, double *vec, int_t lda);
 
 } // namespace einsums::blas::vendor
+
+extern "C" {
+extern EINSUMS_EXPORT void sdirprod(size_t n, float alpha, float const *x, size_t incx, float const *y, size_t incy, float beta, float *z, size_t incz);
+}

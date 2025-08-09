@@ -185,7 +185,10 @@ struct Range : std::array<std::int64_t, 2> {
     constexpr explicit Range(First first, Second second)
         : std::array<std::int64_t, 2>{static_cast<std::int64_t>(first), static_cast<std::int64_t>(second)} {}
 
-    [[nodiscard]] virtual bool is_removable() const noexcept { return false; }
+    [[nodiscard]] bool is_removable() const noexcept { return _is_removable; }
+
+  protected:
+    bool _is_removable{false};
 };
 
 /**
@@ -198,9 +201,9 @@ struct RemovableRange : Range {
      * Initialize a range.
      */
     template <std::integral First, std::integral Second>
-    constexpr explicit RemovableRange(First first, Second second) : Range{first, second} {}
-
-    [[nodiscard]] bool is_removable() const noexcept override { return true; }
+    constexpr explicit RemovableRange(First first, Second second) : Range{first, second} {
+        this->_is_removable = true;
+    }
 };
 
 struct AllT {};

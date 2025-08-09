@@ -770,7 +770,8 @@ class PyTensor : public RuntimeTensor<T> {
             break;                                                                                                                         \
         case 'Z':                                                                                                                          \
             if constexpr (!IsComplexV<T>) {                                                                                                \
-                EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not cast complex to real! Perform your preferred cast before hand.");  \
+                EINSUMS_THROW_EXCEPTION(complex_conversion_error,                                                                          \
+                                        "Can not cast complex to real! Perform your preferred cast before hand.");                         \
             } else {                                                                                                                       \
                 switch (format[1]) {                                                                                                       \
                 case 'f':                                                                                                                  \
@@ -1187,7 +1188,8 @@ class PyTensorView : public RuntimeTensorView<T> {
 
                 if (pybind11::isinstance<pybind11::slice>(arg)) {
                     assign_to_view(value, index);
-                    return subscript(index);
+                    pybind11::object out = this->subscript(index);
+                    return out;
                 }
             }
             EINSUMS_THROW_EXCEPTION(std::length_error, "Can not assign buffer object to a single position!");
