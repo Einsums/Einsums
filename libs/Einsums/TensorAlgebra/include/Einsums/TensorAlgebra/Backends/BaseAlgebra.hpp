@@ -11,7 +11,7 @@
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Logging.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 
 #include <cmath>
@@ -96,7 +96,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                               std::conditional_t<(sizeof(typename AType::ValueType) > sizeof(typename BType::ValueType)),
                                                  typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                               AType const &A, BType const &B) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     using ADataType        = typename AType::ValueType;
     using BDataType        = typename BType::ValueType;

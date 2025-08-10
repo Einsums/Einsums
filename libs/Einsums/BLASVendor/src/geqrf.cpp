@@ -9,7 +9,7 @@
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -25,8 +25,8 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(int_t *, int_t *, std::complex<double> *, 
 }
 
 #define GEQRF(Type, lc, uc)                                                                                                                \
-    auto lc##geqrf(int_t m, int_t n, Type *a, int_t lda, Type *tau) -> int_t {                                                             \
-        LabeledSection0();                                                                                                                 \
+    auto lc##geqrf(int_t m, int_t n, Type *a, int_t lda, Type *tau)->int_t {                                                               \
+        LabeledSection(__func__);                                                                                                          \
                                                                                                                                            \
         int_t info{0};                                                                                                                     \
         int_t lwork{-1};                                                                                                                   \
@@ -50,7 +50,7 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(int_t *, int_t *, std::complex<double> *, 
 
 #define GEQRF_complex(Type, lc, uc)                                                                                                        \
     auto lc##geqrf(int_t m, int_t n, Type *a, int_t lda, Type *tau) -> int_t {                                                             \
-        LabeledSection0();                                                                                                                 \
+        LabeledSection(__func__);                                                                                                                 \
                                                                                                                                            \
         int_t info{0};                                                                                                                     \
         int_t lwork{-1};                                                                                                                   \

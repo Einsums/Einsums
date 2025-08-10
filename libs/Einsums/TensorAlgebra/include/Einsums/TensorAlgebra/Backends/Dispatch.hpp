@@ -26,11 +26,12 @@
 #    if defined(EINSUMS_COMPUTE_CODE)
 #        include <Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp>
 #    endif
-#    include <Einsums/Profile/Timer.hpp>
+#    include <Einsums/Profile.hpp>
 
 #    include <algorithm>
 #    include <cmath>
 #    include <cstddef>
+#    include <memory>
 #    include <stdexcept>
 #    include <string>
 #    include <tuple>
@@ -704,7 +705,7 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
         retval                    = DOT;
     } else if constexpr (einsum_is_direct_product<ConjA, ConjB>(C_indices, A_indices, B_indices)) {
         if constexpr (!DryRun) {
-            profile::Timer const element_wise_multiplication_timer{"element-wise multiplication"};
+            LabeledSection("element-wise multiplication");
 
             linear_algebra::direct_product(AB_prefactor, A, B, C_prefactor, C);
         }
@@ -762,7 +763,7 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     EINSUMS_LOG_TRACE("BEGIN: einsum");
-    std::unique_ptr<Section> _section;
+    std::unique_ptr<profile::ScopedZone> _section;
     if constexpr (IsTensorV<CType>) {
         EINSUMS_LOG_INFO(
             std::fabs(UC_prefactor) > EINSUMS_ZERO
@@ -772,13 +773,13 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                 : fmt::format(R"(einsum: "{}"{} = {} {}"{}"{}{} * {}"{}"{}{})", C->name(), C_indices, UAB_prefactor, (ConjA) ? "conj(" : "",
                               A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices, (ConjB) ? ")" : ""));
         // look
-        _section.reset(new Section(
-            std::fabs(UC_prefactor) > EINSUMS_ZERO
-                ? fmt::format(R"(einsum: "{}"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
-                              (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices,
-                              (ConjB) ? ")" : "", UC_prefactor, C->name(), C_indices)
-                : fmt::format(R"(einsum: "{}"{} = {} {}"{}"{}{} * {}"{}"{}{})", C->name(), C_indices, UAB_prefactor, (ConjA) ? "conj(" : "",
-                              A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices, (ConjB) ? ")" : "")));
+        _section = std::make_unique<profile::ScopedZone>(std::fabs(UC_prefactor) > EINSUMS_ZERO
+                                                             ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(),
+                                                                           C_indices, UAB_prefactor, A.name(), A_indices, B.name(),
+                                                                           B_indices, UC_prefactor, C->name(), C_indices)
+                                                             : fmt::format(R"(einsums: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices,
+                                                                           UAB_prefactor, A.name(), A_indices, B.name(), B_indices),
+                                                         __FILE__, __LINE__, __func__);
     } else {
         EINSUMS_LOG_INFO(std::fabs(UC_prefactor) > EINSUMS_ZERO
                              ? fmt::format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "C"{})", C_indices, UAB_prefactor,
@@ -788,13 +789,12 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                                            (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "",
                                            B.name(), B_indices, (ConjB) ? ")" : ""));
         // look
-        _section.reset(new Section(
+        _section = std::make_unique<profile::ScopedZone>(
             std::fabs(UC_prefactor) > EINSUMS_ZERO
-                ? fmt::format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "C"{})", C_indices, UAB_prefactor, (ConjA) ? "conj(" : "",
-                              A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices, (ConjB) ? ")" : "",
-                              UC_prefactor, C_indices)
-                : fmt::format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{})", C_indices, UAB_prefactor, (ConjA) ? "conj(" : "", A.name(),
-                              A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices, (ConjB) ? ")" : "")));
+                ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(),
+                              B_indices, UC_prefactor, C_indices)
+                : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(), B_indices),
+            __FILE__, __LINE__, __func__);
     }
 
     CDataType const  C_prefactor  = UC_prefactor;

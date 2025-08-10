@@ -8,7 +8,7 @@
 #ifndef DOXYGEN
 
 #    include <Einsums/Concepts/TensorConcepts.hpp>
-#    include <Einsums/Profile/LabeledSection.hpp>
+#    include <Einsums/Profile.hpp>
 #    include <Einsums/Tensor/Tensor.hpp>
 #    include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 
@@ -35,7 +35,7 @@ auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BInd
     -> BasicTensorLike<AType, typename AType::ValueType, 2> {
     using OutType = BasicTensorLike<AType, typename AType::ValueType, 2>;
     using T       = typename AType::ValueType;
-    LabeledSection0();
+    LabeledSection(__func__);
 
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();

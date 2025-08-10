@@ -8,7 +8,7 @@
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -60,7 +60,7 @@ extern void FC_GLOBAL(zgemv, ZGEMV)(char *, int_t *, int_t *, std::complex<doubl
 
 void sgemv(char transa, int_t m, int_t n, float alpha, float const *a, int_t lda, float const *x, int_t incx, float beta, float *y,
            int_t incy) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     if (m == 0 || n == 0)
         return;
@@ -72,7 +72,7 @@ void sgemv(char transa, int_t m, int_t n, float alpha, float const *a, int_t lda
 
 void dgemv(char transa, int_t m, int_t n, double alpha, double const *a, int_t lda, double const *x, int_t incx, double beta, double *y,
            int_t incy) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     if (m == 0 || n == 0)
         return;
@@ -84,7 +84,7 @@ void dgemv(char transa, int_t m, int_t n, double alpha, double const *a, int_t l
 
 void cgemv(char transa, int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *a, int_t lda, std::complex<float> const *x,
            int_t incx, std::complex<float> beta, std::complex<float> *y, int_t incy) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     if (m == 0 || n == 0)
         return;
@@ -96,7 +96,7 @@ void cgemv(char transa, int_t m, int_t n, std::complex<float> alpha, std::comple
 
 void zgemv(char transa, int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *a, int_t lda,
            std::complex<double> const *x, int_t incx, std::complex<double> beta, std::complex<double> *y, int_t incy) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     if (m == 0 || n == 0)
         return;

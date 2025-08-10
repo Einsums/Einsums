@@ -3,13 +3,18 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Assert.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
-#include <Einsums/Profile/Timer.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Runtime/Detail/InitLogging.hpp>
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
@@ -107,7 +112,7 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
     // This is the only initialization routine that needs to be explicitly called here.
     // This is because the runtime environment depends on the profiler. If the profiler
     // depended on the runtime environment, then there would be a dependency issue.
-    profile::initialize();
+    // profile::initialize();
 
     // Disable HDF5 diagnostic reporting
     H5Eset_auto(0, nullptr, nullptr);

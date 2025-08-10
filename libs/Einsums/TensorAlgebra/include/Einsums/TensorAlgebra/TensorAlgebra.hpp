@@ -3,11 +3,17 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #pragma once
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Complex.hpp>
+#include <Einsums/Concepts/NamedRequirements.hpp>
 #include <Einsums/Concepts/SmartPointer.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
@@ -17,8 +23,6 @@
 #include <cstddef>
 #include <tuple>
 #include <type_traits>
-
-#include "Einsums/Concepts/NamedRequirements.hpp"
 
 #if defined(EINSUMS_USE_CATCH2)
 #    include <catch2/catch_all.hpp>

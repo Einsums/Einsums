@@ -7,7 +7,7 @@
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -29,37 +29,37 @@ extern void FC_GLOBAL(dlascl, DLASCL)(char *, int_t *, int_t *, double *, double
 }
 
 void sscal(int_t n, float alpha, float *vec, int_t inc) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     FC_GLOBAL(sscal, SSCAL)(&n, &alpha, vec, &inc);
 }
 
 void dscal(int_t n, double alpha, double *vec, int_t inc) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     FC_GLOBAL(dscal, DSCAL)(&n, &alpha, vec, &inc);
 }
 
 void cscal(int_t n, std::complex<float> alpha, std::complex<float> *vec, int_t inc) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     FC_GLOBAL(cscal, CSCAL)(&n, &alpha, vec, &inc);
 }
 
 void zscal(int_t n, std::complex<double> alpha, std::complex<double> *vec, int_t inc) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     FC_GLOBAL(zscal, ZSCAL)(&n, &alpha, vec, &inc);
 }
 
 void csscal(int_t n, float alpha, std::complex<float> *vec, int_t inc) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     FC_GLOBAL(csscal, CSSCAL)(&n, &alpha, vec, &inc);
 }
 
 void zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     FC_GLOBAL(zdscal, ZDSCAL)(&n, &alpha, vec, &inc);
 }

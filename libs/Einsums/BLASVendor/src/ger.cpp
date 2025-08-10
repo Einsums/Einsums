@@ -8,7 +8,7 @@
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -45,14 +45,14 @@ extern void FC_GLOBAL(zgerc, ZGERC)(int_t *, int_t *, std::complex<double> *, st
     }
 
 void sger(int_t m, int_t n, float alpha, float const *x, int_t inc_x, float const *y, int_t inc_y, float *a, int_t lda) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     ger_parameter_check(m, n, inc_x, inc_y, lda);
     FC_GLOBAL(sger, SGER)(&m, &n, &alpha, x, &inc_x, y, &inc_y, a, &lda);
 }
 
 void dger(int_t m, int_t n, double alpha, double const *x, int_t inc_x, double const *y, int_t inc_y, double *a, int_t lda) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     ger_parameter_check(m, n, inc_x, inc_y, lda);
     FC_GLOBAL(dger, DGER)(&m, &n, &alpha, x, &inc_x, y, &inc_y, a, &lda);
@@ -60,7 +60,7 @@ void dger(int_t m, int_t n, double alpha, double const *x, int_t inc_x, double c
 
 void cger(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x, std::complex<float> const *y, int_t inc_y,
           std::complex<float> *a, int_t lda) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     ger_parameter_check(m, n, inc_x, inc_y, lda);
     FC_GLOBAL(cgeru, CGERU)(&m, &n, &alpha, x, &inc_x, y, &inc_y, a, &lda);
@@ -68,7 +68,7 @@ void cger(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const
 
 void zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
           int_t inc_y, std::complex<double> *a, int_t lda) {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     ger_parameter_check(m, n, inc_x, inc_y, lda);
 

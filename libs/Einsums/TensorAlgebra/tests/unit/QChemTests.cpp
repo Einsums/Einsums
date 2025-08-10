@@ -3,9 +3,14 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/Timer.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/BlockTensor.hpp>
 #include <Einsums/Tensor/FunctionTensor.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
@@ -210,10 +215,13 @@ TEST_CASE("RHF No symmetry", "[qchem]") {
     Evals.zero();
     TEI.zero();
 
-    REQUIRE_NOTHROW(read_tensor("data/water_sto3g/S.dat", &S));
-    REQUIRE_NOTHROW(read_tensor("data/water_sto3g/T.dat", &T));
-    REQUIRE_NOTHROW(read_tensor("data/water_sto3g/V.dat", &V));
-    REQUIRE_NOTHROW(read_tensor("data/water_sto3g/TEI.dat", &TEI));
+    {
+        LabeledSection("Reading tensors");
+        REQUIRE_NOTHROW(read_tensor("data/water_sto3g/S.dat", &S));
+        REQUIRE_NOTHROW(read_tensor("data/water_sto3g/T.dat", &T));
+        REQUIRE_NOTHROW(read_tensor("data/water_sto3g/V.dat", &V));
+        REQUIRE_NOTHROW(read_tensor("data/water_sto3g/TEI.dat", &TEI));
+    }
 
     // Make sure that the tensors are formatted correctly.
     for (int i = 0; i < 7; i++) {

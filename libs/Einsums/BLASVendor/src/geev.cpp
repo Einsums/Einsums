@@ -9,7 +9,7 @@
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -29,8 +29,9 @@ extern void FC_GLOBAL(zgeev, ZGEEV)(char *, char *, int_t *, std::complex<double
 
 #define GEEV_complex(Type, lc, UC)                                                                                                         \
     auto lc##geev(char jobvl, char jobvr, int_t n, std::complex<Type> *a, int_t lda, std::complex<Type> *w, std::complex<Type> *vl,        \
-                  int_t ldvl, std::complex<Type> *vr, int_t ldvr) -> int_t {                                                               \
-        LabeledSection0();                                                                                                                 \
+                  int_t ldvl, std::complex<Type> *vr, int_t ldvr)                                                                          \
+        ->int_t {                                                                                                                          \
+        LabeledSection(__func__);                                                                                                          \
                                                                                                                                            \
         int_t                            info  = 0;                                                                                        \
         int_t                            lwork = -1;                                                                                       \
@@ -78,8 +79,8 @@ GEEV_complex(double, z, Z);
 
 #define GEEV(Type, lc, uc)                                                                                                                 \
     auto lc##geev(char jobvl, char jobvr, int_t n, Type *a, int_t lda, std::complex<Type> *w, Type *vl, int_t ldvl, Type *vr, int_t ldvr)  \
-        -> int_t {                                                                                                                         \
-        LabeledSection0();                                                                                                                 \
+        ->int_t {                                                                                                                          \
+        LabeledSection(__func__);                                                                                                          \
                                                                                                                                            \
         int_t              info  = 0;                                                                                                      \
         int_t              lwork = -1;                                                                                                     \

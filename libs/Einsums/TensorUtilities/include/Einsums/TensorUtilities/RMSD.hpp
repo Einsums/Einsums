@@ -22,7 +22,7 @@ template <TensorConcept AType, TensorConcept BType>
 auto rmsd(AType const &tensor1, BType const &tensor2) -> ValueTypeT<AType> {
     using TType            = ValueTypeT<AType>;
     constexpr size_t TRank = TensorRank<AType>;
-    LabeledSection0();
+    LabeledSection(__func__);
 
     TType diff = 0.0;
 

@@ -7,7 +7,7 @@
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -22,7 +22,7 @@ extern void FC_GLOBAL(zheev, ZHEEV)(char *job, char *uplo, int_t *n, std::comple
 
 auto cheev(char job, char uplo, int_t n, std::complex<float> *a, int_t lda, float *w, std::complex<float> *work, int_t lwork, float *rwork)
     -> int_t {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     int_t info{0};
     FC_GLOBAL(cheev, CHEEV)(&job, &uplo, &n, a, &lda, w, work, &lwork, rwork, &info);
@@ -30,7 +30,7 @@ auto cheev(char job, char uplo, int_t n, std::complex<float> *a, int_t lda, floa
 }
 auto zheev(char job, char uplo, int_t n, std::complex<double> *a, int_t lda, double *w, std::complex<double> *work, int_t lwork,
            double *rwork) -> int_t {
-    LabeledSection0();
+    LabeledSection(__func__);
 
     int_t info{0};
     FC_GLOBAL(zheev, ZHEEV)(&job, &uplo, &n, a, &lda, w, work, &lwork, rwork, &info);

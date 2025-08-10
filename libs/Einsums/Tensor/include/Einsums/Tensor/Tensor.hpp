@@ -16,7 +16,7 @@
 #include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>

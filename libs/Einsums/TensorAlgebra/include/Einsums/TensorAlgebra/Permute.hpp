@@ -13,7 +13,7 @@
 #include <Einsums/HPTT/Transpose.hpp>
 #include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/LinearAlgebra.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/StringUtil/StringOps.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
@@ -331,10 +331,11 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
 
-    LabeledSection1((std::abs(UC_prefactor) > EINSUMS_ZERO)
-                        ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices,
-                                      UC_prefactor, C->name(), C_indices)
-                        : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices));
+    std::string description = std::abs(UC_prefactor) > EINSUMS_ZERO
+                                  ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(),
+                                                A_indices, UC_prefactor, C->name(), C_indices)
+                                  : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices);
+    LabeledSection(fmt::runtime(description));
 
     T const C_prefactor = UC_prefactor;
     T const A_prefactor = UA_prefactor;
