@@ -3,17 +3,6 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-# For the moment always use Tracy
-fetchcontent_declare(
-  tracy
-  GIT_REPOSITORY https://github.com/wolfpld/tracy.git
-  GIT_TAG master
-  GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
-)
-fetchcontent_makeavailable(tracy)
-einsums_add_config_define_namespace(DEFINE EINSUMS_HAVE_TRACY NAMESPACE PROFILE)
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(ProfileHeaders Einsums/Profile/Profile.hpp)

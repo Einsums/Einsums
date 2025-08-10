@@ -28,7 +28,7 @@ einsums_add_module(
   Einsums Logging
   SOURCES ${LoggingSources}
   HEADERS ${LoggingHeaders}
-  DEPENDENCIES spdlog::spdlog
+  DEPENDENCIES spdlog::spdlog Tracy::TracyClient
   MODULE_DEPENDENCIES Einsums_Assertion Einsums_Config Einsums_StringUtil
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME Einsums
