@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-set(EINSUMS_WITH_TRACY_DEFAULT ON)
+set(EINSUMS_WITH_TRACY_DEFAULT OFF)
 einsums_option(
   EINSUMS_WITH_TRACY BOOL "Enable support for Tracy (default: ${EINSUMS_WITH_TRACY_DEFAULT}"
   ${EINSUMS_WITH_TRACY_DEFAULT} ADVANCED CATEGORY "Build Targets"
