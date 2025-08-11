@@ -5,11 +5,10 @@
 
 #pragma once
 
-#include <Einsums/BufferAllocator/InitModule.hpp>
+#include <Einsums/Config.hpp>
+
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
-#include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
-#include <Einsums/StringUtil/MemoryString.hpp>
 
 #include <complex>
 #include <deque>
@@ -42,7 +41,6 @@ namespace einsums {
  */
 template <typename T>
 struct BufferAllocator {
-  public:
     /**
      * @typedef pointer
      *
@@ -205,7 +203,7 @@ struct BufferAllocator {
      *
      * @return The number of elements specified by the buffer size option.
      */
-    size_type max_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_max_size() / type_size; }
+    [[nodiscard]] size_type max_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_max_size() / type_size; }
 
     /**
      * @brief Query the number of elements the allocator has free.
@@ -214,7 +212,9 @@ struct BufferAllocator {
      *
      * @return The number of elements available to allocate.
      */
-    size_type available_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size; }
+    [[nodiscard]] size_type available_size() const {
+        return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size;
+    }
 
     /**
      * @brief Test whether two buffer allocators are the same.
@@ -237,7 +237,7 @@ struct BufferAllocator {
     constexpr bool operator!=(BufferAllocator<T> const &other) const { return false; }
 };
 
-#ifndef WINDOWS
+#ifndef EINSUMS_WINDOWS
 
 extern template struct EINSUMS_EXPORT BufferAllocator<void>;
 extern template struct EINSUMS_EXPORT BufferAllocator<signed char>;

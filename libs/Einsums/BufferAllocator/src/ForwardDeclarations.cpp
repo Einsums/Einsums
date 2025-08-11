@@ -18,7 +18,7 @@ static void check_requirements() {
     static_assert(requirement);
 }
 
-#ifndef WINDOWS
+#ifndef EINSUMS_WINDOWS
 
 template struct BufferAllocator<void>;
 template struct BufferAllocator<signed char>;
