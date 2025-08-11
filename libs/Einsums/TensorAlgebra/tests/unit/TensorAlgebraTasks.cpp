@@ -3,11 +3,6 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All rights reserved.
-// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
-
 #include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>

@@ -4,13 +4,13 @@
 //----------------------------------------------------------------------------------------------
 
 #pragma once
-#include <Einsums/Errors/Error.hpp>
 #ifndef DOXYGEN
 
 #    include <Einsums/Config.hpp>
 
 #    include <Einsums/Concepts/SubscriptChooser.hpp>
 #    include <Einsums/Concepts/TensorConcepts.hpp>
+#    include <Einsums/Errors/Error.hpp>
 #    include <Einsums/LinearAlgebra.hpp>
 #    include <Einsums/Logging.hpp>
 #    include <Einsums/Print.hpp>
