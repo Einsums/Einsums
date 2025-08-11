@@ -9,6 +9,7 @@
 #include <Einsums/Debugging/AttachDebugger.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 
 #include <csignal>
@@ -115,6 +116,7 @@ void set_signal_handlers() {
 }
 
 Runtime::Runtime(RuntimeConfiguration &&rtcfg, bool initialize) : _rtcfg(std::move(rtcfg)) {
+    LabeledSection("Runtime constructor");
     init_global_data();
 
     if (initialize) {
@@ -144,23 +146,23 @@ void Runtime::init() {
     try {
         /// @todo This would be a good place to create and initialize a thread pool
 
-        auto                                &runtime_vars = detail::RuntimeVars::get_singleton();
-        std::lock_guard<detail::RuntimeVars> vars_guard(runtime_vars); // Lock the variables.
+        auto                 &runtime_vars = detail::RuntimeVars::get_singleton();
+        std::lock_guard const vars_guard(runtime_vars); // Lock the variables.
 
         // Copy over all startup functions registered so far.
-        for (StartupFunctionType &f : runtime_vars.global_pre_startup_functions) {
+        for (StartupFunctionType const &f : runtime_vars.global_pre_startup_functions) {
             add_pre_startup_function(f);
         }
 
-        for (StartupFunctionType &f : runtime_vars.global_startup_functions) {
+        for (StartupFunctionType const &f : runtime_vars.global_startup_functions) {
             add_startup_function(f);
         }
 
-        for (ShutdownFunctionType &f : runtime_vars.global_pre_shutdown_functions) {
+        for (ShutdownFunctionType const &f : runtime_vars.global_pre_shutdown_functions) {
             add_pre_shutdown_function(f);
         }
 
-        for (ShutdownFunctionType &f : runtime_vars.global_shutdown_functions) {
+        for (ShutdownFunctionType const &f : runtime_vars.global_shutdown_functions) {
             add_shutdown_function(f);
         }
     } catch (std::exception const &e) {
@@ -171,6 +173,7 @@ void Runtime::init() {
 }
 
 void Runtime::init_global_data() {
+    LabeledSection("Runtime::init_global_data");
     Runtime *&runtime_ = runtime_ptr();
     EINSUMS_ASSERT(!runtime_);
 
@@ -178,42 +181,49 @@ void Runtime::init_global_data() {
 }
 
 void Runtime::deinit_global_data() {
+    LabeledSection("Runtime::deinit_global_data");
     Runtime *&runtime_ = runtime_ptr();
     EINSUMS_ASSERT(runtime_);
     runtime_ = nullptr;
 }
 
 void Runtime::add_pre_shutdown_function(ShutdownFunctionType f) {
-    std::lock_guard l(this->lock_);
+    LabeledSection("Runtime::add_pre_shutdown_function");
+    std::lock_guard const l(this->lock_);
     _pre_shutdown_functions.push_back(f);
 }
 
 void Runtime::add_shutdown_function(ShutdownFunctionType f) {
-    std::lock_guard l(this->lock_);
+    LabeledSection("Runtime::add_shutdown_function");
+    std::lock_guard const l(this->lock_);
     _shutdown_functions.push_back(f);
 }
 
 void Runtime::add_pre_startup_function(StartupFunctionType f) {
-    std::lock_guard l(this->lock_);
+    LabeledSection("Runtime::add_pre_startup_function");
+    std::lock_guard const l(this->lock_);
     _pre_startup_functions.push_back(f);
 }
 
 void Runtime::add_startup_function(StartupFunctionType f) {
-    std::lock_guard l(this->lock_);
+    LabeledSection("Runtime::add_startup_function");
+    std::lock_guard const l(this->lock_);
     _startup_functions.push_back(f);
 }
 
 void Runtime::call_startup_functions(bool pre_startup) {
     if (pre_startup) {
         EINSUMS_LOG_TRACE("Calling pre-startup routines");
+        LabeledSection("Calling pre-startup routines");
         state(RuntimeState::PreStartup);
-        for (StartupFunctionType &f : _pre_startup_functions) {
+        for (StartupFunctionType const &f : _pre_startup_functions) {
             f();
         }
     } else {
         EINSUMS_LOG_TRACE("Calling startup routines");
+        LabeledSection("Calling startup routines");
         state(RuntimeState::Startup);
-        for (StartupFunctionType &f : _startup_functions) {
+        for (StartupFunctionType const &f : _startup_functions) {
             f();
         }
     }
@@ -222,14 +232,16 @@ void Runtime::call_startup_functions(bool pre_startup) {
 void Runtime::call_shutdown_functions(bool pre_shutdown) {
     if (pre_shutdown) {
         EINSUMS_LOG_TRACE("Calling pre-shutdown routines");
+        LabeledSection("Calling pre-shutdown routines");
         state(RuntimeState::PreShutdown);
-        for (ShutdownFunctionType &f : _pre_shutdown_functions) {
+        for (ShutdownFunctionType const &f : _pre_shutdown_functions) {
             f();
         }
     } else {
         EINSUMS_LOG_TRACE("Calling shutdown routines");
+        LabeledSection("Calling shutdown routines");
         state(RuntimeState::Shutdown);
-        for (ShutdownFunctionType &f : _shutdown_functions) {
+        for (ShutdownFunctionType const &f : _shutdown_functions) {
             f();
         }
     }

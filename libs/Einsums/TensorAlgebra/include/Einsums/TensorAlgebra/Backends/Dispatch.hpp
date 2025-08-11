@@ -763,7 +763,9 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     EINSUMS_LOG_TRACE("BEGIN: einsum");
+#    if defined(EINSUMS_HAVE_PROFILER)
     std::unique_ptr<profile::ScopedZone> _section;
+#    endif
     if constexpr (IsTensorV<CType>) {
         EINSUMS_LOG_INFO(
             std::fabs(UC_prefactor) > EINSUMS_ZERO
@@ -772,7 +774,7 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                               (ConjB) ? ")" : "", UC_prefactor, C->name(), C_indices)
                 : fmt::format(R"(einsum: "{}"{} = {} {}"{}"{}{} * {}"{}"{}{})", C->name(), C_indices, UAB_prefactor, (ConjA) ? "conj(" : "",
                               A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices, (ConjB) ? ")" : ""));
-        // look
+#    if defined(EINSUMS_HAVE_PROFILER)
         _section = std::make_unique<profile::ScopedZone>(std::fabs(UC_prefactor) > EINSUMS_ZERO
                                                              ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(),
                                                                            C_indices, UAB_prefactor, A.name(), A_indices, B.name(),
@@ -780,6 +782,7 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                                                              : fmt::format(R"(einsums: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices,
                                                                            UAB_prefactor, A.name(), A_indices, B.name(), B_indices),
                                                          __FILE__, __LINE__, __func__);
+#    endif
     } else {
         EINSUMS_LOG_INFO(std::fabs(UC_prefactor) > EINSUMS_ZERO
                              ? fmt::format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "C"{})", C_indices, UAB_prefactor,
@@ -788,13 +791,14 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                              : fmt::format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{})", C_indices, UAB_prefactor,
                                            (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "",
                                            B.name(), B_indices, (ConjB) ? ")" : ""));
-        // look
+#    if defined(EINSUMS_HAVE_PROFILER)
         _section = std::make_unique<profile::ScopedZone>(
             std::fabs(UC_prefactor) > EINSUMS_ZERO
                 ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(),
                               B_indices, UC_prefactor, C_indices)
                 : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(), B_indices),
             __FILE__, __LINE__, __func__);
+#    endif
     }
 
     CDataType const  C_prefactor  = UC_prefactor;

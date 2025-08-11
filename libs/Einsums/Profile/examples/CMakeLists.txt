@@ -14,26 +14,28 @@ else()
   return()
 endif()
 
-set(example_programs profile1)
+if(EINSUMS_WITH_PROFILER)
+  set(example_programs profile1)
 
-foreach(example_program ${example_programs})
-  set(sources ${example_program}.cpp)
+  foreach(example_program ${example_programs})
+    set(sources ${example_program}.cpp)
 
-  source_group("Source Files" FILES ${sources})
+    source_group("Source Files" FILES ${sources})
 
-  # add example executable
-  einsums_add_executable(
-    PROF_${example_program} INTERNAL_FLAGS
-    SOURCES ${sources} ${${example_program}_FLAGS}
-    FOLDER "Examples/Modules/Profile"
-    NOINSTALL
-  )
-
-  einsums_add_example_target_dependencies("Modules.Einsums.Profile" PROF_${example_program})
-
-  if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
-    einsums_add_example_test(
-      "Modules.Einsums.Profile" PROF_${example_program} ${${example_program}_PARAMETERS}
+    # add example executable
+    einsums_add_executable(
+      PROF_${example_program} INTERNAL_FLAGS
+      SOURCES ${sources} ${${example_program}_FLAGS}
+      FOLDER "Examples/Modules/Profile"
+      NOINSTALL
     )
-  endif()
-endforeach()
+
+    einsums_add_example_target_dependencies("Modules.Einsums.Profile" PROF_${example_program})
+
+    if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
+      einsums_add_example_test(
+        "Modules.Einsums.Profile" PROF_${example_program} ${${example_program}_PARAMETERS}
+      )
+    endif()
+  endforeach()
+endif()

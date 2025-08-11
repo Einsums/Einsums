@@ -7,6 +7,7 @@
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/Profile.hpp>
 
+#if defined(EINSUMS_HAVE_PROFILER)
 namespace einsums::profile {
 
 namespace {
@@ -161,8 +162,8 @@ void Profiler::print(bool detailed, std::ostream &os) {
     std::lock_guard const lock(_mutex);
     // compute per-thread totals (sum of top-level nodes exclusive)
     for (auto &tkv : thread_data()) {
-        std::string const &thread          = tkv.first;
-        double             thread_total_ms = 0.0;
+        auto const &thread          = tkv.first;
+        double      thread_total_ms = 0.0;
         for (auto &c : tkv.second.children) {
             thread_total_ms += ns_to_ms(c.second->total_exclusive);
         }
@@ -206,7 +207,7 @@ auto Profiler::export_json(std::string const &path) -> std::optional<std::string
         if (!firstThread)
             ofs << ",\n";
         firstThread = false;
-        ofs << fmt::format("  \"{}\": ", escape_json(tkv.first));
+        ofs << fmt::format("  \"{}\": ", tkv.first /*escape_json(tkv.first)*/);
         write_node_json(ofs, tkv.second, 2);
     }
     ofs << "\n}\n";
@@ -328,3 +329,4 @@ void Profiler::print_node_recursive(std::ostream &os, AggNode const *n, double t
 }
 
 } // namespace einsums::profile
+#endif

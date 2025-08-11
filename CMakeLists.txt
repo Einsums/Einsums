@@ -404,6 +404,14 @@ if(EINSUMS_WITH_BACKTRACES)
 endif()
 
 einsums_option(
+  EINSUMS_WITH_PROFILER BOOL "Enable Einsums internal profiling code. (Default: ON)" ON
+  CATEGORY "Profiling" ADVANCED
+)
+if(EINSUMS_WITH_PROFILER)
+  einsums_add_config_define(EINSUMS_HAVE_PROFILER)
+endif()
+
+einsums_option(
   EINSUMS_WITH_ITTNOTIFY BOOL "Enable Amplifier (ITT) instrumentation support." OFF
   CATEGORY "Profiling" ADVANCED
 )

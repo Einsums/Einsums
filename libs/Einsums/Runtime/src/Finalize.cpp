@@ -36,11 +36,13 @@ int finalize() {
 
     auto &global_config = GlobalConfigMap::get_singleton();
 
+#if defined(EINSUMS_HAVE_PROFILER)
     if (global_config.get_bool("profiler-report")) {
         std::ofstream out(global_config.get_string("profiler-filename"),
                           global_config.get_bool("profiler-append") ? std::ios::ate : std::ios::trunc);
         profile::Profiler::instance().print(false, out);
     }
+#endif
 
     // this function destroys the runtime.
     rt.deinit_global_data();

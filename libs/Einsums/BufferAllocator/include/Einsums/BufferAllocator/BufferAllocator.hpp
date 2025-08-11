@@ -20,6 +20,10 @@
 #include <type_traits>
 #include <unordered_set>
 
+#if defined(EINSUMS_HAVE_TRACY)
+#    include <tracy/Tracy.hpp>
+#endif
+
 namespace einsums {
 
 /**
@@ -131,6 +135,9 @@ struct BufferAllocator {
         }
 
         out = static_cast<pointer>(malloc(n * type_size));
+#if defined(EINSUMS_HAVE_TRACY)
+        TracyAlloc(out, n * type_size);
+#endif
 
         if (out == nullptr) {
             EINSUMS_THROW_EXCEPTION(
@@ -192,6 +199,9 @@ struct BufferAllocator {
         release(n);
 
         if (p != nullptr) {
+#if defined(EINSUMS_HAVE_TRACY)
+            TracyFree(p);
+#endif
             free(static_cast<void *>(p));
         }
     }

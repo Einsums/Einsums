@@ -26,7 +26,44 @@
 #    include <tracy/Tracy.hpp>
 #endif
 
+#if defined _WIN32
+#    ifndef WIN32_LEAN_AND_MEAN
+#        define WIN32_LEAN_AND_MEAN
+#    endif
+#    ifndef NOMINMAX
+#        define NOMINMAX
+#    endif
+#    include <malloc.h>
+#    include <windows.h>
+
+#    include "TracyWinFamily.hpp"
+#else
+#    include <pthread.h>
+#    include <string.h>
+#    include <unistd.h>
+#endif
+
+#ifdef __linux__
+#    ifdef __ANDROID__
+#        include <sys/types.h>
+#    else
+#        include <sys/syscall.h>
+#    endif
+#    include <fcntl.h>
+#elif defined __FreeBSD__
+#    include <sys/thr.h>
+#elif defined __NetBSD__
+#    include <lwp.h>
+#elif defined __DragonFly__
+#    include <sys/lwp.h>
+#elif defined __QNX__
+#    include <process.h>
+#    include <sys/neutrino.h>
+#endif
+
 namespace einsums::profile {
+
+#if defined(EINSUMS_HAVE_PROFILER)
 
 using Clock     = std::chrono::steady_clock;
 using TimePoint = Clock::time_point;
@@ -80,12 +117,12 @@ struct EINSUMS_EXPORT Profiler {
     void push(std::string const &name, std::string const &file = "", int line = 0, std::string const &func = "") {
         auto now = Clock::now();
 
-#ifdef EINSUMS_HAVE_TRACY
+#    ifdef EINSUMS_HAVE_TRACY
         // dynamic runtime zone name using ScopedZone
         auto z =
             std::make_unique<tracy::ScopedZone>(line, file.c_str(), file.size(), func.c_str(), func.size(), name.c_str(), name.size(), 1);
         thread_tracy_zones().push_back(std::move(z));
-#endif
+#    endif
 
         active_stack().push_back(
             ActiveFrame{.name = name, .start = now, .child_time = ns{0}, .file = file, .line = line, .function = func});
@@ -111,11 +148,11 @@ struct EINSUMS_EXPORT Profiler {
         // collect counter deltas (if any)
         std::map<std::string, uint64_t> const deltas;
 
-#ifdef EINSUMS_HAVE_TRACY
+#    ifdef EINSUMS_HAVE_TRACY
         // pop the tracy zone
         if (!thread_tracy_zones().empty())
             thread_tracy_zones().pop_back();
-#endif
+#    endif
 
         // update aggregated data
         {
@@ -192,21 +229,52 @@ struct EINSUMS_EXPORT Profiler {
         return s;
     }
 
-#ifdef EINSUMS_HAVE_TRACY
+#    ifdef EINSUMS_HAVE_TRACY
     static auto thread_tracy_zones() -> std::vector<std::unique_ptr<tracy::ScopedZone>> & {
         thread_local std::vector<std::unique_ptr<tracy::ScopedZone>> v;
         return v;
     }
-#endif
+#    endif
 
     // ------------------ global aggregated storage keyed by thread id ------------------
-    using ThreadMap = std::unordered_map<std::string, AggNode>;
+    using ThreadMap = std::unordered_map<uint32_t, AggNode>;
     auto        thread_data() -> ThreadMap        &{ return _global_data; }
-    static auto thread_key() -> std::string {
-        // TODO: Try to get thread id from the operating system
-        std::ostringstream ss;
-        ss << std::this_thread::get_id();
-        return ss.str();
+    static auto thread_key() -> uint32_t {
+#    if defined _WIN32
+        static_assert(sizeof(decltype(GetCurrentThreadId())) <= sizeof(uint32_t), "Thread handle too big to fit in protocol");
+        return uint32_t(GetCurrentThreadId());
+#    elif defined __APPLE__
+        uint64_t id;
+        pthread_threadid_np(pthread_self(), &id);
+        return uint32_t(id);
+#    elif defined __ANDROID__
+        return (uint32_t)gettid();
+#    elif defined __linux__
+        return static_cast<uint32_t>(syscall(SYS_gettid));
+#    elif defined __FreeBSD__
+        long id;
+        thr_self(&id);
+        return id;
+#    elif defined __NetBSD__
+        return _lwp_self();
+#    elif defined __DragonFly__
+        return lwp_gettid();
+#    elif defined __OpenBSD__
+        return getthrid();
+#    elif defined __QNX__
+        return (uint32_t)gettid();
+#    elif defined __EMSCRIPTEN__
+        // Not supported, but let it compile.
+        return 0;
+#    else
+        // To add support for a platform, retrieve and return the kernel thread identifier here.
+        //
+        // Note that pthread_t (as for example returned by pthread_self()) is *not* a kernel
+        // thread identifier. It is a pointer to a library-allocated data structure instead.
+        // Such pointers will be reused heavily, making the pthread_t non-unique. Additionally
+        // a 64-bit pointer cannot be reliably truncated to 32 bits.
+#        error "Unsupported platform!"
+#    endif
     }
 
     // thread-sum helper
@@ -215,20 +283,19 @@ struct EINSUMS_EXPORT Profiler {
 };
 
 // ---------------------- Scoped helper ----------------------
-class ScopedZone {
-  public:
-    explicit ScopedZone(std::string const &name, std::string const &file = "", int line = 0, std::string const &func = "") : _nm(name) {
+struct ScopedZone {
+    explicit ScopedZone(std::string const &name, std::string const &file = "", int line = 0, std::string const &func = "") {
         Profiler::instance().push(name, file, line, func);
     }
     ~ScopedZone() { Profiler::instance().pop(); }
-
-  private:
-    std::string _nm;
 };
 
-#define LabeledSection(name_format, ...)                                                                                                   \
-    ::einsums::profile::ScopedZone const EINSUMS_PP_CAT(_scoped_zone_, __LINE__)(fmt::format(name_format, ##__VA_ARGS__), __FILE__,        \
-                                                                                 __LINE__, __func__)
+#    define LabeledSection(name_format, ...)                                                                                               \
+        ::einsums::profile::ScopedZone const EINSUMS_PP_CAT(_scoped_zone_, __LINE__)(fmt::format(name_format, ##__VA_ARGS__), __FILE__,    \
+                                                                                     __LINE__, __func__)
+#else
+#    define LabeledSection(...)
+#endif
 
 } // namespace einsums::profile
 

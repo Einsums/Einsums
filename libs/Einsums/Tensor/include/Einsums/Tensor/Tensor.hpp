@@ -647,6 +647,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @param other The tensor to copy.
      */
     auto operator=(Tensor const &other) -> Tensor & {
+        LabeledSection("operator=");
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
             if (dim(i) == 0 || (dim(i) != other.dim(i))) {
@@ -680,6 +681,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
     auto operator=(Tensor<TOther, Rank> const &other) -> Tensor & {
+        LabeledSection("operator=");
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
             if (dim(i) == 0 || (dim(i) != other.dim(i))) {
@@ -723,6 +725,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             requires CoreTensorConcept<OtherTensor>;
         }
     auto operator=(OtherTensor const &other) -> Tensor & {
+        LabeledSection("operator=");
         size_t size = this->size();
 
         EINSUMS_OMP_PARALLEL_FOR
@@ -740,7 +743,8 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
     template <typename TOther>
     auto operator=(TensorView<TOther, Rank> const &other) -> Tensor & {
-        detail::copy_to(other.impl(), _impl);
+        LabeledSection("operator=");
+        detail:copy_to(other.impl(), _impl);
 
         return *this;
     }
@@ -781,6 +785,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * Fill this tensor with a value.
      */
     auto operator=(T const &fill_value) -> Tensor & {
+        LabeledSection("operator= value");
         set_all(fill_value);
         return *this;
     }

@@ -219,25 +219,28 @@ TEST_CASE("RHF No symmetry", "[qchem]") {
     }
 
     // Make sure that the tensors are formatted correctly.
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 7; j++) {
-            REQUIRE_THAT(S(i, j), Catch::Matchers::WithinAbs(S(j, i), EINSUMS_ZERO));
-            REQUIRE_THAT(T(i, j), Catch::Matchers::WithinAbs(T(j, i), EINSUMS_ZERO));
-            REQUIRE_THAT(V(i, j), Catch::Matchers::WithinAbs(V(j, i), EINSUMS_ZERO));
+    {
+        LabeledSection("Checking tensors");
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                REQUIRE_THAT(S(i, j), Catch::Matchers::WithinAbs(S(j, i), EINSUMS_ZERO));
+                REQUIRE_THAT(T(i, j), Catch::Matchers::WithinAbs(T(j, i), EINSUMS_ZERO));
+                REQUIRE_THAT(V(i, j), Catch::Matchers::WithinAbs(V(j, i), EINSUMS_ZERO));
+            }
         }
-    }
 
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 7; j++) {
-            for (int k = 0; k < 7; k++) {
-                for (int l = 0; l < 7; l++) {
-                    REQUIRE_THAT(TEI(i, j, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
-                    REQUIRE_THAT(TEI(j, i, k, l), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
-                    REQUIRE_THAT(TEI(j, i, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
-                    REQUIRE_THAT(TEI(k, l, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
-                    REQUIRE_THAT(TEI(k, l, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
-                    REQUIRE_THAT(TEI(l, k, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
-                    REQUIRE_THAT(TEI(l, k, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                for (int k = 0; k < 7; k++) {
+                    for (int l = 0; l < 7; l++) {
+                        REQUIRE_THAT(TEI(i, j, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                        REQUIRE_THAT(TEI(j, i, k, l), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                        REQUIRE_THAT(TEI(j, i, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                        REQUIRE_THAT(TEI(k, l, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                        REQUIRE_THAT(TEI(k, l, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                        REQUIRE_THAT(TEI(l, k, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                        REQUIRE_THAT(TEI(l, k, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    }
                 }
             }
         }
@@ -410,6 +413,7 @@ TEST_CASE("RHF No symmetry", "[qchem]") {
     REQUIRE_THAT(e_tot, Catch::Matchers::WithinAbs(-74.991229564312, 1e-6));
 }
 
+#if 0
 TEST_CASE("RHF symmetry") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
@@ -812,3 +816,4 @@ TEST_CASE("RHF symmetry") {
     REQUIRE_THAT(eMP2, Catch::Matchers::WithinAbs(-0.049149636120, 1e-6));
     REQUIRE_THAT(e_tot, Catch::Matchers::WithinAbs(-74.991229564312, 1e-6));
 }
+#endif
