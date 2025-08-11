@@ -19,7 +19,7 @@ einsums_add_module(
   HEADERS ${BufferAllocatorHeaders}
   DEPENDENCIES
   MODULE_DEPENDENCIES Einsums_Runtime Einsums_Logging Einsums_TypeSupport Einsums_Config
-                      Einsums_RuntimeConfiguration Einsums_CommandLine
+                      Einsums_RuntimeConfiguration Einsums_CommandLine Einsums_Print
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME Einsums
 )

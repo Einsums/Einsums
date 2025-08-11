@@ -16,9 +16,7 @@
 #include <memory>
 #include <mutex>
 #include <optional>
-#include <sstream>
 #include <string>
-#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -26,7 +24,7 @@
 #    include <tracy/Tracy.hpp>
 #endif
 
-#if defined _WIN32
+#if defined(EINSUMS_WINDOWS)
 #    ifndef WIN32_LEAN_AND_MEAN
 #        define WIN32_LEAN_AND_MEAN
 #    endif
@@ -294,6 +292,11 @@ struct ScopedZone {
         ::einsums::profile::ScopedZone const EINSUMS_PP_CAT(_scoped_zone_, __LINE__)(fmt::format(name_format, ##__VA_ARGS__), __FILE__,    \
                                                                                      __LINE__, __func__)
 #else
+
+struct ScopedZone {
+    explicit ScopedZone(std::string const & /*name*/, std::string const &file = "", int line = 0, std::string const &func = ""){};
+    ~ScopedZone() = default;
+};
 #    define LabeledSection(...)
 #endif
 
@@ -318,7 +321,6 @@ void work() {
 }
 
 int main() {
-    // TODO: optional: add runtime counter (if EINSUMS_HAVE_LIBPFM)
     // Profiler::instance().add_pfm_counter("LLC_MISSES");
 
     std::thread t([]{

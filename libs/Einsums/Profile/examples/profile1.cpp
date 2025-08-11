@@ -21,7 +21,7 @@ void pack() {
 
 void contract() {
     LabeledSection("contract");
-    ScopedZone z("contract", __FILE__, __LINE__, __func__);
+    ScopedZone z("contract");
     pack();
     microkernel();
     microkernel();
