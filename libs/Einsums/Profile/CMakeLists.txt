@@ -13,12 +13,17 @@ if(EINSUMS_WITH_OMP_TOOLS_H)
   list(APPEND ProfileSource OMPT.cpp)
 endif()
 
+set(ProfileDeps)
+if(TARGET Tracy::TracyClient)
+  list(APPEND ProfileDeps Tracy::TracyClient)
+endif()
+
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Profile
   SOURCES ${ProfileSources}
   HEADERS ${ProfileHeaders}
-  DEPENDENCIES Tracy::TracyClient
+  DEPENDENCIES ${ProfileDeps}
   MODULE_DEPENDENCIES Einsums_Config Einsums_Logging Einsums_Print Einsums_Preprocessor
   CMAKE_SUBDIRS examples tests
 )
