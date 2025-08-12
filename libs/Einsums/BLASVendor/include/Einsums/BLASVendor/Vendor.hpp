@@ -10,6 +10,15 @@
 
 #include <complex>
 
+extern "C" {
+extern EINSUMS_EXPORT int sdirprod_kernel(size_t n, float alpha, float const *x, float const *y, float *z);
+extern EINSUMS_EXPORT int ddirprod_kernel(size_t n, double alpha, double const *x, double const *y, double *z);
+extern EINSUMS_EXPORT int cdirprod_kernel(size_t n, std::complex<float> alpha, std::complex<float> const *x, std::complex<float> const *y,
+                                          std::complex<float> *z);
+extern EINSUMS_EXPORT int zdirprod_kernel(size_t n, std::complex<double> alpha, std::complex<double> const *x,
+                                          std::complex<double> const *y, std::complex<double> *z);
+}
+
 namespace einsums::blas::vendor {
 
 EINSUMS_EXPORT void initialize();
@@ -221,8 +230,11 @@ void zcopy(int_t n, std::complex<double> const *x, int_t incx, std::complex<doub
 int_t slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int_t n, float *vec, int_t lda);
 int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, int_t n, double *vec, int_t lda);
 
-} // namespace einsums::blas::vendor
+void sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, int_t incy, float *z, int_t incz);
+void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *y, int_t incy, double *z, int_t incz);
+void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy,
+               std::complex<float> *z, int_t incz);
+void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy,
+               std::complex<double> *z, int_t incz);
 
-extern "C" {
-extern EINSUMS_EXPORT void sdirprod(size_t n, float alpha, float const *x, size_t incx, float const *y, size_t incy, float beta, float *z, size_t incz);
-}
+} // namespace einsums::blas::vendor

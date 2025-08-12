@@ -34,10 +34,11 @@ set(BLASVendorSources
     scal.cpp
     syev.cpp
     trsyl.cpp
+    direct_prod.cpp
 )
 
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64)
-  set(BLASVendorx64Sources direct_prod_kernels/dirprod-x86_64-avx2.asm)
+  set(BLASVendorx64Sources direct_prod_kernels/sdirprod-x86_64-avx2.asm direct_prod_kernels/ddirprod-x86_64-avx2.asm direct_prod_kernels/cdirprod-x86_64-avx2.asm direct_prod_kernels/zdirprod-x86_64-avx2.asm) 
   list(APPEND BLASVendorSources ${BLASVendorx64Sources})
 else()
   set(BLASVendorDefaultSources direct_prod.c)

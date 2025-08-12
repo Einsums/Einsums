@@ -1056,4 +1056,38 @@ inline int_t lascl<double>(char type, int_t kl, int_t ku, double cfrom, double c
     return detail::dlascl(type, kl, ku, cfrom, cto, m, n, vec, lda);
 }
 
+namespace detail {
+void sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, int_t incy, float *z, int_t incz);
+void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *y, int_t incy, double *z, int_t incz);
+void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy,
+              std::complex<float> *z, int_t incz);
+void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy,
+              std::complex<double> *z, int_t incz);
+} // namespace detail
+
+template <typename T>
+void dirprod(int_t n, T alpha, T const *x, int_t incx, T const *y, int_t incy, T *z, int_t incz);
+
+template <>
+inline void dirprod<float>(int_t n, float alpha, float const *x, int_t incx, float const *y, int_t incy, float *z, int_t incz) {
+    detail::sdirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+
+template <>
+inline void dirprod<double>(int_t n, double alpha, double const *x, int_t incx, double const *y, int_t incy, double *z, int_t incz) {
+    detail::ddirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+
+template <>
+inline void dirprod<std::complex<float>>(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx,
+                                         std::complex<float> const *y, int_t incy, std::complex<float> *z, int_t incz) {
+    detail::cdirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+
+template <>
+inline void dirprod<std::complex<double>>(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx,
+                                          std::complex<double> const *y, int_t incy, std::complex<double> *z, int_t incz) {
+    detail::zdirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+
 } // namespace einsums::blas

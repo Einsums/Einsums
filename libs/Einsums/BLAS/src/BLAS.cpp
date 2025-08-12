@@ -443,5 +443,21 @@ int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, i
     return vendor::dlascl(type, kl, ku, cfrom, cto, m, n, vec, lda);
 }
 
+void sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, int_t incy, float *z, int_t incz) {
+    vendor::sdirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+
+void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *y, int_t incy, double *z, int_t incz) {
+    vendor::ddirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy,
+               std::complex<float> *z, int_t incz) {
+    vendor::cdirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy,
+                std::complex<double> *z, int_t incz) {
+    vendor::zdirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+
 } // namespace detail
 } // namespace einsums::blas
