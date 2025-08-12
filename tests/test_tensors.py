@@ -226,9 +226,9 @@ def test_ops(dtype, etype):
         assert x == pytest.approx(2 * y * z * w, rel=rel)
 
     if not ein.utils.is_complex(dtype) and ein.utils.is_complex(etype):
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_res *= D
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_res *= E
     else:
         A_res *= D
@@ -263,9 +263,9 @@ def test_ops(dtype, etype):
         assert x == pytest.approx(2 + y + z + w, rel=rel)
 
     if not ein.utils.is_complex(dtype) and ein.utils.is_complex(etype):
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_res += D
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_res += E
     else:
         A_res += D
@@ -300,20 +300,20 @@ def test_ops(dtype, etype):
         assert x == pytest.approx(y / 2 / z / w, rel=rel)
 
     if not ein.utils.is_complex(dtype) and ein.utils.is_complex(etype):
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_res /= D
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_res /= E
     else:
         A_res /= D
 
         for x, y, z, w, u in zip(A_res, A, B, C, D_test.flat):
-            assert x == pytest.approx(2 / y / z / w / u, rel=rel)
+            assert x == pytest.approx(y / 2 / z / w / u, rel=rel)
 
         A_res /= E
 
         for x, y, z, w, u, v in zip(A_res, A, B, C, D_test.flat, E_test.flat):
-            assert x == pytest.approx(2 / y / z / w / u / v, rel=rel)
+            assert x == pytest.approx(y / 2 /  z / w / u / v, rel=rel)
 
     with pytest.raises(ValueError):
         A_res /= F
@@ -337,20 +337,20 @@ def test_ops(dtype, etype):
         assert x == pytest.approx(y - 2 - z - w, rel=rel)
 
     if not ein.utils.is_complex(dtype) and ein.utils.is_complex(etype):
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_res -= D
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_res -= E
     else:
         A_res -= D
 
         for x, y, z, w, u in zip(A_res, A, B, C, D_test.flat):
-            assert x == pytest.approx(2 - y - z - w - u, rel=rel)
+            assert x == pytest.approx(y - 2 - z - w - u, rel=rel)
 
         A_res -= E
 
         for x, y, z, w, u, v in zip(A_res, A, B, C, D_test.flat, E_test.flat):
-            assert x == pytest.approx(2 - y - z - w - u - v, rel=rel)
+            assert x == pytest.approx(y - 2 - z - w - u - v, rel=rel)
 
     with pytest.raises(ValueError):
         A_res -= F
@@ -381,15 +381,15 @@ def test_view_creation():
     A_strides = A_view.strides()
     B_strides = B_view.strides()
 
-    assert A_strides[0] == 5
-    assert A_strides[1] == 1
-    assert A_view.stride(0) == 5
-    assert A_view.stride(1) == 1
+    assert A_strides[0] == 1
+    assert A_strides[1] == 5
+    assert A_view.stride(0) == 1
+    assert A_view.stride(1) == 5
 
-    assert B_strides[0] == 5
-    assert B_strides[1] == 1
-    assert B_view.stride(0) == 5
-    assert B_view.stride(1) == 1
+    assert B_strides[0] == 1
+    assert B_strides[1] == 5
+    assert B_view.stride(0) == 1
+    assert B_view.stride(1) == 5
 
     A_view.set_name("A view")
     assert A_view.get_name() == "A view"
@@ -525,9 +525,9 @@ def test_view_ops(dtype, etype):
             assert A_res[index] == A[index]
 
     if not ein.utils.is_complex(dtype) and ein.utils.is_complex(etype):
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_view *= D
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_view *= E
     else:
         A_view *= D
@@ -585,9 +585,9 @@ def test_view_ops(dtype, etype):
             assert A_res[index] == A[index]
 
     if not ein.utils.is_complex(dtype) and ein.utils.is_complex(etype):
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_view += D
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_view += E
     else:
         A_view += D
@@ -645,9 +645,9 @@ def test_view_ops(dtype, etype):
             assert A_res[index] == A[index]
 
     if not ein.utils.is_complex(dtype) and ein.utils.is_complex(etype):
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_view -= D
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_view -= E
     else:
         A_view -= D
@@ -705,9 +705,9 @@ def test_view_ops(dtype, etype):
             assert A_res[index] == A[index]
 
     if not ein.utils.is_complex(dtype) and ein.utils.is_complex(etype):
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_view /= D
-        with pytest.raises(ein.core.complex_conversion_error):
+        with pytest.raises(ein.core.errors.complex_conversion_error):
             A_view /= E
     else:
         A_view /= D

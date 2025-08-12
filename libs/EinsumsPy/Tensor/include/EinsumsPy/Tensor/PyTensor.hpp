@@ -714,36 +714,60 @@ class PyTensor : public RuntimeTensor<T> {
         if (format.length() > 2) {                                                                                                         \
             EINSUMS_THROW_EXCEPTION(pybind11::type_error, "Can't handle user defined data type {}!", format);                              \
         }                                                                                                                                  \
+        einsums::detail::TensorImpl<int8_t>                    int8tens;                                                                   \
+        einsums::detail::TensorImpl<uint8_t>                   uint8tens;                                                                  \
+        einsums::detail::TensorImpl<int16_t>                   int16tens;                                                                  \
+        einsums::detail::TensorImpl<uint16_t>                  uint16tens;                                                                 \
+        einsums::detail::TensorImpl<int32_t>                   int32tens;                                                                  \
+        einsums::detail::TensorImpl<uint32_t>                  uint32tens;                                                                 \
+        einsums::detail::TensorImpl<int64_t>                   int64tens;                                                                  \
+        einsums::detail::TensorImpl<uint64_t>                  uint64tens;                                                                 \
+        einsums::detail::TensorImpl<float>                     float_tens;                                                                 \
+        einsums::detail::TensorImpl<double>                    double_tens;                                                                \
+        einsums::detail::TensorImpl<long double>               ldouble_tens;                                                               \
+        einsums::detail::TensorImpl<std::complex<float>>       cfloat_tens;                                                                \
+        einsums::detail::TensorImpl<std::complex<double>>      cdouble_tens;                                                               \
+        einsums::detail::TensorImpl<std::complex<long double>> cldouble_tens;                                                              \
         switch (format[0]) {                                                                                                               \
         case 'b':                                                                                                                          \
-            FUNC(buffer_to_tensor<int8_t>(buffer), this->impl());                                                                          \
+            int8tens = buffer_to_tensor<int8_t>(buffer);                                                                                   \
+            FUNC(int8tens, this->impl());                                                                                                  \
             break;                                                                                                                         \
         case 'B':                                                                                                                          \
-            FUNC(buffer_to_tensor<uint8_t>(buffer), this->impl());                                                                         \
+            uint8tens = buffer_to_tensor<uint8_t>(buffer);                                                                                 \
+            FUNC(uint8tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'h':                                                                                                                          \
-            FUNC(buffer_to_tensor<int16_t>(buffer), this->impl());                                                                         \
+            int16tens = buffer_to_tensor<int16_t>(buffer);                                                                                 \
+            FUNC(int16tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'H':                                                                                                                          \
-            FUNC(buffer_to_tensor<uint16_t>(buffer), this->impl());                                                                        \
+            uint16tens = buffer_to_tensor<uint16_t>(buffer);                                                                               \
+            FUNC(uint16tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'i':                                                                                                                          \
-            FUNC(buffer_to_tensor<int32_t>(buffer), this->impl());                                                                         \
+            int32tens = buffer_to_tensor<int32_t>(buffer);                                                                                 \
+            FUNC(int32tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'I':                                                                                                                          \
-            FUNC(buffer_to_tensor<uint32_t>(buffer), this->impl());                                                                        \
+            uint32tens = buffer_to_tensor<uint32_t>(buffer);                                                                               \
+            FUNC(uint32tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'q':                                                                                                                          \
-            FUNC(buffer_to_tensor<int64_t>(buffer), this->impl());                                                                         \
+            int64tens = buffer_to_tensor<int64_t>(buffer);                                                                                 \
+            FUNC(int64tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'Q':                                                                                                                          \
-            FUNC(buffer_to_tensor<uint64_t>(buffer), this->impl());                                                                        \
+            uint64tens = buffer_to_tensor<uint64_t>(buffer);                                                                               \
+            FUNC(uint64tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'l':                                                                                                                          \
             if (buffer_info.itemsize == 4) {                                                                                               \
-                FUNC(buffer_to_tensor<int32_t>(buffer), this->impl());                                                                     \
+                int32tens = buffer_to_tensor<int32_t>(buffer);                                                                             \
+                FUNC(int32tens, this->impl());                                                                                             \
             } else if (buffer_info.itemsize == 8) {                                                                                        \
-                FUNC(buffer_to_tensor<int64_t>(buffer), this->impl());                                                                     \
+                int64tens = buffer_to_tensor<int64_t>(buffer);                                                                             \
+                FUNC(int64tens, this->impl());                                                                                             \
             } else {                                                                                                                       \
                 EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                                \
                                         "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                    \
@@ -751,37 +775,46 @@ class PyTensor : public RuntimeTensor<T> {
             break;                                                                                                                         \
         case 'L':                                                                                                                          \
             if (buffer_info.itemsize == 4) {                                                                                               \
-                FUNC(buffer_to_tensor<uint32_t>(buffer), this->impl());                                                                    \
+                uint32tens = buffer_to_tensor<uint32_t>(buffer);                                                                           \
+                FUNC(uint32tens, this->impl());                                                                                            \
             } else if (buffer_info.itemsize == 8) {                                                                                        \
-                FUNC(buffer_to_tensor<uint64_t>(buffer), this->impl());                                                                    \
+                uint64tens = buffer_to_tensor<uint64_t>(buffer);                                                                           \
+                FUNC(uint64tens, this->impl());                                                                                            \
             } else {                                                                                                                       \
                 EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                                \
                                         "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                    \
             }                                                                                                                              \
             break;                                                                                                                         \
         case 'f':                                                                                                                          \
-            FUNC(buffer_to_tensor<float>(buffer), this->impl());                                                                           \
+            float_tens = buffer_to_tensor<float>(buffer);                                                                                  \
+            assert(float_tens.data() == (float *)buffer_info.ptr);                                                                         \
+            FUNC(float_tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'd':                                                                                                                          \
-            FUNC(buffer_to_tensor<double>(buffer), this->impl());                                                                          \
+            double_tens = buffer_to_tensor<double>(buffer);                                                                                \
+            assert(double_tens.data() == (double *)buffer_info.ptr);                                                                       \
+            FUNC(double_tens, this->impl());                                                                                               \
             break;                                                                                                                         \
         case 'g':                                                                                                                          \
-            FUNC(buffer_to_tensor<long double>(buffer), this->impl());                                                                     \
+            ldouble_tens = buffer_to_tensor<long double>(buffer);                                                                          \
+            FUNC(ldouble_tens, this->impl());                                                                                              \
             break;                                                                                                                         \
         case 'Z':                                                                                                                          \
             if constexpr (!IsComplexV<T>) {                                                                                                \
-                EINSUMS_THROW_EXCEPTION(complex_conversion_error,                                                                          \
-                                        "Can not cast complex to real! Perform your preferred cast before hand.");                         \
+                EINSUMS_THROW_EXCEPTION(complex_conversion_error, "Can not cast complex to real! Perform your preferred cast before hand.");  \
             } else {                                                                                                                       \
                 switch (format[1]) {                                                                                                       \
                 case 'f':                                                                                                                  \
-                    FUNC(buffer_to_tensor<std::complex<float>>(buffer), this->impl());                                                     \
+                    cfloat_tens = buffer_to_tensor<std::complex<float>>(buffer);                                                           \
+                    FUNC(cfloat_tens, this->impl());                                                                                       \
                     break;                                                                                                                 \
                 case 'd':                                                                                                                  \
-                    FUNC(buffer_to_tensor<std::complex<double>>(buffer), this->impl());                                                    \
+                    cdouble_tens = buffer_to_tensor<std::complex<double>>(buffer);                                                         \
+                    FUNC(cdouble_tens, this->impl());                                                                                      \
                     break;                                                                                                                 \
                 case 'g':                                                                                                                  \
-                    FUNC(buffer_to_tensor<std::complex<long double>>(buffer), this->impl());                                               \
+                    cldouble_tens = buffer_to_tensor<std::complex<long double>>(buffer);                                                   \
+                    FUNC(cldouble_tens, this->impl());                                                                                     \
                     break;                                                                                                                 \
                 default:                                                                                                                   \
                     EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,             \
@@ -1423,36 +1456,60 @@ class PyTensorView : public RuntimeTensorView<T> {
         if (format.length() > 2) {                                                                                                         \
             EINSUMS_THROW_EXCEPTION(pybind11::type_error, "Can't handle user defined data type {}!", format);                              \
         }                                                                                                                                  \
+        einsums::detail::TensorImpl<int8_t>                    int8tens;                                                                   \
+        einsums::detail::TensorImpl<uint8_t>                   uint8tens;                                                                  \
+        einsums::detail::TensorImpl<int16_t>                   int16tens;                                                                  \
+        einsums::detail::TensorImpl<uint16_t>                  uint16tens;                                                                 \
+        einsums::detail::TensorImpl<int32_t>                   int32tens;                                                                  \
+        einsums::detail::TensorImpl<uint32_t>                  uint32tens;                                                                 \
+        einsums::detail::TensorImpl<int64_t>                   int64tens;                                                                  \
+        einsums::detail::TensorImpl<uint64_t>                  uint64tens;                                                                 \
+        einsums::detail::TensorImpl<float>                     float_tens;                                                                 \
+        einsums::detail::TensorImpl<double>                    double_tens;                                                                \
+        einsums::detail::TensorImpl<long double>               ldouble_tens;                                                               \
+        einsums::detail::TensorImpl<std::complex<float>>       cfloat_tens;                                                                \
+        einsums::detail::TensorImpl<std::complex<double>>      cdouble_tens;                                                               \
+        einsums::detail::TensorImpl<std::complex<long double>> cldouble_tens;                                                              \
         switch (format[0]) {                                                                                                               \
         case 'b':                                                                                                                          \
-            FUNC(buffer_to_tensor<int8_t>(buffer), this->impl());                                                                          \
+            int8tens = buffer_to_tensor<int8_t>(buffer);                                                                                   \
+            FUNC(int8tens, this->impl());                                                                                                  \
             break;                                                                                                                         \
         case 'B':                                                                                                                          \
-            FUNC(buffer_to_tensor<uint8_t>(buffer), this->impl());                                                                         \
+            uint8tens = buffer_to_tensor<uint8_t>(buffer);                                                                                 \
+            FUNC(uint8tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'h':                                                                                                                          \
-            FUNC(buffer_to_tensor<int16_t>(buffer), this->impl());                                                                         \
+            int16tens = buffer_to_tensor<int16_t>(buffer);                                                                                 \
+            FUNC(int16tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'H':                                                                                                                          \
-            FUNC(buffer_to_tensor<uint16_t>(buffer), this->impl());                                                                        \
+            uint16tens = buffer_to_tensor<uint16_t>(buffer);                                                                               \
+            FUNC(uint16tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'i':                                                                                                                          \
-            FUNC(buffer_to_tensor<int32_t>(buffer), this->impl());                                                                         \
+            int32tens = buffer_to_tensor<int32_t>(buffer);                                                                                 \
+            FUNC(int32tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'I':                                                                                                                          \
-            FUNC(buffer_to_tensor<uint32_t>(buffer), this->impl());                                                                        \
+            uint32tens = buffer_to_tensor<uint32_t>(buffer);                                                                               \
+            FUNC(uint32tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'q':                                                                                                                          \
-            FUNC(buffer_to_tensor<int64_t>(buffer), this->impl());                                                                         \
+            int64tens = buffer_to_tensor<int64_t>(buffer);                                                                                 \
+            FUNC(int64tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'Q':                                                                                                                          \
-            FUNC(buffer_to_tensor<uint64_t>(buffer), this->impl());                                                                        \
+            uint64tens = buffer_to_tensor<uint64_t>(buffer);                                                                               \
+            FUNC(uint64tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'l':                                                                                                                          \
             if (buffer_info.itemsize == 4) {                                                                                               \
-                FUNC(buffer_to_tensor<int32_t>(buffer), this->impl());                                                                     \
+                int32tens = buffer_to_tensor<int32_t>(buffer);                                                                             \
+                FUNC(int32tens, this->impl());                                                                                             \
             } else if (buffer_info.itemsize == 8) {                                                                                        \
-                FUNC(buffer_to_tensor<int64_t>(buffer), this->impl());                                                                     \
+                int64tens = buffer_to_tensor<int64_t>(buffer);                                                                             \
+                FUNC(int64tens, this->impl());                                                                                             \
             } else {                                                                                                                       \
                 EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                                \
                                         "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                    \
@@ -1460,36 +1517,45 @@ class PyTensorView : public RuntimeTensorView<T> {
             break;                                                                                                                         \
         case 'L':                                                                                                                          \
             if (buffer_info.itemsize == 4) {                                                                                               \
-                FUNC(buffer_to_tensor<uint32_t>(buffer), this->impl());                                                                    \
+                uint32tens = buffer_to_tensor<uint32_t>(buffer);                                                                           \
+                FUNC(uint32tens, this->impl());                                                                                            \
             } else if (buffer_info.itemsize == 8) {                                                                                        \
-                FUNC(buffer_to_tensor<uint64_t>(buffer), this->impl());                                                                    \
+                uint64tens = buffer_to_tensor<uint64_t>(buffer);                                                                           \
+                FUNC(uint64tens, this->impl());                                                                                            \
             } else {                                                                                                                       \
                 EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                                \
                                         "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                    \
             }                                                                                                                              \
             break;                                                                                                                         \
         case 'f':                                                                                                                          \
-            FUNC(buffer_to_tensor<float>(buffer), this->impl());                                                                           \
+            float_tens = buffer_to_tensor<float>(buffer);                                                                                  \
+            FUNC(float_tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'd':                                                                                                                          \
-            FUNC(buffer_to_tensor<double>(buffer), this->impl());                                                                          \
+            double_tens = buffer_to_tensor<double>(buffer);                                                                                \
+            FUNC(double_tens, this->impl());                                                                                               \
             break;                                                                                                                         \
         case 'g':                                                                                                                          \
-            FUNC(buffer_to_tensor<long double>(buffer), this->impl());                                                                     \
+            ldouble_tens = buffer_to_tensor<long double>(buffer);                                                                          \
+            FUNC(ldouble_tens, this->impl());                                                                                              \
             break;                                                                                                                         \
         case 'Z':                                                                                                                          \
             if constexpr (!IsComplexV<T>) {                                                                                                \
-                EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not cast complex to real! Perform your preferred cast before hand.");  \
+                EINSUMS_THROW_EXCEPTION(complex_conversion_error,                                                                          \
+                                        "Can not cast complex to real! Perform your preferred cast before hand.");                         \
             } else {                                                                                                                       \
                 switch (format[1]) {                                                                                                       \
                 case 'f':                                                                                                                  \
-                    FUNC(buffer_to_tensor<std::complex<float>>(buffer), this->impl());                                                     \
+                    cfloat_tens = buffer_to_tensor<std::complex<float>>(buffer);                                                           \
+                    FUNC(cfloat_tens, this->impl());                                                                                       \
                     break;                                                                                                                 \
                 case 'd':                                                                                                                  \
-                    FUNC(buffer_to_tensor<std::complex<double>>(buffer), this->impl());                                                    \
+                    cdouble_tens = buffer_to_tensor<std::complex<double>>(buffer);                                                         \
+                    FUNC(cdouble_tens, this->impl());                                                                                      \
                     break;                                                                                                                 \
                 case 'g':                                                                                                                  \
-                    FUNC(buffer_to_tensor<std::complex<long double>>(buffer), this->impl());                                               \
+                    cldouble_tens = buffer_to_tensor<std::complex<long double>>(buffer);                                                   \
+                    FUNC(cldouble_tens, this->impl());                                                                                     \
                     break;                                                                                                                 \
                 default:                                                                                                                   \
                     EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,             \
