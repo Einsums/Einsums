@@ -7,13 +7,13 @@
      */
 
     .text
-    .global sdirprod_kernel
-    .type sdirprod_kernel,@function
+    .global sdirprod_kernel_avx2
+    .type sdirprod_kernel_avx2,@function
     .arch .avx2
     /**
      * Direct product kernel for when all strides are 1.
      */
-sdirprod_kernel:
+sdirprod_kernel_avx2:
     .cfi_startproc
     pushq   %rbp
     .cfi_def_cfa    %rsp, 8

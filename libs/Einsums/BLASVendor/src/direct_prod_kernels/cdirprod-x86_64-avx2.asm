@@ -6,10 +6,10 @@
      * The rest: stack
      */
     .text
-    .global cdirprod_kernel
+    .global cdirprod_kernel_avx2
     .arch .avx2
-    .type cdirprod_kernel, @function
-cdirprod_kernel:
+    .type cdirprod_kernel_avx2, @function
+cdirprod_kernel_avx2:
     .cfi_startproc
     pushq   %rbp
     .cfi_def_cfa    rsp, 8
