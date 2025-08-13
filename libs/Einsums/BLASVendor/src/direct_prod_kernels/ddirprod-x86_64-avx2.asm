@@ -5,7 +5,7 @@
      * Floating point: xmm0-7
      * The rest: stack
      */
-
+    .section .note.GNU-stack,"",@progbits
     .text
     .global ddirprod_kernel_avx2
     .type ddirprod_kernel_avx2,@function
