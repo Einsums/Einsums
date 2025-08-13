@@ -150,62 +150,47 @@ def test_geev(width, dtype, array):
         "Eigenvalues", [width], ein.utils.add_complex(dtype), array
     )
 
-    A_vecs = ein.utils.tensor_factory(
+    A_lvecs = ein.utils.tensor_factory(
         "Test eigenvectors", [width, width], ein.utils.add_complex(dtype), array
     )
 
-    ein.core.geev(A, got_vals, None, A_vecs)
+    A_rvecs = ein.utils.tensor_factory(
+        "Test eigenvectors", [width, width], ein.utils.add_complex(dtype), array
+    )
 
-    print(A_vecs)
+    ein.core.geev(A, got_vals, A_lvecs, A_rvecs)
+
+    A_test = np.array(A_rvecs).T @ np.diag(got_vals) @ np.linalg.inv(np.array(A_rvecs).T)
+
+    for i in range(width) :
+        for j in range(width) :
+            assert A_copy[i, j] == pytest.approx(A_test[i, j])
 
     expected_vals, expected_vecs = np.linalg.eig(A_copy)
 
-    # eiglist = [
-    #     (expected_vals[i], expected_vecs[:, i]) for i in range(len(expected_vals))
-    # ]
+    for i in range(width) :
+        min_pos = i
 
-    # eiglist = sorted(eiglist, key=lambda x: x[0])
+        for j in range(i, width) :
+            if got_vals[j].real < got_vals[min_pos].real :
+                min_pos = j
+            elif got_vals[j].real == got_vals[min_pos].real and got_vals[j].imag < got_vals[min_pos].imag :
+                min_pos = j
+        
+        got_vals[i], got_vals[min_pos] = got_vals[min_pos], got_vals[i]
+        A_lvecs[i, :], A_lvecs[min_pos, :] = A_lvecs[min_pos, :], A_lvecs[i, :]
+        A_rvecs[i, :], A_rvecs[min_pos, :] = A_rvecs[min_pos, :], A_rvecs[i, :]
 
-    # expected_vals = [val[0] for val in eiglist]
-    # expected_vecs = np.array([val[1] for val in eiglist], dtype=dtype)
+    for i in range(width) :
+        min_pos = i
 
-    # Go through each vector, divide by the first element, then renormalize.
-    for i in range(width):
-        # div = A_vecs[i, 0]
-        # div_ind = 0
-        # while div == pytest.approx(0.0) and div_ind < width:
-        #     div = A_vecs[i, div_ind]
-        #     div_ind += 1
-
-        # for j in range(width):
-        #     A_vecs[i, j] /= div
-        norm = np.linalg.norm(A_vecs[:, i])
-        for j in range(width):
-            A_vecs[j, i] /= norm
-
-    print(got_vals)
-    print(expected_vals)
-
-    # The algorithm is very unstable for 32-bit floats.
-    if dtype == np.float32 or dtype == np.complex64:
-        for exp, res in zip(expected_vals, got_vals):
-            assert exp == pytest.approx(res, 1e-3)
-        # Don't even check the eigenvectors. They are really bad!
-        # for i in range(width):
-        #     for j in range(width):
-        #         assert (expected_vecs[i, j] == pytest.approx(A[i, j], rel=1e-2)) or (
-        #             expected_vecs[i, j] == pytest.approx(-A[i, j], rel=1e-2)
-        #        )
-    else:
-        for exp, res in zip(expected_vals, got_vals):
-            assert exp == pytest.approx(res)
-        # In my experience, the eigenvectors become very unstable above 30x30.
-        if width < 30:
-            for i in range(width):
-                for j in range(width):
-                    assert (expected_vecs[i, j] == pytest.approx(A_vecs[i, j])) or (
-                        expected_vecs[i, j] == pytest.approx(-A_vecs[i, j])
-                    )
+        for j in range(i, width) :
+            if expected_vals[j].real < expected_vals[min_pos].real :
+                min_pos = j
+            elif expected_vals[j].real == expected_vals[min_pos].real and expected_vals[j].imag < expected_vals[min_pos].imag :
+                min_pos = j
+        
+        expected_vals[i], expected_vals[min_pos] = expected_vals[min_pos], expected_vals[i]
 
     # for i in range(width) :
     #     for j in range(width) :

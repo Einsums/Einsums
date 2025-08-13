@@ -19,11 +19,11 @@ void impl_sum_square_contiguous(einsums::detail::TensorImpl<T> const &a, RemoveC
     } else {
         T const     *a_data = a.data();
         size_t const size = a.size(), incx = a.get_incx();
-        *scale = T{1.0};
+        T            sumsq_local = T{0.0};
 
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: *sumsq))
+        EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: sumsq_local))
         for (size_t i = 0; i < size; i++) {
-            *sumsq += a_data[i * incx] * a_data[i * incx];
+            sumsq_local += a_data[i * incx] * a_data[i * incx];
         }
     }
 }
@@ -36,11 +36,14 @@ void impl_sum_square_noncontiguous_vectorable(int depth, int hard_rank, size_t e
         if constexpr (blas::IsBlasableV<T>) {
             blas::lassq(easy_size, in, inc_in, scale, sumsq);
         } else {
-            *scale = T{1.0};
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: *sumsq))
+            T sumsq_local = T{0.0};
+            *scale        = T{1.0};
+            EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: sumsq_local))
             for (size_t i = 0; i < easy_size; i++) {
-                *sumsq += in[i * inc_in] * in[i * inc_in];
+                sumsq_local += in[i * inc_in] * in[i * inc_in];
             }
+
+            *sumsq = sumsq_local;
         }
     } else {
         for (int i = 0; i < dims[depth]; i++) {
@@ -54,7 +57,7 @@ template <typename T>
 void impl_sum_square(einsums::detail::TensorImpl<T> const &in, RemoveComplexT<T> *scale, RemoveComplexT<T> *sumsq) {
     LabeledSection0();
 
-    if(in.size() == 0) {
+    if (in.size() == 0) {
         return;
     }
 

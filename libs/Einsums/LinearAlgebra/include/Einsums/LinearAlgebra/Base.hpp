@@ -430,31 +430,66 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
     }
     if (A_column_major) {
 
-        blas::geev(jobvl, jobvr, A->dim(0), A_data, lda, W_data, lvec_data, ldvl, rvec_data, ldvr);
+        auto info = blas::geev(jobvl, jobvr, A->dim(0), A_data, lda, W_data, lvec_data, ldvl, rvec_data, ldvr);
+
+        if (info < 0) {
+            EINSUMS_THROW_EXCEPTION(
+                std::invalid_argument,
+                "The {} argument to geev was invalid! 1 (jobvl): {}, 2 (jobvr): {}, 3 (n): {}, 5 (lda): {}, 8 (ldvl): {}, 10 (ldvr): {}",
+                print::ordinal(-info), jobvl, jobvr, A->dim(0), lda, ldvl, ldvr);
+        } else if (info > 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
+        }
     } else {
-        blas::geev(jobvl, jobvr, A->dim(0), A_data, lda, W_data, rvec_data, ldvr, lvec_data, ldvl);
+        auto info = blas::geev(jobvr, jobvl, A->dim(0), A_data, lda, W_data, rvec_data, ldvr, lvec_data, ldvl);
+
+        if (info < 0) {
+            EINSUMS_THROW_EXCEPTION(
+                std::invalid_argument,
+                "The {} argument to geev was invalid! 1 (jobvr): {}, 2 (jobvl): {}, 3 (n): {}, 5 (lda): {}, 8 (ldvr): {}, 10 (ldvl): {}",
+                print::ordinal(-info), jobvr, jobvl, A->dim(0), lda, ldvr, ldvl);
+        } else if (info > 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
+        }
     }
 
     if (do_jobvl) {
-        if (lvecs->is_row_major() && lvec_data == lvecs->data()) {
+        if (((lvecs->is_row_major() && !A_column_major) || (lvecs->is_column_major() && A_column_major)) && lvec_data == lvecs->data()) {
             for (int i = 0; i < lvecs->dim(0); i++) {
                 for (int j = i + 1; j < lvecs->dim(1); j++) {
                     std::swap(lvecs->subscript_no_check(i, j), lvecs->subscript_no_check(j, i));
                 }
             }
         } else if (lvec_data != lvecs->data()) {
-            einsums::detail::copy_to(lvecs_temp.impl(), *lvecs);
+            if (A_column_major) {
+                for (int i = 0; i < lvecs->dim(0); i++) {
+                    for (int j = i + 1; j < lvecs->dim(1); j++) {
+                        lvecs->subscript_no_check(i, j) = lvecs_temp(j, i);
+                    }
+                }
+            } else {
+                einsums::detail::copy_to(lvecs_temp.impl(), *lvecs);
+            }
         }
     }
     if (do_jobvr) {
-        if (rvecs->is_row_major() && rvec_data == rvecs->data()) {
+        // == is xor
+        if ((rvecs->is_row_major() == A_column_major) && rvec_data == rvecs->data()) {
             for (int i = 0; i < rvecs->dim(0); i++) {
                 for (int j = i + 1; j < rvecs->dim(1); j++) {
                     std::swap(rvecs->subscript_no_check(i, j), rvecs->subscript_no_check(j, i));
                 }
             }
         } else if (rvec_data != rvecs->data()) {
-            einsums::detail::copy_to(rvecs_temp.impl(), *rvecs);
+            if (A_column_major) {
+                for (int i = 0; i < rvecs->dim(0); i++) {
+                    for (int j = i + 1; j < lvecs->dim(1); j++) {
+                        rvecs->subscript_no_check(i, j) = rvecs_temp(j, i);
+                    }
+                }
+            } else {
+                einsums::detail::copy_to(rvecs_temp.impl(), *rvecs);
+            }
         }
     }
 }
