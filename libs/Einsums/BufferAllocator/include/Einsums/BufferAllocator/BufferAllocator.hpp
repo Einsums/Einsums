@@ -136,9 +136,7 @@ struct BufferAllocator {
         }
 
         out = static_cast<pointer>(malloc(n * type_size));
-        println("Outside Tracy check");
 #if defined(EINSUMS_HAVE_TRACY)
-        println("in BufferAllocator here");
         TracyAlloc(out, n * type_size);
 #endif
 
