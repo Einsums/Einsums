@@ -495,6 +495,7 @@ include(Einsums_SetupCUDA)
 include(Einsums_SetupHIP)
 include(Einsums_SetupFFT)
 include(Einsums_SetupTracy)
+include(Einsums_SetupHighway)
 include(Einsums_PerformCXXFeatureTests)
 einsums_perform_cxx_feature_tests()
 
