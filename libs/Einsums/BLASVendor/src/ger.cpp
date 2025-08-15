@@ -40,7 +40,7 @@ extern void FC_GLOBAL(zgerc, ZGERC)(int_t *, int_t *, std::complex<double> *, st
     if ((inc_y) == 0) {                                                                                                                    \
         EINSUMS_THROW_EXCEPTION(std::runtime_error, "Seventh parameter (inc_y) in ger call ({}) is zero.", inc_y);                         \
     }                                                                                                                                      \
-    if ((lda) < std::max(int_t{1}, n)) {                                                                                                   \
+    if ((lda) < std::max(int_t{1}, m)) {                                                                                                   \
         EINSUMS_THROW_EXCEPTION(std::runtime_error, "Ninth parameter (lda) in ger call ({}) is less than max(1, n ({})).", lda, n);        \
     }
 
