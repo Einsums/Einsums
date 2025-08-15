@@ -25,6 +25,8 @@
 #include <source_location>
 #include <stdexcept>
 
+#include "Einsums/TensorImpl/TensorImplOperations.hpp"
+
 namespace einsums::python {
 
 template <typename T>
@@ -801,7 +803,8 @@ class PyTensor : public RuntimeTensor<T> {
             break;                                                                                                                         \
         case 'Z':                                                                                                                          \
             if constexpr (!IsComplexV<T>) {                                                                                                \
-                EINSUMS_THROW_EXCEPTION(complex_conversion_error, "Can not cast complex to real! Perform your preferred cast before hand.");  \
+                EINSUMS_THROW_EXCEPTION(complex_conversion_error,                                                                          \
+                                        "Can not cast complex to real! Perform your preferred cast before hand.");                         \
             } else {                                                                                                                       \
                 switch (format[1]) {                                                                                                       \
                 case 'f':                                                                                                                  \
@@ -1115,6 +1118,42 @@ class PyTensorView : public RuntimeTensorView<T> {
     }
 
     /**
+     * @brief Worker method that creates a view based on the indices and slices passed in.
+     *
+     * @param args The indices and slices to use for view creation.
+     */
+    RuntimeTensorView<T> subscript_to_view(pybind11::slice const &args) {
+        Range pass;
+
+        size_t start, stop, step, slice_length;
+        (pybind11::cast<pybind11::slice>(args)).compute(this->dim(0), &start, &stop, &step, &slice_length);
+        if (step != 1) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Can not handle slices with step sizes other than 1!");
+        }
+        pass = Range{start, stop};
+
+        return this->operator()(pass);
+    }
+
+    /**
+     * @brief Worker method that creates a view based on the indices and slices passed in.
+     *
+     * @param args The indices and slices to use for view creation.
+     */
+    RuntimeTensorView<T> subscript_to_view(pybind11::slice const &args) const {
+        Range pass;
+
+        size_t start, stop, step, slice_length;
+        (pybind11::cast<pybind11::slice>(args)).compute(this->dim(0), &start, &stop, &step, &slice_length);
+        if (step != 1) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Can not handle slices with step sizes other than 1!");
+        }
+        pass = Range{start, stop};
+
+        return this->operator()(pass);
+    }
+
+    /**
      * @brief Set the value at the given point in the tensor to the given value.
      *
      * @param value The new value.
@@ -1148,6 +1187,33 @@ class PyTensorView : public RuntimeTensorView<T> {
      * @param args Indices and slices that determine the part of the view to fill.
      */
     void assign_to_view(T value, pybind11::tuple const &args) {
+        auto this_view = subscript_to_view(args);
+
+        this_view = value;
+    }
+
+    /**
+     * @brief Copy the data from a buffer into this view.
+     *
+     * Creates a view of part of the tensor using the subscript arguments, then
+     * assigns the buffer to that view.
+     *
+     * @param view The buffer to copy.
+     * @param args The position to copy to.
+     */
+    void assign_to_view(pybind11::buffer const &view, pybind11::slice const &args) {
+        PyTensorView<T> this_view = subscript_to_view(args);
+
+        this_view = view;
+    }
+
+    /**
+     * @brief Fill part of the view with the given value.
+     *
+     * @param value The value to fill the view with.
+     * @param args Indices and slices that determine the part of the view to fill.
+     */
+    void assign_to_view(T value, pybind11::slice const &args) {
         auto this_view = subscript_to_view(args);
 
         this_view = value;
@@ -1313,23 +1379,15 @@ class PyTensorView : public RuntimeTensorView<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
-                static pybind11::detail::override_caster_t<RuntimeTensorView<T>> caster;
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
                 return pybind11::detail::cast_ref<RuntimeTensorView<T>>(std::move(o), caster);
             }
             return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
-            size_t start, end, step, length;
-
-            pybind11::cast<pybind11::slice>(index).compute(this->_dims[0], &start, &end, &step, &length);
-
-            if (step != 1) {
-                EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Can not handle slices with steps not equal to 1!");
-            }
-
-            BufferVector<Range> pass{Range{start, end}};
-
-            return this->operator()(pass) = value;
+            assign_to_view(value, index);
+            RuntimeTensorView<T> out = this->subscript(index);
+            return out;
         }
     }
 
@@ -1604,9 +1662,99 @@ class PyTensorView : public RuntimeTensorView<T> {
             return pybind11::detail::cast_safe<RuntimeTensorView<T> &>(std::move(o));                                                      \
         } else {                                                                                                                           \
             auto buffer_info = buffer.request();                                                                                           \
+            if (buffer_info.ndim == 0) {                                                                                                   \
+                if (buffer_info.format.length() == 0 || buffer_info.format.length() > 2) {                                                 \
+                    EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Could not handle user defined buffer format \"{}\"!",                  \
+                                            buffer_info.format);                                                                           \
+                }                                                                                                                          \
+                switch (buffer_info.format[0]) {                                                                                           \
+                case 'b':                                                                                                                  \
+                    *this OP einsums::detail::convert<int8_t, T>(*static_cast<int8_t *>(buffer_info.ptr));                                 \
+                    break;                                                                                                                 \
+                case 'B':                                                                                                                  \
+                    *this OP einsums::detail::convert<uint8_t, T>(*static_cast<uint8_t *>(buffer_info.ptr));                               \
+                    break;                                                                                                                 \
+                case 'h':                                                                                                                  \
+                    *this OP einsums::detail::convert<int16_t, T>(*static_cast<int16_t *>(buffer_info.ptr));                               \
+                    break;                                                                                                                 \
+                case 'H':                                                                                                                  \
+                    *this OP einsums::detail::convert<uint16_t, T>(*static_cast<uint16_t *>(buffer_info.ptr));                             \
+                    break;                                                                                                                 \
+                case 'i':                                                                                                                  \
+                    *this OP einsums::detail::convert<int32_t, T>(*static_cast<int32_t *>(buffer_info.ptr));                               \
+                    break;                                                                                                                 \
+                case 'I':                                                                                                                  \
+                    *this OP einsums::detail::convert<uint32_t, T>(*static_cast<uint32_t *>(buffer_info.ptr));                             \
+                    break;                                                                                                                 \
+                case 'q':                                                                                                                  \
+                    *this OP einsums::detail::convert<int64_t, T>(*static_cast<int64_t *>(buffer_info.ptr));                               \
+                    break;                                                                                                                 \
+                case 'Q':                                                                                                                  \
+                    *this OP einsums::detail::convert<uint64_t, T>(*static_cast<uint64_t *>(buffer_info.ptr));                             \
+                    break;                                                                                                                 \
+                case 'l':                                                                                                                  \
+                    if (buffer_info.itemsize == 4) {                                                                                       \
+                        *this OP einsums::detail::convert<int32_t, T>(*static_cast<int32_t *>(buffer_info.ptr));                           \
+                    } else if (buffer_info.itemsize == 8) {                                                                                \
+                        *this OP einsums::detail::convert<int64_t, T>(*static_cast<int64_t *>(buffer_info.ptr));                           \
+                    } else {                                                                                                               \
+                        EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                        \
+                                                "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");            \
+                    }                                                                                                                      \
+                    break;                                                                                                                 \
+                case 'L':                                                                                                                  \
+                    if (buffer_info.itemsize == 4) {                                                                                       \
+                        *this OP einsums::detail::convert<uint32_t, T>(*static_cast<uint32_t *>(buffer_info.ptr));                         \
+                    } else if (buffer_info.itemsize == 8) {                                                                                \
+                        *this OP einsums::detail::convert<uint64_t, T>(*static_cast<uint64_t *>(buffer_info.ptr));                         \
+                    } else {                                                                                                               \
+                        EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                        \
+                                                "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");            \
+                    }                                                                                                                      \
+                    break;                                                                                                                 \
+                case 'f':                                                                                                                  \
+                    *this OP einsums::detail::convert<float, T>(*static_cast<float *>(buffer_info.ptr));                                   \
+                    break;                                                                                                                 \
+                case 'd':                                                                                                                  \
+                    *this OP einsums::detail::convert<double, T>(*static_cast<double *>(buffer_info.ptr));                                 \
+                    break;                                                                                                                 \
+                case 'g':                                                                                                                  \
+                    *this OP einsums::detail::convert<long double, T>(*static_cast<long double *>(buffer_info.ptr));                       \
+                    break;                                                                                                                 \
+                case 'Z':                                                                                                                  \
+                    if constexpr (!IsComplexV<T>) {                                                                                        \
+                        EINSUMS_THROW_EXCEPTION(complex_conversion_error,                                                                  \
+                                                "Can not cast complex to real! Perform your preferred cast before hand.");                 \
+                    } else {                                                                                                               \
+                        switch (buffer_info.format[1]) {                                                                                   \
+                        case 'f':                                                                                                          \
+                            *this OP einsums::detail::convert<std::complex<float>, T>(                                                     \
+                                *static_cast<std::complex<float> *>(buffer_info.ptr));                                                     \
+                            break;                                                                                                         \
+                        case 'd':                                                                                                          \
+                            *this OP einsums::detail::convert<std::complex<double>, T>(                                                    \
+                                *static_cast<std::complex<double> *>(buffer_info.ptr));                                                    \
+                            break;                                                                                                         \
+                        case 'g':                                                                                                          \
+                            *this OP einsums::detail::convert<std::complex<long double>, T>(                                               \
+                                *static_cast<std::complex<long double> *>(buffer_info.ptr));                                               \
+                            break;                                                                                                         \
+                        default:                                                                                                           \
+                            EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Could not handle complex buffer format \"{}\"!",               \
+                                                    buffer_info.format);                                                                   \
+                        }                                                                                                                  \
+                    }                                                                                                                      \
+                default:                                                                                                                   \
+                    EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Could not handle user-defined buffer format \"{}\"!",                  \
+                                            buffer_info.format);                                                                           \
+                }                                                                                                                          \
+                return *this;                                                                                                              \
+            }                                                                                                                              \
                                                                                                                                            \
             if (this->rank() != buffer_info.ndim) {                                                                                        \
-                EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform " #OP " with buffer object with different rank!");           \
+                EINSUMS_THROW_EXCEPTION(tensor_compat_error,                                                                               \
+                                        "Can not perform " #OP " with buffer object with different rank! Got {}, needed {}.",              \
+                                        buffer_info.ndim, this->rank());                                                                   \
             }                                                                                                                              \
             copy_and_cast_##NAME(buffer);                                                                                                  \
             return *this;                                                                                                                  \

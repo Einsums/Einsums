@@ -119,7 +119,7 @@ GEEV_complex(double, z, Z);
                                                                                                                                            \
         /* Pack wr and wi into w */                                                                                                        \
         for (int_t i = 0; i < n; i++) {                                                                                                    \
-            w[i] = std::complex<float>(wr[i], wi[i]);                                                                                      \
+            w[i] = std::complex<Type>(wr[i], wi[i]);                                                                                       \
         }                                                                                                                                  \
                                                                                                                                            \
         return 0;                                                                                                                          \

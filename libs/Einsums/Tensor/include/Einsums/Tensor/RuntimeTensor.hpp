@@ -250,6 +250,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param index The index to use for the subscript.
      */
     template <Container Storage>
+    requires(!std::is_base_of_v<Range, typename Storage::value_type> && !std::is_base_of_v<Range, Storage>)
     Reference operator()(Storage const &index) {
         return _impl.subscript(index);
     }
@@ -264,6 +265,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param index The index to use for the subscript.
      */
     template <Container Storage>
+    requires(!std::is_base_of_v<Range, typename Storage::value_type> && !std::is_base_of_v<Range, Storage>)
     ConstReference operator()(Storage const &index) const {
         return _impl.subscript(index);
     }
@@ -342,38 +344,6 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     template <std::integral... Args>
     ConstReference operator()(Args const &...args) const {
         return _impl.subscript(args...);
-    }
-
-    /**
-     * @brief Subscript into the tensor, checking for validity of the index.
-     *
-     * This function will check the indices. If an index is negative, it will be wrapped around.
-     * It will also make sure that the indices aren't too big. If fewer indices than necessary
-     * are passed, it will throw an error. This will hopefully change in the future to allow for
-     * the creation of views. It will still throw an error when too many arguments are passed.
-     *
-     * @param args The index to use for the subscript.
-     *
-     * @todo std::variant can't handle references. We may be able to make our own, but for right now,
-     * this will not be able to handle the wrong number of arguments.
-     */
-    template <std::integral... Args>
-    Reference operator()(Args &&...args) {
-        return _impl.subscript(std::forward<Args>(args)...);
-    }
-
-    /**
-     * @brief Subscript into the tensor, checking for validity of the index.
-     *
-     * This function will check the indices. If an index is negative, it will be wrapped around.
-     * It will also make sure that the indices aren't too big. If too few indices are passed,
-     * it will create a view.
-     *
-     * @param args The index to use for the subscript.
-     */
-    template <std::integral... Args>
-    T operator()(Args &&...args) const {
-        return _impl.subscript(std::forward<Args>(args)...);
     }
 
     /**
@@ -891,7 +861,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param index The index to use for subscripting.
      */
     template <Container Storage>
-        requires(!std::is_base_of_v<Range, typename Storage::value_type>)
+        requires(!std::is_base_of_v<Range, typename Storage::value_type> && !std::is_base_of_v<Range, Storage>)
     Reference operator()(Storage const &index) {
         return _impl.subscript(index);
     }
@@ -904,7 +874,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param index The index to use for subscripting.
      */
     template <Container Storage>
-        requires(!std::is_base_of_v<Range, typename Storage::value_type>)
+        requires(!std::is_base_of_v<Range, typename Storage::value_type> && !std::is_base_of_v<Range, Storage>)
     ConstReference operator()(Storage const &index) const {
         return _impl.subscript(index);
     }
@@ -997,30 +967,6 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
     template <std::integral... Args>
     ConstReference operator()(Args const &...args) const {
         return _impl.subscript(args...);
-    }
-
-    /**
-     * @brief Subscript into the tensor.
-     *
-     * If there aren't enough indices, an error will be thrown. This version checks for negative indices and does bounds checking.
-     *
-     * @param args The indices to use for the subscript.
-     */
-    template <std::integral... Args>
-    Reference operator()(Args &&...args) {
-        return _impl.subscript(std::forward<Args>(args)...);
-    }
-
-    /**
-     * @brief Subscript into the tensor.
-     *
-     * If there aren't enough indices, an error will be thrown. This version checks for negative indices and does bounds checking.
-     *
-     * @param args The indices to use for the subscript.
-     */
-    template <std::integral... Args>
-    ConstReference operator()(Args &&...args) const {
-        return _impl.subscript(std::forward<Args>(args)...);
     }
 
     /**

@@ -140,61 +140,72 @@ def test_syev(width, dtype, array):
     #         assert(A[i, j] == pytest.approx(expected_vecs[i, j]))
 
 
-@pytest.mark.parametrize(["width"], [(10,), (50,)])
+@pytest.mark.parametrize(["width"], [(3,), (50,)])
 def test_geev(width, dtype, array):
-    A = ein.utils.random_tensor_factory("Test tensor", [width, width], dtype, array)
+    A = ein.utils.random_tensor_factory("A", [width, width], dtype=dtype, method=array)
+    A_copy = A.copy()
 
-    A_copy = np.array(A.copy(), dtype=dtype)
-
-    got_vals = ein.utils.tensor_factory(
-        "Eigenvalues", [width], ein.utils.add_complex(dtype), array
+    got_evals = ein.utils.tensor_factory(
+        "Got eigenvalues", [width], dtype=ein.utils.add_complex(dtype), method=array
+    )
+    got_evecs = ein.utils.tensor_factory(
+        "Got eigenvectors",
+        [width, width],
+        dtype=ein.utils.add_complex(dtype),
+        method=array,
     )
 
-    A_lvecs = ein.utils.tensor_factory(
-        "Test eigenvectors", [width, width], ein.utils.add_complex(dtype), array
-    )
+    print(A)
 
-    A_rvecs = ein.utils.tensor_factory(
-        "Test eigenvectors", [width, width], ein.utils.add_complex(dtype), array
-    )
+    evals, evecs = np.linalg.eig(A_copy)
+    ein.core.geev(A, got_evals, None, got_evecs)
 
-    ein.core.geev(A, got_vals, A_lvecs, A_rvecs)
+    print(evals)
+    print(got_evals)
+    print(evecs)
+    print(got_evecs)
 
-    A_test = np.array(A_rvecs).T @ np.diag(got_vals) @ np.linalg.inv(np.array(A_rvecs).T)
-
-    for i in range(width) :
-        for j in range(width) :
-            assert A_copy[i, j] == pytest.approx(A_test[i, j])
-
-    expected_vals, expected_vecs = np.linalg.eig(A_copy)
-
-    for i in range(width) :
+    for i in range(width):
         min_pos = i
-
-        for j in range(i, width) :
-            if got_vals[j].real < got_vals[min_pos].real :
+        for j in range(i, width):
+            if got_evals[j].real < got_evals[min_pos].real:
                 min_pos = j
-            elif got_vals[j].real == got_vals[min_pos].real and got_vals[j].imag < got_vals[min_pos].imag :
+            elif (
+                got_evals[j].real == got_evals[min_pos].real
+                and got_evals[j].imag < got_evals[min_pos].imag
+            ):
                 min_pos = j
-        
-        got_vals[i], got_vals[min_pos] = got_vals[min_pos], got_vals[i]
-        A_lvecs[i, :], A_lvecs[min_pos, :] = A_lvecs[min_pos, :], A_lvecs[i, :]
-        A_rvecs[i, :], A_rvecs[min_pos, :] = A_rvecs[min_pos, :], A_rvecs[i, :]
+        if min_pos != i:
+            got_evals[i], got_evals[min_pos] = got_evals[min_pos], got_evals[i]
+            for j in range(width):
+                temp = got_evecs[j, i]
+                got_evecs[j, i] = got_evecs[j, min_pos]
+                got_evecs[j, min_pos] = temp
 
-    for i in range(width) :
+    for i in range(width):
         min_pos = i
-
-        for j in range(i, width) :
-            if expected_vals[j].real < expected_vals[min_pos].real :
+        for j in range(i, width):
+            if evals[j].real < evals[min_pos].real:
                 min_pos = j
-            elif expected_vals[j].real == expected_vals[min_pos].real and expected_vals[j].imag < expected_vals[min_pos].imag :
+            elif (
+                evals[j].real == evals[min_pos].real
+                and evals[j].imag < evals[min_pos].imag
+            ):
                 min_pos = j
-        
-        expected_vals[i], expected_vals[min_pos] = expected_vals[min_pos], expected_vals[i]
+        if min_pos != i:
+            evals[i], evals[min_pos] = evals[min_pos], evals[i]
+            for j in range(width):
+                temp = evecs[j, i]
+                evecs[j, i] = evecs[j, min_pos]
+                evecs[j, min_pos] = temp
 
-    # for i in range(width) :
-    #     for j in range(width) :
-    #         assert(A[i, j] == pytest.approx(expected_vecs[i, j]))
+    for i in range(width):
+        assert got_evals[i] == pytest.approx(evals[i])
+
+    for i in range(width):
+        scale = evecs[0, i] / got_evecs[0, i]
+        for j in range(width):
+            assert got_evecs[j, i] * scale == pytest.approx(evecs[j, i])
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 1), (10, 10), (100, 100)])

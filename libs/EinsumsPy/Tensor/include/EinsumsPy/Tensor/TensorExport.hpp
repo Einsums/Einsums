@@ -219,6 +219,11 @@ void export_tensor(pybind11::module &mod) {
                  }
              })
         .def("__setitem__",
+             [](RuntimeTensor<T> &self, pybind11::slice const &key, pybind11::buffer const &values) {
+                 PyTensorView<T> cast(self);
+                 cast.assign_values(values, key);
+             })
+        .def("__setitem__",
              [](RuntimeTensor<T> &self, pybind11::tuple const &key, double value) {
                  PyTensorView<T> cast(self);
                  if constexpr (IsComplexV<T>) {
@@ -552,6 +557,8 @@ void export_tensor(pybind11::module &mod) {
                     cast.assign_values((RemoveComplexT<T>)value.real(), key);
                  }
              })
+        .def("__setitem__",
+             [](PyTensorView<T> &self, pybind11::slice const &key, pybind11::buffer const &values) { self.assign_values(values, key); })
         .def("__setitem__",
              [](PyTensorView<T> &self, pybind11::tuple const &key, pybind11::buffer const &values) { self.assign_values(values, key); })
 #undef OPERATOR

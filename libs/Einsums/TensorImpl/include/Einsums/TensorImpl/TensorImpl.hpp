@@ -890,7 +890,7 @@ struct TensorImpl final {
     template <bool IgnoreRemoveRange = false, Container MultiIndex>
         requires requires {
             requires std::is_integral_v<typename MultiIndex::value_type>;
-            requires !std::is_same_v<Range, MultiIndex>;
+            requires !std::is_base_of_v<Range, MultiIndex>;
         }
     constexpr reference subscript(MultiIndex const &index) {
         return *data(index);
@@ -904,7 +904,7 @@ struct TensorImpl final {
     template <bool IgnoreRemoveRange = false, Container MultiIndex>
         requires requires {
             requires std::is_integral_v<typename MultiIndex::value_type>;
-            requires !std::is_same_v<Range, MultiIndex>;
+            requires !std::is_base_of_v<Range, MultiIndex>;
         }
     constexpr const_reference subscript(MultiIndex const &index) const {
         return *data(index);

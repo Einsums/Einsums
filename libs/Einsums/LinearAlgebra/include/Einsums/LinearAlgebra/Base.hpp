@@ -440,6 +440,38 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
         } else if (info > 0) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
         }
+
+        if (do_jobvl) {
+            if (!lvecs->is_column_major() && lvec_data == lvecs->data()) {
+                for (int i = 0; i < lvecs->dim(0); i++) {
+                    for (int j = i + 1; j < lvecs->dim(1); j++) {
+                        std::swap(lvecs->subscript_no_check(i, j), lvecs->subscript_no_check(j, i));
+                    }
+                }
+            } else if (lvec_data != lvecs->data()) {
+                for (int i = 0; i < lvecs->dim(0); i++) {
+                    for (int j = i + 1; j < lvecs->dim(1); j++) {
+                        lvecs->subscript_no_check(i, j) = lvecs_temp(j, i);
+                    }
+                }
+            }
+        }
+
+        if (do_jobvr) {
+            if (!rvecs->is_column_major() && rvec_data == rvecs->data()) {
+                for (int i = 0; i < rvecs->dim(0); i++) {
+                    for (int j = i + 1; j < rvecs->dim(1); j++) {
+                        std::swap(rvecs->subscript_no_check(i, j), rvecs->subscript_no_check(j, i));
+                    }
+                }
+            } else if (rvec_data != rvecs->data()) {
+                for (int i = 0; i < rvecs->dim(0); i++) {
+                    for (int j = i + 1; j < rvecs->dim(1); j++) {
+                        rvecs->subscript_no_check(i, j) = rvecs_temp(j, i);
+                    }
+                }
+            }
+        }
     } else {
         auto info = blas::geev(jobvr, jobvl, A->dim(0), A_data, lda, W_data, rvec_data, ldvr, lvec_data, ldvl);
 
@@ -451,47 +483,107 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
         } else if (info > 0) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
         }
-    }
 
-    if (do_jobvl) {
-        if (((lvecs->is_row_major() && !A_column_major) || (lvecs->is_column_major() && A_column_major)) && lvec_data == lvecs->data()) {
-            for (int i = 0; i < lvecs->dim(0); i++) {
-                for (int j = i + 1; j < lvecs->dim(1); j++) {
-                    std::swap(lvecs->subscript_no_check(i, j), lvecs->subscript_no_check(j, i));
-                }
-            }
-        } else if (lvec_data != lvecs->data()) {
-            if (A_column_major) {
+        if (do_jobvl) {
+            if (!lvecs->is_column_major() && lvec_data == lvecs->data()) {
                 for (int i = 0; i < lvecs->dim(0); i++) {
                     for (int j = i + 1; j < lvecs->dim(1); j++) {
-                        lvecs->subscript_no_check(i, j) = lvecs_temp(j, i);
+                        if constexpr (!IsComplexV<T>) {
+                            std::swap(lvecs->subscript_no_check(i, j), lvecs->subscript_no_check(j, i));
+                        } else {
+                            T temp                          = std::conj(lvecs->subscript_no_check(i, j));
+                            lvecs->subscript_no_check(i, j) = std::conj(lvecs->subscript_no_check(j, i));
+                            lvecs->subscript_no_check(j, i) = temp;
+                        }
                     }
                 }
-            } else {
+
+                if constexpr (!IsComplexV<T>) {
+                    // Go through and conjugate as well.
+                    for (int i = 0; i < lvecs->dim(0); i++) {
+                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
+                            for (int j = 0; j < lvecs->dim(1); j++) {
+                                lvecs->subscript_no_check(j, i + 1) = -lvecs->subscript_no_check(j, i + 1);
+                            }
+                            i++;
+                        }
+                    }
+                }
+            } else if (lvec_data != lvecs->data()) {
                 einsums::detail::copy_to(lvecs_temp.impl(), *lvecs);
             }
         }
-    }
-    if (do_jobvr) {
-        // == is xor
-        if ((rvecs->is_row_major() == A_column_major) && rvec_data == rvecs->data()) {
-            for (int i = 0; i < rvecs->dim(0); i++) {
-                for (int j = i + 1; j < rvecs->dim(1); j++) {
-                    std::swap(rvecs->subscript_no_check(i, j), rvecs->subscript_no_check(j, i));
-                }
-            }
-        } else if (rvec_data != rvecs->data()) {
-            if (A_column_major) {
+
+        if (do_jobvr) {
+            if (!rvecs->is_column_major() && rvec_data == rvecs->data()) {
                 for (int i = 0; i < rvecs->dim(0); i++) {
-                    for (int j = i + 1; j < lvecs->dim(1); j++) {
-                        rvecs->subscript_no_check(i, j) = rvecs_temp(j, i);
+                    for (int j = i + 1; j < rvecs->dim(1); j++) {
+                        if constexpr (!IsComplexV<T>) {
+                            std::swap(rvecs->subscript_no_check(i, j), rvecs->subscript_no_check(j, i));
+                        } else {
+                            T temp                          = std::conj(rvecs->subscript_no_check(i, j));
+                            rvecs->subscript_no_check(i, j) = std::conj(rvecs->subscript_no_check(j, i));
+                            rvecs->subscript_no_check(j, i) = temp;
+                        }
                     }
                 }
-            } else {
+
+                if constexpr (!IsComplexV<T>) {
+                    // Go through and conjugate as well.
+                    for (int i = 0; i < rvecs->dim(0); i++) {
+                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
+                            for (int j = 0; j < rvecs->dim(1); j++) {
+                                rvecs->subscript_no_check(j, i + 1) = -rvecs->subscript_no_check(j, i + 1);
+                            }
+                            i++;
+                        }
+                    }
+                }
+            } else if (rvec_data != rvecs->data()) {
                 einsums::detail::copy_to(rvecs_temp.impl(), *rvecs);
             }
         }
     }
+
+    // if (do_jobvl) {
+    //     if (lvecs->is_row_major() && lvec_data == lvecs->data()) {
+    //         for (int i = 0; i < lvecs->dim(0); i++) {
+    //             for (int j = i + 1; j < lvecs->dim(1); j++) {
+    //                 std::swap(lvecs->subscript_no_check(i, j), lvecs->subscript_no_check(j, i));
+    //             }
+    //         }
+    //     } else if (lvec_data != lvecs->data()) {
+    //         if (A_column_major) {
+    //             for (int i = 0; i < lvecs->dim(0); i++) {
+    //                 for (int j = i + 1; j < lvecs->dim(1); j++) {
+    //                     lvecs->subscript_no_check(i, j) = lvecs_temp(j, i);
+    //                 }
+    //             }
+    //         } else {
+    //             einsums::detail::copy_to(lvecs_temp.impl(), *lvecs);
+    //         }
+    //     }
+    // }
+    // if (do_jobvr) {
+    //     // == is xor
+    //     if ((rvecs->is_column_major() != A_column_major) && rvec_data == rvecs->data()) {
+    //         for (int i = 0; i < rvecs->dim(0); i++) {
+    //             for (int j = i + 1; j < rvecs->dim(1); j++) {
+    //                 std::swap(rvecs->subscript_no_check(i, j), rvecs->subscript_no_check(j, i));
+    //             }
+    //         }
+    //     } else if (rvec_data != rvecs->data()) {
+    //         if (A_column_major) {
+    //             for (int i = 0; i < rvecs->dim(0); i++) {
+    //                 for (int j = i + 1; j < rvecs->dim(1); j++) {
+    //                     rvecs->subscript_no_check(i, j) = rvecs_temp(j, i);
+    //                 }
+    //             }
+    //         } else {
+    //             einsums::detail::copy_to(rvecs_temp.impl(), *rvecs);
+    //         }
+    //     }
+    // }
 }
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept WType>
