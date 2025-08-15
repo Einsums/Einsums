@@ -40,10 +40,10 @@ extern void FC_GLOBAL(cgesvd, CGESVD)(char *jobu, char *jobvt, int_t *m, int_t *
         int_t i;                                                                                                                           \
                                                                                                                                            \
         int_t ncols_u  = lsame(jobu, 'a') ? m : (lsame(jobu, 's') ? std::min(m, n) : 1);                                                   \
-        int_t ncols_vt = (lsame(jobvt, 'a') || lsame(jobvt, 's')) ? n : 1;                                                                 \
+        int_t ncols_vt = (lsame(jobvt, 'a')) ? n : (lsame(jobvt, 's') ? std::min(m, n) : 1);                                               \
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
-        if (lda < n) {                                                                                                                     \
+        if (lda < m) {                                                                                                                     \
             EINSUMS_LOG_WARN("gesvd warning: lda < n, lda = {}, n = {}", lda, n);                                                          \
             return -6;                                                                                                                     \
         }                                                                                                                                  \
@@ -99,11 +99,11 @@ GESVD(float, s, S);
         int_t              i;                                                                                                              \
                                                                                                                                            \
         int_t ncols_u  = lsame(jobu, 'a') ? m : (lsame(jobu, 's') ? std::min(m, n) : 1);                                                   \
-        int_t ncols_vt = (lsame(jobvt, 'a') || lsame(jobvt, 's')) ? n : 1;                                                                 \
+        int_t ncols_vt = (lsame(jobvt, 'a')) ? n : (lsame(jobvt, 's') ? std::min(m, n) : 1);                                               \
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
-        if (lda < n) {                                                                                                                     \
-            EINSUMS_LOG_WARN("gesvd warning: lda < n, lda = {}, n = {}", lda, n);                                                          \
+        if (lda < m) {                                                                                                                     \
+            EINSUMS_LOG_WARN("gesvd warning: lda < m, lda = {}, m = {}", lda, n);                                                          \
             return -6;                                                                                                                     \
         }                                                                                                                                  \
         if (ldu < ncols_u) {                                                                                                               \

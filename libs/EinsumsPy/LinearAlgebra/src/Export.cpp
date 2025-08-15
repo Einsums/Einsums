@@ -85,8 +85,6 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .def("pseudoinverse", &pseudoinverse, "Compute the pseudoinverse of a non-invertible matrix.")
         .def("solve_continuous_lyapunov", &solve_continuous_lyapunov, "Solve a continuous Lyapunov equation.")
         .def("qr", &qr, "Set up for QR decomposition of a matrix.")
-        .def("q", &q, "Extract the Q matrix after a call to qr.")
-        .def("r", &r, "Extract the R matrix after a call to qr.")
         .def("direct_product", &direct_product, "Compute the direct product between two tensors.")
         .def("det", &det, "Compute the matrix determinant.");
 }

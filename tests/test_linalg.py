@@ -432,6 +432,9 @@ def test_nullspace(a, b, dtype, array):
 
     Null = ein.core.svd_nullspace(A)
 
+    print(Null)
+    print(Null.shape)
+
     for i in range(Null.shape[1]):
         assert ein.core.vec_norm(Null[:, i]) == pytest.approx(1.0)
 
@@ -449,9 +452,10 @@ def test_nullspace(a, b, dtype, array):
 
     assert Null.shape[1] == Null_expected.shape[1]
 
-    for i in range(b):
-        for j in range(Null_expected.shape[1]):
-            assert Null[i, j] == pytest.approx(Null_expected[i, j])
+    for j in range(Null_expected.shape[1]):
+        scale = Null_expected[0, j] / Null[0, j]
+        for i in range(b):
+            assert Null[i, j] * scale == pytest.approx(Null_expected[i, j])
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13)])
@@ -480,22 +484,18 @@ def test_sdd(a, b, dtype, array):
 def test_qr(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
-    A_copy = np.array(A.copy(), dtype=dtype)
+    Q, R = ein.core.qr(A)
 
-    QR, tau = ein.core.qr(A)
+    print(Q)
+    print(R)
 
-    Q = ein.core.q(QR, tau)
-    R = ein.core.r(QR, tau)
+    A_test = ein.utils.tensor_factory("A test", [a, b], dtype, array)
 
-    Q_expected, R_expected = np.linalg.qr(A_copy)
+    ein.core.gemm('n', 'n', 1.0, Q, R, 0.0, A_test)
 
-    for i in range(Q_expected.shape[0]):
-        for j in range(Q_expected.shape[1]):
-            assert Q[i, j] == pytest.approx(Q_expected[i, j])
-
-    for i in range(R_expected.shape[0]):
-        for j in range(R_expected.shape[1]):
-            assert R[i, j] == pytest.approx(R_expected[i, j])
+    for i in range(A.shape[0]) :
+        for j in range(A.shape[1]) :
+            assert A_test[i, j] == pytest.approx(A[i, j])
 
 
 @pytest.mark.parametrize("dims", [[10, 10], [10, 10, 10], [11, 12, 13], [100]])

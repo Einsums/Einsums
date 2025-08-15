@@ -248,4 +248,7 @@ float  scasum(int_t n, std::complex<float> const *x, int_t incx);
 double dzasum(int_t n, std::complex<double> const *x, int_t incx);
 float  scsum1(int_t n, std::complex<float> const *x, int_t incx);
 double dzsum1(int_t n, std::complex<double> const *x, int_t incx);
+
+void clacgv(int_t n, std::complex<float> *x, int_t incx);
+void zlacgv(int_t n, std::complex<double> *x, int_t incx);
 } // namespace einsums::blas::vendor

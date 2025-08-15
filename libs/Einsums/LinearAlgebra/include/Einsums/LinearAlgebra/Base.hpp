@@ -1249,8 +1249,8 @@ auto svd(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, T
         if (info < 0) {
             EINSUMS_THROW_EXCEPTION(
                 std::invalid_argument,
-                "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #6 (lda) = {}, #8 (m) = {}", -info, m, n,
-                lda, U.impl().get_lda(), Vt.impl().get_lda());
+                "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info, m,
+                n, lda, U.impl().get_lda(), Vt.impl().get_lda());
         } else {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
         }
@@ -1359,6 +1359,105 @@ auto vec_norm(einsums::detail::TensorImpl<T> const &a) -> RemoveComplexT<T> {
 template <TensorConcept AType>
 auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::ValueType> {
     return vec_norm(a.impl());
+}
+
+template <typename T>
+auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
+    LabeledSection0();
+
+    //    DisableOMPThreads const nothreads;
+
+    // Calling svd will destroy the original data. Make a copy of it.
+    Tensor<T, 2> A = _A;
+
+    size_t m = A.dim(0);
+    size_t n = A.dim(1);
+
+    // Test if it absolutely necessary to zero out these tensors first.
+    auto U = create_tensor<T>("U (stored columnwise)", m, m);
+    zero(U);
+    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
+    zero(S);
+    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
+    zero(Vt);
+
+    int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), A.impl().get_lda(), S.data(),
+                           U.data(), U.impl().get_lda(), Vt.data(), Vt.impl().get_lda());
+
+    if (info != 0) {
+        if (info < 0) {
+            EINSUMS_THROW_EXCEPTION(
+                std::invalid_argument,
+                "svd_dd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info,
+                m, n, A.impl().get_lda(), U.impl().get_lda(), Vt.impl().get_lda());
+        } else {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd_dd: error value {}", info);
+        }
+    }
+
+    return std::make_tuple(U, S, Vt);
+}
+
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto svd_dd(AType const &A, char job)
+    -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
+                  Tensor<typename AType::ValueType, 2>> {
+    return svd_dd(A.impl(), job);
+}
+
+template <typename T>
+auto qr(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, Tensor<T, 2>> {
+    LabeledSection0();
+
+    // Copy A because it will be overwritten by the QR call.
+    Tensor<T, 2>      A = _A;
+    blas::int_t const m = A.dim(0);
+    blas::int_t const n = A.dim(1);
+
+    Tensor<T, 1> tau("tau", std::min(m, n));
+    // Compute QR factorization of Y
+    blas::int_t info = blas::geqrf(m, n, A.data(), A.impl().get_lda(), tau.data());
+
+    println(A);
+
+    if (info != 0) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "{} parameter to geqrf has an illegal value. #1: (m) {}, #2: (n) {}, #4: (lda) {}.",
+                                print::ordinal(-info), m, n, A.impl().get_lda());
+    }
+
+    Tensor<T, 2> Q{"Q", m, m};
+    Q.zero();
+
+    // Extract the elementary reflectors from A.
+    for (size_t i = 0; i < tau.dim(0); i++) {
+        Q(i, i) = T{1.0};
+        for (size_t j = i + 1; j < m; j++) {
+            Q(j, i) = A(j, i);
+            A(j, i) = T{0.0};
+        }
+    }
+
+    // Extract Matrix Q out of QR factorization
+    if constexpr (IsComplexV<T>) {
+        info = blas::ungqr(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
+    } else {
+        info = blas::orgqr(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
+    }
+
+    if (info != 0) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                "{} parameter to {{or,un}}gqr was invalid! #1: (m) {}, #2: (n) {}, #3: (k) {}, #5: (lda) {}.",
+                                print::ordinal(-info), m, m, tau.dim(0), Q.impl().get_lda());
+    }
+
+    return {Q, A};
+}
+
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto qr(AType const &A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 2>> {
+    return qr(A.impl());
 }
 
 } // namespace einsums::linear_algebra::detail

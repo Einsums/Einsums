@@ -275,7 +275,7 @@ void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
 template <typename T>
 void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *vec1, T *vec2, T *tau) {
     T           *Q_data = Q->data();
-    size_t const dim = Q->dim(0), row_stride = Q->stride(0), col_stride = Q->stride(1);
+    size_t const dim = Q->dim(1), row_stride = Q->stride(0), col_stride = Q->stride(1);
 
     // Set up the first level.
     Q->subscript(-1, -1) = T{1.0};

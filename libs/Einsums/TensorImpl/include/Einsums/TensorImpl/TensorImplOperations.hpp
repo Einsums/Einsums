@@ -365,6 +365,82 @@ void impl_abs(TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     }
 }
 
+template <typename T>
+void impl_conj_contiguous(TensorImpl<std::complex<T>> &x) {
+    if constexpr (blas::IsBlasableV<T>) {
+        blas::lacgv(x.size(), x.data(), x.get_incx());
+    } else {
+        T           *x_data = x.data();
+        size_t const incx = x.get_incx(), size = x.size();
+        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        for (size_t i = 0; i < size; i++) {
+            x_data[i * incx] = std::conj(x_data[i * incx]);
+        }
+    }
+}
+
+template <typename T, Container HardDims, Container InStrides>
+void impl_conj_noncontiguous_vectorable(int depth, int hard_rank, size_t easy_size, HardDims const &dims, std::complex<T> *x,
+                                        InStrides const &x_strides, size_t incx) {
+    // inc_in needs to be multiplied by 2 before entry.
+    if (depth == hard_rank) {
+        if constexpr (blas::IsBlasableV<T>) {
+            blas::lacgv(easy_size, x, incx);
+        } else {
+            EINSUMS_OMP_PARALLEL_FOR_SIMD
+            for (size_t i = 0; i < easy_size; i++) {
+                x[i * incx] = std::conj(x[i * incx]);
+            }
+        }
+    } else {
+        for (int i = 0; i < dims[depth]; i++) {
+            impl_conj_noncontiguous_vectorable(depth + 1, hard_rank, easy_size, dims, x + i * x_strides[depth], x_strides, incx);
+        }
+    }
+}
+
+template <typename T>
+void impl_conj(TensorImpl<T> &x) {
+    LabeledSection0();
+
+    if constexpr (!IsComplexV<T>) {
+        return;
+    } else {
+        if (x.is_totally_vectorable()) {
+            EINSUMS_LOG_DEBUG("Inputs were able to be treated as vector inputs and have the same memory layout. Using lacgv.");
+
+            impl_conj_contiguous(x);
+        } else {
+            EINSUMS_LOG_DEBUG("Inputs were not contiguous, but have the same layout. Using loops over lacgv.");
+
+            size_t               easy_size, easy_rank, incx, hard_size;
+            BufferVector<size_t> hard_dims, x_strides;
+
+            x.query_vectorable_params(&easy_size, &hard_size, &easy_rank, &incx);
+
+            hard_dims.resize(x.rank() - easy_rank);
+
+            if (x.stride(0) < x.stride(-1)) {
+                x_strides.resize(x.rank() - easy_rank);
+
+                for (int i = 0; i < x.rank() - easy_rank; i++) {
+                    x_strides[i] = x.stride(i + easy_rank);
+                    hard_dims[i] = x.dim(i + easy_rank);
+                }
+            } else {
+                x_strides.resize(x.rank() - easy_rank);
+
+                for (int i = 0; i < x.rank() - easy_rank; i++) {
+                    x_strides[i] = x.stride(i);
+                    hard_dims[i] = x.dim(i);
+                }
+            }
+
+            impl_conj_noncontiguous_vectorable(0, x.rank() - easy_rank, easy_size, hard_dims, x.data(), x_strides, incx);
+        }
+    }
+}
+
 template <typename T, typename TOther>
 void impl_axpy_contiguous(T alpha, TensorImpl<TOther> const &in, TensorImpl<T> &out) {
     if constexpr (std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<TOther>> && blas::IsBlasableV<T>) {

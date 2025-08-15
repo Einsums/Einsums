@@ -499,5 +499,13 @@ double dzsum1(int_t n, std::complex<double> const *x, int_t incx) {
     return vendor::dzsum1(n, x, incx);
 }
 
+void clacgv(int_t n, std::complex<float> *x, int_t incx) {
+    vendor::clacgv(n, x, incx);
+}
+
+void zlacgv(int_t n, std::complex<double> *x, int_t incx) {
+    vendor::zlacgv(n, x, incx);
+}
+
 } // namespace detail
 } // namespace einsums::blas

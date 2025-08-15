@@ -29,6 +29,7 @@ set(BLASVendorSources
     getri.cpp
     getrf.cpp
     heev.cpp
+    lacgv.cpp
     lange.cpp
     lassq.cpp
     orgqr.cpp

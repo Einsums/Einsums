@@ -664,14 +664,14 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
     superb.zero();
 
     //    int info{0};
-    int info = blas::gesvd('N', 'A', m, n, A.data(), lda, S.data(), nullptr, 1, Vt.data(), Vt.impl().get_lda(), superb.data());
+    int info = blas::gesvd('N', 'A', m, n, A.data(), lda, S.data(), (T *)nullptr, 1, Vt.data(), Vt.impl().get_lda(), superb.data());
 
     if (info != 0) {
         if (info < 0) {
             EINSUMS_THROW_EXCEPTION(
                 std::invalid_argument,
-                "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #6 (lda) = {}, #8 (m) = {}", -info, m, n,
-                lda, 1, Vt.impl().get_lda());
+                "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info, m,
+                n, lda, 1, Vt.impl().get_lda());
         } else {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
         }
@@ -679,7 +679,7 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
 
     // Determine the rank of the nullspace matrix
     int rank = 0;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < std::min(n, m); i++) {
         if (S(i) > 1e-12) {
             rank++;
         }
@@ -687,13 +687,15 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
 
     // println("rank {}", rank);
     auto Vview     = Vt(Range{rank, Vt.dim(0)}, All);
-    auto nullspace = Tensor(Vview);
+    auto nullspace = Tensor<T, 2>(Vview.impl().transpose_view());
 
     // Normalize nullspace. LAPACK does not guarentee them to be orthonormal
-    for (int i = 0; i < nullspace.dim(0); i++) {
-        T norm = vec_norm(nullspace(i, All));
-        scale_row(i, T{1.0} / norm, &nullspace);
+    for (int i = 0; i < nullspace.dim(1); i++) {
+        T norm = vec_norm(nullspace(All, i));
+        scale_column(i, T{1.0} / norm, &nullspace);
     }
+
+    einsums::detail::impl_conj(nullspace.impl());
 
     return nullspace;
 }
@@ -702,43 +704,10 @@ enum class Vectors : char { All = 'A', Some = 'S', Overwrite = 'O', None = 'N' }
 
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto svd_dd(AType const &_A, Vectors job = Vectors::All)
+auto svd_dd(AType const &A, Vectors job = Vectors::All)
     -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
                   Tensor<typename AType::ValueType, 2>> {
-    using T = typename AType::ValueType;
-    LabeledSection0();
-
-    //    DisableOMPThreads const nothreads;
-
-    // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> A = _A;
-
-    size_t m = A.dim(0);
-    size_t n = A.dim(1);
-
-    // Test if it absolutely necessary to zero out these tensors first.
-    auto U = create_tensor<T>("U (stored columnwise)", m, m);
-    zero(U);
-    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
-    zero(S);
-    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
-    zero(Vt);
-
-    int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), A.impl().get_lda(), S.data(),
-                           U.data(), U.impl().get_lda(), Vt.data(), Vt.impl().get_lda());
-
-    if (info != 0) {
-        if (info < 0) {
-            EINSUMS_THROW_EXCEPTION(
-                std::invalid_argument,
-                "svd_dd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info,
-                m, n, A.impl().get_lda(), U.impl().get_lda(), Vt.impl().get_lda());
-        } else {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd_dd: error value {}", info);
-        }
-    }
-
-    return std::make_tuple(U, S, Vt);
+    return detail::svd_dd(A, static_cast<char>(job));
 }
 
 template <MatrixConcept AType>
@@ -912,54 +881,8 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
 
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto qr(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 1>> {
-    using T = typename AType::ValueType;
-    LabeledSection0();
-
-    // Copy A because it will be overwritten by the QR call.
-    Tensor<T, 2>      A = _A;
-    blas::int_t const m = A.dim(0);
-    blas::int_t const n = A.dim(1);
-
-    Tensor<T, 1> tau("tau", std::min(m, n));
-    // Compute QR factorization of Y
-    blas::int_t info = blas::geqrf(m, n, A.data(), A.impl().get_lda(), tau.data());
-
-    if (info != 0) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "{} parameter to geqrf has an illegal value.", -info);
-    }
-
-    // Extract Matrix Q out of QR factorization
-    // blas::int_t info2 = blas::orgqr(m, n, tau.dim(0), A.data(), n, const_cast<const double *>(tau.data()));
-    return {A, tau};
-}
-
-template <MatrixConcept AType, VectorConcept TauType>
-    requires requires {
-        requires CoreTensorConcept<AType>;
-        requires CoreTensorConcept<TauType>;
-        requires SameUnderlying<AType, TauType>;
-    }
-auto q(AType const &qr, TauType const &tau) -> Tensor<typename AType::ValueType, 2> {
-    using T             = typename AType::ValueType;
-    blas::int_t const m = qr.dim(1);
-    blas::int_t const p = qr.dim(0);
-
-    Tensor<T, 2> Q = qr;
-
-    blas::int_t info;
-    if constexpr (!IsComplexV<T>) {
-
-        info = blas::orgqr(m, m, p, Q.data(), Q.impl().get_lda(), tau.data());
-    } else {
-        info = blas::ungqr(m, m, p, Q.data(), Q.impl().get_lda(), tau.data());
-    }
-    if (info != 0) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "{} parameter to orgqr has an illegal value. 1: {}, 2: {}, 3: {}, 5: {}",
-                                print::ordinal(-info), m, m, p, Q.impl().get_lda());
-    }
-
-    return Q;
+auto qr(AType const &A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 2>> {
+    return detail::qr(A);
 }
 
 template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typename T>

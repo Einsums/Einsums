@@ -53,91 +53,9 @@ pybind11::tuple svd(pybind11::buffer const &A) {
 
 template <typename T>
 RuntimeTensor<T> svd_nullspace_work(pybind11::buffer const &_A) {
-    // Calling svd will destroy the original data. Make a copy of it.
-    PyTensor<T> A = _A;
+    TensorView<T, 2> A{buffer_to_tensor<T>(_A)};
 
-    blas::int_t m   = A.dim(0);
-    blas::int_t n   = A.dim(1);
-    blas::int_t lda = A.stride(0);
-
-    EINSUMS_LOG_DEBUG("Making tensors.");
-
-    auto U = create_tensor<T>("U", m, m);
-    zero(U);
-    auto S = create_tensor<RemoveComplexT<T>>("S", n);
-    zero(S);
-    auto V = create_tensor<T>("V", n, n);
-    zero(V);
-    auto superb = create_tensor<T>("superb", std::min(m, n));
-
-    int info = blas::gesvd('N', 'A', m, n, A.data(), lda, S.data(), U.data(), m, V.data(), n, superb.data());
-
-    if (info != 0) {
-        if (info < 0) {
-            EINSUMS_THROW_EXCEPTION(py::value_error,
-                                    "svd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info,
-                                    m, n, n, m);
-        } else {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error, "SVD could not converge!");
-        }
-    }
-
-    // Determine the rank of the nullspace matrix
-    int rank = 0;
-    for (int i = 0; i < n; i++) {
-        if (std::abs(S(i)) > 1e-12) {
-            rank++;
-        }
-    }
-
-    // println("rank {}", rank);
-
-    auto Vview          = V(Range{rank, V.dim(0)}, All);
-    auto nullspace      = RuntimeTensor<T>("Nullspace", {Vview.dim(1), Vview.dim(0)});
-    auto nullspace_view = (TensorView<T, 2>)nullspace;
-
-    if (nullspace.dim(0) == 0 || nullspace.dim(1) == 0) {
-        return nullspace;
-    }
-
-    tensor_algebra::permute<true>(T{0.0}, Indices{index::i, index::j}, &nullspace_view, T{1.0}, Indices{index::j, index::i}, Vview);
-
-    // for (size_t i = 0; i < nullspace.dim(0); i++) {
-    //     for (size_t j = 0; j < nullspace.dim(1); j++) {
-    //         if constexpr (IsComplexV<T>) {
-    //             nullspace(i, j) = std::conj(Vview(j, i));
-    //         } else {
-    //             nullspace(i, j) = Vview(j, i);
-    //         }
-    //     }
-    // }
-
-    // Normalize nullspace. LAPACK does not guarentee them to be orthonormal
-    for (int i = 0; i < nullspace_view.dim(1); i++) {
-        // Make the first non-zero element positive real.
-        T rescale{0.0};
-        for (int j = 0; j < nullspace_view.dim(0); j++) {
-            rescale = nullspace_view(j, i);
-
-            if (std::abs(rescale) > 1e-12) {
-                break;
-            }
-        }
-
-        rescale /= std::abs(rescale);
-
-        // Normalize
-        T norm{0.0};
-
-        for (int j = 0; j < nullspace_view.dim(0); j++) {
-            norm += std::norm(nullspace_view(j, i));
-        }
-
-        norm = T{1.0} / (norm * rescale);
-        linear_algebra::scale_column(i, norm, &nullspace_view);
-    }
-
-    return nullspace;
+    return RuntimeTensor<T>{std::move(einsums::linear_algebra::svd_nullspace(A))};
 }
 
 pybind11::object svd_nullspace(pybind11::buffer const &A) {
@@ -158,38 +76,11 @@ pybind11::object svd_nullspace(pybind11::buffer const &A) {
 }
 
 template <typename T>
-pybind11::tuple svd_dd_work(pybind11::buffer const &_A, linear_algebra::Vectors job) {
+pybind11::tuple svd_dd_work(pybind11::buffer const &A, linear_algebra::Vectors job) {
+    auto [U, S, Vt] = einsums::linear_algebra::detail::svd_dd(buffer_to_tensor<T>(A), static_cast<char>(job));
 
-    //    DisableOMPThreads const nothreads;
-
-    // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> A = PyTensorView<T>(_A);
-
-    size_t m = A.dim(0);
-    size_t n = A.dim(1);
-
-    // Test if it absolutely necessary to zero out these tensors first.
-    auto U = create_tensor<T>("U (stored columnwise)", m, m);
-    zero(U);
-    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
-    zero(S);
-    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
-    zero(Vt);
-
-    int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), static_cast<int>(n), S.data(),
-                           U.data(), static_cast<int>(m), Vt.data(), static_cast<int>(n));
-
-    if (info != 0) {
-        if (info < 0) {
-            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
-                                    "svd_dd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}",
-                                    -info, m, n, n, m);
-        } else {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd_dd did not converge!");
-        }
-    }
-
-    return py::make_tuple(RuntimeTensor<T>(std::move(U)), RuntimeTensor<RemoveComplexT<T>>(std::move(S)), RuntimeTensor<T>(std::move(Vt)));
+    return pybind11::make_tuple(std::move(RuntimeTensor<T>(std::move(U))), std::move(RuntimeTensor<RemoveComplexT<T>>(std::move(S))),
+                                std::move(RuntimeTensor<T>(std::move(Vt))));
 }
 
 pybind11::tuple svd_dd(pybind11::buffer const &A, linear_algebra::Vectors job) {

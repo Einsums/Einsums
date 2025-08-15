@@ -1327,6 +1327,16 @@ struct TensorImpl final {
         }
     }
 
+    constexpr TensorImpl<T> transpose_view() {
+        return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
+                             BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
+    }
+
+    constexpr TensorImpl<T> const transpose_view() const {
+        return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
+                             BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
+    }
+
     /**
      * @brief Create a row-major view.
      *
@@ -1337,8 +1347,7 @@ struct TensorImpl final {
         if (stride(0) >= stride(-1)) {
             return *this;
         } else {
-            return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
-                                 BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
+            return transpose_view();
         }
     }
 
@@ -1352,8 +1361,7 @@ struct TensorImpl final {
         if (stride(0) <= stride(-1)) {
             return *this;
         } else {
-            return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
-                                 BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
+            return transpose_view();
         }
     }
 
@@ -1367,8 +1375,7 @@ struct TensorImpl final {
         if (stride(0) >= stride(-1)) {
             return *this;
         } else {
-            return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
-                                 BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
+            return transpose_view();
         }
     }
 
@@ -1382,8 +1389,7 @@ struct TensorImpl final {
         if (stride(0) <= stride(-1)) {
             return *this;
         } else {
-            return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
-                                 BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
+            return transpose_view();
         }
     }
 
@@ -1599,7 +1605,7 @@ struct TensorImpl final {
                 index[1] += _dims[I];
             }
 
-            if (index[0] < 0 || index[0] >= _dims[I]) {
+            if (index[0] < 0 || index[0] > _dims[I]) {
                 EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                         "Lower bound of range passed to view creation is out of range! Got {}, expected between {} and {}.",
                                         temp[0], -static_cast<ptrdiff_t>(_dims[I]), _dims[I] - 1);
@@ -1663,7 +1669,7 @@ struct TensorImpl final {
                 item[1] += dim;
             }
 
-            if (item[0] < 0 || item[0] >= dim) {
+            if (item[0] < 0 || item[0] > dim) {
                 EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                         "Lower bound of range passed to view creation is out of range! Got {}, expected between {} and {}.",
                                         temp[0], -static_cast<ptrdiff_t>(dim), dim - 1);

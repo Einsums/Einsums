@@ -435,7 +435,6 @@ void export_tensor(pybind11::module &mod) {
                 detail::rdiv(out, other);
                 return out;
             }, pybind11 ::is_operator())
-        
         .def("assign", [](PyTensor<T> &self, pybind11::buffer &buffer) { return self = buffer; })
         .def("dim", &RuntimeTensor<T>::dim)
         .def("dims", &RuntimeTensor<T>::dims)

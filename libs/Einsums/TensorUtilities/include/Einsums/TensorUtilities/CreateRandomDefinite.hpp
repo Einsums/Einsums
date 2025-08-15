@@ -54,7 +54,7 @@ auto create_random_definite(std::string const &name, int rows, int cols, RemoveC
     // QR decompose Evecs to get a random matrix of orthonormal eigenvectors.
     auto pair = linear_algebra::qr(Evecs);
 
-    Evecs = linear_algebra::q(std::get<0>(pair), std::get<1>(pair));
+    Evecs = std::get<0>(pair);
 
     std::default_random_engine engine;
 

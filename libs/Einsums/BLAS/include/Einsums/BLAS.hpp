@@ -1172,4 +1172,32 @@ inline double sum1(int_t n, std::complex<double> const *x, int_t incx) {
     return detail::dzsum1(n, x, incx);
 }
 
+namespace detail {
+void clacgv(int_t n, std::complex<float> *x, int_t incx);
+void zlacgv(int_t n, std::complex<double> *x, int_t incx);
+} // namespace detail
+
+template <typename T>
+void lacgv(int_t n, T *x, int_t incx);
+
+template <>
+inline void lacgv<float>(int_t n, float *x, int_t incx) {
+    // Conjugating real values does nothing.
+}
+
+template <>
+inline void lacgv<double>(int_t n, double *x, int_t incx) {
+    // Conjugating real values does nothing.
+}
+
+template <>
+inline void lacgv<std::complex<float>>(int_t n, std::complex<float> *x, int_t incx) {
+    detail::clacgv(n, x, incx);
+}
+
+template <>
+inline void lacgv<std::complex<double>>(int_t n, std::complex<double> *x, int_t incx) {
+    detail::zlacgv(n, x, incx);
+}
+
 } // namespace einsums::blas

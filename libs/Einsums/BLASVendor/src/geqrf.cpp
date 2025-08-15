@@ -32,12 +32,6 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(int_t *, int_t *, std::complex<double> *, 
         int_t lwork{-1};                                                                                                                   \
         Type  work_query;                                                                                                                  \
                                                                                                                                            \
-        /* Check leading dimensions */                                                                                                     \
-        if (lda < n) {                                                                                                                     \
-            EINSUMS_LOG_WARN("geqrf warning: lda < n, lda = {}, n = {}", lda, n);                                                          \
-            return -4;                                                                                                                     \
-        }                                                                                                                                  \
-                                                                                                                                           \
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##geqrf, UC##GEQRF)(&m, &n, a, &lda, tau, &work_query, &lwork, &info);                                                 \
                                                                                                                                            \
@@ -61,12 +55,6 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(int_t *, int_t *, std::complex<double> *, 
         int_t info{0};                                                                                                                     \
         int_t lwork{-1};                                                                                                                   \
         Type  work_query;                                                                                                                  \
-                                                                                                                                           \
-        /* Check leading dimensions */                                                                                                     \
-        if (lda < n) {                                                                                                                     \
-            EINSUMS_LOG_WARN("geqrf warning: lda < n, lda = {}, n = {}", lda, n);                                                          \
-            return -4;                                                                                                                     \
-        }                                                                                                                                  \
                                                                                                                                            \
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##geqrf, UC##GEQRF)(&m, &n, a, &lda, tau, &work_query, &lwork, &info);                                                 \
