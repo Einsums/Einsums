@@ -151,12 +151,22 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * @brief Default move constructor.
      */
-    Tensor(Tensor &&) = default;
+    Tensor(Tensor &&other) noexcept
+        : _name{std::move(other._name)}, _data{std::move(other._data)}, _dim_array{std::move(other._dim_array)},
+          _stride_array{std::move(other._stride_array)}, _impl{std::move(other._impl)} {}
 
     /**
      * @brief Default move assignment.
      */
-    Tensor &operator=(Tensor &&other) = default;
+    Tensor &operator=(Tensor &&other) noexcept {
+        _name         = std::move(other._name);
+        _data         = std::move(other._data);
+        _dim_array    = std::move(other._dim_array);
+        _stride_array = std::move(other._stride_array);
+        _impl         = std::move(other._impl);
+
+        return *this;
+    }
 
     /**
      * @brief Construct a new Tensor object with the given name and dimensions.
@@ -346,6 +356,21 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         _impl.set_data(_data.data());
 
         detail::copy_to(other.impl(), _impl);
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+    }
+
+    /**
+     * @brief Construct a new Tensor from the implementation of another.
+     */
+    Tensor(detail::TensorImpl<T> const &other) : _impl(nullptr, other.dims()) {
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+        detail::copy_to(other, _impl);
 
         for (int i = 0; i < Rank; i++) {
             _dim_array[i]    = _impl.dim(i);

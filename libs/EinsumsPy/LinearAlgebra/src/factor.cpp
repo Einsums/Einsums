@@ -37,9 +37,10 @@ std::vector<blas::int_t> getrf(pybind11::buffer &A) {
 
     int result = 0;
 
-    EINSUMS_PY_LINALG_CALL(
-        (A_info.format == py::format_descriptor<Float>::format()),
-        (result = blas::getrf(A_info.shape[0], A_info.shape[1], (Float *)A_info.ptr, A_info.strides[0] / A_info.itemsize, pivot.data())))
+    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), [&]() {
+        auto A_tens = buffer_to_tensor<Float>(A);
+        result      = einsums::linear_algebra::detail::getrf(&A_tens, &pivot);
+    }())
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only decompose matrices of real or complex floating point values!");
     }
@@ -143,8 +144,10 @@ void getri(pybind11::buffer &A, std::vector<blas::int_t> &pivot) {
 
     int result = 0;
 
-    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()),
-                           (result = blas::getri(A_info.shape[0], (Float *)A_info.ptr, A_info.strides[0] / A_info.itemsize, pivot.data())))
+    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), [&]() {
+        auto A_tens = buffer_to_tensor<Float>(A);
+        result      = einsums::linear_algebra::detail::getri(&A_tens, pivot);
+    }())
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only decompose matrices of real or complex floating point values!");
     }

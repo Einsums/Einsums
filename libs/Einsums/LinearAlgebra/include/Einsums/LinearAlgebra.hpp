@@ -646,44 +646,11 @@ auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::ValueType> {
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto svd(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
+auto svd(AType const &A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
                                         Tensor<typename AType::ValueType, 2>> {
-    using T = typename AType::ValueType;
     LabeledSection0();
 
-    // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> A = _A;
-
-    size_t m   = A.dim(0);
-    size_t n   = A.dim(1);
-    size_t lda = A.impl().get_lda();
-
-    // Test if it is absolutely necessary to zero out these tensors first.
-    auto U = create_tensor<T>("U (stored columnwise)", m, m);
-    U.zero();
-    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
-    S.zero();
-    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
-    Vt.zero();
-    auto superb = create_tensor<T>("superb", std::min(m, n));
-    superb.zero();
-
-    //    int info{0};
-    int info =
-        blas::gesvd('A', 'A', m, n, A.data(), lda, S.data(), U.data(), U.impl().get_lda(), Vt.data(), Vt.impl().get_lda(), superb.data());
-
-    if (info != 0) {
-        if (info < 0) {
-            EINSUMS_THROW_EXCEPTION(
-                std::invalid_argument,
-                "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #6 (lda) = {}, #8 (m) = {}", -info, m, n,
-                lda, U.impl().get_lda(), Vt.impl().get_lda());
-        } else {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
-        }
-    }
-
-    return std::make_tuple(U, S, Vt);
+    return detail::svd(A.impl());
 }
 
 template <MatrixConcept AType>
