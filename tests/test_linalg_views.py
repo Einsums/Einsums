@@ -26,11 +26,11 @@ def test_sumsq(length, dtype, array):
     scale = 0
     sumsq = 0
 
-    sumsq, scale = ein.core.sum_square(lst_view)
+    sumsq = ein.core.sum_square(lst_view)
 
     check = sum(abs(x) ** 2 for x in lst_view)
 
-    assert check == pytest.approx(scale**2 * sumsq)
+    assert check == pytest.approx(sumsq)
 
 
 @pytest.mark.parametrize(
@@ -118,16 +118,7 @@ def test_syev(width, dtype, array):
     eiglist = sorted(eiglist, key=lambda x: x[0])
 
     expected_vals = [val[0] for val in eiglist]
-    expected_vecs = np.array([val[1] for val in eiglist], dtype=dtype)
-
-    # Go through each vector, divide by the first element, then renormalize.
-    for i in range(width):
-        div = A[i, 0]
-        for j in range(width):
-            A[i, j] /= div
-        norm = np.linalg.norm(list(A[i, :width]))
-        for j in range(width):
-            A[i, j] /= norm
+    expected_vecs = np.array([val[1] for val in eiglist], dtype=dtype).T
 
     # The algorithm is very unstable for 32-bit floats.
     if dtype == np.float32 or dtype == np.complex64:
@@ -143,10 +134,9 @@ def test_syev(width, dtype, array):
         for exp, res in zip(expected_vals, got_vals):
             assert exp == pytest.approx(res)
         for i in range(width):
+            scale = expected_vecs[0, i] / A[0, i]
             for j in range(width):
-                assert (expected_vecs[i, j] == pytest.approx(A[i, j])) or (
-                    expected_vecs[i, j] == pytest.approx(-A[i, j])
-                )
+                assert expected_vecs[j, i] == pytest.approx(A[j, i] * scale)
 
     # for i in range(width) :
     #     for j in range(width) :
@@ -175,31 +165,40 @@ def test_geev(width, dtype, array):
 
     expected_vals, expected_vecs = np.linalg.eig(A_copy)
 
-    # eiglist = [
-    #     (expected_vals[i], expected_vecs[:, i]) for i in range(len(expected_vals))
-    # ]
-
-    # eiglist = sorted(eiglist, key=lambda x: x[0])
-
-    # expected_vals = [val[0] for val in eiglist]
-    # expected_vecs = np.array([val[1] for val in eiglist], dtype=dtype)
-
-    # Go through each vector, divide by the first element, then renormalize.
     for i in range(width):
-        # div = A_vecs[i, 0]
-        # div_ind = 0
-        # while div == pytest.approx(0.0) and div_ind < width:
-        #     div = A_vecs[i, div_ind]
-        #     div_ind += 1
+        min_pos = i
+        for j in range(i, width):
+            if got_vals[j].real < got_vals[min_pos].real:
+                min_pos = j
+            elif (
+                got_vals[j].real == got_vals[min_pos].real
+                and got_vals[j].imag < got_vals[min_pos].imag
+            ):
+                min_pos = j
+        if min_pos != i:
+            got_vals[i], got_vals[min_pos] = got_vals[min_pos], got_vals[i]
+            for j in range(width):
+                temp = A_vecs[j, i]
+                A_vecs[j, i] = A_vecs[j, min_pos]
+                A_vecs[j, min_pos] = temp
 
-        # for j in range(width):
-        #     A_vecs[i, j] /= div
-        norm = np.linalg.norm(A_vecs[:width, i])
-        for j in range(width):
-            A_vecs[j, i] /= norm
+    for i in range(width):
+        min_pos = i
+        for j in range(i, width):
+            if expected_vals[j].real < expected_vals[min_pos].real:
+                min_pos = j
+            elif (
+                expected_vals[j].real == expected_vals[min_pos].real
+                and expected_vals[j].imag < expected_vals[min_pos].imag
+            ):
+                min_pos = j
+        if min_pos != i:
+            expected_vals[i], expected_vals[min_pos] = expected_vals[min_pos], expected_vals[i]
+            for j in range(width):
+                temp = expected_vecs[j, i]
+                expected_vecs[j, i] = expected_vecs[j, min_pos]
+                expected_vecs[j, min_pos] = temp
 
-    print(got_vals)
-    print(expected_vals)
 
     # The algorithm is very unstable for 32-bit floats.
     if dtype == np.float32 or dtype == np.complex64:
@@ -214,13 +213,10 @@ def test_geev(width, dtype, array):
     else:
         for exp, res in zip(expected_vals, got_vals):
             assert exp == pytest.approx(res)
-        # In my experience, the eigenvectors become very unstable above 30x30.
-        if width < 30:
-            for i in range(width):
-                for j in range(width):
-                    assert (expected_vecs[i, j] == pytest.approx(A_vecs[i, j])) or (
-                        expected_vecs[i, j] == pytest.approx(-A_vecs[i, j])
-                    )
+        for i in range(width):
+            scale = expected_vecs[0, i] / A_vecs[0, i]
+            for j in range(width):
+                assert expected_vecs[j, i] == pytest.approx(A_vecs[j, i] * scale)
 
     # for i in range(width) :
     #     for j in range(width) :
@@ -406,10 +402,10 @@ def test_norm(a, b, dtype, array):
     assert ein.core.norm(ein.core.FROBENIUS, A_view) == pytest.approx(
         np.linalg.norm(A_view, "fro")
     )
-    assert ein.core.norm(ein.core.INFINITY, A_view) == pytest.approx(
+    assert ein.core.norm(ein.core.ONE, A_view) == pytest.approx(
         np.linalg.norm(A_view, 1)
     )
-    assert ein.core.norm(ein.core.ONE, A_view) == pytest.approx(
+    assert ein.core.norm(ein.core.INFINITY, A_view) == pytest.approx(
         np.linalg.norm(A_view, np.inf)
     )
 
@@ -530,20 +526,11 @@ def test_nullspace(a, b, dtype, array):
 
     Null_expected = sp.linalg.null_space(A_copy, lapack_driver="gesvd")
 
-    for i in range(Null_expected.shape[1]):
-        scale = 0
-        for j in range(b):
-            scale = Null_expected[j, i]
-            if abs(scale) > 1e-12:
-                break
-        Null_expected[:, i] /= scale
-        norm = np.linalg.norm(Null_expected[:, i])
-        Null_expected[:, i] /= norm
-
     assert Null.shape[1] == Null_expected.shape[1]
 
-    for i in range(b):
-        for j in range(Null_expected.shape[1]):
+    for j in range(Null_expected.shape[1]):
+        scale = Null_expected[0, j] / Null[0, j]
+        for i in range(b):
             assert Null[i, j] == pytest.approx(Null_expected[i, j])
 
 
@@ -579,10 +566,7 @@ def test_qr(a, b, dtype, array):
 
     A_copy = np.array(A.copy(), dtype=dtype)
 
-    QR, tau = ein.core.qr(A)
-
-    Q = ein.core.q(QR, tau)
-    R = ein.core.r(QR, tau)
+    Q, R = ein.core.qr(A)
 
     Q_expected, R_expected = np.linalg.qr(A_copy)
 

@@ -165,8 +165,6 @@ def test_set(tensor_type):
         for j in range(3):
             assert A[i, j] == 3 * i + j
 
-    print(B[0, 0:2])
-
     B[0, 0:2] = np.array([1.0, 2.0])
 
     B_expected = [1, 2, 3, 3, 3, 3, 3, 3, 3]
@@ -313,7 +311,7 @@ def test_ops(dtype, etype):
         A_res /= E
 
         for x, y, z, w, u, v in zip(A_res, A, B, C, D_test.flat, E_test.flat):
-            assert x == pytest.approx(y / 2 /  z / w / u / v, rel=rel)
+            assert x == pytest.approx(y / 2 / z / w / u / v, rel=rel)
 
     with pytest.raises(ValueError):
         A_res /= F

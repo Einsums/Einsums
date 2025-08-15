@@ -477,6 +477,12 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
     } else {
         auto info = blas::geev(jobvr, jobvl, A->dim(0), A_data, lda, W_data, rvec_data, ldvr, lvec_data, ldvl);
 
+        if(!IsComplexV<T>) {
+            for(size_t i = 0; i < A->dim(0); i++) {
+                W_data[i] = std::conj(W_data[i]);
+            }
+        }
+
         if (info < 0) {
             EINSUMS_THROW_EXCEPTION(
                 std::invalid_argument,
@@ -489,7 +495,7 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
         if (do_jobvl) {
             if (!lvecs->is_column_major() && lvec_data == lvecs->data()) {
                 for (int i = 0; i < lvecs->dim(0); i++) {
-                    for (int j = i + 1; j < lvecs->dim(1); j++) {
+                    for (int j = i; j < lvecs->dim(1); j++) {
                         if constexpr (!IsComplexV<T>) {
                             std::swap(lvecs->subscript_no_check(i, j), lvecs->subscript_no_check(j, i));
                         } else {
@@ -512,6 +518,18 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
                     }
                 }
             } else if (lvec_data != lvecs->data()) {
+                if constexpr (IsComplexV<T>) {
+                    einsums::detail::impl_conj(lvecs_temp.impl());
+                } else {
+                    for (int i = 0; i < lvecs->dim(0); i++) {
+                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
+                            for (int j = 0; j < lvecs->dim(1); j++) {
+                                lvecs_temp(j, i + 1) = -lvecs_temp(j, i + 1);
+                            }
+                            i++;
+                        }
+                    }
+                }
                 einsums::detail::copy_to(lvecs_temp.impl(), *lvecs);
             }
         }
@@ -519,7 +537,7 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
         if (do_jobvr) {
             if (!rvecs->is_column_major() && rvec_data == rvecs->data()) {
                 for (int i = 0; i < rvecs->dim(0); i++) {
-                    for (int j = i + 1; j < rvecs->dim(1); j++) {
+                    for (int j = i; j < rvecs->dim(1); j++) {
                         if constexpr (!IsComplexV<T>) {
                             std::swap(rvecs->subscript_no_check(i, j), rvecs->subscript_no_check(j, i));
                         } else {
@@ -542,6 +560,18 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
                     }
                 }
             } else if (rvec_data != rvecs->data()) {
+                if constexpr (IsComplexV<T>) {
+                    einsums::detail::impl_conj(rvecs_temp.impl());
+                } else {
+                    for (int i = 0; i < rvecs->dim(0); i++) {
+                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
+                            for (int j = 0; j < rvecs->dim(1); j++) {
+                                rvecs_temp(j, i + 1) = -rvecs_temp(j, i + 1);
+                            }
+                            i++;
+                        }
+                    }
+                }
                 einsums::detail::copy_to(rvecs_temp.impl(), *rvecs);
             }
         }
@@ -818,7 +848,7 @@ void scale_column(ptrdiff_t col, T scale, einsums::detail::TensorImpl<T> *A) {
     if (A->rank() != 2) {
         EINSUMS_THROW_EXCEPTION(rank_error, "The input to scale_column needs to be a rank-2 tensor!");
     }
-    blas::scal(A->dim(1), scale, A->data(0, col), A->stride(1));
+    blas::scal(A->dim(0), scale, A->data(0, col), A->stride(0));
 }
 
 template <CoreBasicTensorConcept AType>
@@ -1418,8 +1448,6 @@ auto qr(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, Te
     Tensor<T, 1> tau("tau", std::min(m, n));
     // Compute QR factorization of Y
     blas::int_t info = blas::geqrf(m, n, A.data(), A.impl().get_lda(), tau.data());
-
-    println(A);
 
     if (info != 0) {
         EINSUMS_THROW_EXCEPTION(std::invalid_argument, "{} parameter to geqrf has an illegal value. #1: (m) {}, #2: (n) {}, #4: (lda) {}.",

@@ -30,22 +30,6 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
     auto lcletter##gesdd(char jobz, int_t m, int_t n, Type *a, int_t lda, Type *s, Type *u, int_t ldu, Type *vt, int_t ldvt) -> int_t {    \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
-        int_t ncols_u = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m < n)) ? m : (lsame(jobz, 's') ? std::min(m, n) : 1);                   \
-                                                                                                                                           \
-        /* Check leading dimensions(s) */                                                                                                  \
-        if (lda < n) {                                                                                                                     \
-            EINSUMS_LOG_WARN("gesdd warning: lda < n, lda = {}, n = {}", lda, n);                                                          \
-            return -5;                                                                                                                     \
-        }                                                                                                                                  \
-        if (ldu < ncols_u) {                                                                                                               \
-            EINSUMS_LOG_WARN("gesdd warning: ldu < ncols_u, ldu = {}, ncols_u = {}", ldu, ncols_u);                                        \
-            return -8;                                                                                                                     \
-        }                                                                                                                                  \
-        if (ldvt < n) {                                                                                                                    \
-            EINSUMS_LOG_WARN("gesdd warning: ldvt < n, ldvt = {}, n = {}", ldvt, n);                                                       \
-            return -10;                                                                                                                    \
-        }                                                                                                                                  \
-                                                                                                                                           \
         /* Query optimal working array(s) */                                                                                               \
         int_t info{0};                                                                                                                     \
         int_t lwork{-1};                                                                                                                   \
@@ -63,7 +47,11 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
         /* Call lapack routine */                                                                                                          \
         FC_GLOBAL(lcletter##gesdd, UCLETTER##GESDD)                                                                                        \
         (&jobz, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work.data(), &lwork, iwork.data(), &info);                                         \
-        if (info != 0) {                                                                                                                   \
+        if (info < 0) {                                                                                                                    \
+            EINSUMS_LOG_WARN("The {} parameter to gesdd was invalid! 1: (jobz) {}, 2: (m) {}, 3: (n) {}, 5: (lda) {}, 8: (ldu) {}, 10: "   \
+                             "(ldvt) {}, 12: (lwork) {}.",                                                                                 \
+                             print::ordinal(-info), jobz, m, n, lda, ldu, ldvt, lwork);                                                    \
+        } else {                                                                                                                           \
             EINSUMS_LOG_WARN("gesdd lapack routine failed. info {}", info);                                                                \
             return info;                                                                                                                   \
         }                                                                                                                                  \
@@ -76,8 +64,6 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
                    std::complex<Type> *vt, int_t ldvt) -> int_t {                                                                          \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
-        int_t ncols_u = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m < n)) ? m : (lsame(jobz, 's') ? std::min(m, n) : 1);                   \
-                                                                                                                                           \
         int_t                            info{0};                                                                                          \
         int_t                            lwork{-1};                                                                                        \
         size_t                           lrwork;                                                                                           \
@@ -85,20 +71,6 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
         BufferVector<Type>               rwork;                                                                                            \
         BufferVector<std::complex<Type>> work;                                                                                             \
         BufferVector<int_t>              iwork;                                                                                            \
-                                                                                                                                           \
-        /* Check leading dimensions(s) */                                                                                                  \
-        if (lda < n) {                                                                                                                     \
-            EINSUMS_LOG_WARN("gesdd warning: lda < n, lda = {}, n = {}", lda, n);                                                          \
-            return -5;                                                                                                                     \
-        }                                                                                                                                  \
-        if (ldu < ncols_u) {                                                                                                               \
-            EINSUMS_LOG_WARN("gesdd warning: ldu < ncols_u, ldu = {}, ncols_u = {}", ldu, ncols_u);                                        \
-            return -8;                                                                                                                     \
-        }                                                                                                                                  \
-        if (ldvt < n) {                                                                                                                    \
-            EINSUMS_LOG_WARN("gesdd warning: ldvt < n, ldvt = {}, n = {}", ldvt, n);                                                       \
-            return -10;                                                                                                                    \
-        }                                                                                                                                  \
                                                                                                                                            \
         if (lsame(jobz, 'n')) {                                                                                                            \
             lrwork = std::max(int_t{1}, 7 * std::min(m, n));                                                                               \
@@ -120,7 +92,11 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
         /* Call lapack routine */                                                                                                          \
         FC_GLOBAL(lc##gesdd, UC##GESDD)                                                                                                    \
         (&jobz, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work.data(), &lwork, rwork.data(), iwork.data(), &info);                           \
-        if (info != 0) {                                                                                                                   \
+        if (info < 0) {                                                                                                                    \
+            EINSUMS_LOG_WARN("The {} parameter to gesdd was invalid! 1: (jobz) {}, 2: (m) {}, 3: (n) {}, 5: (lda) {}, 8: (ldu) {}, 10: "   \
+                             "(ldvt) {}, 12: (lwork) {}.",                                                                                 \
+                             print::ordinal(-info), jobz, m, n, lda, ldu, ldvt, lwork);                                                    \
+        } else {                                                                                                                           \
             EINSUMS_LOG_WARN("gesdd lapack routine failed. info {}", info);                                                                \
             return info;                                                                                                                   \
         }                                                                                                                                  \

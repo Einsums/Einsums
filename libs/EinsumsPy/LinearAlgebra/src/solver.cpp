@@ -189,7 +189,7 @@ py::object solve_continuous_lyapunov(pybind11::buffer const &A, pybind11::buffer
 
     if (A_info.shape[0] != A_info.shape[1] || A_info.shape[0] != Q_info.shape[0] || A_info.shape[0] != Q_info.shape[1]) {
         EINSUMS_THROW_EXCEPTION(dimension_error,
-                                "The arguments to solve_continuous_lyapunove need to be square matrices and have the same size!");
+                                "The arguments to solve_continuous_lyapunov need to be square matrices and have the same size!");
     }
 
     if (A_info.format != Q_info.format) {

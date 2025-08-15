@@ -151,8 +151,6 @@ void geev_setup(py::buffer &A, py::buffer &W, pybind11::buffer *Vl_or_none, pybi
     }
 
     geev_work<T>(A_tens, W_tens, Vl_ptr, Vr_ptr);
-
-    println(Vr_tens);
 }
 
 void geev(py::buffer &A, py::buffer &W, std::variant<pybind11::buffer, pybind11::none> &Vl_or_none,

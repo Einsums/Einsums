@@ -44,8 +44,7 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .export_values();
 
     mod.def("sum_square", &sum_square,
-            "Calculate the sum of the squares of the elements of a vector. The result will be scale**2 * sum_sq. sum_sq is the first "
-            "return value, scale is the second.")
+            "Calculate the sum of the squares of the elements of a vector.")
         .def("gemm", &gemm,
              "Matrix multiplication. The first two arguments indicate whether to transpose the input matrices. The third is a scale factor "
              "for the input matrices. The next two arguments are the matrices to multiply. The fifth argument is a scale factor for the "

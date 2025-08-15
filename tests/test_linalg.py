@@ -22,14 +22,11 @@ def set_big_memory():
 def test_sumsq(length, dtype, array):
     lst = ein.utils.random_tensor_factory("vector", [length], dtype, array)
 
-    scale = 0
-    sumsq = 0
-
-    sumsq, scale = ein.core.sum_square(lst)
+    sumsq = ein.core.sum_square(lst)
 
     check = sum(abs(x) ** 2 for x in lst)
 
-    assert check == pytest.approx(scale**2 * sumsq)
+    assert check == pytest.approx(sumsq)
 
 
 @pytest.mark.parametrize(
@@ -81,66 +78,44 @@ def test_mat_vec_prod(set_big_memory, a, b, dtype, array):
 @pytest.mark.parametrize(["width"], [(10,), (100,)])
 def test_syev(width, dtype, array):
     A = ein.utils.random_tensor_factory("Test tensor", [width, width], dtype, array)
+    W = ein.utils.tensor_factory("Eigenvalues", [width], dtype = ein.utils.remove_complex(dtype))
 
-    # Make A symmetric/hermitian.
-    for i in range(width):
-        A[i, i] = A[i, i].real
-        for j in range(i + 1, width):
-            A[i, j] = A[j, i].conjugate()
-
-    A_copy = np.array(A.copy(), dtype=dtype)
-
-    got_vals = ein.utils.tensor_factory(
-        "Eigenvalues", [width], ein.utils.remove_complex(dtype), array
-    )
-
-    ein.core.syev("V", A, got_vals)
-
-    expected_vals, expected_vecs = np.linalg.eigh(A_copy)
-
-    eiglist = [
-        (expected_vals[i], expected_vecs[:, i]) for i in range(len(expected_vals))
-    ]
-
-    eiglist = sorted(eiglist, key=lambda x: x[0])
-
-    expected_vals = [val[0] for val in eiglist]
-    expected_vecs = np.array([val[1] for val in eiglist], dtype=dtype)
-
-    # Go through each vector, divide by the first element, then renormalize.
-    for i in range(width):
-        div = A[i, 0]
-        for j in range(width):
-            A[i, j] /= div
-        norm = np.linalg.norm(list(A[i, :]))
-        for j in range(width):
-            A[i, j] /= norm
-
-    # The algorithm is very unstable for 32-bit floats.
-    if dtype == np.float32 or dtype == np.complex64:
-        for exp, res in zip(expected_vals, got_vals):
-            assert exp == pytest.approx(res, 1e-3)
-        # Don't even check the eigenvectors. They are really bad!
-        # for i in range(width):
-        #     for j in range(width):
-        #         assert (expected_vecs[i, j] == pytest.approx(A[i, j], rel=1e-2)) or (
-        #             expected_vecs[i, j] == pytest.approx(-A[i, j], rel=1e-2)
-        #        )
-    else:
-        for exp, res in zip(expected_vals, got_vals):
-            assert exp == pytest.approx(res)
-        for i in range(width):
-            for j in range(width):
-                assert (expected_vecs[i, j] == pytest.approx(A[i, j])) or (
-                    expected_vecs[i, j] == pytest.approx(-A[i, j])
-                )
-
-    # for i in range(width) :
-    #     for j in range(width) :
-    #         assert(A[i, j] == pytest.approx(expected_vecs[i, j]))
+    if ein.utils.is_complex(dtype) :
+        for i in range(width) :
+            A[i, i] = A[i, i].real
+            for j in range(i) :
+                A[i, j] = A[j, i].conjugate()
+    else :
+        for i in range(width) :
+            for j in range(i) :
+                A[i, j] = A[j, i]
 
 
-@pytest.mark.parametrize(["width"], [(3,), (50,)])
+    A_copy = np.array(A)
+
+    ein.core.syev('V', A, W)
+
+    evals, evecs = np.linalg.eigh(A_copy)
+
+    pair = [(evals[i], evecs[:, i]) for i in range(width)]
+
+    pair = sorted(pair, key = lambda x : x[0])
+
+    evals, evecs = [p[0] for p in pair], np.array([p[1] for p in pair]).T
+
+    for i in range(width) :
+        assert W[i] == pytest.approx(evals[i])
+
+    for i in range(width) :
+        scale = evecs[0, i] / A[0, i]
+        for j in range(width) :
+            assert A[j, i] * scale == pytest.approx(evecs[j, i])
+
+
+
+
+
+@pytest.mark.parametrize(["width"], [(10,), (50,)])
 def test_geev(width, dtype, array):
     A = ein.utils.random_tensor_factory("A", [width, width], dtype=dtype, method=array)
     A_copy = A.copy()
@@ -155,15 +130,8 @@ def test_geev(width, dtype, array):
         method=array,
     )
 
-    print(A)
-
     evals, evecs = np.linalg.eig(A_copy)
     ein.core.geev(A, got_evals, None, got_evecs)
-
-    print(evals)
-    print(got_evals)
-    print(evecs)
-    print(got_evecs)
 
     for i in range(width):
         min_pos = i
@@ -220,9 +188,6 @@ def test_gesv(a, b, dtype, array):
 
     expected_B = np.linalg.solve(A_copy, B_copy)
 
-    print(B)
-    print(expected_B)
-
     for i in range(a):
         for j in range(b):
             assert B[i, j] == pytest.approx(expected_B[i, j])
@@ -235,7 +200,6 @@ def test_scale(a, b, c, dtype, array):
     A_copy = A.copy()
 
     scale_factor = ein.utils.random.random()
-    print(scale_factor)
 
     ein.core.scale(scale_factor, A)
 
@@ -432,9 +396,6 @@ def test_nullspace(a, b, dtype, array):
 
     Null = ein.core.svd_nullspace(A)
 
-    print(Null)
-    print(Null.shape)
-
     for i in range(Null.shape[1]):
         assert ein.core.vec_norm(Null[:, i]) == pytest.approx(1.0)
 
@@ -485,9 +446,6 @@ def test_qr(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
     Q, R = ein.core.qr(A)
-
-    print(Q)
-    print(R)
 
     A_test = ein.utils.tensor_factory("A test", [a, b], dtype, array)
 
