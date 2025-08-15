@@ -367,8 +367,8 @@ def test_norm(a, b, dtype, array):
     assert ein.core.norm(ein.core.FROBENIUS, A) == pytest.approx(
         np.linalg.norm(A, "fro")
     )
-    assert ein.core.norm(ein.core.INFINITY, A) == pytest.approx(np.linalg.norm(A, 1))
-    assert ein.core.norm(ein.core.ONE, A) == pytest.approx(np.linalg.norm(A, np.inf))
+    assert ein.core.norm(ein.core.ONE, A) == pytest.approx(np.linalg.norm(A, 1))
+    assert ein.core.norm(ein.core.INFINITY, A) == pytest.approx(np.linalg.norm(A, np.inf))
 
 
 @pytest.mark.parametrize("a", [10, 100])

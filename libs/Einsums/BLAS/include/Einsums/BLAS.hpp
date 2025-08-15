@@ -743,10 +743,14 @@ inline auto lange<std::complex<double>>(char norm_type, int_t m, int_t n, std::c
 }
 
 namespace detail {
-void EINSUMS_EXPORT slassq(int_t n, float const *x, int_t incx, float *scale, float *sumsq);
-void EINSUMS_EXPORT dlassq(int_t n, double const *x, int_t incx, double *scale, double *sumsq);
-void EINSUMS_EXPORT classq(int_t n, std::complex<float> const *x, int_t incx, float *scale, float *sumsq);
-void EINSUMS_EXPORT zlassq(int_t n, std::complex<double> const *x, int_t incx, double *scale, double *sumsq);
+void EINSUMS_EXPORT   slassq(int_t n, float const *x, int_t incx, float *scale, float *sumsq);
+void EINSUMS_EXPORT   dlassq(int_t n, double const *x, int_t incx, double *scale, double *sumsq);
+void EINSUMS_EXPORT   classq(int_t n, std::complex<float> const *x, int_t incx, float *scale, float *sumsq);
+void EINSUMS_EXPORT   zlassq(int_t n, std::complex<double> const *x, int_t incx, double *scale, double *sumsq);
+float EINSUMS_EXPORT  snrm2(int_t n, float const *x, int_t incx);
+double EINSUMS_EXPORT dnrm2(int_t n, double const *x, int_t incx);
+float EINSUMS_EXPORT  scnrm2(int_t n, std::complex<float> const *x, int_t incx);
+double EINSUMS_EXPORT dznrm2(int_t n, std::complex<double> const *x, int_t incx);
 } // namespace detail
 
 template <typename T>
@@ -770,6 +774,29 @@ inline void lassq<std::complex<float>>(int_t n, std::complex<float> const *x, in
 template <>
 inline void lassq<std::complex<double>>(int_t n, std::complex<double> const *x, int_t incx, double *scale, double *sumsq) {
     detail::zlassq(n, x, incx, scale, sumsq);
+}
+
+template <typename T>
+RemoveComplexT<T> nrm2(int_t n, T const *x, int_t incx);
+
+template <>
+inline float nrm2<float>(int_t n, float const *x, int_t incx) {
+    return detail::snrm2(n, x, incx);
+}
+
+template <>
+inline double nrm2<double>(int_t n, double const *x, int_t incx) {
+    return detail::dnrm2(n, x, incx);
+}
+
+template <>
+inline float nrm2<std::complex<float>>(int_t n, std::complex<float> const *x, int_t incx) {
+    return detail::scnrm2(n, x, incx);
+}
+
+template <>
+inline double nrm2<std::complex<double>>(int_t n, std::complex<double> const *x, int_t incx) {
+    return detail::dznrm2(n, x, incx);
 }
 
 /*!
@@ -1088,6 +1115,61 @@ template <>
 inline void dirprod<std::complex<double>>(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx,
                                           std::complex<double> const *y, int_t incy, std::complex<double> *z, int_t incz) {
     detail::zdirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+
+namespace detail {
+float  sasum(int_t n, float const *x, int_t incx);
+double dasum(int_t n, double const *x, int_t incx);
+float  scasum(int_t n, std::complex<float> const *x, int_t incx);
+double dzasum(int_t n, std::complex<double> const *x, int_t incx);
+float  scsum1(int_t n, std::complex<float> const *x, int_t incx);
+double dzsum1(int_t n, std::complex<double> const *x, int_t incx);
+} // namespace detail
+
+template <typename T>
+RemoveComplexT<T> asum(int_t n, T const *x, int_t incx);
+
+template <>
+inline float asum(int_t n, float const *x, int_t incx) {
+    return detail::sasum(n, x, incx);
+}
+
+template <>
+inline double asum(int_t n, double const *x, int_t incx) {
+    return detail::dasum(n, x, incx);
+}
+
+template <>
+inline float asum(int_t n, std::complex<float> const *x, int_t incx) {
+    return detail::scasum(n, x, incx);
+}
+
+template <>
+inline double asum(int_t n, std::complex<double> const *x, int_t incx) {
+    return detail::dzasum(n, x, incx);
+}
+
+template <typename T>
+RemoveComplexT<T> sum1(int_t n, T const *x, int_t incx);
+
+template <>
+inline float sum1(int_t n, float const *x, int_t incx) {
+    return detail::sasum(n, x, incx);
+}
+
+template <>
+inline double sum1(int_t n, double const *x, int_t incx) {
+    return detail::dasum(n, x, incx);
+}
+
+template <>
+inline float sum1(int_t n, std::complex<float> const *x, int_t incx) {
+    return detail::scsum1(n, x, incx);
+}
+
+template <>
+inline double sum1(int_t n, std::complex<double> const *x, int_t incx) {
+    return detail::dzsum1(n, x, incx);
 }
 
 } // namespace einsums::blas

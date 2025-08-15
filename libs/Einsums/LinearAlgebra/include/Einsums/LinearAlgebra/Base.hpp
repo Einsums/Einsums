@@ -27,6 +27,8 @@
 
 #include <stdexcept>
 
+#include "Einsums/LinearAlgebra/Bases/norm.hpp"
+
 namespace einsums::linear_algebra::detail {
 
 template <typename T>
@@ -1218,7 +1220,7 @@ template <typename T>
 auto svd(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
     LabeledSection0();
 
-    if(_A.rank() != 2) {
+    if (_A.rank() != 2) {
         EINSUMS_THROW_EXCEPTION(rank_error, "Can only decompose matrices!");
     }
 
@@ -1260,8 +1262,103 @@ auto svd(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, T
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto svd(AType const &A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
-                                        Tensor<typename AType::ValueType, 2>> {
+                                       Tensor<typename AType::ValueType, 2>> {
     return svd(A.impl());
+}
+
+template <typename T>
+auto norm(char norm_type, einsums::detail::TensorImpl<T> const &a) -> RemoveComplexT<T> {
+    LabeledSection0();
+
+    if (a.rank() > 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "A norm can only be taken on a matrix or vector!");
+    }
+
+    if constexpr (blas::IsBlasableV<T>) {
+        switch (norm_type) {
+        case 'm':
+        case 'M':
+            if (a.rank() == 1) {
+                return impl_max_abs_norm(a);
+            } else if (a.is_gemmable()) {
+                return impl_max_abs_norm_gemmable(a);
+            } else {
+                return impl_max_abs_norm(a);
+            }
+        case '1':
+        case 'o':
+        case 'O':
+            if (a.rank() == 1) {
+                return blas::sum1(a.dim(0), a.data(), a.get_incx());
+            } else if (a.is_gemmable()) {
+                return impl_one_norm_gemmable(a);
+            } else {
+                return impl_one_norm(a);
+            }
+        case 'i':
+        case 'I':
+            if (a.rank() == 1) {
+                return impl_max_abs_norm(a);
+            } else if (a.is_gemmable()) {
+                return impl_infinity_norm_gemmable(a);
+            } else {
+                return impl_infinity_norm(a);
+            }
+        case 'e':
+        case 'f':
+        case 'E':
+        case 'F':
+            if (a.rank() == 1) {
+                return blas::nrm2(a.dim(0), a.data(), a.get_incx());
+            } else if (a.is_gemmable()) {
+                return impl_frobenius_norm_gemmable(a);
+            } else {
+                return impl_frobenius_norm(a);
+            }
+        default:
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The norm type passed to norm is not valid!");
+        }
+    } else {
+        switch (norm_type) {
+        case 'm':
+        case 'M':
+            return impl_max_abs_norm(a);
+        case '1':
+        case 'o':
+        case 'O':
+            return impl_one_norm(a);
+        case 'i':
+        case 'I':
+            return impl_infinity_norm(a);
+        case 'e':
+        case 'f':
+        case 'E':
+        case 'F':
+            return impl_frobenius_norm(a);
+        default:
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The norm type passed to norm is not valid!");
+        }
+    }
+}
+
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto norm(char norm_type, AType const &a) -> RemoveComplexT<typename AType::ValueType> {
+    return norm(norm_type, a.impl());
+}
+
+template <typename T>
+auto vec_norm(einsums::detail::TensorImpl<T> const &a) -> RemoveComplexT<T> {
+    RemoveComplexT<T> norm = 0.0, scale = 1.0;
+
+    sum_square(a, &scale, &norm);
+
+    return std::sqrt(norm) * scale;
+}
+
+template <TensorConcept AType>
+auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::ValueType> {
+    return vec_norm(a.impl());
 }
 
 } // namespace einsums::linear_algebra::detail

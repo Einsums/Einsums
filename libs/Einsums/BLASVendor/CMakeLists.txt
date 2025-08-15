@@ -13,6 +13,7 @@ set(BLASVendorHeaders Einsums/BLASVendor/Vendor.hpp)
 
 set(BLASVendorSources
     InitializeFinalize.cpp
+    asum.cpp
     axpy.cpp
     copy.cpp
     dot.cpp

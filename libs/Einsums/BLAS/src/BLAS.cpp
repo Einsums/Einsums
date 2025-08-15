@@ -300,6 +300,22 @@ void zlassq(int_t n, std::complex<double> const *x, int_t incx, double *scale, d
     return vendor::zlassq(n, x, incx, scale, sumsq);
 }
 
+float snrm2(int_t n, float const *x, int_t incx) {
+    return vendor::snrm2(n, x, incx);
+}
+
+double dnrm2(int_t n, double const *x, int_t incx) {
+    return vendor::dnrm2(n, x, incx);
+}
+
+float scnrm2(int_t n, std::complex<float> const *x, int_t incx) {
+    return vendor::scnrm2(n, x, incx);
+}
+
+double dznrm2(int_t n, std::complex<double> const *x, int_t incx) {
+    return vendor::dznrm2(n, x, incx);
+}
+
 auto sgesdd(char jobz, int_t m, int_t n, float *a, int_t lda, float *s, float *u, int_t ldu, float *vt, int_t ldvt) -> int_t {
     return vendor::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
@@ -451,12 +467,36 @@ void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *
     vendor::ddirprod(n, alpha, x, incx, y, incy, z, incz);
 }
 void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy,
-               std::complex<float> *z, int_t incz) {
+              std::complex<float> *z, int_t incz) {
     vendor::cdirprod(n, alpha, x, incx, y, incy, z, incz);
 }
 void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy,
-                std::complex<double> *z, int_t incz) {
+              std::complex<double> *z, int_t incz) {
     vendor::zdirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+
+float sasum(int_t n, float const *x, int_t incx) {
+    return vendor::sasum(n, x, incx);
+}
+
+double dasum(int_t n, double const *x, int_t incx) {
+    return vendor::dasum(n, x, incx);
+}
+
+float scasum(int_t n, std::complex<float> const *x, int_t incx) {
+    return vendor::scasum(n, x, incx);
+}
+
+double dzasum(int_t n, std::complex<double> const *x, int_t incx) {
+    return vendor::dzasum(n, x, incx);
+}
+
+float scsum1(int_t n, std::complex<float> const *x, int_t incx) {
+    return vendor::scsum1(n, x, incx);
+}
+
+double dzsum1(int_t n, std::complex<double> const *x, int_t incx) {
+    return vendor::dzsum1(n, x, incx);
 }
 
 } // namespace detail

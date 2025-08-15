@@ -623,31 +623,20 @@ template <MatrixConcept AType>
 auto norm(Norm norm_type, AType const &a) -> RemoveComplexT<typename AType::ValueType> {
     LabeledSection0();
 
-    BufferVector<RemoveComplexT<typename AType::ValueType>> work(4 * a.dim(0), 0.0);
-    auto                                                    norm_type_adjusted = norm_type;
-
-    if (norm_type == Norm::One && a.impl().is_row_major()) {
-        norm_type_adjusted = Norm::Infinity;
-    } else if (norm_type == Norm::Infinity && a.impl().is_row_major()) {
-        norm_type_adjusted = Norm::One;
-    }
-    return blas::lange(static_cast<char>(norm_type_adjusted), a.dim(0), a.dim(1), a.data(), a.impl().get_lda(), work.data());
+    return detail::norm(static_cast<char>(norm_type), a);
 }
 
 template <TensorConcept AType>
 auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::ValueType> {
-    RemoveComplexT<typename AType::ValueType> norm = 0.0, scale = 1.0;
-
-    sum_square(a, &scale, &norm);
-
-    return std::sqrt(norm) * scale;
+    LabeledSection0();
+    return detail::vec_norm(a);
 }
 
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto svd(AType const &A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
-                                        Tensor<typename AType::ValueType, 2>> {
+                                       Tensor<typename AType::ValueType, 2>> {
     LabeledSection0();
 
     return detail::svd(A.impl());

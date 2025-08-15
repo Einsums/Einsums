@@ -182,6 +182,11 @@ void dlassq(int_t n, double const *x, int_t incx, double *scale, double *sumsq);
 void classq(int_t n, std::complex<float> const *x, int_t incx, float *scale, float *sumsq);
 void zlassq(int_t n, std::complex<double> const *x, int_t incx, double *scale, double *sumsq);
 
+float snrm2(int_t n, float const *x, int_t incx);
+double dnrm2(int_t n, double const *x, int_t incx);
+float scnrm2(int_t n, std::complex<float> const *x, int_t incx);
+double dznrm2(int_t n, std::complex<double> const *x, int_t incx);
+
 auto sgesvd(char, char, int_t, int_t, float *, int_t, float *, float *, int_t, float *, int_t, float *) -> int_t;
 auto dgesvd(char, char, int_t, int_t, double *, int_t, double *, double *, int_t, double *, int_t, double *) -> int_t;
 auto cgesvd(char jobu, char jobvt, int_t m, int_t n, std::complex<float> *a, int_t lda, float *s, std::complex<float> *u, int_t ldu,
@@ -233,8 +238,14 @@ int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, i
 void sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, int_t incy, float *z, int_t incz);
 void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *y, int_t incy, double *z, int_t incz);
 void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy,
-               std::complex<float> *z, int_t incz);
+              std::complex<float> *z, int_t incz);
 void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy,
-               std::complex<double> *z, int_t incz);
+              std::complex<double> *z, int_t incz);
 
+float  sasum(int_t n, float const *x, int_t incx);
+double dasum(int_t n, double const *x, int_t incx);
+float  scasum(int_t n, std::complex<float> const *x, int_t incx);
+double dzasum(int_t n, std::complex<double> const *x, int_t incx);
+float  scsum1(int_t n, std::complex<float> const *x, int_t incx);
+double dzsum1(int_t n, std::complex<double> const *x, int_t incx);
 } // namespace einsums::blas::vendor
