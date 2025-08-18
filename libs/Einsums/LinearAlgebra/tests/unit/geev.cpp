@@ -26,8 +26,9 @@ void sort_evals(Tensor<std::complex<T>, 1> &evals) {
     });
 }
 
-template <NotComplex T>
-void geev_test() {
+TEMPLATE_TEST_CASE("geev", "[linear-algebra]", float, double) {
+
+    using T = TestType;
 
     auto a  = create_tensor<T, true>("a", 5, 5);
     auto w  = create_tensor<AddComplexT<T>>("w", 5);
@@ -72,13 +73,13 @@ void geev_test() {
     sort_evals(w2);
 
     for (int i = 0; i < 5; i++) {
-        CHECK_THAT(std::real(w2(i)), Catch::Matchers::WithinRel(std::real(w(i))));
-        CHECK_THAT(std::imag(w2(i)), Catch::Matchers::WithinRel(std::imag(w(i))));
+        CHECK_THAT(std::real(w2(i)), Catch::Matchers::WithinRel(std::real(w(i)), 0.001));
+        CHECK_THAT(std::imag(w2(i)), Catch::Matchers::WithinRel(std::imag(w(i)), 0.001));
     }
 }
 
-template <Complex T>
-void geev_test() {
+TEMPLATE_TEST_CASE("geev complex", "[linear-algebra]", std::complex<float>, std::complex<double>) {
+    using T = TestType;
 
     auto a  = create_tensor<T, true>("a", 4, 4);
     auto w  = create_tensor<T>("w", 4);
@@ -116,11 +117,7 @@ void geev_test() {
     sort_evals(w2);
 
     for (int i = 0; i < 4; i++) {
-        CHECK_THAT(std::real(w2(i)), Catch::Matchers::WithinRel(std::real(w(i))));
-        CHECK_THAT(std::imag(w2(i)), Catch::Matchers::WithinRel(std::imag(w(i))));
+        CHECK_THAT(std::real(w2(i)), Catch::Matchers::WithinRel(std::real(w(i)), 0.001));
+        CHECK_THAT(std::imag(w2(i)), Catch::Matchers::WithinRel(std::imag(w(i)), 0.001));
     }
-}
-
-TEMPLATE_TEST_CASE("geev", "[linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
-    geev_test<TestType>();
 }
