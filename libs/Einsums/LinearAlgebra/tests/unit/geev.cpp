@@ -73,8 +73,8 @@ TEMPLATE_TEST_CASE("geev", "[linear-algebra]", float, double) {
     sort_evals(w2);
 
     for (int i = 0; i < 5; i++) {
-        CHECK_THAT(std::real(w2(i)), Catch::Matchers::WithinRel(std::real(w(i)), 0.001));
-        CHECK_THAT(std::imag(w2(i)), Catch::Matchers::WithinRel(std::imag(w(i)), 0.001));
+        CHECK_THAT(std::real(w2(i)), Catch::Matchers::WithinRel(std::real(w(i)), T{0.001}));
+        CHECK_THAT(std::imag(w2(i)), Catch::Matchers::WithinRel(std::imag(w(i)), T{0.001}));
     }
 }
 
@@ -117,7 +117,7 @@ TEMPLATE_TEST_CASE("geev complex", "[linear-algebra]", std::complex<float>, std:
     sort_evals(w2);
 
     for (int i = 0; i < 4; i++) {
-        CHECK_THAT(std::real(w2(i)), Catch::Matchers::WithinRel(std::real(w(i)), 0.001));
-        CHECK_THAT(std::imag(w2(i)), Catch::Matchers::WithinRel(std::imag(w(i)), 0.001));
+        CHECK_THAT(std::real(w2(i)), Catch::Matchers::WithinRel(std::real(w(i)), RemoveComplexT<T>{0.001}));
+        CHECK_THAT(std::imag(w2(i)), Catch::Matchers::WithinRel(std::imag(w(i)), RemoveComplexT<T>{0.001}));
     }
 }
