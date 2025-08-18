@@ -21,7 +21,7 @@
 
 #include <stddef.h>
 
-#if defined(__AVX2__)
+#if defined(__AVX2__) && defined(__FMA3__)
 extern int sdirprod_kernel_avx2(size_t n, float alpha, float const *x, float const *y, float *z);
 extern int ddirprod_kernel_avx2(size_t n, double alpha, double const *x, double const *y, double *z);
 extern int cdirprod_kernel_avx2(size_t n, _Complex float alpha, _Complex float const *x, _Complex float const *y,

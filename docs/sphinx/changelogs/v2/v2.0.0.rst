@@ -20,6 +20,11 @@ What's New
 What's Removed
 --------------
 * The `q` function from the C++ and Python interfaces, and the `r` function from the Python interface.
+* CP and Tucker decomposition broke and were not able to be fixed. They have been moved to experimental.
 
 Bug Fixes
 ---------
+
+Known Issues
+------------
+* CP and Tucker decomposition do not work.
