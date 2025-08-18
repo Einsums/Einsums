@@ -114,7 +114,7 @@ void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         // LAPACK: the elements above the first super diagonal are overwritten by the elements of the elementary reflectors.
         // The way it defines it is that the first non-zero element is 1, so we need to rescale the reflectors.
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = k + 2; i < dim; i++) {
             A_data[i * row_stride + k * col_stride] = vec1[i] / vec1[k + 1];
         }
@@ -260,7 +260,7 @@ void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
             alpha *= safe_min;
         }
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = k + 2; i < dim; i++) {
             A_data[i * row_stride + k * col_stride] = vec1[i];
         }
@@ -292,19 +292,19 @@ void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *vec1, T *vec2, T *tau)
         vec1[n + 1] = T{1.0};
 
         // Fill the rest of the elements.
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        EINSUMS_OMP_PARALLEL_FOR
         for (int k = n + 2; k < dim; k++) {
             vec1[k] = Q_data[k * row_stride + n * col_stride];
         }
 
         // Now, set up the next level of the matrix.
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        EINSUMS_OMP_PARALLEL_FOR
         for (int k = n + 1; k < dim; k++) {
             Q_data[k * row_stride + n * col_stride] = T{0.0};
         }
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        EINSUMS_OMP_PARALLEL_FOR
         for (int k = n + 1; k < dim; k++) {
             Q_data[n * row_stride + k * col_stride] = T{0.0};
         }
@@ -679,7 +679,7 @@ void impl_eig_sort(einsums::detail::TensorImpl<T> *Q, RemoveComplexT<T> *work) {
         }
 
         if (min_pos != head) {
-            EINSUMS_OMP_PARALLEL_FOR_SIMD
+            EINSUMS_OMP_PARALLEL_FOR
             for (size_t i = 0; i < dim; i++) {
                 std::swap(Q_data[i * row_stride + head * col_stride], Q_data[i * row_stride + min_pos * col_stride]);
             }
@@ -755,12 +755,12 @@ void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
 
         // Compute the eigenvalues and eigenvectors of the tridiagonal form.
         if (std::tolower(jobz) == 'n') {
-            EINSUMS_OMP_PARALLEL_FOR_SIMD
+            EINSUMS_OMP_PARALLEL_FOR
             for (size_t i = 0; i < dim; i++) {
                 diag[i] = A_data[i * (row_stride + col_stride)];
             }
 
-            EINSUMS_OMP_PARALLEL_FOR_SIMD
+            EINSUMS_OMP_PARALLEL_FOR
             for (size_t i = 0; i < dim - 1; i++) {
                 subdiag[i] = A_data[i * (row_stride + col_stride) + row_stride];
             }
@@ -784,7 +784,7 @@ void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
             }
 
             // Copy the eigenvalues.
-            EINSUMS_OMP_PARALLEL_FOR_SIMD
+            EINSUMS_OMP_PARALLEL_FOR
             for (size_t i = 0; i < A->dim(0); i++) {
                 W->subscript(i) = diag[i];
             }
@@ -793,12 +793,12 @@ void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
             diag    = work + 3 * dim - 1;
             subdiag = work + 4 * dim - 1;
 
-            EINSUMS_OMP_PARALLEL_FOR_SIMD
+            EINSUMS_OMP_PARALLEL_FOR
             for (size_t i = 0; i < dim; i++) {
                 diag[i] = A_data[i * (row_stride + col_stride)];
             }
 
-            EINSUMS_OMP_PARALLEL_FOR_SIMD
+            EINSUMS_OMP_PARALLEL_FOR
             for (size_t i = 0; i < dim - 1; i++) {
                 subdiag[i] = A_data[i * (row_stride + col_stride) + row_stride];
             }
@@ -875,12 +875,12 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
         // Reduce to tridiagonal form.
         impl_hessenberg_reduce(A, vec1, vec2, tau, std::tolower(jobz) != 'n');
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = 0; i < dim; i++) {
             diag[i] = std::real(A_data[i * (row_stride + col_stride)]);
         }
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
+        EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = 0; i < dim - 1; i++) {
             subdiag[i] = std::real(A_data[i * (row_stride + col_stride) + row_stride]);
         }
@@ -907,7 +907,7 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
             }
 
             // Copy the eigenvalues.
-            EINSUMS_OMP_PARALLEL_FOR_SIMD
+            EINSUMS_OMP_PARALLEL_FOR
             for (size_t i = 0; i < A->dim(0); i++) {
                 W->subscript(i) = rwork[i];
             }
