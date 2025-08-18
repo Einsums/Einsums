@@ -19,10 +19,10 @@ TEST_CASE("Lyapunov") {
     auto A = create_tensor<double>("A", 3, 3);
     auto Q = create_tensor<double>("Q", 3, 3);
 
-    A.vector_data() = einsums::VectorData<double>{1.25898804, -0.00000000, -0.58802280, -0.00000000, 1.51359048,
+    A.vector_data() = {1.25898804, -0.00000000, -0.58802280, -0.00000000, 1.51359048,
                                                   0.00000000, -0.58802280, 0.00000000,  1.71673427};
 
-    Q.vector_data() = einsums::VectorData<double>{-0.05892104, 0.00000000, 0.00634896, 0.00000000, -0.02508491,
+    Q.vector_data() = {-0.05892104, 0.00000000, 0.00634896, 0.00000000, -0.02508491,
                                                   0.00000000,  0.00634896, 0.00000000, 0.00155829};
 
     auto X = einsums::linear_algebra::solve_continuous_lyapunov(A, Q);
