@@ -32,14 +32,14 @@ void impl_gemm_noncontiguous(char transA, char transB, CType alpha, einsums::det
 
     // Scale the output.
     if (beta == zero) {
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(2))
         for (size_t ca = 0; ca < m; ca++) {
             for (size_t cb = 0; cb < n; cb++) {
                 C_data[ca * ca_stride + cb * cb_stride] = zero;
             }
         }
     } else {
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(2))
         for (size_t ca = 0; ca < m; ca++) {
             for (size_t cb = 0; cb < n; cb++) {
                 C_data[ca * ca_stride + cb * cb_stride] *= beta;
@@ -50,7 +50,7 @@ void impl_gemm_noncontiguous(char transA, char transB, CType alpha, einsums::det
     // Do the matrix multiplication.
     if constexpr (IsComplexV<CType>) {
         if (tA == 'c' && tB == 'c') {
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(3))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(3))
             for (size_t link = 0; link < k; link++) {
                 for (size_t ca = 0; ca < m; ca++) {
                     for (size_t cb = 0; cb < n; cb++) {
@@ -60,7 +60,7 @@ void impl_gemm_noncontiguous(char transA, char transB, CType alpha, einsums::det
                 }
             }
         } else if (tA == 'c') {
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(3))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(3))
             for (size_t link = 0; link < k; link++) {
                 for (size_t ca = 0; ca < m; ca++) {
                     for (size_t cb = 0; cb < n; cb++) {
@@ -70,7 +70,7 @@ void impl_gemm_noncontiguous(char transA, char transB, CType alpha, einsums::det
                 }
             }
         } else if (tB == 'c') {
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(3))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(3))
             for (size_t link = 0; link < k; link++) {
                 for (size_t ca = 0; ca < m; ca++) {
                     for (size_t cb = 0; cb < n; cb++) {
@@ -80,7 +80,7 @@ void impl_gemm_noncontiguous(char transA, char transB, CType alpha, einsums::det
                 }
             }
         } else {
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(3))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(3))
             for (size_t link = 0; link < k; link++) {
                 for (size_t ca = 0; ca < m; ca++) {
                     for (size_t cb = 0; cb < n; cb++) {
@@ -91,7 +91,7 @@ void impl_gemm_noncontiguous(char transA, char transB, CType alpha, einsums::det
             }
         }
     } else {
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(3))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(3))
         for (size_t link = 0; link < k; link++) {
             for (size_t ca = 0; ca < m; ca++) {
                 for (size_t cb = 0; cb < n; cb++) {

@@ -23,7 +23,7 @@ BiggestTypeT<T, TOther> impl_dot_contiguous(einsums::detail::TensorImpl<T> const
 
         BiggestTypeT<T, TOther> sum{0.0};
 
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: sum))
+        EINSUMS_OMP_PRAGMA(parallel for reduction(+: sum))
         for (size_t i = 0; i < size; i++) {
             sum += in_data[i * incx] * out_data[i * incy];
         }
@@ -42,7 +42,7 @@ BiggestTypeT<T, TOther> impl_dot_noncontiguous_vectorable(int depth, int hard_ra
         } else {
             BiggestTypeT<T, TOther> sum{0.0};
 
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: sum))
+            EINSUMS_OMP_PRAGMA(parallel for reduction(+: sum))
             for (size_t i = 0; i < easy_size; i++) {
                 sum += in[i * inc_in] * out[i * inc_out];
             }
@@ -150,7 +150,7 @@ BiggestTypeT<T, TOther> impl_true_dot_contiguous(einsums::detail::TensorImpl<T> 
 
         BiggestTypeT<T, TOther> sum{0.0};
 
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: sum))
+        EINSUMS_OMP_PRAGMA(parallel for reduction(+: sum))
         for (size_t i = 0; i < size; i++) {
             sum += std::conj(in_data[i * incx]) * out_data[i * incy];
         }
@@ -169,7 +169,7 @@ BiggestTypeT<T, TOther> impl_true_dot_noncontiguous_vectorable(int depth, int ha
         } else {
             BiggestTypeT<T, TOther> sum{0.0};
 
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: sum))
+            EINSUMS_OMP_PRAGMA(parallel for reduction(+: sum))
             for (size_t i = 0; i < easy_size; i++) {
                 sum += std::conj(in[i * inc_in]) * out[i * inc_out];
             }
@@ -289,7 +289,7 @@ BiggestTypeT<A, B, C> impl_dot_contiguous(einsums::detail::TensorImpl<A> const &
 
     BiggestTypeT<A, B, C> sum{0.0};
 
-    EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: sum))
+    EINSUMS_OMP_PRAGMA(parallel for reduction(+: sum))
     for (size_t i = 0; i < size; i++) {
         sum += a_data[i * inca] * b_data[i * incb] * c_data[i * incc];
     }
@@ -304,7 +304,7 @@ BiggestTypeT<A, B, C> impl_dot_noncontiguous_vectorable(int depth, int hard_rank
     if (depth == hard_rank) {
         BiggestTypeT<A, B, C> sum{0.0};
 
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: sum))
+        EINSUMS_OMP_PRAGMA(parallel for reduction(+: sum))
         for (size_t i = 0; i < easy_size; i++) {
             sum += a[i * inca] * b[i * incb] * c[i * incc];
         }

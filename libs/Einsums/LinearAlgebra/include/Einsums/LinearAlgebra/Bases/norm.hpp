@@ -166,7 +166,7 @@ auto impl_one_norm(einsums::detail::TensorImpl<T> const &A) -> RemoveComplexT<T>
         size_t const      n = A.dim(0), incx = A.get_incx();
         T const          *A_data = A.data();
 
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: out))
+        EINSUMS_OMP_PRAGMA(parallel for reduction(+: out))
         for (size_t i = 0; i < n; i++) {
             out += std::abs(A_data[i * incx]);
         }

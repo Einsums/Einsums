@@ -33,14 +33,14 @@ void impl_ger(T alpha, einsums::detail::TensorImpl<T> const &x, einsums::detail:
                cols = a.dim(1);
 
         if (row_stride < col_stride) {
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(2))
             for (size_t j = 0; j < cols; j++) {
                 for (size_t i = 0; i < rows; i++) {
                     a_data[i * row_stride + j * col_stride] += alpha * x_data[i * incx] * y_data[j * incy];
                 }
             }
         } else {
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(2))
             for (size_t i = 0; i < rows; i++) {
                 for (size_t j = 0; j < cols; j++) {
                     a_data[i * row_stride + j * col_stride] += alpha * x_data[i * incx] * y_data[j * incy];
@@ -75,14 +75,14 @@ void impl_gerc(T alpha, einsums::detail::TensorImpl<T> const &x, einsums::detail
 
         if constexpr (IsComplexV<T>) {
             if (row_stride < col_stride) {
-                EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+                EINSUMS_OMP_PRAGMA(parallel for collapse(2))
                 for (size_t j = 0; j < cols; j++) {
                     for (size_t i = 0; i < rows; i++) {
                         a_data[i * row_stride + j * col_stride] += alpha * x_data[i * incx] * std::conj(y_data[j * incy]);
                     }
                 }
             } else {
-                EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+                EINSUMS_OMP_PRAGMA(parallel for collapse(2))
                 for (size_t i = 0; i < rows; i++) {
                     for (size_t j = 0; j < cols; j++) {
                         a_data[i * row_stride + j * col_stride] += alpha * x_data[i * incx] * std::conj(y_data[j * incy]);
@@ -91,14 +91,14 @@ void impl_gerc(T alpha, einsums::detail::TensorImpl<T> const &x, einsums::detail
             }
         } else {
             if (row_stride < col_stride) {
-                EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+                EINSUMS_OMP_PRAGMA(parallel for collapse(2))
                 for (size_t j = 0; j < cols; j++) {
                     for (size_t i = 0; i < rows; i++) {
                         a_data[i * row_stride + j * col_stride] += alpha * x_data[i * incx] * y_data[j * incy];
                     }
                 }
             } else {
-                EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+                EINSUMS_OMP_PRAGMA(parallel for collapse(2))
                 for (size_t i = 0; i < rows; i++) {
                     for (size_t j = 0; j < cols; j++) {
                         a_data[i * row_stride + j * col_stride] += alpha * x_data[i * incx] * y_data[j * incy];

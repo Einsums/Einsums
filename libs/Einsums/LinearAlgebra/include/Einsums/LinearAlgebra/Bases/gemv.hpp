@@ -35,7 +35,7 @@ void impl_gemv_noncontiguous(char transA, YType alpha, einsums::detail::TensorIm
     // Do the matrix multiplication.
     if constexpr (IsComplexV<YType>) {
         if (tA == 'c') {
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(2))
             for (size_t link = 0; link < link_dim; link++) {
                 for (size_t target = 0; target < target_dim; target++) {
                     Y_data[target * incy] +=
@@ -43,7 +43,7 @@ void impl_gemv_noncontiguous(char transA, YType alpha, einsums::detail::TensorIm
                 }
             }
         } else {
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(2))
             for (size_t link = 0; link < link_dim; link++) {
                 for (size_t target = 0; target < target_dim; target++) {
                     Y_data[target * incy] += alpha * A_data[a_target_stride * target + a_link_stride * link] * X_data[incx * link];
@@ -51,7 +51,7 @@ void impl_gemv_noncontiguous(char transA, YType alpha, einsums::detail::TensorIm
             }
         }
     } else {
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(2))
         for (size_t link = 0; link < link_dim; link++) {
             for (size_t target = 0; target < target_dim; target++) {
                 Y_data[target * incy] += alpha * A_data[a_target_stride * target + a_link_stride * link] * X_data[incx * link];

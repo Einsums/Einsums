@@ -64,7 +64,7 @@ void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         }
 
         // The first k + 1 elements of vec1 are all zero. This also means we can ignore the first k rows of A.
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(2))
         for (size_t i = 0; i < dim; i++) {
             for (size_t j = k + 1; j < dim; j++) {
                 vec2[i] = std::fma(A_data[i * row_stride + j * col_stride], vec1[j], vec2[i]);
@@ -75,7 +75,7 @@ void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         blas::scal(dim, T{2.0}, vec2, 1);
 
         // Next, update A to be A - 2Avv^T.
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(2))
         for (size_t i = 0; i < dim; i++) {
             for (size_t j = k + 1; j < dim; j++) {
                 A_data[i * row_stride + j * col_stride] = std::fma(-vec2[i], vec1[j], A_data[i * row_stride + j * col_stride]);
@@ -90,7 +90,7 @@ void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
 
         // In this case, the first k columns of A - Avv^T should be zero when vec1 is non-zero.
         // This means that the first k entries of vec2 will be zero.
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(2))
         for (size_t j = k + 1; j < dim; j++) {
             for (size_t i = k; i < dim; i++) {
                 vec2[i] = std::fma(A_data[j * row_stride + i * col_stride], vec1[j], vec2[i]);
@@ -101,7 +101,7 @@ void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         blas::scal(dim, T{2.0}, vec2, 1);
 
         // Finally, update A to be (A - 2Avv^T) - 2vv^T(A - 2Avv^T), which is (I - 2vv^T)A(I - 2vv^T).
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(2))
         for (size_t i = k + 1; i < dim; i++) {
             for (size_t j = k; j < dim; j++) {
                 A_data[i * row_stride + j * col_stride] = std::fma(-vec2[j], vec1[i], A_data[i * row_stride + j * col_stride]);
@@ -206,7 +206,7 @@ void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         }
 
         // The first k + 1 elements of vec1 are all zero. This also means we can ignore the first k rows of A.
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(2))
         for (size_t i = 0; i < dim; i++) {
             for (size_t j = k + 1; j < dim; j++) {
                 vec2[i] += A_data[i * row_stride + j * col_stride] * vec1[j];
@@ -217,7 +217,7 @@ void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         blas::scal(dim, tau_val, vec2, 1);
 
         // Next, update A to be A - tau Avv^H.
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(2))
         for (size_t i = 0; i < dim; i++) {
             for (size_t j = k + 1; j < dim; j++) {
                 A_data[i * row_stride + j * col_stride] -= vec2[i] * std::conj(vec1[j]);
@@ -232,7 +232,7 @@ void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
 
         // In this case, the first k columns of A - tau^* Avv^H should be zero when vec1 is non-zero.
         // This means that the first k entries of vec2 will be zero.
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(2))
         for (size_t i = k; i < dim; i++) {
             for (size_t j = k + 1; j < dim; j++) {
                 vec2[i] += A_data[j * row_stride + i * col_stride] * std::conj(vec1[j]);
@@ -243,7 +243,7 @@ void impl_hessenberg_reduce(einsums::detail::TensorImpl<T> *A, T *vec1, T *vec2,
         blas::scal(dim, std::conj(tau_val), vec2, 1);
 
         // Finally, update A to be (A - 2Avv^T) - 2vv^T(A - 2Avv^T), which is (I - 2vv^T)A(I - 2vv^T).
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+        EINSUMS_OMP_PRAGMA(parallel for collapse(2))
         for (size_t i = k + 1; i < dim; i++) {
             for (size_t j = k; j < dim; j++) {
                 A_data[i * row_stride + j * col_stride] -= vec2[j] * vec1[i];
@@ -320,13 +320,13 @@ void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *vec1, T *vec2, T *tau)
         // Next, find Q - Qvv^H.
         if constexpr (IsComplexV<T>) {
 
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(2))
             for (int i = n; i < dim; i++) {
                 for (int j = n; j < dim; j++) {
                     vec2[i] += Q_data[i * row_stride + j * col_stride] * std::conj(vec1[j]);
                 }
             }
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(2))
             for (int i = n; i < dim; i++) {
                 for (int j = n; j < dim; j++) {
                     // Might need conj(tau).
@@ -334,13 +334,13 @@ void impl_compute_q(einsums::detail::TensorImpl<T> *Q, T *vec1, T *vec2, T *tau)
                 }
             }
         } else {
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(2))
             for (int i = n; i < dim; i++) {
                 for (int j = n; j < dim; j++) {
                     vec2[i] += Q_data[i * row_stride + j * col_stride] * vec1[j];
                 }
             }
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for collapse(2))
+            EINSUMS_OMP_PRAGMA(parallel for collapse(2))
             for (int i = n; i < dim; i++) {
                 for (int j = n; j < dim; j++) {
                     Q_data[i * row_stride + j * col_stride] -= tau[n] * vec2[i] * vec1[j];

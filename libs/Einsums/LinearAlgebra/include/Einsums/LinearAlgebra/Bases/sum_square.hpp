@@ -21,7 +21,7 @@ void impl_sum_square_contiguous(einsums::detail::TensorImpl<T> const &a, RemoveC
         size_t const size = a.size(), incx = a.get_incx();
         T            sumsq_local = T{0.0};
 
-        EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: sumsq_local))
+        EINSUMS_OMP_PRAGMA(parallel for reduction(+: sumsq_local))
         for (size_t i = 0; i < size; i++) {
             sumsq_local += a_data[i * incx] * a_data[i * incx];
         }
@@ -38,7 +38,7 @@ void impl_sum_square_noncontiguous_vectorable(int depth, int hard_rank, size_t e
         } else {
             T sumsq_local = T{0.0};
             *scale        = T{1.0};
-            EINSUMS_OMP_SIMD_PRAGMA(parallel for reduction(+: sumsq_local))
+            EINSUMS_OMP_PRAGMA(parallel for reduction(+: sumsq_local))
             for (size_t i = 0; i < easy_size; i++) {
                 sumsq_local += in[i * inc_in] * in[i * inc_in];
             }
