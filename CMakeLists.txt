@@ -294,6 +294,12 @@ einsums_option(
   CATEGORY "Build Targets"
 )
 
+einsums_option(
+  EINSUMS_WITH_EXPERIMENTAL BOOL
+  "If true, build experimental Einsums modules (default: OFF)" OFF
+  CATEGORY "Build Targets"
+)
+
 set(EINSUMS_FULL_RPATH_DEFAULT ON)
 if(APPLE OR WIN32)
   set(EINSUMS_FULL_RPATH_DEFAULT OFF)
