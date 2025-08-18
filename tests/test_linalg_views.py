@@ -252,7 +252,6 @@ def test_scale(a, b, c, dtype, array):
     A_copy = A_view.copy()
 
     scale_factor = ein.utils.random.random()
-    print(scale_factor)
 
     ein.core.scale(scale_factor, A_view)
 

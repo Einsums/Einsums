@@ -145,7 +145,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>, Alloc> &folds, size_t rank) -> 
 
             EINSUMS_LOG_DEBUG("m: {}", m);
 
-            println(Unew);
+            // println(Unew);
 
             // Need to save the factors
             factors.push_back(Unew);
