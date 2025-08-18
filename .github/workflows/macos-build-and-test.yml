@@ -111,7 +111,7 @@ jobs:
 
       - name: Build and Install
         run: |
-          cmake --build "${{ github.workspace }}/build" --config Release --target install
+          cmake --build "${{ github.workspace }}/build" --config Release --target install -j4
 
       - name: Test (CTest) - Unit Tests
         working-directory: "${{ github.workspace }}/build"
