@@ -296,9 +296,7 @@ inline void fprintln(std::ostream &fp) {
  */
 
 template <typename... Ts>
-[[deprecated("Raise an exception instead. The EINSUMS_THROW_EXCEPTION macro provides way more information on what went wrong than this "
-             "function.")]] void
-println_abort(std::string_view const &format, Ts const... ts) {
+void println_abort(std::string_view const &format, Ts const... ts) {
     std::string message = std::string("ERROR: ") + format.data();
     println(bg(color::red) | fg(color::white), message, ts...);
 
@@ -313,7 +311,6 @@ println_abort(std::string_view const &format, Ts const... ts) {
  * Calls println to generate a warning message.
  */
 template <typename... Ts>
-[[deprecated("Use our logging functionality. EINSUMS_LOG_WARN provides way more information than this.")]]
 void println_warn(std::string_view const &format, Ts const... ts) {
     std::string message = std::string("WARNING: ") + format.data();
     println(bg(color::yellow) | fg(color::black), message, ts...);
