@@ -818,6 +818,7 @@ install(
   COMPONENT core
   FILES_MATCHING
   PATTERN "*.hpp"
+  PATTERN "*.h"
   PATTERN ".git" EXCLUDE
   PATTERN "CMakeFiles" EXCLUDE
   PATTERN "CTestFiles" EXCLUDE

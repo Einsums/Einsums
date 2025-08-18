@@ -1,23 +1,5 @@
 
-#define EINSUMS_PRAGMA(stuff) _Pragma(#stuff)
-#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
-#    define EINSUMS_OMP_PRAGMA(stuff)      EINSUMS_PRAGMA(omp stuff)
-#    define EINSUMS_OMP_SIMD_PRAGMA(stuff) EINSUMS_PRAGMA(omp stuff simd)
-#    define EINSUMS_OMP_SIMD               _Pragma("omp simd")
-#else
-#    define EINSUMS_OMP_PRAGMA(stuff)      EINSUMS_PRAGMA(omp stuff)
-#    define EINSUMS_OMP_SIMD_PRAGMA(stuff) EINSUMS_PRAGMA(omp stuff)
-#    define EINSUMS_OMP_SIMD
-#endif
-
-#define EINSUMS_OMP_PARALLEL_FOR_SIMD EINSUMS_OMP_SIMD_PRAGMA(parallel for)
-#define EINSUMS_OMP_PARALLEL_FOR EINSUMS_OMP_PRAGMA(parallel for)
-#define EINSUMS_OMP_PARALLEL      EINSUMS_OMP_PRAGMA(parallel)
-#define EINSUMS_OMP_TASK_FOR      EINSUMS_OMP_PRAGMA(taskloop)
-#define EINSUMS_OMP_TASK_FOR_SIMD EINSUMS_OMP_SIMD_PRAGMA(taskloop)
-#define EINSUMS_OMP_TASK          EINSUMS_OMP_PRAGMA(task)
-#define EINSUMS_OMP_FOR_NOWAIT EINSUMS_OMP_PRAGMA(for nowait)
-#define EINSUMS_OMP_CRITICAL EINSUMS_OMP_PRAGMA(critical)
+#include <Einsums/Config/CompilerSpecific.h>
 
 #include <stddef.h>
 

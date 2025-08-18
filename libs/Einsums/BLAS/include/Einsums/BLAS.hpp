@@ -1084,12 +1084,12 @@ inline int_t lascl<double>(char type, int_t kl, int_t ku, double cfrom, double c
 }
 
 namespace detail {
-void sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, int_t incy, float *z, int_t incz);
-void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *y, int_t incy, double *z, int_t incz);
-void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy,
-              std::complex<float> *z, int_t incz);
-void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy,
-              std::complex<double> *z, int_t incz);
+void EINSUMS_EXPORT sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, int_t incy, float *z, int_t incz);
+void EINSUMS_EXPORT ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *y, int_t incy, double *z, int_t incz);
+void EINSUMS_EXPORT cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx, std::complex<float> const *y,
+                             int_t incy, std::complex<float> *z, int_t incz);
+void EINSUMS_EXPORT zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx, std::complex<double> const *y,
+                             int_t incy, std::complex<double> *z, int_t incz);
 } // namespace detail
 
 template <typename T>
@@ -1118,12 +1118,12 @@ inline void dirprod<std::complex<double>>(int_t n, std::complex<double> alpha, s
 }
 
 namespace detail {
-float  sasum(int_t n, float const *x, int_t incx);
-double dasum(int_t n, double const *x, int_t incx);
-float  scasum(int_t n, std::complex<float> const *x, int_t incx);
-double dzasum(int_t n, std::complex<double> const *x, int_t incx);
-float  scsum1(int_t n, std::complex<float> const *x, int_t incx);
-double dzsum1(int_t n, std::complex<double> const *x, int_t incx);
+float EINSUMS_EXPORT  sasum(int_t n, float const *x, int_t incx);
+double EINSUMS_EXPORT dasum(int_t n, double const *x, int_t incx);
+float EINSUMS_EXPORT  scasum(int_t n, std::complex<float> const *x, int_t incx);
+double EINSUMS_EXPORT dzasum(int_t n, std::complex<double> const *x, int_t incx);
+float EINSUMS_EXPORT  scsum1(int_t n, std::complex<float> const *x, int_t incx);
+double EINSUMS_EXPORT dzsum1(int_t n, std::complex<double> const *x, int_t incx);
 } // namespace detail
 
 template <typename T>
@@ -1173,8 +1173,8 @@ inline double sum1(int_t n, std::complex<double> const *x, int_t incx) {
 }
 
 namespace detail {
-void clacgv(int_t n, std::complex<float> *x, int_t incx);
-void zlacgv(int_t n, std::complex<double> *x, int_t incx);
+void EINSUMS_EXPORT clacgv(int_t n, std::complex<float> *x, int_t incx);
+void EINSUMS_EXPORT zlacgv(int_t n, std::complex<double> *x, int_t incx);
 } // namespace detail
 
 template <typename T>
