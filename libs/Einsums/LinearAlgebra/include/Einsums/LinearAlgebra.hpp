@@ -691,11 +691,15 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
 
     // Normalize nullspace. LAPACK does not guarentee them to be orthonormal
     for (int i = 0; i < nullspace.dim(1); i++) {
-        T norm = vec_norm(nullspace(All, i));
-        scale_column(i, T{1.0} / norm, &nullspace);
+        RemoveComplexT<T> norm = vec_norm(nullspace(All, i));
+        if (norm > std::numeric_limits<RemoveComplexT<T>>::epsilon()) {
+            scale_column(i, T{1.0} / norm, &nullspace);
+        }
     }
 
-    einsums::detail::impl_conj(nullspace.impl());
+    if constexpr (IsComplexV<T>) {
+        einsums::detail::impl_conj(nullspace.impl());
+    }
 
     return nullspace;
 }
