@@ -248,17 +248,26 @@ class EINSUMS_EXPORT GlobalConfigMap {
     /**
      * @brief Get the string value stored at the given key.
      *
-     * Throws an error if the key is not in the map.
+     * Returns the empty string if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
+    std::string get_string(std::string const &key) const;
+
+    /**
+     * @brief Get the string value stored at the given key.
+     *
+     * Returns an optional default value if the key is not in the map.
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
      */
-    std::string const &get_string(std::string const &key, std::string const &dephault = "") const;
+    std::string get_string(std::string const &key, std::string const &dephault) const;
 
     /**
      * @brief Get the integer value stored at the given key.
      *
-     * Throws an error if the key is not in the map.
+     * Returns an optional default value if the key is not in the map.
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
@@ -268,7 +277,7 @@ class EINSUMS_EXPORT GlobalConfigMap {
     /**
      * @brief Get the floating point value stored at the given key.
      *
-     * Throws an error if the key is not in the map.
+     * Returns an optional default value if the key is not in the map.
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
@@ -278,12 +287,44 @@ class EINSUMS_EXPORT GlobalConfigMap {
     /**
      * @brief Get the boolean flag stored at the given key.
      *
-     * Throws an error if the key is not in the map.
+     * Returns an optional default value if the key is not in the map.
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
      */
-    bool get_bool(std::string const &key, bool dephaul = false) const;
+    bool get_bool(std::string const &key, bool dephault = false) const;
+
+    /**
+     * @brief Set the string value stored at the given key.
+     *
+     * @param key The key to query.
+     * @param value The new value.
+     */
+    void set_string(std::string const &key, std::string const &value);
+
+    /**
+     * @brief Set the integer value stored at the given key.
+     *
+     * @param key The key to query.
+     * @param value The new value.
+     */
+    void set_int(std::string const &key, std::int64_t value);
+
+    /**
+     * @brief Set the floating point value stored at the given key.
+     *
+     * @param key The key to query.
+     * @param value The new value.
+     */
+    void set_double(std::string const &key, double value);
+
+    /**
+     * @brief Set the Boolean value stored at the given key.
+     *
+     * @param key The key to query.
+     * @param value The new value.
+     */
+    void set_bool(std::string const &key, bool value);
 
     /**
      * @brief Returns the map containing string options.

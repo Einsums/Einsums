@@ -5,6 +5,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
 #include <Einsums/GPUStreams/InitModule.hpp>
@@ -24,11 +25,11 @@ namespace einsums {
 namespace gpu {
 
 namespace detail {
-std::vector<hipblasHandle_t>   blas_handles;
-std::vector<hipsolverHandle_t> solver_handles;
-std::vector<hipStream_t>       default_streams;
-std::vector<bool>              skip_waits;
-std::recursive_mutex           wait_mutex;
+BufferVector<hipblasHandle_t>   blas_handles;
+BufferVector<hipsolverHandle_t> solver_handles;
+BufferVector<hipStream_t>       default_streams;
+BufferVector<bool>              skip_waits;
+std::recursive_mutex            wait_mutex;
 } // namespace detail
 } // namespace gpu
 } // namespace einsums
@@ -150,7 +151,7 @@ EINSUMS_HOST void stream_wait(hipStream_t stream) {
 
 EINSUMS_HOST void all_stream_wait() {
 
-    std::vector<hipEvent_t> wait_events(omp_get_max_threads());
+    BufferVector<hipEvent_t> wait_events(omp_get_max_threads());
 
     detail::wait_mutex.lock();
 

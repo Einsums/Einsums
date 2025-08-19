@@ -7,10 +7,13 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(LinearAlgebraHeaders
     Einsums/LinearAlgebra.hpp Einsums/LinearAlgebra/Base.hpp Einsums/LinearAlgebra/BlockTensor.hpp
-    Einsums/LinearAlgebra/TiledTensor.hpp Einsums/LinearAlgebra/Unoptimized.hpp
+    Einsums/LinearAlgebra/TiledTensor.hpp Einsums/LinearAlgebra/Unoptimized.hpp Einsums/LinearAlgebra/Bases/dot.hpp
+    Einsums/LinearAlgebra/Bases/direct_product.hpp Einsums/LinearAlgebra/Bases/gemm.hpp Einsums/LinearAlgebra/Bases/gemv.hpp
+    Einsums/LinearAlgebra/Bases/ger.hpp Einsums/LinearAlgebra/Bases/high_precision.hpp Einsums/LinearAlgebra/Bases/sum_square.hpp
+    Einsums/LinearAlgebra/Bases/syev.hpp
 )
 
-set(LinearAlgebraSources LinearAlgebra.cpp)
+set(LinearAlgebraSources LinearAlgebra.cpp ForwardDeclarations.cpp)
 
 if(EINSUMS_WITH_GPU_SUPPORT)
   list(APPEND LinearAlgebraHeaders Einsums/LinearAlgebra/GPULinearAlgebra.hpp)
@@ -42,6 +45,7 @@ einsums_add_module(
     Einsums_Profile
     Einsums_Tensor
     Einsums_TensorUtilities
+    Einsums_TensorImpl
     Einsums_TypeSupport
   CMAKE_SUBDIRS examples tests
 )

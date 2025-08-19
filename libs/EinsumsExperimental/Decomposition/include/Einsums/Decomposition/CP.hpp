@@ -13,6 +13,8 @@
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
 
+#include "Einsums/Concepts/NamedRequirements.hpp"
+
 namespace einsums::decomposition {
 
 /**
@@ -31,7 +33,7 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
     LabeledSection0();
 
     if (tensor.dim(0) != weights.dim(0)) {
-        println_abort("The first dimension of the tensor and the dimension of the weight DO NOT match");
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The first dimension of the tensor and the dimension of the weight DO NOT match");
     }
 
     auto weighted_tensor = create_tensor_like(tensor);
@@ -59,8 +61,8 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
  *
  *   factors = The decomposed CANDECOMP matrices (dimension: [dim[i], rank])
  */
-template <size_t TRank, typename TType>
-auto parafac_reconstruct(std::vector<Tensor<TType, 2>> const &factors) -> Tensor<TType, TRank> {
+template <size_t TRank, typename TType, typename Alloc>
+auto parafac_reconstruct(std::vector<Tensor<TType, 2>, Alloc> const &factors) -> Tensor<TType, TRank> {
     LabeledSection0();
 
     size_t     rank = 0;
@@ -96,13 +98,13 @@ auto parafac_reconstruct(std::vector<Tensor<TType, 2>> const &factors) -> Tensor
     return new_tensor;
 }
 
-template <size_t TRank, typename TType>
-auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::vector<Tensor<TType, 2>> {
+template <size_t TRank, typename TType, typename Alloc>
+auto initialize_cp(std::vector<Tensor<TType, 2>, Alloc> &folds, size_t rank) -> BufferVector<Tensor<TType, 2>> {
     LabeledSection0();
 
     using namespace einsums::tensor_algebra;
 
-    std::vector<Tensor<TType, 2>> factors;
+    BufferVector<Tensor<TType, 2>> factors;
     factors.reserve(TRank);
 
     // Perform compile-time looping.
@@ -119,7 +121,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
         // Diagonalize fold squared (akin to SVD)
         linear_algebra::syev(&fold_squared, &S);
 
-        // Reorder into row major form
+        // // Reorder into row major form
         Tensor U = create_tensor<TType>("Left Singular Vectors", m, m);
         permute(Indices{index::M, index::N}, &U, Indices{index::N, index::M}, fold_squared);
 
@@ -136,10 +138,14 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
         // println(U);
 
         if (folds[i].dim(0) < rank) {
-            // println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
+            // EINSUMS_LOG_WARN("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
             /// @todo Need to padd U up to rank
             Tensor<TType, 2> Unew  = create_random_tensor<TType>("Padded SVD Left Vectors", folds[i].dim(0), rank);
             Unew(All, Range{0, m}) = U(All, All);
+
+            EINSUMS_LOG_DEBUG("m: {}", m);
+
+            // println(Unew);
 
             // Need to save the factors
             factors.push_back(Unew);
@@ -165,19 +171,19 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
  */
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto parafac(TTensor<TType, TRank> const &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8)
-    -> std::vector<Tensor<TType, 2>> {
+    -> BufferVector<Tensor<TType, 2>> {
     LabeledSection0();
 
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
     // Compute set of unfolded matrices
-    std::vector<Tensor<TType, 2>> unfolded_matrices;
+    BufferVector<Tensor<TType, 2>> unfolded_matrices;
     unfolded_matrices.reserve(TRank);
     for_sequence<TRank>([&](auto i) { unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor)); });
 
     // Perform SVD guess for parafac decomposition procedure
-    std::vector<Tensor<TType, 2>> factors = initialize_cp<TRank>(unfolded_matrices, rank);
+    BufferVector<Tensor<TType, 2>> factors = initialize_cp<TRank>(unfolded_matrices, rank);
 
     TType  tensor_norm = linear_algebra::vec_norm(tensor);
     size_t nelem       = 1;
@@ -246,7 +252,7 @@ auto parafac(TTensor<TType, TRank> const &tensor, size_t rank, int n_iter_max = 
         iter += 1;
     }
     if (!converged) {
-        println_warn("CP decomposition failed to converge in {} iterations", n_iter_max);
+        EINSUMS_LOG_WARN("CP decomposition failed to converge in {} iterations", n_iter_max);
     }
 
     // Return **non-normalized** factors
@@ -262,18 +268,18 @@ auto parafac(TTensor<TType, TRank> const &tensor, size_t rank, int n_iter_max = 
  */
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto weighted_parafac(TTensor<TType, TRank> const &tensor, TTensor<TType, 1> const &weights, size_t rank, int n_iter_max = 100,
-                      double tolerance = 1.e-8) -> std::vector<Tensor<TType, 2>> {
+                      double tolerance = 1.e-8) -> BufferVector<Tensor<TType, 2>> {
     LabeledSection0();
 
     using namespace einsums::tensor_algebra;
 
     // Compute set of unfolded matrices (unweighted)
-    std::vector<Tensor<TType, 2>> unfolded_matrices;
+    BufferVector<Tensor<TType, 2>> unfolded_matrices;
     unfolded_matrices.reserve(TRank);
     for_sequence<TRank>([&](auto i) { unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor)); });
 
     // Perform SVD guess for parafac decomposition procedure
-    std::vector<Tensor<TType, 2>> factors = initialize_cp<TRank>(unfolded_matrices, rank);
+    BufferVector<Tensor<TType, 2>> factors = initialize_cp<TRank>(unfolded_matrices, rank);
 
     { // Define new scope (for memory optimization)
         // Create the weighted tensor
@@ -365,7 +371,7 @@ auto weighted_parafac(TTensor<TType, TRank> const &tensor, TTensor<TType, 1> con
         iter += 1;
     }
     if (!converged) {
-        println_warn("CP decomposition failed to converge in {} iterations", n_iter_max);
+        EINSUMS_LOG_WARN("CP decomposition failed to converge in {} iterations", n_iter_max);
     }
 
     // Return **non-normalized** factors

@@ -7,7 +7,9 @@
 
 #include <Einsums/Config/Defines.hpp>
 
+#ifdef __cplusplus
 #include <complex>
+#endif
 
 #define EINSUMS_PRAGMA(stuff) _Pragma(#stuff)
 #if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
@@ -29,7 +31,7 @@
 #define EINSUMS_OMP_FOR_NOWAIT EINSUMS_OMP_PRAGMA(for nowait)
 #define EINSUMS_OMP_CRITICAL EINSUMS_OMP_PRAGMA(critical)
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined(__cplusplus)
 
 // gcc does not have reductions for complex values.
 #    pragma omp declare reduction(+ : std::complex<float> : omp_out += omp_in) initializer(omp_priv = omp_orig)

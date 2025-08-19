@@ -43,7 +43,7 @@ void rdiv(RuntimeTensorView<T> &out, U const &numerator) {
 
     auto *data = out.data();
 
-    std::vector<size_t> index_strides;
+    BufferVector<size_t> index_strides;
 
     auto strides = out.strides();
 
@@ -217,6 +217,11 @@ void export_tensor(pybind11::module &mod) {
                  } else {
                     cast.assign_values((RemoveComplexT<T>)value.real(), pybind11::make_tuple(key));
                  }
+             })
+        .def("__setitem__",
+             [](RuntimeTensor<T> &self, pybind11::slice const &key, pybind11::buffer const &values) {
+                 PyTensorView<T> cast(self);
+                 cast.assign_values(values, key);
              })
         .def("__setitem__",
              [](RuntimeTensor<T> &self, pybind11::tuple const &key, double value) {
@@ -430,7 +435,6 @@ void export_tensor(pybind11::module &mod) {
                 detail::rdiv(out, other);
                 return out;
             }, pybind11 ::is_operator())
-        
         .def("assign", [](PyTensor<T> &self, pybind11::buffer &buffer) { return self = buffer; })
         .def("dim", &RuntimeTensor<T>::dim)
         .def("dims", &RuntimeTensor<T>::dims)
@@ -552,6 +556,8 @@ void export_tensor(pybind11::module &mod) {
                     cast.assign_values((RemoveComplexT<T>)value.real(), key);
                  }
              })
+        .def("__setitem__",
+             [](PyTensorView<T> &self, pybind11::slice const &key, pybind11::buffer const &values) { self.assign_values(values, key); })
         .def("__setitem__",
              [](PyTensorView<T> &self, pybind11::tuple const &key, pybind11::buffer const &values) { self.assign_values(values, key); })
 #undef OPERATOR

@@ -30,13 +30,13 @@ namespace einsums {
  *
  * @return A TiledTensorView that contains the resulting views.
  */
-template <CoreBlockTensorConcept TensorType>
-auto apply_view(TensorType const &tensor, std::vector<Range> const &spec) {
+template <CoreBlockTensorConcept TensorType, ContainerOf<Range> Spec>
+auto apply_view(TensorType const &tensor, Spec const &spec) {
     if (spec.size() > tensor.num_blocks()) {
         EINSUMS_THROW_EXCEPTION(num_argument_error, "Can not apply view specification to block tensor. Incorrect number of indices given.");
     }
 
-    std::vector<int64_t> sizes(spec.size());
+    BufferVector<int64_t> sizes(spec.size());
 
     for (int i = 0; i < spec.size(); i++) {
         if (spec[i][1] < 0 && tensor.block_dim(i) != 0) {
@@ -87,11 +87,10 @@ auto apply_view(TensorType const &tensor, std::vector<Range> const &spec) {
  *
  * @return A TiledTensorView that contains the resulting views.
  */
-template <CoreBlockTensorConcept TensorType, typename... ViewSpec>
+template <CoreBlockTensorConcept TensorType, ContainerOf<Range>... ViewSpec>
     requires requires {
         requires sizeof...(ViewSpec) == TensorType::Rank;
         requires sizeof...(ViewSpec) > 1;
-        requires(std::is_same_v<ViewSpec, std::vector<Range>> && ...);
     }
 auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
     if (((spec.size() > tensor.num_blocks()) || ...)) {
@@ -100,7 +99,7 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
 
     auto spec_array = std::array{std::forward<ViewSpec>(spec)...};
 
-    std::array<std::vector<int>, TensorType::Rank> sizes;
+    std::array<BufferVector<int>, TensorType::Rank> sizes;
 
     for (int i = 0; i < spec_array.size(); i++) {
         sizes[i].resize(spec_array[i].size());
@@ -159,11 +158,10 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
  *
  * @return A TiledTensorView that contains the resulting views.
  */
-template <CoreTiledTensorConcept TensorType, typename... ViewSpec>
+template <CoreTiledTensorConcept TensorType, ContainerOf<Range>... ViewSpec>
     requires requires {
         requires sizeof...(ViewSpec) == TensorType::Rank;
         requires sizeof...(ViewSpec) > 1;
-        requires(std::is_same_v<ViewSpec, std::vector<Range>> && ...);
     }
 auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
     auto spec_array = std::array{std::forward<ViewSpec>(spec)...};
@@ -175,7 +173,7 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
         }
     }
 
-    std::array<std::vector<int>, TensorType::Rank> sizes;
+    std::array<BufferVector<int>, TensorType::Rank> sizes;
 
     for (int i = 0; i < spec_array.size(); i++) {
         sizes[i].resize(spec_array[i].size());
@@ -230,13 +228,13 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
  *
  * @return A TiledTensorView that contains the resulting views.
  */
-template <DeviceBlockTensorConcept TensorType>
-auto apply_view(TensorType const &tensor, std::vector<Range> const &spec) {
+template <DeviceBlockTensorConcept TensorType, ContainerOf<Range> Spec>
+auto apply_view(TensorType const &tensor, Spec const &spec) {
     if (spec.size() > tensor.num_blocks()) {
         EINSUMS_THROW_EXCEPTION(num_argument_error, "Can not apply view specification to block tensor. Incorrect number of indices given.");
     }
 
-    std::vector<int64_t> sizes(spec.size());
+    BufferVector<int64_t> sizes(spec.size());
 
     for (int i = 0; i < spec.size(); i++) {
         if (spec[i][1] < 0 && tensor.block_dim(i) != 0) {
@@ -287,11 +285,10 @@ auto apply_view(TensorType const &tensor, std::vector<Range> const &spec) {
  *
  * @return A TiledTensorView that contains the resulting views.
  */
-template <DeviceBlockTensorConcept TensorType, typename... ViewSpec>
+template <DeviceBlockTensorConcept TensorType, ContainerOf<Range>... ViewSpec>
     requires requires {
         requires sizeof...(ViewSpec) == TensorType::Rank;
         requires sizeof...(ViewSpec) > 1;
-        requires(std::is_same_v<ViewSpec, std::vector<Range>> && ...);
     }
 auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
     if (((spec.size() > tensor.num_blocks()) || ...)) {
@@ -300,7 +297,7 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
 
     auto spec_array = std::array{std::forward<ViewSpec>(spec)...};
 
-    std::array<std::vector<int>, TensorType::Rank> sizes;
+    std::array<BufferVector<int>, TensorType::Rank> sizes;
 
     for (int i = 0; i < spec_array.size(); i++) {
         sizes[i].resize(spec_array[i].size());
@@ -359,11 +356,10 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
  *
  * @return A TiledTensorView that contains the resulting views.
  */
-template <DeviceTiledTensorConcept TensorType, typename... ViewSpec>
+template <DeviceTiledTensorConcept TensorType, ContainerOf<Range>... ViewSpec>
     requires requires {
         requires sizeof...(ViewSpec) == TensorType::Rank;
         requires sizeof...(ViewSpec) > 1;
-        requires(std::is_same_v<ViewSpec, std::vector<Range>> && ...);
     }
 auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
     auto spec_array = std::array{std::forward<ViewSpec>(spec)...};
@@ -375,7 +371,7 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
         }
     }
 
-    std::array<std::vector<int>, TensorType::Rank> sizes;
+    std::array<BufferVector<int>, TensorType::Rank> sizes;
 
     for (int i = 0; i < spec_array.size(); i++) {
         sizes[i].resize(spec_array[i].size());

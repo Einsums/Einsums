@@ -223,6 +223,18 @@ def remove_complex(dtype):
     return dtype
 
 
+def is_complex(dtype):
+    """
+    Checks to see if the datatype is a complex datatype.
+    """
+    return (
+        dtype in __complex_singles
+        or dtype in __complex_doubles
+        or isinstance(dtype, (core.RuntimeTensorC, core.RuntimeTensorZ))
+        or (isinstance(dtype, str) and dtype[0] == "Z")
+    )
+
+
 def add_complex(dtype):
     """
     Takes a datatype and gives the complex equivalent.

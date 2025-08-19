@@ -24,8 +24,13 @@ pytestmark = [
     pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
 ]
 
+@pytest.fixture
+def set_big_memory() :
+    ein.core.GlobalConfigMap.get_singleton().set_str("buffer-size", "1GB")
+    ein.core.GlobalConfigMap.get_singleton().set_str("gpu-buffer-size", "1GB")
 
-def test_mat_prod(a, b, c, dtype, rel, array):
+
+def test_mat_prod(set_big_memory, a, b, c, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
     C = ein.utils.tensor_factory("C", [a, c], dtype, array)
@@ -75,7 +80,7 @@ def test_mat_prod_list(a, b, c, dtype, rel, array):
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
-def test_mat_prod_gpu_copy(a, b, c, dtype, rel, array):
+def test_mat_prod_gpu_copy(set_big_memory, a, b, c, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
     C = ein.utils.tensor_factory("C", [a, c], dtype, array)
@@ -108,7 +113,7 @@ def test_mat_prod_gpu_copy(a, b, c, dtype, rel, array):
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
-def test_mat_prod_gpu_map(a, b, c, dtype, rel, array):
+def test_mat_prod_gpu_map(set_big_memory, a, b, c, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
     C = ein.utils.tensor_factory("C", [a, c], dtype, array)

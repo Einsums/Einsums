@@ -12,6 +12,22 @@ namespace detail {
 
 namespace gpu {
 
+hipblasOperation_t char_to_op(char trans) {
+    switch (trans) {
+    case 'c':
+    case 'C':
+        return HIPBLAS_OP_C;
+    case 'n':
+    case 'N':
+        return HIPBLAS_OP_N;
+    case 't':
+    case 'T':
+        return HIPBLAS_OP_T;
+    default:
+        EINSUMS_THROW_EXCEPTION(enum_error, "Transpose value invalid! Expected c, n, or t case insensitive, got {}.", trans);
+    }
+}
+
 void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, float const *alpha, float const *a, int lda,
           float const *b, int ldb, float const *beta, float *c, int ldc) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
@@ -26,8 +42,8 @@ void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, in
     hipblas_catch(hipblasDgemm(handle, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc));
 }
 
-void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, hipFloatComplex const *alpha, hipFloatComplex const *a, int lda,
-          hipFloatComplex const *b, int ldb, hipFloatComplex const *beta, hipFloatComplex *c, int ldc) {
+void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, hipFloatComplex const *alpha, hipFloatComplex const *a,
+          int lda, hipFloatComplex const *b, int ldb, hipFloatComplex const *beta, hipFloatComplex *c, int ldc) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     hipblas_catch(hipblasCgemm(handle, transa, transb, m, n, k, (hipblasComplex const *)alpha, (hipblasComplex const *)a, lda,
@@ -55,15 +71,32 @@ void ger(int m, int n, double const *alpha, double const *x, int incx, double co
     hipblas_catch(hipblasDger(handle, m, n, alpha, x, incx, y, incy, A, lda));
 }
 
-void ger(int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *x, int incx, hipFloatComplex const *y, int incy, hipFloatComplex *A, int lda) {
+void ger(int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *x, int incx, hipFloatComplex const *y, int incy,
+         hipFloatComplex *A, int lda) {
+    hipblasHandle_t handle = einsums::gpu::get_blas_handle();
+
+    hipblas_catch(hipblasCgeru(handle, m, n, (hipblasComplex const *)alpha, (hipblasComplex const *)x, incx, (hipblasComplex const *)y,
+                               incy, (hipblasComplex *)A, lda));
+}
+
+void ger(int m, int n, hipDoubleComplex const *alpha, hipDoubleComplex const *x, int incx, hipDoubleComplex const *y, int incy,
+         hipDoubleComplex *A, int lda) {
+    hipblasHandle_t handle = einsums::gpu::get_blas_handle();
+
+    hipblas_catch(hipblasZgeru(handle, m, n, (hipblasDoubleComplex const *)alpha, (hipblasDoubleComplex const *)x, incx,
+                               (hipblasDoubleComplex const *)y, incy, (hipblasDoubleComplex *)A, lda));
+}
+
+void gerc(int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *x, int incx, hipFloatComplex const *y, int incy,
+          hipFloatComplex *A, int lda) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     hipblas_catch(hipblasCgerc(handle, m, n, (hipblasComplex const *)alpha, (hipblasComplex const *)x, incx, (hipblasComplex const *)y,
                                incy, (hipblasComplex *)A, lda));
 }
 
-void ger(int m, int n, hipDoubleComplex const *alpha, hipDoubleComplex const *x, int incx, hipDoubleComplex const *y, int incy,
-         hipDoubleComplex *A, int lda) {
+void gerc(int m, int n, hipDoubleComplex const *alpha, hipDoubleComplex const *x, int incx, hipDoubleComplex const *y, int incy,
+          hipDoubleComplex *A, int lda) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     hipblas_catch(hipblasZgerc(handle, m, n, (hipblasDoubleComplex const *)alpha, (hipblasDoubleComplex const *)x, incx,
@@ -84,8 +117,8 @@ void gemv(hipblasOperation_t transa, int m, int n, double const *alpha, double c
     hipblas_catch(hipblasDgemv(handle, transa, m, n, alpha, a, lda, x, incx, beta, y, incy));
 }
 
-void gemv(hipblasOperation_t transa, int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *a, int lda, hipFloatComplex const *x, int incx,
-          hipFloatComplex const *beta, hipFloatComplex *y, int incy) {
+void gemv(hipblasOperation_t transa, int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *a, int lda,
+          hipFloatComplex const *x, int incx, hipFloatComplex const *beta, hipFloatComplex *y, int incy) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     hipblas_catch(hipblasCgemv(handle, transa, m, n, (hipblasComplex const *)alpha, (hipblasComplex const *)a, lda,
@@ -283,7 +316,8 @@ EINSUMS_EXPORT void axpby(int n, double const *alpha, double const *X, int incx,
     hipblas_catch(hipblasGetStream(handle, &stream));
     daxpby_kernel<<<einsums::gpu::blocks(n), einsums::gpu::block_size(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
 }
-EINSUMS_EXPORT void axpby(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta, hipFloatComplex *Y, int incy) {
+EINSUMS_EXPORT void axpby(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta,
+                          hipFloatComplex *Y, int incy) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     // hipblas_catch(hipblasCaxpby(handle, n, (hipblasComplex *)alpha, (hipblasComplex *)X, incx, beta, (hipblasComplex *)Y, incy));
@@ -329,8 +363,8 @@ __global__ EINSUMS_EXPORT void daxpby_kernel(int n, double const *alpha, double 
         Y[y_index] = gpu_ops::fma(*alpha, X[x_index], gpu_ops::mult(*beta, Y[y_index]));
     }
 }
-__global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta,
-                                             hipFloatComplex *Y, int incy) {
+__global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx,
+                                             hipFloatComplex const *beta, hipFloatComplex *Y, int incy) {
     int thread, kernel_size;
 
     get_worker_info(thread, kernel_size);
@@ -436,8 +470,8 @@ __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n,
     }
 }
 
-__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, hipFloatComplex const *A, int lda, hipFloatComplex const *B, int ldb,
-                                         hipFloatComplex *C, int ldc) {
+__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, hipFloatComplex const *A, int lda,
+                                         hipFloatComplex const *B, int ldb, hipFloatComplex *C, int ldc) {
     int thread, kernel_size;
 
     get_worker_info(thread, kernel_size);

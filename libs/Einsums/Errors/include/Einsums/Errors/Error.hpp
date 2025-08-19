@@ -194,6 +194,17 @@ struct EINSUMS_EXPORT enum_error : std::domain_error {
     using std::domain_error::domain_error;
 };
 
+/**
+ * @struct complex_conversion_error
+ *
+ * Thrown when trying to convert a complex number to a real number. Instead, the input
+ * data should be transformed into a real value in a way that makes sense for the operation
+ * being performed. This is often either the magnitude or the real part.
+ */
+struct EINSUMS_EXPORT complex_conversion_error : std::logic_error {
+    using std::logic_error::logic_error;
+};
+
 #ifdef EINSUMS_COMPUTE_CODE
 /**
  * @struct hip_exception

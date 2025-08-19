@@ -10,14 +10,18 @@ pytestmark = [
         ["a", "b"],
         [(10, 10), pytest.param(1000, 1000, marks=pytest.mark.slow), (11, 13)],
     ),
-    pytest.mark.parametrize(
-        ["dtype"], [(np.float64,), (np.complex128,)]
-    ),
+    pytest.mark.parametrize(["dtype"], [(np.float64,), (np.complex128,)]),
     pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
 ]
 
 
-def test_generic(a: int, b: int, dtype, array):
+@pytest.fixture
+def set_big_memory():
+    ein.core.GlobalConfigMap.get_singleton().set_str("buffer-size", "1GB")
+    ein.core.GlobalConfigMap.get_singleton().set_str("gpu-buffer-size", "1GB")
+
+
+def test_generic(set_big_memory, a: int, b: int, dtype, array):
     A = ein.utils.random_tensor_factory("A", [b, a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
     C = ein.utils.tensor_factory("C", [a, b], dtype, array)
@@ -28,7 +32,7 @@ def test_generic(a: int, b: int, dtype, array):
 
     plan.execute(0.0, C, 1.0, A, B)
 
-    C_actual = A.T * B
+    C_actual = np.array(A).T * B
 
     for i in range(a):
         for j in range(b):
@@ -55,7 +59,7 @@ def test_generic_list(a: int, b: int, dtype, array) :
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
-def test_generic_gpu_copy(a: int, b: int, dtype, array):
+def test_generic_gpu_copy(set_big_memory, a: int, b: int, dtype, array):
     A = ein.utils.random_tensor_factory("A", [b, a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
     C = ein.utils.tensor_factory("C", [a, b], dtype, array)
@@ -82,7 +86,7 @@ def test_generic_gpu_copy(a: int, b: int, dtype, array):
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
-def test_generic_gpu_map(a: int, b: int, dtype, array):
+def test_generic_gpu_map(set_big_memory, a: int, b: int, dtype, array):
     A = ein.utils.random_tensor_factory("A", [b, a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
     C = ein.utils.tensor_factory("C", [a, b], dtype, array)

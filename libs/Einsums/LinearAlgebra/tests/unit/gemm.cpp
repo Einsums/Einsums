@@ -12,16 +12,18 @@ template <typename T>
 void test_gemm() {
     using namespace einsums;
 
-    Tensor A = create_tensor<T>("A", 3, 3);
-    Tensor B = create_tensor<T>("B", 3, 3);
-    Tensor C = create_tensor<T>("C", 3, 3);
+    Tensor A = create_tensor<T, true>("A", 3, 3);
+    Tensor B = create_tensor<T, true>("B", 3, 3);
+    Tensor C = create_tensor<T, true>("C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
     REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
 
-    A.vector_data() = VectorData<T>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    B.vector_data() = VectorData<T>{11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
+    auto temp       = VectorData<T>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    A.vector_data() = temp;
+    temp            = VectorData<T>{11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
+    B.vector_data() = temp;
 
     einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
     CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(VectorData<T>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));

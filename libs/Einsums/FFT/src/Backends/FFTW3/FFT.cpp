@@ -25,7 +25,7 @@ namespace {
 template <typename Plan>
 void verify(Plan plan) {
     if (plan == nullptr) {
-        println_abort("einsums::backend::fftw3::XXfft: Unable to create FFTW plan.");
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "einsums::backend::fftw3::XXfft: Unable to create FFTW plan.");
     }
 }
 } // namespace

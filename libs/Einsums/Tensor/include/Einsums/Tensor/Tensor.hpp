@@ -7,6 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/File.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
@@ -19,6 +20,7 @@
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
+#include <Einsums/TensorImpl/TensorImpl.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
@@ -47,6 +49,8 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+
+#include "Einsums/TensorImpl/TensorImplOperations.hpp"
 
 #if defined(EINSUMS_COMPUTE_CODE)
 #    include <hip/hip_common.h>
@@ -82,6 +86,34 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     using ValueType = T;
 
     /**
+     * @typedef Pointer
+     *
+     * @brief Type for pointers contained by this object.
+     */
+    using Pointer = T *;
+
+    /**
+     * @typedef ConstPointer
+     *
+     * @brief Type for const pointers contained by this object.
+     */
+    using ConstPointer = T const *;
+
+    /**
+     * @typedef Reference
+     *
+     * @brief Type for references to items in the object.
+     */
+    using Reference = T &;
+
+    /**
+     * @typedef ConstReference
+     *
+     * @brief Type for const references to items in the object.
+     */
+    using ConstReference = T const &;
+
+    /**
      * @property Rank
      *
      * @brief The rank of the tensor.
@@ -93,7 +125,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * This represents the internal storage method of the tensor.
      */
-    using Vector = VectorData<T>;
+    using Vector = BufferVector<T>;
 
     /**
      * @brief Construct a new Tensor object. Default constructor.
@@ -103,7 +135,13 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * @brief Construct a new Tensor object. Default copy constructor
      */
-    Tensor(Tensor const &) = default;
+    Tensor(Tensor const &other) : _name(other.name()), _data(other._data), _impl(other._impl) {
+        _impl.set_data(_data.data());
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+    }
 
     /**
      * @brief Destroy the Tensor object.
@@ -113,12 +151,22 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * @brief Default move constructor.
      */
-    Tensor(Tensor &&) = default;
+    Tensor(Tensor &&other) noexcept
+        : _name{std::move(other._name)}, _data{std::move(other._data)}, _dim_array{std::move(other._dim_array)},
+          _stride_array{std::move(other._stride_array)}, _impl{std::move(other._impl)} {}
 
     /**
      * @brief Default move assignment.
      */
-    Tensor &operator=(Tensor &&other) = default;
+    Tensor &operator=(Tensor &&other) noexcept {
+        _name         = std::move(other._name);
+        _data         = std::move(other._data);
+        _dim_array    = std::move(other._dim_array);
+        _stride_array = std::move(other._stride_array);
+        _impl         = std::move(other._impl);
+
+        return *this;
+    }
 
     /**
      * @brief Construct a new Tensor object with the given name and dimensions.
@@ -136,14 +184,54 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @param name Name of the new tensor.
      * @param dims The dimensions of each rank of the tensor.
      */
-    template <typename... Dims>
-    Tensor(std::string name, Dims... dims) : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
+    template <std::integral... Dims>
+        requires(sizeof...(Dims) == Rank)
+    Tensor(std::string name, Dims... dims)
+        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, false) {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
-        size_t size = dims_to_strides(_dims, _strides);
+        // Resize the data structure
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+    }
+
+    /**
+     * @brief Construct a new Tensor object with the given name and dimensions.
+     *
+     * Constructs a new Tensor object using the information provided in \p name and \p dims .
+     *
+     * @code
+     * auto A = Tensor("A", 3, 3);
+     * @endcode
+     *
+     * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     *
+     * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
+     * @param name Name of the new tensor.
+     * @param dims The dimensions of each rank of the tensor.
+     */
+    template <std::integral... Dims>
+        requires(sizeof...(Dims) == Rank)
+    Tensor(bool row_major, std::string name, Dims... dims)
+        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, row_major) {
+        static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
         // Resize the data structure
-        _data.resize(size);
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -173,11 +261,14 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
     template <size_t OtherRank, typename... Dims>
     explicit Tensor(Tensor<T, OtherRank> &&existingTensor, std::string name, Dims... dims)
-        : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...}, _data(std::move(existingTensor._data)) {
+        : _name{std::move(name)}, _data(std::move(existingTensor._data)) {
         static_assert(Rank == sizeof...(dims), "Declared rank does not match provided dims");
 
         // Check to see if the user provided a dim of "-1" in one place. If found then the user requests that we
         // compute this dimensionality of this "0" index for them.
+
+        auto _dims = std::array<ptrdiff_t, sizeof...(Dims)>{(ptrdiff_t)dims...};
+
         int nfound{0};
         int location{-1};
         for (auto [i, dim] : enumerate(_dims)) {
@@ -204,10 +295,15 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
             _dims[location] = existingTensor.size() / size;
         }
 
-        size_t size = dims_to_strides(_dims, _strides);
+        _impl = detail::TensorImpl<T>(_data.data(), _dims, existingTensor.impl().is_row_major());
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
 
         // Check size
-        if (_data.size() != size) {
+        if (_data.size() != _impl.size()) {
             EINSUMS_THROW_EXCEPTION(dimension_error, "Provided dims to not match size of parent tensor");
         }
     }
@@ -217,11 +313,33 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param dims The dimensions of the new tensor in Dim form.
      */
-    explicit Tensor(Dim<Rank> dims) : _dims{std::move(dims)} {
-        size_t size = dims_to_strides(_dims, _strides);
-
+    explicit Tensor(Dim<Rank> dims) : _impl(nullptr, dims) {
         // Resize the data structure
-        _data.resize(size);
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+    }
+
+    /**
+     * @brief Construct a new Tensor object using the dimensions given by Dim object.
+     *
+     * @param dims The dimensions of the new tensor in Dim form.
+     */
+    explicit Tensor(bool row_major, Dim<Rank> dims) : _impl(nullptr, dims, row_major) {
+        // Resize the data structure
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -231,19 +349,32 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param other The tensor view to copy.
      */
-    Tensor(TensorView<T, rank> const &other) : _name{other.name()}, _dims{other.dims()} {
-        size_t size = dims_to_strides(_dims, _strides);
-
+    Tensor(TensorView<T, rank> const &other) : _name{other.name()}, _impl(nullptr, other.dims(), false) {
         // Resize the data structure
-        _data.resize(size);
+        _data.resize(_impl.size());
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t sentinel = 0; sentinel < size; sentinel++) {
-            thread_local std::array<size_t, Rank> index;
+        _impl.set_data(_data.data());
 
-            sentinel_to_indices(sentinel, _strides, index);
+        detail::copy_to(other.impl(), _impl);
 
-            _data[sentinel] = subscript_tensor(other, index);
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+    }
+
+    /**
+     * @brief Construct a new Tensor from the implementation of another.
+     */
+    Tensor(detail::TensorImpl<T> const &other) : _impl(nullptr, other.dims()) {
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+        detail::copy_to(other, _impl);
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
         }
     }
 
@@ -253,16 +384,21 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @param dims The new dimensions of a tensor.
      */
     void resize(Dim<Rank> dims) {
-        if (_dims == dims) {
+        if (std::equal(_impl.dims().cbegin(), _impl.dims().cend(), dims.cbegin())) {
             return;
         }
 
-        _dims = dims;
-
-        size_t size = dims_to_strides(_dims, _strides);
+        _impl = detail::TensorImpl<T>(nullptr, dims, _impl.is_row_major());
 
         // Resize the data structure
-        _data.resize(size);
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -270,8 +406,8 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param dims The new dimensions of a tensor.
      */
-    template <typename... Dims>
-        requires((std::is_arithmetic_v<Dims> && ... && (sizeof...(Dims) == Rank)))
+    template <std::integral... Dims>
+        requires(sizeof...(Dims) == Rank)
     void resize(Dims... dims) {
         resize(Dim<Rank>{static_cast<size_t>(dims)...});
     }
@@ -296,7 +432,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @return T* A pointer to the data.
      */
-    T *data() { return _data.data(); }
+    Pointer data() { return _impl.data(); }
 
     /**
      * @brief Returns a constant pointer to the data.
@@ -306,7 +442,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @return const T* An immutable pointer to the data.
      */
-    T const *data() const { return _data.data(); }
+    ConstPointer data() const { return _impl.data(); }
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -323,21 +459,12 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @return A pointer into the tensor at the requested location.
      */
     template <typename... MultiIndex>
-        requires requires {
-            requires NoneOfType<AllT, MultiIndex...>;
-            requires NoneOfType<Range, MultiIndex...>;
-            requires NoneOfType<Dim<Rank>, MultiIndex...>;
-            requires NoneOfType<Offset<Rank>, MultiIndex...>;
-        }
-    auto data(MultiIndex... index) -> T * {
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
+    auto data(MultiIndex &&...index) -> Pointer {
 #if !defined(DOXYGEN)
-        assert(sizeof...(MultiIndex) <= _dims.size());
+        assert(sizeof...(MultiIndex) <= Rank);
 
-        auto index_list = std::array{static_cast<ptrdiff_t>(index)...};
-
-        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index_list);
-
-        return &_data[ordinal];
+        return _impl.data(std::forward<MultiIndex>(index)...);
 #endif
     }
 
@@ -353,19 +480,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @return const T&
      */
     template <typename... MultiIndex>
-        requires requires {
-            requires NoneOfType<AllT, MultiIndex...>;
-            requires NoneOfType<Range, MultiIndex...>;
-            requires NoneOfType<Dim<Rank>, MultiIndex...>;
-            requires NoneOfType<Offset<Rank>, MultiIndex...>;
-            requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
-        }
-    auto operator()(MultiIndex &&...index) const -> T const & {
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
+    auto operator()(MultiIndex &&...index) const -> ConstReference {
         static_assert(sizeof...(MultiIndex) == Rank);
 
-        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, std::forward<MultiIndex>(index)...);
-
-        return _data[ordinal];
+        return _impl.subscript(std::forward<MultiIndex>(index)...);
     }
 
     /**
@@ -378,11 +497,9 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @param index The explicit desired index into the tensor. Elements must be castable size_t.
      * @return const T&
      */
-    template <typename int_type>
-        requires requires { requires std::is_integral_v<int_type>; }
-    auto subscript(std::array<int_type, Rank> const &index) const -> T const & {
-        size_t ordinal = indices_to_sentinel(_strides, index);
-        return _data[ordinal];
+    template <Container Index>
+    auto subscript(Index const &index) const -> ConstReference {
+        return _impl.subscript_no_check(index);
     }
 
     /**
@@ -396,19 +513,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @return const T&
      */
     template <typename... MultiIndex>
-        requires requires {
-            requires NoneOfType<AllT, MultiIndex...>;
-            requires NoneOfType<Range, MultiIndex...>;
-            requires NoneOfType<Dim<Rank>, MultiIndex...>;
-            requires NoneOfType<Offset<Rank>, MultiIndex...>;
-            requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
-        }
-    auto subscript(MultiIndex &&...index) const -> T const & {
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
+    auto subscript(MultiIndex &&...index) const -> ConstReference {
         static_assert(sizeof...(MultiIndex) == Rank);
 
-        size_t ordinal = indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
-
-        return _data[ordinal];
+        return _impl.subscript_no_check(std::forward<MultiIndex>(index)...);
     }
 
     /**
@@ -423,18 +532,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @return T&
      */
     template <typename... MultiIndex>
-        requires requires {
-            requires NoneOfType<AllT, MultiIndex...>;
-            requires NoneOfType<Range, MultiIndex...>;
-            requires NoneOfType<Dim<Rank>, MultiIndex...>;
-            requires NoneOfType<Offset<Rank>, MultiIndex...>;
-            requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
-        }
-    auto operator()(MultiIndex &&...index) -> T & {
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
+    auto operator()(MultiIndex &&...index) -> Reference {
         static_assert(sizeof...(MultiIndex) == Rank);
 
-        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, std::forward<MultiIndex>(index)...);
-        return _data[ordinal];
+        return _impl.subscript(std::forward<MultiIndex>(index)...);
     }
 
     /**
@@ -447,11 +549,9 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @param index The explicit desired index into the tensor. Elements must be castable size_t.
      * @return T&
      */
-    template <typename int_type>
-        requires requires { requires std::is_integral_v<int_type>; }
-    auto subscript(std::array<int_type, Rank> const &index) -> T & {
-        size_t ordinal = indices_to_sentinel(_strides, index);
-        return _data[ordinal];
+    template <Container Index>
+    auto subscript(Index const &index) -> Reference {
+        return _impl.subscript_no_check(index);
     }
 
     /**
@@ -465,18 +565,11 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @return T&
      */
     template <typename... MultiIndex>
-        requires requires {
-            requires NoneOfType<AllT, MultiIndex...>;
-            requires NoneOfType<Range, MultiIndex...>;
-            requires NoneOfType<Dim<Rank>, MultiIndex...>;
-            requires NoneOfType<Offset<Rank>, MultiIndex...>;
-            requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...);
-        }
-    auto subscript(MultiIndex &&...index) -> T & {
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
+    auto subscript(MultiIndex &&...index) -> Reference {
         static_assert(sizeof...(MultiIndex) == Rank);
 
-        size_t ordinal = indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
-        return _data[ordinal];
+        return _impl.subscript_no_check(std::forward<MultiIndex>(index)...);
     }
 
     /**
@@ -489,46 +582,17 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @return A tensor view with the appropriate starting point and dimensions.
      */
     template <typename... MultiIndex>
-        requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
-    auto operator()(MultiIndex... index) -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
+        requires requires { requires AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>; }
+    auto operator()(MultiIndex const &...index)
+        -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
         // Construct a TensorView using the indices provided as the starting point for the view.
         // e.g.:
         //    Tensor T{"Big Tensor", 7, 7, 7, 7};
         //    T(0, 0) === T(0, 0, :, :) === TensorView{T, Dims<2>{7, 7}, Offset{0, 0}, Stride{49, 1}} ??
         // println("Here");
-        auto const &indices = std::forward_as_tuple(index...);
 
-        Offset<Rank>                                                                         offsets;
-        Stride<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> strides{};
-        Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>    dims{};
-
-        int counter{0};
-        for_sequence<sizeof...(MultiIndex)>([&](auto i) {
-            // println("looking at {}", i);
-            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, ptrdiff_t>) {
-                auto tmp = static_cast<ptrdiff_t>(std::get<i>(indices));
-                if (tmp < 0)
-                    tmp = _dims[i] + tmp;
-                offsets[i] = tmp;
-            } else if constexpr (std::is_same_v<AllT, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
-                strides[counter] = _strides[i];
-                dims[counter]    = _dims[i];
-                counter++;
-            } else if constexpr (std::is_same_v<Range, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
-                auto range       = std::get<i>(indices);
-                offsets[counter] = range[0];
-                if (range[1] < 0) {
-                    auto temp = _dims[i] + range[1];
-                    range[1]  = temp;
-                }
-                dims[counter]    = range[1] - range[0];
-                strides[counter] = _strides[i];
-                counter++;
-            }
-        });
-
-        return TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>{*this, std::move(dims), offsets,
-                                                                                                           strides};
+        return TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>{
+            _impl.template subscript<true>(index...), data()};
     }
 
     /**
@@ -541,118 +605,40 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @return A tensor view with the appropriate starting point and dimensions.
      */
     template <typename... MultiIndex>
-        requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
-    auto operator()(MultiIndex... index) const
+        requires requires { requires AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>; }
+    auto operator()(MultiIndex const &...index) const
         -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> const {
         // Construct a TensorView using the indices provided as the starting point for the view.
         // e.g.:
         //    Tensor T{"Big Tensor", 7, 7, 7, 7};
         //    T(0, 0) === T(0, 0, :, :) === TensorView{T, Dims<2>{7, 7}, Offset{0, 0}, Stride{49, 1}} ??
-        auto const &indices = std::forward_as_tuple(index...);
 
-        Offset<Rank>                                                                         offsets;
-        Stride<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> strides{};
-        Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>    dims{};
-
-        int counter{0};
-        for_sequence<sizeof...(MultiIndex)>([&](auto i) {
-            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, ptrdiff_t>) {
-                auto tmp = static_cast<ptrdiff_t>(std::get<i>(indices));
-                if (tmp < 0)
-                    tmp = _dims[i] + tmp;
-                offsets[i] = tmp;
-            } else if constexpr (std::is_same_v<AllT, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
-                strides[counter] = _strides[i];
-                dims[counter]    = _dims[i];
-                counter++;
-            } else if constexpr (std::is_same_v<Range, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
-                auto range       = std::get<i>(indices);
-                offsets[counter] = range[0];
-                if (range[1] < 0) {
-                    auto temp = _dims[i] + range[1];
-                    range[1]  = temp;
-                }
-                dims[counter]    = range[1] - range[0];
-                strides[counter] = _strides[i];
-                counter++;
-            }
-        });
-
-        return TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>{*this, std::move(dims), offsets,
-                                                                                                           strides};
-    }
-
-    /**
-     * Subscripts into the tensor, creating a view based on the given ranges
-     *
-     * @tparam MultiIndex The types of the Ranges.
-     * @param index The ranges.
-     * @return The view based on these ranges.
-     */
-    template <typename... MultiIndex>
-        requires NumOfType<Range, Rank, MultiIndex...>
-    auto operator()(MultiIndex... index) const -> TensorView<T, Rank> {
-        Dim<Rank>    dims{};
-        Offset<Rank> offset{};
-        Stride<Rank> stride = _strides;
-
-        auto ranges = arguments::get_array_from_tuple<std::array<Range, Rank>>(std::forward_as_tuple(index...));
-
-        for (int r = 0; r < Rank; r++) {
-            auto range = ranges[r];
-            offset[r]  = range[0];
-            if (range[1] < 0) {
-                auto temp = _dims[r] + range[1];
-                range[1]  = temp;
-            }
-            dims[r] = range[1] - range[0];
-        }
-
-        return TensorView<T, Rank>{*this, std::move(dims), std::move(offset), std::move(stride)};
+        return TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>(
+            _impl.template subscript<true>(index...));
     }
 
     /**
      * @copydoc Tensor<T, Rank>::operator(MultiIndex...) -> T&
      */
-    template <typename Container>
+    template <Container Index>
         requires requires {
-            requires !std::is_integral_v<Container>;
-            requires !std::is_same_v<Container, Dim<Rank>>;
-            requires !std::is_same_v<Container, Stride<Rank>>;
-            requires !std::is_same_v<Container, Offset<Rank>>;
-            requires !std::is_same_v<Container, Range>;
+            requires !std::is_same_v<Index, Offset<Rank>>;
+            requires !std::is_same_v<Index, Range>;
         }
-    T &operator()(Container const &index) {
-        if (index.size() < Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
-        } else if (index.size() > Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to Tensor!");
-        }
-
-        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
-        return _data[ordinal];
+    Reference operator()(Index const &index) {
+        return _impl.subscript(index);
     }
 
     /**
      * @copydoc Tensor<T, Rank>::operator(MultiIndex...) -> T&
      */
-    template <typename Container>
+    template <Container Index>
         requires requires {
-            requires !std::is_integral_v<Container>;
-            requires !std::is_same_v<Container, Dim<Rank>>;
-            requires !std::is_same_v<Container, Stride<Rank>>;
-            requires !std::is_same_v<Container, Offset<Rank>>;
-            requires !std::is_same_v<Container, Range>;
+            requires !std::is_same_v<Index, Offset<Rank>>;
+            requires !std::is_same_v<Index, Range>;
         }
-    T const &operator()(Container const &index) const {
-        if (index.size() < Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
-        } else if (index.size() > Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to Tensor!");
-        }
-
-        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
-        return _data[ordinal];
+    ConstReference operator()(Index const &index) const {
+        return _impl.subscript(index);
     }
 
     /**
@@ -669,15 +655,19 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         }
 
         if (realloc) {
-            _dims = other._dims;
+            _impl = other.impl();
 
-            size_t size = dims_to_strides(_dims, _strides);
+            _data.resize(_impl.size());
 
-            // Resize the data structure
-            _data.resize(size);
+            _impl.set_data(_data.data());
         }
 
-        std::copy(other._data.begin(), other._data.end(), _data.begin());
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+
+        detail::copy_to(other.impl(), _impl);
 
         return *this;
     }
@@ -692,31 +682,24 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     auto operator=(Tensor<TOther, Rank> const &other) -> Tensor & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
-            if (dim(i) == 0) {
+            if (dim(i) == 0 || (dim(i) != other.dim(i))) {
                 realloc = true;
-            } else if (dim(i) != other.dim(i)) {
-                if constexpr (Rank != 1) {
-                    EINSUMS_THROW_EXCEPTION(dimension_error, "dimensions do not match (this){} (other){}", dim(i), other.dim(i));
-                } else {
-                    realloc = true;
-                }
             }
         }
 
         if (realloc) {
-            _dims = other._dims;
+            _impl = detail::TensorImpl<T>(nullptr, other.dims(), other.impl().is_row_major());
 
-            size_t size = dims_to_strides(_dims, _strides);
+            _data.resize(_impl.size());
 
-            // Resize the data structure
-            _data.resize(size);
+            _impl.set_data(_data.data());
         }
 
-        size_t size = this->size();
+        detail::copy_to(other.impl(), _impl);
 
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t sentinel = 0; sentinel < size; sentinel++) {
-            _data[sentinel] = other.data()[sentinel];
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
         }
 
         return *this;
@@ -725,6 +708,14 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * Copy the data from a tensor of a different kind into this one.
      */
+
+    template <BasicTensorConcept OtherTensor>
+    auto operator=(OtherTensor const &other) -> Tensor & {
+        detail::copy_to(other.impl(), _impl);
+
+        return *this;
+    }
+
     template <TensorConcept OtherTensor>
         requires requires {
             requires !BasicTensorConcept<OtherTensor>;
@@ -737,7 +728,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < size; sentinel++) {
             thread_local std::array<size_t, Rank> index;
-            sentinel_to_indices(sentinel, _strides, index);
+            sentinel_to_indices(sentinel, _impl.strides(), index);
             _data[sentinel] = subscript_tensor(other, index);
         }
 
@@ -749,14 +740,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
     template <typename TOther>
     auto operator=(TensorView<TOther, Rank> const &other) -> Tensor & {
-        size_t size = this->size();
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t sentinel = 0; sentinel < size; sentinel++) {
-            thread_local std::array<size_t, Rank> index;
-            sentinel_to_indices(sentinel, _strides, index);
-            _data[sentinel] = other.subscript(index);
-        }
+        detail::copy_to(other.impl(), _impl);
 
         return *this;
     }
@@ -774,15 +758,20 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         }
 
         if (realloc) {
-            _dims = other.dims();
-
-            size_t size = dims_to_strides(_dims, _strides);
+            _impl = detail::TensorImpl<T>(nullptr, other.dims());
 
             // Resize the data structure
-            _data.resize(size);
+            _data.resize(size());
+
+            _impl.set_data(_data.data());
         }
 
-        hip_catch(hipMemcpy(_data.data(), other.gpu_data(), _strides[0] * _dims[0] * sizeof(T), hipMemcpyDeviceToHost));
+        hip_catch(hipMemcpy(_data.data(), other.gpu_data(), _impl.size() * sizeof(T), hipMemcpyDeviceToHost));
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
 
         return *this;
     }
@@ -796,60 +785,127 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         return *this;
     }
 
-#ifndef DOXYGEN
-#    define OPERATOR(OP)                                                                                                                   \
-        auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                  \
-            const size_t elements = this->size();                                                                                          \
-            T           *array    = this->data();                                                                                          \
-            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
-            for (size_t i = 0; i < elements; i++) {                                                                                        \
-                array[i] OP b;                                                                                                             \
-            }                                                                                                                              \
-            return *this;                                                                                                                  \
-        }                                                                                                                                  \
-                                                                                                                                           \
-        auto operator OP(const Tensor<T, Rank> &b)->Tensor<T, Rank> & {                                                                    \
-            if (size() != b.size()) {                                                                                                      \
-                EINSUMS_THROW_EXCEPTION(dimension_error, "tensors differ in size : {} {}", size(), b.size());                              \
-            }                                                                                                                              \
-            EINSUMS_OMP_PARALLEL {                                                                                                         \
-                auto tid       = omp_get_thread_num();                                                                                     \
-                auto chunksize = _data.size() / omp_get_num_threads();                                                                     \
-                auto abegin    = _data.begin() + chunksize * tid;                                                                          \
-                auto bbegin    = b._data.begin() + chunksize * tid;                                                                        \
-                auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                    \
-                auto j         = bbegin;                                                                                                   \
-                EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                    \
-                    (*i) OP(*j);                                                                                                           \
-                    j++;                                                                                                                   \
-                }                                                                                                                          \
-            }                                                                                                                              \
-            return *this;                                                                                                                  \
+    Tensor &operator+=(T const &b) {
+        detail::impl_scalar_add_contiguous(b, _impl);
+
+        return *this;
+    }
+
+    Tensor &operator-=(T const &b) {
+        detail::impl_scalar_add_contiguous(-b, _impl);
+
+        return *this;
+    }
+
+    Tensor &operator*=(T const &b) {
+        detail::impl_scal_contiguous(b, _impl);
+
+        return *this;
+    }
+
+    Tensor &operator/=(T const &b) {
+        detail::impl_div_scalar_contiguous(b, _impl);
+
+        return *this;
+    }
+
+    template <typename TOther>
+    Tensor &operator+=(Tensor<TOther, rank> const &other) {
+        if (_impl.is_column_major() == other.impl().is_column_major()) {
+            if constexpr (std::is_integral_v<T>) {
+                detail::impl_axpy_contiguous(T{1}, other.impl(), _impl);
+            } else {
+                detail::impl_axpy_contiguous(T{1.0}, other.impl(), _impl);
+            }
+        } else {
+            if constexpr (std::is_integral_v<T>) {
+                detail::impl_axpy(T{1}, other.impl(), _impl);
+            } else {
+                detail::impl_axpy(T{1.0}, other.impl(), _impl);
+            }
         }
 
-    OPERATOR(*=)
-    OPERATOR(/=)
-    OPERATOR(+=)
-    OPERATOR(-=)
+        return *this;
+    }
 
-#    undef OPERATOR
-#endif
+    template <typename TOther>
+    Tensor &operator-=(Tensor<TOther, rank> const &other) {
+        if (_impl.is_column_major() == other.impl().is_column_major()) {
+            if constexpr (std::is_integral_v<T>) {
+                detail::impl_axpy_contiguous(T{-1}, other.impl(), _impl);
+            } else {
+                detail::impl_axpy_contiguous(T{-1.0}, other.impl(), _impl);
+            }
+        } else {
+            if constexpr (std::is_integral_v<T>) {
+                detail::impl_axpy(T{-1}, other.impl(), _impl);
+            } else {
+                detail::impl_axpy(T{-1.0}, other.impl(), _impl);
+            }
+        }
+
+        return *this;
+    }
+
+    template <typename TOther>
+    Tensor &operator*=(Tensor<TOther, rank> const &other) {
+        if (_impl.is_column_major() == other.impl().is_column_major()) {
+            detail::impl_mult_contiguous(other.impl(), _impl);
+        } else {
+            detail::impl_mult(other.impl(), _impl);
+        }
+
+        return *this;
+    }
+
+    template <typename TOther>
+    Tensor &operator/=(Tensor<TOther, rank> const &other) {
+        if (_impl.is_column_major() == other.impl().is_column_major()) {
+            detail::impl_div_contiguous(other.impl(), _impl);
+        } else {
+            detail::impl_div(other.impl(), _impl);
+        }
+
+        return *this;
+    }
+
+    template <BasicTensorConcept TOther>
+    Tensor &operator+=(TOther const &other) {
+        detail::add_assign(other.impl(), _impl);
+
+        return *this;
+    }
+
+    template <BasicTensorConcept TOther>
+    Tensor &operator-=(TOther const &other) {
+        detail::sub_assign(other.impl(), _impl);
+
+        return *this;
+    }
+
+    template <BasicTensorConcept TOther>
+    Tensor &operator*=(TOther const &other) {
+        detail::mult_assign(other.impl(), _impl);
+
+        return *this;
+    }
+
+    template <BasicTensorConcept TOther>
+    Tensor &operator/=(TOther const &other) {
+        detail::div_assign(other.impl(), _impl);
+
+        return *this;
+    }
 
     /**
      * Get the dimension of the tensor along a given axis.
      */
-    size_t dim(int d) const {
-        // Add support for negative indices.
-        if (d < 0) {
-            d += Rank;
-        }
-        return _dims[d];
-    }
+    size_t dim(int d) const { return _impl.dim(d); }
 
     /**
      * Get all the dimensions of the tensor.
      */
-    Dim<Rank> dims() const { return _dims; }
+    Dim<Rank> const &dims() const { return _dim_array; }
 
     /**
      * Get the internal vector containing the tensor's data.
@@ -862,24 +918,18 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * Get the stride along a given axis.
      */
-    size_t stride(int d) const {
-        if (d < 0) {
-            d += Rank;
-        }
-        return _strides[d];
-    }
+    size_t stride(int d) const { return _impl.stride(d); }
 
     /**
      * Get the strides of this tensor.
      */
-    Stride<Rank> strides() const { return _strides; }
+    Stride<Rank> const &strides() const { return _stride_array; }
 
     /**
      * Flatten out the tensor.
      */
     auto to_rank_1_view() const -> TensorView<T, 1> {
-        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
-        Dim<1> dim{size};
+        Dim<1> dim{size()};
 
         return TensorView<T, 1>{*this, dim};
     }
@@ -887,7 +937,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * Returns the linear size of the tensor.
      */
-    [[nodiscard]] size_t size() const { return _dims[0] * _strides[0]; }
+    [[nodiscard]] size_t size() const { return _impl.size(); }
 
     /**
      * Indicates that the tensor is contiguous.
@@ -904,11 +954,25 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
     void set_name(std::string const &new_name) { _name = new_name; };
 
+    /**
+     * Get the implementation of the tensor.
+     */
+    detail::TensorImpl<T> &impl() { return _impl; }
+
+    /**
+     * Get the implementation of the tensor.
+     */
+    detail::TensorImpl<T> const &impl() const { return _impl; }
+
   private:
-    std::string  _name{"(unnamed)"};
-    Dim<Rank>    _dims;
-    Stride<Rank> _strides;
-    Vector       _data;
+    std::string _name{"(unnamed)"};
+
+    BufferVector<T> _data{};
+
+    detail::TensorImpl<T> _impl{};
+
+    Dim<Rank>    _dim_array;
+    Stride<Rank> _stride_array;
 
     template <typename T_, size_t Rank_>
     friend struct TensorView;
@@ -1093,6 +1157,34 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     using ValueType = T;
 
     /**
+     * @typedef Pointer
+     *
+     * @brief Type for pointers contained by this object.
+     */
+    using Pointer = T *;
+
+    /**
+     * @typedef ConstPointer
+     *
+     * @brief Type for const pointers contained by this object.
+     */
+    using ConstPointer = T const *;
+
+    /**
+     * @typedef Reference
+     *
+     * @brief Type for references to items in the object.
+     */
+    using Reference = T &;
+
+    /**
+     * @typedef ConstReference
+     *
+     * @brief Type for const references to items in the object.
+     */
+    using ConstReference = T const &;
+
+    /**
      * @property Rank
      *
      * @brief The rank of the tensor view.
@@ -1124,42 +1216,41 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Creates a view of a tensor with the given properties.
      */
-    template <size_t OtherRank, typename... Args>
-    explicit TensorView(Tensor<T, OtherRank> const &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
-        common_initialization(const_cast<Tensor<T, OtherRank> &>(other), args...);
+    template <size_t OtherRank, Container Dim, typename... Args>
+    explicit TensorView(Tensor<T, OtherRank> const &other, Dim const &dims, Args &&...args) : _name{other._name} {
+        common_initialization(const_cast<Tensor<T, OtherRank> &>(other), dims, std::forward<Args>(args)...);
     }
 
     /**
      * Creates a view of a tensor with the given properties.
      */
-    template <size_t OtherRank, typename... Args>
-    explicit TensorView(Tensor<T, OtherRank> &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
-        common_initialization(other, args...);
+    template <size_t OtherRank, Container Dim, typename... Args>
+    explicit TensorView(Tensor<T, OtherRank> &other, Dim const &dims, Args &&...args) : _name{other._name} {
+        common_initialization(other, dims, std::forward<Args>(args)...);
     }
 
     /**
      * Creates a view of a tensor with the given properties.
      */
-    template <size_t OtherRank, typename... Args>
-    explicit TensorView(TensorView<T, OtherRank> &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
-        common_initialization(other, args...);
+    template <size_t OtherRank, Container Dim, typename... Args>
+    explicit TensorView(TensorView<T, OtherRank> &other, Dim const &dims, Args &&...args) : _name{other._name} {
+        common_initialization(other, dims, std::forward<Args>(args)...);
     }
 
     /**
      * Creates a view of a tensor with the given properties.
      */
-    template <size_t OtherRank, typename... Args>
-    explicit TensorView(TensorView<T, OtherRank> const &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
-        common_initialization(const_cast<TensorView<T, OtherRank> &>(other), args...);
+    template <size_t OtherRank, Container Dim, typename... Args>
+    explicit TensorView(TensorView<T, OtherRank> const &other, Dim const &dims, Args &&...args) : _name{other._name} {
+        common_initialization(const_cast<TensorView<T, OtherRank> &>(other), dims, std::forward<Args>(args)...);
     }
 
     /**
      * Creates a view of a tensor with the given properties.
      */
-    template <size_t OtherRank, typename... Args>
-    explicit TensorView(std::string name, Tensor<T, OtherRank> &other, Dim<Rank> const &dim, Args &&...args)
-        : _name{std::move(name)}, _dims{dim} {
-        common_initialization(other, args...);
+    template <size_t OtherRank, Container Dim, typename... Args>
+    explicit TensorView(std::string name, Tensor<T, OtherRank> &other, Dim const &dims, Args &&...args) : _name{std::move(name)} {
+        common_initialization(other, dims, std::forward<Args>(args)...);
     }
 
     /**
@@ -1168,12 +1259,14 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param data The pointer to wrap.
      * @param dims The dimensions of the view.
      */
-    explicit TensorView(T const *data, Dim<Rank> const &dims) : _dims(dims), _full_view_of_underlying{true}, _data{const_cast<T *>(data)} {
-        dims_to_strides(dims, _strides);
-        dims_to_strides(dims, _index_strides);
-        _source_dims = dims;
+    explicit TensorView(T const *data, Dim<Rank> const &dims, bool row_major = false)
+        : _impl(const_cast<T *>(data), dims, row_major), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
-        _offset_ordinal = 0;
+        _source_dims = dims;
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -1182,12 +1275,14 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param data The pointer to wrap.
      * @param dims The dimensions of the view.
      */
-    explicit TensorView(T *data, Dim<Rank> const &dims) : _dims(dims), _full_view_of_underlying{true}, _data{const_cast<T *>(data)} {
-        dims_to_strides(dims, _strides);
-        dims_to_strides(dims, _index_strides);
-        _source_dims = dims;
+    explicit TensorView(T *data, Dim<Rank> const &dims, bool row_major = false)
+        : _impl(const_cast<T *>(data), dims, row_major), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
-        _offset_ordinal = 0;
+        _source_dims = dims;
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
     }
 
     /**
@@ -1198,37 +1293,12 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param strides The strides for the view.
      */
     explicit TensorView(T const *data, Dim<Rank> const &dims, Stride<Rank> const &strides)
-        : _dims(dims), _strides(strides), _data{const_cast<T *>(data)} {
-        dims_to_strides(dims, _index_strides);
-        _full_view_of_underlying = (strides == _index_strides);
-        _source_dims             = dims; // Must have size Rank
-        _offsets.fill(0);                // No offset given, taken to be zero
-        _offset_ordinal = 0;             // Follows
-
-        if (Rank > 0 && _strides[Rank - 1] == 0) {
-            _strides[Rank - 1] = 1;
-        }
-
-        for (ptrdiff_t i = (ptrdiff_t)Rank - 2; i >= 0; i--) {
-            if (_strides[i] == 0) {
-                _strides[i] = _strides[i + 1];
-            }
-        }
-
-        // Check access is in increasing stride
-        for (size_t i = 0; i < Rank - 1; i++) {
-            if (_strides[i] < _strides[i + 1]) {
-                EINSUMS_THROW_EXCEPTION(dimension_error,
-                                        "Strides must be in decreasing order - else unexpected permute behaviour will ensue");
-            }
-        }
-        if (!_full_view_of_underlying) { // Fuses Indices if Rank < OtherRank (as OtherRank is not known)
-            size_t current_stride = 1;
-            for (int i = Rank - 1; i >= 1; i--) {
-                _source_dims[i] = _strides[i - 1] / current_stride;
-                current_stride *= _source_dims[i];
-            }
-            _source_dims[0] = (_strides[0] * _dims[0]) / current_stride; // stride[0] must be the largest
+        : _impl(const_cast<T *>(data), dims, strides), _parent{const_cast<T *>(data)} {
+        _offsets.fill(0);
+        _source_dims = dims;
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
         }
     }
 
@@ -1240,37 +1310,38 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param strides The strides for the view.
      */
     explicit TensorView(T *data, Dim<Rank> const &dims, Stride<Rank> const &strides)
-        : _dims(dims), _strides(strides), _data{const_cast<T *>(data)} {
-        dims_to_strides(dims, _index_strides);
-        _full_view_of_underlying = (strides == _index_strides);
-        _source_dims             = dims;
+        : _impl(const_cast<T *>(data), dims, strides), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
-        _offset_ordinal = 0;
-
-        if (Rank > 0 && _strides[Rank - 1] == 0) {
-            _strides[Rank - 1] = 1;
+        _source_dims = dims;
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
         }
+    }
 
-        for (ptrdiff_t i = (ptrdiff_t)Rank - 2; i >= 0; i--) {
-            if (_strides[i] == 0) {
-                _strides[i] = _strides[i + 1];
-            }
+    explicit TensorView(detail::TensorImpl<T> const &impl) : _impl(impl), _parent{const_cast<T *>(impl.data())} {
+        _offsets.fill(0);
+        _source_dims = Dim<Rank>(impl.dims().begin(), impl.dims().end());
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
         }
+    }
+    explicit TensorView(detail::TensorImpl<T> const &impl, T *parent) : _impl(impl), _parent{parent} {
+        _offsets.fill(0);
+        _source_dims = Dim<Rank>(impl.dims().begin(), impl.dims().end());
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+    }
 
-        // Check access is in increasing stride
-        for (size_t i = 0; i < Rank - 1; i++) {
-            if (_strides[i] < _strides[i + 1]) {
-                EINSUMS_THROW_EXCEPTION(dimension_error,
-                                        "Strides must be in decreasing order - Else unexpected permute behaviour will pursue");
-            }
-        }
-        if (!_full_view_of_underlying) { // Fuses Indices if Rank < OtherRank (as OtherRank is not known)
-            size_t current_stride = 1;
-            for (int i = dims.size() - 1; i >= 1; i--) {
-                _source_dims[i] = strides[i - 1] / current_stride;
-                current_stride *= _source_dims[i];
-            }
-            _source_dims[0] = (_strides[0] * _dims[0]) / current_stride;
+    explicit TensorView(detail::TensorImpl<T> const &impl, T const *parent) : _impl(impl), _parent{const_cast<T *>(parent)} {
+        _offsets.fill(0);
+        _source_dims = Dim<Rank>(impl.dims().begin(), impl.dims().end());
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
         }
     }
 
@@ -1283,16 +1354,9 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         // Can't perform checks on data. Assume the user knows what they're doing.
         // This function is used when interfacing with libint2.
 
-        size_t elements = this->size();
+        detail::TensorImpl<T> other_impl(const_cast<T *>(other), _impl.dims(), true);
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t item = 0; item < elements; item++) {
-            size_t new_item;
-
-            sentinel_to_sentinels(item, _index_strides, _strides, new_item);
-
-            this->_data[new_item + _offset_ordinal] = other[item];
-        }
+        detail::copy_to(other_impl, _impl);
 
         return *this;
     }
@@ -1304,20 +1368,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         if (this == &other)
             return *this;
 
-        if (this->size() != other.size() || this->dims() != other.dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform copy assignment. The tensor views have different dimensions.");
-        }
-
-        size_t elements = this->size();
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t item = 0; item < elements; item++) {
-            size_t out_item, in_item;
-
-            sentinel_to_sentinels(item, _index_strides, _strides, out_item, other._strides, in_item);
-
-            this->_data[out_item + _offset_ordinal] = other.data()[in_item];
-        }
+        detail::copy_to(other.impl(), _impl);
 
         return *this;
     }
@@ -1333,31 +1384,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
                 return *this;
         }
 
-        if (this->size() != other.size() || this->dims() != other.dims()) {
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform copy assignment. The tensor views have different dimensions.");
-        }
-
-        size_t elements = this->size();
-
-        if (other.full_view_of_underlying()) {
-            EINSUMS_OMP_PARALLEL_FOR
-            for (size_t item = 0; item < elements; item++) {
-                size_t out_item, in_item;
-
-                sentinel_to_sentinels(item, _index_strides, _strides, out_item);
-
-                this->_data[out_item + _offset_ordinal] = other.data()[item];
-            }
-        } else {
-            EINSUMS_OMP_PARALLEL_FOR
-            for (size_t item = 0; item < elements; item++) {
-                size_t out_item, in_item;
-
-                sentinel_to_sentinels(item, _index_strides, _strides, out_item, other._strides, in_item);
-
-                this->_data[out_item + _offset_ordinal] = other.data()[in_item];
-            }
-        }
+        detail::copy_to(other.impl(), _impl);
 
         return *this;
     }
@@ -1366,74 +1393,80 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * Fill this view with a single value.
      */
     auto operator=(T const &fill_value) -> TensorView & {
-        size_t elements = this->size();
+        detail::copy_to(fill_value, _impl);
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t item = 0; item < elements; item++) {
-            size_t out_item;
-
-            sentinel_to_sentinels(item, _index_strides, _strides, out_item);
-
-            this->_data[out_item + _offset_ordinal] = fill_value;
-        }
         return *this;
     }
 
     void zero() { *this = T{0.0}; }
 
-#ifndef DOXYGEN
-#    if defined(OPERATOR)
-#        undef OPERATOR
-#    endif
-#    define OPERATOR(OP)                                                                                                                   \
-        auto operator OP(const T &value)->TensorView & {                                                                                   \
-            size_t elements = this->size();                                                                                                \
-                                                                                                                                           \
-            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
-            for (size_t item = 0; item < elements; item++) {                                                                               \
-                size_t out_item;                                                                                                           \
-                                                                                                                                           \
-                sentinel_to_sentinels(item, _index_strides, _strides, out_item);                                                           \
-                                                                                                                                           \
-                this->_data[out_item + _offset_ordinal] OP value;                                                                          \
-            }                                                                                                                              \
-                                                                                                                                           \
-            return *this;                                                                                                                  \
-        }
+    void set_all(T value) { *this = value; }
 
-    OPERATOR(*=)
-    OPERATOR(/=)
-    OPERATOR(+=)
-    OPERATOR(-=)
+    template <typename TOther>
+    TensorView &operator+=(TOther const &b) {
+        detail::add_assign(b, _impl);
 
-#    undef OPERATOR
-#endif
+        return *this;
+    }
+
+    template <typename TOther>
+    TensorView &operator-=(TOther const &b) {
+        detail::sub_assign(b, _impl);
+
+        return *this;
+    }
+
+    template <typename TOther>
+    TensorView &operator*=(TOther const &b) {
+        detail::mult_assign(b, _impl);
+
+        return *this;
+    }
+
+    template <typename TOther>
+    TensorView &operator/=(TOther const &b) {
+        detail::div_assign(b, _impl);
+
+        return *this;
+    }
+
+    template <BasicTensorConcept TOther>
+    TensorView &operator+=(TOther const &b) {
+        detail::add_assign(b.impl(), _impl);
+
+        return *this;
+    }
+
+    template <BasicTensorConcept TOther>
+    TensorView &operator-=(TOther const &b) {
+        detail::sub_assign(b.impl(), _impl);
+
+        return *this;
+    }
+
+    template <BasicTensorConcept TOther>
+    TensorView &operator*=(TOther const &b) {
+        detail::mult_assign(b.impl(), _impl);
+
+        return *this;
+    }
+
+    template <BasicTensorConcept TOther>
+    TensorView &operator/=(TOther const &b) {
+        detail::div_assign(b.impl(), _impl);
+
+        return *this;
+    }
 
     /**
      * Get a pointer to the data.
      */
-    T *data() {
-        auto offset_data = &_data[_offset_ordinal];
-        return offset_data;
-    }
+    Pointer data() { return _impl.data(); }
 
     /**
      * @copydoc TensorView<T,Rank>::data()
      */
-    T const *data() const {
-        auto offset_data = &_data[_offset_ordinal];
-        return static_cast<T const *>(offset_data);
-    }
-
-    /**
-     * Get a pointer to the data without the offset included.
-     */
-    T *full_data() { return _data; }
-
-    /**
-     * @copydoc TensorView<T,Rank>::data()
-     */
-    T const *full_data() const { return static_cast<T const *>(_data); }
+    ConstPointer data() const { return _impl.data(); }
 
     /**
      * Get a pointer to the data at a certain index in the tensor.
@@ -1441,13 +1474,9 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param index The index for the offset.
      */
     template <typename... MultiIndex>
-    auto data(MultiIndex... index) const -> T * {
-        assert(sizeof...(MultiIndex) <= _dims.size());
-
-        auto index_list = std::array{static_cast<ptrdiff_t>(index)...};
-
-        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index_list);
-        return &_data[ordinal + _offset_ordinal];
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
+    auto data(MultiIndex &&...index) const -> ConstPointer {
+        return _impl.data(std::forward<MultiIndex>(index)...);
     }
 
     /**
@@ -1455,9 +1484,60 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      *
      * @param index_list The index for the offset.
      */
-    auto data_array(std::array<size_t, Rank> const &index_list) const -> T * {
-        size_t ordinal = indices_to_sentinel(_strides, index_list);
-        return &_data[ordinal + _offset_ordinal];
+    template <Container Index>
+    auto data(Index const &index_list) const -> ConstPointer {
+        return _impl.data(index_list);
+    }
+
+    /**
+     * Get a pointer to the data at a certain index in the tensor.
+     *
+     * @param index The index for the offset.
+     */
+    template <typename... MultiIndex>
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
+    auto data(MultiIndex &&...index) -> Pointer {
+        return _impl.data(std::forward<MultiIndex>(index)...);
+    }
+
+    /**
+     * Get a pointer to the data at a certain index in the tensor.
+     *
+     * @param index_list The index for the offset.
+     */
+    template <Container Index>
+    auto data(Index const &index_list) -> Pointer {
+        return _impl.data(index_list);
+    }
+
+    /**
+     * Get a pointer to the data at a certain index in the tensor.
+     *
+     * @param index_list The index for the offset.
+     */
+    template <Container Index>
+    [[deprecated("The data_array method will be removed in the future. Its functionality will be taken by data.")]] auto
+    data_array(Index const &index_list) const -> Pointer {
+        return const_cast<Pointer>(data(index_list));
+    }
+
+    Pointer full_data() noexcept { return _parent; }
+
+    ConstPointer full_data() const noexcept { return _parent; }
+
+    /**
+     * @brief Subscript into the tensor.
+     *
+     * Wraps negative indices and checks the bounds.
+     *
+     * @param index The indices to use for the subscript.
+     */
+    template <typename... MultiIndex>
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
+    auto operator()(MultiIndex &&...index) const -> ConstReference {
+        static_assert(sizeof...(MultiIndex) == Rank);
+
+        return _impl.subscript(std::forward<MultiIndex>(index)...);
     }
 
     /**
@@ -1468,26 +1548,11 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param index The indices to use for the subscript.
      */
     template <typename... MultiIndex>
-    auto operator()(MultiIndex &&...index) const -> T const & {
+        requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
+    auto operator()(MultiIndex &&...index) -> Reference {
         static_assert(sizeof...(MultiIndex) == Rank);
 
-        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, std::forward<MultiIndex>(index)...);
-        return _data[ordinal + _offset_ordinal];
-    }
-
-    /**
-     * @brief Subscript into the tensor.
-     *
-     * Wraps negative indices and checks the bounds.
-     *
-     * @param index The indices to use for the subscript.
-     */
-    template <typename... MultiIndex>
-    auto operator()(MultiIndex &&...index) -> T & {
-        static_assert(sizeof...(MultiIndex) == Rank);
-
-        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, std::forward<MultiIndex>(index)...);
-        return _data[ordinal + _offset_ordinal];
+        return _impl.subscript(std::forward<MultiIndex>(index)...);
     }
 
     /**
@@ -1499,10 +1564,9 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
-    auto subscript(MultiIndex &&...index) const -> T const & {
+    auto subscript(MultiIndex &&...index) const -> ConstReference {
         static_assert(sizeof...(MultiIndex) == Rank);
-        size_t ordinal = indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
-        return _data[ordinal + _offset_ordinal];
+        return _impl.subscript_no_check(std::forward<MultiIndex>(index)...);
     }
 
     /**
@@ -1514,11 +1578,10 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
-    auto subscript(MultiIndex &&...index) -> T & {
+    auto subscript(MultiIndex &&...index) -> Reference {
         static_assert(sizeof...(MultiIndex) == Rank);
 
-        size_t ordinal = indices_to_sentinel(_strides, std::forward<MultiIndex>(index)...);
-        return _data[ordinal + _offset_ordinal];
+        return _impl.subscript_no_check(std::forward<MultiIndex>(index)...);
     }
 
     /**
@@ -1530,9 +1593,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
-    auto subscript(std::array<int_type, Rank> const &index) const -> T const & {
-        size_t ordinal = indices_to_sentinel(_strides, index);
-        return _data[ordinal + _offset_ordinal];
+    auto subscript(std::array<int_type, Rank> const &index) const -> ConstReference {
+        return _impl.subscript_no_check(index);
     }
 
     /**
@@ -1544,9 +1606,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
-    auto subscript(std::array<int_type, Rank> const &index) -> T & {
-        size_t ordinal = indices_to_sentinel(_strides, index);
-        return _data[ordinal + _offset_ordinal];
+    auto subscript(std::array<int_type, Rank> const &index) -> Reference {
+        return _impl.subscript_no_check(index);
     }
 
     /**
@@ -1564,15 +1625,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             requires !std::is_same_v<Container, Offset<Rank>>;
             requires !std::is_same_v<Container, Range>;
         }
-    T &operator()(Container const &index) {
-        if (index.size() < Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
-        } else if (index.size() > Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to Tensor!");
-        }
-
-        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
-        return _data[ordinal + _offset_ordinal];
+    Reference operator()(Container const &index) {
+        return _impl.subscript(index);
     }
 
     /**
@@ -1590,15 +1644,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             requires !std::is_same_v<Container, Offset<Rank>>;
             requires !std::is_same_v<Container, Range>;
         }
-    T const &operator()(Container const &index) const {
-        if (index.size() < Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
-        } else if (index.size() > Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to Tensor!");
-        }
-
-        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
-        return _data[ordinal + _offset_ordinal];
+    ConstReference operator()(Container const &index) const {
+        return _impl.subscript(index);
     }
 
     /**
@@ -1606,30 +1653,34 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      *
      * @param d The axis to query.
      */
-    size_t dim(int d) const {
-        if (d < 0)
-            d += Rank;
-        return _dims[d];
-    }
+    size_t dim(int d) const { return _impl.dim(d); }
 
     /**
      * Get the dimension of the original tensor along a given axis.
      */
     size_t source_dim(int d) const {
-        if (d < 0)
-            d += Rank;
-        return _source_dims[d];
+        int temp = d;
+        if (temp < 0) {
+            temp += Rank;
+        }
+
+        if (temp < 0 || temp >= Rank) {
+            EINSUMS_THROW_EXCEPTION(std::out_of_range, "Index to the source dims was out of range! Expected between {} and {}, got {}.",
+                                    -(ptrdiff_t)Rank, Rank - 1, d);
+        }
+
+        return _source_dims[temp];
     }
 
     /**
      * Get the dimensions of the view.
      */
-    Dim<Rank> dims() const { return _dims; }
+    Dim<Rank> const &dims() const { return _dim_array; }
 
     /**
      * Get the dimensions of the original tensor.
      */
-    Dim<Rank> source_dims() const { return _source_dims; }
+    Dim<Rank> const &source_dims() const { return _source_dims; }
 
     /**
      * Get the name of the view.
@@ -1648,24 +1699,28 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      *
      * @param d The axis to query.
      */
-    size_t stride(int d) const noexcept {
-        if (d < 0)
-            d += Rank;
-        return _strides[d];
-    }
+    size_t stride(int d) const { return _impl.stride(d); }
 
     /**
      * Get the strides of the tensor.
      */
-    Stride<Rank> strides() const noexcept { return _strides; }
+    Stride<Rank> const &strides() const noexcept { return _stride_array; }
 
     /**
      * Get the offset of the view along a given axis.
      */
-    size_t offset(int d) const noexcept {
-        if (d < 0)
-            d += Rank;
-        return _offsets[d];
+    size_t offset(int d) const {
+        int temp = d;
+        if (temp < 0) {
+            temp += Rank;
+        }
+
+        if (temp < 0 || temp >= Rank) {
+            EINSUMS_THROW_EXCEPTION(std::out_of_range, "Index to the offsets was out of range! Expected between {} and {}, got {}.",
+                                    -(ptrdiff_t)Rank, Rank - 1, d);
+        }
+
+        return _offsets[temp];
     }
 
     /**
@@ -1682,10 +1737,10 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         if constexpr (Rank == 1) {
             return *this;
         } else {
-            if (_strides[Rank - 1] != 1) {
+            if (std::min(_impl.stride(0), _impl.stride(-1)) != 1) {
                 EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Creating a Rank-1 TensorView for this Tensor(View) is not supported.");
             }
-            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+            size_t size = Rank == 0 ? 0 : std::max(stride(0) * dim(0), stride(-1) * dim(-1));
             Dim<1> dim{size};
 
 #if defined(EINSUMS_SHOW_WARNING)
@@ -1699,53 +1754,51 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Check whether the view has all elements of the tensor it is viewing.
      */
-    bool full_view_of_underlying() const noexcept { return _full_view_of_underlying; }
+    bool full_view_of_underlying() const noexcept { return _impl.is_contiguous(); }
 
     /**
      * Get the number of elements in the view.
      */
-    size_t size() const { return _dims[0] * _index_strides[0]; }
+    size_t size() const { return _impl.size(); }
+
+    /**
+     * Get the underlying implementation details.
+     */
+    detail::TensorImpl<T> &impl() noexcept { return _impl; }
+
+    /**
+     * Get the underlying implementation details.
+     */
+    detail::TensorImpl<T> const &impl() const noexcept { return _impl; }
 
   private:
-    /**
-     * Initialize the view using a pointer.
-     */
-    auto common_initialization(T const *other) {
-        _data = const_cast<T *>(other);
-
-        dims_to_strides(_dims, _index_strides);
-        dims_to_strides(_dims, _strides);
-        _source_dims = _dims;
-        _offsets.fill(0);
-        _offset_ordinal = 0;
-
-        // At this time we'll assume we have full view of the underlying tensor since we were only provided
-        // pointer.
-        _full_view_of_underlying = true;
-    }
-
     /**
      * Initialize a view using a tensor.
      */
     template <TensorConcept TensorType, typename... Args>
         requires(std::is_same_v<T, typename TensorType::ValueType>)
-    auto common_initialization(TensorType &other, Args &&...args) -> void {
+    auto common_initialization(TensorType &other, Dim<Rank> const &dims, Args &&...args) -> void {
         constexpr size_t OtherRank = TensorType::Rank;
 
         static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
+
+        _parent = other.data();
 
         // set_mutex(other.get_mutex());
         Stride<Rank>      default_strides{};
         Offset<OtherRank> default_offsets{};
         Offset<OtherRank> temp_offsets{};
         Stride<Rank>      error_strides{};
-        error_strides[0] = -1;
+        error_strides[0]   = -1;
+        Dim<Rank>    _dims = dims;
+        Stride<Rank> _strides{};
+        T           *_data;
 
         // Check to see if the user provided a dim of "-1" in one place. If found then the user requests that we compute this
         // dimensionality for them.
         int nfound{0};
         int location{-1};
-        for (auto [i, dim] : enumerate(_dims)) {
+        for (auto [i, dim] : enumerate(dims)) {
             if (dim == -1) {
                 nfound++;
                 location = i;
@@ -1783,13 +1836,13 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
         // If the Ranks are the same then use "other"s stride information
         if constexpr (Rank == OtherRank) {
-            default_strides = other._strides;
+            default_strides = other.strides();
             // Else since we're different Ranks we cannot automatically determine our stride and the user MUST
             // provide the information
         } else {
             if (std::accumulate(_dims.begin(), _dims.end(), 1.0, std::multiplies()) ==
-                std::accumulate(other._dims.begin(), other._dims.end(), 1.0, std::multiplies())) {
-                dims_to_strides(_dims, default_strides);
+                std::accumulate(other.dims().begin(), other.dims().end(), 1.0, std::multiplies())) {
+                dims_to_strides(_dims, default_strides, other.impl().is_row_major());
             } else {
                 // Stride information cannot be automatically deduced.  It must be provided.
                 default_strides = arguments::get(error_strides, args...);
@@ -1804,16 +1857,16 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         // Use default_* unless the caller provides one to use.
         _strides       = arguments::get(default_strides, args...);
         temp_offsets   = arguments::get(default_offsets, args...);
-        size_t ordinal = indices_to_sentinel(other._strides, temp_offsets);
+        size_t ordinal = indices_to_sentinel(other.strides(), temp_offsets);
 
         // Find source dimensions
         if constexpr (std::is_same_v<TensorType, TensorView<T, Rank>>) {
-            _source_dims    = other._source_dims;
+            _source_dims    = other.dims();
             _offsets        = temp_offsets;
             _offset_ordinal = ordinal;
             ordinal         = 0;
         } else if constexpr (std::is_same_v<TensorType, Tensor<T, Rank>>) {
-            _source_dims    = other._dims;
+            _source_dims    = other.dims();
             _offsets        = temp_offsets;
             _offset_ordinal = ordinal;
             ordinal         = 0;
@@ -1822,26 +1875,51 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             // In decreasing strides when matching the correct dimension is reached (dim[i] = 1 is neglected)
             // Where dimenions less than the outermost are skipped these are incorporated into the dimension inner to it
             // If there are no further inner strides, the inner stride is non-zero to account for missing dimensionality.
-            size_t current_stride    = 1;
-            size_t tensor_index      = 0;
-            size_t cumulative_stride = 1;
-            for (int i = 0; i < Rank; i++) {
-                _source_dims[i]   = 0;
-                cumulative_stride = 1;
-                current_stride    = _strides[i];
-                while (_source_dims[i] == 0) {
-                    cumulative_stride *= other._dims[tensor_index];
-                    if (other._strides[tensor_index] == current_stride) {
-                        _source_dims[i] = cumulative_stride;
-                        _offsets[i]     = temp_offsets[tensor_index];
+
+            if (other.impl().is_column_major()) {
+                size_t current_stride    = 1;
+                size_t tensor_index      = 0;
+                size_t cumulative_stride = 1;
+                for (int i = 0; i < Rank; i++) {
+                    _source_dims[i]   = 0;
+                    cumulative_stride = 1;
+                    current_stride    = _strides[i];
+                    while (_source_dims[i] == 0) {
+                        if (other.stride(tensor_index) == current_stride) {
+                            _source_dims[i] = cumulative_stride;
+                            _offsets[i]     = temp_offsets[tensor_index];
+                        }
+                        cumulative_stride *= other.dim(tensor_index);
+                        tensor_index++;
                     }
-                    tensor_index++;
+                    if (_source_dims[i] == 0) {
+                        EINSUMS_THROW_EXCEPTION(bad_logic,
+                                                "Unable to deduce source dimensions. Stride does not follow source tensor dimensions.");
+                    }
                 }
-                if (_source_dims[i] == 0) {
-                    EINSUMS_THROW_EXCEPTION(bad_logic,
-                                            "Unable to deduce source dimensions. Stride does not follow source tensor dimensions.");
+            } else {
+                size_t current_stride    = 1;
+                size_t tensor_index      = 0;
+                size_t cumulative_stride = 1;
+                for (int i = 0; i < Rank; i++) {
+                    _source_dims[i]   = 0;
+                    cumulative_stride = 1;
+                    current_stride    = _strides[i];
+                    while (_source_dims[i] == 0) {
+                        cumulative_stride *= other.dim(tensor_index);
+                        if (other.stride(tensor_index) == current_stride) {
+                            _source_dims[i] = cumulative_stride;
+                            _offsets[i]     = temp_offsets[tensor_index];
+                        }
+                        tensor_index++;
+                    }
+                    if (_source_dims[i] == 0) {
+                        EINSUMS_THROW_EXCEPTION(bad_logic,
+                                                "Unable to deduce source dimensions. Stride does not follow source tensor dimensions.");
+                    }
                 }
             }
+
             _offset_ordinal = indices_to_sentinel(_strides, _offsets); // Only counts offsets that are in the view
             ordinal -= _offset_ordinal;
         }
@@ -1857,18 +1935,13 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         }
 
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
-        _data = &(other._data[ordinal]);
+        _data = &(other.data()[_offset_ordinal]);
 
-        // Calculate the index strides.
-        dims_to_strides(_dims, _index_strides);
+        _impl = detail::TensorImpl<T>(_data, _dims, _strides);
 
-        // Check the index strides. If they are the same as the strides, then this is the "full view" of the underlying tensor.
-        _full_view_of_underlying = true;
         for (int i = 0; i < Rank; i++) {
-            if (_index_strides[i] != _strides[i]) {
-                _full_view_of_underlying = false;
-                break;
-            }
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
         }
     }
 
@@ -1880,30 +1953,18 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     std::string _name{"(Unnamed View)"};
 
     /**
-     * @var _dims
+     * @var _impl
      *
-     * The dimensions of the view.
+     * The underlying implementation.
      */
+    detail::TensorImpl<T> _impl;
+
     /**
      * @var _source_dims
      *
      * The dimensions of the source tensor.
      */
-    Dim<Rank> _dims, _source_dims;
-
-    /**
-     * @var _strides
-     *
-     * The strides of the tensor.
-     */
-    /**
-     * @var _index_strides
-     *
-     * These are strides used for iterating over indices in the tensor.
-     * These are based on the dimensions of the view, while _strides are based on the
-     * dimensions of the tensor being viewed.
-     */
-    Stride<Rank> _strides, _index_strides;
+    Dim<Rank> _source_dims;
 
     /**
      * @var _offsets
@@ -1917,20 +1978,10 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     Offset<Rank> _offsets;
     size_t       _offset_ordinal{0};
+    Dim<Rank>    _dim_array;
+    Stride<Rank> _stride_array;
 
-    /**
-     * @var _full_view_of_underlying
-     *
-     * Whether the view is viewing the whole tensor.
-     */
-    bool _full_view_of_underlying{false};
-
-    /**
-     * @var _data
-     *
-     * Pointer to the data of the tensor.
-     */
-    T *_data;
+    T *_parent{nullptr};
 
     template <typename T_, size_t Rank_>
     friend struct Tensor;
@@ -2105,11 +2156,17 @@ void zero(TensorType<T, Rank> &A) {
 template <typename... Args>
 Tensor(std::string const &, Args...) -> Tensor<double, sizeof...(Args)>;
 
+template <typename... Args>
+Tensor(bool, std::string const &, Args...) -> Tensor<double, sizeof...(Args)>;
+
 template <typename T, size_t OtherRank, typename... Dims>
 explicit Tensor(Tensor<T, OtherRank> &&otherTensor, std::string name, Dims... dims) -> Tensor<T, sizeof...(dims)>;
 
 template <size_t Rank, typename... Args>
 explicit Tensor(Dim<Rank> const &, Args...) -> Tensor<double, Rank>;
+
+template <size_t Rank, typename... Args>
+explicit Tensor(bool, Dim<Rank> const &, Args...) -> Tensor<double, Rank>;
 
 template <typename T, size_t Rank, size_t OtherRank, typename... Args>
 TensorView(Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
@@ -2157,10 +2214,10 @@ TensorView(std::string, Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> T
  * @param args The arguments needed to construct the tensor.
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
-template <typename Type = double, typename... Args>
+template <typename Type = double, bool RowMajor = false, typename... Args>
 auto create_tensor(std::string const &name, Args... args) {
     EINSUMS_LOG_TRACE("creating tensor {}, {}", name, std::forward_as_tuple(args...));
-    return Tensor<Type, sizeof...(Args)>{name, args...};
+    return Tensor<Type, sizeof...(Args)>{RowMajor, name, args...};
 }
 
 /**
@@ -2186,195 +2243,56 @@ auto create_tensor(std::string const &name, Args... args) {
  * @param args The arguments needed to construct the tensor.
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
-template <typename Type = double, std::integral... Args>
+template <typename Type = double, bool RowMajor = false, std::integral... Args>
 auto create_tensor(Args... args) {
-    return Tensor<Type, sizeof...(Args)>{"Temporary", args...};
+    return Tensor<Type, sizeof...(Args)>{RowMajor, "Temporary", args...};
 }
-
-namespace detail {
-
-/**
- * Count the number of digits in a number.
- */
-template <std::integral T>
-auto ndigits(T number) -> int {
-    int digits{0};
-    if (number < 0)
-        digits = 1; // Remove this line if '-' counts as a digit
-    while (number) {
-        number /= 10;
-        digits++;
-    }
-    return digits;
-}
-} // namespace detail
 
 #ifndef DOXYGEN
 template <FileOrOStream Output, RankTensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
-    using T                    = typename AType::ValueType;
-    constexpr std::size_t Rank = AType::Rank;
-
     fprintln(fp, "Name: {}", A.name());
     {
-        print::Indent const indent{};
+        print::Indent indent;
+        if constexpr (!TensorViewConcept<AType>)
+            fprintln(fp, "Type: In Core Tensor");
+        else
+            fprintln(fp, "Type: In Core Tensor View");
+    }
 
-        if constexpr (CoreTensorConcept<AType>) {
-            if constexpr (!TensorViewConcept<AType>)
-                fprintln(fp, "Type: In Core Tensor");
-            else
-                fprintln(fp, "Type: In Core Tensor View");
-#    if defined(EINSUMS_COMPUTE_CODE)
-        } else if constexpr (DeviceTensorConcept<AType>) {
-            if constexpr (!TensorViewConcept<AType>)
-                fprintln(fp, "Type: Device Tensor");
-            else
-                fprintln(fp, "Type: Device Tensor View");
-#    endif
-        } else if constexpr (DiskTensorConcept<AType>) {
-            fprintln(fp, "Type: Disk Tensor");
-        } else {
-            fprintln(fp, "Type: {}", type_name<AType>());
-        }
+    if constexpr (AType::Rank == 0) {
+        {
+            print::Indent const indent{};
 
-        fprintln(fp, "Data Type: {}", type_name<typename AType::ValueType>());
+            fprintln(fp, "Data Type: {}", type_name<typename AType::ValueType>());
 
-        if constexpr (Rank > 0) {
-            std::ostringstream oss;
-            for (size_t i = 0; i < Rank; i++) {
-                oss << A.dim(i) << " ";
-            }
-            fprintln(fp, "Dims{{{}}}", oss.str().c_str());
-        }
+            if (options.full_output) {
+                fprintln(fp);
 
-        if constexpr (Rank > 0 && einsums::BasicTensorConcept<AType>) {
-            std::ostringstream oss;
-            for (size_t i = 0; i < Rank; i++) {
-                oss << A.stride(i) << " ";
-            }
-            fprintln(fp, "Strides{{{}}}", oss.str());
-        }
-
-        if (options.full_output) {
-            fprintln(fp);
-
-            if constexpr (Rank == 0) {
-                T value = A;
+                typename AType::ValueType value = A;
 
                 std::ostringstream oss;
                 oss << "              ";
-                if constexpr (std::is_floating_point_v<T>) {
+                if constexpr (std::is_floating_point_v<typename AType::ValueType>) {
                     if (std::abs(value) < 1.0E-4) {
                         oss << fmt::format("{:14.4e} ", value);
                     } else {
                         oss << fmt::format("{:14.8f} ", value);
                     }
-                } else if constexpr (IsComplexV<T>) {
+                } else if constexpr (IsComplexV<typename AType::ValueType>) {
                     oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                 } else
                     oss << fmt::format("{:14} ", value);
 
                 fprintln(fp, "{}", oss.str());
                 fprintln(fp);
-#    if !defined(EINSUMS_COMPUTE_CODE)
-            } else if constexpr (Rank > 1 && einsums::CoreTensorConcept<AType>) {
-#    else
-            } else if constexpr (Rank > 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
-#    endif
-
-                Stride<Rank - 1> index_strides;
-                size_t           elements = dims_to_strides(einsums::slice_array<Rank - 1>(A.dims()), index_strides);
-
-                auto final_dim = A.dim(Rank - 1);
-                auto ndigits   = detail::ndigits(final_dim);
-
-                for (size_t item = 0; item < elements; item++) {
-                    std::array<int64_t, Rank - 1> target_combination;
-
-                    sentinel_to_indices(item, index_strides, target_combination);
-
-                    std::ostringstream oss;
-                    for (int j = 0; j < final_dim; j++) {
-                        if (j % options.width == 0) {
-                            std::ostringstream tmp;
-                            tmp << fmt::format("{}", fmt::join(target_combination, ", "));
-                            if (final_dim >= j + options.width)
-                                oss << fmt::format(
-                                    "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
-                            else
-                                oss << fmt::format("{:<14}",
-                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
-                        }
-                        auto new_tuple = std::tuple_cat(target_combination, std::tuple(j));
-                        T    value     = std::apply(A, new_tuple);
-                        if (std::abs(value) > 1.0E+10) {
-                            if constexpr (std::is_floating_point_v<T>)
-                                oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
-                            else if constexpr (IsComplexV<T>)
-                                oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
-                                    << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
-                            else
-                                oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
-                        } else {
-                            if constexpr (std::is_floating_point_v<T>) {
-                                if (std::abs(value) < 1.0E-4) {
-                                    oss << fmt::format("{:14.4e} ", value);
-                                } else {
-                                    oss << fmt::format("{:14.8f} ", value);
-                                }
-                            } else if constexpr (IsComplexV<T>) {
-                                oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
-                            } else
-                                oss << fmt::format("{:14} ", value);
-                        }
-                        if (j % options.width == options.width - 1 && j != final_dim - 1) {
-                            oss << "\n";
-                        }
-                    }
-                    fprintln(fp, "{}", oss.str());
-                    fprintln(fp);
-                }
-#    if !defined(EINSUMS_COMPUTE_CODE)
-            } else if constexpr (Rank == 1 && einsums::CoreTensorConcept<AType>) {
-#    else
-            } else if constexpr (Rank == 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
-#    endif
-                size_t elements = A.size();
-
-                for (size_t item = 0; item < elements; item++) {
-                    std::ostringstream oss;
-                    oss << "(";
-                    oss << fmt::format("{}, ", item);
-                    oss << "): ";
-
-                    T value = A(item);
-                    if (std::abs(value) > 1.0E+5) {
-                        if constexpr (std::is_floating_point_v<T>)
-                            oss << fmt::format(fg(fmt::color::white) | bg(fmt::color::red), "{:14.8f} ", value);
-                        else if constexpr (IsComplexV<T>) {
-                            oss << fmt::format(fg(color::white) | bg(color::red), "({:14.8f} + {:14.8f})", value.real(), value.imag());
-                        } else
-                            oss << fmt::format(fg(color::white) | bg(color::red), "{:14} ", value);
-                    } else {
-                        if constexpr (std::is_floating_point_v<T>)
-                            if (std::abs(value) < 1.0E-4) {
-                                oss << fmt::format("{:14.4e} ", value);
-                            } else {
-                                oss << fmt::format("{:14.8f} ", value);
-                            }
-                        else if constexpr (IsComplexV<T>) {
-                            oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
-                        } else
-                            oss << fmt::format("{:14} ", value);
-                    }
-
-                    fprintln(fp, "{}", oss.str());
-                }
             }
         }
+        fprintln(fp);
+    } else {
+        fprintln(fp, A.impl(), options);
     }
-    fprintln(fp);
 }
 
 template <RankTensorConcept AType>

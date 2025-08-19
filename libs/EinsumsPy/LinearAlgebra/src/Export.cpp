@@ -44,8 +44,7 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .export_values();
 
     mod.def("sum_square", &sum_square,
-            "Calculate the sum of the squares of the elements of a vector. The result will be scale**2 * sum_sq. sum_sq is the first "
-            "return value, scale is the second.")
+            "Calculate the sum of the squares of the elements of a vector.")
         .def("gemm", &gemm,
              "Matrix multiplication. The first two arguments indicate whether to transpose the input matrices. The third is a scale factor "
              "for the input matrices. The next two arguments are the matrices to multiply. The fifth argument is a scale factor for the "
@@ -85,8 +84,6 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .def("pseudoinverse", &pseudoinverse, "Compute the pseudoinverse of a non-invertible matrix.")
         .def("solve_continuous_lyapunov", &solve_continuous_lyapunov, "Solve a continuous Lyapunov equation.")
         .def("qr", &qr, "Set up for QR decomposition of a matrix.")
-        .def("q", &q, "Extract the Q matrix after a call to qr.")
-        .def("r", &r, "Extract the R matrix after a call to qr.")
         .def("direct_product", &direct_product, "Compute the direct product between two tensors.")
         .def("det", &det, "Compute the matrix determinant.");
 }

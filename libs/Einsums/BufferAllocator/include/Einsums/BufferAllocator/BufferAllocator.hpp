@@ -15,6 +15,7 @@
 #include <deque>
 #include <forward_list>
 #include <source_location>
+#include <string>
 #include <type_traits>
 #include <unordered_set>
 
@@ -237,6 +238,16 @@ struct BufferAllocator {
 #ifndef WINDOWS
 
 extern template struct EINSUMS_EXPORT BufferAllocator<void>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed char>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed short>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed int>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed long>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed long long>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned char>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned short>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned int>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned long>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned long long>;
 extern template struct EINSUMS_EXPORT BufferAllocator<float>;
 extern template struct EINSUMS_EXPORT BufferAllocator<double>;
 extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<float>>;
@@ -279,5 +290,10 @@ using BufferUnorderedMultiSet = std::unordered_multiset<Key, Hash, KeyEqual, Buf
 
 template <typename Key, typename T, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
 using BufferUnorderedMultiMap = std::unordered_multimap<Key, T, Hash, KeyEqual, BufferAllocator<std::pair<Key const, T>>>;
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+using BufferBasicString = std::basic_string<CharT, Traits, BufferAllocator<CharT>>;
+
+using BufferString = BufferBasicString<char>;
 
 } // namespace einsums

@@ -16,7 +16,7 @@
 #include <catch2/catch_all.hpp>
 
 int einsums_main(int argc, char *const *const argv) {
-    int result;
+    int result = 0;
 #pragma omp parallel
     {
 #pragma omp single

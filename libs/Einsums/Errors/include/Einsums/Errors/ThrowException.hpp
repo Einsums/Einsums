@@ -27,3 +27,7 @@
 #define EINSUMS_THROW_NOT_IMPLEMENTED                                                                                                      \
     throw not_implemented(                                                                                                                 \
         einsums::detail::make_error_message(einsums::type_name<not_implemented>(), "", std::source_location::current())) /**/
+
+#define EINSUMS_THROW_NESTED(except, ...)                                                                                                  \
+    std::throw_with_nested(except(einsums::detail::make_error_message(einsums::type_name<except>(), fmt::format(__VA_ARGS__),              \
+                                                                      std::source_location::current()))) /**/

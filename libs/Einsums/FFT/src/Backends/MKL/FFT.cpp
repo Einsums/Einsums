@@ -7,6 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/FFT/Defines.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
@@ -20,7 +21,7 @@ inline void verify(MKL_LONG status) {
     if (status == DFTI_NO_ERROR)
         return;
 
-    println_abort("MKL DFTI failure: {}", status);
+    EINSUMS_THROW_EXCEPTION(std::runtime_error, "MKL DFTI failure: {}", status);
 }
 } // namespace
 

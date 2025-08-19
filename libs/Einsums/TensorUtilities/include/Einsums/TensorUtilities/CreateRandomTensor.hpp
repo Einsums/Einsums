@@ -48,10 +48,11 @@ template <typename T = double, bool Normalize = false, typename Distribution, st
     requires requires(Distribution dist) {
         { dist(einsums::random_engine) } -> std::same_as<T>;
     }
-auto create_random_tensor(std::string const &name, Distribution &&distribution, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
+auto create_random_tensor(bool row_major, std::string const &name, Distribution &&distribution, MultiIndex... index)
+    -> Tensor<T, sizeof...(MultiIndex)> {
     EINSUMS_LOG_TRACE("creating random tensor {}, {}", name, std::forward_as_tuple(index...));
 
-    Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
+    Tensor<T, sizeof...(MultiIndex)> A(row_major, name, std::forward<MultiIndex>(index)...);
     EINSUMS_OMP_PARALLEL_FOR
     for (size_t i = 0; i < A.size(); i++) {
         A.data()[i] = distribution(einsums::random_engine);
@@ -98,9 +99,18 @@ auto create_random_tensor(std::string const &name, Distribution &&distribution, 
 template <typename T = double, bool Normalize = false, std::integral... MultiIndex>
 auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     if constexpr (IsComplexV<T>) {
-        return create_random_tensor<T, Normalize>(name, detail::unit_circle_distribution<T>(), index...);
+        return create_random_tensor<T, Normalize>(false, name, detail::unit_circle_distribution<T>(), index...);
     } else {
-        return create_random_tensor<T, Normalize>(name, std::uniform_real_distribution<T>(-1, 1), index...);
+        return create_random_tensor<T, Normalize>(false, name, std::uniform_real_distribution<T>(-1, 1), index...);
+    }
+}
+
+template <typename T = double, bool Normalize = false, std::integral... MultiIndex>
+auto create_random_tensor(bool row_major, std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
+    if constexpr (IsComplexV<T>) {
+        return create_random_tensor<T, Normalize>(row_major, name, detail::unit_circle_distribution<T>(), index...);
+    } else {
+        return create_random_tensor<T, Normalize>(row_major, name, std::uniform_real_distribution<T>(-1, 1), index...);
     }
 }
 
@@ -126,10 +136,10 @@ auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tenso
  * @return A new tensor filled with random data
  */
 template <typename T = double, bool Normalize = false, typename Distribution, Container Indices>
-auto create_random_tensor(std::string const &name, Distribution &&dist, Indices const &indices) -> RuntimeTensor<T> {
+auto create_random_tensor(bool row_major, std::string const &name, Distribution &&dist, Indices const &indices) -> RuntimeTensor<T> {
     EINSUMS_LOG_TRACE("creating random runtime tensor {}, {}", name, indices);
 
-    RuntimeTensor<T> A(name, indices);
+    RuntimeTensor<T> A(name, indices, row_major);
 
     EINSUMS_OMP_PARALLEL_FOR
     for (size_t i = 0; i < A.size(); i++) {
@@ -179,9 +189,18 @@ auto create_random_tensor(std::string const &name, Distribution &&dist, Indices 
 template <typename T = double, bool Normalize = false, Container Indices>
 auto create_random_tensor(std::string const &name, Indices const &index) -> RuntimeTensor<T> {
     if constexpr (IsComplexV<T>) {
-        return create_random_tensor<T, Normalize>(name, detail::unit_circle_distribution<T>(), index);
+        return create_random_tensor<T, Normalize>(false, name, detail::unit_circle_distribution<T>(), index);
     } else {
-        return create_random_tensor<T, Normalize>(name, std::uniform_real_distribution<T>(-1, 1), index);
+        return create_random_tensor<T, Normalize>(false, name, std::uniform_real_distribution<T>(-1, 1), index);
+    }
+}
+
+template <typename T = double, bool Normalize = false, Container Indices>
+auto create_random_tensor(bool row_major, std::string const &name, Indices const &index) -> RuntimeTensor<T> {
+    if constexpr (IsComplexV<T>) {
+        return create_random_tensor<T, Normalize>(row_major, name, detail::unit_circle_distribution<T>(), index);
+    } else {
+        return create_random_tensor<T, Normalize>(row_major, name, std::uniform_real_distribution<T>(-1, 1), index);
     }
 }
 

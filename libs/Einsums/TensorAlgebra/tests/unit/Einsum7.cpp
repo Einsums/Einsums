@@ -206,6 +206,6 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
         einsum(Indices{index::Q, index::X}, &N_QX, Indices{index::Q, index::i, index::a}, Qov, Indices{index::i, index::a, index::X}, ia_X,
                &alg_choice);
-        REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
     }
 }
