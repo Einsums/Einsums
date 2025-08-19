@@ -1,0 +1,22 @@
+
+.. 
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. _modules_EinsumsExperimental_Decomposition_api:
+
+-------------------------------------------------------------------------------
+EinsumsExperimental
+-------------------------------------------------------------------------------
+
+See :ref:`modules_overview` for a list of names and headers that are part of the public
+|einsums| API.
+
+
+.. toctree::
+   :maxdepth: 1
+
+   /libs/EinsumsExperimental/Decomposition/api/Tucker.rst
+   /libs/EinsumsExperimental/Decomposition/api/CP.rst

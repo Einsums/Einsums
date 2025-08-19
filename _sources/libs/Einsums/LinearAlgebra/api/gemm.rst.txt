@@ -5,16 +5,16 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _modules_Einsums_Einsums/Decomposition/CP.hpp_api:
+.. _modules_Einsums_Einsums/LinearAlgebra/Bases/gemm.hpp_api:
 
 -------------------------------------------------------------------------------
-Einsums/Decomposition/CP.hpp
+Einsums/LinearAlgebra/Bases/gemm.hpp
 -------------------------------------------------------------------------------
 
-Defined in header Einsums/Decomposition/CP.hpp.
+Defined in header Einsums/LinearAlgebra/Bases/gemm.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
-.. autodoxygenfile:: Einsums/Decomposition/CP.hpp
+.. autodoxygenfile:: Einsums/LinearAlgebra/Bases/gemm.hpp
    :project: Einsums

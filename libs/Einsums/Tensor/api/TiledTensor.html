@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums/Tensor/TiledTensor.hpp &#8212; Einsums 1.1.0-trunk documentation</title>
+    <title>Einsums/Tensor/TiledTensor.hpp &#8212; Einsums 2.0.0-trunk documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../../../../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,8 +52,8 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Aug 19, 2025"/>
   </head>
   
   
@@ -265,15 +265,15 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="H5.html">Einsums/Tensor/H5.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tensor.html">Einsums/Tensor/Tensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RuntimeTensor.html">Einsums/Tensor/RuntimeTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="DiskTensor.html">Einsums/Tensor/DiskTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArithmeticTensor.html">Einsums/Tensor/ArithmeticTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="TensorForward.html">Einsums/Tensor/TensorForward.hpp</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Tensor/TiledTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DiskTensor.html">Einsums/Tensor/DiskTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="BlockTensor.html">Einsums/Tensor/BlockTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArithmeticTensor.html">Einsums/Tensor/ArithmeticTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tensor.html">Einsums/Tensor/Tensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeviceTensor.html">Einsums/Tensor/DeviceTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FunctionTensor.html">Einsums/Tensor/FunctionTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RuntimeTensor.html">Einsums/Tensor/RuntimeTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Backends_DeviceTensor.html">Einsums/Tensor/Backends/DeviceTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeviceTensorView.html">Einsums/Tensor/Backends/DeviceTensorView.hpp</a></li>
 </ul>
@@ -343,7 +343,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000013"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000010"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -516,8 +516,15 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERRN7einsums10TensorViewI1T4RankEE">
-<span id="_CPPv3N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERRN7einsums10TensorViewI1T4RankEE"></span><span id="_CPPv2N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERRN7einsums10TensorViewI1T4RankEE"></span><span id="einsums::TiledTensorView::insert_tile__std::array:i.Rank:.einsums::TensorView:T.Rank:RR"></span><span class="target" id="structeinsums_1_1_tiled_tensor_view_1a995b2f56e5586ef5ede8d112c10b5a2d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">insert_tile</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums15TiledTensorViewE" title="einsums::TiledTensorView::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Tensor.html#_CPPv4I0_6size_tEN7einsums10TensorViewE" title="einsums::TensorView"><span class="n"><span class="pre">TensorView</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums15TiledTensorViewE" title="einsums::TiledTensorView::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums15TiledTensorViewE" title="einsums::TiledTensorView::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">view</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERRN7einsums10TensorViewI1T4RankEE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERN7einsums10TensorViewI1T4RankEE">
+<span id="_CPPv3N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERN7einsums10TensorViewI1T4RankEE"></span><span id="_CPPv2N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERN7einsums10TensorViewI1T4RankEE"></span><span id="einsums::TiledTensorView::insert_tile__std::array:i.Rank:.einsums::TensorView:T.Rank:R"></span><span class="target" id="structeinsums_1_1_tiled_tensor_view_1a915dc4d9a91d1fdfc47b1e4ac8b0634d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">insert_tile</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums15TiledTensorViewE" title="einsums::TiledTensorView::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Tensor.html#_CPPv4I0_6size_tEN7einsums10TensorViewE" title="einsums::TensorView"><span class="n"><span class="pre">TensorView</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums15TiledTensorViewE" title="einsums::TiledTensorView::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums15TiledTensorViewE" title="einsums::TiledTensorView::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">view</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERN7einsums10TensorViewI1T4RankEE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Add a tile to the view. </p>
+<p>This does not add a tile to the viewed tensor, only to the view. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERKN7einsums10TensorViewI1T4RankEE">
+<span id="_CPPv3N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERKN7einsums10TensorViewI1T4RankEE"></span><span id="_CPPv2N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERKN7einsums10TensorViewI1T4RankEE"></span><span id="einsums::TiledTensorView::insert_tile__std::array:i.Rank:.einsums::TensorView:T.Rank:CR"></span><span class="target" id="structeinsums_1_1_tiled_tensor_view_1a2c60d5a87f5c4c85b133e156c66a1888"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">insert_tile</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums15TiledTensorViewE" title="einsums::TiledTensorView::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Tensor.html#_CPPv4I0_6size_tEN7einsums10TensorViewE" title="einsums::TensorView"><span class="n"><span class="pre">TensorView</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums15TiledTensorViewE" title="einsums::TiledTensorView::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums15TiledTensorViewE" title="einsums::TiledTensorView::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">view</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERKN7einsums10TensorViewI1T4RankEE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Add a tile to the view. </p>
 <p>This does not add a tile to the viewed tensor, only to the view. </p>
 </dd></dl>
@@ -1277,7 +1284,8 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums15TiledTensorView15TiledTensorViewERK15TiledTensorViewI1T4RankE"><code class="docutils literal notranslate"><span class="pre">TiledTensorView()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums15TiledTensorViewD0Ev"><code class="docutils literal notranslate"><span class="pre">~TiledTensorView()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums15TiledTensorView23full_view_of_underlyingEv"><code class="docutils literal notranslate"><span class="pre">full_view_of_underlying()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERRN7einsums10TensorViewI1T4RankEE"><code class="docutils literal notranslate"><span class="pre">insert_tile()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERN7einsums10TensorViewI1T4RankEE"><code class="docutils literal notranslate"><span class="pre">insert_tile()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums15TiledTensorView11insert_tileENSt5arrayIi4RankEERKN7einsums10TensorViewI1T4RankEE"><code class="docutils literal notranslate"><span class="pre">insert_tile()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums15TiledTensorView8add_tileERKNSt5arrayIi4RankEE"><code class="docutils literal notranslate"><span class="pre">add_tile()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums15TiledTensorView24_full_view_of_underlyingE"><code class="docutils literal notranslate"><span class="pre">_full_view_of_underlying</span></code></a></li>
 </ul>

@@ -1,0 +1,20 @@
+
+.. 
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. _modules_Einsums_Einsums/StringUtil/StringOps.hpp_api:
+
+-------------------------------------------------------------------------------
+Einsums/StringUtil/StringOps.hpp
+-------------------------------------------------------------------------------
+
+Defined in header Einsums/StringUtil/StringOps.hpp.
+
+See :ref:`modules_overview` for a list of names and headers that are part of the public
+|einsums| API.
+
+.. autodoxygenfile:: Einsums/StringUtil/StringOps.hpp
+   :project: Einsums

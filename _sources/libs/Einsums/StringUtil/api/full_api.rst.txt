@@ -18,7 +18,8 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 .. toctree::
    :maxdepth: 1
 
+   /libs/Einsums/StringUtil/api/MemoryString.rst
    /libs/Einsums/StringUtil/api/Trim.rst
    /libs/Einsums/StringUtil/api/FromString.rst
+   /libs/Einsums/StringUtil/api/StringOps.rst
    /libs/Einsums/StringUtil/api/BadLexicalCast.rst
-   /libs/Einsums/StringUtil/api/MemoryString.rst

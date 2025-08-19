@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums/Errors/Error.hpp &#8212; Einsums 1.1.0-trunk documentation</title>
+    <title>Einsums/Errors/Error.hpp &#8212; Einsums 2.0.0-trunk documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../../../../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,8 +52,8 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Aug 19, 2025"/>
   </head>
   
   
@@ -264,8 +264,8 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Errors/Error.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ThrowException.html">Einsums/Errors/ThrowException.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Errors/Error.hpp</a></li>
 </ul>
 </div>
 </nav></div>
@@ -333,7 +333,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000013"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000010"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -368,6 +368,14 @@
 </dd></dl>
 
 </div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums24complex_conversion_errorE">
+<span id="_CPPv3N7einsums24complex_conversion_errorE"></span><span id="_CPPv2N7einsums24complex_conversion_errorE"></span><span id="einsums::complex_conversion_error"></span><span class="target" id="structeinsums_1_1complex__conversion__error"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">complex_conversion_error</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">logic_error</span></span><a class="headerlink" href="#_CPPv4N7einsums24complex_conversion_errorE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Error.hpp&gt;</em></div>
+<p>Thrown when trying to convert a complex number to a real number. Instead, the input data should be transformed into a real value in a way that makes sense for the operation being performed. This is often either the magnitude or the real part. </p>
 </dd></dl>
 
 <dl class="cpp struct">
@@ -499,6 +507,7 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums10CodedError8get_codeEv"><code class="docutils literal notranslate"><span class="pre">get_code()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums24complex_conversion_errorE"><code class="docutils literal notranslate"><span class="pre">einsums::complex_conversion_error</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums15dimension_errorE"><code class="docutils literal notranslate"><span class="pre">einsums::dimension_error</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums10enum_errorE"><code class="docutils literal notranslate"><span class="pre">einsums::enum_error</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums15not_enough_argsE"><code class="docutils literal notranslate"><span class="pre">einsums::not_enough_args</span></code></a></li>

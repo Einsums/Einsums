@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums/TensorAlgebra/Permute.hpp &#8212; Einsums 1.1.0-trunk documentation</title>
+    <title>Einsums/TensorAlgebra/Permute.hpp &#8212; Einsums 2.0.0-trunk documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../../../../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,8 +52,8 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Aug 19, 2025"/>
   </head>
   
   
@@ -267,19 +267,19 @@
 <li class="toctree-l1"><a class="reference internal" href="TensorAlgebra.html">Einsums/TensorAlgebra.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="TensorAlgebra_TensorAlgebra.html">Einsums/TensorAlgebra/TensorAlgebra.hpp</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TensorAlgebra/Permute.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Utilities.html">Einsums/TensorAlgebra/Detail/Utilities.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Index.html">Einsums/TensorAlgebra/Detail/Index.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BlockAlgebra.html">Einsums/TensorAlgebra/Backends/BlockAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GenericAlgorithm.html">Einsums/TensorAlgebra/Backends/GenericAlgorithm.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dispatch.html">Einsums/TensorAlgebra/Backends/Dispatch.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ElementTransform.html">Einsums/TensorAlgebra/Backends/ElementTransform.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Unfold.html">Einsums/TensorAlgebra/Backends/Unfold.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GPUTensorAlgebra.html">Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="BaseAlgebra.html">Einsums/TensorAlgebra/Backends/BaseAlgebra.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="KhatriRao.html">Einsums/TensorAlgebra/Backends/KhatriRao.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TileAlgebra.html">Einsums/TensorAlgebra/Backends/TileAlgebra.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Dispatch.html">Einsums/TensorAlgebra/Backends/Dispatch.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BlockTileAlgebra.html">Einsums/TensorAlgebra/Backends/BlockTileAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Unfold.html">Einsums/TensorAlgebra/Backends/Unfold.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DevicePermute.html">Einsums/TensorAlgebra/Backends/DevicePermute.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GenericAlgorithm.html">Einsums/TensorAlgebra/Backends/GenericAlgorithm.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPUTensorAlgebra.html">Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TileAlgebra.html">Einsums/TensorAlgebra/Backends/TileAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BlockTileAlgebra.html">Einsums/TensorAlgebra/Backends/BlockTileAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BlockAlgebra.html">Einsums/TensorAlgebra/Backends/BlockAlgebra.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Index.html">Einsums/TensorAlgebra/Detail/Index.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Utilities.html">Einsums/TensorAlgebra/Detail/Utilities.hpp</a></li>
 </ul>
 </div>
 </nav></div>
@@ -347,7 +347,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000013"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000010"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -415,6 +415,11 @@
 </dl>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_13MatrixConcept_13MatrixConceptEN7einsums14tensor_algebra9transposeEvP5CTypeRK5AType">
+<span id="_CPPv3I_b_13MatrixConcept_13MatrixConceptEN7einsums14tensor_algebra9transposeEP5CTypeRK5AType"></span><span id="_CPPv2I_b_13MatrixConcept_13MatrixConceptEN7einsums14tensor_algebra9transposeEP5CTypeRK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConjA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_permute_8hpp_1a35ef436cd4787044d6b4bfb23f8ad655"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">transpose</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13MatrixConceptEN7einsums14tensor_algebra9transposeEvP5CTypeRK5AType" title="einsums::tensor_algebra::transpose::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13MatrixConceptEN7einsums14tensor_algebra9transposeEvP5CTypeRK5AType" title="einsums::tensor_algebra::transpose::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_13MatrixConcept_13MatrixConceptEN7einsums14tensor_algebra9transposeEvP5CTypeRK5AType" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
 </div>
 </dd></dl>
 
@@ -456,6 +461,7 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_b_17CoreTensorConcept_17CoreTensorConceptDpDp0EN7einsums14tensor_algebra7permuteEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5AType"><code class="docutils literal notranslate"><span class="pre">permute()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_b_16NotASmartPointer_16NotASmartPointerDpDpEN7einsums14tensor_algebra7permuteEvRKNSt5tupleIDp8CIndicesEEP7ObjectCRKNSt5tupleIDp8AIndicesEERK7ObjectA"><code class="docutils literal notranslate"><span class="pre">permute()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0_13TensorConcept_13TensorConceptDpDpDpDpEN7einsums14tensor_algebra24get_grid_ranges_for_manyEDaRK5CTypeRKNSt5tupleIDp8CIndicesEERK5ATypeRKNSt5tupleIDp8AIndicesEERKNSt5tupleIDp16AllUniqueIndicesEE"><code class="docutils literal notranslate"><span class="pre">get_grid_ranges_for_many()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_b_13MatrixConcept_13MatrixConceptEN7einsums14tensor_algebra9transposeEvP5CTypeRK5AType"><code class="docutils literal notranslate"><span class="pre">transpose()</span></code></a></li>
 </ul>
 </li>
 </ul>

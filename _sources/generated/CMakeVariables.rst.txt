@@ -59,6 +59,7 @@ Build Targets options
 * :option:`EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS:STRING`
 * :option:`EINSUMS_WITH_EXAMPLES:BOOL`
 * :option:`EINSUMS_WITH_EXECUTABLE_PREFIX:STRING`
+* :option:`EINSUMS_WITH_EXPERIMENTAL:BOOL`
 * :option:`EINSUMS_WITH_FAIL_COMPILE_TESTS:BOOL`
 * :option:`EINSUMS_WITH_FULL_RPATH:BOOL`
 * :option:`EINSUMS_WITH_HIDDEN_VISIBILITY:BOOL`
@@ -105,6 +106,10 @@ Build Targets options
 .. option:: EINSUMS_WITH_EXECUTABLE_PREFIX:STRING
 
    Sets a string to be prepended to executable names (default: none).
+
+.. option:: EINSUMS_WITH_EXPERIMENTAL:BOOL
+
+   If true, build experimental Einsums modules (default: OFF)
 
 .. option:: EINSUMS_WITH_FAIL_COMPILE_TESTS:BOOL
 

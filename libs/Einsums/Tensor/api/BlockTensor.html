@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums/Tensor/BlockTensor.hpp &#8212; Einsums 1.1.0-trunk documentation</title>
+    <title>Einsums/Tensor/BlockTensor.hpp &#8212; Einsums 2.0.0-trunk documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../../../../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,8 +52,8 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Aug 19, 2025"/>
   </head>
   
   
@@ -265,15 +265,15 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="H5.html">Einsums/Tensor/H5.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tensor.html">Einsums/Tensor/Tensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RuntimeTensor.html">Einsums/Tensor/RuntimeTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="DiskTensor.html">Einsums/Tensor/DiskTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArithmeticTensor.html">Einsums/Tensor/ArithmeticTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="TensorForward.html">Einsums/Tensor/TensorForward.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="TiledTensor.html">Einsums/Tensor/TiledTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DiskTensor.html">Einsums/Tensor/DiskTensor.hpp</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Tensor/BlockTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArithmeticTensor.html">Einsums/Tensor/ArithmeticTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tensor.html">Einsums/Tensor/Tensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeviceTensor.html">Einsums/Tensor/DeviceTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FunctionTensor.html">Einsums/Tensor/FunctionTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RuntimeTensor.html">Einsums/Tensor/RuntimeTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Backends_DeviceTensor.html">Einsums/Tensor/Backends/DeviceTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeviceTensorView.html">Einsums/Tensor/Backends/DeviceTensorView.hpp</a></li>
 </ul>
@@ -343,7 +343,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000013"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000010"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -718,7 +718,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor10push_blockE10TensorType">
 <span id="_CPPv3N7einsums11tensor_base11BlockTensor10push_blockE10TensorType"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor10push_blockE10TensorType"></span><span id="einsums::tensor_base::BlockTensor::push_block__TensorType"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1af5329ac9b050d7c1c4b19294b73db45b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_block</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor10push_blockE10TensorType" title="Link to this definition">#</a><br /></dt>
-<dd><p>Add a block to the end of the list of blocks. </p>
+<dd><p>Add a tensor to the end of the list of blocks. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>value</strong> – The tensor to push. </p>
@@ -732,7 +732,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base11BlockTensor12insert_blockEi10TensorType">
 <span id="_CPPv3N7einsums11tensor_base11BlockTensor12insert_blockEi10TensorType"></span><span id="_CPPv2N7einsums11tensor_base11BlockTensor12insert_blockEi10TensorType"></span><span id="einsums::tensor_base::BlockTensor::insert_block__i.TensorType"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ac10a3ecdf72fea05faa262f5a0029806"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">insert_block</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <a class="reference internal" href="#_CPPv4I0_6size_t0EN7einsums11tensor_base11BlockTensorE" title="einsums::tensor_base::BlockTensor::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base11BlockTensor12insert_blockEi10TensorType" title="Link to this definition">#</a><br /></dt>
-<dd><p>Add a block to the specified position in the list of blocks. </p>
+<dd><p>Add a tensor to the specified position in the list of blocks. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -742,6 +742,23 @@
 </dd>
 <dt class="field-even">Throws<span class="colon">:</span></dt>
 <dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/api/Error.html#_CPPv4N7einsums15dimension_errorE" title="einsums::dimension_error"><span class="n">dimension_error</span></a></span></span> – if the tensor being pushed is not square. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums11tensor_base11BlockTensor13emplace_blockEviDpRR4Args">
+<span id="_CPPv3IDpEN7einsums11tensor_base11BlockTensor13emplace_blockEiDpRR4Args"></span><span id="_CPPv2IDpEN7einsums11tensor_base11BlockTensor13emplace_blockEiDpRR4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1tensor__base_1_1_block_tensor_1ac8147bca4a83fb362d538316eb8fcbc6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emplace_block</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums11tensor_base11BlockTensor13emplace_blockEviDpRR4Args" title="einsums::tensor_base::BlockTensor::emplace_block::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums11tensor_base11BlockTensor13emplace_blockEviDpRR4Args" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a new block with the given dimensions. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> – The position to insert at. </p></li>
+<li><p><strong>args</strong> – The arguments for the constructor. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/api/Error.html#_CPPv4N7einsums15dimension_errorE" title="einsums::dimension_error"><span class="n">dimension_error</span></a></span></span> – if the tensor is not square. </p>
 </dd>
 </dl>
 </dd></dl>
@@ -1170,6 +1187,7 @@
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums11tensor_base11BlockTensor5blockERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">block()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums11tensor_base11BlockTensor10push_blockE10TensorType"><code class="docutils literal notranslate"><span class="pre">push_block()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums11tensor_base11BlockTensor12insert_blockEi10TensorType"><code class="docutils literal notranslate"><span class="pre">insert_block()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7einsums11tensor_base11BlockTensor13emplace_blockEviDpRR4Args"><code class="docutils literal notranslate"><span class="pre">emplace_block()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7einsums11tensor_base11BlockTensor4dataEP1TDp10MultiIndex"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpENK7einsums11tensor_base11BlockTensorclERK1TDp10MultiIndex"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7einsums11tensor_base11BlockTensorclER1TDp10MultiIndex"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>

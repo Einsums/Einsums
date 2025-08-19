@@ -5,18 +5,16 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _modules_Einsums_Decomposition_api:
+.. _modules_Einsums_Einsums/LinearAlgebra/Bases/direct_product.hpp_api:
 
 -------------------------------------------------------------------------------
-Einsums
+Einsums/LinearAlgebra/Bases/direct_product.hpp
 -------------------------------------------------------------------------------
+
+Defined in header Einsums/LinearAlgebra/Bases/direct_product.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
-
-.. toctree::
-   :maxdepth: 1
-
-   /libs/Einsums/Decomposition/api/CP.rst
-   /libs/Einsums/Decomposition/api/Tucker.rst
+.. autodoxygenfile:: Einsums/LinearAlgebra/Bases/direct_product.hpp
+   :project: Einsums

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums Python Module &#8212; Einsums 1.1.0-trunk documentation</title>
+    <title>Einsums Python Module &#8212; Einsums 2.0.0-trunk documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -51,11 +51,11 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Einsums Core Module" href="einsums.core.html" />
-    <link rel="prev" title="EinsumsExperimental Library TODO" href="../libs/EinsumsExperimental/todo.html" />
+    <link rel="prev" title="EinsumsPy Library TODO" href="../libs/EinsumsPy/todo.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Aug 19, 2025"/>
   </head>
   
   
@@ -280,7 +280,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Config/docs/index.html">Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Debugging/docs/index.html">Debugging</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Decomposition/docs/index.html">Decomposition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Errors/docs/index.html">Errors</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/FFT/docs/index.html">FFT</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/GPUMemory/docs/index.html">Einsums GPUMemory</a></li>
@@ -320,14 +319,6 @@
 </ul>
 </details></li>
 <li class="toctree-l3"><a class="reference internal" href="../libs/EinsumsPy/todo.html">EinsumsPy Library TODO</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../libs/EinsumsExperimental/index.html">EinsumsExperimental</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../libs/EinsumsExperimental/modules.html">EinsumsExperimental Modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../libs/EinsumsExperimental/Graph/docs/index.html">EinsumsExperimental Graph</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3"><a class="reference internal" href="../libs/EinsumsExperimental/todo.html">EinsumsExperimental Library TODO</a></li>
 </ul>
 </details></li>
 </ul>
@@ -426,7 +417,7 @@ namespaces of the other modules.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="einsums.core.html">Einsums Core Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.gpu_enabled"><code class="docutils literal notranslate"><span class="pre">gpu_enabled</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.initialize"><code class="docutils literal notranslate"><span class="pre">initialize</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.__initialize"><code class="docutils literal notranslate"><span class="pre">__initialize</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.finalize"><code class="docutils literal notranslate"><span class="pre">finalize</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.get_buffer_format"><code class="docutils literal notranslate"><span class="pre">get_buffer_format</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.tensor_algebra.html">Einsums Python Tensor Algebra</a><ul>
@@ -496,6 +487,7 @@ namespaces of the other modules.</p>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.uninitialized_error"><code class="docutils literal notranslate"><span class="pre">uninitialized_error</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.system_error"><code class="docutils literal notranslate"><span class="pre">system_error</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.enum_error"><code class="docutils literal notranslate"><span class="pre">enum_error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.errors.html#einsums.core.complex_conversion_error"><code class="docutils literal notranslate"><span class="pre">complex_conversion_error</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -511,6 +503,7 @@ namespaces of the other modules.</p>
 <li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_random_tensor"><code class="docutils literal notranslate"><span class="pre">create_random_tensor</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_tensor"><code class="docutils literal notranslate"><span class="pre">create_tensor</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.enumerate_many"><code class="docutils literal notranslate"><span class="pre">enumerate_many</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.is_complex"><code class="docutils literal notranslate"><span class="pre">is_complex</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.labeled_section"><code class="docutils literal notranslate"><span class="pre">labeled_section</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.random_definite_tensor_factory"><code class="docutils literal notranslate"><span class="pre">random_definite_tensor_factory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.utils.html#einsums.utils.random_semidefinite_tensor_factory"><code class="docutils literal notranslate"><span class="pre">random_semidefinite_tensor_factory</span></code></a></li>
@@ -639,12 +632,12 @@ namespaces of the other modules.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../libs/EinsumsExperimental/todo.html"
+       href="../libs/EinsumsPy/todo.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">EinsumsExperimental Library TODO</p>
+        <p class="prev-next-title">EinsumsPy Library TODO</p>
       </div>
     </a>
     <a class="right-next"

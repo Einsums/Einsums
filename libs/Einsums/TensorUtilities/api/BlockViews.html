@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums/TensorUtilities/BlockViews.hpp &#8212; Einsums 1.1.0-trunk documentation</title>
+    <title>Einsums/TensorUtilities/BlockViews.hpp &#8212; Einsums 2.0.0-trunk documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../../../../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,8 +52,8 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Aug 19, 2025"/>
   </head>
   
   
@@ -264,17 +264,17 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="CreateRandomSemidefinite.html">Einsums/TensorUtilities/CreateRandomSemidefinite.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ARange.html">Einsums/TensorUtilities/ARange.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CreateRandomTensor.html">Einsums/TensorUtilities/CreateRandomTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Diagonal.html">Einsums/TensorUtilities/Diagonal.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CreateIdentity.html">Einsums/TensorUtilities/CreateIdentity.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CreateRandomDefinite.html">Einsums/TensorUtilities/CreateRandomDefinite.hpp</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TensorUtilities/BlockViews.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CreateTensorLike.html">Einsums/TensorUtilities/CreateTensorLike.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RMSD.html">Einsums/TensorUtilities/RMSD.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CreateIncrementedTensor.html">Einsums/TensorUtilities/CreateIncrementedTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CreateZeroTensor.html">Einsums/TensorUtilities/CreateZeroTensor.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TensorUtilities/BlockViews.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CreateIdentity.html">Einsums/TensorUtilities/CreateIdentity.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ARange.html">Einsums/TensorUtilities/ARange.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CreateRandomDefinite.html">Einsums/TensorUtilities/CreateRandomDefinite.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CreateRandomSemidefinite.html">Einsums/TensorUtilities/CreateRandomSemidefinite.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Diagonal.html">Einsums/TensorUtilities/Diagonal.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RMSD.html">Einsums/TensorUtilities/RMSD.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CreateRandomTensor.html">Einsums/TensorUtilities/CreateRandomTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CreateTensorLike.html">Einsums/TensorUtilities/CreateTensorLike.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SetTo.html">Einsums/TensorUtilities/Detail/SetTo.hpp</a></li>
 </ul>
 </div>
@@ -343,15 +343,15 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000013"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000010"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_22CoreBlockTensorConceptEN7einsums10apply_viewEDaRK10TensorTypeRKNSt6vectorI5RangeEE">
-<span id="_CPPv3I_22CoreBlockTensorConceptEN7einsums10apply_viewERK10TensorTypeRKNSt6vectorI5RangeEE"></span><span id="_CPPv2I_22CoreBlockTensorConceptEN7einsums10apply_viewERK10TensorTypeRKNSt6vectorI5RangeEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">CoreBlockTensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1aa6e66fce68ac6b117b98399ba5c87e9e"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">apply_view</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_22CoreBlockTensorConceptEN7einsums10apply_viewEDaRK10TensorTypeRKNSt6vectorI5RangeEE" title="einsums::apply_view::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4N7einsums5RangeE" title="einsums::Range"><span class="n"><span class="pre">Range</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">spec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_22CoreBlockTensorConceptEN7einsums10apply_viewEDaRK10TensorTypeRKNSt6vectorI5RangeEE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I_22CoreBlockTensorConcept_11ContainerOfI5RangeEEN7einsums10apply_viewEDaRK10TensorTypeRK4Spec">
+<span id="_CPPv3I_22CoreBlockTensorConcept_11ContainerOfI5RangeEEN7einsums10apply_viewERK10TensorTypeRK4Spec"></span><span id="_CPPv2I_22CoreBlockTensorConcept_11ContainerOfI5RangeEEN7einsums10apply_viewERK10TensorTypeRK4Spec"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">CoreBlockTensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">ContainerOf</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4N7einsums5RangeE" title="einsums::Range"><span class="n"><span class="pre">Range</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Spec</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a37e988475aa9ebd24039a1f86cf03ba2"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">apply_view</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_22CoreBlockTensorConcept_11ContainerOfI5RangeEEN7einsums10apply_viewEDaRK10TensorTypeRK4Spec" title="einsums::apply_view::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span>, <a class="reference internal" href="#_CPPv4I_22CoreBlockTensorConcept_11ContainerOfI5RangeEEN7einsums10apply_viewEDaRK10TensorTypeRK4Spec" title="einsums::apply_view::Spec"><span class="n"><span class="pre">Spec</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">spec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_22CoreBlockTensorConcept_11ContainerOfI5RangeEEN7einsums10apply_viewEDaRK10TensorTypeRK4Spec" title="Link to this definition">#</a><br /></dt>
 <dd><p>Create a view of a block tensor where each member has a different view. </p>
 <p>This function takes in a vector of ranges and applies the ranges to each dimension of each block. For instance:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">BlockTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tensor</span><span class="p">(</span><span class="s">&quot;tensor&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
@@ -373,8 +373,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_22CoreBlockTensorConceptDpEN7einsums10apply_viewEDaRK10TensorTypeDpRR8ViewSpec">
-<span id="_CPPv3I_22CoreBlockTensorConceptDpEN7einsums10apply_viewERK10TensorTypeDpRR8ViewSpec"></span><span id="_CPPv2I_22CoreBlockTensorConceptDpEN7einsums10apply_viewERK10TensorTypeDpRR8ViewSpec"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">CoreBlockTensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">ViewSpec</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a2b202017554e26bbb247c6a02ff97351"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">apply_view</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_22CoreBlockTensorConceptDpEN7einsums10apply_viewEDaRK10TensorTypeDpRR8ViewSpec" title="einsums::apply_view::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span>, <a class="reference internal" href="#_CPPv4I_22CoreBlockTensorConceptDpEN7einsums10apply_viewEDaRK10TensorTypeDpRR8ViewSpec" title="einsums::apply_view::ViewSpec"><span class="n"><span class="pre">ViewSpec</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_22CoreBlockTensorConceptDpEN7einsums10apply_viewEDaRK10TensorTypeDpRR8ViewSpec" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I_22CoreBlockTensorConcept_Dp11ContainerOfI5RangeEEN7einsums10apply_viewEDaRK10TensorTypeDpRR8ViewSpec">
+<span id="_CPPv3I_22CoreBlockTensorConcept_Dp11ContainerOfI5RangeEEN7einsums10apply_viewERK10TensorTypeDpRR8ViewSpec"></span><span id="_CPPv2I_22CoreBlockTensorConcept_Dp11ContainerOfI5RangeEEN7einsums10apply_viewERK10TensorTypeDpRR8ViewSpec"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">CoreBlockTensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">ContainerOf</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4N7einsums5RangeE" title="einsums::Range"><span class="n"><span class="pre">Range</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ViewSpec</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a12ac6ce046b4d67896e134a55776ad67"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">apply_view</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_22CoreBlockTensorConcept_Dp11ContainerOfI5RangeEEN7einsums10apply_viewEDaRK10TensorTypeDpRR8ViewSpec" title="einsums::apply_view::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span>, <a class="reference internal" href="#_CPPv4I_22CoreBlockTensorConcept_Dp11ContainerOfI5RangeEEN7einsums10apply_viewEDaRK10TensorTypeDpRR8ViewSpec" title="einsums::apply_view::ViewSpec"><span class="n"><span class="pre">ViewSpec</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_22CoreBlockTensorConcept_Dp11ContainerOfI5RangeEEN7einsums10apply_viewEDaRK10TensorTypeDpRR8ViewSpec" title="Link to this definition">#</a><br /></dt>
 <dd><p>Create a view of a block tensor where each member has a different view. </p>
 <p>Create a view of a tiled tensor where each member has a different view.</p>
 <p>This function takes in several vectors of ranges and applies the ranges to the respective dimension of each block. For instance:</p>
@@ -449,8 +449,8 @@ This function takes in several vectors of ranges and applies the ranges to the r
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv47einsums"><code class="docutils literal notranslate"><span class="pre">einsums</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_22CoreBlockTensorConceptEN7einsums10apply_viewEDaRK10TensorTypeRKNSt6vectorI5RangeEE"><code class="docutils literal notranslate"><span class="pre">apply_view()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_22CoreBlockTensorConceptDpEN7einsums10apply_viewEDaRK10TensorTypeDpRR8ViewSpec"><code class="docutils literal notranslate"><span class="pre">apply_view()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_22CoreBlockTensorConcept_11ContainerOfI5RangeEEN7einsums10apply_viewEDaRK10TensorTypeRK4Spec"><code class="docutils literal notranslate"><span class="pre">apply_view()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_22CoreBlockTensorConcept_Dp11ContainerOfI5RangeEEN7einsums10apply_viewEDaRK10TensorTypeDpRR8ViewSpec"><code class="docutils literal notranslate"><span class="pre">apply_view()</span></code></a></li>
 </ul>
 </li>
 </ul>

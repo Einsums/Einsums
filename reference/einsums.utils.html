@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums Utilities Module &#8212; Einsums 1.1.0-trunk documentation</title>
+    <title>Einsums Utilities Module &#8212; Einsums 2.0.0-trunk documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -54,8 +54,8 @@
     <link rel="prev" title="Einsums Internal Errors" href="einsums.core.errors.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Aug 19, 2025"/>
   </head>
   
   
@@ -284,7 +284,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Config/docs/index.html">Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Debugging/docs/index.html">Debugging</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Decomposition/docs/index.html">Decomposition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Errors/docs/index.html">Errors</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/FFT/docs/index.html">FFT</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/GPUMemory/docs/index.html">Einsums GPUMemory</a></li>
@@ -324,14 +323,6 @@
 </ul>
 </details></li>
 <li class="toctree-l3"><a class="reference internal" href="../libs/EinsumsPy/todo.html">EinsumsPy Library TODO</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../libs/EinsumsExperimental/index.html">EinsumsExperimental</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../libs/EinsumsExperimental/modules.html">EinsumsExperimental Modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../libs/EinsumsExperimental/Graph/docs/index.html">EinsumsExperimental Graph</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3"><a class="reference internal" href="../libs/EinsumsExperimental/todo.html">EinsumsExperimental Library TODO</a></li>
 </ul>
 </details></li>
 </ul>
@@ -589,6 +580,12 @@ If the iterables are of different lengths, then once one ends, it will emit
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="einsums.utils.is_complex">
+<span class="sig-prename descclassname"><span class="pre">einsums.utils.</span></span><span class="sig-name descname"><span class="pre">is_complex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/einsums/utils.html#is_complex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#einsums.utils.is_complex" title="Link to this definition">#</a></dt>
+<dd><p>Checks to see if the datatype is a complex datatype.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="einsums.utils.labeled_section">
 <span class="sig-prename descclassname"><span class="pre">einsums.utils.</span></span><span class="sig-name descname"><span class="pre">labeled_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/einsums/utils.html#labeled_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#einsums.utils.labeled_section" title="Link to this definition">#</a></dt>
 <dd><p>Decorates a function. Add a line to the timer report for profiling the function.</p>
@@ -751,6 +748,7 @@ to ensure cross functionality.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.create_random_tensor"><code class="docutils literal notranslate"><span class="pre">create_random_tensor</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.create_tensor"><code class="docutils literal notranslate"><span class="pre">create_tensor</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.enumerate_many"><code class="docutils literal notranslate"><span class="pre">enumerate_many</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.is_complex"><code class="docutils literal notranslate"><span class="pre">is_complex</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.labeled_section"><code class="docutils literal notranslate"><span class="pre">labeled_section</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.random_definite_tensor_factory"><code class="docutils literal notranslate"><span class="pre">random_definite_tensor_factory</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.random_semidefinite_tensor_factory"><code class="docutils literal notranslate"><span class="pre">random_semidefinite_tensor_factory</span></code></a></li>

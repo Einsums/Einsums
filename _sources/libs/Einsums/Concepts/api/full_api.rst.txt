@@ -18,9 +18,9 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 .. toctree::
    :maxdepth: 1
 
-   /libs/Einsums/Concepts/api/SubscriptChooser.rst
-   /libs/Einsums/Concepts/api/TensorConcepts.rst
    /libs/Einsums/Concepts/api/NamedRequirements.rst
-   /libs/Einsums/Concepts/api/Complex.rst
-   /libs/Einsums/Concepts/api/SmartPointer.rst
    /libs/Einsums/Concepts/api/File.rst
+   /libs/Einsums/Concepts/api/TensorConcepts.rst
+   /libs/Einsums/Concepts/api/SubscriptChooser.rst
+   /libs/Einsums/Concepts/api/SmartPointer.rst
+   /libs/Einsums/Concepts/api/Complex.rst

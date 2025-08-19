@@ -5,16 +5,16 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _modules_Einsums_Einsums/Decomposition/Tucker.hpp_api:
+.. _modules_Einsums_Einsums/LinearAlgebra/Bases/gemv.hpp_api:
 
 -------------------------------------------------------------------------------
-Einsums/Decomposition/Tucker.hpp
+Einsums/LinearAlgebra/Bases/gemv.hpp
 -------------------------------------------------------------------------------
 
-Defined in header Einsums/Decomposition/Tucker.hpp.
+Defined in header Einsums/LinearAlgebra/Bases/gemv.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
-.. autodoxygenfile:: Einsums/Decomposition/Tucker.hpp
+.. autodoxygenfile:: Einsums/LinearAlgebra/Bases/gemv.hpp
    :project: Einsums

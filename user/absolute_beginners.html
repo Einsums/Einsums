@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums: The Absolute Basics for Beginners &#8212; Einsums 1.1.0-trunk documentation</title>
+    <title>Einsums: The Absolute Basics for Beginners &#8212; Einsums 2.0.0-trunk documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,8 +55,8 @@
     <link rel="prev" title="Einsums User Guide" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Aug 19, 2025"/>
   </head>
   
   
@@ -285,7 +285,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Config/docs/index.html">Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Debugging/docs/index.html">Debugging</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Decomposition/docs/index.html">Decomposition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Errors/docs/index.html">Errors</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/FFT/docs/index.html">FFT</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/GPUMemory/docs/index.html">Einsums GPUMemory</a></li>
@@ -325,14 +324,6 @@
 </ul>
 </details></li>
 <li class="toctree-l3"><a class="reference internal" href="../libs/EinsumsPy/todo.html">EinsumsPy Library TODO</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../libs/EinsumsExperimental/index.html">EinsumsExperimental</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../libs/EinsumsExperimental/modules.html">EinsumsExperimental Modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../libs/EinsumsExperimental/Graph/docs/index.html">EinsumsExperimental Graph</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3"><a class="reference internal" href="../libs/EinsumsExperimental/todo.html">EinsumsExperimental Library TODO</a></li>
 </ul>
 </details></li>
 </ul>
@@ -446,7 +437,7 @@ options into your code.</p>
 If you are using CMake use can use the <code class="code docutils literal notranslate"><span class="pre">find_package</span></code> function. Then with the
 <code class="code docutils literal notranslate"><span class="pre">target_link_libraries</span></code> function you can link against Einsums.</p>
 <p>For example, in your CMakeLists.txt file you can have lines similar to the following:</p>
-<pre class="literal-block">find_package(Einsums 1.1.0 CONFIG)
+<pre class="literal-block">find_package(Einsums 2.0.0 CONFIG)
 
 add_executable(sample main.cpp)
 target_link_libraries(samples Einsums::Einsums)</pre>
@@ -742,9 +733,12 @@ and it permutes the input tensor, scales it, scales the output tensor, then adds
 <span class="c1">// passed as template parameters.</span>
 <span class="n">linear_algebra</span><span class="o">::</span><span class="n">gemm</span><span class="o">&lt;</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="o">&gt;</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
 
-<span class="c1">// We can also do eigendecomposition. Whether to compute</span>
-<span class="c1">// the eigenvectors is passed as a template parameter.</span>
-<span class="n">linear_algebra</span><span class="o">::</span><span class="n">geev</span><span class="o">&lt;</span><span class="nb">true</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">evals</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
+<span class="c1">// We can also do eigendecomposition. The following computes</span>
+<span class="c1">// both the left and right eigenvectors.</span>
+<span class="n">linear_algebra</span><span class="o">::</span><span class="n">geev</span><span class="p">(</span><span class="o">&amp;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">evals</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
+
+<span class="c1">// Whereas this only computes the right eigenvectors.</span>
+<span class="n">linear_algebra</span><span class="o">::</span><span class="n">geev</span><span class="p">(</span><span class="o">&amp;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">evals</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
 
 <span class="c1">// And dot products. This one does not conjugate the first argument.</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>

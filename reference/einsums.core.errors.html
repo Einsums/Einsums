@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums Internal Errors &#8212; Einsums 1.1.0-trunk documentation</title>
+    <title>Einsums Internal Errors &#8212; Einsums 2.0.0-trunk documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=e5332444"></script>
+    <script src="../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -54,8 +54,8 @@
     <link rel="prev" title="Python Logging" href="einsums.core.logging.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.0" />
-    <meta name="docbuild:last-update" content="Jul 12, 2025"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Aug 19, 2025"/>
   </head>
   
   
@@ -284,7 +284,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Config/docs/index.html">Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Debugging/docs/index.html">Debugging</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Decomposition/docs/index.html">Decomposition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Errors/docs/index.html">Errors</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/FFT/docs/index.html">FFT</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/GPUMemory/docs/index.html">Einsums GPUMemory</a></li>
@@ -324,14 +323,6 @@
 </ul>
 </details></li>
 <li class="toctree-l3"><a class="reference internal" href="../libs/EinsumsPy/todo.html">EinsumsPy Library TODO</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../libs/EinsumsExperimental/index.html">EinsumsExperimental</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../libs/EinsumsExperimental/modules.html">EinsumsExperimental Modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../libs/EinsumsExperimental/Graph/docs/index.html">EinsumsExperimental Graph</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3"><a class="reference internal" href="../libs/EinsumsExperimental/todo.html">EinsumsExperimental Library TODO</a></li>
 </ul>
 </details></li>
 </ul>
@@ -510,6 +501,14 @@ arguments.</p>
 <dd><p>Indicates that an invalid enumeration value was used.</p>
 </dd></dl>
 
+<dl class="py exception">
+<dt class="sig sig-object py" id="einsums.core.complex_conversion_error">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">complex_conversion_error</span></span><a class="headerlink" href="#einsums.core.complex_conversion_error" title="Link to this definition">#</a></dt>
+<dd><p>Thrown when trying to convert a complex number to a real number. Instead, the input
+data should be transformed into a real value in a way that makes sense for the operation
+being performed. This is often either the magnitude or the real part.</p>
+</dd></dl>
+
 </section>
 
 
@@ -572,6 +571,7 @@ arguments.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.uninitialized_error"><code class="docutils literal notranslate"><span class="pre">uninitialized_error</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.system_error"><code class="docutils literal notranslate"><span class="pre">system_error</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.enum_error"><code class="docutils literal notranslate"><span class="pre">enum_error</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.complex_conversion_error"><code class="docutils literal notranslate"><span class="pre">complex_conversion_error</span></code></a></li>
 </ul>
   </nav></div>
 

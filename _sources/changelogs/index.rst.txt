@@ -11,6 +11,8 @@ Changelogs
 .. contents:: Versions
     :depth: 1
 
+.. include:: v2/index.rst
+
 .. include:: v1/index.rst
 
 .. include:: v0/index.rst

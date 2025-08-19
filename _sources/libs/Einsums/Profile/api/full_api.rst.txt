@@ -19,5 +19,5 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
    :maxdepth: 1
 
    /libs/Einsums/Profile/api/LabeledSection.rst
-   /libs/Einsums/Profile/api/Section.rst
    /libs/Einsums/Profile/api/Timer.rst
+   /libs/Einsums/Profile/api/Section.rst
