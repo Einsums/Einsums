@@ -16,11 +16,10 @@ using namespace einsums;
 
 TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
 
-    //    using TestType = double;
-
     SECTION("Integer power") {
 
         Tensor A = create_random_tensor<TestType>("A", 10, 10);
+
         // Can only handle symmetric matrices.
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < i; j++) {
@@ -28,10 +27,11 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
             }
         }
 
-        Tensor B = linear_algebra::pow(A, TestType{2.0});
         Tensor C = create_tensor_like(A);
 
         linear_algebra::gemm<false, false>(1.0, A, A, 0.0, &C);
+
+        Tensor B = linear_algebra::pow(A, TestType{2.0});
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
@@ -108,7 +108,7 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
         auto Diag1 = diagonal(Evals);
 
         for (int i = 0; i < size; i++) {
-            Evals(i) = std::pow(Evals(i), TestType{0.5});
+            Evals(i) = std::pow(Evals(i), TestType{-0.5});
         }
         auto Diag2 = diagonal(Evals);
 
@@ -118,13 +118,13 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
         linear_algebra::gemm<false, false>(TestType{1.0}, Evecs, C, TestType{0.0}, &B);
 
         C.zero();
-        C = linear_algebra::pow(A, TestType{0.5});
+        C = linear_algebra::pow(A, TestType{-0.5});
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-3}));
-                CHECK_THAT(C(j, i), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-3}));
-                CHECK_THAT(B(j, i), Catch::Matchers::WithinAbs(B(i, j), TestType{1e-3}));
+                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-4}));
+                CHECK_THAT(C(j, i), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-4}));
+                CHECK_THAT(B(j, i), Catch::Matchers::WithinAbs(B(i, j), TestType{1e-4}));
             }
         }
     }
@@ -170,9 +170,9 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
             A[i] = create_random_definite("block", A.block_dim(i), A.block_dim(i));
         }
 
-        BlockTensor<TestType, 2> B      = einsums::linear_algebra::pow(A, TestType{0.5});
+        BlockTensor<TestType, 2> B      = einsums::linear_algebra::pow(A, TestType{-0.5});
         Tensor<TestType, 2>      A_base = (Tensor<TestType, 2>)A;
-        Tensor<TestType, 2>      C      = einsums::linear_algebra::pow(A_base, TestType{0.5});
+        Tensor<TestType, 2>      C      = einsums::linear_algebra::pow(A_base, TestType{-0.5});
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {

@@ -25,7 +25,7 @@ if(NOT CMAKE_BUILD_TYPE)
   )
 endif()
 
-project(Einsums LANGUAGES C CXX)
+project(Einsums LANGUAGES C CXX ASM)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -40,8 +40,8 @@ endif()
 # ##################################################################################################
 # Build all of Einsums
 # ##################################################################################################
-set(EINSUMS_VERSION_MAJOR 1)
-set(EINSUMS_VERSION_MINOR 1)
+set(EINSUMS_VERSION_MAJOR 2)
+set(EINSUMS_VERSION_MINOR 0)
 set(EINSUMS_VERSION_PATCH 0)
 string(TIMESTAMP EINSUMS_VERSION_DATE "%Y%m%d" UTC)
 set(EINSUMS_VERSION_TAG "-trunk")
@@ -291,6 +291,12 @@ einsums_option(
 einsums_option(
   EINSUMS_WITH_FAIL_COMPILE_TESTS BOOL
   "Create build system support for fail compile tests (default: ON)" ON DEPENDS "EINSUMS_WITH_TESTS"
+  CATEGORY "Build Targets"
+)
+
+einsums_option(
+  EINSUMS_WITH_EXPERIMENTAL BOOL
+  "If true, build experimental Einsums modules (default: OFF)" OFF
   CATEGORY "Build Targets"
 )
 
@@ -812,6 +818,7 @@ install(
   COMPONENT core
   FILES_MATCHING
   PATTERN "*.hpp"
+  PATTERN "*.h"
   PATTERN ".git" EXCLUDE
   PATTERN "CMakeFiles" EXCLUDE
   PATTERN "CTestFiles" EXCLUDE

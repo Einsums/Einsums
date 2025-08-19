@@ -24,10 +24,10 @@ This module contains many functions and classes implemented in C++.
 
     :return: :code:`True` if GPU capabilities are enabled.
 
-.. py:function:: initialize()
+.. py:function:: __initialize()
 
-    Initialize the Einsums library. It does not need to be called directly, and instead
-    it is called when you import :code:`einsums`. 
+    Initializes the Einsums library. This is an internal function that is called automatically. 
+    It does not need to be called directly, and instead it is called when you import :code:`einsums`. 
 
 .. py:function:: finalize(arg: bool | str)
 

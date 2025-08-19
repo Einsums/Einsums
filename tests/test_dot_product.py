@@ -13,7 +13,6 @@ pytestmark = [
     pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
 ]
 
-
 def test_dot(a: int, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a], dtype, array)
     B = ein.utils.random_tensor_factory("A", [a], dtype, array)

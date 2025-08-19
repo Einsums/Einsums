@@ -17,7 +17,6 @@ set(_Einsums_modules
   Concepts
   Config
   Debugging
-  Decomposition
   Errors
   FFT
   GPUMemory
@@ -50,3 +49,4 @@ foreach(module ${_Einsums_modules})
   einsums_info("    ${module}")
   add_subdirectory(${module})
 endforeach()
+

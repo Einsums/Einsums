@@ -12,7 +12,7 @@
 
 using namespace einsums;
 
-TEMPLATE_TEST_CASE("Full-Full", "[tensor]", float, double, float const, int) {
+TEMPLATE_TEST_CASE("Full-Full", "[tensor]", float, double, int) {
     BufferVector<std::remove_cv_t<TestType>> input_data(27), output_data(27);
 
     for (int i = 0; i < 27; i++) {
@@ -297,7 +297,7 @@ TEMPLATE_TEST_CASE("Full-Full", "[tensor]", float, double, float const, int) {
     }
 }
 
-TEMPLATE_TEST_CASE("View-View", "[tensor]", float, double, float const, int) {
+TEMPLATE_TEST_CASE("View-View", "[tensor]", float, double, int) {
     BufferVector<std::remove_cv_t<TestType>> input_data(64), output_data(64);
 
     for (int i = 0; i < 64; i++) {

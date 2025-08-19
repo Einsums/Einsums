@@ -37,9 +37,10 @@ std::vector<blas::int_t> getrf(pybind11::buffer &A) {
 
     int result = 0;
 
-    EINSUMS_PY_LINALG_CALL(
-        (A_info.format == py::format_descriptor<Float>::format()),
-        (result = blas::getrf(A_info.shape[0], A_info.shape[1], (Float *)A_info.ptr, A_info.strides[0] / A_info.itemsize, pivot.data())))
+    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), [&]() {
+        auto A_tens = buffer_to_tensor<Float>(A);
+        result      = einsums::linear_algebra::detail::getrf(&A_tens, &pivot);
+    }())
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only decompose matrices of real or complex floating point values!");
     }
@@ -143,8 +144,10 @@ void getri(pybind11::buffer &A, std::vector<blas::int_t> &pivot) {
 
     int result = 0;
 
-    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()),
-                           (result = blas::getri(A_info.shape[0], (Float *)A_info.ptr, A_info.strides[0] / A_info.itemsize, pivot.data())))
+    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), [&]() {
+        auto A_tens = buffer_to_tensor<Float>(A);
+        result      = einsums::linear_algebra::detail::getri(&A_tens, pivot);
+    }())
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only decompose matrices of real or complex floating point values!");
     }
@@ -216,23 +219,13 @@ py::object pseudoinverse(pybind11::buffer const &A, pybind11::object const &tol)
 }
 
 template <typename T>
-pybind11::tuple qr_work(pybind11::buffer const &_A) {
-    // Copy A because it will be overwritten by the QR call.
-    Tensor<T, 2>      A = PyTensorView<T>(_A);
-    blas::int_t const m = A.dim(0);
-    blas::int_t const n = A.dim(1);
-
-    Tensor<T, 1> tau("tau", std::min(m, n));
+pybind11::tuple qr_work(pybind11::buffer const &A) {
     // Compute QR factorization of Y
-    blas::int_t info = blas::geqrf(m, n, A.data(), n, tau.data());
-
-    if (info < 0) {
-        EINSUMS_THROW_EXCEPTION(py::value_error, "{} parameter to geqrf has an illegal value.", print::ordinal(-info));
-    }
+    auto [Q, R] = einsums::linear_algebra::detail::qr(buffer_to_tensor<T>(A));
 
     // Extract Matrix Q out of QR factorization
     // blas::int_t info2 = blas::orgqr(m, n, tau.dim(0), A.data(), n, const_cast<const double *>(tau.data()));
-    return py::make_tuple(PyTensor<T>(std::move(A)), PyTensor<T>(std::move(tau)));
+    return py::make_tuple(PyTensor<T>(std::move(Q)), PyTensor<T>(std::move(R)));
 }
 
 py::tuple qr(pybind11::buffer const &A) {
@@ -246,89 +239,6 @@ py::tuple qr(pybind11::buffer const &A) {
     EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), (out = qr_work<Float>(A)))
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "The inputs to qr need to store real or complex floating point values!");
-    }
-
-    return out;
-}
-
-template <typename T>
-RuntimeTensor<T> q_work(pybind11::buffer const &qr, pybind11::buffer const &tau) {
-    py::buffer_info qr_info = qr.request(false), tau_info = tau.request(false);
-
-    blas::int_t const m   = qr_info.shape[0];
-    blas::int_t const n   = std::min(qr_info.shape[0], qr_info.shape[1]);
-    blas::int_t const k   = tau_info.shape[0];
-    blas::int_t const lda = qr_info.strides[0] / qr_info.itemsize;
-
-    Tensor<T, 2> Q = PyTensorView<T>(qr);
-
-    blas::int_t info;
-    if constexpr (!IsComplexV<T>) {
-        info = blas::orgqr(m, n, k, Q.data(), lda, (T *)tau_info.ptr);
-    } else {
-        info = blas::ungqr(m, n, k, Q.data(), lda, (T *)tau_info.ptr);
-    }
-
-    if (info < 0) {
-        EINSUMS_THROW_EXCEPTION(py::value_error, "{} parameter to orgqr has an illegal value. m = {}, n = {}, k = {}, lda = {}",
-                                print::ordinal(-info), m, n, k, lda);
-    }
-
-    return RuntimeTensor<T>(std::move(Q));
-}
-
-py::object q(pybind11::buffer const &qr, pybind11::buffer const &tau) {
-    py::buffer_info qr_info = qr.request(false), tau_info = tau.request(false);
-
-    if (qr_info.ndim != 2 || tau_info.ndim != 1) {
-        EINSUMS_THROW_EXCEPTION(rank_error, "The q function takes a matrix and a vector!");
-    }
-
-    if (qr_info.format != tau_info.format) {
-        EINSUMS_THROW_EXCEPTION(py::value_error, "The arguments to the q function need to store the same data types!");
-    }
-
-    py::object out;
-    EINSUMS_PY_LINALG_CALL((qr_info.format == py::format_descriptor<Float>::format()), (out = py::cast(q_work<Float>(qr, tau))))
-    else {
-        EINSUMS_THROW_EXCEPTION(py::value_error, "The inputs to q need to store real or complex floating point values!");
-    }
-
-    return out;
-}
-
-template <typename T>
-RuntimeTensor<T> r_work(pybind11::buffer const &qr) {
-    py::buffer_info qr_info = qr.request(false);
-
-    RuntimeTensor<T> out("R", {(size_t)std::min(qr_info.shape[0], qr_info.shape[1]), (size_t)qr_info.shape[1]});
-
-    out.zero();
-
-    T const *qr_data = (T const *)qr_info.ptr;
-
-    size_t qr_stride0 = qr_info.strides[0] / qr_info.itemsize, qr_stride1 = qr_info.strides[1] / qr_info.itemsize;
-
-    for (size_t i = 0; i < out.dim(0); i++) {
-        for (size_t j = i; j < out.dim(1); j++) {
-            out(i, j) = qr_data[i * qr_stride0 + j * qr_stride1];
-        }
-    }
-
-    return out;
-}
-
-py::object r(pybind11::buffer const &qr, pybind11::buffer const &tau) {
-    py::buffer_info qr_info = qr.request(false), tau_info = tau.request(false);
-
-    if (qr_info.ndim != 2 || tau_info.ndim != 1) {
-        EINSUMS_THROW_EXCEPTION(rank_error, "The q function takes a matrix and a vector!");
-    }
-
-    py::object out;
-    EINSUMS_PY_LINALG_CALL((qr_info.format == py::format_descriptor<Float>::format()), (out = py::cast(r_work<Float>(qr))))
-    else {
-        EINSUMS_THROW_EXCEPTION(py::value_error, "The inputs to r need to store real or complex floating point values!");
     }
 
     return out;

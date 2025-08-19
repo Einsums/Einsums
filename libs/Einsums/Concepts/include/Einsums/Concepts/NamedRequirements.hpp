@@ -112,4 +112,28 @@ concept ContainerOrInitializer = requires(T a, T b, T const ca, T const cb, T &r
     { a.max_size() } -> std::same_as<typename T::size_type>;
 };
 
+template <typename T>
+concept ContiguousContainer = requires(T a) {
+    requires Container<T>;
+    { a.data() } -> std::same_as<typename T::value_type *>;
+};
+
+template <typename T, typename Holds>
+concept ContiguousContainerOf = requires {
+    requires ContiguousContainer<T>;
+    requires std::same_as<typename T::value_type, Holds>;
+};
+
+template <typename T, typename Holds>
+concept ContainerOf = requires {
+    requires Container<T>;
+    requires std::same_as<typename T::value_type, Holds>;
+};
+
+template <typename T, typename Holds>
+concept ContainerOrInitializerOf = requires {
+    requires ContainerOrInitializer<T>;
+    requires std::same_as<typename T::value_type, Holds>;
+};
+
 } // namespace einsums

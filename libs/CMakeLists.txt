@@ -51,9 +51,13 @@ set(CONFIG_STRINGS_MODULES_ENTRIES)
 
 # List of sub-directories to work through
 set(EINSUMS_LIBS
-    Einsums EinsumsExperimental
+    Einsums
     CACHE INTERNAL "List of Einsums libraries" FORCE
 )
+
+if(EINSUMS_WITH_EXPERIMENTAL)
+  list(APPEND EINSUMS_LIBS EinsumsExperimental)
+endif()
 
 include(Einsums_CodeCoverage)
 set(einsums_libs_public_static SHARED)

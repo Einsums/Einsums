@@ -128,7 +128,7 @@ struct ordinal {
             return *this;                                                                                                                  \
         }                                                                                                                                  \
         template <std::integral OtherType>                                                                                                 \
-        constexpr ordinal<IntType> &operator OP##=(const OtherType &other) {                                                               \
+        constexpr ordinal<IntType> &operator OP##=(const OtherType & other) {                                                              \
             val_ OP## = other;                                                                                                             \
             return *this;                                                                                                                  \
         }
@@ -294,6 +294,7 @@ inline void fprintln(std::ostream &fp) {
 /**
  * Calls println to generate an error message, then aborts.
  */
+
 template <typename... Ts>
 void println_abort(std::string_view const &format, Ts const... ts) {
     std::string message = std::string("ERROR: ") + format.data();

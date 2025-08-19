@@ -90,15 +90,16 @@ void gesvd_test() {
 
     using namespace einsums;
 
-    auto a = create_tensor<T>("a", N, LDA);
+    auto a = create_tensor<T>("a", M, N);
 
-    a.vector_data() = VectorData<T>{8.79, 6.11, -9.15, 9.57, -3.49, 9.84, 9.93, 6.91,  -7.93, 1.64, 4.02, 0.15, 9.83, 5.04, 4.86,
+    auto temp       = VectorData<T>{8.79, 6.11, -9.15, 9.57, -3.49, 9.84, 9.93, 6.91,  -7.93, 1.64, 4.02, 0.15, 9.83, 5.04, 4.86,
                                     8.83, 9.80, -8.99, 5.45, -0.27, 4.85, 0.74, 10.00, -6.02, 3.16, 7.98, 3.01, 5.80, 4.27, -5.31};
+    a.vector_data() = temp;
 
     auto [u, s, vt] = linear_algebra::svd(a);
 
     // Using u, s, and vt reconstruct a and test a against the reconstructed a
-    auto new_a = reconstruct(u, s, vt, N, LDA);
+    auto new_a = reconstruct(u, s, vt, M, N);
 
     CHECK_THAT(new_a.vector_data(), Catch::Matchers::Approx(a.vector_data()).margin(0.0001));
 }

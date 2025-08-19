@@ -4,7 +4,7 @@
 //----------------------------------------------------------------------------------------------
 
 #pragma once
-#include "Einsums/Errors/Error.hpp"
+#include <Einsums/Errors/Error.hpp>
 #ifndef DOXYGEN
 
 #    include <Einsums/Config.hpp>
@@ -12,6 +12,7 @@
 #    include <Einsums/Concepts/SubscriptChooser.hpp>
 #    include <Einsums/Concepts/TensorConcepts.hpp>
 #    include <Einsums/LinearAlgebra.hpp>
+#    include <Einsums/Logging.hpp>
 #    include <Einsums/Print.hpp>
 #    include <Einsums/Tensor/BlockTensor.hpp>
 #    include <Einsums/Tensor/Tensor.hpp>
@@ -43,8 +44,8 @@
 namespace einsums::tensor_algebra {
 namespace detail {
 
-template <bool OnlyUseGenericAlgorithm, bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool DryRun, bool ConjA, bool ConjB, TensorConcept AType, TensorConcept BType, typename CType,
+          typename... CIndices, typename... AIndices, typename... BIndices>
     requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
 AlgorithmChoice einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
                        BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
@@ -74,9 +75,8 @@ void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndic
             if (std::get<a>(A_indices).letter == std::get<b>(B_indices).letter) {
                 if (dimA != dimB) {
 #    if !defined(EINSUMS_IS_TESTING)
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
-                            print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
-                            print_tuple_no_type(B_indices));
+                    EINSUMS_LOG_ERROR("{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(), print_tuple_no_type(C_indices),
+                                      AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices));
 #    endif
                     runtime_indices_abort = true;
                 }
@@ -92,9 +92,8 @@ void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndic
             if (std::get<a>(A_indices).letter == std::get<c>(C_indices).letter) {
                 if (dimA != dimC) {
 #    if !defined(EINSUMS_IS_TESTING)
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
-                            print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
-                            print_tuple_no_type(B_indices));
+                    EINSUMS_LOG_ERROR("{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(), print_tuple_no_type(C_indices),
+                                      AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices));
 #    endif
                     runtime_indices_abort = true;
                 }
@@ -113,9 +112,8 @@ void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndic
             if (std::get<b>(B_indices).letter == std::get<c>(C_indices).letter) {
                 if (dimB != dimC) {
 #    if !defined(EINSUMS_IS_TESTING)
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
-                            print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
-                            print_tuple_no_type(B_indices));
+                    EINSUMS_LOG_ERROR("{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(), print_tuple_no_type(C_indices),
+                                      AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices));
 #    endif
                     runtime_indices_abort = true;
                 }
@@ -134,8 +132,8 @@ void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndic
  * This will either call einsum_generic_algorithm or einsum_special_dispatch, depending on whether the tensors
  * have special dispatching. The template argument will be passed onto einsum_special_dispatch.
  */
-template <bool OnlyUseGenericAlgorithm, bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool DryRun, bool ConjA, bool ConjB, TensorConcept AType, TensorConcept BType, typename CType,
+          typename... CIndices, typename... AIndices, typename... BIndices>
     requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
 AlgorithmChoice einsum_generic_default(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
                                        BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
@@ -145,19 +143,21 @@ AlgorithmChoice einsum_generic_default(ValueTypeT<CType> const C_prefactor, std:
     constexpr auto B_indices = std::tuple<BIndices...>();
     constexpr auto C_indices = std::tuple<CIndices...>();
 
-    if constexpr (IsAlgebraTensorV<AType> && IsAlgebraTensorV<BType> &&
-                  (IsAlgebraTensorV<CType> || !IsTensorV<CType>)&&(!IsBasicTensorV<AType> || !IsBasicTensorV<BType> ||
-                                                                   (!IsBasicTensorV<CType> && IsTensorV<CType>))) {
+    if constexpr (IsAlgebraTensorV<AType> && IsAlgebraTensorV<BType> && (IsAlgebraTensorV<CType> || !IsTensorV<CType>) &&
+                  (!IsBasicTensorV<AType> || !IsBasicTensorV<BType> || (!IsBasicTensorV<CType> && IsTensorV<CType>))) {
         if constexpr (!DryRun) {
-            einsum_special_dispatch<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+            einsum_special_dispatch<OnlyUseGenericAlgorithm, ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices,
+                                                                           B);
         }
         Tensor<typename AType::ValueType, AType::Rank> dry_A;
         Tensor<typename BType::ValueType, BType::Rank> dry_B;
         if constexpr (TensorConcept<CType>) {
             Tensor<typename CType::ValueType, CType::Rank> dry_C;
-            return einsum<OnlyUseGenericAlgorithm, true>(C_prefactor, C_indices, &dry_C, AB_prefactor, A_indices, dry_A, B_indices, dry_B);
+            return einsum<OnlyUseGenericAlgorithm, true, ConjA, ConjB>(C_prefactor, C_indices, &dry_C, AB_prefactor, A_indices, dry_A,
+                                                                       B_indices, dry_B);
         } else {
-            return einsum<OnlyUseGenericAlgorithm, true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, dry_A, B_indices, dry_B);
+            return einsum<OnlyUseGenericAlgorithm, true, ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, dry_A, B_indices,
+                                                                       dry_B);
         }
     } else {
         constexpr auto A_unique              = UniqueT<std::tuple<AIndices...>>();
@@ -175,8 +175,9 @@ AlgorithmChoice einsum_generic_default(ValueTypeT<CType> const C_prefactor, std:
         EINSUMS_LOG_TRACE("Performing the generic algorithm.");
 
         if constexpr (!DryRun) {
-            einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
-                                     unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
+            einsum_generic_algorithm<ConjA, ConjB>(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices,
+                                                   unique_target_dims, unique_link_dims, target_position_in_C, link_position_in_link,
+                                                   C_prefactor, C, AB_prefactor, A, B);
         }
         return GENERIC;
     }
@@ -215,7 +216,7 @@ constexpr bool einsum_is_dot_product(std::tuple<CIndices...> const &, std::tuple
 /**
  * @brief Checks to see if the indices passed can be turned into a direct product.
  */
-template <typename... CIndices, typename... AIndices, typename... BIndices>
+template <bool ConjA, bool ConjB, typename... CIndices, typename... AIndices, typename... BIndices>
 constexpr bool einsum_is_direct_product(std::tuple<CIndices...> const &, std::tuple<AIndices...> const &, std::tuple<BIndices...> const &) {
     constexpr auto A_unique = UniqueT<std::tuple<AIndices...>>();
     constexpr auto B_unique = UniqueT<std::tuple<BIndices...>>();
@@ -225,31 +226,45 @@ constexpr bool einsum_is_direct_product(std::tuple<CIndices...> const &, std::tu
     constexpr auto C_exactly_matches_B =
         sizeof...(CIndices) == sizeof...(BIndices) && same_indices<std::tuple<CIndices...>, std::tuple<BIndices...>>();
 
-    return C_exactly_matches_A && C_exactly_matches_B;
+    return C_exactly_matches_A && C_exactly_matches_B && !ConjA && !ConjB;
 }
 
 /**
  * @brief Checks to see if the indices passed can be turned into an outer product.
  */
-template <typename... CIndices, typename... AIndices, typename... BIndices>
+template <bool ConjA, bool ConjB, typename... CIndices, typename... AIndices, typename... BIndices>
 constexpr bool einsum_is_outer_product(std::tuple<CIndices...> const &, std::tuple<AIndices...> const &, std::tuple<BIndices...> const &) {
-    constexpr auto linksAB                         = IntersectT<std::tuple<AIndices...>, std::tuple<BIndices...>>();
     constexpr auto A_indices                       = std::tuple<AIndices...>();
     constexpr auto B_indices                       = std::tuple<BIndices...>();
+    constexpr auto C_indices                       = std::tuple<CIndices...>();
+    constexpr auto linksAB                         = IntersectT<std::tuple<AIndices...>, std::tuple<BIndices...>>();
     constexpr auto C_unique                        = UniqueT<std::tuple<CIndices...>>();
     constexpr auto target_position_in_A            = detail::find_type_with_position(C_unique, A_indices);
     constexpr auto target_position_in_B            = detail::find_type_with_position(C_unique, B_indices);
     constexpr auto contiguous_target_position_in_A = detail::contiguous_positions(target_position_in_A);
     constexpr auto contiguous_target_position_in_B = detail::contiguous_positions(target_position_in_B);
+    constexpr auto A_target_position_in_C          = detail::find_type_with_position(A_indices, C_indices);
+    constexpr auto B_target_position_in_C          = detail::find_type_with_position(B_indices, C_indices);
 
-    return std::tuple_size_v<decltype(linksAB)> == 0 && contiguous_target_position_in_A && contiguous_target_position_in_B;
+    constexpr bool condition =
+        std::tuple_size_v<decltype(linksAB)> == 0 && contiguous_target_position_in_A && contiguous_target_position_in_B;
+
+    if constexpr (condition) {
+        constexpr bool swap_AB = std::get<1>(A_target_position_in_C) != 0;
+
+        constexpr bool straight_conjugation = !ConjA && !swap_AB;
+        constexpr bool swapped_conjugation  = !ConjB && swap_AB;
+        return straight_conjugation || swapped_conjugation;
+    } else {
+        return false;
+    }
 }
 
 /**
  * @brief Sets up tensor views and performs the outer product on them.
  */
-template <bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices, typename... AIndices,
-          typename... BIndices>
+template <bool DryRun, bool ConjA, bool ConjB, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
 bool einsum_do_outer_product(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/,
@@ -289,7 +304,7 @@ bool einsum_do_outer_product(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
 #    ifdef EINSUMS_COMPUTE_CODE
     std::conditional_t<IsIncoreRankTensorV<CType, CRank, CDataType>, TensorView<CDataType, 2>, DeviceTensorView<CDataType, 2>> tC{*C, dC};
 #    else
-    TensorView<CDataType, 2>       tC{*C, dC};
+    TensorView<CDataType, 2> tC{*C, dC};
 #    endif
     if (C_prefactor != CDataType{1.0}) {
         EINSUMS_LOG_TRACE("scaling C");
@@ -298,29 +313,37 @@ bool einsum_do_outer_product(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
     try {
         EINSUMS_LOG_TRACE("calling ger");
         if constexpr (swap_AB) {
-            linear_algebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
+            if constexpr (ConjA) {
+                linear_algebra::gerc(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
+            } else {
+                linear_algebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
+            }
         } else {
-            linear_algebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
+            if constexpr (ConjB) {
+                linear_algebra::gerc(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
+            } else {
+                linear_algebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
+            }
         }
     } catch (std::runtime_error &e) {
 #    if defined(EINSUMS_SHOW_WARNING)
-        println(bg(fmt::color::yellow) | fg(fmt::color::black), "Optimized outer product failed. Likely from a non-contiguous "
-                                                                "TensorView. Attempting to perform generic algorithm.");
+        EINSUMS_LOG_WARN("Optimized outer product failed. Likely from a non-contiguous "
+                         "TensorView. Attempting to perform generic algorithm.");
 #    endif
         if constexpr (IsComplexV<CDataType>) {
             if (C_prefactor == CDataType{0.0, 0.0}) {
 #    if defined(EINSUMS_SHOW_WARNING)
-                println(bg(fmt::color::red) | fg(fmt::color::white),
-                        "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
+                EINSUMS_LOG_WARN("WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor,
+                                 C->name());
 #    endif
             } else {
-                linear_algebra::scale(CDataType{1.0, 1.0} / C_prefactor, C);
+                linear_algebra::scale(CDataType{1.0, 0.0} / C_prefactor, C);
             }
         } else {
             if (C_prefactor == CDataType{0.0}) {
 #    if defined(EINSUMS_SHOW_WARNING)
-                println(bg(fmt::color::red) | fg(fmt::color::white),
-                        "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
+                EINSUMS_LOG_WARN("WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor,
+                                 C->name());
 #    endif
             } else {
                 linear_algebra::scale(CDataType{1.0} / C_prefactor, C);
@@ -335,7 +358,7 @@ bool einsum_do_outer_product(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
  * @brief Checks to see if the indices passed can be turned into a matrix-vector product where the second pack contains the indices for the
  * matrix.
  */
-template <typename... CIndices, typename... AIndices, typename... BIndices>
+template <bool ConjA, bool ConjB, typename... CIndices, typename... AIndices, typename... BIndices>
 constexpr bool einsum_is_matrix_vector(std::tuple<CIndices...> const &, std::tuple<AIndices...> const &, std::tuple<BIndices...> const &) {
     constexpr auto A_indices                           = std::tuple<AIndices...>();
     constexpr auto B_indices                           = std::tuple<BIndices...>();
@@ -357,16 +380,23 @@ constexpr bool einsum_is_matrix_vector(std::tuple<CIndices...> const &, std::tup
     constexpr auto same_ordering_target_position_in_CA = detail::is_same_ordering(target_position_in_A, A_target_position_in_C);
     constexpr auto same_ordering_target_position_in_CB = detail::is_same_ordering(target_position_in_B, B_target_position_in_C);
 
-    return contiguous_link_position_in_A && contiguous_link_position_in_B && contiguous_target_position_in_A &&
-           same_ordering_link_position_in_AB && same_ordering_target_position_in_CA && !same_ordering_target_position_in_CB &&
-           std::tuple_size_v<decltype(B_target_position_in_C)> == 0;
+    constexpr bool condition = contiguous_link_position_in_A && contiguous_link_position_in_B && contiguous_target_position_in_A &&
+                               same_ordering_link_position_in_AB && same_ordering_target_position_in_CA &&
+                               !same_ordering_target_position_in_CB && std::tuple_size_v<decltype(B_target_position_in_C)> == 0 && !ConjB;
+
+    if constexpr (condition) {
+        constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
+        return transpose_A || !ConjA;
+    } else {
+        return false;
+    }
 }
 
 /**
  * @brief Sets up tensor views and performs a matrix-vector product on them.
  */
-template <bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices, typename... AIndices,
-          typename... BIndices>
+template <bool DryRun, bool ConjA, bool ConjB, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
 bool einsum_do_matrix_vector(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/,
@@ -436,7 +466,7 @@ bool einsum_do_matrix_vector(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
 #    endif
 
     if constexpr (transpose_A) {
-        linear_algebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+        linear_algebra::gemv((ConjA) ? 'c' : 't', AB_prefactor, tA, tB, C_prefactor, &tC);
     } else {
         linear_algebra::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
     }
@@ -447,7 +477,7 @@ bool einsum_do_matrix_vector(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
 /**
  * @brief Checks to see if the indices passed can be turned into a matrix-matrix product.
  */
-template <typename... CIndices, typename... AIndices, typename... BIndices>
+template <bool ConjA, bool ConjB, typename... CIndices, typename... AIndices, typename... BIndices>
 constexpr bool einsum_is_matrix_product(std::tuple<CIndices...> const &, std::tuple<AIndices...> const &, std::tuple<BIndices...> const &) {
     constexpr auto A_indices                           = std::tuple<AIndices...>();
     constexpr auto B_indices                           = std::tuple<BIndices...>();
@@ -476,17 +506,28 @@ constexpr bool einsum_is_matrix_product(std::tuple<CIndices...> const &, std::tu
     constexpr auto same_ordering_target_position_in_CA = detail::is_same_ordering(target_position_in_A, A_target_position_in_C);
     constexpr auto same_ordering_target_position_in_CB = detail::is_same_ordering(target_position_in_B, B_target_position_in_C);
 
-    return have_remaining_indices_in_CminusA && have_remaining_indices_in_CminusB && contiguous_link_position_in_A &&
-           contiguous_link_position_in_B && contiguous_target_position_in_A && contiguous_target_position_in_B &&
-           contiguous_A_targets_in_C && contiguous_B_targets_in_C && same_ordering_link_position_in_AB &&
-           same_ordering_target_position_in_CA && same_ordering_target_position_in_CB;
+    constexpr bool condition = have_remaining_indices_in_CminusA && have_remaining_indices_in_CminusB && contiguous_link_position_in_A &&
+                               contiguous_link_position_in_B && contiguous_target_position_in_A && contiguous_target_position_in_B &&
+                               contiguous_A_targets_in_C && contiguous_B_targets_in_C && same_ordering_link_position_in_AB &&
+                               same_ordering_target_position_in_CA && same_ordering_target_position_in_CB;
+
+    if constexpr (condition) {
+        constexpr bool transpose_A     = std::get<1>(link_position_in_A) == 0;
+        constexpr bool transpose_B     = std::get<1>(link_position_in_B) != 0;
+        constexpr bool transpose_C     = std::get<1>(A_target_position_in_C) != 0;
+        constexpr bool conjugate_works = (transpose_C && (transpose_A || !ConjA) && (transpose_B || !ConjB)) ||
+                                         (!transpose_C && (!transpose_A || !ConjA) && (!transpose_B || !ConjB));
+        return conjugate_works;
+    } else {
+        return false;
+    }
 }
 
 /**
  * @brief Sets up tensor views and performs a matrix-vector product on them.
  */
-template <bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices, typename... AIndices,
-          typename... BIndices>
+template <bool DryRun, bool ConjA, bool ConjB, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
     requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
 bool einsum_do_matrix_product(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
                               BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
@@ -512,17 +553,6 @@ bool einsum_do_matrix_product(ValueTypeT<CType> const C_prefactor, std::tuple<CI
     constexpr auto target_position_in_B   = detail::find_type_with_position(C_unique, B_indices);
     constexpr auto A_target_position_in_C = detail::find_type_with_position(A_indices, C_indices);
     constexpr auto B_target_position_in_C = detail::find_type_with_position(B_indices, C_indices);
-
-    if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
-        // Fall through to generic algorithm.
-        EINSUMS_LOG_TRACE("do not have full view of underlying data A {} B{} C{}", !A.full_view_of_underlying(),
-                          !B.full_view_of_underlying(), !C->full_view_of_underlying());
-        return false;
-    }
-
-    if constexpr (DryRun) {
-        return true;
-    }
 
     constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
     constexpr bool transpose_B = std::get<1>(link_position_in_B) != 0;
@@ -571,37 +601,20 @@ bool einsum_do_matrix_product(ValueTypeT<CType> const C_prefactor, std::tuple<CI
     TensorView<CDataType, 2>       tC{*C, dC, sC};
 #    endif
 
-    // println("--------------------");
-    // println(*C);
-    // println(tC);
-    // println("--------------------");
-    // println(A);
-    // println(tA);
-    // println("--------------------");
-    // println(B);
-    // println(tB);
-    // println("--------------------");
-
-    if constexpr (!transpose_C && !transpose_A && !transpose_B) {
-        linear_algebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-    } else if constexpr (!transpose_C && !transpose_A) {
-        linear_algebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-    } else if constexpr (!transpose_C && !transpose_B) {
-        linear_algebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-    } else if constexpr (!transpose_C) {
-        linear_algebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-    } else if constexpr (!transpose_A && !transpose_B) {
-        linear_algebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
-    } else if constexpr (!transpose_A && transpose_B) {
-        linear_algebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
-    } else if constexpr (transpose_A && !transpose_B) {
-        linear_algebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
-    } else if constexpr (transpose_A && transpose_B) {
-        linear_algebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
-    } else {
-        EINSUMS_LOG_WARN("This GEMM case is not programmed: transpose_C {}, transpose_A {}, transpose_B {}", transpose_C, transpose_A,
-                         transpose_B);
+    if (!tA.impl().is_gemmable() || !tB.impl().is_gemmable() || !tC.impl().is_gemmable()) {
         return false;
+    }
+
+    if constexpr (DryRun) {
+        return true;
+    }
+
+    if constexpr (!transpose_C) {
+        constexpr char transA = (transpose_A) ? ((ConjA) ? 'c' : 't') : 'n', transB = (transpose_B) ? ((ConjB) ? 'c' : 't') : 'n';
+        linear_algebra::gemm(transA, transB, AB_prefactor, tA, tB, C_prefactor, &tC);
+    } else {
+        constexpr char transA = (!transpose_A) ? ((ConjA) ? 'c' : 't') : 'n', transB = (!transpose_B) ? ((ConjB) ? 'c' : 't') : 'n';
+        linear_algebra::gemm(transB, transA, AB_prefactor, tB, tA, C_prefactor, &tC);
     }
 
     return true;
@@ -627,8 +640,8 @@ constexpr bool einsum_is_batchable(std::tuple<CIndices...> const &, std::tuple<A
 }
 
 // CType has typename to allow for interoperability with scalar types.
-template <bool OnlyUseGenericAlgorithm, bool DryRun, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool DryRun, bool ConjA, bool ConjB, TensorConcept AType, TensorConcept BType, typename CType,
+          typename... CIndices, typename... AIndices, typename... BIndices>
     requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
 auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
             BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor, std::tuple<AIndices...> const & /*As*/,
@@ -670,14 +683,26 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
         // Mixed datatypes and poorly behaved tensor types go directly to the generic algorithm.
     } else if constexpr (einsum_is_dot_product(C_indices, A_indices, B_indices)) {
         if constexpr (!DryRun) {
-            CDataType temp = linear_algebra::dot(A, B);
-            (*C) *= C_prefactor;
-            (*C) += AB_prefactor * temp;
+            if constexpr (ConjA == ConjB || (!IsComplexV<ADataType> && !IsComplex<BDataType>)) {
+                CDataType temp = linear_algebra::dot(A, B);
+                if constexpr (ConjA && IsComplexV<CDataType>) {
+                    temp = std::conj(temp);
+                }
+                (*C) *= C_prefactor;
+                (*C) += AB_prefactor * temp;
+            } else {
+                CDataType temp = linear_algebra::true_dot(A, B);
+                if constexpr (ConjB && IsComplexV<CDataType>) {
+                    temp = std::conj(temp);
+                }
+                (*C) *= C_prefactor;
+                (*C) += AB_prefactor * temp;
+            }
         }
 
         has_performed_contraction = true;
         retval                    = DOT;
-    } else if constexpr (einsum_is_direct_product(C_indices, A_indices, B_indices)) {
+    } else if constexpr (einsum_is_direct_product<ConjA, ConjB>(C_indices, A_indices, B_indices)) {
         if constexpr (!DryRun) {
             profile::Timer const element_wise_multiplication_timer{"element-wise multiplication"};
 
@@ -687,36 +712,39 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
         has_performed_contraction = true;
         retval                    = DIRECT;
     } else if constexpr (!IsBasicTensorV<AType> || !IsBasicTensorV<BType> || !IsBasicTensorV<CType>) {
-        retval = einsum_generic_default<false, DryRun>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        retval = einsum_generic_default<false, DryRun, ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
         has_performed_contraction = true;
-    } else if constexpr (einsum_is_outer_product(C_indices, A_indices, B_indices)) {
-        has_performed_contraction = einsum_do_outer_product<DryRun>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
-        retval                    = GER;
-    } else if constexpr (einsum_is_matrix_vector(C_indices, A_indices, B_indices)) {
-        has_performed_contraction = einsum_do_matrix_vector<DryRun>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
-        retval                    = GEMV;
-    } else if constexpr (einsum_is_matrix_vector(C_indices, B_indices, A_indices)) {
-        has_performed_contraction = einsum_do_matrix_vector<DryRun>(C_prefactor, C_indices, C, AB_prefactor, B_indices, B, A_indices, A);
-        retval                    = GEMV;
+    } else if constexpr (einsum_is_outer_product<ConjA, ConjB>(C_indices, A_indices, B_indices)) {
+        has_performed_contraction =
+            einsum_do_outer_product<DryRun, ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        retval = GER;
+    } else if constexpr (einsum_is_matrix_vector<ConjA, ConjB>(C_indices, A_indices, B_indices)) {
+        has_performed_contraction =
+            einsum_do_matrix_vector<DryRun, ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        retval = GEMV;
+    } else if constexpr (einsum_is_matrix_vector<ConjA, ConjB>(C_indices, B_indices, A_indices)) {
+        has_performed_contraction =
+            einsum_do_matrix_vector<DryRun, ConjB, ConjA>(C_prefactor, C_indices, C, AB_prefactor, B_indices, B, A_indices, A);
+        retval = GEMV;
     }
     // To use a gemm the input tensors need to be at least rank 2
     else if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
-        if constexpr (einsum_is_matrix_product(C_indices, A_indices, B_indices)) {
+        if constexpr (einsum_is_matrix_product<ConjA, ConjB>(C_indices, A_indices, B_indices)) {
             has_performed_contraction =
-                einsum_do_matrix_product<DryRun>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+                einsum_do_matrix_product<DryRun, ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
             retval = GEMM;
         }
     }
 
     if (!has_performed_contraction) {
-        return einsum_generic_default<true, DryRun>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        return einsum_generic_default<true, DryRun, ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
     }
     return retval;
 }
 } // namespace detail
 
-template <TensorConcept AType, TensorConcept BType, typename CType, typename U, typename... CIndices, typename... AIndices,
-          typename... BIndices>
+template <bool ConjA, bool ConjB, TensorConcept AType, TensorConcept BType, typename CType, typename U, typename... CIndices,
+          typename... AIndices, typename... BIndices>
     requires requires {
         requires InSamePlace<AType, BType>;
         requires InSamePlace<AType, CType> || !TensorConcept<CType>;
@@ -736,30 +764,37 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     EINSUMS_LOG_TRACE("BEGIN: einsum");
     std::unique_ptr<Section> _section;
     if constexpr (IsTensorV<CType>) {
-        EINSUMS_LOG_INFO(std::fabs(UC_prefactor) > EINSUMS_ZERO
-                             ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
-                                           A.name(), A_indices, B.name(), B_indices, UC_prefactor, C->name(), C_indices)
-                             : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, UAB_prefactor, A.name(),
-                                           A_indices, B.name(), B_indices));
-        // look
-        _section.reset(
-            new Section(std::fabs(UC_prefactor) > EINSUMS_ZERO
-                            ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
-                                          A.name(), A_indices, B.name(), B_indices, UC_prefactor, C->name(), C_indices)
-                            : fmt::format(R"(einsums: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, UAB_prefactor, A.name(),
-                                          A_indices, B.name(), B_indices)));
-    } else {
         EINSUMS_LOG_INFO(
             std::fabs(UC_prefactor) > EINSUMS_ZERO
-                ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(),
-                              B_indices, UC_prefactor, C_indices)
-                : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(), B_indices));
+                ? fmt::format(R"(einsum: "{}"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
+                              (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices,
+                              (ConjB) ? ")" : "", UC_prefactor, C->name(), C_indices)
+                : fmt::format(R"(einsum: "{}"{} = {} {}"{}"{}{} * {}"{}"{}{})", C->name(), C_indices, UAB_prefactor, (ConjA) ? "conj(" : "",
+                              A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices, (ConjB) ? ")" : ""));
         // look
-        _section.reset(new Section(std::fabs(UC_prefactor) > EINSUMS_ZERO
-                                       ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(),
-                                                     A_indices, B.name(), B_indices, UC_prefactor, C_indices)
-                                       : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices,
-                                                     B.name(), B_indices)));
+        _section.reset(new Section(
+            std::fabs(UC_prefactor) > EINSUMS_ZERO
+                ? fmt::format(R"(einsum: "{}"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
+                              (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices,
+                              (ConjB) ? ")" : "", UC_prefactor, C->name(), C_indices)
+                : fmt::format(R"(einsum: "{}"{} = {} {}"{}"{}{} * {}"{}"{}{})", C->name(), C_indices, UAB_prefactor, (ConjA) ? "conj(" : "",
+                              A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices, (ConjB) ? ")" : "")));
+    } else {
+        EINSUMS_LOG_INFO(std::fabs(UC_prefactor) > EINSUMS_ZERO
+                             ? fmt::format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "C"{})", C_indices, UAB_prefactor,
+                                           (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "",
+                                           B.name(), B_indices, (ConjB) ? ")" : "", UC_prefactor, C_indices)
+                             : fmt::format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{})", C_indices, UAB_prefactor,
+                                           (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "",
+                                           B.name(), B_indices, (ConjB) ? ")" : ""));
+        // look
+        _section.reset(new Section(
+            std::fabs(UC_prefactor) > EINSUMS_ZERO
+                ? fmt::format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "C"{})", C_indices, UAB_prefactor, (ConjA) ? "conj(" : "",
+                              A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices, (ConjB) ? ")" : "",
+                              UC_prefactor, C_indices)
+                : fmt::format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{})", C_indices, UAB_prefactor, (ConjA) ? "conj(" : "", A.name(),
+                              A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices, (ConjB) ? ")" : "")));
     }
 
     CDataType const  C_prefactor  = UC_prefactor;
@@ -776,23 +811,34 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
             auto testB = Tensor<BDataType, BRank>(B);
             // Perform the einsum using only the generic algorithm
             // #pragma omp task depend(in: A, B) depend(inout: testC)
-            { detail::einsum<true, false>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB); }
+            {
+                detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB);
+            }
         } else {
 #        endif
             if constexpr (!einsums::detail::IsBasicTensorV<AType> && !einsums::detail::IsBasicTensorV<BType>) {
                 auto testA = Tensor<ADataType, ARank>(A);
                 auto testB = Tensor<BDataType, BRank>(B);
-                { detail::einsum<true, false>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB); }
+                {
+                    detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices,
+                                                              testB);
+                }
             } else if constexpr (!einsums::detail::IsBasicTensorV<AType>) {
                 auto testA = Tensor<ADataType, ARank>(A);
-                { detail::einsum<true, false>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, B); }
+                {
+                    detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, B);
+                }
             } else if constexpr (!einsums::detail::IsBasicTensorV<BType>) {
                 auto testB = Tensor<BDataType, BRank>(B);
-                { detail::einsum<true, false>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, testB); }
+                {
+                    detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, testB);
+                }
             } else {
                 // Perform the einsum using only the generic algorithm
                 // #pragma omp task depend(in: A, B) depend(inout: testC)
-                { detail::einsum<true, false>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B); }
+                {
+                    detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
+                }
                 // #pragma omp taskwait depend(in: testC)
             }
 #        ifdef EINSUMS_COMPUTE_CODE
@@ -802,7 +848,8 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
 #    endif
 
     // Default einsums.
-    detail::AlgorithmChoice retval = detail::einsum<false, false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    detail::AlgorithmChoice retval =
+        detail::einsum<false, false, ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
 
 #    if defined(EINSUMS_TEST_NANS)
     // The tests need a wait.
@@ -820,42 +867,39 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
             CDataType Cvalue{subscript_tensor(*C, target_combination)};
             if constexpr (!IsComplexV<CDataType>) {
                 if (std::isnan(Cvalue)) {
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "NaN DETECTED!");
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor,
-                            C->name(), print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
-                            print_tuple_no_type(B_indices));
+                    EINSUMS_LOG_ERROR("NaN DETECTED!");
+                    EINSUMS_LOG_ERROR("{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(), print_tuple_no_type(C_indices),
+                                      AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices));
 
                     println(*C);
                     println(A);
                     println(B);
 
-                    throw EINSUMSEXCEPTION("NAN detected in resulting tensor.");
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "NAN detected in resulting tensor.");
                 }
 
                 if (std::isinf(Cvalue)) {
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "Infinity DETECTED!");
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor,
-                            C->name(), print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
-                            print_tuple_no_type(B_indices));
+                    EINSUMS_LOG_ERROR("Infinity DETECTED!");
+                    EINSUMS_LOG_ERROR("{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(), print_tuple_no_type(C_indices),
+                                      AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices));
 
                     println(*C);
                     println(A);
                     println(B);
 
-                    throw EINSUMSEXCEPTION("Infinity detected in resulting tensor.");
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "Infinity detected in resulting tensor.");
                 }
 
                 if (std::abs(Cvalue) > 100000000) {
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "Large value DETECTED!");
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor,
-                            C->name(), print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
-                            print_tuple_no_type(B_indices));
+                    EINSUMS_LOG_ERROR("Large value DETECTED!");
+                    EINSUMS_LOG_ERROR("{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(), print_tuple_no_type(C_indices),
+                                      AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices));
 
                     println(*C);
                     println(A);
                     println(B);
 
-                    throw EINSUMSEXCEPTION("Large value detected in resulting tensor.");
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "Large value detected in resulting tensor.");
                 }
             }
         }
@@ -881,18 +925,18 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
 
             if constexpr (!IsComplexV<CDataType>) {
                 if (std::isnan(Cvalue) || std::isnan(Ctest)) {
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "NAN DETECTED!");
+                    EINSUMS_LOG_ERROR("NAN DETECTED!");
                     println("Source tensors");
                     println(A);
                     println(B);
                     if (std::isnan(Cvalue)) {
-                        println("NAN detected in C");
-                        println("location of detected NAN {}", print_tuple_no_type(target_combination));
+                        EINSUMS_LOG_ERROR("NAN detected in C");
+                        EINSUMS_LOG_ERROR("location of detected NAN {}", print_tuple_no_type(target_combination));
                         println(*C);
                     }
                     if (std::isnan(Ctest)) {
-                        println("NAN detected in reference Ctest");
-                        println("location of detected NAN {}", print_tuple_no_type(target_combination));
+                        EINSUMS_LOG_ERROR("NAN detected in reference Ctest");
+                        EINSUMS_LOG_ERROR("location of detected NAN {}", print_tuple_no_type(target_combination));
                         println(testC);
                     }
 
@@ -913,16 +957,15 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
             }
 
             if (print_info_and_abort) {
-                println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "    !!! EINSUM ERROR !!!");
+                EINSUMS_LOG_ERROR(emphasis::bold, "!!! EINSUM ERROR !!!");
                 if constexpr (IsComplexV<CDataType>) {
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f} + {:20.14f}i", Ctest.real(), Ctest.imag());
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f} + {:20.14f}i", Cvalue.real(),
-                            Cvalue.imag());
+                    EINSUMS_LOG_ERROR("Expected {:20.14f} + {:20.14f}i", Ctest.real(), Ctest.imag());
+                    EINSUMS_LOG_ERROR("Obtained {:20.14f} + {:20.14f}i", Cvalue.real(), Cvalue.imag());
                 } else {
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f}", Ctest);
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f}", Cvalue);
+                    EINSUMS_LOG_ERROR("Expected {:20.14f}", Ctest);
+                    EINSUMS_LOG_ERROR("Obtained {:20.14f}", Cvalue);
                 }
-                println(bg(fmt::color::red) | fg(fmt::color::white), "    tensor element ({:})", print_tuple_no_type(target_combination));
+                EINSUMS_LOG_ERROR("tensor element ({:})", print_tuple_no_type(target_combination));
                 std::string C_prefactor_string;
                 if constexpr (IsComplexV<CDataType>) {
                     C_prefactor_string = fmt::format("({:f} + {:f}i)", C_prefactor.real(), C_prefactor.imag());
@@ -935,9 +978,8 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                 } else {
                     AB_prefactor_string = fmt::format("{:f}", AB_prefactor);
                 }
-                println(bg(fmt::color::red) | fg(fmt::color::white), "    {} C({:}) += {:f} A({:}) * B({:})", C_prefactor_string,
-                        print_tuple_no_type(C_indices), AB_prefactor_string, print_tuple_no_type(A_indices),
-                        print_tuple_no_type(B_indices));
+                EINSUMS_LOG_ERROR("{} C({:}) += {:f} A({:}) * B({:})", C_prefactor_string, print_tuple_no_type(C_indices),
+                                  AB_prefactor_string, print_tuple_no_type(A_indices), print_tuple_no_type(B_indices));
 
                 println("Expected:");
                 println(testC);
@@ -946,7 +988,7 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                 println(A);
                 println(B);
 #        if defined(EINSUMS_TEST_EINSUM_ABORT)
-                std::abort();
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Continuous test failed!");
 #        endif
             }
         }
@@ -989,7 +1031,7 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
             println(B);
 
 #        if defined(EINSUMS_TEST_EINSUM_ABORT)
-            std::abort();
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Continuous test failed!");
 #        endif
         }
     }
@@ -1001,8 +1043,8 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     }
 }
 
-template <Container CType, Container AType, Container BType, typename CPrefactorType, typename ABPrefactorType, typename... AIndices,
-          typename... BIndices, typename... CIndices>
+template <bool ConjA, bool ConjB, Container CType, Container AType, Container BType, typename CPrefactorType, typename ABPrefactorType,
+          typename... AIndices, typename... BIndices, typename... CIndices>
 void einsum(CPrefactorType const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C_list, ABPrefactorType const AB_prefactor,
             std::tuple<AIndices...> const &A_indices, AType const &A_list, std::tuple<BIndices...> const &B_indices, BType const &B_list,
             detail::AlgorithmChoice *algorithm_choice) {
@@ -1016,12 +1058,12 @@ void einsum(CPrefactorType const C_prefactor, std::tuple<CIndices...> const &C_i
 
     size_t tensors = C_list->size();
 
-    *algorithm_choice = detail::einsum<false, true>(C_prefactor, C_indices, &(C_list->at(0)), AB_prefactor, A_indices, A_list.at(0),
-                                                    B_indices, B_list.at(0));
+    *algorithm_choice = detail::einsum<false, true, ConjA, ConjB>(C_prefactor, C_indices, &(C_list->at(0)), AB_prefactor, A_indices,
+                                                                  A_list.at(0), B_indices, B_list.at(0));
 
     EINSUMS_OMP_PARALLEL_FOR
     for (size_t i = 0; i < tensors; i++) {
-        einsum(C_prefactor, C_indices, &(C_list->at(i)), AB_prefactor, A_indices, A_list.at(i), B_indices, B_list.at(i));
+        einsum<ConjA, ConjB>(C_prefactor, C_indices, &(C_list->at(i)), AB_prefactor, A_indices, A_list.at(i), B_indices, B_list.at(i));
     }
 }
 

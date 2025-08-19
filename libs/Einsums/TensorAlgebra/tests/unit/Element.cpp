@@ -14,6 +14,13 @@ TEMPLATE_TEST_CASE("element transform", "[tensor_algebra]", float, double, std::
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
+    {
+        auto &singleton = GlobalConfigMap::get_singleton();
+        singleton.lock();
+        singleton.set_string("buffer-size", "1GB");
+        singleton.unlock();
+    }
+
     SECTION("tensor") {
         Tensor A     = create_random_tensor<TestType>("A", 32, 32, 32, 32);
         Tensor Acopy = A;

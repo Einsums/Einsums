@@ -85,7 +85,7 @@ auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &
 
     // Ensure the various tensors passed in are the same dimensionality
     if (((C->dims() != tensors.dims()) || ...)) {
-        println_abort("element: at least one tensor does not have same dimensionality as destination");
+        EINSUMS_THROW_EXCEPTION(dimension_error, "element: at least one tensor does not have same dimensionality as destination");
     }
 
     Stride<Rank> index_strides;

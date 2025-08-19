@@ -13,6 +13,7 @@ set(BLASVendorHeaders Einsums/BLASVendor/Vendor.hpp)
 
 set(BLASVendorSources
     InitializeFinalize.cpp
+    asum.cpp
     axpy.cpp
     copy.cpp
     dot.cpp
@@ -28,13 +29,22 @@ set(BLASVendorSources
     getri.cpp
     getrf.cpp
     heev.cpp
+    lacgv.cpp
     lange.cpp
     lassq.cpp
     orgqr.cpp
     scal.cpp
     syev.cpp
     trsyl.cpp
+    direct_prod.c
+    direct_prod.cpp
 )
+
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64)
+  set(BLASVendorx64Sources direct_prod_kernels/sdirprod-x86_64-avx2.S direct_prod_kernels/ddirprod-x86_64-avx2.S
+      direct_prod_kernels/cdirprod-x86_64-avx2.S direct_prod_kernels/zdirprod-x86_64-avx2.S) 
+  list(APPEND BLASVendorSources ${BLASVendorx64Sources})
+endif()
 
 include(Einsums_AddModule)
 einsums_add_module(
@@ -43,6 +53,6 @@ einsums_add_module(
   HEADERS ${BLASVendorHeaders}
   DEPENDENCIES tgt::lapack
         MODULE_DEPENDENCIES Einsums_Assertion Einsums_Config Einsums_Print Einsums_Profile
-        Einsums_BLASBase Einsums_HPTT
+        Einsums_BLASBase Einsums_HPTT Einsums_Errors Einsums_Logging Einsums_BufferAllocator
   CMAKE_SUBDIRS examples tests
 )

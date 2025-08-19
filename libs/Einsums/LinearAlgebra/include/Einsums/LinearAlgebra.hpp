@@ -95,6 +95,16 @@ void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C)
     detail::gemm<TransA, TransB>(alpha, A, B, beta, C);
 }
 
+template <MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U>
+    requires requires {
+        requires InSamePlace<AType, BType, CType>;
+        requires std::convertible_to<U, typename AType::ValueType>;
+        requires SameUnderlying<AType, BType, CType>;
+    }
+void gemm(char transA, char transB, U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
+    detail::gemm(transA, transB, alpha, A, B, beta, C);
+}
+
 /**
  * @brief General matrix multiplication. Returns new tensor.
  *
@@ -183,6 +193,18 @@ void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y)
     detail::gemv<TransA>(alpha, A, z, beta, y);
 }
 
+template <MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U>
+    requires requires {
+        requires InSamePlace<AType, XType, YType>;
+        requires SameUnderlying<AType, XType, YType>;
+        requires std::convertible_to<U, typename AType::ValueType>;
+    }
+void gemv(char transA, U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
+    LabeledSection1(fmt::format("<transA={}>", transA));
+
+    detail::gemv(transA, alpha, A, z, beta, y);
+}
+
 /**
  * Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
  *
@@ -225,20 +247,28 @@ void syev(AType *A, WType *W) {
 
 /**
  * @brief Compute the general eigendecomposition of a matrix.
- *
- * Can only be used to compute both left and right eigenvectors or neither.
- *
- * @todo I think it would be neat if we had a way to choose.
  */
-template <bool ComputeLeftRightEigenvectors = true, MatrixConcept AType, VectorConcept WType>
+template <MatrixConcept AType, VectorConcept WType>
     requires requires {
         requires InSamePlace<AType, WType>;
         requires std::is_same_v<typename WType::ValueType, AddComplexT<typename AType::ValueType>>;
     }
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
-    LabeledSection1(fmt::format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
+    char jobvl = (lvecs == nullptr) ? 'n' : 'v';
+    char jobvr = (rvecs == nullptr) ? 'n' : 'v';
+    LabeledSection1(fmt::format("<jobvl = {}, jobvr = {}>", jobvl, jobvr));
 
-    detail::geev<ComputeLeftRightEigenvectors>(A, W, lvecs, rvecs);
+    detail::geev(A, W, lvecs, rvecs);
+}
+
+template <MatrixConcept InType, MatrixConcept OutType, VectorConcept WType>
+    requires requires {
+        requires InSamePlace<InType, OutType, WType>;
+        requires std::is_same_v<AddComplexT<typename InType::ValueType>, typename OutType::ValueType>;
+        requires std::is_same_v<typename OutType::ValueType, typename WType::ValueType>;
+    }
+void process_geev_vectors(WType const &W, InType const *lvecs_in, InType const *rvecs_in, OutType *lvecs_out, OutType *rvecs_out) {
+    detail::process_geev_vectors(W, lvecs_in, rvecs_in, lvecs_out, rvecs_out);
 }
 
 template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WType>
@@ -253,10 +283,11 @@ void heev(AType *A, WType *W) {
     detail::heev<ComputeEigenvectors>(A, W);
 }
 
-template <MatrixConcept AType, MatrixConcept BType>
+template <MatrixConcept AType, TensorConcept BType>
     requires requires {
         requires InSamePlace<AType, BType>;
         requires SameUnderlying<AType, BType>;
+        requires MatrixConcept<BType> || VectorConcept<BType>;
     }
 auto gesv(AType *A, BType *B) -> int {
 
@@ -479,6 +510,17 @@ void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, ATyp
     detail::ger(alpha, X, Y, A);
 }
 
+template <MatrixConcept AType, VectorConcept XYType>
+    requires requires {
+        requires SameUnderlying<AType, XYType>;
+        requires InSamePlace<AType, XYType>;
+    }
+void gerc(typename AType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
+    LabeledSection0();
+
+    detail::gerc(alpha, X, Y, A);
+}
+
 /**
  * @brief Computes the LU factorization of a general m-by-n matrix.
  *
@@ -494,23 +536,10 @@ void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, ATyp
  * @param pivot
  * @return
  */
-template <MatrixConcept TensorType>
+template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
     requires(CoreTensorConcept<TensorType>)
-auto getrf(TensorType *A, std::vector<blas::int_t> *pivot) -> int {
-    LabeledSection0();
-
-    if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
-        // println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
-        pivot->resize(std::min(A->dim(0), A->dim(1)));
-    }
-    int result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
-
-    if (result < 0) {
-        println_warn("getrf: argument {} has an invalid value", -result);
-        abort();
-    }
-
-    return result;
+auto getrf(TensorType *A, Pivots *pivot) -> int {
+    return detail::getrf(A, pivot);
 }
 
 /**
@@ -524,17 +553,10 @@ auto getrf(TensorType *A, std::vector<blas::int_t> *pivot) -> int {
  * @param pivot The pivot vector from getrf
  * @return int If 0, the execution is successful.
  */
-template <MatrixConcept TensorType>
+template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
     requires(CoreTensorConcept<TensorType>)
-auto getri(TensorType *A, std::vector<blas::int_t> const &pivot) -> int {
-    LabeledSection0();
-
-    int result = blas::getri(A->dim(0), A->data(), A->stride(0), pivot.data());
-
-    if (result < 0) {
-        println_warn("getri: argument {} has an invalid value", -result);
-    }
-    return result;
+auto getri(TensorType *A, Pivots const &pivot) -> int {
+    return detail::getri(A, pivot);
 }
 
 /**
@@ -548,27 +570,7 @@ auto getri(TensorType *A, std::vector<blas::int_t> const &pivot) -> int {
 template <MatrixConcept TensorType>
     requires(CoreTensorConcept<TensorType>)
 void invert(TensorType *A) {
-    if constexpr (IsIncoreBlockTensorV<TensorType>) {
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A->num_blocks(); i++) {
-            linear_algebra::invert(&(A->block(i)));
-        }
-    } else {
-        LabeledSection0();
-
-        std::vector<blas::int_t> pivot(A->dim(0));
-        int                      result = getrf(A, &pivot);
-        if (result > 0) {
-            println_abort("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result,
-                          result);
-        }
-
-        result = getri(A, pivot);
-        if (result > 0) {
-            println_abort("invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed", result,
-                          result);
-        }
-    }
+    return detail::invert(A);
 }
 
 #if !defined(DOXYGEN)
@@ -621,53 +623,23 @@ template <MatrixConcept AType>
 auto norm(Norm norm_type, AType const &a) -> RemoveComplexT<typename AType::ValueType> {
     LabeledSection0();
 
-    std::vector<RemoveComplexT<typename AType::ValueType>> work(4 * a.dim(0), 0.0);
-    return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
+    return detail::norm(static_cast<char>(norm_type), a);
 }
 
 template <TensorConcept AType>
 auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::ValueType> {
-    return std::sqrt(std::abs(true_dot(a, a)));
+    LabeledSection0();
+    return detail::vec_norm(a);
 }
 
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto svd(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
-                                        Tensor<typename AType::ValueType, 2>> {
-    using T = typename AType::ValueType;
+auto svd(AType const &A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
+                                       Tensor<typename AType::ValueType, 2>> {
     LabeledSection0();
 
-    // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> A = _A;
-
-    size_t m   = A.dim(0);
-    size_t n   = A.dim(1);
-    size_t lda = A.stride(0);
-
-    // Test if it is absolutely necessary to zero out these tensors first.
-    auto U = create_tensor<T>("U (stored columnwise)", m, m);
-    U.zero();
-    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
-    S.zero();
-    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
-    Vt.zero();
-    auto superb = create_tensor<T>("superb", std::min(m, n));
-    superb.zero();
-
-    //    int info{0};
-    int info = blas::gesvd('A', 'A', m, n, A.data(), lda, S.data(), U.data(), m, Vt.data(), n, superb.data());
-
-    if (info != 0) {
-        if (info < 0) {
-            println_abort("svd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
-                          m);
-        } else {
-            println_abort("svd: error value {}", info);
-        }
-    }
-
-    return std::make_tuple(U, S, Vt);
+    return detail::svd(A.impl());
 }
 
 template <MatrixConcept AType>
@@ -679,49 +651,54 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
     // Calling svd will destroy the original data. Make a copy of it.
     Tensor<T, 2> A = _A;
 
-    blas::int_t m   = A.dim(0);
-    blas::int_t n   = A.dim(1);
-    blas::int_t lda = A.stride(0);
+    size_t m   = A.dim(0);
+    size_t n   = A.dim(1);
+    size_t lda = A.impl().get_lda();
 
-    auto U = create_tensor<T>("U", m, m);
-    zero(U);
-    auto S = create_tensor<T>("S", n);
-    zero(S);
-    auto V = create_tensor<T>("V", n, n);
-    zero(V);
+    // Test if it is absolutely necessary to zero out these tensors first.
+    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
+    S.zero();
+    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
+    Vt.zero();
     auto superb = create_tensor<T>("superb", std::min(m, n));
+    superb.zero();
 
-    int info = blas::gesvd('N', 'A', m, n, A.data(), lda, S.data(), U.data(), m, V.data(), n, superb.data());
+    //    int info{0};
+    int info = blas::gesvd('N', 'A', m, n, A.data(), lda, S.data(), (T *)nullptr, 1, Vt.data(), Vt.impl().get_lda(), superb.data());
 
     if (info != 0) {
         if (info < 0) {
-            println_abort("svd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
-                          m);
+            EINSUMS_THROW_EXCEPTION(
+                std::invalid_argument,
+                "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info, m,
+                n, lda, 1, Vt.impl().get_lda());
         } else {
-            println_abort("svd: error value {}", info);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
         }
     }
 
     // Determine the rank of the nullspace matrix
     int rank = 0;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < std::min(n, m); i++) {
         if (S(i) > 1e-12) {
             rank++;
         }
     }
 
     // println("rank {}", rank);
-    auto Vview     = V(Range{rank, V.dim(0)}, All);
-    auto nullspace = Tensor(V);
+    auto Vview     = Vt(Range{rank, Vt.dim(0)}, All);
+    auto nullspace = Tensor<T, 2>(Vview.impl().transpose_view());
 
     // Normalize nullspace. LAPACK does not guarentee them to be orthonormal
-    for (int i = 0; i < nullspace.dim(0); i++) {
-        T sum{0};
-        for (int j = 0; j < nullspace.dim(1); j++) {
-            sum += std::pow(nullspace(i, j), 2.0);
+    for (int i = 0; i < nullspace.dim(1); i++) {
+        RemoveComplexT<T> norm = vec_norm(nullspace(All, i));
+        if (norm > std::numeric_limits<RemoveComplexT<T>>::epsilon()) {
+            scale_column(i, T{1.0} / norm, &nullspace);
         }
-        sum = std::sqrt(sum);
-        scale_row(i, sum, &nullspace);
+    }
+
+    if constexpr (IsComplexV<T>) {
+        einsums::detail::impl_conj(nullspace.impl());
     }
 
     return nullspace;
@@ -731,41 +708,10 @@ enum class Vectors : char { All = 'A', Some = 'S', Overwrite = 'O', None = 'N' }
 
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto svd_dd(AType const &_A, Vectors job = Vectors::All)
+auto svd_dd(AType const &A, Vectors job = Vectors::All)
     -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
                   Tensor<typename AType::ValueType, 2>> {
-    using T = typename AType::ValueType;
-    LabeledSection0();
-
-    //    DisableOMPThreads const nothreads;
-
-    // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> A = _A;
-
-    size_t m = A.dim(0);
-    size_t n = A.dim(1);
-
-    // Test if it absolutely necessary to zero out these tensors first.
-    auto U = create_tensor<T>("U (stored columnwise)", m, m);
-    zero(U);
-    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
-    zero(S);
-    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
-    zero(Vt);
-
-    int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), static_cast<int>(n), S.data(),
-                           U.data(), static_cast<int>(m), Vt.data(), static_cast<int>(n));
-
-    if (info != 0) {
-        if (info < 0) {
-            println_abort("svd_dd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n,
-                          n, m);
-        } else {
-            println_abort("svd_dd: error value {}", info);
-        }
-    }
-
-    return std::make_tuple(U, S, Vt);
+    return detail::svd_dd(A, static_cast<char>(job));
 }
 
 template <MatrixConcept AType>
@@ -788,12 +734,12 @@ auto truncated_svd(AType const &_A, size_t k)
 
     Tensor<T, 1> tau("tau", std::min(m, k + 5));
     // Compute QR factorization of Y
-    int info1 = blas::geqrf(m, k + 5, Y.data(), k + 5, tau.data());
+    int info1 = blas::geqrf(m, k + 5, Y.data(), Y.impl().get_lda(), tau.data());
     // Extract Matrix Q out of QR factorization
     if constexpr (!IsComplexV<T>) {
-        int info2 = blas::orgqr(m, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<T const *>(tau.data()));
+        int info2 = blas::orgqr(m, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
     } else {
-        int info2 = blas::ungqr(m, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<T const *>(tau.data()));
+        int info2 = blas::ungqr(m, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
     }
 
     // Cast the matrix A into a smaller rank (B)
@@ -817,7 +763,7 @@ auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename ATyp
     LabeledSection0();
 
     if (A.dim(0) != A.dim(1)) {
-        println_abort("Non-square matrix used as input of truncated_syev!");
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Non-square matrix used as input of truncated_syev!");
     }
 
     size_t n = A.dim(0);
@@ -831,9 +777,9 @@ auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename ATyp
 
     Tensor<T, 1> tau("tau", std::min(n, k + 5));
     // Compute QR factorization of Y
-    blas::int_t const info1 = blas::geqrf(n, k + 5, Y.data(), k + 5, tau.data());
+    blas::int_t const info1 = blas::geqrf(n, k + 5, Y.data(), Y.impl().get_lda(), tau.data());
     // Extract Matrix Q out of QR factorization
-    blas::int_t const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<T const *>(tau.data()));
+    blas::int_t const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
 
     Tensor<T, 2> &Q1 = Y;
 
@@ -898,34 +844,35 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
     LabeledSection0();
 
     if (A.dim(0) != A.dim(1)) {
-        println_abort("solve_continuous_lyapunov: Dimensions of A ({} x {}), do not match", A.dim(0), A.dim(1));
+        EINSUMS_THROW_EXCEPTION(dimension_error, "solve_continuous_lyapunov: Dimensions of A ({} x {}), do not match", A.dim(0), A.dim(1));
     }
     if (Q.dim(0) != Q.dim(1)) {
-        println_abort("solve_continuous_lyapunov: Dimensions of Q ({} x {}), do not match", Q.dim(0), Q.dim(1));
+        EINSUMS_THROW_EXCEPTION(dimension_error, "solve_continuous_lyapunov: Dimensions of Q ({} x {}), do not match", Q.dim(0), Q.dim(1));
     }
     if (A.dim(0) != Q.dim(0)) {
-        println_abort("solve_continuous_lyapunov: Dimensions of A ({} x {}) and Q ({} x {}), do not match", A.dim(0), A.dim(1), Q.dim(0),
-                      Q.dim(1));
+        EINSUMS_THROW_EXCEPTION(dimension_error, "solve_continuous_lyapunov: Dimensions of A ({} x {}) and Q ({} x {}), do not match",
+                                A.dim(0), A.dim(1), Q.dim(0), Q.dim(1));
     }
 
     size_t n = A.dim(0);
 
     //// @todo Break this off into a separate schur function
     // Compute Schur Decomposition of A
-    Tensor<T, 2>             R = A; // R is a copy of A
-    Tensor<T, 2>             wr("Schur Real Buffer", n, n);
-    Tensor<T, 2>             wi("Schur Imaginary Buffer", n, n);
-    Tensor<T, 2>             U("Lyapunov U", n, n);
-    std::vector<blas::int_t> sdim(1);
-    blas::gees('V', n, R.data(), n, sdim.data(), wr.data(), wi.data(), U.data(), n);
+    Tensor<T, 2>              R = A; // R is a copy of A
+    Tensor<T, 2>              wr("Schur Real Buffer", n, n);
+    Tensor<T, 2>              wi("Schur Imaginary Buffer", n, n);
+    Tensor<T, 2>              U("Lyapunov U", n, n);
+    BufferVector<blas::int_t> sdim(1);
+    blas::gees('V', n, R.data(), R.impl().get_lda(), sdim.data(), wr.data(), wi.data(), U.data(), U.impl().get_lda());
 
     // Compute F = U^T * Q * U
     Tensor<T, 2> Fbuff = gemm<true, false>(1.0, U, Q);
     Tensor<T, 2> F     = gemm<false, false>(1.0, Fbuff, U);
 
     // Call the Sylvester Solve
-    std::vector<T> scale(1);
-    blas::trsyl('N', 'N', 1, n, n, const_cast<T const *>(R.data()), n, const_cast<T const *>(R.data()), n, F.data(), n, scale.data());
+    BufferVector<T> scale(1);
+    blas::trsyl('N', 'N', 1, n, n, const_cast<T const *>(R.data()), R.impl().get_lda(), const_cast<T const *>(R.data()), R.impl().get_lda(),
+                F.data(), F.impl().get_lda(), scale.data());
 
     Tensor<T, 2> Xbuff = gemm<false, false>(scale[0], U, F);
     Tensor<T, 2> X     = gemm<false, true>(1.0, Xbuff, U);
@@ -938,53 +885,8 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
 
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto qr(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 1>> {
-    using T = typename AType::ValueType;
-    LabeledSection0();
-
-    // Copy A because it will be overwritten by the QR call.
-    Tensor<T, 2>      A = _A;
-    blas::int_t const m = A.dim(0);
-    blas::int_t const n = A.dim(1);
-
-    Tensor<T, 1> tau("tau", std::min(m, n));
-    // Compute QR factorization of Y
-    blas::int_t info = blas::geqrf(m, n, A.data(), n, tau.data());
-
-    if (info != 0) {
-        println_abort("{} parameter to geqrf has an illegal value.", -info);
-    }
-
-    // Extract Matrix Q out of QR factorization
-    // blas::int_t info2 = blas::orgqr(m, n, tau.dim(0), A.data(), n, const_cast<const double *>(tau.data()));
-    return {A, tau};
-}
-
-template <MatrixConcept AType, VectorConcept TauType>
-    requires requires {
-        requires CoreTensorConcept<AType>;
-        requires CoreTensorConcept<TauType>;
-        requires SameUnderlying<AType, TauType>;
-    }
-auto q(AType const &qr, TauType const &tau) -> Tensor<typename AType::ValueType, 2> {
-    using T             = typename AType::ValueType;
-    blas::int_t const m = qr.dim(1);
-    blas::int_t const p = qr.dim(0);
-
-    Tensor<T, 2> Q = qr;
-
-    blas::int_t info;
-    if constexpr (!IsComplexV<T>) {
-
-        info = blas::orgqr(m, m, p, Q.data(), m, tau.data());
-    } else {
-        info = blas::ungqr(m, m, p, Q.data(), m, tau.data());
-    }
-    if (info != 0) {
-        println_abort("{} parameter to orgqr has an illegal value. {} {} {}", -info, m, m, p);
-    }
-
-    return Q;
+auto qr(AType const &A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 2>> {
+    return detail::qr(A);
 }
 
 template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typename T>
@@ -1007,8 +909,8 @@ typename AType::ValueType det(AType const &A) {
 
     RemoveViewT<AType> temp = A;
 
-    std::vector<blas::int_t> pivots;
-    int                      singular = getrf(&temp, &pivots);
+    BufferVector<blas::int_t> pivots;
+    int                       singular = getrf(&temp, &pivots);
     if (singular > 0) {
         return T{0.0}; // Matrix is singular, so it has a determinant of zero.
     }

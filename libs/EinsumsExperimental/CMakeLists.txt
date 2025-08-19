@@ -9,6 +9,7 @@ include(Einsums_Message)
 
 # cmake-format: off
 set(_EinsumsExperimental_modules
+  Decomposition
   Graph
   )
 # cmake-format: on
@@ -20,3 +21,4 @@ foreach(module ${_EinsumsExperimental_modules})
   einsums_info("    ${module}")
   add_subdirectory(${module})
 endforeach()
+

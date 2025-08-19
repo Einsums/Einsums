@@ -18,6 +18,11 @@ extern void FC_GLOBAL(slassq, SLASSQ)(int_t *n, float const *x, int_t *incx, flo
 extern void FC_GLOBAL(dlassq, DLASSQ)(int_t *n, double const *x, int_t *incx, double *scale, double *sumsq);
 extern void FC_GLOBAL(classq, CLASSQ)(int_t *n, std::complex<float> const *x, int_t *incx, float *scale, float *sumsq);
 extern void FC_GLOBAL(zlassq, ZLASSQ)(int_t *n, std::complex<double> const *x, int_t *incx, double *scale, double *sumsq);
+
+extern float  FC_GLOBAL(snrm2, SNRM2)(int_t *n, float const *x, int_t *incx);
+extern double FC_GLOBAL(dnrm2, DNRM2)(int_t *n, double const *x, int_t *incx);
+extern float  FC_GLOBAL(scnrm2, SCNRM2)(int_t *n, std::complex<float> const *x, int_t *incx);
+extern double FC_GLOBAL(dznrm2, DZNRM2)(int_t *n, std::complex<double> const *x, int_t *incx);
 }
 
 void slassq(int_t n, float const *x, int_t incx, float *scale, float *sumsq) {
@@ -42,6 +47,30 @@ void zlassq(int_t n, std::complex<double> const *x, int_t incx, double *scale, d
     LabeledSection0();
 
     FC_GLOBAL(zlassq, ZLASSQ)(&n, x, &incx, scale, sumsq);
+}
+
+float snrm2(int_t n, float const *x, int_t incx) {
+    LabeledSection0();
+
+    return FC_GLOBAL(snrm2, SNRM2)(&n, x, &incx);
+}
+
+double dnrm2(int_t n, double const *x, int_t incx) {
+    LabeledSection0();
+
+    return FC_GLOBAL(dnrm2, DNRM2)(&n, x, &incx);
+}
+
+float scnrm2(int_t n, std::complex<float> const *x, int_t incx) {
+    LabeledSection0();
+
+    return FC_GLOBAL(scnrm2, SCNRM2)(&n, x, &incx);
+}
+
+double dznrm2(int_t n, std::complex<double> const *x, int_t incx) {
+    LabeledSection0();
+
+    return FC_GLOBAL(dznrm2, DZNRM2)(&n, x, &incx);
 }
 
 } // namespace einsums::blas::vendor

@@ -15,6 +15,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
+#include "EinsumsPy/Tensor/PyTensor.hpp"
 #include "macros.hpp"
 
 namespace py = pybind11;
@@ -38,14 +39,12 @@ void ger(pybind11::object const &alpha, pybind11::buffer const &X, pybind11::buf
         EINSUMS_THROW_EXCEPTION(py::value_error, "The storage types of the tensors passed to ger must be the same!");
     }
 
-    size_t m = X_info.shape[0], n = Y_info.shape[0];
-
-    size_t incx = X_info.strides[0] / X_info.itemsize, incy = Y_info.strides[0] / Y_info.itemsize,
-           lda = A_info.strides[0] / A_info.itemsize;
-
-    EINSUMS_PY_LINALG_CALL(
-        (X_info.format == py::format_descriptor<Float>::format()),
-        (blas::ger(m, n, alpha.cast<Float>(), (Float const *)X_info.ptr, incx, (Float const *)Y_info.ptr, incy, (Float *)A_info.ptr, lda)))
+    EINSUMS_PY_LINALG_CALL((X_info.item_type_is_equivalent_to<Float>()), [&]() {
+        auto X_tens = buffer_to_tensor<Float>(X);
+        auto Y_tens = buffer_to_tensor<Float>(Y);
+        auto A_tens = buffer_to_tensor<Float>(A);
+        einsums::linear_algebra::detail::ger(alpha.cast<Float>(), X_tens, Y_tens, &A_tens);
+    }())
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "ger can only handle real and complex floating point types!");
     }

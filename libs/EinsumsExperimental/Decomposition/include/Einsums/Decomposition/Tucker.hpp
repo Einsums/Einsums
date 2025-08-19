@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Concepts/NamedRequirements.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
@@ -15,8 +16,8 @@
 
 namespace einsums::decomposition {
 
-template <TensorConcept TTensor>
-auto tucker_reconstruct(TTensor const &g_tensor, std::vector<TensorLike<TTensor, ValueTypeT<TTensor>, 2>> const &factors) -> TTensor {
+template <TensorConcept TTensor, ContainerOf<TensorLike<TTensor, ValueTypeT<TTensor>, 2>> Factors>
+auto tucker_reconstruct(TTensor const &g_tensor, Factors const &factors) -> TTensor {
     LabeledSection0();
 
     // Dimension workspace for temps
@@ -63,11 +64,11 @@ auto tucker_reconstruct(TTensor const &g_tensor, std::vector<TensorLike<TTensor,
     return new_tensor;
 }
 
-template <size_t Rank, MatrixConcept TTensor>
-auto initialize_tucker(std::vector<TTensor> &folds, std::vector<size_t> &ranks) -> std::vector<TTensor> {
+template <size_t Rank, MatrixConcept TTensor, typename Alloc, ContainerOf<size_t> Ranks>
+auto initialize_tucker(std::vector<TTensor, Alloc> &folds, Ranks &ranks) -> BufferVector<TTensor> {
     LabeledSection0();
 
-    std::vector<TTensor> factors;
+    BufferVector<TTensor> factors;
     factors.reserve(TensorRank<TTensor>);
 
     // Perform compile-time looping.
@@ -80,7 +81,7 @@ auto initialize_tucker(std::vector<TTensor> &folds, std::vector<size_t> &ranks) 
 
         if (folds[i].dim(0) < rank) {
             // i is an std::integral_constant the "()" obtains the underlying value.
-            println_warn("dimension {} size {} is less than the requested decomposition rank {}", i(), folds[i].dim(0), rank);
+            EINSUMS_LOG_WARN("dimension {} size {} is less than the requested decomposition rank {}", i(), folds[i].dim(0), rank);
             /// @todo Need to pad U up to rank
         }
 
@@ -97,14 +98,14 @@ auto initialize_tucker(std::vector<TTensor> &folds, std::vector<size_t> &ranks) 
  *
  *   tensor = [|weights[r0][r1]...; factor[0][r0], ..., factors[-1][rn] |]
  */
-template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
-auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, std::vector<size_t> &ranks,
-                   std::vector<Tensor<TType, 2>> const &folds = std::vector<Tensor<TType, 2>>())
-    -> std::tuple<Tensor<TType, TRank>, std::vector<Tensor<TType, 2>>> {
+template <template <typename, size_t> typename TTensor, size_t TRank, ContainerOf<size_t> Ranks, typename TType = double,
+          ContainerOf<Tensor<TType, 2>> Folds>
+auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, Ranks &ranks, Folds const &folds)
+    -> std::tuple<Tensor<TType, TRank>, BufferVector<Tensor<TType, 2>>> {
     LabeledSection0();
 
     // Compute set of unfolded matrices
-    std::vector<Tensor<TType, 2>> unfolded_matrices;
+    BufferVector<Tensor<TType, 2>> unfolded_matrices;
     unfolded_matrices.reserve(TRank);
     if (!folds.size()) {
         for_sequence<TRank>([&](auto i) { unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor)); });
@@ -113,7 +114,7 @@ auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, std::vector<size_t> &ran
     }
 
     // Perform SVD guess for tucker decomposition procedure
-    std::vector<Tensor<TType, 2>> factors = initialize_tucker<TRank>(unfolded_matrices, ranks);
+    BufferVector<Tensor<TType, 2>> factors = initialize_tucker<TRank>(unfolded_matrices, ranks);
 
     // Get the dimension workspace for temps
     Dim<TRank> dims_buffer = tensor.dims();
@@ -160,15 +161,20 @@ auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, std::vector<size_t> &ran
     return std::make_tuple(g_tensor, factors);
 }
 
+template <template <typename, size_t> typename TTensor, size_t TRank, ContainerOf<size_t> Ranks, typename TType = double>
+auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, Ranks &ranks) -> std::tuple<Tensor<TType, TRank>, BufferVector<Tensor<TType, 2>>> {
+    return tucker_ho_svd(tensor, ranks, BufferVector<TTensor<TType, 2>>());
+}
+
 /**
  * Tucker decomposition via Higher-Order Orthogonal Inversion (HO-OI).
  * Computes a rank-`rank` decomposition of `tensor` such that:
  *
  *   tensor = [|weights[r0][r1]...; factor[0][r1], ..., factors[-1][rn] |].
  */
-template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
-auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, std::vector<size_t> &ranks, int n_iter_max = 100, double tolerance = 1.e-8)
-    -> std::tuple<TTensor<TType, TRank>, std::vector<Tensor<TType, 2>>> {
+template <template <typename, size_t> typename TTensor, size_t TRank, ContainerOf<size_t> Ranks, typename TType = double>
+auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, Ranks &ranks, int n_iter_max = 100, double tolerance = 1.e-8)
+    -> std::tuple<TTensor<TType, TRank>, BufferVector<Tensor<TType, 2>>> {
     LabeledSection0();
 
     // Use HO SVD as a starting guess
@@ -179,7 +185,7 @@ auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, std::vector<size_t> &rank
     int  iter      = 0;
     bool converged = false;
     while (iter < n_iter_max) {
-        std::vector<Tensor<TType, 2>> new_folds;
+        BufferVector<Tensor<TType, 2>> new_folds;
         new_folds.reserve(TRank);
 
         for_sequence<TRank>([&](auto i) {
@@ -190,14 +196,15 @@ auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, std::vector<size_t> &rank
             TTensor<TType, TRank> *new_fold_buffer;
 
             // Initialize old fold buffer to the tensor
-            old_fold_buffer  = new TTensor<TType, TRank>(dims_buffer);
+            BufferAllocator<TTensor<TType, TRank>> allocator;
+            old_fold_buffer  = std::construct_at(allocator.allocate(1), dims_buffer);
             *old_fold_buffer = tensor;
 
             for_sequence<TRank>([&](auto j) {
                 if (j != i) {
                     size_t rank     = ranks[j];
                     dims_buffer[j]  = rank;
-                    new_fold_buffer = new TTensor<TType, TRank>(dims_buffer);
+                    new_fold_buffer = std::construct_at(allocator.allocate(1), dims_buffer);
                     new_fold_buffer->zero();
 
                     std::array<size_t, TRank> index_strides;
@@ -218,7 +225,7 @@ auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, std::vector<size_t> &rank
                         }
                     }
 
-                    delete old_fold_buffer;
+                    allocator.deallocate(old_fold_buffer, 1);
                     old_fold_buffer = new_fold_buffer;
                 }
             });
@@ -227,7 +234,7 @@ auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, std::vector<size_t> &rank
             new_folds.push_back(new_fold);
 
             // Only delete once to avoid a double free
-            delete new_fold_buffer;
+            allocator.deallocate(new_fold_buffer, 1);
         });
 
         // Reformulate guess based on HO SVD of new_folds
@@ -251,7 +258,7 @@ auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, std::vector<size_t> &rank
         iter += 1;
     }
     if (!converged) {
-        println_warn("Tucker HO-OI decomposition failed to converge in {} iterations", n_iter_max);
+        EINSUMS_LOG_WARN("Tucker HO-OI decomposition failed to converge in {} iterations", n_iter_max);
     }
 
     return std::make_tuple(g_tensor, factors);

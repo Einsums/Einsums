@@ -7,9 +7,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(StringUtilHeaders Einsums/StringUtil/BadLexicalCast.hpp Einsums/StringUtil/FromString.hpp
                       Einsums/StringUtil/Trim.hpp Einsums/StringUtil/MemoryString.hpp
+                      Einsums/StringUtil/StringOps.hpp
 )
 
-set(StringUtilSources MemoryString.cpp)
+set(StringUtilSources MemoryString.cpp StringOps.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(

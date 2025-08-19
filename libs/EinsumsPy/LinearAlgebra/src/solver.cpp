@@ -61,33 +61,24 @@ void gesv_work(pybind11::buffer &A, pybind11::buffer &B) {
 void gesv(pybind11::buffer &A, pybind11::buffer &B) {
     py::buffer_info A_info = A.request(true), B_info = B.request(true);
 
-    if (A_info.ndim != 2) {
-        EINSUMS_THROW_EXCEPTION(rank_error, "The coefficient matrix needs to be a matrix!");
-    }
-
-    if (B_info.ndim != 1 && B_info.ndim != 2) {
-        EINSUMS_THROW_EXCEPTION(rank_error, "The constant matrix needs to be a vector or a matrix!");
-    }
-
-    if (A_info.shape[0] != A_info.shape[1]) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "The solver can only handle square matrices!");
-    }
-
-    if (A_info.shape[0] != B_info.shape[0]) {
-        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The rows of A and B must match!");
-    }
-
     if (A_info.format != B_info.format) {
-        EINSUMS_THROW_EXCEPTION(py::value_error, "The storage types of the input matrices need to be the same!");
-    } else if (A_info.format == py::format_descriptor<float>::format()) {
-        gesv_work<float>(A, B);
-    } else if (A_info.format == py::format_descriptor<double>::format()) {
-        gesv_work<double>(A, B);
-    } else if (A_info.format == py::format_descriptor<std::complex<float>>::format()) {
-        gesv_work<std::complex<float>>(A, B);
-    } else if (A_info.format == py::format_descriptor<std::complex<double>>::format()) {
-        gesv_work<std::complex<double>>(A, B);
-    } else {
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The data types stored by the inputs to gesv were different!");
+    }
+
+    EINSUMS_PY_LINALG_CALL(A_info.item_type_is_equivalent_to<Float>(), [&]() {
+        auto A_tens = buffer_to_tensor<Float>(A);
+        auto B_tens = buffer_to_tensor<Float>(B);
+        auto info   = einsums::linear_algebra::detail::gesv(&A_tens, &B_tens);
+        if (info < 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument to gesv had an invalid value!", print::ordinal(-info));
+        } else if (info > 0) {
+            EINSUMS_THROW_EXCEPTION(
+                std::runtime_error,
+                "The {} diagonal element was exactly zero, so the system could not be solved! The input was still factored into LU form.",
+                print::ordinal(info));
+        }
+    }())
+    else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "The storage type of the input to the solver is invalid!");
     }
 }
@@ -198,7 +189,7 @@ py::object solve_continuous_lyapunov(pybind11::buffer const &A, pybind11::buffer
 
     if (A_info.shape[0] != A_info.shape[1] || A_info.shape[0] != Q_info.shape[0] || A_info.shape[0] != Q_info.shape[1]) {
         EINSUMS_THROW_EXCEPTION(dimension_error,
-                                "The arguments to solve_continuous_lyapunove need to be square matrices and have the same size!");
+                                "The arguments to solve_continuous_lyapunov need to be square matrices and have the same size!");
     }
 
     if (A_info.format != Q_info.format) {
