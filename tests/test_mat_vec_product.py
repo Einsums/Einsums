@@ -57,6 +57,49 @@ def test_mat_vec_prod(a, b, dtype, rel, array):
     for i in range(b):
         assert C[i] == pytest.approx(C_actual[i], rel = rel)
 
+def test_mat_vec_prod_list(a, b, dtype, rel, array):
+    A = [ein.utils.random_tensor_factory(f"A {i}", [b, a], dtype, array) for i in range(10)]
+    B = [ein.utils.random_tensor_factory(f"B {i}", [a], dtype, array) for i in range(10)]
+    C = [ein.utils.tensor_factory(f"C {i}", [b], dtype, array) for i in range(10)]
+
+    plan = ein.core.compile_plan("i", "ij", "j")
+
+    assert type(plan) is ein.core.EinsumGemvPlan
+
+    plan.execute(0.0, C, 1.0, A, B)
+
+    C_actual = [np.array([0.0 for i in range(b)], dtype = dtype) for i in range(10)]
+
+    # Numpy hates doing matrix multiplication with einsums imported
+    for item in range(10) :
+        for i in range(b):
+            for j in range(a):
+                C_actual[item][i] += A[item][i, j] * B[item][j]
+
+        for i in range(b):
+            assert C[item][i] == pytest.approx(C_actual[item][i], rel = rel)
+
+    # Do the swapped version.
+    C = [ein.utils.tensor_factory(f"C {i}", [b], dtype, array) for i in range(10)]
+
+    plan = ein.core.compile_plan("i", "j", "ij")
+
+    assert type(plan) is ein.core.EinsumGemvPlan
+
+    plan.execute(0.0, C, 1.0, B, A)
+
+    C_actual = [np.array([0.0 for i in range(b)], dtype = dtype) for i in range(10)]
+
+    # Numpy hates doing matrix multiplication with einsums imported
+    for item in range(10) :
+        for i in range(b):
+            for j in range(a):
+                C_actual[item][i] += A[item][i, j] * B[item][j]
+
+        for i in range(b):
+            assert C[item][i] == pytest.approx(C_actual[item][i], rel = rel)
+
+
 
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
