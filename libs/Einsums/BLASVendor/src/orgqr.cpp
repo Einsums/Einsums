@@ -26,7 +26,7 @@ extern void FC_GLOBAL(zungqr, ZUNGQR)(int_t *, int_t *, int_t *, std::complex<do
 
 #define ORGQR(Type, lc, uc)                                                                                                                \
     auto lc##orgqr(int_t m, int_t n, int_t k, Type *a, int_t lda, const Type *tau)->int_t {                                                \
-        LabeledSection(__func__);                                                                                                          \
+        LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t info{0};                                                                                                                     \
         int_t lwork{-1};                                                                                                                   \
@@ -58,8 +58,8 @@ ORGQR(double, d, D);
 ORGQR(float, s, S);
 
 #define UNGQR(Type, lc, uc)                                                                                                                \
-    auto lc##ungqr(int_t m, int_t n, int_t k, Type *a, int_t lda, const Type *tau) -> int_t {                                              \
-        LabeledSection0(__func__);                                                                                                                 \
+    auto lc##ungqr(int_t m, int_t n, int_t k, Type *a, int_t lda, const Type *tau)->int_t {                                                \
+        LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t info{0};                                                                                                                     \
         int_t lwork{-1};                                                                                                                   \

@@ -29,37 +29,37 @@ extern void FC_GLOBAL(dlascl, DLASCL)(char *, int_t *, int_t *, double *, double
 }
 
 void sscal(int_t n, float alpha, float *vec, int_t inc) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     FC_GLOBAL(sscal, SSCAL)(&n, &alpha, vec, &inc);
 }
 
 void dscal(int_t n, double alpha, double *vec, int_t inc) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     FC_GLOBAL(dscal, DSCAL)(&n, &alpha, vec, &inc);
 }
 
 void cscal(int_t n, std::complex<float> alpha, std::complex<float> *vec, int_t inc) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     FC_GLOBAL(cscal, CSCAL)(&n, &alpha, vec, &inc);
 }
 
 void zscal(int_t n, std::complex<double> alpha, std::complex<double> *vec, int_t inc) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     FC_GLOBAL(zscal, ZSCAL)(&n, &alpha, vec, &inc);
 }
 
 void csscal(int_t n, float alpha, std::complex<float> *vec, int_t inc) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     FC_GLOBAL(csscal, CSSCAL)(&n, &alpha, vec, &inc);
 }
 
 void zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     FC_GLOBAL(zdscal, ZDSCAL)(&n, &alpha, vec, &inc);
 }

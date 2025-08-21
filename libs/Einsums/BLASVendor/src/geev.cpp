@@ -31,7 +31,7 @@ extern void FC_GLOBAL(zgeev, ZGEEV)(char *, char *, int_t *, std::complex<double
     auto lc##geev(char jobvl, char jobvr, int_t n, std::complex<Type> *a, int_t lda, std::complex<Type> *w, std::complex<Type> *vl,        \
                   int_t ldvl, std::complex<Type> *vr, int_t ldvr)                                                                          \
         ->int_t {                                                                                                                          \
-        LabeledSection(__func__);                                                                                                          \
+        LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t                            info  = 0;                                                                                        \
         int_t                            lwork = -1;                                                                                       \
@@ -80,7 +80,7 @@ GEEV_complex(double, z, Z);
 #define GEEV(Type, lc, uc)                                                                                                                 \
     auto lc##geev(char jobvl, char jobvr, int_t n, Type *a, int_t lda, std::complex<Type> *w, Type *vl, int_t ldvl, Type *vr, int_t ldvr)  \
         ->int_t {                                                                                                                          \
-        LabeledSection(__func__);                                                                                                          \
+        LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t              info  = 0;                                                                                                      \
         int_t              lwork = -1;                                                                                                     \

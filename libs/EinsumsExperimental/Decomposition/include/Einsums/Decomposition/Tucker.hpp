@@ -66,7 +66,7 @@ auto tucker_reconstruct(TTensor const &g_tensor, Factors const &factors) -> TTen
 
 template <size_t Rank, MatrixConcept TTensor, typename Alloc, ContainerOf<size_t> Ranks>
 auto initialize_tucker(std::vector<TTensor, Alloc> &folds, Ranks &ranks) -> BufferVector<TTensor> {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     BufferVector<TTensor> factors;
     factors.reserve(TensorRank<TTensor>);
@@ -102,7 +102,7 @@ template <template <typename, size_t> typename TTensor, size_t TRank, ContainerO
           ContainerOf<Tensor<TType, 2>> Folds>
 auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, Ranks &ranks, Folds const &folds)
     -> std::tuple<Tensor<TType, TRank>, BufferVector<Tensor<TType, 2>>> {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     // Compute set of unfolded matrices
     BufferVector<Tensor<TType, 2>> unfolded_matrices;

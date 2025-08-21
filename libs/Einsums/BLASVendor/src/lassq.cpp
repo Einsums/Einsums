@@ -41,7 +41,7 @@ void classq(int_t n, std::complex<float> const *x, int_t incx, float *scale, flo
 }
 
 void zlassq(int_t n, std::complex<double> const *x, int_t incx, double *scale, double *sumsq) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     FC_GLOBAL(zlassq, ZLASSQ)(&n, x, &incx, scale, sumsq);
 }

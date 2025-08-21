@@ -35,7 +35,7 @@ void verify(Plan plan) {
  *******************************************************************************/
 
 void scfft(Tensor<float, 1> const &a, Tensor<std::complex<float>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     fftwf_plan r2c = nullptr;
 
@@ -46,7 +46,7 @@ void scfft(Tensor<float, 1> const &a, Tensor<std::complex<float>, 1> *result) {
 }
 
 void ccfft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     fftwf_plan c2c = nullptr;
 
@@ -57,7 +57,7 @@ void ccfft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 
 }
 
 void dzfft(Tensor<double, 1> const &a, Tensor<std::complex<double>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     fftw_plan r2c = nullptr;
 
@@ -68,7 +68,7 @@ void dzfft(Tensor<double, 1> const &a, Tensor<std::complex<double>, 1> *result) 
 }
 
 void zzfft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     fftw_plan c2c = nullptr;
 
@@ -82,7 +82,7 @@ void zzfft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>
  * Backward transforms                                                         *
  *******************************************************************************/
 void csifft(Tensor<std::complex<float>, 1> const &a, Tensor<float, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     fftwf_plan c2r = nullptr;
 
@@ -93,7 +93,7 @@ void csifft(Tensor<std::complex<float>, 1> const &a, Tensor<float, 1> *result) {
 }
 
 void zdifft(Tensor<std::complex<double>, 1> const &a, Tensor<double, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     fftw_plan c2r = nullptr;
 
@@ -104,7 +104,7 @@ void zdifft(Tensor<std::complex<double>, 1> const &a, Tensor<double, 1> *result)
 }
 
 void ccifft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     fftwf_plan c2r = nullptr;
 
@@ -115,7 +115,7 @@ void ccifft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>,
 }
 
 void zzifft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     fftw_plan c2c = nullptr;
 

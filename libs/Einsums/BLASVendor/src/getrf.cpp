@@ -21,7 +21,7 @@ extern void FC_GLOBAL(zgetrf, ZGETRF)(int_t *, int_t *, std::complex<double> *, 
 }
 
 auto sgetrf(int_t m, int_t n, float *a, int_t lda, int_t *ipiv) -> int_t {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     int_t info{0};
     FC_GLOBAL(sgetrf, SGETRF)(&m, &n, a, &lda, ipiv, &info);
@@ -29,7 +29,7 @@ auto sgetrf(int_t m, int_t n, float *a, int_t lda, int_t *ipiv) -> int_t {
 }
 
 auto dgetrf(int_t m, int_t n, double *a, int_t lda, int_t *ipiv) -> int_t {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     int_t info{0};
     FC_GLOBAL(dgetrf, DGETRF)(&m, &n, a, &lda, ipiv, &info);
@@ -37,7 +37,7 @@ auto dgetrf(int_t m, int_t n, double *a, int_t lda, int_t *ipiv) -> int_t {
 }
 
 auto cgetrf(int_t m, int_t n, std::complex<float> *a, int_t lda, int_t *ipiv) -> int_t {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     int_t info{0};
     FC_GLOBAL(cgetrf, CGETRF)(&m, &n, a, &lda, ipiv, &info);
@@ -45,7 +45,7 @@ auto cgetrf(int_t m, int_t n, std::complex<float> *a, int_t lda, int_t *ipiv) ->
 }
 
 auto zgetrf(int_t m, int_t n, std::complex<double> *a, int_t lda, int_t *ipiv) -> int_t {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     int_t info{0};
     FC_GLOBAL(zgetrf, ZGETRF)(&m, &n, a, &lda, ipiv, &info);

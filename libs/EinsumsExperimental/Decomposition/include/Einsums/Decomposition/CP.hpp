@@ -30,7 +30,7 @@ template <TensorConcept TTensor, VectorConcept WTensor>
 auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<ValueTypeT<TTensor>, TensorRank<TTensor>> {
     using TType            = ValueTypeT<TTensor>;
     constexpr size_t TRank = TensorRank<TTensor>;
-    LabeledSection(__func__);
+    LabeledSection0();
 
     if (tensor.dim(0) != weights.dim(0)) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "The first dimension of the tensor and the dimension of the weight DO NOT match");
@@ -63,7 +63,7 @@ auto weight_tensor(TTensor const &tensor, WTensor const &weights) -> Tensor<Valu
  */
 template <size_t TRank, typename TType, typename Alloc>
 auto parafac_reconstruct(std::vector<Tensor<TType, 2>, Alloc> const &factors) -> Tensor<TType, TRank> {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     size_t     rank = 0;
     Dim<TRank> dims;
@@ -100,7 +100,7 @@ auto parafac_reconstruct(std::vector<Tensor<TType, 2>, Alloc> const &factors) ->
 
 template <size_t TRank, typename TType, typename Alloc>
 auto initialize_cp(std::vector<Tensor<TType, 2>, Alloc> &folds, size_t rank) -> BufferVector<Tensor<TType, 2>> {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     using namespace einsums::tensor_algebra;
 
@@ -168,7 +168,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>, Alloc> &folds, size_t rank) -> 
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto parafac(TTensor<TType, TRank> const &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8)
     -> BufferVector<Tensor<TType, 2>> {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
@@ -265,7 +265,7 @@ auto parafac(TTensor<TType, TRank> const &tensor, size_t rank, int n_iter_max = 
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto weighted_parafac(TTensor<TType, TRank> const &tensor, TTensor<TType, 1> const &weights, size_t rank, int n_iter_max = 100,
                       double tolerance = 1.e-8) -> BufferVector<Tensor<TType, 2>> {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     using namespace einsums::tensor_algebra;
 

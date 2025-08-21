@@ -28,7 +28,7 @@ template <CoreTensorConcept CType, typename UnaryOperator>
         requires RankTensorConcept<CType>;
     }
 auto element_transform(CType *C, UnaryOperator unary_opt) -> void {
-    LabeledSection(__func__);
+    LabeledSection0();
     using T               = typename CType::ValueType;
     constexpr size_t Rank = CType::Rank;
 
@@ -81,7 +81,7 @@ template <template <typename, size_t> typename CType, template <typename, size_t
         requires BasicTensorConcept<CType<T, Rank>>;
     }
 auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &...tensors) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     // Ensure the various tensors passed in are the same dimensionality
     if (((C->dims() != tensors.dims()) || ...)) {

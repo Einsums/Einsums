@@ -16,9 +16,15 @@ else()
   return()
 endif()
 
-set(example_programs Dot hwy_play)
+set(example_programs Dot)
+
+# Highway is agonizingly slow in debug builds
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+  list(APPEND example_programs hwy_play hwy_triplet)
+endif()
 
 set(hwy_play_FLAGS DEPENDENCIES hwy)
+set(hwy_triplet_FLAGS DEPENDENCIES hwy)
 
 foreach(example_program ${example_programs})
   set(sources ${example_program}.cpp)

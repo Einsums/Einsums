@@ -32,7 +32,7 @@ extern void FC_GLOBAL(cgesvd, CGESVD)(char *jobu, char *jobvt, int_t *m, int_t *
     auto lcletter##gesvd(char jobu, char jobvt, int_t m, int_t n, Type *a, int_t lda, Type *s, Type *u, int_t ldu, Type *vt, int_t ldvt,   \
                          Type *superb)                                                                                                     \
         ->int_t {                                                                                                                          \
-        LabeledSection(__func__);                                                                                                          \
+        LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t info  = 0;                                                                                                                   \
         int_t lwork = -1;                                                                                                                  \
@@ -92,7 +92,7 @@ GESVD(float, s, S);
     auto lcletter##gesvd(char jobu, char jobvt, int_t m, int_t n, std::complex<Type> *a, int_t lda, Type *s, std::complex<Type> *u,        \
                          int_t ldu, std::complex<Type> *vt, int_t ldvt, std::complex<Type> *superb)                                        \
         ->int_t {                                                                                                                          \
-        LabeledSection(__func__);                                                                                                          \
+        LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t info  = 0;                                                                                                                   \
         int_t lwork = -1;                                                                                                                  \
@@ -129,8 +129,8 @@ GESVD(float, s, S);
         /* Allocate memory for work array */                                                                                               \
         BufferVector<std::complex<Type>> work(lwork);                                                                                      \
         /* Call lapack routine */                                                                                                          \
-        FC_GLOBAL(lcletter##gesvd, UCLETTER##GESVD)(&jobu, &jobvt, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work.data(), &lwork,            \
-                                                    rwork.data(), &info);                                                                  \
+        FC_GLOBAL(lcletter##gesvd, UCLETTER##GESVD)                                                                                        \
+        (&jobu, &jobvt, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work.data(), &lwork, rwork.data(), &info);                                 \
                                                                                                                                            \
         if (info < 0) {                                                                                                                    \
             EINSUMS_LOG_WARN("gesvd lapack routine failed. info {}", info);                                                                \

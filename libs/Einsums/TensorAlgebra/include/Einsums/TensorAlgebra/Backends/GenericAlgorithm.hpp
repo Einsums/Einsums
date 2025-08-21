@@ -134,7 +134,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                               std::conditional_t<(sizeof(typename AType::ValueType) > sizeof(typename BType::ValueType)),
                                                  typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                               AType const &A, BType const &B) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     using ADataType        = typename AType::ValueType;
     using BDataType        = typename BType::ValueType;

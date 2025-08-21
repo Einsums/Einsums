@@ -7,7 +7,6 @@
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/Profile.hpp>
 
-#if defined(EINSUMS_HAVE_PROFILER)
 namespace einsums::profile {
 
 namespace {
@@ -172,12 +171,12 @@ void Profiler::print(bool detailed, std::ostream &os) {
         fmt::print(os, "\n");
         safe_print(os, fmt::emphasis::bold | fg(fmt::color::white), "Thread: {}  (total exclusive: {:-7.3f} ms)\n", thread,
                    thread_total_ms);
-        fmt::print(os, "{:-^130}\n", "");
+        fmt::print(os, "{:-^142}\n", "");
 
         // column header: % | time(ms) | name | file:line | func
         if (!detailed) {
-            fmt::print(os, " {:>10}  {:<60}  {:<30}  {:<}\n", "time(ms)", "name", "file:line", "function");
-            fmt::print(os, "{:-^130}\n", "");
+            fmt::print(os, " {:>10}  {:<10}  {:<60}  {:<30}  {:<}\n", "time(ms)", "count", "name", "file:line", "function");
+            fmt::print(os, "{:-^142}\n", "");
         } else {
             // show extra cols for min/max/avg and counters
             fmt::print(os, " {:>10}  {:<60}  {:<30}  {:<20}  {:>8} {:>8} {:>8}\n", "time(ms)", "name", "file:line", "function", "min",
@@ -207,7 +206,7 @@ auto Profiler::export_json(std::string const &path) -> std::optional<std::string
         if (!firstThread)
             ofs << ",\n";
         firstThread = false;
-        ofs << fmt::format("  \"{}\": ", tkv.first /*escape_json(tkv.first)*/);
+        ofs << fmt::format("  \"{}\": ", tkv.first);
         write_node_json(ofs, tkv.second, 2);
     }
     ofs << "\n}\n";
@@ -273,6 +272,7 @@ void Profiler::print_node_recursive(std::ostream &os, AggNode const *n, double t
     // time, name, file:line (clickable), func
     fmt::print(os, " ");
     fmt::print(os, "{:10.3f}  ", excl_ms);
+    fmt::print(os, "{:10}  ", n->call_count);
     fmt::print(os, "{:<60}  ", name);
     // clickable file:line (if present)
     // inside print_node_recursive when printing one node:
@@ -329,4 +329,3 @@ void Profiler::print_node_recursive(std::ostream &os, AggNode const *n, double t
 }
 
 } // namespace einsums::profile
-#endif

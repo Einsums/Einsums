@@ -30,7 +30,7 @@ inline void verify(MKL_LONG status) {
  *******************************************************************************/
 
 void scfft(Tensor<float, 1> const &a, Tensor<std::complex<float>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -48,7 +48,7 @@ void scfft(Tensor<float, 1> const &a, Tensor<std::complex<float>, 1> *result) {
 }
 
 void ccfft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -66,7 +66,7 @@ void ccfft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 
 }
 
 void dzfft(Tensor<double, 1> const &a, Tensor<std::complex<double>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -84,7 +84,7 @@ void dzfft(Tensor<double, 1> const &a, Tensor<std::complex<double>, 1> *result) 
 }
 
 void zzfft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -106,7 +106,7 @@ void zzfft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>
  *******************************************************************************/
 
 void csifft(Tensor<std::complex<float>, 1> const &a, Tensor<float, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -127,7 +127,7 @@ void csifft(Tensor<std::complex<float>, 1> const &a, Tensor<float, 1> *result) {
 }
 
 void zdifft(Tensor<std::complex<double>, 1> const &a, Tensor<double, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -145,7 +145,7 @@ void zdifft(Tensor<std::complex<double>, 1> const &a, Tensor<double, 1> *result)
 }
 
 void ccifft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
@@ -163,7 +163,7 @@ void ccifft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>,
 }
 
 void zzifft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>, 1> *result) {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 

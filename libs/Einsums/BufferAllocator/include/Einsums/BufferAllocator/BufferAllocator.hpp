@@ -8,10 +8,10 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
-#include <Einsums/Errors/ThrowException.hpp>
-#include <Einsums/Print.hpp>
+#include <Einsums/Errors.hpp>
 
 #include <complex>
+#include <cstdlib>
 #include <deque>
 #include <forward_list>
 #include <map>
@@ -135,7 +135,14 @@ struct BufferAllocator {
                                     n, n * type_size, available_size(), max_size());
         }
 
-        out = static_cast<pointer>(malloc(n * type_size));
+        void *ptr = nullptr;
+#if 0
+        posix_memalign(&ptr, 64, n * type_size);
+#else
+        ptr = malloc(n * type_size);
+#endif
+        out = static_cast<pointer>(ptr);
+
 #if defined(EINSUMS_HAVE_TRACY)
         TracyAlloc(out, n * type_size);
 #endif

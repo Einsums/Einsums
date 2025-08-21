@@ -21,7 +21,7 @@ extern void FC_GLOBAL(dsterf, DSTERF)(int_t *, double *, double *, int_t *);
 }
 
 auto ssyev(char job, char uplo, int_t n, float *a, int_t lda, float *w, float *work, int_t lwork) -> int_t {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     int_t info{0};
     FC_GLOBAL(ssyev, SSYEV)(&job, &uplo, &n, a, &lda, w, work, &lwork, &info);
@@ -29,7 +29,7 @@ auto ssyev(char job, char uplo, int_t n, float *a, int_t lda, float *w, float *w
 }
 
 auto dsyev(char job, char uplo, int_t n, double *a, int_t lda, double *w, double *work, int_t lwork) -> int_t {
-    LabeledSection(__func__);
+    LabeledSection0();
 
     int_t info{0};
     FC_GLOBAL(dsyev, DSYEV)(&job, &uplo, &n, a, &lda, w, work, &lwork, &info);

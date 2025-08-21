@@ -16,7 +16,9 @@ else()
   return()
 endif()
 
-set(example_programs Dot)
+set(example_programs Dot hwy_contraction)
+
+set(hwy_contraction_FLAGS DEPENDENCIES hwy)
 
 foreach(example_program ${example_programs})
   set(sources ${example_program}.cpp)
@@ -30,6 +32,7 @@ foreach(example_program ${example_programs})
     FOLDER "Examples/Modules/TensorAlgebra"
     NOINSTALL
   )
+  target_include_directories(TA_${example_program} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
   einsums_add_example_target_dependencies("Modules.Einsums.TensorAlgebra" TA_${example_program})
 
