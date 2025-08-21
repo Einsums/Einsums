@@ -17,6 +17,17 @@ void export_TensorAlgebra(py::module_ &mod) {
         .def("execute",
              [](PyEinsumGenericPlan &self, pybind11::object const &C_prefactor, pybind11::buffer &C, pybind11::object const &AB_prefactor,
                 pybind11::buffer const &A, pybind11::buffer const &B) { self.execute(C_prefactor, C, AB_prefactor, A, B); })
+        .def("execute",
+             [](PyEinsumGenericPlan &self, pybind11::object const &C_prefactor, std::vector<pybind11::buffer> &C,
+                pybind11::object const &AB_prefactor, std::vector<pybind11::buffer> const &A, std::vector<pybind11::buffer> const &B) {
+                 if (C.size() != A.size() || C.size() != B.size()) {
+                     EINSUMS_THROW_EXCEPTION(py::value_error, "The lengths of the collections need to be the same!");
+                 }
+                 size_t const tensors = C.size();
+                 for (size_t i = 0; i < tensors; i++) {
+                     self.execute(C_prefactor, C[i], AB_prefactor, A[i], B[i]);
+                 }
+             })
 #ifdef EINSUMS_COMPUTE_CODE
         .def("execute",
              [](PyEinsumGenericPlan &self, pybind11::object const &C_prefactor, python::PyGPUView &C, pybind11::object const &AB_prefactor,
@@ -28,6 +39,17 @@ void export_TensorAlgebra(py::module_ &mod) {
         .def("execute",
              [](PyEinsumDotPlan &self, pybind11::object const &C_prefactor, pybind11::buffer &C, pybind11::object const &AB_prefactor,
                 pybind11::buffer const &A, pybind11::buffer const &B) { self.execute(C_prefactor, C, AB_prefactor, A, B); })
+        .def("execute",
+             [](PyEinsumDotPlan &self, pybind11::object const &C_prefactor, std::vector<pybind11::buffer> &C,
+                pybind11::object const &AB_prefactor, std::vector<pybind11::buffer> const &A, std::vector<pybind11::buffer> const &B) {
+                 if (C.size() != A.size() || C.size() != B.size()) {
+                     EINSUMS_THROW_EXCEPTION(py::value_error, "The lengths of the collections need to be the same!");
+                 }
+                 size_t const tensors = C.size();
+                 for (size_t i = 0; i < tensors; i++) {
+                     self.execute(C_prefactor, C[i], AB_prefactor, A[i], B[i]);
+                 }
+             })
 #ifdef EINSUMS_COMPUTE_CODE
         .def("execute",
              [](PyEinsumDotPlan &self, pybind11::object const &C_prefactor, python::PyGPUView &C, pybind11::object const &AB_prefactor,
@@ -39,6 +61,17 @@ void export_TensorAlgebra(py::module_ &mod) {
         .def("execute", [](PyEinsumDirectProductPlan &self, pybind11::object const &C_prefactor, pybind11::buffer &C,
                            pybind11::object const &AB_prefactor, pybind11::buffer const &A,
                            pybind11::buffer const &B) { self.execute(C_prefactor, C, AB_prefactor, A, B); })
+        .def("execute",
+             [](PyEinsumDirectProductPlan &self, pybind11::object const &C_prefactor, std::vector<pybind11::buffer> &C,
+                pybind11::object const &AB_prefactor, std::vector<pybind11::buffer> const &A, std::vector<pybind11::buffer> const &B) {
+                 if (C.size() != A.size() || C.size() != B.size()) {
+                     EINSUMS_THROW_EXCEPTION(py::value_error, "The lengths of the collections need to be the same!");
+                 }
+                 size_t const tensors = C.size();
+                 for (size_t i = 0; i < tensors; i++) {
+                     self.execute(C_prefactor, C[i], AB_prefactor, A[i], B[i]);
+                 }
+             })
 #ifdef EINSUMS_COMPUTE_CODE
         .def("execute", [](PyEinsumDirectProductPlan &self, pybind11::object const &C_prefactor, python::PyGPUView &C,
                            pybind11::object const &AB_prefactor, python::PyGPUView const &A,
@@ -50,6 +83,17 @@ void export_TensorAlgebra(py::module_ &mod) {
         .def("execute",
              [](PyEinsumGerPlan &self, pybind11::object const &C_prefactor, pybind11::buffer &C, pybind11::object const &AB_prefactor,
                 pybind11::buffer const &A, pybind11::buffer const &B) { self.execute(C_prefactor, C, AB_prefactor, A, B); })
+        .def("execute",
+             [](PyEinsumGerPlan &self, pybind11::object const &C_prefactor, std::vector<pybind11::buffer> &C,
+                pybind11::object const &AB_prefactor, std::vector<pybind11::buffer> const &A, std::vector<pybind11::buffer> const &B) {
+                 if (C.size() != A.size() || C.size() != B.size()) {
+                     EINSUMS_THROW_EXCEPTION(py::value_error, "The lengths of the collections need to be the same!");
+                 }
+                 size_t const tensors = C.size();
+                 for (size_t i = 0; i < tensors; i++) {
+                     self.execute(C_prefactor, C[i], AB_prefactor, A[i], B[i]);
+                 }
+             })
 #ifdef EINSUMS_COMPUTE_CODE
         .def("execute",
              [](PyEinsumGerPlan &self, pybind11::object const &C_prefactor, python::PyGPUView &C, pybind11::object const &AB_prefactor,
@@ -61,6 +105,17 @@ void export_TensorAlgebra(py::module_ &mod) {
         .def("execute",
              [](PyEinsumGemvPlan &self, pybind11::object const &C_prefactor, pybind11::buffer &C, pybind11::object const &AB_prefactor,
                 pybind11::buffer const &A, pybind11::buffer const &B) { self.execute(C_prefactor, C, AB_prefactor, A, B); })
+        .def("execute",
+             [](PyEinsumGemvPlan &self, pybind11::object const &C_prefactor, std::vector<pybind11::buffer> &C,
+                pybind11::object const &AB_prefactor, std::vector<pybind11::buffer> const &A, std::vector<pybind11::buffer> const &B) {
+                 if (C.size() != A.size() || C.size() != B.size()) {
+                     EINSUMS_THROW_EXCEPTION(py::value_error, "The lengths of the collections need to be the same!");
+                 }
+                 size_t const tensors = C.size();
+                 for (size_t i = 0; i < tensors; i++) {
+                     self.execute(C_prefactor, C[i], AB_prefactor, A[i], B[i]);
+                 }
+             })
 #ifdef EINSUMS_COMPUTE_CODE
         .def("execute",
              [](PyEinsumGemvPlan &self, pybind11::object const &C_prefactor, python::PyGPUView &C, pybind11::object const &AB_prefactor,
@@ -72,6 +127,17 @@ void export_TensorAlgebra(py::module_ &mod) {
         .def("execute",
              [](PyEinsumGemmPlan &self, pybind11::object const &C_prefactor, pybind11::buffer &C, pybind11::object const &AB_prefactor,
                 pybind11::buffer const &A, pybind11::buffer const &B) { self.execute(C_prefactor, C, AB_prefactor, A, B); })
+        .def("execute",
+             [](PyEinsumGemmPlan &self, pybind11::object const &C_prefactor, std::vector<pybind11::buffer> &C,
+                pybind11::object const &AB_prefactor, std::vector<pybind11::buffer> const &A, std::vector<pybind11::buffer> const &B) {
+                 if (C.size() != A.size() || C.size() != B.size()) {
+                     EINSUMS_THROW_EXCEPTION(py::value_error, "The lengths of the collections need to be the same!");
+                 }
+                 size_t const tensors = C.size();
+                 for (size_t i = 0; i < tensors; i++) {
+                     self.execute(C_prefactor, C[i], AB_prefactor, A[i], B[i]);
+                 }
+             })
 #ifdef EINSUMS_COMPUTE_CODE
         .def("execute",
              [](PyEinsumGemmPlan &self, pybind11::object const &C_prefactor, python::PyGPUView &C, pybind11::object const &AB_prefactor,
