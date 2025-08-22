@@ -22,20 +22,28 @@ These are the linear algebra functions that have been made available to Python.
 
     Enumeration of different types of matrix norms.
 
+    .. versionadded:: 1.1.0
+
     .. py:attribute:: MAXABS
         :value: 'M'
 
         Finds the largest absolute value of the elements in a matrix.
+
+        .. versionadded:: 1.1.0
 
     .. py:attribute:: ONE
         :value: '1'
 
         Finds the one-norm of a matrix. This is equivalent to finding the maximum column sum of the matrix.
 
+        .. versionadded:: 1.1.0
+
     .. py:attribute:: INFINITY
         :value: 'I'
 
         Finds the infinity-norm of a matrix. This is equivalent to finding the maximum row sum of the matrix.
+
+        .. versionadded:: 1.1.0
 
     .. py:attribute:: FROBENIUS
         :value: 'F'
@@ -43,14 +51,20 @@ These are the linear algebra functions that have been made available to Python.
         Finds the Frobenius norm of a matrix. This is the square root of the sum of the squares of the elements.
         Similar to the vector norm, but applied to matrices.
 
+        .. versionadded:: 1.1.0
+
 .. py:class:: Vectors
 
     Enumerations of different operations for :py:func:`einsums.core.svd_dd`.
+
+    .. versionadded:: 1.1.0
 
     .. py:attribute:: ALL
         :value: 'A'
 
         Gets all of the vectors from the singular value decomposition.
+
+        .. versionadded:: 1.1.0
 
     .. py:attribute:: SOME
         :value: 'S'
@@ -58,16 +72,22 @@ These are the linear algebra functions that have been made available to Python.
         Only some of the vectors are returned. The number of vectors is the minimum of the dimensions of the
         input matrix.
 
+        .. versionadded:: 1.1.0
+
     .. py:attribute:: OVERWRITE
         :value: 'O'
 
         Overwrite some of the singular vectors into the input matrix. See the LAPACK documentation for ``gesdd``
         for more details.
 
+        .. versionadded:: 1.1.0
+
     .. py:attribute:: NONE
         :value: 'N'
 
         Do not compute the vectors for the singular value decomposition.
+
+        .. versionadded:: 1.1.0
 
 
 .. py:function:: sum_square(A) -> float, float
@@ -83,6 +103,8 @@ These are the linear algebra functions that have been made available to Python.
     :return: The square of the sum of the vector and the scale factor to apply to it to avoid overflow.
     :raises einsums.core.rank_error: if the tensor passed in is not rank-1.
     :raises ValueError: if the data stored by the vector is not real or complex floating point.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: gemm(transA: str, transB: str, alpha, A, B, beta, C)
 
@@ -103,6 +125,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises einsums.core.rank_error: if any of the tensors is not rank-2.
     :raises einsums.core.tensor_compat_error: if the rows and columns of the matrices are incompatible.
     :raises ValueError: if the storage types of the matrices are not compatible.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: gemv(transA: str, alpha, A, X, beta, Y)
 
@@ -125,6 +149,8 @@ These are the linear algebra functions that have been made available to Python.
     the vectors.
     :raises ValueError: if the storage types of the matrices are not compatible.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: syev(A, W)
 .. py:function:: heev(A, W)
 
@@ -142,6 +168,8 @@ These are the linear algebra functions that have been made available to Python.
     passed to the underlying library call had an illegal value. This second case should hopefully never happen.
     :raisees RuntimeError: if the algorithm does not converge, or the memory for internal buffers could not
     be allocated.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: geev(jobvl: str, jobvr: str, A, W, Vl, Vr)
 
@@ -175,6 +203,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises TypeError: if a set of eigenvectors is requested, but the output tensor is ``None``.
     :raises ValueError: if the storage types of any of the tensors is incompatible.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: gesv(A, B)
 
     Solve a linear system like the following.
@@ -194,6 +224,8 @@ These are the linear algebra functions that have been made available to Python.
     to the underlying library function. This second case should not happen.
     :raises RuntimeError: if the input matrix is singular, meaning no solutions could be found.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: scale(alpha, A)
 
     Scale a tensor by a scale factor.
@@ -201,6 +233,8 @@ These are the linear algebra functions that have been made available to Python.
     :param alpha: The scale factor.
     :param A: The tensor to scale.
     :raises ValueError: if ``A`` does not store real or complex floating point data.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: scale_row(row: int, alpha, A)
 
@@ -214,6 +248,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises IndexError: if the requested row is outside of the range of the matrix.
     :raises ValueError: if the matrix does not store real or complex floating point data.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: scale_column(col: int, alpha, A)
 
     Scales a column of a matrix by a scale factor.
@@ -225,6 +261,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises einsums.core.rank_error: if ``A`` is not a matrix.
     :raises IndexError: if the requested column is outside of the range of the matrix.
     :raises ValueError: if the matrix does not store real or complex floating point data.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: dot(A, B)
 
@@ -253,6 +291,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises ValueError: if the tensors do not store the same data type or the stored data type is
     not real or complex floating point.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: true_dot(A, B)
 
     Performs the possibly conjugated dot product. This is the true dot product. That is,
@@ -275,6 +315,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises ValueError: if the tensors do not store the same data type or the stored data type is
     not real or complex floating point.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: axpy(alpha, x, y)
 
     Performs a scale and add operation. It is similar to :py:func:`axpby` where the ``beta`` 
@@ -291,6 +333,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises ValueError: if the tensors do not have the same storage type or the tensors
     do not store real or complex floating point data.
     :raises einsums.core.tensor_compat_error: if the tensors do not have the same dimensions.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: axpby(alpha, x, beta, y)
 
@@ -309,6 +353,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises ValueError: if the tensors do not have the same storage type or the tensors
     do not store real or complex floating point data.
     :raises einsums.core.tensor_compat_error: if the tensors do not have the same dimensions.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: ger(alpha, x, y, A)
 
@@ -332,6 +378,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises einsums.core.dimension_error: if the inputs do not have compatible dimensions.
     :raises ValueError: if the inputs do not store the same data type or the data type stored
     is not real or complex floating point data.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: getrf(A) -> list[int]
 
@@ -360,6 +408,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises ValueError: if the tensor does not store real or complex floating point data or if an invalid
     argument is passed to the internal ``getrf`` call. This last case should not happen.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: extract_plu(A, pivot: list[int]) -> tuple
 
     Extracts the matrices from a call to :py:func:`getrf`.
@@ -371,6 +421,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises einsums.core.rank_error: if the input tensor is not a matrix.
     :raises RuntimeError: if the pivot list is not formatted correctly.
     :raises ValueError: if the matrix does not store real or complex floating point data.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: getri(A, pivot: list[int])
 
@@ -388,6 +440,8 @@ These are the linear algebra functions that have been made available to Python.
     the underlying ``getri`` call. This last one should not happen.
     :raises RuntimeError: if the matrix is singular.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: invert(A)
 
     Computes the matrix inverse. This calls :py:func:`getrf` and :py:func:`getri` under the hood
@@ -401,6 +455,8 @@ These are the linear algebra functions that have been made available to Python.
     one of the underlying LAPACK calls. This last one should not happen.
     :raises RuntimeError: if the matrix is singular.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: norm(norm_type: einsums.core.Norm, A)
 
     Computes the norm of a matrix. Does not handle vectors.
@@ -411,6 +467,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises einsums.core.rank_error: if the input tensor is not a matrix.
     :raises ValueError: if the matrix does not store real or complex floating point data.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: vec_norm(A)
 
     Computes the norm of a vector.
@@ -419,6 +477,8 @@ These are the linear algebra functions that have been made available to Python.
     :return: The norm of the vector.
     :raises einsums.core.rank_error: if the input is not a vector.
     :raises ValueError: if the vector does not store real or complex floating point data.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: svd(A) -> tuple
 
@@ -431,6 +491,8 @@ These are the linear algebra functions that have been made available to Python.
     illegal argument is passed to the underlying LAPACK call. This last one should never happen.
     :raises RuntimeError: if the SVD iterations did not converge.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: svd_nullspace(A)
 
     Computes the nullspace of a matrix using singular value decomposition.
@@ -441,6 +503,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises ValueError: if the matrix does not store real or complex floating point data, or an 
     invalid argument was passed to the underlying LAPACK call. This last one should not happen.
     :raises RuntimeError: if the SVD iterations did not converge.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: svd_dd(A, job: einsums.core.Vectors = einsums.core.ALL) -> tuple
 
@@ -454,6 +518,8 @@ These are the linear algebra functions that have been made available to Python.
     illegal argument is passed to the underlying LAPACK call. This last one should never happen.
     :raises RuntimeError: if the SVD iterations did not converge.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: truncated_svd(A, k: int) -> tuple
 
     Computes the singular value decomposition, but truncates the number of singular values.
@@ -464,6 +530,8 @@ These are the linear algebra functions that have been made available to Python.
     vectors.
     :raises einsums.core.rank_error: if the input is not a matrix.
     :raises ValueError: if the matrix does not store real or complex floating point data.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: truncated_syev(A, k: int) -> tuple
 
@@ -476,6 +544,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises einsums.core.dimension_error: if the input is not a square matrix.
     :raises ValueError: if the matrix does not store real or complex floating point data.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: pseudoinverse(A, tol: float)
 
     Computes the pseudoinverse of a matrix.
@@ -485,6 +555,8 @@ These are the linear algebra functions that have been made available to Python.
     :return: The pseudoinverse of the input matrix.
     :raises einsums.core.rank_error: if the input tensor is not a matrix.
     :raises ValueError: if the matrix does not store real or complex floating point data.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: solve_continuous_lyapunov(A, Q)
 
@@ -505,6 +577,8 @@ These are the linear algebra functions that have been made available to Python.
     LAPACK functions. This last case should hopefully not happen.
     :raises RuntimeError: if the Schur decomposition step fails to converge.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: qr(A) -> tuple
 
     Perform QR decomposition. The information to get Q and R are returned.
@@ -514,6 +588,11 @@ These are the linear algebra functions that have been made available to Python.
     :raises einsums.core.rank_error: if the input is not a matrix.
     :raises ValueError: if the matrix input does not store real or complex floating point data,
     or an invalid value was passed to the underlying LAPACK call. The second case should not happen.
+
+    .. versionadded:: 1.1.0
+    .. versionchanged:: 2.0.0
+
+        This function now returns the Q and R matrices instead of matrices that need to be passed to other functions.
 
 .. py:function:: q(QR, tau)
 
@@ -527,6 +606,9 @@ These are the linear algebra functions that have been made available to Python.
     do not store real or complex floating point data,
     or an invalid value was passed to the underlying LAPACK call. The second case should not happen.
 
+    .. versionadded:: 1.1.0
+    .. versionremoved:: 2.0.0
+
 .. py:function:: r(QR, tau)
 
     Extract the R factor from the return from :py:func:`qr`.
@@ -537,6 +619,9 @@ These are the linear algebra functions that have been made available to Python.
     :return: The R matrix from the decomposition.
     :raises einsums.core.rank_error: if the input is not a matrix.
     :raises ValueError: if the matrix inputs do not store real or complex floating point data.
+
+    .. versionadded:: 1.1.0
+    .. versionremoved:: 2.0.0
 
 .. py:function:: direct_product(alpha, A, B, beta, C)
 
@@ -556,6 +641,8 @@ These are the linear algebra functions that have been made available to Python.
     :raises ValueError: if the tensors do not store the same data type or they do not
     store real or complex floating point data.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: det(A)
 
     Computes the determinant of a matrix.
@@ -566,3 +653,5 @@ These are the linear algebra functions that have been made available to Python.
     :raises einsums.core.dimension_error: if the input is not a square matrix.
     :raises ValueError: if the matrix does not store real or complex floating point data, or an
     argument passed to the underlying LAPACK call was invalid. The second case should not happen.
+
+    .. versionadded:: 1.1.0
