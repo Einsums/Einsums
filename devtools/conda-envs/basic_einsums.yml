@@ -1,0 +1,43 @@
+name: einsums
+channels: 
+  - conda-forge
+  - nodefaults
+dependencies:
+  - sphinx
+  - sphinx-design
+  - sphinx-copybutton
+  - sphinxcontrib-bibtex
+  - six
+  - pydata-sphinx-theme
+  - doxygen
+  - breathe
+  - docutils
+  - cmake
+  - ccache
+  - cxx-compiler
+  - ninja
+  - lcov
+  - pre-commit
+  # Prebuilts to save einsums the work
+  - cpp-argparse
+  - catch2
+  - fftw
+  - fmt
+  - cpptrace
+  - spdlog
+  # HDF5
+  # * zlib brings headers; hdf5 package only bring libzlib
+  - hdf5
+  - zlib
+  - numpy
+  - mimalloc
+  # Python stuff
+  - pybind11
+  - pytest
+  - numpy
+  - pytest-cov
+  - coverage
+  - scipy
+  - libblas[build=*openblas]
+  - openblas[build=*openmp*]
+  - fftw
