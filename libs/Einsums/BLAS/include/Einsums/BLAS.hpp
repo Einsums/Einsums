@@ -35,7 +35,7 @@ template <typename T>
 struct IsBlasable<std::complex<T>> : std::is_floating_point<T> {};
 
 /**
- * @property IsBlasableV<T>
+ * @property IsBlasableV
  *
  * @brief Boolean wrapper of IsBlasable<T>.
  *
@@ -45,7 +45,7 @@ template <typename T>
 constexpr bool IsBlasableV = IsBlasable<T>::value;
 
 /**
- * @concept Blasable<T>
+ * @concept Blasable
  *
  * @brief Concept version of IsBlasableV<T>.
  *
