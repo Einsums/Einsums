@@ -65,6 +65,7 @@ or set by its modules. This functionality has been exposed to Python so that use
 
         .. versionadded:: 1.0.0
         .. versionremoved:: 1.1.0
+            Use :py:meth:`get_str` instead. Name changed to match Python data types instead of C++.
     
     .. py:method:: get_str(key: str) -> str
 
@@ -85,6 +86,7 @@ or set by its modules. This functionality has been exposed to Python so that use
         .. versionadded:: 1.0.0
 
     .. py:method:: get_double(key: str) -> float
+        :deprecated:
 
         Gets the value of a floating-point option.
 
@@ -93,6 +95,7 @@ or set by its modules. This functionality has been exposed to Python so that use
 
         .. versionadded:: 1.0.0
         .. versionremoved:: 1.1.0
+            Use :py:meth:`get_float` instead. Name changed to match Python data types instead of C++.
 
     .. py:method:: get_float(key: str) -> float
 

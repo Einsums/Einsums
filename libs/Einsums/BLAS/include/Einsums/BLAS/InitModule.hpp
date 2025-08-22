@@ -16,15 +16,24 @@
 
 namespace einsums {
 
+/**
+ * @brief Registers the initialization and finalization functions with the runtime manager.
+ *
+ * @since 1.1.0
+ */
 EINSUMS_EXPORT int setup_Einsums_BLAS();
 
 /**
  * @brief Initialize the BLAS runtime.
+ *
+ * @since 1.0.0
  */
 EINSUMS_EXPORT void initialize_Einsums_BLAS();
 
 /**
  * @brief Finalize the BLAS runtime.
+ *
+ * @since 1.0.0
  */
 EINSUMS_EXPORT void finalize_Einsums_BLAS();
 

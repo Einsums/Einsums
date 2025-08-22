@@ -24,6 +24,8 @@ Here is a list of public utilities defined in this module.
 
     :param expr: The expression to test.
 
+    .. versionadded:: 1.0.0
+
 .. c:macro:: EINSUMS_ASSERT_MSG(expr, msg)
 
     Asserts that the expression is true. If it is false, then this prints a custom message and aborts the execution.
@@ -31,6 +33,8 @@ Here is a list of public utilities defined in this module.
 
     :param expr: The expression to check.
     :param msg: The message to print on failure.
+
+    .. versionadded:: 1.0.0
 
 -------------
 Example Usage

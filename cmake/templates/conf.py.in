@@ -264,8 +264,17 @@ breathe_doxygen_config_options = {
 }
 
 # ! this should work but doesn't. check after updating breathe version.
-# breathe_doxygen_aliases = {
-# }
+breathe_doxygen_aliases = {
+    "rst": r"\verbatim embed:rst:leading-asterisk",
+    "endrst": r"\endverbatim",
+    "versionadded{1}": r"\verbatim embed:rst ^^ .. versionadded:: \1 ^^ \endverbatim",
+    "versionremoved{1}": r"\verbatim embed:rst ^^ .. versionremoved:: \1 ^^ \endverbatim",
+    "versionchanged{1}": r"\verbatim embed:rst ^^ .. versionchanged:: \1 ^^ \endverbatim",
+    "versionaddeddesc{1}": r"\verbatim embed:rst:leading-asterisk .. versionadded:: \1",
+    "versionremoveddesc{1}": r"\verbatim embed:rst:leading-asterisk ^^ .. versionremoved:: \1",
+    "versionchangeddesc{1}": r"\verbatim embed:rst:leading-asterisk ^^ .. versionchanged:: \1",
+    "endversion": r"\endverbatim"
+}
 
 numfig = True
 primary_domain = 'cpp'
