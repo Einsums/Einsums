@@ -37,6 +37,10 @@ namespace einsums {
  *
  * This allocator follows the C++ standard for allocators, and can be used in templates that use them, such as
  * containers, smart pointers, and more.
+ *
+ * @tparam T The data type returned by this allocator.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T>
 struct BufferAllocator {
@@ -45,6 +49,8 @@ struct BufferAllocator {
      * @typedef pointer
      *
      * Represents the type of pointer handled by this allocator.
+     *
+     * @versionadded{1.1.0}
      */
     using pointer = T *;
 
@@ -52,6 +58,8 @@ struct BufferAllocator {
      * @typedef const_pointer
      *
      * Represents the type of pointer handled by this allocator, but for const operations.
+     *
+     * @versionadded{1.1.0}
      */
     using const_pointer = T const *;
 
@@ -59,6 +67,8 @@ struct BufferAllocator {
      * @typedef void_pointer
      *
      * Represents the type of typeless pointer handled by this allocator.
+     *
+     * @versionadded{1.1.0}
      */
     using void_pointer = void *;
 
@@ -66,6 +76,8 @@ struct BufferAllocator {
      * @typedef const_void_pointer
      *
      * Represents the type of typeless pointer handled by this allocator, but for const operations.
+     *
+     * @versionadded{1.1.0}
      */
     using const_void_pointer = void const *;
 
@@ -73,6 +85,8 @@ struct BufferAllocator {
      * @typedef value_type
      *
      * The type of buffers this allocator makes.
+     *
+     * @versionadded{1.1.0}
      */
     using value_type = T;
 
@@ -80,6 +94,8 @@ struct BufferAllocator {
      * @typedef size_type
      *
      * The type used to represent sizes for this buffer.
+     *
+     * @versionadded{1.1.0}
      */
     using size_type = size_t;
 
@@ -87,6 +103,8 @@ struct BufferAllocator {
      * @typedef difference_type
      *
      * The type used to represent address offsets.
+     *
+     * @versionadded{1.1.0}
      */
     using difference_type = ptrdiff_t;
 
@@ -94,6 +112,8 @@ struct BufferAllocator {
      * @typedef is_always_equal
      *
      * Flag that indicates that all allocators of this type are considered to be equal.
+     *
+     * @versionadded{1.1.0}
      */
     using is_always_equal = std::true_type;
 
@@ -102,6 +122,8 @@ struct BufferAllocator {
      *
      * The size of the types handled by this allocator. This is needed to handle void pointers, which traditionally
      * don't have a size, but should be treated as one byte.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr static size_t type_size = sizeof(std::conditional_t<std::is_void_v<std::remove_cv_t<T>>, char, T>);
 
@@ -115,6 +137,8 @@ struct BufferAllocator {
      * @return A pointer to the newly allocated memory.
      *
      * @throws std::runtime_error When the allocation size is too large or the allocation returns an unexpected null pointer.
+     *
+     * @versionadded{1.1.0}
      */
     pointer allocate(size_type n) {
         if (n == 0) {
@@ -151,6 +175,8 @@ struct BufferAllocator {
      * @param n The number of elements to reserve.
      *
      * @return True if the allocation will be successful, false if it will fail.
+     *
+     * @versionadded{1.1.0}
      */
     [[nodiscard("This function tells you when an allocation fails due to being out of memory. Don't ignore its return value. It is bad "
                 "form.")]] bool
@@ -171,6 +197,8 @@ struct BufferAllocator {
      * default allocator, but still want to track the memory being used.
      *
      * @param n The number of elements to release.
+     *
+     * @versionadded{1.1.0}
      */
     void release(size_type n) {
         if (n == 0) {
@@ -187,6 +215,8 @@ struct BufferAllocator {
      *
      * @param p The pointer to free.
      * @param n The number of elements the pointer points to.
+     *
+     * @versionadded{1.1.0}
      */
     void deallocate(pointer p, size_type n) {
         release(n);
@@ -202,6 +232,8 @@ struct BufferAllocator {
      * This will return the number of elements as determined by the global buffer size limit.
      *
      * @return The number of elements specified by the buffer size option.
+     *
+     * @versionadded{1.1.0}
      */
     size_type max_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_max_size() / type_size; }
 
@@ -211,6 +243,8 @@ struct BufferAllocator {
      * This will return the number of elements that have not yet been allocated.
      *
      * @return The number of elements available to allocate.
+     *
+     * @versionadded{1.1.0}
      */
     size_type available_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size; }
 
@@ -221,6 +255,8 @@ struct BufferAllocator {
      *
      * @param other The allocator to compare to.
      * @return Always returns true.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr bool operator==(BufferAllocator<T> const &other) const { return true; }
 
@@ -231,6 +267,8 @@ struct BufferAllocator {
      *
      * @param other The allocator to compare to.
      * @return Always returns false.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr bool operator!=(BufferAllocator<T> const &other) const { return false; }
 };
@@ -255,45 +293,158 @@ extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<double>>;
 
 #endif
 
+/**
+ * Alias for a vector that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam T The data type stored by the container.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename T>
 using BufferVector = std::vector<T, BufferAllocator<T>>;
 
+/**
+ * Alias for a deque that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam T The data type stored by the container.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename T>
 using BufferDeque = std::deque<T, BufferAllocator<T>>;
 
+/**
+ * Alias for a forward list that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam T The data type stored by the container.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename T>
 using BufferForwardList = std::forward_list<T, BufferAllocator<T>>;
 
+/**
+ * Alias for a linked list that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam T The data type stored by the container.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename T>
 using BufferList = std::list<T, BufferAllocator<T>>;
 
+/**
+ * Alias for a set that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam Key The data stored by the container.
+ * @tparam Compare A comparison function for the elements.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename Key, typename Compare = std::less<Key>>
 using BufferSet = std::set<Key, Compare, BufferAllocator<Key>>;
 
+/**
+ * Alias for a map that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam Key The type for the keys for indexing the container.
+ * @tparam T The data type stored by the container.
+ * @tparam Compare A function that checks keys against each other.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename Key, typename T, typename Compare = std::less<Key>>
 using BufferMap = std::map<Key, T, Compare, BufferAllocator<std::pair<Key const, T>>>;
 
+/**
+ * Alias for a multiset that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam Key The data stored by the container.
+ * @tparam Compare A comparison function for the elements.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename Key, typename Compare = std::less<Key>>
 using BufferMultiSet = std::multiset<Key, Compare, BufferAllocator<Key>>;
 
+/**
+ * Alias for a multimap that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam Key The type for the keys for indexing the container.
+ * @tparam T The data type stored by the container.
+ * @tparam Compare A function that checks keys against each other.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename Key, typename T, typename Compare = std::less<Key>>
 using BufferMultiMap = std::multimap<Key, T, Compare, BufferAllocator<std::pair<Key const, T>>>;
 
+/**
+ * Alias for an unordered set that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam Key The type for the keys for indexing the container.
+ * @tparam Hash A function for hashing keys.
+ * @tparam KeyEqual A function to determine if two keys are the same.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename Key, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
 using BufferUnorderedSet = std::unordered_set<Key, Hash, KeyEqual, BufferAllocator<Key>>;
 
+/**
+ * Alias for an unordered map that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam Key The type for the keys for indexing the container.
+ * @tparam T The data type stored by the container.
+ * @tparam Hash A function that hashes keys.
+ * @tparam KeyEqual A function to determine if two keys are the same.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename Key, typename T, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
 using BufferUnorderedMap = std::unordered_map<Key, T, Hash, KeyEqual, BufferAllocator<std::pair<Key const, T>>>;
 
+/**
+ * Alias for an unordered multiset that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam Key The type for the keys for indexing the container.
+ * @tparam Hash A function for hashing keys.
+ * @tparam KeyEqual A function to determine if two keys are the same.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename Key, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
 using BufferUnorderedMultiSet = std::unordered_multiset<Key, Hash, KeyEqual, BufferAllocator<Key>>;
 
+/**
+ * Alias for an unordered multimap that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam Key The type for the keys for indexing the container.
+ * @tparam T The data type stored by the container.
+ * @tparam Hash A function that hashes keys.
+ * @tparam KeyEqual A function to determine if two keys are the same.
+ *
+ * @versionadded{1.1.0}
+ */
 template <typename Key, typename T, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
 using BufferUnorderedMultiMap = std::unordered_multimap<Key, T, Hash, KeyEqual, BufferAllocator<std::pair<Key const, T>>>;
 
+/**
+ * Alias for a basic string that uses a BufferAllocator<T> as its allocator.
+ *
+ * @tparam CharT The type of character stored by the string.
+ * @tparam Traits The character traits of the character type.
+ *
+ * @versionadded{2.0.0}
+ */
 template <typename CharT, typename Traits = std::char_traits<CharT>>
 using BufferBasicString = std::basic_string<CharT, Traits, BufferAllocator<CharT>>;
 
+/**
+ * Alias for a string that uses a BufferAllocator<T> as its allocator.
+ *
+ * @versionadded{2.0.0}
+ */
 using BufferString = BufferBasicString<char>;
 
 } // namespace einsums

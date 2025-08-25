@@ -497,5 +497,10 @@ bibtex_bibfiles = ['references.bib']
 nitpick_ignore_regex = {(r"c(pp)?:identifier", r"size_t"),
     (r"c(pp)?:identifier", "ptrdiff_t"),
     (r"c(pp)?:identifier", r"u?int(8|16|32|64)_t"),
-    (r"cpp:identifier", r"pybind11(::.*)?")
+    (r"cpp:identifier", r"pybind11(::.*)?"),
+    (r"cpp:identifier", r"_concept")
     }
+
+suppress_warnings = {
+    "duplicate_declaration.cpp"
+}

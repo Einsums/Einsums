@@ -19,6 +19,8 @@ namespace einsums::blas {
  *
  * This checks to see if a type is @c float or @c double .
  *
+ * @tparam T The type to test.
+ *
  * @versionadded{1.1.0}
  */
 template <typename T>
@@ -28,6 +30,8 @@ struct IsBlasable : std::is_floating_point<std::remove_cvref_t<T>> {};
  * @brief Determines whether a type can be used in a BLAS call.
  *
  * This checks to see if a type is @c std::complex<float> or @c std::complex<double> .
+ *
+ * @tparam T The real type within the type to test.
  *
  * @versionadded{1.1.0}
  */
@@ -39,6 +43,8 @@ struct IsBlasable<std::complex<T>> : std::is_floating_point<T> {};
  *
  * @brief Boolean wrapper of IsBlasable<T>.
  *
+ * @tparam T The type to test.
+ *
  * @versionadded{1.1.0}
  */
 template <typename T>
@@ -48,6 +54,8 @@ constexpr bool IsBlasableV = IsBlasable<T>::value;
  * @concept Blasable
  *
  * @brief Concept version of IsBlasableV<T>.
+ *
+ * @tparam T The type to test.
  *
  * @versionadded{1.1.0}
  */
@@ -81,34 +89,33 @@ void EINSUMS_EXPORT zgemm(char transa, char transb, int_t m, int_t n, int_t k, s
  * @f$\alpha@f$ and @f$\beta@f$ are scalar values.
  *
  * @tparam T The datatype of the GEMM.
- * @param transa Whether to transpose matrix a :
+ * @param[in] transa Whether to transpose matrix a :
  *   - 'N' or 'n' for no transpose,
  *   - 'T' or 't' for transpose,
  *   - 'C' or 'c' for conjugate transpose.
- * @param transb Whether to transpose matrix b .
- * @param m The number of rows in matrix A and C.
- * @param n The number of columns in matrix B and C.
- * @param k The number of columns in matrix A and rows in matrix B.
- * @param alpha The scalar alpha.
- * @param a A pointer to the matrix A with dimensions `(lda, k)` when transa is 'N' or 'n', and `(lda, m)`
+ * @param[in] transb Whether to transpose matrix b .
+ * @param[in] m The number of rows in matrix A and C.
+ * @param[in] n The number of columns in matrix B and C.
+ * @param[in] k The number of columns in matrix A and rows in matrix B.
+ * @param[in] alpha The scalar alpha.
+ * @param[in] a A pointer to the matrix A with dimensions `(lda, k)` when transa is 'N' or 'n', and `(lda, m)`
  * otherwise.
- * @param lda Leading dimension of A, specifying the distance between two consecutive columns.
- * @param b A pointer to the matrix B with dimensions `(ldb, n)` when transB is 'N' or 'n', and `(ldb, k)`
+ * @param[in] lda Leading dimension of A, specifying the distance between two consecutive columns.
+ * @param[in] b A pointer to the matrix B with dimensions `(ldb, n)` when transB is 'N' or 'n', and `(ldb, k)`
  * otherwise.
- * @param ldb Leading dimension of B, specifying the distance between two consecutive columns.
- * @param beta The scalar beta.
- * @param c A pointer to the matrix C with dimensions `(ldc, n)`.
- * @param ldc Leading dimension of C, specifying the distance between two consecutive columns.
+ * @param[in] ldb Leading dimension of B, specifying the distance between two consecutive columns.
+ * @param[in] beta The scalar beta.
+ * @param[inout] c A pointer to the matrix C with dimensions `(ldc, n)`.
+ * @param[in] ldc Leading dimension of C, specifying the distance between two consecutive columns.
  *
  * @note The function performs one of the following matrix operations:
- * - If transA is 'N' or 'n' and transB is 'N' or 'n': \f$C = alpha * A * B + beta * C\f$
- * - If transA is 'N' or 'n' and transB is 'T' or 't': \f$C = alpha * A * B^T + beta * C\f$
- * - If transA is 'T' or 't' and transB is 'N' or 'n': \f$C = alpha * A^T * B + beta * C\f$
- * - If transA is 'T' or 't' and transB is 'T' or 't': \f$C = alpha * A^T * B^T + beta * C\f$
- * - If transA is 'C' or 'c' and transB is 'N' or 'n': \f$C = alpha * A^H * B + beta * C\f$
- * - If transA is 'C' or 'c' and transB is 'T' or 't': \f$C = alpha * A^H * B^T + beta * C\f$
- *
- * @return None.
+ * - If transA is 'N' or 'n' and transB is 'N' or 'n': \f$\mathbf{C} = \alpha\mathbf{AB} + \beta\mathbf{C}\f$
+ * - If transA is 'N' or 'n' and transB is 'T' or 't': \f$\mathbf{C} = \alpha\mathbf{A}\mathbf{B}^T + \beta\mathbf{C}\f$
+ * - If transA is 'T' or 't' and transB is 'N' or 'n': \f$\mathbf{C} = \alpha\mathbf{A}^T\mathbf{B} + \beta\mathbf{C}\f$
+ * - If transA is 'T' or 't' and transB is 'T' or 't': \f$\mathbf{C} = \alpha\mathbf{A}^T\mathbf{B}^T + \beta\mathbf{C}\f$
+ * - If transA is 'C' or 'c' and transB is 'N' or 'n': \f$\mathbf{C} = \alpha\mathbf{A}^H\mathbf{B} + \beta\mathbf{C}\f$
+ * - If transA is 'C' or 'c' and transB is 'T' or 't': \f$\mathbf{C} = \alpha\mathbf{A}^H\mathbf{B}^Y + \beta\mathbf{C}\f$
+ * - etc.
  *
  * @throws invalid_argument If @p transA or @p transB are invalid.
  * @throws domain_error If the values of @p m , @p n , or @p k are negative, or the values of @p lda , @p ldb , or @p ldc are invalid.
@@ -179,17 +186,17 @@ void EINSUMS_EXPORT zgemv(char transa, int_t m, int_t n, std::complex<double> al
  * @f]
  *
  * @tparam T the underlying data type of the matrix and vector
- * @param transa what to do with \p a - no trans, trans, conjg
- * @param m specifies the number of rows of \p a
- * @param n specifies the number of columns of \p a
- * @param alpha Specifies the scaler alpha
- * @param a Array, size lda * m
- * @param lda Specifies the leading dimension of \p a as declared in the calling function
- * @param x array, vector x
- * @param incx Specifies the increment for the elements of \p x
- * @param beta Specifies the scalar beta. When beta is set to zero, then \p y need not be set on input.
- * @param y array, vector y
- * @param incy Specifies the increment for the elements of \p y .
+ * @param[in] transa what to do with \p a - no trans, trans, conjg
+ * @param[in] m specifies the number of rows of \p a
+ * @param[in] n specifies the number of columns of \p a
+ * @param[in] alpha Specifies the scaler alpha
+ * @param[in] a Array, size lda * m
+ * @param[in] lda Specifies the leading dimension of \p a as declared in the calling function
+ * @param[in] x array, vector x
+ * @param[in] incx Specifies the increment for the elements of \p x
+ * @param[in] beta Specifies the scalar beta. When beta is set to zero, then \p y need not be set on input.
+ * @param[inout] y array, vector y
+ * @param[in] incy Specifies the increment for the elements of \p y .
  *
  * @throws invalid_argument If @p transA is invalid.
  * @throws domain_error If the values of @p m or @p n are negative, the value of @p lda is invalid, or either @p incx or @p incy is
@@ -246,16 +253,17 @@ auto EINSUMS_EXPORT dsyev(char job, char uplo, int_t n, double *a, int_t lda, do
  * the eigenvectors of @f$ \mathbf{A} @f$, and @f$ \mathbf{\Lambda} @f$ is a diagonal matrix, whose elements are the eigenvalues of @f$
  * \mathbf{A} @f$. The eigenvalues are stored in a vector form on exit.
  *
- * @param job Whether to compute the eigenvectors. Can be either 'n' or 'v', case insensitive.
- * @param uplo Whether the matrix data is stored in the upper or lower triangle. Can be either 'u' or 'l', case insensitive.
- * @param n The number of rows/columns of the input matrix.
- * @param a The input matrix. On output, it will be changed. If the eigenvectors are requested, then they will be placed
+ * @tparam T The type the function will handle.
+ * @param[in] job Whether to compute the eigenvectors. Can be either 'n' or 'v', case insensitive.
+ * @param[in] uplo Whether the matrix data is stored in the upper or lower triangle. Can be either 'u' or 'l', case insensitive.
+ * @param[in] n The number of rows/columns of the input matrix.
+ * @param[inout] a The input matrix. On output, it will be changed. If the eigenvectors are requested, then they will be placed
  * in the columns of @p a on exit.
- * @param lda The leading dimension of the input matrix.
- * @param w The output vector for the eigenvalues.
- * @param work A work array. If @p lwork is -1, then no operations are performed and the first value in the work array is the
+ * @param[in] lda The leading dimension of the input matrix.
+ * @param[out] w The output vector for the eigenvalues.
+ * @param[inout] work A work array. If @p lwork is -1, then no operations are performed and the first value in the work array is the
  * optimal work buffer size.
- * @param lwork The size of the work array. If @p lwork is -1, then a workspace query is assumed. No operations will be performed
+ * @param[in] lwork The size of the work array. If @p lwork is -1, then a workspace query is assumed. No operations will be performed
  * and the optimal workspace size will be put into the first element of @p work.
  *
  * @return 0 on success. If positive, this means that the algorithm did not converge. The return value indicates the number of eigenvalues
@@ -296,9 +304,10 @@ auto EINSUMS_EXPORT dsterf(int_t n, double *d, double *e) -> int_t;
  * columns are the eigenvectors of @f$ \mathbf{A} @f$, and @f$ \mathbf{\Lambda} @f$ is a diagonal matrix, whose elements are the eigenvalues
  * of @f$ \mathbf{A} @f$. The eigenvalues are stored in a vector form on exit.
  *
- * @param n The number of elements along the diagonal.
- * @param d The diagonal elements. On exit, it contains the eigenvalues.
- * @param e The off-diagonal elements. There is one fewer of these than the diagonal elements.
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements along the diagonal.
+ * @param[inout] d The diagonal elements. On exit, it contains the eigenvalues.
+ * @param[inout] e The off-diagonal elements. There is one fewer of these than the diagonal elements.
  *
  * @return 0 on success. If positive, this means that the algorithm did not converge. The return value indicates the number of eigenvalues
  * that were able to be computed. If negative, this means that one of the parameters was invalid. The absolute value indicates which
@@ -349,16 +358,17 @@ auto EINSUMS_EXPORT zgeev(char jobvl, char jobvr, int_t n, std::complex<double> 
  * eigenvalues are stored in a vector form on exit. The eigenvectors are stored in a special way if the input is a real matrix. If the input
  * is a complex matrix, then the eigenvectors are stored plainly in the columns of the appropriate output matrices.
  *
- * @param jobvl Whether to compute the left eigenvectors. Can be either 'n' or 'v', case insensitive.
- * @param jobvr Whether to compute the right eigenvectors. Can be either 'n' or 'v', case insensitive.
- * @param n The number of rows/columns of the input matrix.
- * @param a The input matrix. On output, it will be changed.
- * @param lda The leading dimension of the input matrix.
- * @param w The output vector for the eigenvalues.
- * @param vl The left eigenvector output. If @p jobvl is 'n', then this is not referenced and may be null.
- * @param ldvl The leading dimension of the left eigenvectors. Even if not referenced, it must be at least 1.
- * @param vr The right eigenvector output. If @p jobvr is 'n', then this is not referenced and may be null.
- * @param ldvr The leading dimension of the right eigenvectors. Even if not referenced, it must be at least 1.
+ * @tparam T The type this function handles.
+ * @param[in] jobvl Whether to compute the left eigenvectors. Can be either 'n' or 'v', case insensitive.
+ * @param[in] jobvr Whether to compute the right eigenvectors. Can be either 'n' or 'v', case insensitive.
+ * @param[in] n The number of rows/columns of the input matrix.
+ * @param[inout] a The input matrix. On output, it will be changed.
+ * @param[in] lda The leading dimension of the input matrix.
+ * @param[out] w The output vector for the eigenvalues.
+ * @param[out] vl The left eigenvector output. If @p jobvl is 'n', then this is not referenced and may be null.
+ * @param[in] ldvl The leading dimension of the left eigenvectors. Even if not referenced, it must be at least 1.
+ * @param[out] vr The right eigenvector output. If @p jobvr is 'n', then this is not referenced and may be null.
+ * @param[in] ldvr The leading dimension of the right eigenvectors. Even if not referenced, it must be at least 1.
  *
  * @return 0 on success. If positive, this means that the algorithm did not converge. The return value indicates the number of eigenvalues
  * that were able to be computed. If negative, this means that one of the parameters was invalid. The absolute value indicates which
@@ -407,7 +417,7 @@ auto EINSUMS_EXPORT zheev(char job, char uplo, int_t n, std::complex<double> *a,
 /**
  * @brief Performs diagonalization of a Hermitian matrix.
  *
- * The syev routine finds the matrices that satisfy the following equation.
+ * The heev routine finds the matrices that satisfy the following equation.
  * @f[
  * \mathbf{A} = \mathbf{P} \mathbf{\Lambda} \mathbf{P}^H
  * @f]
@@ -415,18 +425,19 @@ auto EINSUMS_EXPORT zheev(char job, char uplo, int_t n, std::complex<double> *a,
  * the eigenvectors of @f$\mathbf{A}@f$, and @f$\mathbf{\Lambda}@f$ is a diagonal matrix, whose elements are the eigenvalues of
  * @f$\mathbf{A}@f$. The eigenvalues are stored in a vector form on exit.
  *
- * @param job Whether to compute the eigenvectors. Can be either 'n' or 'v', case insensitive.
- * @param uplo Whether the matrix data is stored in the upper or lower triangle. Can be either 'u' or 'l', case insensitive.
- * @param n The number of rows/columns of the input matrix.
- * @param a The input matrix. On output, it will be changed. If the eigenvectors are requested, then they will be placed
+ * @tparam T The type this function handles.
+ * @param[in] job Whether to compute the eigenvectors. Can be either 'n' or 'v', case insensitive.
+ * @param[in] uplo Whether the matrix data is stored in the upper or lower triangle. Can be either 'u' or 'l', case insensitive.
+ * @param[in] n The number of rows/columns of the input matrix.
+ * @param[inout] a The input matrix. On output, it will be changed. If the eigenvectors are requested, then they will be placed
  * in the columns of @p a on exit.
- * @param lda The leading dimension of the input matrix.
- * @param w The output vector for the eigenvalues.
- * @param work A work array. If @p lwork is -1, then no operations are performed and the first value in the work array is the
+ * @param[in] lda The leading dimension of the input matrix.
+ * @param[out] w The output vector for the eigenvalues.
+ * @param[inout] work A work array. If @p lwork is -1, then no operations are performed and the first value in the work array is the
  * optimal work buffer size.
- * @param lwork The size of the work array. If @p lwork is -1, then a workspace query is assumed. No operations will be performed
+ * @param[in] lwork The size of the work array. If @p lwork is -1, then a workspace query is assumed. No operations will be performed
  * and the optimal workspace size will be put into the first element of @p work.
- * @param rwork A work array for real values.
+ * @param[inout] rwork A work array for real values.
  *
  * @return 0 on success. If positive, this means that the algorithm did not converge. The return value indicates the number of eigenvalues
  * that were able to be computed. If negative, this means that one of the parameters was invalid. The absolute value indicates which
@@ -469,14 +480,15 @@ auto EINSUMS_EXPORT zgesv(int_t n, int_t nrhs, std::complex<double> *a, int_t ld
  * \mathbf{A}\mathbf{x} = \mathbf{B}
  * @f]
  *
- * @param n The number of rows and columns of @f$\mathbf{A}@f$ and rows @f$\mathbf{B}@f$.
- * @param nrhs The number of columns of @f$\mathbf{B}@f$
- * @param a The coefficient matrix. On exit, it contains the LU decomposition of @p a, where the lower-triangle matrix has unit diagonal
- * entries, which are not stored.
- * @param lda The leading dimension of @p a.
- * @param ipiv A list of pivots used in the decomposition.
- * @param b The results matrix. On exit, it contains the values of @f$\mathbf{x}@f$ that satisfy the system of equations.
- * @param ldb The leading dimension of @p b.
+ * @tparam T The type this function handles.
+ * @param[in] n The number of rows and columns of @f$\mathbf{A}@f$ and rows @f$\mathbf{B}@f$.
+ * @param[in] nrhs The number of columns of @f$\mathbf{B}@f$
+ * @param[inout] a The coefficient matrix. On exit, it contains the LU decomposition of @p a, where the lower-triangle matrix has unit
+ * diagonal entries, which are not stored.
+ * @param[in] lda The leading dimension of @p a.
+ * @param[out] ipiv A list of pivots used in the decomposition.
+ * @param[inout] b The results matrix. On exit, it contains the values of @f$\mathbf{x}@f$ that satisfy the system of equations.
+ * @param[in] ldb The leading dimension of @p b.
  *
  * @return 0 on success. If positive, then the matrix was singular. If negative, then a bad value was passed to the function.
  * The absolute value indicates which parameter was bad.
@@ -529,10 +541,11 @@ void EINSUMS_EXPORT zdrscl(int_t n, double alpha, std::complex<double> *vec, int
 /**
  * @brief Scales a vector by a value.
  *
- * @param n The number of elements to scale the vector by.
- * @param alpha The scale factor.
- * @param vec The vector to scale.
- * @param inc The spacing between elements of the vector.
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements to scale the vector by.
+ * @param[in] alpha The scale factor.
+ * @param[inout] vec The vector to scale.
+ * @param[in] inc The spacing between elements of the vector.
  *
  * @versionadded{1.0.0}
  */
@@ -542,10 +555,10 @@ void scal(int_t n, T const alpha, T *vec, int_t inc);
 /**
  * @brief Scales a complex vector by a real value.
  *
- * @param n The number of elements to scale the vector by.
- * @param alpha The scale factor.
- * @param vec The vector to scale.
- * @param inc The spacing between elements of the vector.
+ * @param[in] n The number of elements to scale the vector by.
+ * @param[in] alpha The scale factor.
+ * @param[inout] vec The vector to scale.
+ * @param[in] inc The spacing between elements of the vector.
  *
  * @versionadded{1.0.0}
  */
@@ -587,10 +600,11 @@ inline void scal<std::complex<double>>(int_t n, double const alpha, std::complex
 /**
  * @brief Scales a vector by the reciprocal of a value.
  *
- * @param n The number of elements in the vector.
- * @param alpha The value to divide all the elements in the vector by.
- * @param vec The vector to scale.
- * @param inc The spacing between elements in the vector.
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements in the vector.
+ * @param[in] alpha The value to divide all the elements in the vector by.
+ * @param[inout] vec The vector to scale.
+ * @param[in] inc The spacing between elements in the vector.
  *
  * @versionadded{2.0.0}
  */
@@ -600,10 +614,11 @@ void rscl(int_t n, T const alpha, T *vec, int_t inc);
 /**
  * @brief Scales a complex vector by the reciprocal of a real value.
  *
- * @param n The number of elements in the vector.
- * @param alpha The value to divide all the elements in the vector by.
- * @param vec The vector to scale.
- * @param inc The spacing between elements in the vector.
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements in the vector.
+ * @param[in] alpha The value to divide all the elements in the vector by.
+ * @param[inout] vec The vector to scale.
+ * @param[in] inc The spacing between elements in the vector.
  *
  * @versionadded{2.0.0}
  */
@@ -662,11 +677,11 @@ auto EINSUMS_EXPORT zdotc(int_t n, std::complex<double> const *x, int_t incx, st
  * (c|z)dotu in BLAS nomenclature.
  *
  * @tparam T underlying data type
- * @param n length of the vectors
- * @param x first vector
- * @param incx how many elements to skip in x
- * @param y second vector
- * @param incy how many elements to skip in yo
+ * @param[in] n length of the vectors
+ * @param[in] x first vector
+ * @param[in] incx how many elements to skip in x
+ * @param[in] y second vector
+ * @param[in] incy how many elements to skip in yo
  * @return result of the dot product
  *
  * @versionadded{1.0.0}
@@ -703,11 +718,11 @@ inline auto dot<std::complex<double>>(int_t n, std::complex<double> const *x, in
  * (c|z)dotc in BLAS nomenclature.
  *
  * @tparam T underlying data type
- * @param n length of the vectors
- * @param x first vector
- * @param incx how many elements to skip in x
- * @param y second vector
- * @param incy how many elements to skip in yo
+ * @param[in] n length of the vectors
+ * @param[in] x first vector
+ * @param[in] incx how many elements to skip in x
+ * @param[in] y second vector
+ * @param[in] incy how many elements to skip in yo
  * @return result of the dot product
  *
  * @versionadded{1.0.0}
@@ -748,12 +763,13 @@ void EINSUMS_EXPORT zaxpy(int_t n, std::complex<double> alpha_x, std::complex<do
  * \mathbf{y} := \alpha\mathbf{x} + \mathbf{y}
  * @f]
  *
- * @param n The number of elements in the vectors.
- * @param alpha_x The scale factor for the input vector.
- * @param x The input vector.
- * @param inc_x The skip value for the output vector. It can be negative to go in reverse, or zero to broadcast values to @p y.
- * @param y The output vector.
- * @param inc_y The skip value for the output vector. It can be negative to go in reverse, or zero to sum over the elements of @p x .
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements in the vectors.
+ * @param[in] alpha_x The scale factor for the input vector.
+ * @param[in] x The input vector.
+ * @param[in] inc_x The skip value for the output vector. It can be negative to go in reverse, or zero to broadcast values to @p y.
+ * @param[inout] y The output vector.
+ * @param[in] inc_y The skip value for the output vector. It can be negative to go in reverse, or zero to sum over the elements of @p x .
  *
  * @versionadded{1.0.0}
  */
@@ -803,13 +819,14 @@ void EINSUMS_EXPORT zaxpby(int_t n, std::complex<double> alpha_x, std::complex<d
  * \mathbf{y} := \alpha\mathbf{x} + \beta\mathbf{y}
  * @f]
  *
- * @param n The number of elements in the vectors.
- * @param alpha_x The scale factor for the input vector.
- * @param x The input vector.
- * @param inc_x The skip value for the output vector. It can be negative to go in reverse, or zero to broadcast values to @p y.
- * @param beta The scale factor for the output vector.
- * @param y The output vector.
- * @param inc_y The skip value for the output vector. It can be negative to go in reverse, or zero to sum over the elements of @p x .
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements in the vectors.
+ * @param[in] alpha_x The scale factor for the input vector.
+ * @param[in] x The input vector.
+ * @param[in] inc_x The skip value for the output vector. It can be negative to go in reverse, or zero to broadcast values to @p y.
+ * @param[in] beta The scale factor for the output vector.
+ * @param[inout] y The output vector.
+ * @param[in] inc_y The skip value for the output vector. It can be negative to go in reverse, or zero to sum over the elements of @p x .
  *
  * @versionadded{1.0.0}
  */
@@ -863,15 +880,16 @@ void EINSUMS_EXPORT zgerc(int_t m, int_t n, std::complex<double> alpha, std::com
  *    \mathbf{A} := \alpha\mathbf{x}\mathbf{y}^T + \mathbf{A}
  * @f]
  *
- * @param m The number of entries in @p x.
- * @param n The number of entries in @p y.
- * @param alpha The scale factor for the outer product.
- * @param x The left input vector.
- * @param inc_x The skip value for the left input. May be negative to go in reverse.
- * @param y The right input vector.
- * @param inc_y The skip value for the right input. May be negative to go in reverse.
- * @param a The output matrix.
- * @param lda The leading dimension of @p a.
+ * @tparam T The type this function handles.
+ * @param[in] m The number of entries in @p x.
+ * @param[in] n The number of entries in @p y.
+ * @param[in] alpha The scale factor for the outer product.
+ * @param[in] x The left input vector.
+ * @param[in] inc_x The skip value for the left input. May be negative to go in reverse.
+ * @param[in] y The right input vector.
+ * @param[in] inc_y The skip value for the right input. May be negative to go in reverse.
+ * @param[inout] a The output matrix.
+ * @param[in] lda The leading dimension of @p a.
  *
  * @versionadded{1.0.0}
  */
@@ -886,15 +904,16 @@ void ger(int_t m, int_t n, T alpha, T const *x, int_t inc_x, T const *y, int_t i
  *    \mathbf{A} := \alpha\mathbf{x}\mathbf{y}^H + \mathbf{A}
  * @f]
  *
- * @param m The number of entries in @p x.
- * @param n The number of entries in @p y.
- * @param alpha The scale factor for the outer product.
- * @param x The left input vector.
- * @param inc_x The skip value for the left input. May be negative to go in reverse.
- * @param y The right input vector.
- * @param inc_y The skip value for the right input. May be negative to go in reverse.
- * @param a The output matrix.
- * @param lda The leading dimension of @p a.
+ * @tparam T The type this function handle.
+ * @param[in] m The number of entries in @p x.
+ * @param[in] n The number of entries in @p y.
+ * @param[in] alpha The scale factor for the outer product.
+ * @param[in] x The left input vector.
+ * @param[in] inc_x The skip value for the left input. May be negative to go in reverse.
+ * @param[in] y The right input vector.
+ * @param[in] inc_y The skip value for the right input. May be negative to go in reverse.
+ * @param[inout] a The output matrix.
+ * @param[in] lda The leading dimension of @p a.
  *
  * @versionadded{2.0.0}
  */
@@ -968,12 +987,13 @@ auto EINSUMS_EXPORT zgetrf(int_t, int_t, std::complex<double> *, int_t, int_t *)
  * unit diagonal elements (lower trapezoidal if m > n) and @f$\mathbf{U}@f$ is upper
  * triangular (upper trapezoidal if m < n).
  *
- * @param m The number of rows in the input.
- * @param n The number of columns in the input.
- * @param a The input matrix. On exit, it contains the upper and lower triangular matrices. The elemnts of the lower
+ * @tparam T The type this function handles.
+ * @param[in] m The number of rows in the input.
+ * @param[in] n The number of columns in the input.
+ * @param[inout] a The input matrix. On exit, it contains the upper and lower triangular matrices. The elemnts of the lower
  * triangular matrix are not stored since they are all 1.
- * @param lda The leading dimension of the matrix.
- * @param ipiv The list of pivots.
+ * @param[in] lda The leading dimension of the matrix.
+ * @param[out] ipiv The list of pivots.
  *
  * @return 0 on success. If positive, the matrix is singular and the result should not be used for solving systems of equations.
  * The decomposition was performed, though. If negative, one of the inputs had an invalid value. The absolute value indicates
@@ -1019,10 +1039,11 @@ auto EINSUMS_EXPORT zgetri(int_t n, std::complex<double> *a, int_t lda, int_t co
  * Computes the inverse of a matrix using the LU factorization computed
  * by getrf.
  *
- * @param n The number of rows and columns of the matrix.
- * @param a The input matrix after being processed by getrf.
- * @param lda The leading dimension of the matrix.
- * @param ipiv The pivots from getrf.
+ * @tparam T The type this function handles.
+ * @param[in] n The number of rows and columns of the matrix.
+ * @param[inout] a The input matrix after being processed by getrf.
+ * @param[in] lda The leading dimension of the matrix.
+ * @param[in] ipiv The pivots from getrf.
  *
  * @return 0 on success. If positive, the matrix is singular and an inverse could not be computed. If negative,
  * one of the inputs is invalid, and the absolute value indicates which input is bad.
@@ -1066,13 +1087,14 @@ auto EINSUMS_EXPORT zlange(char norm_type, int_t m, int_t n, std::complex<double
 /**
  * Computes various matrix norms. The available norms are the 1-norm, Frobenius norm, Max-abs norm, and the infinity norm.
  *
- * @param norm_type The norm to compute. It is case insensitive. For the 1-norm, it should be '1' or 'o'. For the Frobenius norm it should
- * be 'f' or 'e'. For the max-abs norm it should be 'm'. For the infinity norm, it should be 'i'.
- * @param m The number of rows in the matrix.
- * @param n The number of columns in the matrix.
- * @param A The matrix.
- * @param lda The leading dimension of the matrix.
- * @param work A work array. Only needed for the infinity norm.
+ * @tparam T The type this matrix handles.
+ * @param[in] norm_type The norm to compute. It is case insensitive. For the 1-norm, it should be '1' or 'o'. For the Frobenius norm it
+ * should be 'f' or 'e'. For the max-abs norm it should be 'm'. For the infinity norm, it should be 'i'.
+ * @param[in] m The number of rows in the matrix.
+ * @param[in] n The number of columns in the matrix.
+ * @param[in] A The matrix.
+ * @param[in] lda The leading dimension of the matrix.
+ * @param[inout] work A work array. Only needed for the infinity norm.
  *
  * @versionadded{1.0.0}
  */
@@ -1121,11 +1143,12 @@ double EINSUMS_EXPORT dznrm2(int_t n, std::complex<double> const *x, int_t incx)
  * scale^2 sumsq := \left|\mathbf{x}\right|^2 + scale^2 sumsq
  * @f]
  *
- * @param n The number of elements in the vector.
- * @param x The input vector.
- * @param incx The skip value for the vector.
- * @param scale The scale value used to avoid overflow/underflow. It is also used as an input to continue a previous calculation.
- * @param sumsq The result of the operation, scaled to avoid overflow/underflow. It is also used as an input to continue a previous
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements in the vector.
+ * @param[in] x The input vector.
+ * @param[in] incx The skip value for the vector.
+ * @param[inout] scale The scale value used to avoid overflow/underflow. It is also used as an input to continue a previous calculation.
+ * @param[inout] sumsq The result of the operation, scaled to avoid overflow/underflow. It is also used as an input to continue a previous
  * calculation.
  *
  * @versionadded{1.0.0}
@@ -1158,9 +1181,10 @@ inline void lassq<std::complex<double>>(int_t n, std::complex<double> const *x, 
 /**
  * Compute the Euclidean norm of a vector.
  *
- * @param n The number of elements in the vector.
- * @param x The input vector.
- * @param incx The skip value for the vector.
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements in the vector.
+ * @param[in] x The input vector.
+ * @param[in] incx The skip value for the vector.
  *
  * @return The Euclidean norm of the vector.
  *
@@ -1210,16 +1234,17 @@ auto EINSUMS_EXPORT zgesdd(char jobz, int_t m, int_t n, std::complex<double> *a,
  * \mathbf{A} = \mathbf{U\Sigma V}^T
  * @f]
  *
- * @param jobz What computation to do. Case insensitive. Can be 'a', 's', 'o', or 'n'.
- * @param m The number of rows of the input matrix.
- * @param n The number of columns of the input matrix.
- * @param a The input matrix.
- * @param lda The leading dimension of the input matrix.
- * @param s The singular values output.
- * @param u The U matrix from the singular value decomposition.
- * @param ldu The leading dimension of U.
- * @param vt The transpose of the V matrix from the singular value decomposition.
- * @param ldvt The leading dimension of the transpose of the V matrix.
+ * @tparam T The type this function handles.
+ * @param[in] jobz What computation to do. Case insensitive. Can be 'a', 's', 'o', or 'n'.
+ * @param[in] m The number of rows of the input matrix.
+ * @param[in] n The number of columns of the input matrix.
+ * @param[inout] a The input matrix.
+ * @param[in] lda The leading dimension of the input matrix.
+ * @param[out] s The singular values output.
+ * @param[out] u The U matrix from the singular value decomposition.
+ * @param[in] ldu The leading dimension of U.
+ * @param[out] vt The transpose of the V matrix from the singular value decomposition.
+ * @param[in] ldvt The leading dimension of the transpose of the V matrix.
  *
  * @return 0 on success. If positive, the algorithm did not converge. If -4, then the input matrix had a NaN entry. If negative otherwise,
  * then one of the parameters had a bad value. The absolute value of the return gives the parameter.
@@ -1274,18 +1299,19 @@ auto EINSUMS_EXPORT zgesvd(char jobu, char jobvt, int_t m, int_t n, std::complex
  * \mathbf{A} = \mathbf{U\Sigma V}^T
  * @f]
  *
- * @param jobu Whether to compute the U matrix. Case insensitive. Can be 'a', 's', 'o', or 'n'.
- * @param jobvt Whether to compute the transpose of the V matrix. Case insensitive. Can be 'a', 's', 'o', or 'n'.
- * @param m The number of rows of the input matrix.
- * @param n The number of columns of the input matrix.
- * @param a The input matrix.
- * @param lda The leading dimension of the input matrix.
- * @param s The singular values output.
- * @param u The U matrix from the singular value decomposition.
- * @param ldu The leading dimension of U.
- * @param vt The transpose of the V matrix from the singular value decomposition.
- * @param ldvt The leading dimension of the transpose of the V matrix.
- * @param superb Temporary storage area for intermediates in the computation.
+ * @tparam T The type this function handles.
+ * @param[in] jobu Whether to compute the U matrix. Case insensitive. Can be 'a', 's', 'o', or 'n'.
+ * @param[in] jobvt Whether to compute the transpose of the V matrix. Case insensitive. Can be 'a', 's', 'o', or 'n'.
+ * @param[in] m The number of rows of the input matrix.
+ * @param[in] n The number of columns of the input matrix.
+ * @param[inout] a The input matrix.
+ * @param[in] lda The leading dimension of the input matrix.
+ * @param[out] s The singular values output.
+ * @param[out] u The U matrix from the singular value decomposition.
+ * @param[in] ldu The leading dimension of U.
+ * @param[out] vt The transpose of the V matrix from the singular value decomposition.
+ * @param[in] ldvt The leading dimension of the transpose of the V matrix.
+ * @param[inout] superb Temporary storage area for intermediates in the computation.
  *
  * @return 0 on success. If positive, the algorithm did not converge. If negative,
  * then one of the parameters had a bad value. The absolute value of the return gives the parameter.
@@ -1335,15 +1361,16 @@ auto EINSUMS_EXPORT zgees(char jobvs, int_t n, std::complex<double> *a, int_t ld
 /**
  * Computes the Schur decomposition of a matrix.
  *
- * @param jobvs Whether to compute the unitary matrix for the decomposition.
- * @param n The number of rows and columns of the input matrix.
- * @param a The iput matrix. On exit, it contains the pseudotriangular matrix from the decomposition.
- * @param lda The leading dimension of A.
- * @param sdim The number of selected eigenvalues.
- * @param wr The real components of the eigenvalues.
- * @param wi The imaginary components of the eigenvaules.
- * @param vs The Schur vector matrix.
- * @param ldvs The leading dimension of the Schur vector matrix.
+ * @tparam T The type this function handles.
+ * @param[in] jobvs Whether to compute the unitary matrix for the decomposition.
+ * @param[in] n The number of rows and columns of the input matrix.
+ * @param[inout] a The iput matrix. On exit, it contains the pseudotriangular matrix from the decomposition.
+ * @param[in] lda The leading dimension of A.
+ * @param[in] sdim The number of selected eigenvalues.
+ * @param[out] wr The real components of the eigenvalues.
+ * @param[out] wi The imaginary components of the eigenvaules.
+ * @param[out] vs The Schur vector matrix.
+ * @param[in] ldvs The leading dimension of the Schur vector matrix.
  *
  * @return 0 on success. If negative, then one of the parameters had a bad value. The absolute value tells you which parameter it was.
  * If positive and less than or equal to the number of rows in the matrix, the QR algorithm failed to converge. If one more than the
@@ -1370,14 +1397,15 @@ inline auto gees<double>(char jobvs, int_t n, double *a, int_t lda, int_t *sdim,
 /**
  * Computes the Schur decomposition of a matrix.
  *
- * @param jobvs Whether to compute the unitary matrix for the decomposition.
- * @param n The number of rows and columns of the input matrix.
- * @param a The iput matrix. On exit, it contains the pseudotriangular matrix from the decomposition.
- * @param lda The leading dimension of A.
- * @param sdim The number of selected eigenvalues.
- * @param w The  eigenvalues.
- * @param vs The Schur vector matrix.
- * @param ldvs The leading dimension of the Schur vector matrix.
+ * @tparam T The type this function handles.
+ * @param[in] jobvs Whether to compute the unitary matrix for the decomposition.
+ * @param[in] n The number of rows and columns of the input matrix.
+ * @param[inout] a The iput matrix. On exit, it contains the pseudotriangular matrix from the decomposition.
+ * @param[in] lda The leading dimension of A.
+ * @param[in] sdim The number of selected eigenvalues.
+ * @param[out] w The  eigenvalues.
+ * @param[out] vs The Schur vector matrix.
+ * @param[in] ldvs The leading dimension of the Schur vector matrix.
  *
  * @return 0 on success. If negative, then one of the parameters had a bad value. The absolute value tells you which parameter it was.
  * If positive and less than or equal to the number of rows in the matrix, the QR algorithm failed to converge. If one more than the
@@ -1422,18 +1450,19 @@ auto EINSUMS_EXPORT ztrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n,
  *  \mathbf{A}\mathbf{X} \pm \mathbf{X}\mathbf{B} = \alpha\mathbf{C}
  * @f]
  *
- * @param trana Whether to transpose the A matrix. Case insensitive. Can be 'c', 't', or 'n'.
- * @param tranb Whether to transpose the B matrix. Case insensitive. Can be 'c', 't', or 'n'.
- * @param isgn Whether the sign in the equation is positive or negative.
- * @param m The number of rows in X.
- * @param n The number of columns in X.
- * @param a The A matrix in Schur canonical form.
- * @param lda The leading dimension of A.
- * @param b The B matrix in Schur canonical form.
- * @param ldb The leading dimension of B.
- * @param c The right hand side matrix. On exit, it contains the value of the X matrix that satisfies the equation.
- * @param ldc The leading dimension of the C matrix.
- * @param scale The scale factor for the right hand side matrix.
+ * @tparam T The type this function handles.
+ * @param[in] trana Whether to transpose the A matrix. Case insensitive. Can be 'c', 't', or 'n'.
+ * @param[in] tranb Whether to transpose the B matrix. Case insensitive. Can be 'c', 't', or 'n'.
+ * @param[in] isgn Whether the sign in the equation is positive or negative.
+ * @param[in] m The number of rows in X.
+ * @param[in] n The number of columns in X.
+ * @param[in] a The A matrix in Schur canonical form.
+ * @param[in] lda The leading dimension of A.
+ * @param[in] b The B matrix in Schur canonical form.
+ * @param[in] ldb The leading dimension of B.
+ * @param[inout] c The right hand side matrix. On exit, it contains the value of the X matrix that satisfies the equation.
+ * @param[in] ldc The leading dimension of the C matrix.
+ * @param[out] scale The scale factor for the right hand side matrix.
  *
  * @return 0 on success. If 1, then some eigenvalues were close and needed to be perturbed. If negative, then one of the inputs
  * had a bad value, and the absolute value of the return gives the parameter.
@@ -1489,12 +1518,13 @@ auto EINSUMS_EXPORT zgeqrf(int_t m, int_t n, std::complex<double> *a, int_t lda,
  *
  * Here, @f$\mathbf{Q}@f$ is an orthogonal matrix and @f$\mathbf{R}@f$ is an upper triangular matrix.
  *
- * @param m The number of rows in the input matrix.
- * @param n The number of columns in the input matrix.
- * @param a The input matrix. On exit, contains the data needed to compute the Q and R matrices. The
+ * @tparam T The type this function handles.
+ * @param[in] m The number of rows in the input matrix.
+ * @param[in] n The number of columns in the input matrix.
+ * @param[inout] a The input matrix. On exit, contains the data needed to compute the Q and R matrices. The
  * entries on and above the diagonal are the entries of the R matrix. The rest is needed to find the Q matrix.
- * @param lda The leading dimension of the input matrix.
- * @param tau On exit, holds the Householder reflector parameters for computing the Q matrix.
+ * @param[in] lda The leading dimension of the input matrix.
+ * @param[out] tau On exit, holds the Householder reflector parameters for computing the Q matrix.
  *
  * @return 0 on success. If negative, one of the inputs had a bad value, and the absolute value of the return
  * tells you which one it was.
@@ -1538,12 +1568,13 @@ auto EINSUMS_EXPORT zungqr(int_t m, int_t n, int_t k, std::complex<double> *a, i
 /**
  * Extract the Q matrix after a call to geqrf.
  *
- * @param m The number of rows of the input matrix.
- * @param n The number of columns in the input matrix.
- * @param k The number of elementary reflectors used in the calculation.
- * @param a The input matrix after being processed by geqrf.
- * @param lda The leading dimension of the input matrix.
- * @param tau The scales for the elementary reflectors from geqrf.
+ * @tparam T The type this function handles.
+ * @param[in] m The number of rows of the input matrix.
+ * @param[in] n The number of columns in the input matrix.
+ * @param[in] k The number of elementary reflectors used in the calculation.
+ * @param[inout] a The input matrix after being processed by geqrf.
+ * @param[in] lda The leading dimension of the input matrix.
+ * @param[in] tau The scales for the elementary reflectors from geqrf.
  *
  * @return 0 on success. If negative, then one of the inputs had an invalid value, and the absolute value indicates
  * which parameter it is.
@@ -1592,12 +1623,13 @@ void EINSUMS_EXPORT zcopy(int_t n, std::complex<double> const *x, int_t inc_x, s
 /**
  * Copy data from one vector to another.
  *
- * @param n The number of elements to copy.
- * @param x The input vector.
- * @param inc_x The skip value for the input vector. If negative, the vector is traversed backwards. If zero, the values are broadcast to
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements to copy.
+ * @param[in] x The input vector.
+ * @param[in] inc_x The skip value for the input vector. If negative, the vector is traversed backwards. If zero, the values are broadcast to
  * the output vector.
- * @param y The output vector.
- * @param inc_y The skip value for the output vector. If negative, the vector is traversed backwards.
+ * @param[out] y The output vector.
+ * @param[in] inc_y The skip value for the output vector. If negative, the vector is traversed backwards.
  *
  * @versionadded{2.0.0}
  */
@@ -1636,18 +1668,19 @@ int_t EINSUMS_EXPORT dlascl(char type, int_t kl, int_t ku, double cfrom, double 
 /**
  * Scales a general matrix. The scale factor is <tt> cto / cfrom </tt>, but the scale is performed without overflow/underflow.
  *
- * @param type The type of matrix. Case insensitive. 'g' is for general matrices, 'l' is for lower triangular matrices, 'u' if for upper
+ * @tparam T The type this function handles.
+ * @param[in] type The type of matrix. Case insensitive. 'g' is for general matrices, 'l' is for lower triangular matrices, 'u' if for upper
  * triangular matrices, 'h' is for hessenberg matrices, 'b' is for symmetric band matrices with lower bandwidth @p kl and upper bandwidth of
  * @p ku and with only the lower half stored, 'q' is the same as 'b' but with the upper half stored instead, and 'z' is the same as 'b' but
  * with a more complicated storage scheme.
- * @param kl The lower bandwidth of the matrix. Only used if the type is 'b', 'q', or 'z'.
- * @param ku The upper bandwidth of the matrix. Only used if the type is 'b', 'q', or 'z'.
- * @param cfrom The denominator for the scale.
- * @param cto The numerator for the scale.
- * @param m The number of rows in the matrix.
- * @param n The number of columns in the matrix.
- * @param A The matrix being scaled.
- * @param lda The leading dimension of the matrix.
+ * @param[in] kl The lower bandwidth of the matrix. Only used if the type is 'b', 'q', or 'z'.
+ * @param[in] ku The upper bandwidth of the matrix. Only used if the type is 'b', 'q', or 'z'.
+ * @param[in] cfrom The denominator for the scale.
+ * @param[in] cto The numerator for the scale.
+ * @param[in] m The number of rows in the matrix.
+ * @param[in] n The number of columns in the matrix.
+ * @param[inout] A The matrix being scaled.
+ * @param[in] lda The leading dimension of the matrix.
  *
  * @return 0 on success. If negative, then one of the parameters had an invalid value. The absolute value of the return indicates which
  * parameter it was.
@@ -1687,14 +1720,15 @@ void EINSUMS_EXPORT zdirprod(int_t n, std::complex<double> alpha, std::complex<d
  * z_i := z_i + \alpha x_i y_i
  * @f]
  *
- * @param n The number of elements in the vectors.
- * @param alpha The scale factor for the product.
- * @param x The first input vector.
- * @param incx The skip value for the first vector.
- * @param y The second input vector.
- * @param incy The skip value for the second vector.
- * @param z The accumulation vector.
- * @param incz The skip value for the accumulation vector.
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements in the vectors.
+ * @param[in] alpha The scale factor for the product.
+ * @param[in] x The first input vector.
+ * @param[in] incx The skip value for the first vector.
+ * @param[in] y The second input vector.
+ * @param[in] incy The skip value for the second vector.
+ * @param[inout] z The accumulation vector.
+ * @param[in] incz The skip value for the accumulation vector.
  *
  * @versionadded{2.0.0}
  */
@@ -1740,9 +1774,10 @@ double EINSUMS_EXPORT dzsum1(int_t n, std::complex<double> const *x, int_t incx)
  * Computes the sum of the absolute values of the input vector. If the vector is complex,
  * then it is the sum of the absolute values of the components, not the magnitudes.
  *
- * @param n The number of elements.
- * @param x The vector to process.
- * @param incx The skip value for the vector.
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements.
+ * @param[in] x The vector to process.
+ * @param[in] incx The skip value for the vector.
  *
  * @return The sum of the absolute values of the inputs as stated above.
  *
@@ -1777,9 +1812,10 @@ inline double asum(int_t n, std::complex<double> const *x, int_t incx) {
  * Computes the sum of the absolute values of the input vector. If the vector is complex,
  * then it is the sum of the magnitudes.
  *
- * @param n The number of elements.
- * @param x The vector to process.
- * @param incx The skip value for the vector.
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements.
+ * @param[in] x The vector to process.
+ * @param[in] incx The skip value for the vector.
  *
  * @return The sum of the absolute values of the inputs as stated above.
  *
@@ -1820,9 +1856,10 @@ void EINSUMS_EXPORT zlacgv(int_t n, std::complex<double> *x, int_t incx);
 /**
  * Take the conjugate of a vector. Does nothing if the vector is real.
  *
- * @param n The number of elements in the vector.
- * @param x The input vector.
- * @param incx The skip value for the vector.
+ * @tparam T The type this function handles.
+ * @param[in] n The number of elements in the vector.
+ * @param[in] x The input vector.
+ * @param[in] incx The skip value for the vector.
  *
  * @versionadded{2.0.0}
  */
