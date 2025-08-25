@@ -27,6 +27,8 @@ namespace hashes {
  *
  * This hash object first converts a string to all capital letters and converts hyphens to underscores.
  * Then it computes a hash based on the new string.
+ *
+ * @versionadded{1.0.1}
  */
 template <typename str_type>
 struct insensitive_hash {
@@ -38,6 +40,8 @@ struct insensitive_hash {
      *
      * @param str The string to hash.
      * @return The hash of the string.
+     *
+     * @versionadded{1.0.1}
      */
     size_t operator()(str_type const &str) const {
         size_t hash = 0;
@@ -97,6 +101,8 @@ namespace detail {
  *
  * This will compare the two strings, ignoring letter case. Also, hyphens and underscores will match together.
  * This means that an option like @c buffer-size will be matched with @c BUFFER_SIZE .
+ *
+ * @versionadded{1.0.1}
  */
 template <typename str_type>
 struct insensitive_equals {
@@ -109,6 +115,8 @@ struct insensitive_equals {
      * @param b The second string to compare.
      *
      * @return True if the strings match based on the rules stated before, false if they don't.
+     *
+     * @versionadded{1.0.1}
      */
     bool operator()(str_type const &a, str_type const &b) const {
         if (a.size() != b.size()) {
@@ -142,6 +150,8 @@ struct insensitive_equals {
  * @brief The type of map that underlies the ConfigMap class.
  *
  * @tparam T The value type of the map.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T>
 using config_mapping_type =
@@ -157,6 +167,11 @@ using config_mapping_type =
  * observers with the new information. it has all of the methods and typedefs available from std::map.
  *
  * @tparam Value The type of data to be associated with each key.
+ *
+ * @versionadded{1.0.0}
+ * @versionchangeddesc{1.0.1}
+ *      Keys are now case-insensitive. Hyphens and underscores are also treated as equivalent.
+ * @endversion
  */
 template <typename Value>
 class ConfigMap
@@ -170,6 +185,8 @@ class ConfigMap
      * @brief This class allows for a public constructor that can't be used in public contexts.
      *
      * This class helps users to make shared pointers from this class.
+     *
+     * @versionadded{1.0.0}
      */
     class PrivateType {
       public:
@@ -181,6 +198,11 @@ class ConfigMap
      * @typedef MappingType
      *
      * @brief Represents the type used to hold the option map.
+     *
+     * @versionadded{1.0.0}
+     * @versionchangeddesc{1.0.1}
+     *      Keys are now case-insensitive. Hyphens and underscores are also treated as equivalent.
+     * @endversion
      */
     using MappingType =
         std::unordered_map<std::string, Value, hashes::insensitive_hash<std::string>, detail::insensitive_equals<std::string>>;
@@ -188,6 +210,8 @@ class ConfigMap
     /**
      * Public constructor that can only be accessed in private contexts. Used to make shared pointers
      * from this class.
+     *
+     * @versionadded{1.0.0}
      */
     ConfigMap(PrivateType)
         : design_pats::Observable<
@@ -197,12 +221,16 @@ class ConfigMap
      * @brief Create a shared pointer from this class.
      *
      * @return A shared pointer to a ConfigMap.
+     *
+     * @versionadded{1.0.0}
      */
     static std::shared_ptr<ConfigMap<Value>> create() { return std::make_shared<ConfigMap<Value>>(PrivateType()); }
 
   private:
     /**
      * @brief Default constructor.
+     *
+     * @versionadded{1.0.0}
      */
     explicit ConfigMap() = default;
 
@@ -213,6 +241,8 @@ class ConfigMap
  * @typedef SharedConfigMap
  *
  * @brief Shared pointer to a ConfigMap.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename Value>
 using SharedConfigMap = std::shared_ptr<ConfigMap<Value>>;
@@ -226,22 +256,41 @@ using SharedConfigMap = std::shared_ptr<ConfigMap<Value>>;
  * This map holds three ConfigMap's inside. It has one for each of integer values, floating point values,
  * and string values. Observers can observe this map, and depending on the type of the observer, it will
  * be attached to the appropriate sub-map. This class is a singleton.
+ *
+ * @versionadded{1.0.0}
+ * @versionchanged{1.0.1}
+ *      Added support for Boolean values.
+ * @endversion
  */
 class EINSUMS_EXPORT GlobalConfigMap {
     EINSUMS_SINGLETON_DEF(GlobalConfigMap)
   public:
     /**
+     * @fn get_singleton()
+     *
+     * Get the single unique instance for this class.
+     *
+     * @versionadded{1.0.0}
+     */
+
+    /**
      * @brief Checks to see if the map is empty.
+     *
+     * @versionadded{1.0.0}
      */
     bool empty() const noexcept;
 
     /**
      * @brief Gets the size of the map.
+     *
+     * @versionadded{1.0.0}
      */
     size_t size() const noexcept;
 
     /**
      * @brief Gets the maximum number of buckets in the map.
+     *
+     * @versionadded{1.0.0}
      */
     size_t max_size() const noexcept;
 
@@ -251,6 +300,11 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * Returns the empty string if the key is not in the map.
      *
      * @param key The key to query.
+     *
+     * @versionadded{1.0.0}
+     * @versionchangeddesc{2.0.0}
+     *      Returns a new string instead of a const reference to an underlying string.
+     * @endversion
      */
     std::string get_string(std::string const &key) const;
 
@@ -261,6 +315,11 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
+     *
+     * @versionadded{1.0.1}
+     * @versionchangeddesc{2.0.0}
+     *      Returns a new string instead of a const reference to an underlying string.
+     * @endversion
      */
     std::string get_string(std::string const &key, std::string const &dephault) const;
 
@@ -271,6 +330,11 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
+     *
+     * @versionadded{1.0.0}
+     * @versionchanged{1.0.1}
+     *      Added the ability to set a default return value.
+     * @endversion
      */
     std::int64_t get_int(std::string const &key, std::int64_t dephault = 0) const;
 
@@ -281,6 +345,11 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
+     *
+     * @versionadded{1.0.0}
+     * @versionchanged{1.0.1}
+     *      Added the ability to set a default return value.
+     * @endversion
      */
     double get_double(std::string const &key, double dephault = 0) const;
 
@@ -291,6 +360,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
+     *
+     * @versionadded{1.0.1}
      */
     bool get_bool(std::string const &key, bool dephault = false) const;
 
@@ -299,6 +370,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *
      * @param key The key to query.
      * @param value The new value.
+     *
+     * @versionadded{2.0.0}
      */
     void set_string(std::string const &key, std::string const &value);
 
@@ -315,6 +388,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *
      * @param key The key to query.
      * @param value The new value.
+     *
+     * @versionadded{2.0.0}
      */
     void set_double(std::string const &key, double value);
 
@@ -323,26 +398,36 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *
      * @param key The key to query.
      * @param value The new value.
+     *
+     * @versionadded{2.0.0}
      */
     void set_bool(std::string const &key, bool value);
 
     /**
      * @brief Returns the map containing string options.
+     *
+     * @versionadded{1.0.0}
      */
     std::shared_ptr<ConfigMap<std::string>> get_string_map();
 
     /**
      * @brief Returns the map containing integer options.
+     *
+     * @versionadded{1.0.0}
      */
     std::shared_ptr<ConfigMap<std::int64_t>> get_int_map();
 
     /**
      * @brief Returns the map containing floating point options.
+     *
+     * @versionadded{1.0.0}
      */
     std::shared_ptr<ConfigMap<double>> get_double_map();
 
     /**
      * @brief Returns the map containing boolean flags.
+     *
+     * @versionadded{1.0.0}
      */
     std::shared_ptr<ConfigMap<bool>> get_bool_map();
 
@@ -356,6 +441,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * multiple of these observers, it will be attached to each map that it is able to.
      *
      * @param obs The observer to attach.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename T, bool string_requirement = requires(T obs, config_mapping_type<std::string> map) { obs(map); },
               bool int_requirement    = requires(T obs, config_mapping_type<std::int64_t> map) { obs(map); },
@@ -384,6 +471,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * @brief Detach an observer from the global configuration map.
      *
      * @param obs The observer to remove.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename T, bool string_requirement = requires(T obs, config_mapping_type<std::string> map) { obs(map); },
               bool int_requirement    = requires(T obs, config_mapping_type<std::int64_t> map) { obs(map); },
@@ -409,6 +498,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
 
     /**
      * @brief Lock all of the maps contained in this object.
+     *
+     * @versionadded{1.1.0}
      */
     void lock();
 
@@ -416,6 +507,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * @brief Try to lock all of the maps contained in this object.
      *
      * @return True if a lock could be obtained for all of the maps, false if any map could not be locked.
+     *
+     * @versionadded{1.1.0}
      */
     bool try_lock();
 
@@ -423,6 +516,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * @brief Unlock all of the maps contained in this object.
      *
      * @param notify If true, notify all of the observers that an option was changed.
+     *
+     * @versionadded{1.1.0}
      */
     void unlock(bool notify = true);
 
@@ -433,6 +528,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * @property str_map_
      *
      * @brief Holds the string valued options.
+     *
+     * @versionadded{1.0.0}
      */
     std::shared_ptr<ConfigMap<std::string>> str_map_;
 
@@ -440,6 +537,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * @property int_map_
      *
      * @brief Holds the integer valued options.
+     *
+     * @versionadded{1.0.0}
      */
     std::shared_ptr<ConfigMap<std::int64_t>> int_map_;
 
@@ -447,6 +546,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * @property double_map_
      *
      * @brief Holds the floating-point valued options.
+     *
+     * @versionadded{1.0.0}
      */
     std::shared_ptr<ConfigMap<double>> double_map_;
 
@@ -454,6 +555,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * @property bool_map_
      *
      * @brief Holds the Boolean flag options.
+     *
+     * @versionadded{1.0.1}
      */
     std::shared_ptr<ConfigMap<bool>> bool_map_;
 };
@@ -462,6 +565,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
 
 /**
  * @brief Compare a ConfigMap with an object of the same contained mapping type.
+ *
+ * @versionadded{1.0.0}
  */
 template <class Value>
 bool operator==(std::unordered_map<std::string, Value, einsums::hashes::insensitive_hash<std::string>,
@@ -472,6 +577,8 @@ bool operator==(std::unordered_map<std::string, Value, einsums::hashes::insensit
 
 /**
  * @brief Compare a ConfigMap with an object of the same contained mapping type.
+ *
+ * @versionadded{1.0.0}
  */
 template <class Value>
 bool operator==(einsums::ConfigMap<Value> const &lhs, std::unordered_map<std::string, Value, einsums::hashes::insensitive_hash<std::string>,
@@ -481,6 +588,8 @@ bool operator==(einsums::ConfigMap<Value> const &lhs, std::unordered_map<std::st
 
 /**
  * @brief Compare two ConfigMaps.
+ *
+ * @versionadded{1.0.0}
  */
 template <class Value>
 bool operator==(einsums::ConfigMap<Value> const &lhs, einsums::ConfigMap<Value> const &rhs) {

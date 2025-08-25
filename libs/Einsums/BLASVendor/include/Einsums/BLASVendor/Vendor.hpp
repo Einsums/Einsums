@@ -22,8 +22,9 @@ extern "C" {
  *
  * @versionadded{2.0.0}
  *
- * @version 2.0.0
+ * @versionchanged{2.0.0}
  *  Added AVX2 vectorized kernels and default unvectorized kernels.
+ * @endversion
  */
 extern EINSUMS_EXPORT void sdirprod_kernel(size_t n, float alpha, float const *x, float const *y, float *z);
 

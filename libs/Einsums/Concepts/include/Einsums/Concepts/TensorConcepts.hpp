@@ -686,7 +686,9 @@ constexpr inline bool IsIncoreBlockTensorV = IsIncoreTensorV<D> && IsBlockTensor
  * @tparam D The tensor to check.
  *
  * @versionadded{1.0.0}
- * @version 2.0.0 Fixed a typo. Was @c IsDeviceBLockTensorV , now it is @c IsDeviceBlockTensorV .
+ * @versionchanged{2.0.0}
+ *      Fixed a typo. Was @c IsDeviceBLockTensorV , now it is @c IsDeviceBlockTensorV .
+ * @endversion
  */
 template <typename D>
 constexpr inline bool IsDeviceBlockTensorV = IsDeviceTensorV<D> && IsBlockTensorV<D>;

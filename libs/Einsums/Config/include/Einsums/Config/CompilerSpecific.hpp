@@ -8,9 +8,46 @@
 #include <Einsums/Config/Defines.hpp>
 
 #ifdef __cplusplus
-#include <complex>
+#    include <complex>
 #endif
 
+/**
+ * @def EINSUMS_OMP_PRAGMA
+ *
+ * Creates a pragma line for an OpenMP call. The text inside does not need the "omp".
+ *
+ * @param stuff The OpenMP directives to use.
+ *
+ * @versionadded{1.1.0}
+ */
+
+/**
+ * @def EINSUMS_OMP_SIMD_PRAGMA
+ *
+ * Creates a pragma line for an OpenMP call that can be vectorized, if supported by the compiler. The text inside does not need the "omp".
+ *
+ * @param stuff The OpenMP directives to use.
+ *
+ * @versionadded{1.1.0}
+ */
+
+/**
+ * @def EINSUMS_OMP_SIMD
+ *
+ * Indicates that the following block can be vectorized.
+ *
+ * @versionadded{1.1.0}
+ */
+
+/**
+ * @def EINSUMS_PRAGMA
+ *
+ * Creates a pragma line. Mostly used within other macros.
+ *
+ * @param stuff The pragma line without quotes.
+ *
+ * @versionadded{1.1.0}
+ */
 #define EINSUMS_PRAGMA(stuff) _Pragma(#stuff)
 #if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #    define EINSUMS_OMP_PRAGMA(stuff)      EINSUMS_PRAGMA(omp stuff)
@@ -21,14 +58,76 @@
 #    define EINSUMS_OMP_SIMD_PRAGMA(stuff) EINSUMS_PRAGMA(omp stuff)
 #    define EINSUMS_OMP_SIMD
 #endif
-
+/**
+ * @def EINSUMS_OMP_PARALLEL_FOR_SIMD
+ *
+ * Tell the compiler that the following for-loop can be parallelized and vectorized using SIMD.
+ *
+ * @versionadded{1.1.0}
+ */
 #define EINSUMS_OMP_PARALLEL_FOR_SIMD EINSUMS_OMP_SIMD_PRAGMA(parallel for)
+
+/**
+ * @def EINSUMS_OMP_PARALLEL_FOR
+ *
+ * Tell the compiler that the following for-loop can be parallelized.
+ *
+ * @versionadded{1.0.0}
+ */
 #define EINSUMS_OMP_PARALLEL_FOR EINSUMS_OMP_PRAGMA(parallel for)
-#define EINSUMS_OMP_PARALLEL      EINSUMS_OMP_PRAGMA(parallel)
-#define EINSUMS_OMP_TASK_FOR      EINSUMS_OMP_PRAGMA(taskloop)
+
+/**
+ * @def EINSUMS_OMP_PARALLEL
+ *
+ * Tell the compiler that the following block should be done in parallel.
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_OMP_PARALLEL EINSUMS_OMP_PRAGMA(parallel)
+
+/**
+ * @def EINSUMS_OMP_TASK_FOR
+ *
+ * Tell the compiler that the following for-loop can be parallelized and should use tasks.
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_OMP_TASK_FOR EINSUMS_OMP_PRAGMA(taskloop)
+
+/**
+ * @def EINSUMS_OMP_TASK_FOR_SIMD
+ *
+ * Tell the compiler that the following for-loop can be parallelized and vectorized using SIMD and should use tasks.
+ *
+ * @versionadded{1.1.0}
+ */
 #define EINSUMS_OMP_TASK_FOR_SIMD EINSUMS_OMP_SIMD_PRAGMA(taskloop)
-#define EINSUMS_OMP_TASK          EINSUMS_OMP_PRAGMA(task)
+
+/**
+ * @def EINSUMS_OMP_TASK
+ *
+ * Start a new task within a parallel region.
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_OMP_TASK EINSUMS_OMP_PRAGMA(task)
+
+/**
+ * @def EINSUMS_OMP_FOR_NOWAIT
+ *
+ * Tell the compiler that the following for-loop can be parallelized and it should not wait for threads to finish.
+ *
+ * @versionadded{1.0.0}
+ */
 #define EINSUMS_OMP_FOR_NOWAIT EINSUMS_OMP_PRAGMA(for nowait)
+
+/**
+ * @def EINSUMS_OMP_CRITICAL
+ *
+ * Indicates that the following block should only be executed by one thread at a time.
+ *
+ * @versionadded{1.0.0}
+ */
 #define EINSUMS_OMP_CRITICAL EINSUMS_OMP_PRAGMA(critical)
 
 #if defined(__GNUC__) && defined(__cplusplus)
@@ -39,10 +138,63 @@
 
 #endif
 
+/**
+ * @def EINSUMS_ALWAYS_INLINE
+ *
+ * Tell the compiler to inline a function.
+ *
+ * @versionadded{1.0.0}
+ */
 #define EINSUMS_ALWAYS_INLINE __attribute__((always_inline)) inline
 
 // clang-format off
-#if defined(_MSC_VER)
+#ifdef DOXYGEN
+/**
+ * @def EINSUMS_DISABLE_WARNING_PUSH
+ *
+ * Pushes the current warning ignore state so that ignore rules can be changed and then reverted.
+ *
+ * @versionadded{1.0.0}
+ */
+#    define EINSUMS_DISABLE_WARNING_PUSH
+
+/**
+ * @def EINSUMS_DISABLE_WARNING_POP
+ *
+ * Ppp the current warning ignore state to revert the changes to the warning ignore rules.
+ *
+ * @versionadded{1.0.0}
+ */
+#    define EINSUMS_DISABLE_WARNING_POP
+
+/**
+ * @def EINSUMS_DISABLE_WARNING
+ *
+ * Disables a specific warning. The behavior may differ between compilers.
+ *
+ * @versionadded{1.0.0}
+ */
+#    define EINSUMS_DISABLE_WARNING(warning)
+
+/**
+ * @def EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
+ *
+ * Disable warnings that a function that normally returns C's <tt>_Complex float</tt> or <tt>_Complex double</tt> is externed as
+ * a function that returns C++'s <tt>std::complex<float></tt> or <tt>std::complex<double></tt>.
+ *
+ * @versionadded{1.0.0}
+ */
+#    define EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
+
+/**
+ * @def EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS
+ *
+ * Disable warnings of deprecated functions, classes, variables, etc.
+ *
+ * @versionadded{1.0.0}
+ */
+#    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS
+#elif defined(_MSC_VER)
 #    define EINSUMS_DISABLE_WARNING_PUSH           __pragma(warning(push))
 #    define EINSUMS_DISABLE_WARNING_POP            __pragma(warning(pop))
 #    define EINSUMS_DISABLE_WARNING(warningNumber) __pragma(warning(disable : warningNumber))
@@ -74,18 +226,24 @@
 
 #if defined(DOXYGEN)
 /// Returns the GCC version einsums is compiled with. Only set if compiled with GCC.
+/// @versionadded{1.0.0}
 #    define EINSUMS_GCC_VERSION
 /// Returns the Clang version einsums is compiled with. Only set if compiled with
 /// Clang.
+/// @versionadded{1.0.0}
 #    define EINSUMS_CLANG_VERSION
 /// Returns the Intel Compiler version einsums is compiled with. Only set if
 /// compiled with the Intel Compiler.
+/// @versionadded{1.0.0}
 #    define EINSUMS_INTEL_VERSION
 /// This macro is set if the compilation is with MSVC.
+/// @versionadded{1.0.0}
 #    define EINSUMS_MSVC
 /// This macro is set if the compilation is with Mingw.
+/// @versionadded{1.0.0}
 #    define EINSUMS_MINGW
 /// This macro is set if the compilation is for Windows.
+/// @versionadded{1.0.0}
 #    define EINSUMS_WINDOWS
 #else
 
@@ -157,11 +315,111 @@
 // Detecting nvhpc
 // The CUDA version will also be defined, so we end this block with #endif,
 // not #elif
-#if defined(__NVCOMPILER)
+#if defined(__NVCOMPILER) || defined(DOXYGEN)
+/**
+ * @def EINSUMS_NVHPC_VERSION
+ *
+ * Gives the version of the NVidia HPC compiler used to compile Einsums.
+ *
+ * @versionadded{1.0.0}
+ */
 #  define EINSUMS_NVHPC_VERSION (__NVCOMPILER_MAJOR__ * 10000 + __NVCOMPILER_MINOR__ * 100 + __NVCOMPILER_PATCHLEVEL__)
 #endif
 
 // Detecting NVCC/CUDA
+#ifdef DOXYGEN
+/**
+ * @def EINSUMS_CUDA_VERSION
+ *
+ * The version of CUDA used to compile Einsums.
+ *
+ * @versionadded{1.0.0}
+ */
+#  define EINSUMS_CUDA_VERSION
+
+/**
+ * @def EINSUMS_HIP_VERSION
+ *
+ * The version of HIP used to compile Einsums.
+ *
+ * @versionadded{1.0.0}
+ */
+#  define EINSUMS_HIP_VERSION
+
+/**
+ * @def EINSUMS_COMPUTE_CODE
+ *
+ * Only available when Einsums was compiled with GPU capabilities. If not present, then there are no GPU capabilities.
+ *
+ * @versionadded{1.0.0}
+ */
+#  define EINSUMS_COMPUTE_CODE
+
+/**
+ * @def EINSUMS_COMPUTE_DEVICE_CODE
+ *
+ * Only available when Einsums was compiled with GPU capabilities and only during compilation for the graphics device.
+ *
+ * @versionadded{1.0.0}
+ */
+#    define EINSUMS_COMPUTE_DEVICE_CODE
+
+/**
+ * @def EINSUMS_COMPUTE_HOST_CODE
+ *
+ * Available whenever Einsums is not being compiled for the device. This means that it is defined when GPU capabilities
+ * are turned off and when they are turned on during compilation for the host.
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_COMPUTE_HOST_CODE
+
+/**
+ * @def EINSUMS_DEVICE
+ *
+ * When compiled with GPU capabilities, this expands to @c __device__ . Otherwise, it expands to nothing.
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_DEVICE
+
+/**
+ * @def EINSUMS_HOST
+ *
+ * When compiled with GPU capabilities, this expands to @c __host__ . Otherwise, it expands to nothing.
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_HOST
+
+/**
+ * @def EINSUMS_CONSTANT
+ *
+ * When compiled with GPU capabilities, this expands to @c __constant__ . Otherwise, it expands to nothing.
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_CONSTANT
+
+/**
+ * @def EINSUMS_HOSTDEV
+ *
+ * When compiled with GPU capabilities, this expands to @c __host__ @c __device__ . Otherwise, it expands to nothing.
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_HOSTDEV
+
+/**
+ * @def EINSUMS_NVCC_PRAGMA_HD_WARNING_DISABLE
+ *
+ * Silences warnings about calling a host function from a device function, which is common when not using host/device specifiers.
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_NVCC_PRAGMA_HD_WARNING_DISABLE
+
+#endif
 #if defined(__NVCC__) || defined(__CUDACC__)
 // NVCC build version numbers can be high (without limit?) so we leave it out
 // from the version definition
@@ -215,6 +473,10 @@
 #define EINSUMS_CONSTANT
 #define EINSUMS_HOSTDEV
 #endif
+
+/**
+ * @copydoc EINSUMS_HOSTDEV
+ */
 #define EINSUMS_HOST_DEVICE EINSUMS_HOST EINSUMS_DEVICE
 
 #if defined(__NVCC__)
@@ -223,8 +485,44 @@
 #define EINSUMS_NVCC_PRAGMA_HD_WARNING_DISABLE
 #endif
 
-#if !defined(EINSUMS_CDECL)
+#if !defined(EINSUMS_CDECL) || defined(DOXYGEN)
+/**
+ * @def EINSUMS_CDECL
+ *
+ * Mark a function as using the @c __cdecl calling convention.
+ *
+ * @versionadded{1.0.0}
+ */
 #define EINSUMS_CDECL
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @def EINSUMS_HAVE_ADDRESS_SANITIZER
+ *
+ * Defined if Einsums was compiled with address sanitization (ASAN).
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_HAVE_ADDRESS_SANITIZER
+
+/**
+ * @def EINSUMS_NO_SANITIZE_ADDRESS
+ *
+ * Marks a function to not be sanitized.
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_NO_ADDRESS_SANITIZE
+
+/**
+ * @def EINSUMS_HAVE_THREAD_SANITIZER
+ *
+ * Defined if Einsums was compiled with thread sanitization.
+ *
+ * @versionadded{1.0.0}
+ */
+#define EINSUMS_HAVE_THREAD_SANITIZER
 #endif
 
 // clang-format on
