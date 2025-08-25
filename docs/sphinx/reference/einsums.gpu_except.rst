@@ -315,7 +315,7 @@ along with a brief description of each.
 
 .. py:exception:: ErrorInvalidResourceHandle
     
-    Superceded by ErrorInvalidHandle
+    Superceded by :py:exc:`ErrorInvalidHandle`.
 
     .. versionadded:: 1.0.0
 
