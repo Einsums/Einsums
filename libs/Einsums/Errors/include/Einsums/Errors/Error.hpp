@@ -1410,7 +1410,21 @@ EINSUMS_HOST EINSUMS_EXPORT void __hipsolver_catch__(hipsolverStatus_t status, c
 EINSUMS_HOST EINSUMS_EXPORT void __hip_catch__(hipError_t condition, char const *func_call, char const *fname, char const *diagnostic,
                                                char const *funcname, bool throw_success = false);
 
+/**
+ * @def hip_catch_STR1
+ *
+ * Stringifies its argument. Multiple levels needed because of macro behaviors.
+ *
+ * @versionadded{1.0.0}
+ */
 #    define hip_catch_STR1(x) #x
+/**
+ * @def hip_catch_STR
+ *
+ * Stringifies its argument. Multiple levels needed because of macro behaviors.
+ *
+ * @versionadded{1.0.0}
+ */
 #    define hip_catch_STR(x)  hip_catch_STR1(x)
 /**
  * @def hip_catch
