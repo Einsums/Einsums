@@ -25,6 +25,7 @@
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
 
+#include <optional>
 #include <stdexcept>
 
 #include "Einsums/LinearAlgebra/Bases/norm.hpp"
@@ -477,8 +478,8 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
     } else {
         auto info = blas::geev(jobvr, jobvl, A->dim(0), A_data, lda, W_data, rvec_data, ldvr, lvec_data, ldvl);
 
-        if(!IsComplexV<T>) {
-            for(size_t i = 0; i < A->dim(0); i++) {
+        if (!IsComplexV<T>) {
+            for (size_t i = 0; i < A->dim(0); i++) {
                 W_data[i] = std::conj(W_data[i]);
             }
         }
@@ -1247,8 +1248,11 @@ void invert(TensorType *A) {
 }
 
 template <typename T>
-auto svd(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
+auto svd(einsums::detail::TensorImpl<T> const &_A, char jobu, char jobvt)
+    -> std::tuple<std::optional<Tensor<T, 2>>, Tensor<RemoveComplexT<T>, 1>, std::optional<Tensor<T, 2>>> {
     LabeledSection0();
+
+    using option = std::optional<Tensor<T, 2>>;
 
     if (_A.rank() != 2) {
         EINSUMS_THROW_EXCEPTION(rank_error, "Can only decompose matrices!");
@@ -1261,39 +1265,52 @@ auto svd(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, T
     size_t n   = A.dim(1);
     size_t lda = A.impl().get_lda();
 
+    Tensor<T, 2> U, Vt;
+    T           *U_data = nullptr, *Vt_data = nullptr;
+    size_t       ldu = 1, ldvt = 1;
+
     // Test if it is absolutely necessary to zero out these tensors first.
-    auto U = create_tensor<T>("U (stored columnwise)", m, m);
-    U.zero();
+    if (std::tolower(jobu) != 'n') {
+        U = create_tensor<T>("U (stored columnwise)", m, m);
+        U.zero();
+        U_data = U.data();
+        ldu    = U.impl().get_lda();
+    }
     auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     S.zero();
-    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
-    Vt.zero();
+    if (std::tolower(jobvt) != 'n') {
+        Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
+        Vt.zero();
+        Vt_data = Vt.data();
+        ldvt    = Vt.impl().get_lda();
+    }
     auto superb = create_tensor<T>("superb", std::min(m, n));
     superb.zero();
 
     //    int info{0};
-    int info =
-        blas::gesvd('A', 'A', m, n, A.data(), lda, S.data(), U.data(), U.impl().get_lda(), Vt.data(), Vt.impl().get_lda(), superb.data());
+    int info = blas::gesvd(jobu, jobvt, m, n, A.data(), lda, S.data(), U_data, ldu, Vt_data, ldvt, superb.data());
 
     if (info != 0) {
         if (info < 0) {
             EINSUMS_THROW_EXCEPTION(
                 std::invalid_argument,
                 "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info, m,
-                n, lda, U.impl().get_lda(), Vt.impl().get_lda());
+                n, lda, ldu, ldvt);
         } else {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
         }
     }
 
-    return std::make_tuple(U, S, Vt);
+    return std::make_tuple((std::tolower(jobu) != 'n') ? option(std::move(U)) : option(), S,
+                           (std::tolower(jobvt) != 'n') ? option(std::move(Vt)) : option());
 }
 
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto svd(AType const &A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
-                                       Tensor<typename AType::ValueType, 2>> {
-    return svd(A.impl());
+auto svd(AType const &A, char jobu, char jobvt)
+    -> std::tuple<std::optional<Tensor<typename AType::ValueType, 2>>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
+                  std::optional<Tensor<typename AType::ValueType, 2>>> {
+    return svd(A.impl(), jobu, jobvt);
 }
 
 template <typename T>
@@ -1392,8 +1409,11 @@ auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::ValueType> {
 }
 
 template <typename T>
-auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
+auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job)
+    -> std::tuple<std::optional<Tensor<T, 2>>, Tensor<RemoveComplexT<T>, 1>, std::optional<Tensor<T, 2>>> {
     LabeledSection0();
+
+    using option = std::optional<Tensor<T, 2>>;
 
     //    DisableOMPThreads const nothreads;
 
@@ -1403,36 +1423,48 @@ auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job) -> std::tuple<Te
     size_t m = A.dim(0);
     size_t n = A.dim(1);
 
+    Tensor<T, 2> U, Vt;
+    T           *U_data = nullptr, *Vt_data = nullptr;
+    size_t       ldu = 1, ldvt = 1;
+
     // Test if it absolutely necessary to zero out these tensors first.
-    auto U = create_tensor<T>("U (stored columnwise)", m, m);
-    zero(U);
+    if (std::tolower(job) != 'n') {
+        U = create_tensor<T>("U (stored columnwise)", m, m);
+        zero(U);
+        Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
+        zero(Vt);
+        U_data  = U.data();
+        Vt_data = Vt.data();
+        ldu     = U.impl().get_lda();
+        ldvt    = Vt.impl().get_lda();
+    }
+
     auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     zero(S);
-    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
-    zero(Vt);
 
-    int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), A.impl().get_lda(), S.data(),
-                           U.data(), U.impl().get_lda(), Vt.data(), Vt.impl().get_lda());
+    int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), A.impl().get_lda(), S.data(), U_data,
+                           ldu, Vt_data, ldvt);
 
     if (info != 0) {
         if (info < 0) {
             EINSUMS_THROW_EXCEPTION(
                 std::invalid_argument,
                 "svd_dd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info,
-                m, n, A.impl().get_lda(), U.impl().get_lda(), Vt.impl().get_lda());
+                m, n, A.impl().get_lda(), ldu, ldvt);
         } else {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd_dd: error value {}", info);
         }
     }
 
-    return std::make_tuple(U, S, Vt);
+    return std::make_tuple((std::tolower(job) != 'n') ? option(std::move(U)) : option(), S,
+                           (std::tolower(job) != 'n') ? option(std::move(Vt)) : option());
 }
 
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto svd_dd(AType const &A, char job)
-    -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
-                  Tensor<typename AType::ValueType, 2>> {
+    -> std::tuple<std::optional<Tensor<typename AType::ValueType, 2>>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
+                  std::optional<Tensor<typename AType::ValueType, 2>>> {
     return svd_dd(A.impl(), job);
 }
 

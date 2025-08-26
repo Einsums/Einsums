@@ -99,7 +99,7 @@ void gesvd_test() {
     auto [u, s, vt] = linear_algebra::svd(a);
 
     // Using u, s, and vt reconstruct a and test a against the reconstructed a
-    auto new_a = reconstruct(u, s, vt, M, N);
+    auto new_a = reconstruct(u.value(), s, vt.value(), M, N);
 
     CHECK_THAT(new_a.vector_data(), Catch::Matchers::Approx(a.vector_data()).margin(0.0001));
 }

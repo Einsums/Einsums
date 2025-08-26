@@ -185,15 +185,15 @@ RuntimeTensor<T> pseudoinverse_work(pybind11::buffer const &_A, RemoveComplexT<T
     for (size_t v = 0; v < S.dim(0); v++) {
         RemoveComplexT<T> val = S(v);
         if (val > tol)
-            linear_algebra::scale_column(v, T{1.0} / val, &U);
+            linear_algebra::scale_column(v, T{1.0} / val, &U.value());
         else {
             new_dim = v;
             break;
         }
     }
 
-    TensorView<T, 2> U_view = U(All, Range{0, new_dim});
-    TensorView<T, 2> V_view = Vh(Range{0, new_dim}, All);
+    TensorView<T, 2> U_view = U.value()(All, Range{0, new_dim});
+    TensorView<T, 2> V_view = Vh.value()(Range{0, new_dim}, All);
 
     Tensor<T, 2> pinv("pinv", A.dim(0), A.dim(1));
     linear_algebra::gemm<false, false>(T{1.0}, U_view, V_view, T{0.0}, &pinv);

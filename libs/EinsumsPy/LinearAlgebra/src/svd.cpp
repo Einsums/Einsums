@@ -16,6 +16,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
+#include "Einsums/LinearAlgebra.hpp"
 #include "Einsums/TensorAlgebra/Detail/Index.hpp"
 #include "Einsums/TensorAlgebra/Permute.hpp"
 #include "macros.hpp"
@@ -27,14 +28,25 @@ namespace python {
 namespace detail {
 
 template <typename T>
-pybind11::tuple svd_work(pybind11::buffer const &A) {
-    auto [U, S, Vt] = einsums::linear_algebra::detail::svd(buffer_to_tensor<T>(A));
+pybind11::tuple svd_work(pybind11::buffer const &A, char jobu, char jobvt) {
+    auto [U, S, Vt] = einsums::linear_algebra::detail::svd(buffer_to_tensor<T>(A), jobu, jobvt);
 
-    return pybind11::make_tuple(std::move(RuntimeTensor<T>(std::move(U))), std::move(RuntimeTensor<RemoveComplexT<T>>(std::move(S))),
-                                std::move(RuntimeTensor<T>(std::move(Vt))));
+    if (std::tolower(jobu) == 'n' && std::tolower(jobvt) == 'n') {
+        return pybind11::make_tuple(std::move(RuntimeTensor<RemoveComplexT<T>>(std::move(S))));
+    } else if (std::tolower(jobu) == 'n') {
+        return pybind11::make_tuple(std::move(RuntimeTensor<RemoveComplexT<T>>(std::move(S))),
+                                    std::move(RuntimeTensor<T>(std::move(Vt.value()))));
+    } else if (std::tolower(jobvt) == 'n') {
+        return pybind11::make_tuple(std::move(RuntimeTensor<T>(std::move(U.value()))),
+                                    std::move(RuntimeTensor<RemoveComplexT<T>>(std::move(S))));
+    } else {
+        return pybind11::make_tuple(std::move(RuntimeTensor<T>(std::move(U.value()))),
+                                    std::move(RuntimeTensor<RemoveComplexT<T>>(std::move(S))),
+                                    std::move(RuntimeTensor<T>(std::move(Vt.value()))));
+    }
 }
 
-pybind11::tuple svd(pybind11::buffer const &A) {
+pybind11::tuple svd(pybind11::buffer const &A, einsums::linear_algebra::Vectors jobu, einsums::linear_algebra::Vectors jobvt) {
     py::buffer_info A_info = A.request(false);
 
     if (A_info.ndim != 2) {
@@ -43,7 +55,8 @@ pybind11::tuple svd(pybind11::buffer const &A) {
 
     pybind11::tuple out;
 
-    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), (out = svd_work<Float>(A)))
+    EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()),
+                           (out = svd_work<Float>(A, static_cast<char>(jobu), static_cast<char>(jobvt))))
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only take the svd of real or complex floating point matrices!");
     }
@@ -79,8 +92,13 @@ template <typename T>
 pybind11::tuple svd_dd_work(pybind11::buffer const &A, linear_algebra::Vectors job) {
     auto [U, S, Vt] = einsums::linear_algebra::detail::svd_dd(buffer_to_tensor<T>(A), static_cast<char>(job));
 
-    return pybind11::make_tuple(std::move(RuntimeTensor<T>(std::move(U))), std::move(RuntimeTensor<RemoveComplexT<T>>(std::move(S))),
-                                std::move(RuntimeTensor<T>(std::move(Vt))));
+    if (std::tolower(static_cast<char>(job)) == 'n') {
+        return pybind11::make_tuple(std::move(RuntimeTensor<RemoveComplexT<T>>(std::move(S))));
+    } else {
+        return pybind11::make_tuple(std::move(RuntimeTensor<T>(std::move(U.value()))),
+                                    std::move(RuntimeTensor<RemoveComplexT<T>>(std::move(S))),
+                                    std::move(RuntimeTensor<T>(std::move(Vt.value()))));
+    }
 }
 
 pybind11::tuple svd_dd(pybind11::buffer const &A, linear_algebra::Vectors job) {
@@ -134,9 +152,9 @@ pybind11::tuple truncated_svd_work(pybind11::buffer const &_A, size_t k) {
     // Cast U back into full basis
     RuntimeTensor<T> U("U", {m, k + 5});
     TensorView<T, 2> U_view(U);
-    linear_algebra::gemm<false, false>(T{1.0}, Y, Utilde, T{0.0}, &U_view);
+    linear_algebra::gemm<false, false>(T{1.0}, Y, Utilde.value(), T{0.0}, &U_view);
 
-    return py::make_tuple(U, RuntimeTensor<RemoveComplexT<T>>(std::move(S)), RuntimeTensor<T>(std::move(Vt)));
+    return py::make_tuple(U, RuntimeTensor<RemoveComplexT<T>>(std::move(S)), RuntimeTensor<T>(std::move(Vt.value())));
 }
 
 pybind11::tuple truncated_svd(pybind11::buffer const &A, size_t k) {
