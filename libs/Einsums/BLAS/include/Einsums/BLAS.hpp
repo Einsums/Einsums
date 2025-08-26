@@ -14,31 +14,41 @@
 
 namespace einsums::blas {
 
+#ifdef DOXYGEN
 /**
+ * @class IsBlasable
+ *
  * @brief Determines whether a type can be used in a BLAS call.
  *
- * This checks to see if a type is @c float or @c double .
+ * This checks to see if a type is @c float or @c double or a complex type of these..
  *
  * @tparam T The type to test.
  *
  * @versionadded{1.1.0}
  */
 template <typename T>
+class IsBlasable {
+  public:
+    constexpr static bool value = false;
+};
+#else
+// Base instantiation.
+template <typename T>
 struct IsBlasable : std::is_floating_point<std::remove_cvref_t<T>> {};
 
-/**
- * @brief Determines whether a type can be used in a BLAS call.
- *
- * This checks to see if a type is @c std::complex<float> or @c std::complex<double> .
- *
- * @tparam T The real type within the type to test.
- *
- * @versionadded{1.1.0}
- */
+// Complex instantiation.
 template <typename T>
 struct IsBlasable<std::complex<T>> : std::is_floating_point<T> {};
+#endif
+
 
 /**
+ * @property IsBlasable<T>::value
+ *
+ * The result of the test.
+ *
+ * @versionadded{1.1.0}
+ *
  * @property IsBlasableV
  *
  * @brief Boolean wrapper of IsBlasable<T>.
@@ -117,8 +127,9 @@ void EINSUMS_EXPORT zgemm(char transa, char transb, int_t m, int_t n, int_t k, s
  * - If transA is 'C' or 'c' and transB is 'T' or 't': \f$\mathbf{C} = \alpha\mathbf{A}^H\mathbf{B}^Y + \beta\mathbf{C}\f$
  * - etc.
  *
- * @throws invalid_argument If @p transA or @p transB are invalid.
- * @throws domain_error If the values of @p m , @p n , or @p k are negative, or the values of @p lda , @p ldb , or @p ldc are invalid.
+ * @throws std::invalid_argument If @p transA or @p transB are invalid.
+ * @throws std::domain_error If the values of @p m , @p n , or @p k are negative, or the values of @p lda , @p ldb , or @p ldc are
+ * invalid.
  *
  * @versionadded{1.0.0}
  */
@@ -198,8 +209,8 @@ void EINSUMS_EXPORT zgemv(char transa, int_t m, int_t n, std::complex<double> al
  * @param[inout] y array, vector y
  * @param[in] incy Specifies the increment for the elements of \p y .
  *
- * @throws invalid_argument If @p transA is invalid.
- * @throws domain_error If the values of @p m or @p n are negative, the value of @p lda is invalid, or either @p incx or @p incy is
+ * @throws std::invalid_argument If @p transA is invalid.
+ * @throws std::domain_error If the values of @p m or @p n are negative, the value of @p lda is invalid, or either @p incx or @p incy is
  * zero.
  *
  * @versionadded{1.0.0}
@@ -824,7 +835,7 @@ void EINSUMS_EXPORT zaxpby(int_t n, std::complex<double> alpha_x, std::complex<d
  * @param[in] alpha_x The scale factor for the input vector.
  * @param[in] x The input vector.
  * @param[in] inc_x The skip value for the output vector. It can be negative to go in reverse, or zero to broadcast values to @p y.
- * @param[in] beta The scale factor for the output vector.
+ * @param[in] b The scale factor for the output vector.
  * @param[inout] y The output vector.
  * @param[in] inc_y The skip value for the output vector. It can be negative to go in reverse, or zero to sum over the elements of @p x .
  *
@@ -1626,8 +1637,8 @@ void EINSUMS_EXPORT zcopy(int_t n, std::complex<double> const *x, int_t inc_x, s
  * @tparam T The type this function handles.
  * @param[in] n The number of elements to copy.
  * @param[in] x The input vector.
- * @param[in] inc_x The skip value for the input vector. If negative, the vector is traversed backwards. If zero, the values are broadcast to
- * the output vector.
+ * @param[in] inc_x The skip value for the input vector. If negative, the vector is traversed backwards. If zero, the values are broadcast
+ * to the output vector.
  * @param[out] y The output vector.
  * @param[in] inc_y The skip value for the output vector. If negative, the vector is traversed backwards.
  *

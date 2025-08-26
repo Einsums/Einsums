@@ -22,7 +22,7 @@ extern "C" {
  *
  * @versionadded{2.0.0}
  *
- * @versionchanged{2.0.0}
+ * @versionchangeddesc{2.0.0}
  *  Added AVX2 vectorized kernels and default unvectorized kernels.
  * @endversion
  */
@@ -481,7 +481,7 @@ auto zgetrf(int_t m, int_t n, std::complex<double> *A, int_t lda, int_t *ipiv) -
 auto sgetri(int_t n, float *A, int_t lda, int_t const *ipiv) -> int_t;
 /// @copydoc sgetri
 auto dgetri(int_t n, double *A, int_t lda, int_t const *ipiv) -> int_t;
-/// @copydoc sgeteri
+/// @copydoc sgetri
 auto cgetri(int_t n, std::complex<float> *A, int_t lda, int_t const *ipiv) -> int_t;
 /// @copydoc sgetri
 auto zgetri(int_t n, std::complex<double> *A, int_t lda, int_t const *ipiv) -> int_t;

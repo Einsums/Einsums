@@ -924,6 +924,11 @@ struct EINSUMS_EXPORT hipblas_exception : std::exception {
         message += hipblasStatusToString(error);
     }
 
+    /**
+     * @brief Construct a new hipblas_exception.
+     *
+     * @versionadded{1.0.0}
+     */
     hipblas_exception(std::string diagnostic) : message{""} {
         message += diagnostic;
         message += hipblasStatusToString(error);
@@ -970,10 +975,12 @@ struct EINSUMS_EXPORT hipblas_exception : std::exception {
      */
     bool operator!=(hipblasStatus_t other) const { return error != other; }
 
+#    ifndef DOXYGEN
     template <hipblasStatus_t error2>
     friend bool operator==(hipblasStatus_t, hipblas_exception<error2> const &);
     template <hipblasStatus_t error2>
     friend bool operator!=(hipblasStatus_t, hipblas_exception<error2> const &);
+#    endif
 };
 
 /**
@@ -1380,8 +1387,12 @@ using solverUnknown          = hipsolver_exception<HIPSOLVER_STATUS_UNKNOWN>;
 /**
  * @brief Takes a status code as an argument and throws the appropriate exception.
  *
- * @param status The status to convert.
- * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
+ * @param[in] status The status to convert.
+ * @param[in] func_call The function call that produced the error.
+ * @param[in] fname The file name.
+ * @param[in] diagnostic A custom message to the user.
+ * @param[in] funcname The name of the containing function.
+ * @param[in] throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
  * function to exit quietly.
  *
  * @versionadded{1.0.0}
@@ -1392,8 +1403,12 @@ EINSUMS_HOST EINSUMS_EXPORT void __hipblas_catch__(hipblasStatus_t status, char 
 /**
  * @brief Takes a status code as an argument and throws the appropriate exception.
  *
- * @param status The status to convert.
- * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
+ * @param[in] status The status to convert.
+ * @param[in] func_call The function call that produced the error.
+ * @param[in] fname The file name.
+ * @param[in] diagnostic A custom message to the user.
+ * @param[in] funcname The name of the containing function.
+ * @param[in] throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
  * function to exit quietly.
  *
  * @versionadded{1.0.0}
@@ -1402,8 +1417,15 @@ EINSUMS_HOST EINSUMS_EXPORT void __hipsolver_catch__(hipsolverStatus_t status, c
                                                      char const *diagnostic, char const *funcname, bool throw_success = false);
 
 /**
- * Wraps up an HIP function to catch any error codes. If the function does not return
- * hipSuccess, then an exception will be thrown
+ * @brief Takes a status code as an argument and throws the appropriate exception.
+ *
+ * @param[in] status The status to convert.
+ * @param[in] func_call The function call that produced the error.
+ * @param[in] fname The file name.
+ * @param[in] diagnostic A custom message to the user.
+ * @param[in] funcname The name of the containing function.
+ * @param[in] throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
+ * function to exit quietly.
  *
  * @versionadded{1.0.0}
  */
@@ -1425,7 +1447,7 @@ EINSUMS_HOST EINSUMS_EXPORT void __hip_catch__(hipError_t condition, char const 
  *
  * @versionadded{1.0.0}
  */
-#    define hip_catch_STR(x)  hip_catch_STR1(x)
+#    define hip_catch_STR(x) hip_catch_STR1(x)
 /**
  * @def hip_catch
  *
