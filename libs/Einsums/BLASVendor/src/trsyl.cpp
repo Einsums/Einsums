@@ -33,15 +33,12 @@ extern void FC_GLOBAL(ctrsyl, CTRSYL)(char *, char *, int_t *, int_t *, int_t *,
         /* Check leading dimensions */                                                                                                     \
         if (lda < m) {                                                                                                                     \
             EINSUMS_LOG_WARN("trsyl warning: lda < m, lda = {}, m = {}", lda, m);                                                          \
-            return -7;                                                                                                                     \
         }                                                                                                                                  \
         if (ldb < n) {                                                                                                                     \
             EINSUMS_LOG_WARN("trsyl warning: ldb < n, ldb = {}, n = {}", ldb, n);                                                          \
-            return -9;                                                                                                                     \
         }                                                                                                                                  \
         if (ldc < n) {                                                                                                                     \
             EINSUMS_LOG_WARN("trsyl warning: ldc < n, ldc = {}, n = {}", ldc, n);                                                          \
-            return -11;                                                                                                                    \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Call LAPACK function and adjust info */                                                                                         \
@@ -67,15 +64,12 @@ extern void FC_GLOBAL(ctrsyl, CTRSYL)(char *, char *, int_t *, int_t *, int_t *,
         /* Check leading dimensions */                                                                                                     \
         if (lda < m) {                                                                                                                     \
             EINSUMS_LOG_WARN("trsyl warning: lda < m, lda = {}, m = {}", lda, m);                                                          \
-            return -7;                                                                                                                     \
         }                                                                                                                                  \
         if (ldb < n) {                                                                                                                     \
             EINSUMS_LOG_WARN("trsyl warning: ldb < n, ldb = {}, n = {}", ldb, n);                                                          \
-            return -9;                                                                                                                     \
         }                                                                                                                                  \
         if (ldc < n) {                                                                                                                     \
             EINSUMS_LOG_WARN("trsyl warning: ldc < n, ldc = {}, n = {}", ldc, n);                                                          \
-            return -11;                                                                                                                    \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Call LAPACK function and adjust info */                                                                                         \

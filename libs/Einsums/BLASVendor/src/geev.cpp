@@ -44,20 +44,21 @@ extern void FC_GLOBAL(zgeev, ZGEEV)(char *, char *, int_t *, std::complex<double
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
             EINSUMS_LOG_WARN("geev warning: lda < n, lda = {}, n = {}", lda, n);                                                           \
-            return -5;                                                                                                                     \
         }                                                                                                                                  \
         if (ldvl < 1 || (lsame(jobvl, 'v') && ldvl < n)) {                                                                                 \
             EINSUMS_LOG_WARN("geev warning: ldvl < 1 or (jobvl = 'v' and ldvl < n), ldvl = {}, n = {}", ldvl, n);                          \
-            return -8;                                                                                                                     \
         }                                                                                                                                  \
         if (ldvr < 1 || (lsame(jobvr, 'v') && ldvr < n)) {                                                                                 \
             EINSUMS_LOG_WARN("geev warning: ldvr < 1 or (jobvr = 'v' and ldvr < n), ldvr = {}, n = {}", ldvr, n);                          \
-            return -10;                                                                                                                    \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##geev, UC##GEEV)                                                                                                      \
         (&jobvl, &jobvr, &n, a, &lda, w, vl, &ldvl, vr, &ldvr, &work_query, &lwork, rwork.data(), &info);                                  \
+                                                                                                                                           \
+        if (info != 0) {                                                                                                                   \
+            return info;                                                                                                                   \
+        }                                                                                                                                  \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
         lwork = (int_t)work_query.real();                                                                                                  \
@@ -66,7 +67,7 @@ extern void FC_GLOBAL(zgeev, ZGEEV)(char *, char *, int_t *, std::complex<double
         /* Call LAPACK function and adjust info */                                                                                         \
         FC_GLOBAL(lc##geev, UC##GEEV)                                                                                                      \
         (&jobvl, &jobvr, &n, a, &lda, w, vl, &ldvl, vr, &ldvr, work.data(), &lwork, rwork.data(), &info);                                  \
-        if (info < 0) {                                                                                                                    \
+        if (info != 0) {                                                                                                                   \
             return info;                                                                                                                   \
         }                                                                                                                                  \
                                                                                                                                            \
@@ -91,20 +92,21 @@ GEEV_complex(double, z, Z);
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
             EINSUMS_LOG_WARN("geev warning: lda < n, lda = {}, n = {}", lda, n);                                                           \
-            return -5;                                                                                                                     \
         }                                                                                                                                  \
         if (ldvl < 1 || (lsame(jobvl, 'v') && ldvl < n)) {                                                                                 \
             EINSUMS_LOG_WARN("geev warning: ldvl < 1 or (jobvl = 'v' and ldvl < n), ldvl = {}, n = {}", ldvl, n);                          \
-            return -9;                                                                                                                     \
         }                                                                                                                                  \
         if (ldvr < 1 || (lsame(jobvr, 'v') && ldvr < n)) {                                                                                 \
             EINSUMS_LOG_WARN("geev warning: ldvr < 1 or (jobvr = 'v' and ldvr < n), ldvr = {}, n = {}", ldvr, n);                          \
-            return -11;                                                                                                                    \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##geev, UC##GEEV)                                                                                                      \
         (&jobvl, &jobvr, &n, a, &lda, wr.data(), wi.data(), vl, &ldvl, vr, &ldvr, &work_query, &lwork, &info);                             \
+                                                                                                                                           \
+        if (info != 0) {                                                                                                                   \
+            return info;                                                                                                                   \
+        }                                                                                                                                  \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
         lwork = (int_t)work_query;                                                                                                         \
@@ -113,7 +115,7 @@ GEEV_complex(double, z, Z);
         /* Call LAPACK function and adjust info */                                                                                         \
         FC_GLOBAL(lc##geev, UC##GEEV)                                                                                                      \
         (&jobvl, &jobvr, &n, a, &lda, wr.data(), wi.data(), vl, &ldvl, vr, &ldvr, work.data(), &lwork, &info);                             \
-        if (info < 0) {                                                                                                                    \
+        if (info != 0) {                                                                                                                   \
             return info;                                                                                                                   \
         }                                                                                                                                  \
                                                                                                                                            \

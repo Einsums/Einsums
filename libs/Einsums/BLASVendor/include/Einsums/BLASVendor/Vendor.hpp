@@ -73,6 +73,9 @@ EINSUMS_EXPORT void finalize();
  * @param[inout] c The output matrix.
  * @param[in] ldc The leading dimension for the output matrix.
  *
+ * @throws std::invalid_argument If @p transa or @p transb are not one of the valid options.
+ * @throws std::domain_error If any of the integer arguments have invalid values.
+ *
  * @versionadded{1.0.0}
  */
 void sgemm(char transa, char transb, int_t m, int_t n, int_t k, float alpha, float const *a, int_t lda, float const *b, int_t ldb,
@@ -101,6 +104,9 @@ void zgemm(char transa, char transb, int_t m, int_t n, int_t k, std::complex<dou
  * @param[in] beta The scale factor for the output vector.
  * @param[inout] y The output vector.
  * @param[in] incy The skip value for the output vector. If it is negative, then the multiplication proceeds in reverse.
+ *
+ * @throws std::invalid_argument If @p transa or @p transb are not one of the valid options.
+ * @throws std::domain_error If any of the integer arguments have invalid values.
  *
  * @versionadded{1.0.0}
  */
@@ -394,6 +400,9 @@ void zaxpy(int_t n, std::complex<double> alpha_x, std::complex<double> const *x,
  * @param[out] a The matrix to update.
  * @param[in] lda The leading dimension of the matrix.
  *
+ * @throws std::domain_error If the dimensions are zero, or the leading dimension of the array is less than the number of columns.
+ * @throws std::invalid_argument If either of the increment values is zero.
+ *
  * @versionadded{1.0.0}
  */
 void sger(int_t m, int_t n, float alpha, float const *x, int_t inc_x, float const *y, int_t inc_y, float *a, int_t lda);
@@ -422,6 +431,9 @@ void zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> con
  * @param[in] inc_y The skip value for the right vector.
  * @param[out] a The matrix to update.
  * @param[in] lda The leading dimension of the matrix.
+ *
+ * @throws std::domain_error If the dimensions are zero, or the leading dimension of the array is less than the number of columns.
+ * @throws std::invalid_argument If either of the increment values is zero.
  *
  * @versionadded{2.0.0}
  */

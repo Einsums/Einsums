@@ -1407,6 +1407,8 @@ using solverUnknown          = hipsolver_exception<HIPSOLVER_STATUS_UNKNOWN>;
  * @param[in] throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
  * function to exit quietly.
  *
+ * @throws hipblas_exception When the status is not a successful status.
+ *
  * @versionadded{1.0.0}
  */
 EINSUMS_HOST EINSUMS_EXPORT void __hipblas_catch__(hipblasStatus_t status, char const *func_call, char const *fname, char const *diagnostic,
@@ -1423,6 +1425,8 @@ EINSUMS_HOST EINSUMS_EXPORT void __hipblas_catch__(hipblasStatus_t status, char 
  * @param[in] throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
  * function to exit quietly.
  *
+ * @throws hipsolver_exception When the status is not a successful status.
+ *
  * @versionadded{1.0.0}
  */
 EINSUMS_HOST EINSUMS_EXPORT void __hipsolver_catch__(hipsolverStatus_t status, char const *func_call, char const *fname,
@@ -1438,6 +1442,8 @@ EINSUMS_HOST EINSUMS_EXPORT void __hipsolver_catch__(hipsolverStatus_t status, c
  * @param[in] funcname The name of the containing function.
  * @param[in] throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
  * function to exit quietly.
+ *
+ * @throws hip_exception When the status is not a successful status.
  *
  * @versionadded{1.0.0}
  */

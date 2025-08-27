@@ -309,7 +309,7 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *      Returns a new string instead of a const reference to an underlying string.
      * @endversion
      */
-    std::string get_string(std::string const &key) const;
+    std::string get_string(std::string const &key) const noexcept;
 
     /**
      * @brief Get the string value stored at the given key.
@@ -324,7 +324,7 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *      Returns a new string instead of a const reference to an underlying string.
      * @endversion
      */
-    std::string get_string(std::string const &key, std::string const &dephault) const;
+    std::string get_string(std::string const &key, std::string const &dephault) const noexcept;
 
     /**
      * @brief Get the integer value stored at the given key.
@@ -339,7 +339,7 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *      Added the ability to set a default return value.
      * @endversion
      */
-    std::int64_t get_int(std::string const &key, std::int64_t dephault = 0) const;
+    std::int64_t get_int(std::string const &key, std::int64_t dephault = 0) const noexcept;
 
     /**
      * @brief Get the floating point value stored at the given key.
@@ -354,7 +354,7 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *      Added the ability to set a default return value.
      * @endversion
      */
-    double get_double(std::string const &key, double dephault = 0) const;
+    double get_double(std::string const &key, double dephault = 0) const noexcept;
 
     /**
      * @brief Get the boolean flag stored at the given key.
@@ -366,7 +366,7 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *
      * @versionadded{1.0.1}
      */
-    bool get_bool(std::string const &key, bool dephault = false) const;
+    bool get_bool(std::string const &key, bool dephault = false) const noexcept;
 
     /**
      * @brief Set the string value stored at the given key.
@@ -411,28 +411,28 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *
      * @versionadded{1.0.0}
      */
-    std::shared_ptr<ConfigMap<std::string>> get_string_map();
+    std::shared_ptr<ConfigMap<std::string>> get_string_map() noexcept;
 
     /**
      * @brief Returns the map containing integer options.
      *
      * @versionadded{1.0.0}
      */
-    std::shared_ptr<ConfigMap<std::int64_t>> get_int_map();
+    std::shared_ptr<ConfigMap<std::int64_t>> get_int_map() noexcept;
 
     /**
      * @brief Returns the map containing floating point options.
      *
      * @versionadded{1.0.0}
      */
-    std::shared_ptr<ConfigMap<double>> get_double_map();
+    std::shared_ptr<ConfigMap<double>> get_double_map() noexcept;
 
     /**
      * @brief Returns the map containing boolean flags.
      *
      * @versionadded{1.0.0}
      */
-    std::shared_ptr<ConfigMap<bool>> get_bool_map();
+    std::shared_ptr<ConfigMap<bool>> get_bool_map() noexcept;
 
 #ifdef DOXYGEN
     /**

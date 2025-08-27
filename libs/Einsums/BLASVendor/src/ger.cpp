@@ -9,6 +9,7 @@
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
+#include <stdexcept>
 
 #include "Common.hpp"
 
@@ -29,16 +30,16 @@ extern void FC_GLOBAL(zgerc, ZGERC)(int_t *, int_t *, std::complex<double> *, st
 
 #define ger_parameter_check(m, n, inc_x, inc_y, lda)                                                                                       \
     if ((m) < 0) {                                                                                                                         \
-        EINSUMS_THROW_EXCEPTION(std::runtime_error, "First parameter (m) in ger call ({}) is less than zero.", m);                         \
+        EINSUMS_THROW_EXCEPTION(std::domain_error, "First parameter (m) in ger call ({}) is less than zero.", m);                         \
     }                                                                                                                                      \
     if ((n) < 0) {                                                                                                                         \
-        EINSUMS_THROW_EXCEPTION(std::runtime_error, "Second parameter (n) in ger call ({}) is less than zero.", n);                        \
+        EINSUMS_THROW_EXCEPTION(std::domain_error, "Second parameter (n) in ger call ({}) is less than zero.", n);                        \
     }                                                                                                                                      \
     if ((inc_x) == 0) {                                                                                                                    \
-        EINSUMS_THROW_EXCEPTION(std::runtime_error, "Fifth parameter (inc_x) in ger call ({}) is zero.", inc_x);                           \
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Fifth parameter (inc_x) in ger call ({}) is zero.", inc_x);                           \
     }                                                                                                                                      \
     if ((inc_y) == 0) {                                                                                                                    \
-        EINSUMS_THROW_EXCEPTION(std::runtime_error, "Seventh parameter (inc_y) in ger call ({}) is zero.", inc_y);                         \
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Seventh parameter (inc_y) in ger call ({}) is zero.", inc_y);                         \
     }                                                                                                                                      \
     if ((lda) < std::max(int_t{1}, m)) {                                                                                                   \
         EINSUMS_THROW_EXCEPTION(std::runtime_error, "Ninth parameter (lda) in ger call ({}) is less than max(1, n ({})).", lda, n);        \

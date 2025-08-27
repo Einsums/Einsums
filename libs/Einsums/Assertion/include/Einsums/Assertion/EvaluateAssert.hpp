@@ -20,7 +20,10 @@ namespace einsums::detail {
  * @param[in] msg An extra message to print out.
  *
  * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *      No longer noexcept to allow users to raise an exception rather than immediately calling exit.
+ * @endversion
  */
-EINSUMS_EXPORT void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) noexcept;
+EINSUMS_EXPORT void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg);
 
 } // namespace einsums::detail

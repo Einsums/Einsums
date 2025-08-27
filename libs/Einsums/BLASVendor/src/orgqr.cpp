@@ -35,21 +35,20 @@ extern void FC_GLOBAL(zungqr, ZUNGQR)(int_t *, int_t *, int_t *, std::complex<do
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
             EINSUMS_LOG_WARN("orgqr warning: lda < n, lda = {}, n = {}", lda, n);                                                          \
-            return -5;                                                                                                                     \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##orgqr, UC##ORGQR)(&m, &n, &k, a, &lda, tau, &work_query, &lwork, &info);                                             \
+                                                                                                                                           \
+        if (info != 0) {                                                                                                                   \
+            return info;                                                                                                                   \
+        }                                                                                                                                  \
                                                                                                                                            \
         lwork = (int_t)work_query;                                                                                                         \
         BufferVector<Type> work(lwork);                                                                                                    \
                                                                                                                                            \
         /* Call LAPACK function and adjust info */                                                                                         \
         FC_GLOBAL(lc##orgqr, UC##ORGQR)(&m, &n, &k, a, &lda, tau, work.data(), &lwork, &info);                                             \
-                                                                                                                                           \
-        if (info < 0) {                                                                                                                    \
-            return info;                                                                                                                   \
-        }                                                                                                                                  \
                                                                                                                                            \
         return info;                                                                                                                       \
     } /**/
@@ -68,21 +67,20 @@ ORGQR(float, s, S);
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
             EINSUMS_LOG_WARN("ungqr warning: lda < n, lda = {}, n = {}", lda, n);                                                          \
-            return -5;                                                                                                                     \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##ungqr, UC##UNGQR)(&m, &n, &k, a, &lda, tau, &work_query, &lwork, &info);                                             \
+                                                                                                                                           \
+        if (info != 0) {                                                                                                                   \
+            return info;                                                                                                                   \
+        }                                                                                                                                  \
                                                                                                                                            \
         lwork = (int_t)(work_query.real());                                                                                                \
         BufferVector<Type> work(lwork);                                                                                                    \
                                                                                                                                            \
         /* Call LAPACK function and adjust info */                                                                                         \
         FC_GLOBAL(lc##ungqr, UC##UNGQR)(&m, &n, &k, a, &lda, tau, work.data(), &lwork, &info);                                             \
-                                                                                                                                           \
-        if (info < 0) {                                                                                                                    \
-            return info;                                                                                                                   \
-        }                                                                                                                                  \
                                                                                                                                            \
         return info;                                                                                                                       \
     } /**/

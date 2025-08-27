@@ -20,6 +20,16 @@
 namespace einsums::detail {
 
 /**
+ * Thrown when an assertion fails.
+ *
+ * @versionadded{2.0.0}
+ */
+struct assertion_error : std::logic_error {
+  public:
+    using std::logic_error::logic_error;
+};
+
+/**
  * @typedef assertion_handler_type
  *
  * @brief The type for assertion handlers.
@@ -35,15 +45,20 @@ using assertion_handler_type = void (*)(std::source_location const &loc, char co
  * @param[in] expr The expression that failed.
  * @param[in] msg An extra diagnostic message.
  *
+ * @throws assertion_error Always throws.
+ *
  * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *      Throws an exception that can be handled rather than calling exit.
+ * @endversion
  */
-EINSUMS_EXPORT void default_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg);
+[[noreturn]] EINSUMS_EXPORT void default_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg);
 
 /**
  * @brief Sets the assertion hanlder to a user-defined handler.
  *
  * @param[in] handler The new handler to use.
- * 
+ *
  * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
@@ -61,7 +76,12 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
  *
  * @sa EINSUMS_ASSERT_MSG
  *
+ * @throws assertion_error If the expression is false.
+ *
  * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *      Throws an exception instead of calling exit when the expression is false.
+ * @endversion
  */
 #    define EINSUMS_ASSERT(expr)
 
@@ -81,7 +101,12 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
  * Asserts are enabled if \a EINSUMS_DEBUG is set. This is the default for
  * `CMAKE_BUILD_TYPE=Debug`
  *
+ * @throws assertion_error If the expression is false.
+ *
  * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *      Throws an exception instead of calling exit when the expression is false.
+ * @endversion
  */
 #    define EINSUMS_ASSERT_MSG(expr, msg)
 #else

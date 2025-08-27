@@ -63,7 +63,7 @@ struct Observable {
      *
      * @param initial_value The initial value of the observable.
      */
-    Observable(T initial_value = T{}) : _state(std::move(initial_value)) {}
+    Observable(T initial_value = T{}) noexcept : _state(std::move(initial_value)) {}
 
     /**
      * @brief Assignment operator for setting the value
@@ -71,7 +71,7 @@ struct Observable {
      * @param value The value to assign to the observable.
      */
     Observable &operator=(T const &value) {
-        set_value(value);
+        _state = value;
         return *this;
     }
 

@@ -41,7 +41,6 @@ template <typename T>
 struct IsBlasable<std::complex<T>> : std::is_floating_point<T> {};
 #endif
 
-
 /**
  * @property IsBlasable<T>::value
  *
@@ -902,6 +901,10 @@ void EINSUMS_EXPORT zgerc(int_t m, int_t n, std::complex<double> alpha, std::com
  * @param[inout] a The output matrix.
  * @param[in] lda The leading dimension of @p a.
  *
+ * @throws std::domain_error If either of the dimension parameters are negative or the leading dimension of the matrix is less than the
+ * number of columns.
+ * @throws std::invalid_argument If either of the vector increments are zero.
+ *
  * @versionadded{1.0.0}
  */
 template <typename T>
@@ -925,6 +928,10 @@ void ger(int_t m, int_t n, T alpha, T const *x, int_t inc_x, T const *y, int_t i
  * @param[in] inc_y The skip value for the right input. May be negative to go in reverse.
  * @param[inout] a The output matrix.
  * @param[in] lda The leading dimension of @p a.
+ *
+ * @throws std::domain_error If either of the dimension parameters are negative or the leading dimension of the matrix is less than the
+ * number of columns.
+ * @throws std::invalid_argument If either of the vector increments are zero.
  *
  * @versionadded{2.0.0}
  */

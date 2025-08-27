@@ -41,16 +41,18 @@ extern void FC_GLOBAL(zgees, ZGEES)(char *, char *, int_t (*)(double *, double *
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
             EINSUMS_LOG_WARN("gees warning: lda < n, lda = {}, n = {}", lda, n);                                                           \
-            return -4;                                                                                                                     \
         }                                                                                                                                  \
         if (ldvs < n) {                                                                                                                    \
             EINSUMS_LOG_WARN("gees warning: ldvs < n, ldvs = {}, n = {}", ldvs, n);                                                        \
-            return -9;                                                                                                                     \
         }                                                                                                                                  \
                                                                                                                                            \
         char sort = 'N';                                                                                                                   \
         FC_GLOBAL(lc##gees, UC##GEES)                                                                                                      \
         (&jobvs, &sort, nullptr, &n, a, &lda, sdim, wr, wi, vs, &ldvs, &work_query, &lwork, bwork, &info);                                 \
+                                                                                                                                           \
+        if (info != 0) {                                                                                                                   \
+            return info;                                                                                                                   \
+        }                                                                                                                                  \
                                                                                                                                            \
         lwork = (int_t)work_query;                                                                                                         \
         /* Allocate memory for work array */                                                                                               \
@@ -58,7 +60,7 @@ extern void FC_GLOBAL(zgees, ZGEES)(char *, char *, int_t (*)(double *, double *
         /* Call LAPACK function and adjust info */                                                                                         \
         FC_GLOBAL(lc##gees, UC##GEES)(&jobvs, &sort, nullptr, &n, a, &lda, sdim, wr, wi, vs, &ldvs, work.data(), &lwork, bwork, &info);    \
                                                                                                                                            \
-        return 0;                                                                                                                          \
+        return info;                                                                                                                       \
     } /**/
 
 GEES(double, d, D);
@@ -79,17 +81,19 @@ GEES(float, s, S);
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
             EINSUMS_LOG_WARN("gees warning: lda < n, lda = {}, n = {}", lda, n);                                                           \
-            return -4;                                                                                                                     \
         }                                                                                                                                  \
         if (ldvs < n) {                                                                                                                    \
             EINSUMS_LOG_WARN("gees warning: ldvs < n, ldvs = {}, n = {}", ldvs, n);                                                        \
-            return -9;                                                                                                                     \
         }                                                                                                                                  \
                                                                                                                                            \
         BufferVector<Type> rwork(n); /* real work */                                                                                       \
         char               sort = 'N';                                                                                                     \
         FC_GLOBAL(lc##gees, UC##GEES)                                                                                                      \
         (&jobvs, &sort, nullptr, &n, a, &lda, sdim, w, vs, &ldvs, &work_query, &lwork, rwork.data(), bwork, &info);                        \
+                                                                                                                                           \
+        if (info != 0) {                                                                                                                   \
+            return info;                                                                                                                   \
+        }                                                                                                                                  \
                                                                                                                                            \
         lwork = (int_t)work_query.real(); /* Allocate memory for work array */                                                             \
         BufferVector<std::complex<Type>> work(lwork);                                                                                      \
@@ -98,7 +102,7 @@ GEES(float, s, S);
         FC_GLOBAL(lc##gees, UC##GEES)                                                                                                      \
         (&jobvs, &sort, nullptr, &n, a, &lda, sdim, w, vs, &ldvs, work.data(), &lwork, rwork.data(), bwork, &info);                        \
                                                                                                                                            \
-        return 0;                                                                                                                          \
+        return info;                                                                                                                       \
     }
 
 GEES(double, z, Z);
