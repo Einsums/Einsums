@@ -37,6 +37,9 @@ class EINSUMS_EXPORT Einsums_BufferAllocator_vars final : public design_pats::Lo
      *
      * @versionadded{1.1.0}
      */
+    #ifdef DOXYGEN
+    static Einsums_BufferAllocator_vars &get_singleton();
+    #endif
 
     /**
      * @brief Requests a number of bytes from the counter.

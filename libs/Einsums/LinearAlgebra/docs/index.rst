@@ -369,7 +369,7 @@ Here are some of the public symbols that are available to use. More can be found
     .. versionadded:: 2.0.0
         Added :cpp:func:`gerc`.
 
-.. cpp:function:: template<MatrixConcept TensorType> int getrf(TensorType *A, std::vector<blas::int_t> *pivot)
+.. cpp:function:: template<MatrixConcept TensorType, ContiguousContainerOf<einsums::blas::int_t> Pivots> int getrf(TensorType *A, Pivots *pivot)
 
     Computes the LU factorization of a general :math:`m` by :math:`n` matrix.
 
@@ -381,7 +381,10 @@ Here are some of the public symbols that are available to use. More can be found
 
     .. versionadded:: 1.0.0
 
-.. cpp:function:: template<MatrixConcept TensorType> int getri(TensorType *A, std::vector<blas::int_t> const &pivot)
+    .. versionchanged:: 2.0.0
+        The pivots can now be any container type that stores its data contiguously. For instance, vectors and arrays work, but linked lists don't.
+
+.. cpp:function:: template<MatrixConcept TensorType, ContiguousContainerOf<einsums::blas::int_t> Pivots> int getri(TensorType *A, Pivots const &pivot)
 
     Computes the inverse of a matrix using the data obtained from :cpp:func:`getrf`.
 
@@ -390,6 +393,9 @@ Here are some of the public symbols that are available to use. More can be found
     :return: If 0, then the procedure succeded. Otherwise, the procedure failed.
 
     .. versionadded:: 1.0.0
+
+    .. versionchanged:: 2.0.0
+        The pivots can now be any container type that stores its data contiguously. For instance, vectors and arrays work, but linked lists don't.
 
 .. cpp:function:: template<MatrixConcept TensorType> void invert(TensorType *A)
 

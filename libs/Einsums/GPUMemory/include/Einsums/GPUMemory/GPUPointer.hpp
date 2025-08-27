@@ -688,6 +688,7 @@ constexpr bool operator+(ptrdiff_t &&offset, einsums::gpu::GPUPointer<T> const &
     return base + offset;
 }
 
+namespace std {
 /**
  * @brief Swap the contents of two pointers.
  *
@@ -696,7 +697,6 @@ constexpr bool operator+(ptrdiff_t &&offset, einsums::gpu::GPUPointer<T> const &
  *
  * @versionadded{1.1.0}
  */
-namespace std {
 template <typename T>
 void swap(einsums::gpu::GPUPointer<T> &a, einsums::gpu::GPUPointer<T> &b) {
     auto *temp = a.gpu_ptr_;

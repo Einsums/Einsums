@@ -26,6 +26,8 @@ namespace detail {} // namespace detail
 
 /**
  * @brief Add a function to the list of startup functions to add module-specific command line arguments.
+ *
+ * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT void register_arguments(std::function<void(argparse::ArgumentParser &)>);
 
@@ -40,12 +42,16 @@ EINSUMS_EXPORT void register_arguments(std::function<void(argparse::ArgumentPars
  *
  * The current instance of the RuntimeConfiguration can be obtained
  * from Runtime::config() or from runtime_config() functions.
+ *
+ * @versionadded{1.0.0}
  */
 struct EINSUMS_EXPORT RuntimeConfiguration {
     /**
      * @property original
      *
      * @todo Document.
+     *
+     * @versionadded{1.0.0}
      */
     std::vector<std::string> original;
 
@@ -53,23 +59,29 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
      * @property argument_parser
      *
      * @brief Holds the parser used to parse the arguments passed to Einsums.
+     *
+     * @versionadded{1.0.0}
      */
     std::unique_ptr<argparse::ArgumentParser> argument_parser;
 
     /**
      * Constructor of the runtime configuration object of einsums.
      *
-     * @param argc the argc argument from main
-     * @param argv the argv argument from main
-     * @param user_command_line callback function that can be used to register additional command-line options
+     * @param[in] argc the argc argument from main
+     * @param[in] argv the argv argument from main
+     * @param[in] user_command_line callback function that can be used to register additional command-line options
+     *
+     * @versionadded{1.0.0}
      */
     RuntimeConfiguration(int argc, char const *const *argv, std::function<void(argparse::ArgumentParser &)> const &user_command_line = {});
 
     /**
      * Constructor of the runtime configuration object of einsums. This is used when argv has been packaged into a vector.
      *
-     * @param argv The argv that has been packaged up.
-     * @param user_command_line callback function that can be used to register additional command-line options
+     * @param[in] argv The argv that has been packaged up.
+     * @param[in] user_command_line callback function that can be used to register additional command-line options
+     *
+     * @versionadded{1.0.0}
      */
     explicit RuntimeConfiguration(std::vector<std::string> const                        &argv,
                                   std::function<void(argparse::ArgumentParser &)> const &user_command_line = {});
@@ -79,11 +91,17 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
   private:
     /**
      * Currently sets reasonable defaults for the development of Einsums.
+     *
+     * @versionadded{1.0.0}
      */
     void pre_initialize();
 
     /**
      * Parse the command line arguments provided in argc and argv. Returns unknown command line arguments.
+     *
+     * @param[in] user_command_line Callbiack function that can be used to register additional command-line arguments.
+     *
+     * @versionadded{1.0.0}
      */
     std::vector<std::string> parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line = {});
 };

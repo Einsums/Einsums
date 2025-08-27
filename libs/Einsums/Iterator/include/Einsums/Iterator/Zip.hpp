@@ -462,12 +462,12 @@ Zip(Containers &...) -> Zip<Containers...>;
 
 } // namespace einsums
 
+namespace std {
 /**
  * @brief Overload for swap.
  *
  * @versionadded{1.1.0}
  */
-namespace std {
 template <typename... Containers>
 constexpr void swap(einsums::ZipIter<Containers...> &first, einsums::ZipIter<Containers...> &second) {
     first.swap(second);

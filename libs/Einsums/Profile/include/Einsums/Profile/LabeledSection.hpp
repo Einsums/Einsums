@@ -14,6 +14,8 @@
  *
  * Constructs a label that includes the encompassing namespace and function names.
  * This macro also includes an extra label that will be appended to the section name.
+ *
+ * @versionadded{1.0.0}
  */
 #define LabeledSection1(x) const Section _section(fmt::format("{} {}", __func__, x))
 
@@ -21,5 +23,7 @@
  * @brief Convenience wrapper to Section.
  *
  * Constructs a label that includes the encompassing namespace and function names.
+ *
+ * @versionadded{1.0.0}
  */
 #define LabeledSection0() const Section _section(fmt::format("{}", __func__))

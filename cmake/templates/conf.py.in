@@ -500,9 +500,15 @@ nitpick_ignore_regex = {(r"c(pp)?:identifier", r"size_t"),
     (r"cpp:identifier", r"pybind11(::.*)?"),
     (r"cpp:identifier", r"_concept"),
     (r"cpp:identifier", r"HIP.*"),
-    (r"cpp:identifier", r"hip.*_t")
+    (r"cpp:identifier", r"hip.*_t"),
+    (r"cpp:identifier", r"argparse.*"),
+    (r"cpp:identifier", r".*detail.*"),
+    (r"cpp:identifier", r"hipError.*"),
+    (r"cpp:identifier", r"hipSuccess"),
+    (r"cpp:identifier", r"hip.*Complex"),
+    (r"cpp:identifier", r"dim3")
     }
 
-suppress_warnings = {
+suppress_warnings = [
     "duplicate_declaration.cpp"
-}
+]

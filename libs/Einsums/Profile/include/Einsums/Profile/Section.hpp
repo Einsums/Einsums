@@ -27,29 +27,60 @@ namespace einsums {
  * }
  * @endcode
  *
+ * @versionadded{1.0.0}
+ *
  */
 struct EINSUMS_EXPORT Section {
+#ifdef DOXYGEN
+    /**
+     * The underlying implementation of the section class.
+     *
+     * @versionadded{1.0.0}
+     */
+    struct Impl {
+        /**
+         * The section name.
+         *
+         * @versionadded{1.0.0}
+         */
+        std::string name;
+
+        /**
+         * Whether the timer was pushed or not.
+         *
+         * @versionadded{1.0.0}
+         */
+        bool push_timer;
+    };
+#else
     struct Impl;
+#endif
 
     /**
      * @brief Construct a new Section object
      *
-     * @param name Name of the section to be timed. If VTune is available then \p name becomes the label in VTune.
-     * @param pushTimer Enable Einsums timing mechanism for this section. Default is true.
+     * @param[in] name Name of the section to be timed. If VTune is available then \p name becomes the label in VTune.
+     * @param[in] pushTimer Enable Einsums timing mechanism for this section. Default is true.
+     *
+     * @versionadded{1.0.0}
      */
     explicit Section(std::string const &name, bool pushTimer = true);
 
     /**
      * @brief Construct a new Section object
      *
-     * @param name Name of the section to be timed.
-     * @param domain If VTune is available then this is the label used in VTune.
-     * @param pushTimer Enable Einsums timing mechanism for this section. Default is true.
+     * @param[in] name Name of the section to be timed.
+     * @param[in] domain If VTune is available then this is the label used in VTune.
+     * @param[in] pushTimer Enable Einsums timing mechanism for this section. Default is true.
+     *
+     * @versionadded{1.0.0}
      */
     Section(std::string const &name, std::string const &domain, bool pushTimer = true);
 
     /**
      * @brief Destroy the Section object
+     *
+     * @versionadded{1.0.0}
      */
     ~Section();
 
@@ -59,12 +90,19 @@ struct EINSUMS_EXPORT Section {
      * If for some reason you need to prematurely end a timing section then use this function.
      * This is automatically called by the destructor when Section goes out of scope.
      *
+     *
+     * @versionadded{1.0.0}
      */
     void end();
 
   private:
     void begin();
 
+    /**
+     * The underlying implementation of the section class.
+     *
+     * @versionadded{1.0.0}
+     */
     std::unique_ptr<Impl> _impl;
 };
 

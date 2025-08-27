@@ -278,7 +278,11 @@ struct hip_exception : std::exception {
      *
      * @versionadded{1.0.0}
      */
-    char const *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return message.c_str(); }
+    #    ifdef DOXYGEN
+    char const *what() const noexcept override;
+#    else
+    char const *what() const EINSUMS_TRANSACTION_SAFE_DYN noexcept override { return message.c_str(); }
+#    endif
 
     /**
      * @brief Equality operator.
@@ -939,7 +943,11 @@ struct EINSUMS_EXPORT hipblas_exception : std::exception {
      *
      * @versionadded{1.0.0}
      */
-    char const *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return message.c_str(); }
+#    ifdef DOXYGEN
+    char const *what() const noexcept override;
+#    else
+    char const *what() const EINSUMS_TRANSACTION_SAFE_DYN noexcept override { return message.c_str(); }
+#    endif
 
     /**
      * @brief Equality operator.
@@ -1306,7 +1314,11 @@ struct EINSUMS_EXPORT hipsolver_exception : std::exception {
      *
      * @versionadded{1.0.0}
      */
-    char const *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return message.c_str(); }
+#    ifdef DOXYGEN
+    char const *what() const noexcept override;
+#    else
+    char const *what() const EINSUMS_TRANSACTION_SAFE_DYN noexcept override { return message.c_str(); }
+#    endif
 
     /**
      * Equality operator.
@@ -1419,7 +1431,7 @@ EINSUMS_HOST EINSUMS_EXPORT void __hipsolver_catch__(hipsolverStatus_t status, c
 /**
  * @brief Takes a status code as an argument and throws the appropriate exception.
  *
- * @param[in] status The status to convert.
+ * @param[in] condition The status to convert.
  * @param[in] func_call The function call that produced the error.
  * @param[in] fname The file name.
  * @param[in] diagnostic A custom message to the user.

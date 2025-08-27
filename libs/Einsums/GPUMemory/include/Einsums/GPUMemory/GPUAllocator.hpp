@@ -219,7 +219,7 @@ struct GPUAllocator {
 // template <typename T>
 // struct MappedAllocator {
 //   public:
-//     /**
+//     /*
 //      * @typedef dev_datatype
 //      *
 //      * @brief The data type stored on the device. This is only different if T is complex.

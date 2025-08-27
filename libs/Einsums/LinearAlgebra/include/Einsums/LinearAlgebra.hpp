@@ -977,7 +977,7 @@ auto norm(Norm norm_type, AType const &a) -> RemoveComplexT<typename AType::Valu
  * this is the same as taking the square root of the sum of the squares of all of the elements.
  *
  * @tparam AType The type of the input tensor.
- * @param[in] A The tensor to handle.
+ * @param[in] a The tensor to handle.
  *
  * @return The vector norm of the tensor.
  *
@@ -1020,6 +1020,8 @@ enum class Vectors : char {
  *
  * @tparam AType The type of the input tensor.
  * @param[in] A the matrix to decompose.
+ * @param[in] jobu Whether to compute the U matrix.
+ * @param[in] jobvt Whether to compute the transpose of the V matrix.
  *
  * @return A tuple containing the U matrix, singular value vector, and the transpose of the V matrix.
  *
@@ -1193,7 +1195,7 @@ auto truncated_svd(AType const &_A, size_t k)
  * Perform the truncated eigendecomposition of a matrix.
  *
  * @tparam AType The type of the matrix.
- * @param[in] _A The matrix to decompose.
+ * @param[in] A The matrix to decompose.
  * @param[in] k The number of eigenvalues to use.
  *
  * @return A tuple containing the eigenvectors and eigenvalues.
@@ -1328,7 +1330,7 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
 
     size_t n = A.dim(0);
 
-    //// @todo Break this off into a separate schur function
+    /// @todo Break this off into a separate schur function
     // Compute Schur Decomposition of A
     Tensor<T, 2>              R = A; // R is a copy of A
     Tensor<T, 2>              wr("Schur Real Buffer", n, n);
@@ -1353,7 +1355,7 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
 }
 
 /// @todo Bring this back
-// ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)
+/// <tt>ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)</tt>
 
 /**
  * Perform QR decomposition.

@@ -686,7 +686,7 @@ constexpr inline bool IsIncoreBlockTensorV = IsIncoreTensorV<D> && IsBlockTensor
  * @tparam D The tensor to check.
  *
  * @versionadded{1.0.0}
- * @versionchanged{2.0.0}
+ * @versionchangeddesc{2.0.0}
  *      Fixed a typo. Was @c IsDeviceBLockTensorV , now it is @c IsDeviceBlockTensorV .
  * @endversion
  */
