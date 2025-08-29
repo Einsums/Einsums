@@ -8,7 +8,8 @@
 /**
  * Concatenates its arguments.
  *
- * @param a,b The arguments to concatenate.
+ * @param a
+ * @param b The arguments to concatenate.
  *
  * @versionadded{1.0.0}
  */
@@ -17,7 +18,8 @@
 /**
  * Concatenates its arguments. Inner level because of macro weirdness.
  *
- * @param a,b The arguments to concatenate.
+ * @param a
+ * @param b The arguments to concatenate.
  *
  * @versionadded{1.0.0}
  */

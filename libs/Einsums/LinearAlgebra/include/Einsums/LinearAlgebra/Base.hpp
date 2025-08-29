@@ -33,7 +33,7 @@
 namespace einsums::linear_algebra::detail {
 
 template <typename T>
-void sum_square(einsums::detail::TensorImpl<T> const &a, RemoveComplexT<T> *scale, RemoveComplexT<T> *sumsq) {
+void sum_square(einsums::detail::TensorImpl<T> const &a, RemoveComplexT<T> *scale, RemoveComplexT<T> *sumsq) noexcept {
     impl_sum_square(a, scale, sumsq);
 }
 
@@ -50,6 +50,12 @@ void gemm(char transA, char transB, AlphaType const alpha, einsums::detail::Tens
     if (A.rank() != 2 || B.rank() != 2 || C->rank() != 2) {
         EINSUMS_THROW_EXCEPTION(rank_error, "The inputs to gemm need to be matrices! Got ranks {}, {}, and {}.", A.rank(), B.rank(),
                                 C->rank());
+    }
+
+    if (!std::strchr("cnt", tA) || !std::strchr("cnt", tB)) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                "One of the transpose inputs was invalid. Expected 'c', 'n', or 't', case insensitive. Got {:?} and {:?}.",
+                                transA, transB);
     }
     if (tA == 'n' && tB == 'n') {
         if (A.dim(1) != B.dim(0)) {
@@ -141,6 +147,10 @@ void gemv(char transA, AlphaType alpha, einsums::detail::TensorImpl<AType> const
         EINSUMS_THROW_EXCEPTION(
             rank_error, "The ranks of the tensors passed to gemv are incompatible! Requires a matrix and to vectors. Got {}, {}, and {}.",
             A.rank(), X.rank(), Y->rank());
+    }
+    if (!std::strchr("cntCNT", transA)) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The transpose character is invalid! Expected either 'c', 'n', or 't'. Got {:?}.",
+                                transA);
     }
     if (std::tolower(transA) == 'n') {
         if (A.dim(0) != Y->dim(0)) {
@@ -247,8 +257,20 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
             // Query buffer params.
             AType lwork_complex = AType{(RemoveComplexT<AType>)(2 * n - 1)};
 
-            blas::heev(jobz, 'u', n, A->data(), lda, (RemoveComplexT<AType> *)nullptr, &lwork_complex, -1,
-                       (RemoveComplexT<AType> *)nullptr);
+            blas::int_t info;
+
+            info = blas::heev(jobz, 'u', n, A->data(), lda, (RemoveComplexT<AType> *)nullptr, &lwork_complex, -1,
+                              (RemoveComplexT<AType> *)nullptr);
+
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(
+                    std::invalid_argument,
+                    "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, 5 (lda): {}, 8 (lwork): "
+                    "-1. This is  the query call, so lwork should be -1.",
+                    jobz, n, lda);
+            } else if (info > 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "The query call to syev/heev returned an unknown error!");
+            }
 
             lwork = (blas::int_t)std::real(lwork_complex);
 
@@ -262,14 +284,34 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
 
                 // Make a temporary buffer for the eigenvalues, then copy after.
                 BufferVector<RemoveComplexT<AType>> temp_vals(A->dim(0));
-                blas::heev(jobz, 'u', n, A->data(), lda, temp_vals.data(), work.data(), lwork, rwork.data());
+                info = blas::heev(jobz, 'u', n, A->data(), lda, temp_vals.data(), work.data(), lwork, rwork.data());
+
+                if (info < 0) {
+                    EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                            "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, "
+                                            "5 (lda): {}, 8 (lwork): "
+                                            "{}.",
+                                            jobz, n, lda, lwork);
+                } else if (info > 0) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
+                }
 
                 for (int i = 0; i < W->dim(0); i++) {
                     W->subscript(i) = temp_vals[i];
                 }
             } else {
                 // No temporary buffer needed.
-                blas::heev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
+                info = blas::heev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
+
+                if (info < 0) {
+                    EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                            "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, "
+                                            "5 (lda): {}, 8 (lwork): "
+                                            "{}.",
+                                            jobz, n, lda, lwork);
+                } else if (info > 0) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
+                }
             }
 
             // We might need to transpose the eigenvectors.
@@ -303,9 +345,20 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
         // Check if we can use LAPACK.
         if (A->is_gemmable(&lda)) {
             // Query buffer params.
-            AType lwork_real = (AType)(3 * n - 2);
+            AType       lwork_real = (AType)(3 * n - 2);
+            blas::int_t info       = 0;
 
-            blas::syev(jobz, 'u', n, A->data(), lda, (AType *)nullptr, &lwork_real, -1);
+            info = blas::syev(jobz, 'u', n, A->data(), lda, (AType *)nullptr, &lwork_real, -1);
+
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(
+                    std::invalid_argument,
+                    "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, 5 (lda): {}, 8 (lwork): "
+                    "-1. This is  the query call, so lwork should be -1.",
+                    jobz, n, lda);
+            } else if (info > 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "The query call to syev/heev returned an unknown error!");
+            }
 
             lwork = (blas::int_t)lwork_real;
 
@@ -314,13 +367,33 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
             // Check
             if (W->get_incx() != 1) {
                 BufferVector<RemoveComplexT<AType>> temp(A->dim(0));
-                blas::syev(jobz, 'u', n, A->data(), lda, temp.data(), work.data(), lwork);
+                info = blas::syev(jobz, 'u', n, A->data(), lda, temp.data(), work.data(), lwork);
+
+                if (info < 0) {
+                    EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                            "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, "
+                                            "5 (lda): {}, 8 (lwork): "
+                                            "{}.",
+                                            jobz, n, lda, lwork);
+                } else if (info > 0) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
+                }
 
                 for (int i = 0; i < W->dim(0); i++) {
                     W->subscript(i) = temp[i];
                 }
             } else {
-                blas::syev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+                info = blas::syev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+
+                if (info < 0) {
+                    EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                            "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, "
+                                            "5 (lda): {}, 8 (lwork): "
+                                            "{}.",
+                                            jobz, n, lda, lwork);
+                } else if (info > 0) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
+                }
             }
 
             // We might need to transpose the eigenvectors.
@@ -968,15 +1041,20 @@ template <bool TransA, bool TransB, CoreBasicTensorConcept AType, CoreBasicTenso
         requires MatrixConcept<AType>;
     }
 void symm_gemm(AType const &A, BType const &B, CType *C) {
-    int temp_rows, temp_cols;
+    int  temp_rows, temp_cols;
+    bool shape_test = true;
     if constexpr (TransA && TransB) {
-        EINSUMS_ASSERT(B.dim(0) == A.dim(0) && A.dim(1) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
+        shape_test = B.dim(0) == A.dim(0) && A.dim(1) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1);
     } else if constexpr (TransA && !TransB) {
-        EINSUMS_ASSERT(B.dim(1) == A.dim(0) && A.dim(1) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
+        shape_test = B.dim(1) == A.dim(0) && A.dim(1) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0);
     } else if constexpr (!TransA && TransB) {
-        EINSUMS_ASSERT(B.dim(0) == A.dim(1) && A.dim(0) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
+        shape_test = B.dim(0) == A.dim(1) && A.dim(0) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1);
     } else {
-        EINSUMS_ASSERT(B.dim(1) == A.dim(1) && A.dim(0) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
+        shape_test = B.dim(1) == A.dim(1) && A.dim(0) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0);
+    }
+
+    if (!shape_test) {
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The shapes of the input and output tensors are incompatible!");
     }
 
     if constexpr (TransA) {
@@ -1075,8 +1153,17 @@ auto pow(AType const &a, typename AType::ValueType alpha,
     return result;
 }
 
-template <typename T, ContiguousContainerOf<blas::int_t> Pivots>
-auto getrf(einsums::detail::TensorImpl<T> *A, Pivots *pivot) -> int {
+template <typename T, typename Pivots, bool is_resizable = requires(Pivots c) { c.resize(); }>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+    }
+[[nodiscard]] auto getrf(einsums::detail::TensorImpl<T> *A, Pivots *pivot) -> int {
     LabeledSection0();
 
     if (A->rank() != 2) {
@@ -1087,9 +1174,15 @@ auto getrf(einsums::detail::TensorImpl<T> *A, Pivots *pivot) -> int {
         return 0;
     }
 
-    if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
-        // println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
-        pivot->resize(std::min(A->dim(0), A->dim(1)));
+    if constexpr (is_resizable) {
+        if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
+            // println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
+            pivot->resize(std::min(A->dim(0), A->dim(1)));
+        }
+    } else {
+        if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
+            EINSUMS_THROW_EXCEPTION(std::length_error, "The length of the pivot array is too small and can not be resized!");
+        }
     }
 
     int result;
@@ -1101,7 +1194,11 @@ auto getrf(einsums::detail::TensorImpl<T> *A, Pivots *pivot) -> int {
     }
 
     if (result < 0) {
-        EINSUMS_LOG_WARN("getrf: argument {} has an invalid value", -result);
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "getrf: {} argument has an invalid value!, m: {}, n: {}, lda: {}.",
+                                print::ordinal(-result), A->dim(0), A->dim(1), A->get_lda());
+    } else if (result > 0) {
+        EINSUMS_LOG_INFO("The matrix passed into the LU decomposition routine was singular. The decomposition was completed, but the "
+                         "result should not be used to solve equations or to find the inverse of the matrix.");
     }
 
     return result;
@@ -1122,9 +1219,18 @@ auto getrf(einsums::detail::TensorImpl<T> *A, Pivots *pivot) -> int {
  * @param pivot
  * @return
  */
-template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
-    requires(CoreTensorConcept<TensorType>)
-auto getrf(TensorType *A, Pivots *pivot) -> int {
+template <MatrixConcept TensorType, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+        requires(CoreTensorConcept<TensorType>);
+    }
+[[nodiscard]] auto getrf(TensorType *A, Pivots *pivot) -> int {
     return getrf(&A->impl(), pivot);
 }
 
@@ -1139,8 +1245,17 @@ auto getrf(TensorType *A, Pivots *pivot) -> int {
  * @param pivot The pivot vector from getrf
  * @return int If 0, the execution is successful.
  */
-template <typename T, ContiguousContainerOf<blas::int_t> Pivots>
-auto getri(einsums::detail::TensorImpl<T> *A, Pivots const &pivot) -> int {
+template <typename T, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+    }
+void getri(einsums::detail::TensorImpl<T> *A, Pivots const &pivot) {
     LabeledSection0();
 
     if (A->rank() != 2) {
@@ -1161,10 +1276,12 @@ auto getri(einsums::detail::TensorImpl<T> *A, Pivots const &pivot) -> int {
     }
 
     if (result < 0) {
-        EINSUMS_LOG_WARN("getri: argument {} has an invalid value", -result);
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "getri: {} argument has an invalid value! n: {}, lda: {}.", print::ordinal(-result),
+                                A->dim(0), A->get_lda());
+    } else if (result > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "The matrix passed into the inversion function is singular! An inverse could not be "
+                                                    "computed. This means that the return value from getrf was ignored.");
     }
-
-    return result;
 }
 
 /**
@@ -1178,10 +1295,19 @@ auto getri(einsums::detail::TensorImpl<T> *A, Pivots const &pivot) -> int {
  * @param pivot The pivot vector from getrf
  * @return int If 0, the execution is successful.
  */
-template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
-    requires(CoreTensorConcept<TensorType>)
-auto getri(TensorType *A, Pivots const &pivot) -> int {
-    return getri(&A->impl(), pivot);
+template <MatrixConcept TensorType, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+        requires(CoreTensorConcept<TensorType>);
+    }
+void getri(TensorType *A, Pivots const &pivot) {
+    getri(&A->impl(), pivot);
 }
 
 template <typename T>
@@ -1290,15 +1416,13 @@ auto svd(einsums::detail::TensorImpl<T> const &_A, char jobu, char jobvt)
     //    int info{0};
     int info = blas::gesvd(jobu, jobvt, m, n, A.data(), lda, S.data(), U_data, ldu, Vt_data, ldvt, superb.data());
 
-    if (info != 0) {
-        if (info < 0) {
-            EINSUMS_THROW_EXCEPTION(
-                std::invalid_argument,
-                "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info, m,
-                n, lda, ldu, ldvt);
-        } else {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
-        }
+    if (info < 0) {
+        EINSUMS_THROW_EXCEPTION(
+            std::invalid_argument,
+            "svd: Argument {} has an invalid value.\n#3 (m) = {}, #4 (n) = {}, #6 (lda) = {}, #9 (ldu) = {}, #11 (ldvt) = {}", -info, m, n,
+            lda, ldu, ldvt);
+    } else if (info > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: Algorithm did not converge!", info);
     }
 
     return std::make_tuple((std::tolower(jobu) != 'n') ? option(std::move(U)) : option(), S,
@@ -1362,8 +1486,10 @@ auto norm(char norm_type, einsums::detail::TensorImpl<T> const &a) -> RemoveComp
             } else {
                 return impl_frobenius_norm(a);
             }
+        case '2':
+            EINSUMS_THROW_EXCEPTION(not_implemented, "Haven't got around to implementing yet. It should be a simple svd.");
         default:
-            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The norm type passed to norm is not valid!");
+            EINSUMS_THROW_EXCEPTION(enum_error, "The norm type passed to norm is not valid!");
         }
     } else {
         switch (norm_type) {
@@ -1382,8 +1508,10 @@ auto norm(char norm_type, einsums::detail::TensorImpl<T> const &a) -> RemoveComp
         case 'E':
         case 'F':
             return impl_frobenius_norm(a);
+        case '2':
+            EINSUMS_THROW_EXCEPTION(not_implemented, "Haven't got around to implementing yet. It should be a simple svd.");
         default:
-            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The norm type passed to norm is not valid!");
+            EINSUMS_THROW_EXCEPTION(enum_error, "The norm type passed to norm is not valid!");
         }
     }
 }
@@ -1416,6 +1544,10 @@ auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job)
     using option = std::optional<Tensor<T, 2>>;
 
     //    DisableOMPThreads const nothreads;
+
+    if (_A.rank() != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "The input tensor to svd_dd needs to be rank-2!");
+    }
 
     // Calling svd will destroy the original data. Make a copy of it.
     Tensor<T, 2> A = _A;

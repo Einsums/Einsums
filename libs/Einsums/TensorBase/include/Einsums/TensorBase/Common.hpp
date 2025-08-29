@@ -45,6 +45,12 @@ struct Dim : std ::array<std ::int64_t, Rank> {
         requires(std::is_integral_v<std::remove_cvref_t<Args>> && ...)
     constexpr explicit Dim(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
 
+    /**
+     * Construct a dimension array and fill it with values.
+     *
+     * @param[in] start An iterator to the start of the data.
+     * @param[in] end An iterator to the end of the data.
+     */
     template <typename Iterator>
         requires requires(Iterator it) {
             { *it };

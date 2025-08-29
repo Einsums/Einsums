@@ -187,6 +187,8 @@ struct GPUAllocator {
      * @param[inout] xp The destination pointer.
      * @param[in] value The value to copy.
      *
+     * @throws ErrorInvalidMemcpyDirection If the pointer provided is not a device pointer.
+     *
      * @versionadded{1.1.0}
      */
     void construct(pointer xp, T const &value) {
@@ -200,7 +202,7 @@ struct GPUAllocator {
      *
      * @versionadded{1.1.0}
      */
-    void destroy(pointer xp) {
+    void destroy(pointer xp) noexcept {
         ; // Do nothing.
     }
 

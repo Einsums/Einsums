@@ -16,42 +16,42 @@
  *
  * If transactional memory is supported by your compiler, expands to the @c transaction_safe_dynamic keyword.
  *
- * @verisonadded{2.0.0}
+ * @versionadded{2.0.0}
  */
 /**
  * @def EINSUMS_TRANSACTION_SAFE
  *
  * If transactional memory is supported by your compiler, expands to the @c transaction_safe keyword.
  *
- * @verisonadded{2.0.0}
+ * @versionadded{2.0.0}
  */
 /**
  * @def EINSUMS_ATOMIC_CANCEL
  *
  * If transactional memory is supported by your compiler, expands to the @c atomic_cancel keyword.
  *
- * @verisonadded{2.0.0}
+ * @versionadded{2.0.0}
  */
 /**
  * @def EINSUMS_ATOMIC_COMMIT
  *
  * If transactional memory is supported by your compiler, expands to the @c atomic_commit keyword.
  *
- * @verisonadded{2.0.0}
+ * @versionadded{2.0.0}
  */
 /**
  * @def EINSUMS_ATOMIC_NOEXCEPT
  *
  * If transactional memory is supported by your compiler, expands to the @c atomic_noexcept keyword.
  *
- * @verisonadded{2.0.0}
+ * @versionadded{2.0.0}
  */
 /**
  * @def EINSUMS_SYNCHRONIZED
  *
  * If transactional memory is supported by your compiler, expands to the @c synchronized keyword.
  *
- * @verisonadded{2.0.0}
+ * @versionadded{2.0.0}
  */
 #if defined(__cpp_transactional_memory) && __cpp_transactional_memory >= 201505L
 #    define EINSUMS_TRANSACTION_SAFE_DYN transaction_safe_dynamic

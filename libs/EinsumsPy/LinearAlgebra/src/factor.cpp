@@ -142,20 +142,12 @@ void getri(pybind11::buffer &A, std::vector<blas::int_t> &pivot) {
         EINSUMS_THROW_EXCEPTION(py::value_error, "The pivot list has not been initialized! Have you performed getrf on this matrix first?");
     }
 
-    int result = 0;
-
     EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), [&]() {
         auto A_tens = buffer_to_tensor<Float>(A);
-        result      = einsums::linear_algebra::detail::getri(&A_tens, pivot);
+        einsums::linear_algebra::detail::getri(&A_tens, pivot);
     }())
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only decompose matrices of real or complex floating point values!");
-    }
-
-    if (result < 0) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument had an illegal value!", print::ordinal(-result));
-    } else if (result > 0) {
-        EINSUMS_THROW_EXCEPTION(std::runtime_error, "The matrix is singular!");
     }
 }
 

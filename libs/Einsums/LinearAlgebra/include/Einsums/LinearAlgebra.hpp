@@ -18,6 +18,9 @@
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
+#include "Einsums/Errors/Error.hpp"
+#include "Einsums/Profile/LabeledSection.hpp"
+
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/LinearAlgebra/GPULinearAlgebra.hpp>
 #endif
@@ -50,10 +53,12 @@ namespace einsums::linear_algebra {
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Can now handle tensors. Can also handle non-unit strides and both row- and colum-major layouts.
+ *      Includes support for block and tiled tensors.
  * @endversion
  */
 template <TensorConcept AType>
-void sum_square(AType const &a, RemoveComplexT<typename AType::ValueType> *scale, RemoveComplexT<typename AType::ValueType> *sumsq) {
+void sum_square(AType const &a, RemoveComplexT<typename AType::ValueType> *scale,
+                RemoveComplexT<typename AType::ValueType> *sumsq) noexcept(BasicTensorConcept<AType>) {
     LabeledSection0();
     detail::sum_square(a, scale, sumsq);
 }
@@ -89,6 +94,9 @@ void sum_square(AType const &a, RemoveComplexT<typename AType::ValueType> *scale
  * @param[in] beta Scaling factor for the output tensor C
  * @param[inout] C Output tensor
  *
+ * @throws rank_error If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+ * @throws tensor_compat_error If the tensors have incompatible dimensions.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Can now handle non-unit strides and both row- and colum-major layouts.
@@ -101,6 +109,8 @@ template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, Ma
         requires SameUnderlying<AType, BType, CType>;
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
+    LabeledSection0();
+
     detail::gemm<TransA, TransB>(alpha, A, B, beta, C);
 }
 
@@ -136,6 +146,10 @@ void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C)
  * @param[inout] C Output tensor
  * @tparam T the underlying data type
  *
+ * @throws rank_error If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+ * @throws tensor_compat_error If the tensors have incompatible dimensions.
+ * @throws std::invalid_argument If the transpose characters are invalid.
+ *
  * @versionadded{2.0.0}
  */
 template <MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U>
@@ -169,6 +183,9 @@ void gemm(char transA, char transB, U const alpha, AType const &A, BType const &
  * @param[in] A First input tensor
  * @param[in] B Second input tensor
  * @returns resulting tensor
+ *
+ * @throws rank_error If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+ * @throws tensor_compat_error If the tensors have incompatible dimensions.
  *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
@@ -204,6 +221,9 @@ auto gemm(U const alpha, AType const &A, BType const &B) -> RemoveViewT<AType> {
  * @param[in] A The inner tensor.
  * @param[in] B The outer tensor.
  * @param[out] C The output tensor.
+ *
+ * @throws rank_error If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+ * @throws tensor_compat_error If the tensors have incompatible dimensions.
  *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
@@ -241,6 +261,9 @@ void symm_gemm(AType const &A, BType const &B, CType *C) {
  * @param[in] beta Scaling factor for the output vector y
  * @param[out] y Output vector y
  *
+ * @throws rank_error If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+ * @throws tensor_compat_error If the tensors have incompatible dimensions.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Can now handle non-unit strides and both row- and colum-major layouts.
@@ -277,6 +300,10 @@ void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y)
  * @param[in] z Vector z
  * @param[in] beta Scaling factor for the output vector y
  * @param[out] y Output vector y
+ *
+ * @throws rank_error If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+ * @throws tensor_compat_error If the tensors have incompatible dimensions.
+ * @throws std::invalid_argument If the transpose character is invalid.
  *
  * @versionadded{2.0.0}
  */
@@ -320,6 +347,13 @@ void gemv(char transA, U const alpha, AType const &A, XType const &z, U const be
  *   Any data previously stored in A is destroyed.
  * @param[out] W On exit, the eigenvalues in ascending order.
  *
+ * @throws rank_error If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.
+ * @throws dimension_error If the matrix input is not square.
+ * @throws tensor_compat_error If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix.
+ * @throws std::invalid_argument If values passed to internal functions were invalid. This is often due to passing uninitialized or
+ * zero-size tensors.
+ * @throws std::runtime_error If the eigenvalue algorithm fails to converge.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Can now handle non-unit strides and both row- and colum-major layouts.
@@ -346,6 +380,14 @@ void syev(AType *A, WType *W) {
  * @param[out] W The eigenvalues.
  * @param[out] lvecs The left eigenvectors. If null, then these will not be computed.
  * @param[out] rvecs The right eigenvectors. If null, then these will not be computed.
+ *
+ * @throws rank_error If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.
+ * @throws dimension_error If the matrix input is not square.
+ * @throws tensor_compat_error If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix,
+ * or the eigenvector outputs, if not null, do not have the same dimensions as the input.
+ * @throws std::invalid_argument If values passed to internal functions were invalid. This is often due to passing uninitialized or
+ * zero-size tensors.
+ * @throws std::runtime_error If the eigenvalue algorithm fails to converge.
  *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
@@ -385,6 +427,10 @@ void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
  * @param[in] rvecs_in The right eignevector input. If null, then this will not be processed.
  * @param[out] lvecs_out The left eigenvector output. If null, then this will not be processed.
  * @param[out] rvecs_out The right eigenvector output. If null, then this will not be processed.
+ *
+ * @throws std::invalid_argument If one of the output tensors is null but its corresponding input is not.
+ * @throws rank_error If any of the input or output vectors are not rank-2, or the eigenvalue input is not rank-1.
+ * @throws dimension_error If any of the dimensions on any of the axes of any of the tensors is different from another.
  *
  * @versionadded{2.0.0}
  */
@@ -426,6 +472,13 @@ void process_geev_vectors(WType const &W, InType const *lvecs_in, InType const *
  *   Any data previously stored in A is destroyed.
  * @param[out] W On exit, the eigenvalues in ascending order.
  *
+ * @throws rank_error If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.
+ * @throws dimension_error If the matrix input is not square.
+ * @throws tensor_compat_error If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix.
+ * @throws std::invalid_argument If values passed to internal functions were invalid. This is often due to passing uninitialized or
+ * zero-size tensors.
+ * @throws std::runtime_error If the eigenvalue algorithm fails to converge.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Can now handle non-unit strides and both row- and colum-major layouts.
@@ -459,6 +512,10 @@ void heev(AType *A, WType *W) {
  * @return 0 on success. If positive, then the coefficient matrix was singular. The decomposition was performed, but the system was unable
  * to be solved. If negative, then one of the parameters in the underlying LAPACK call was invalid. The absolute value gives which parameter
  * was invalid.
+ *
+ * @throws rank_error If the coefficient matrix is not rank-2 or the result matrix is not rank-1 or rank-2.
+ * @throws dimension_error If the coefficient matrix is not square, or the number of rows of the result matrix is not the same as the number
+ * of rows of the coefficient matrix.
  *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
@@ -499,6 +556,13 @@ auto gesv(AType *A, BType *B) -> int {
  * true.
  * @param[in] A The symmetric matrix A in the leading N-by-N upper triangular part of A.
  * @return std::tuple<Tensor<T, 2>, Tensor<T, 1>> The eigenvectors and eigenvalues.
+ *
+ * @throws rank_error If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.
+ * @throws dimension_error If the matrix input is not square.
+ * @throws tensor_compat_error If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix.
+ * @throws std::invalid_argument If values passed to internal functions were invalid. This is often due to passing uninitialized or
+ * zero-size tensors.
+ * @throws std::runtime_error If the eigenvalue algorithm fails to converge.
  *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
@@ -564,6 +628,9 @@ void scale(typename AType::ValueType scale, AType *A) {
  * @param[in] scale The scalar to scale the tensor by.
  * @param[inout] A The tensor to scale.
  *
+ * @throws std::out_of_range If the row is outside of what the input matrix stores.
+ * @throws rank_error If the input matrix is not rank-2.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Can now handle non-unit strides and both row- and colum-major layouts.
@@ -592,6 +659,9 @@ void scale_row(size_t row, typename AType::ValueType scale, AType *A) {
  * @param[in] scale The scalar to scale the tensor by.
  * @param[inout] A The tensor to scale.
  *
+ * @throws std::out_of_range If the row is outside of what the input matrix stores.
+ * @throws rank_error If the input matrix is not rank-2.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Can now handle non-unit strides and both row- and colum-major layouts.
@@ -613,6 +683,15 @@ void scale_column(size_t col, typename AType::ValueType scale, AType *A) {
  * @param[in] cutoff Values below cutoff are considered zero.
  *
  * @return The matrix power.
+ *
+ * @warning If any of the eigenvalues when exponentiated gives a non-finite or complex value, that eigenvalue will be set to zero. This may
+ * cause numerical imprecisions.
+ *
+ * @throws rank_error If the inputs have the wrong ranks. The A tensor needs to be rank-2.
+ * @throws dimension_error If the matrix input is not square.
+ * @throws std::invalid_argument If values passed to internal functions were invalid. This is often due to passing uninitialized or
+ * zero-size tensors.
+ * @throws std::runtime_error If the eigenvalue algorithm fails to converge.
  *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
@@ -637,6 +716,9 @@ auto pow(AType const &a, typename AType::ValueType alpha,
  * @param[in] A,B The tensors to dot together.
  *
  * @return The dot product of the tensors.
+ *
+ * @throws rank_error If the input tensors do not have the same rank.
+ * @throws dimension_error If the input tensors do not have the same shape.
  *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
@@ -667,6 +749,9 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
  *
  * @return The dot product between two tensors.
  *
+ * @throws rank_error If the input tensors do not have the same rank.
+ * @throws dimension_error If the input tensors do not have the same shape.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Can now handle non-unit strides and both row- and colum-major layouts.
@@ -693,6 +778,9 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
  * @param[in] A,B,C The tensors to dot together.
  *
  * @return The triple dot product.
+ *
+ * @throws rank_error If the input tensors do not have the same rank.
+ * @throws dimension_error If the input tensors do not have the same shape.
  *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
@@ -723,6 +811,9 @@ auto dot(AType const &A, BType const &B, CType const &C)
  * @param[in] X The input tensor.
  * @param[inout] Y The output tensor.
  *
+ * @throws rank_error If the input tensors do not have the same rank.
+ * @throws dimension_error If the input tensors do not have the same shape.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Can now handle non-unit strides and both row- and colum-major layouts.
@@ -751,6 +842,9 @@ void axpy(typename XType::ValueType alpha, XType const &X, YType *Y) {
  * @param[in] X The input tensor.
  * @param[in] beta The scale factor for the output.
  * @param[inout] Y The output tensor.
+ *
+ * @throws rank_error If the input tensors do not have the same rank.
+ * @throws dimension_error If the input tensors do not have the same shape.
  *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
@@ -782,6 +876,10 @@ void axpby(typename XType::ValueType alpha, XType const &X, typename XType::Valu
  * @param[in] Y The right vector.
  * @param[inout] A The output matrix.
  *
+ * @throws rank_error If the X and Y tensors are not rank-1 or the A tensor is not rank-2.
+ * @throws tensor_compat_error If the number of elements in the X vector is not the same as the number of rows in A, or the number of
+ * elements in the Y vector is not the same as the number of columns of A.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Can now handle non-unit strides and both row- and colum-major layouts.
@@ -811,6 +909,10 @@ void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, ATyp
  * @param[in] X The left vector.
  * @param[in] Y The right vector.
  * @param[inout] A The output matrix.
+ *
+ * @throws rank_error If the X and Y tensors are not rank-1 or the A tensor is not rank-2.
+ * @throws tensor_compat_error If the number of elements in the X vector is not the same as the number of rows in A, or the number of
+ * elements in the Y vector is not the same as the number of columns of A.
  *
  * @versionadded{2.0.0}
  */
@@ -844,15 +946,58 @@ void gerc(typename AType::ValueType alpha, XYType const &X, XYType const &Y, ATy
  * used to solve equations. If negative, one of the inputs to the underlying LAPACK call is invalid. The absolute value indicates which
  * parameter.
  *
+ * @warning Do not ignore the return value. It tells you if your matrix is singular.
+ *
+ * @throws rank_error If the tensor input is not rank-2.
+ * @throws std::invalid_argument If one of the values passed to the internal call was invalid.
+ * @throws std::length_error If the pivot buffer type can not be resized and does not have enough space for the pivots.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      The pivots can now be any contiguous container of blas::int_t , such as vectors and arrays.
+ *      It can also be spans.
  *      Can also handle non-unit strides and row- and column-major layouts.
+ *      The BlockTensor implementation no longe creates temporary buffers for the pivots at each step. Instead, it uses spans to process
+ *      sections of the pivots.
  * @endversion
  */
-template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
-    requires(CoreTensorConcept<TensorType>)
-auto getrf(TensorType *A, Pivots *pivot) -> int {
+#ifndef DOXYGEN
+template <MatrixConcept TensorType, typename Pivots, bool resizable = requires(Pivots a) { a.resize(); }>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+        requires(CoreTensorConcept<TensorType>);
+    }
+#else
+template <MatrixConcept TensorType, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+        requires(CoreTensorConcept<TensorType>);
+    }
+#endif
+[[nodiscard]] auto getrf(TensorType *A, Pivots *pivot) -> int {
+    auto pivot_size = std::min(A->dim(0), A->dim(1));
+    if constexpr (resizable) {
+
+        if (pivot->size() < pivot_size) {
+            pivot->resize(pivot_size);
+        }
+    } else {
+        if (pivot->size() < pivot_size) {
+            EINSUMS_THROW_EXCEPTION(std::length_error, "Pivot buffer too small and can not be resized!");
+        }
+    }
     return detail::getrf(A, pivot);
 }
 
@@ -866,19 +1011,41 @@ auto getrf(TensorType *A, Pivots *pivot) -> int {
  * @tparam Pivots The type for the pivots.
  * @param[inout] A The matrix to invert after being processed by getrf.
  * @param[in] pivot The pivot vector from getrf.
- * @return int If 0, the execution is successful. If positive, the matrix is singular and the inverse could not be found. If negative, one
- * of the parameters passed to the underlying LAPACK call was invalid. The absolute value indicates which parameter it was.
+ *
+ * @throws rank_error If the input tensor is not a matrix.
+ * @throws dimension_error If the input matrix is not square.
+ * @throws std::invalid_argument If an invalid argument got passed to the internal call. This likely means that the tensor is not
+ * initialized.
+ * @throws std::runtime_error If the matrix passed in is singular. This means that the return value from getrf was ignored.
+ * @throws std::length_error If the pivot buffer is too small.
  *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
- *      The pivots can now be any contiguous container of blas::int_t , such as vectors and arrays.
- *      Can also handle non-unit strides and row- and column-major layouts.
+ *      The pivots can now be any contiguous container of blas::int_t , such as vectors and arrays. It can also be spans.
+ *      Can also handle non-unit strides and row- and column-major layouts. Raises exceptions as opposed to returning a status code.
+ *      The BlockTensor implementation no longe creates temporary buffers for the pivots at each step. Instead, it uses spans to process
+ *      sections of the pivots.
  * @endversion
  */
-template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
-    requires(CoreTensorConcept<TensorType>)
-auto getri(TensorType *A, Pivots const &pivot) -> int {
-    return detail::getri(A, pivot);
+template <MatrixConcept TensorType, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+        requires(CoreTensorConcept<TensorType>);
+    }
+void getri(TensorType *A, Pivots const &pivot) {
+    if (pivot.size() < std::min(A->dim(0), A->dim(1))) {
+        EINSUMS_THROW_EXCEPTION(
+            std::length_error,
+            "The pivot buffer is not the right size! Make sure it has enough data and you call getrf before calling getri.");
+    }
+
+    detail::getri(A, pivot);
 }
 
 /**
@@ -949,6 +1116,9 @@ enum class Norm : char {
  * @note Note that \f$ max(abs(A(i,j))) \f$ is not a consistent matrix norm.
  * @param[in] a The matrix to compute the norm of.
  * @return The requested norm of the matrix.
+ *
+ * @throws rank_error If the input is neither a matrix or vector.
+ * @throws enum_error If an invalid enum value is passed.
  *
  * @versionaddeddesc{1.0.0}
  *      .. note::
@@ -1025,6 +1195,10 @@ enum class Vectors : char {
  *
  * @return A tuple containing the U matrix, singular value vector, and the transpose of the V matrix.
  *
+ * @throws rank_error If the tensor being decomposed is not rank-2.
+ * @throws std::invalid_argument If one of the parameters passed to the internal functions is invalid.
+ * @throws std::runtime_error If the decomposition algorithm did not converge.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Now accepts a job specification and outputs optional tensors depending on the job.
@@ -1045,6 +1219,9 @@ auto svd(AType const &A, Vectors jobu = Vectors::ALL, Vectors jobvt = Vectors::A
  *
  * @tparam AType The type of the matrix to decompose.
  * @param[in] _A The matrix to decompose.
+ *
+ * @throws std::invalid_argument If one of the parameters passed to the internal functions is invalid.
+ * @throws std::runtime_error If the decomposition algorithm did not converge.
  *
  * @return The nullspace of the input matrix.
  *
@@ -1078,10 +1255,10 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
         if (info < 0) {
             EINSUMS_THROW_EXCEPTION(
                 std::invalid_argument,
-                "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info, m,
+                "svd: Argument {} has an invalid value.\n#3 (m) = {}, #4 (n) = {}, #6 (lda) = {}, #9 (ldu) = {}, #11 (ldvt) = {}", -info, m,
                 n, lda, 1, Vt.impl().get_lda());
         } else {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: Algorithm did not converge!");
         }
     }
 
@@ -1125,6 +1302,10 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
  *
  * @return A tuple containing the U matrix, singular value vector, and the transpose of the V matrix.
  *
+ * @throws rank_error If the tensor being decomposed is not rank-2.
+ * @throws std::invalid_argument If one of the parameters passed to the internal functions is invalid.
+ * @throws std::runtime_error If the decomposition algorithm did not converge.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      Now returns a tuple with optional tensors so that if Vectors::NONE is passed, the extra tensors are not allocated.
@@ -1147,7 +1328,12 @@ auto svd_dd(AType const &A, Vectors job = Vectors::ALL)
  *
  * @return A tuple containing the vectors and singular values.
  *
+ * @throws std::invalid_argument If a parameter passed to one of the internal calls is invalid.
+ *
  * @versionadded{1.0.0}
+ *
+ * @todo LAPACK provides {un,or}mqr which multiplies matrices by the Q matrix from geqrf without explicitly generating the Q matrix.
+ * It might be something to look into.
  */
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
@@ -1170,11 +1356,27 @@ auto truncated_svd(AType const &_A, size_t k)
     Tensor<T, 1> tau("tau", std::min(m, k + 5));
     // Compute QR factorization of Y
     int info1 = blas::geqrf(m, k + 5, Y.data(), Y.impl().get_lda(), tau.data());
+
+    if (info1 < 0) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} parameter to geqrf was invalid! #1 (m): {}, #2 (n): {}, #4 (lda): {}.",
+                                print::ordinal(-info1), m, k + 5, Y.impl().get_lda());
+    } else if (info1 > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "An unknown error has occurred in geqrf.");
+    }
+
     // Extract Matrix Q out of QR factorization
+    int info2;
     if constexpr (!IsComplexV<T>) {
-        int info2 = blas::orgqr(m, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
+        info2 = blas::orgqr(m, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
     } else {
-        int info2 = blas::ungqr(m, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
+        info2 = blas::ungqr(m, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
+    }
+
+    if (info2 < 0) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} parameter to orgqr/ungqr was invalid! #1 (m): {}, #2 (n): {}, #4 (lda): {}.",
+                                print::ordinal(-info1), m, k + 5, Y.impl().get_lda());
+    } else if (info2 > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "An unknown error has occurred in orgqr/ungqr.");
     }
 
     // Cast the matrix A into a smaller rank (B)
@@ -1201,6 +1403,9 @@ auto truncated_svd(AType const &_A, size_t k)
  * @return A tuple containing the eigenvectors and eigenvalues.
  *
  * @versionadded{1.0.0}
+ *
+ * @todo LAPACK provides {un,or}mqr which multiplies matrices by the Q matrix from geqrf without explicitly generating the Q matrix.
+ * It might be something to look into.
  */
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
@@ -1224,8 +1429,28 @@ auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename ATyp
     Tensor<T, 1> tau("tau", std::min(n, k + 5));
     // Compute QR factorization of Y
     blas::int_t const info1 = blas::geqrf(n, k + 5, Y.data(), Y.impl().get_lda(), tau.data());
+
+    if (info1 < 0) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} parameter to geqrf was invalid! #1 (m): {}, #2 (n): {}, #4 (lda): {}.",
+                                print::ordinal(-info1), n, k + 5, Y.impl().get_lda());
+    } else if (info1 > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "An unknown error has occurred in geqrf.");
+    }
+
     // Extract Matrix Q out of QR factorization
-    blas::int_t const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
+    blas::int_t info2;
+    if constexpr (!IsComplexV<T>) {
+        info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
+    } else {
+        info2 = blas::ungqr(n, k + 5, tau.dim(0), Y.data(), Y.impl().get_lda(), const_cast<T const *>(tau.data()));
+    }
+
+    if (info1 < 0) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} parameter to geqrf was invalid! #1 (m): {}, #2 (n): {}, #4 (lda): {}.",
+                                print::ordinal(-info1), n, k + 5, Y.impl().get_lda());
+    } else if (info1 > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "An unknown error has occurred in geqrf.");
+    }
 
     Tensor<T, 2> &Q1 = Y;
 
@@ -1259,6 +1484,10 @@ auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename ATyp
  *
  * @return The pseudoinverse of a matrix.
  *
+ * @throws rank_error If the tensor being decomposed is not rank-2.
+ * @throws std::invalid_argument If one of the parameters passed to the internal functions is invalid.
+ * @throws std::runtime_error If the SVD algorithm did not converge.
+ *
  * @versionadded{1.0.0}
  */
 template <MatrixConcept AType, typename T>
@@ -1275,15 +1504,15 @@ inline auto pseudoinverse(AType const &A, T tol) -> Tensor<T, 2> {
     for (size_t v = 0; v < S.dim(0); v++) {
         T val = S(v);
         if (val > tol)
-            scale_column(v, T{1.0} / val, &U);
+            scale_column(v, T{1.0} / val, &U.value());
         else {
             new_dim = v;
             break;
         }
     }
 
-    TensorView<T, 2> U_view = U(All, Range{0, new_dim});
-    TensorView<T, 2> V_view = Vh(Range{0, new_dim}, All);
+    TensorView<T, 2> U_view = U.value()(All, Range{0, new_dim});
+    TensorView<T, 2> V_view = Vh.value()(Range{0, new_dim}, All);
 
     Tensor<T, 2> pinv("pinv", A.dim(0), A.dim(1));
     gemm<false, false>(1.0, U_view, V_view, 0.0, &pinv);
@@ -1305,6 +1534,9 @@ inline auto pseudoinverse(AType const &A, T tol) -> Tensor<T, 2> {
  *
  * @return The solution to the equation.
  *
+ * @throws dimension_error If the input matrices are not square.
+ * @throws tensor_compat_error If the input matrices do not have the same size.
+ *
  * @versionadded{1.0.0}
  */
 template <MatrixConcept AType, MatrixConcept QType>
@@ -1324,7 +1556,7 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
         EINSUMS_THROW_EXCEPTION(dimension_error, "solve_continuous_lyapunov: Dimensions of Q ({} x {}), do not match", Q.dim(0), Q.dim(1));
     }
     if (A.dim(0) != Q.dim(0)) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "solve_continuous_lyapunov: Dimensions of A ({} x {}) and Q ({} x {}), do not match",
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "solve_continuous_lyapunov: Dimensions of A ({} x {}) and Q ({} x {}), do not match",
                                 A.dim(0), A.dim(1), Q.dim(0), Q.dim(1));
     }
 
@@ -1371,10 +1603,12 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
  *
  * @return The Q and R matrices.
  *
+ * @throws std::invalid_argument If one of the parameters passed to the internal functions is invalid.
+ *
  * @versionadded{1.0.0}
  * @versionchangeddesc{2.0.0}
  *      This function no longer returns the output of geqrf. It now returns the Q and R matrices. This means that the old q function
- *      no longer needed to exist.
+ *      no longer needs to exist.
  * @endversion
  */
 template <MatrixConcept AType>
@@ -1417,6 +1651,8 @@ void direct_product(T alpha, AType const &A, BType const &B, T beta, CType *C) {
  *
  * @return The determinant of the matrix.
  *
+ * @throws dimension_error If the input matrix is not square.
+ *
  * @versionadded{1.0.0}
  */
 template <MatrixConcept AType>
@@ -1448,7 +1684,7 @@ typename AType::ValueType det(AType const &A) {
     // Calculate the contribution of the diagonal elements.
 #pragma omp parallel for simd reduction(* : ret)
     for (int i = 0; i < A.dim(0); i++) {
-        ret *= A(i, i);
+        ret *= temp(i, i);
     }
 
     if (parity % 2 == 1) {

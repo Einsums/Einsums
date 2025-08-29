@@ -36,6 +36,9 @@ namespace gpu {
  *
  * @return The current internal hipBLAS handle.
  *
+ * @throws std::out_of_range If the current thread is too large. This should only happen if this function is called when the list of streams
+ * is uninitialized.
+ *
  * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT EINSUMS_HOST hipblasHandle_t get_blas_handle();
@@ -47,6 +50,9 @@ EINSUMS_EXPORT EINSUMS_HOST hipblasHandle_t get_blas_handle();
  *
  * @return The current internal hipBLAS handle.
  *
+ * @throws std::out_of_range If the parameter is larger than the number of threads or is negative. It may also be thrown if the list of
+ * streams is uninitialized.
+ *
  * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT EINSUMS_HOST hipblasHandle_t get_blas_handle(int thread_id);
@@ -55,6 +61,9 @@ EINSUMS_EXPORT EINSUMS_HOST hipblasHandle_t get_blas_handle(int thread_id);
  * @brief Get the internal hipSolver handle.
  *
  * @return The current internal hipSolver handle.
+ *
+ * @throws std::out_of_range If the current thread is too large. This should only happen if this function is called when the list of streams
+ * is uninitialized.
  *
  * @versionadded{1.0.0}
  */
@@ -67,6 +76,9 @@ EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t get_solver_handle();
  *
  * @return The current internal hipSolver handle.
  *
+ * @throws std::out_of_range If the parameter is larger than the number of threads or is negative. It may also be thrown if the list of
+ * streams is uninitialized.
+ *
  * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t get_solver_handle(int thread_id);
@@ -76,6 +88,9 @@ EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t get_solver_handle(int thread_id);
  * @brief Set the internal hipBLAS handle.
  *
  * @param[in] value The new handle.
+ *
+ * @throws std::out_of_range If the current thread is too large. This should only happen if this function is called when the list of streams
+ * is uninitialized.
  *
  * @return The new handle.
  *
@@ -91,6 +106,9 @@ EINSUMS_EXPORT EINSUMS_HOST hipblasHandle_t set_blas_handle(hipblasHandle_t valu
  *
  * @return The new handle.
  *
+ * @throws std::out_of_range If the thread parameter is larger than the number of threads or is negative. It may also be thrown if the list
+ * of streams is uninitialized.
+ *
  * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT EINSUMS_HOST hipblasHandle_t set_blas_handle(hipblasHandle_t value, int thread_id);
@@ -101,6 +119,9 @@ EINSUMS_EXPORT EINSUMS_HOST hipblasHandle_t set_blas_handle(hipblasHandle_t valu
  * @param[in] value The new handle.
  *
  * @return The new handle.
+ *
+ * @throws std::out_of_range If the current thread is too large. This should only happen if this function is called when the list of streams
+ * is uninitialized.
  *
  * @versionadded{1.0.0}
  */
@@ -113,6 +134,9 @@ EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t set_solver_handle(hipsolverHandle_
  * @param[in] thread_id The id of the thread to modify.
  *
  * @return The new handle.
+ *
+ * @throws std::out_of_range If the thread parameter is larger than the number of threads or is negative. It may also be thrown if the list
+ * of streams is uninitialized.
  *
  * @versionadded{1.0.0}
  */
@@ -192,6 +216,9 @@ EINSUMS_HOST EINSUMS_EXPORT void all_stream_wait();
  *
  * @return The stream associated with the current thread.
  *
+ * @throws std::out_of_range If the current thread is too large. This should only happen if this function is called when the list of streams
+ * is uninitialized.
+ *
  * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT EINSUMS_HOST hipStream_t get_stream();
@@ -203,6 +230,9 @@ EINSUMS_EXPORT EINSUMS_HOST hipStream_t get_stream();
  *
  * @return The stream associated with the thread.
  *
+ * @throws std::out_of_range If the parameter is larger than the number of threads or is negative. It may also be thrown if the list of
+ * streams is uninitialized.
+ *
  * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT EINSUMS_HOST hipStream_t get_stream(int thread_id);
@@ -211,6 +241,9 @@ EINSUMS_EXPORT EINSUMS_HOST hipStream_t get_stream(int thread_id);
  * @brief Sets the stream assigned to the current thread.
  *
  * @param[in] stream The new stream.
+ *
+ * @throws std::out_of_range If the current thread is too large. This should only happen if this function is called when the list of streams
+ * is uninitialized.
  *
  * @versionadded{1.0.0}
  */
@@ -221,6 +254,9 @@ EINSUMS_EXPORT EINSUMS_HOST void set_stream(hipStream_t stream);
  *
  * @param[in] stream The new stream.
  * @param[in] thread_id The ID of the thread to modify.
+ *
+ * @throws std::out_of_range If the thread parameter is larger than the number of threads or is negative. It may also be thrown if the list
+ * of streams is uninitialized.
  *
  * @versionadded{1.0.0}
  */
@@ -246,22 +282,22 @@ EINSUMS_HOST inline void device_synchronize() {
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_DEVICE inline bool is_zero(double value) {
+EINSUMS_DEVICE constexpr bool is_zero(double value) noexcept {
     return value == 0.0;
 }
 
 /// @copydoc is_zero(double)
-EINSUMS_DEVICE inline bool is_zero(float value) {
+EINSUMS_DEVICE constexpr bool is_zero(float value) noexcept {
     return value == 0.0f;
 }
 
 /// @copydoc is_zero(double)
-EINSUMS_DEVICE inline bool is_zero(hipFloatComplex value) {
+EINSUMS_DEVICE constexpr bool is_zero(hipFloatComplex value) noexcept {
     return value.x == 0.0f && value.y == 0.0f;
 }
 
 /// @copydoc is_zero(double)
-EINSUMS_DEVICE inline bool is_zero(hipDoubleComplex value) {
+EINSUMS_DEVICE constexpr bool is_zero(hipDoubleComplex value) noexcept {
     return value.x == 0.0 && value.y == 0.0;
 }
 
@@ -274,23 +310,23 @@ EINSUMS_DEVICE inline bool is_zero(hipDoubleComplex value) {
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_DEVICE inline void make_zero(double &value) {
+EINSUMS_DEVICE inline void make_zero(double &value) noexcept {
     value = 0.0;
 }
 
 /// @copydoc make_zero(double&)
-EINSUMS_DEVICE inline void make_zero(float &value) {
+EINSUMS_DEVICE inline void make_zero(float &value) noexcept {
     value = 0.0f;
 }
 
 /// @copydoc make_zero(double&)
-EINSUMS_DEVICE inline void make_zero(hipFloatComplex &value) {
+EINSUMS_DEVICE inline void make_zero(hipFloatComplex &value) noexcept {
     value.x = 0.0f;
     value.y = 0.0f;
 }
 
 /// @copydoc make_zero(double&)
-EINSUMS_DEVICE inline void make_zero(hipDoubleComplex &value) {
+EINSUMS_DEVICE inline void make_zero(hipDoubleComplex &value) noexcept {
     value.x = 0.0;
     value.y = 0.0;
 }
@@ -303,23 +339,23 @@ EINSUMS_DEVICE inline void make_zero(hipDoubleComplex &value) {
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_DEVICE inline void atomicAdd_wrap(float *address, float value) {
+EINSUMS_DEVICE inline void atomicAdd_wrap(float *address, float value) noexcept {
     atomicAdd(address, value);
 }
 
 /// @copydoc atomicAdd_wrap(float*,float)
-EINSUMS_DEVICE inline void atomicAdd_wrap(double *address, double value) {
+EINSUMS_DEVICE inline void atomicAdd_wrap(double *address, double value) noexcept {
     atomicAdd(address, value);
 }
 
 /// @copydoc atomicAdd_wrap(float*,float)
-EINSUMS_DEVICE inline void atomicAdd_wrap(hipFloatComplex *address, hipFloatComplex value) {
+EINSUMS_DEVICE inline void atomicAdd_wrap(hipFloatComplex *address, hipFloatComplex value) noexcept {
     atomicAdd(&(address->x), value.x);
     atomicAdd(&(address->y), value.y);
 }
 
 /// @copydoc atomicAdd_wrap(float*,float)
-EINSUMS_DEVICE inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleComplex value) {
+EINSUMS_DEVICE inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleComplex value) noexcept {
     atomicAdd(&(address->x), value.x);
     atomicAdd(&(address->y), value.y);
 }
