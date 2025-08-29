@@ -39,6 +39,8 @@ namespace tensor_base {
  * @tparam T The data type stored in this tensor.
  * @tparam Rank The rank of the tensor
  * @tparam TensorType The underlying type for the tensors.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T, size_t rank, typename TensorType>
 struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std::recursive_mutex>, AlgebraOptimizedTensor {
@@ -47,6 +49,8 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * @typedef StoredType
      *
      * @brief The kind of tensor that is used by this structured tensor to store data.
+     *
+     * @versionadded{1.0.0}
      */
     using StoredType = TensorType;
 
@@ -54,6 +58,8 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * @property Rank
      *
      * @brief The rank of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr static size_t Rank = rank;
 
@@ -61,6 +67,8 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * @typedef ValueType
      *
      * @brief The type of data stored in the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     using ValueType = T;
 
@@ -70,11 +78,15 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      */
     /**
      * Construct a new BlockTensor object.
+     *
+     * @versionadded{1.0.0}
      */
     BlockTensor() = default;
 
     /**
      * Copy constructs a new BlockTensor object.
+     *
+     * @versionadded{1.0.0}
      */
     BlockTensor(BlockTensor const &other) : _ranges{other._ranges}, _dims{other._dims}, _blocks{}, _dim{other._dim} {
         _blocks.reserve(other._blocks.size());
@@ -98,8 +110,10 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * in your code try calling BlockTensor.zero() or zero(BlockTensor) to see if that resolves it.
      *
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
-     * @param name Name of the new tensor.
-     * @param block_dims The size of each block.
+     * @param[in] name Name of the new tensor.
+     * @param[in] block_dims The size of each block.
+     *
+     * @versionadded{1.0.0}
      */
     template <std::convertible_to<size_t>... Dims>
     explicit BlockTensor(std::string name, Dims... block_dims)
@@ -130,8 +144,10 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
      * @tparam ArrayArg A container type that stores the dimensions. For instance, std::array or einsums::Dim.
-     * @param name Name of the new tensor.
-     * @param block_dims The size of each block.
+     * @param[in] name Name of the new tensor.
+     * @param[in] block_dims The size of each block.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename ArrayArg>
     explicit BlockTensor(std::string name, ArrayArg const &block_dims)
@@ -162,8 +178,10 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
      * @tparam IntType The type of the size values. This should be determined automatically.
-     * @param name Name of the new tensor.
-     * @param block_dims The size of each block.
+     * @param[in] name Name of the new tensor.
+     * @param[in] block_dims The size of each block.
+     *
+     * @versionadded{1.0.0}
      */
     template <std::convertible_to<size_t> IntType>
     explicit BlockTensor(std::string name, std::initializer_list<IntType> block_dims)
@@ -194,7 +212,9 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
      * @tparam ArrayArg A container type that stores the dimensions. For instance, std::array or einsums::Dim.
-     * @param block_dims The size of each block.
+     * @param[in] block_dims The size of each block.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename ArrayArg>
     explicit BlockTensor(ArrayArg const &block_dims) : _blocks(), _ranges(), _dims(block_dims.cbegin(), block_dims.cend()) {
@@ -224,7 +244,9 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
      * @tparam ArrayArg A container type that stores the dimensions. For instance, std::array or einsums::Dim.
-     * @param block_dims The size of each block.
+     * @param[in] block_dims The size of each block.
+     *
+     * @versionadded{1.0.0}
      */
     template <std::convertible_to<size_t> IntType>
     explicit BlockTensor(std::initializer_list<IntType> block_dims) : _blocks(), _ranges(), _dims(block_dims.begin(), block_dims.end()) {
@@ -243,6 +265,8 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
 
     /**
      * Destroy the BlockTensor object.
+     *
+     * @versionadded{1.0.0}
      */
     ~BlockTensor() = default;
     // End constructor group
@@ -258,9 +282,13 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * This index should be greater than or equal to zero and less than the dimension
      * of the tensor along any axis.
      *
-     * @param index The index to test.
+     * @param[in] index The index to test.
+     *
      * @return The index of the block containing the given index.
+     *
      * @throws std::out_of_range Throws this when the index it outside of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     int block_of(size_t index) const {
         for (int i = 0; i < _ranges.size(); i++) {
@@ -274,6 +302,8 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
 
     /**
      * @brief Zeroes out the tensor data.
+     *
+     * @versionadded{1.0.0}
      */
     void zero() {
         EINSUMS_OMP_PARALLEL_FOR
@@ -287,7 +317,9 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      *
      * This does not set the value in the unoccupied blocks.
      *
-     * @param value Value to set the elements to.
+     * @param[in] value Value to set the elements to.
+     *
+     * @versionadded{1.0.0}
      */
     void set_all(T value) {
         EINSUMS_OMP_PARALLEL_FOR
@@ -299,9 +331,13 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     /**
      * @brief Return the selected block with an integer ID.
      *
-     * @param id The index of the block in the list of blocks.
+     * @param[in] id The index of the block in the list of blocks.
+     *
      * @return The block requested.
+     *
      * @throws std::out_of_range if \p id is outside of the list of blocks.
+     *
+     * @versionadded{1.0.0}
      */
     TensorType const &block(int id) const { return _blocks.at(id); }
 
@@ -311,9 +347,13 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     /**
      * @brief Return the first block with the given name.
      *
-     * @param name The name of the block to find.
+     * @param[in] name The name of the block to find.
+     *
      * @return The requested block.
+     *
      * @throws std::out_of_range if no block with the given name is contained in this tensor.
+     *
+     * @versionadded{1.0.0}
      */
     TensorType const &block(std::string const &name) const {
         for (int i = 0; i < _blocks.size(); i++) {
@@ -345,8 +385,11 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     /**
      * @brief Add a tensor to the end of the list of blocks.
      *
-     * @param value The tensor to push.
+     * @param[in] value The tensor to push.
+     *
      * @throws dimension_error if the tensor being pushed is not square.
+     *
+     * @versionadded{1.0.0}
      */
     void push_block(TensorType value) {
         for (int i = 0; i < Rank; i++) {
@@ -362,9 +405,12 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     /**
      * @brief Add a tensor to the specified position in the list of blocks.
      *
-     * @param pos The position to insert at.
-     * @param value The tensor to insert.
+     * @param[in] pos The position to insert at.
+     * @param[in] value The tensor to insert.
+     *
      * @throws dimension_error if the tensor being pushed is not square.
+     *
+     * @versionadded{1.0.0}
      */
     void insert_block(int pos, TensorType value) {
         for (int i = 0; i < Rank; i++) {
@@ -382,9 +428,12 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     /**
      * @brief Create a new block with the given dimensions.
      *
-     * @param pos The position to insert at.
-     * @param args The arguments for the constructor.
+     * @param[in] pos The position to insert at.
+     * @param[in] args The arguments for the constructor.
+     *
      * @throws dimension_error if the tensor is not square.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... Args>
     void emplace_block(int pos, Args &&...args) {
@@ -405,8 +454,11 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      *
      *
      * @tparam MultiIndex The datatypes of the passed parameters. Must be castable to
-     * @param index The explicit desired index into the tensor. Must be castable to std::int64_t.
+     * @param[in] index The explicit desired index into the tensor. Must be castable to std::int64_t.
+     *
      * @return A pointer into the tensor at the requested location, or nullptr if it is outside of the blocks.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
         requires requires {
@@ -455,8 +507,11 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * It does not work with the All or Range tags.
      *
      * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
-     * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
-     * @return const T&
+     * @param[in] index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
+     *
+     * @return A reference to the value at the requested location.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
         requires requires {
@@ -545,11 +600,13 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * It does not work with the All or Range tags.
      *
      * @tparam Container A container type, such as std::array.
-     * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
+     * @param[in] index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
      * @return T& A reference to the value at that index.
      *
      * @throws not_enough_args Throws this if the container doesn't have enough indices.
      * @throws too_many_args Throws this if the container has too many indices.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename Container>
         requires requires {
@@ -656,6 +713,10 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
 
     /**
      * @brief Return the block with the given index. Equivalent to block(index)
+     *
+     * @param[in] index The block index.
+     *
+     * @versionadded{1.0.0}
      */
     TensorType const &operator[](size_t index) const { return this->block(index); }
 
@@ -665,17 +726,25 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     TensorType &operator[](size_t index) { return this->block(index); }
 
     /**
-     * @copydoc operator[](size_t) const
+     * @brief Return the block with the given name. Equivalent to block(name)
+     *
+     * @param[in] name The block's name.
+     *
+     * @versionadded{1.0.0}
      */
     TensorType const &operator[](std::string const &name) const { return this->block(name); }
 
     /**
-     * @copydoc operator[](size_t) const
+     * @copydoc operator[](std::string const &) const
      */
     TensorType &operator[](std::string const &name) { return this->block(name); }
 
     /**
      * @brief Copy assignment.
+     *
+     * @param[in] other The tensor to copy.
+     *
+     * @versionadded{1.0.0}
      */
     auto operator=(BlockTensor<T, Rank, TensorType> const &other) -> BlockTensor<T, Rank, TensorType> & {
 
@@ -705,6 +774,10 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
 
     /**
      * @brief Copy assignment with a cast.
+     *
+     * @param[in] other The tensor to copy.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
@@ -1108,21 +1181,29 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
  *
  * @tparam T The type of data stored in the tensor.
  * @tparam Rank The rank of the tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T, size_t Rank>
 struct BlockTensor : public tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, tensor_base::CoreTensor {
     /**
      * @brief Construct a new BlockTensor object. Default constructor.
+     *
+     * @versionadded{1.0.0}
      */
     BlockTensor() = default;
 
     /**
-     * @brief Construct a new BlockTensor object. Default copy constructor
+     * @brief Construct a new BlockTensor object. Default copy constructor.
+     *
+     * @versionadded{1.0.0}
      */
     BlockTensor(BlockTensor const &) = default;
 
     /**
      * @brief Destroy the BlockTensor object.
+     *
+     * @versionadded{1.0.0}
      */
     ~BlockTensor() = default;
 
@@ -1140,8 +1221,10 @@ struct BlockTensor : public tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, 
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
-     * @param name Name of the new tensor.
-     * @param block_dims The size of each block.
+     * @param[in] name Name of the new tensor.
+     * @param[in] block_dims The size of each block.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... Dims>
     explicit BlockTensor(std::string name, Dims... block_dims) : tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>(name, block_dims...) {}
@@ -1160,8 +1243,10 @@ struct BlockTensor : public tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, 
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
-     * @param name Name of the new tensor.
-     * @param block_dims The size of each block.
+     * @param[in] name Name of the new tensor.
+     * @param[in] block_dims The size of each block.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename ArrayArg>
     explicit BlockTensor(std::string name, ArrayArg const &block_dims)
@@ -1171,10 +1256,19 @@ struct BlockTensor : public tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, 
      * @brief Construct a new BlockTensor object using the dimensions given by Dim object.
      *
      * @param block_dims The dimensions of the new tensor in Dim form.
+     *
+     * @versionadded{1.0.0}
      */
     template <size_t Dims>
     explicit BlockTensor(Dim<Dims> block_dims) : tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>(block_dims) {}
 
+    /**
+     * Convert the block tensor into a tiled tensor view.
+     *
+     * @return A tiled tensor view whose diagonal blocks view the blocks of this tensor.
+     *
+     * @versionadded{1.1.0}
+     */
     operator TiledTensorView<T, Rank>() {
         std::array<std::vector<size_t>, Rank> block_dims;
 
@@ -1194,7 +1288,14 @@ struct BlockTensor : public tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, 
         return out;
     }
 
-    operator TiledTensorView<T, Rank> const() const {
+    /**
+     * Convert the block tensor into a tiled tensor view.
+     *
+     * @return A tiled tensor view whose diagonal blocks view the blocks of this tensor.
+     *
+     * @versionadded{1.1.0}
+     */
+    operator TiledTensorView<T, Rank> const() const & {
         std::array<std::vector<size_t>, Rank> block_dims;
 
         for (int i = 0; i < Rank; i++) {
@@ -1528,6 +1629,13 @@ struct BlockDeviceTensor : public tensor_base::BlockTensor<T, Rank, einsums::Dev
         return subscript_tensor(this->_blocks.at(block), index_list);
     }
 
+    /**
+     * Convert the block tensor into a tiled tensor view.
+     *
+     * @return A tiled tensor view whose diagonal blocks view the blocks of this tensor.
+     *
+     * @versionadded{1.1.0}
+     */
     operator TiledDeviceTensorView<T, Rank>() {
         std::array<std::vector<size_t>, Rank> block_dims;
 
@@ -1547,6 +1655,13 @@ struct BlockDeviceTensor : public tensor_base::BlockTensor<T, Rank, einsums::Dev
         return out;
     }
 
+    /**
+     * Convert the block tensor into a tiled tensor view.
+     *
+     * @return A tiled tensor view whose diagonal blocks view the blocks of this tensor.
+     *
+     * @versionadded{1.1.0}
+     */
     operator TiledDeviceTensorView<T, Rank> const() const {
         std::array<std::vector<size_t>, Rank> block_dims;
 
