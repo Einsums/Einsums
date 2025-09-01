@@ -25,6 +25,10 @@
 #    include <tracy/Tracy.hpp>
 #endif
 
+#if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
+#    include <mimalloc.h>
+#endif
+
 namespace einsums {
 
 /**
@@ -136,16 +140,17 @@ struct BufferAllocator {
         }
 
         void *ptr = nullptr;
-#if 0
-        posix_memalign(&ptr, 64, n * type_size);
+#if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
+        ptr = mi_malloc_aligned(n * type_size, 64);
+#elif defined(_ISOC11_SOURCE) || (__STDC_VERSION__ >= 201112L)
+        ptr = std::aligned_alloc(64, n * type_size);
 #else
-        ptr = malloc(n * type_size);
+        // returns zero on success, or an error value. On Linux (and other systems), p is not modified on failure.
+        if (posix_memalign(&ptr, 64, n * type_size) != 0) {
+            ptr = nullptr;
+        }
 #endif
         out = static_cast<pointer>(ptr);
-
-#if defined(EINSUMS_HAVE_TRACY)
-        TracyAlloc(out, n * type_size);
-#endif
 
         if (out == nullptr) {
             EINSUMS_THROW_EXCEPTION(
@@ -153,6 +158,10 @@ struct BufferAllocator {
                 "Could not allocate enough memory for buffers. Requested {} elements or {} bytes, but malloc returned a null pointer.", n,
                 n * type_size);
         }
+
+#if defined(EINSUMS_HAVE_TRACY)
+        TracyAlloc(out, n * type_size);
+#endif
 
         return out;
     }
@@ -210,7 +219,11 @@ struct BufferAllocator {
 #if defined(EINSUMS_HAVE_TRACY)
             TracyFree(p);
 #endif
+#if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
+            mi_free(p);
+#else
             free(static_cast<void *>(p));
+#endif
         }
     }
 

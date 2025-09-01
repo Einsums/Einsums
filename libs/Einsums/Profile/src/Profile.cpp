@@ -7,6 +7,7 @@
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/Profile.hpp>
 
+#if defined(EINSUMS_HAVE_PROFILER)
 namespace einsums::profile {
 
 namespace {
@@ -329,3 +330,4 @@ void Profiler::print_node_recursive(std::ostream &os, AggNode const *n, double t
 }
 
 } // namespace einsums::profile
+#endif

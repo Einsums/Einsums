@@ -16,9 +16,7 @@ else()
   return()
 endif()
 
-set(example_programs Dot hwy_contraction)
-
-set(hwy_contraction_FLAGS DEPENDENCIES hwy)
+set(example_programs Dot)
 
 foreach(example_program ${example_programs})
   set(sources ${example_program}.cpp)

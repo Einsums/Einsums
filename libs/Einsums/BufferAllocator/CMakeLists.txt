@@ -17,7 +17,7 @@ einsums_add_module(
   Einsums BufferAllocator
   SOURCES ${BufferAllocatorSources}
   HEADERS ${BufferAllocatorHeaders}
-  DEPENDENCIES
+  DEPENDENCIES einsums_dependencies_allocator
   MODULE_DEPENDENCIES Einsums_Runtime Einsums_Logging Einsums_TypeSupport Einsums_Config
                       Einsums_RuntimeConfiguration Einsums_CommandLine Einsums_Print
   CMAKE_SUBDIRS examples tests

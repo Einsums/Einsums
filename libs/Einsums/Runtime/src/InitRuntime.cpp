@@ -89,7 +89,7 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
 
     // Command line arguments for Einsums will be prefixed with --einsums:
     // For example, "--einsums:verbose=1" will be translated to verbose=1
-    RuntimeConfiguration config(argv);
+    RuntimeConfiguration config(argv, params.user_command_line);
 
     // Before this line logging does not work.
     init_logging(config);

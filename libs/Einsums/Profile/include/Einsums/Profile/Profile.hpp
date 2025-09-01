@@ -293,47 +293,21 @@ struct ScopedZone {
 #    define LabeledSection(name_format, ...)                                                                                               \
         ::einsums::profile::ScopedZone const EINSUMS_PP_CAT(_scoped_zone_, __LINE__)(fmt::format(name_format, ##__VA_ARGS__), __FILE__,    \
                                                                                      __LINE__, __func__)
-
 #    define LabeledSection0() LabeledSection(__func__)
-
+#    if defined(EINSUMS_WITH_PROFILER_INTERNAL)
+#        define LabeledSectionInternal(name_format, ...)                                                                                   \
+            ::einsums::profile::ScopedZone const EINSUMS_PP_CAT(_scoped_zone_, __LINE__)(fmt::format(name_format, ##__VA_ARGS__),          \
+                                                                                         __FILE__, __LINE__, __func__)
+#        define LabeledSectionInternal0() LabeledSectionInternal(__func__)
+#    else
+#        define LabeledSectionInternal(...)
+#        define LabeledSectionInternal0()
+#    endif
 #else
 #    define LabeledSection(...)
 #    define LabeledSection0()
+#    define LabeledSectionInternal(...)
+#    define LabeledSectionInternal0()
 #endif
 
 } // namespace einsums::profile
-
-// ---------------------- Example usage ----------------------
-/*
-#include <chrono>
-#include <thread>
-
-#include "einsums_profiler_fmt.hpp"
-
-using namespace einsums::profiler;
-
-void work() {
-    LabeledSection("work");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    {
-        LabeledSection("inner");
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    }
-}
-
-int main() {
-    // TODO: optional: add runtime counter (if EINSUMS_HAVE_LIBPFM)
-    // Profiler::instance().add_pfm_counter("LLC_MISSES");
-
-    std::thread t([]{
-        work();
-    });
-
-    work();
-    t.join();
-
-    Profiler::instance().print(false); // summary
-    Profiler::instance().print(true);  // detailed
-    Profiler::instance().export_json("profile.json");
-}
-*/

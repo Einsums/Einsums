@@ -295,8 +295,7 @@ einsums_option(
 )
 
 einsums_option(
-  EINSUMS_WITH_EXPERIMENTAL BOOL
-  "If true, build experimental Einsums modules (default: OFF)" OFF
+  EINSUMS_WITH_EXPERIMENTAL BOOL "If true, build experimental Einsums modules (default: OFF)" OFF
   CATEGORY "Build Targets"
 )
 
@@ -404,11 +403,18 @@ if(EINSUMS_WITH_BACKTRACES)
 endif()
 
 einsums_option(
-  EINSUMS_WITH_PROFILER BOOL "Enable Einsums internal profiling code. (Default: ON)" ON
-  CATEGORY "Profiling" ADVANCED
+  EINSUMS_WITH_PROFILER BOOL "Enable Einsums profiling. (Default: ON)" ON CATEGORY "Profiling"
+                                                                                   ADVANCED
+)
+einsums_option(
+  EINSUMS_WITH_PROFILER_INTERNAL BOOL "Enable profiling internal Einsums code. (Default: OFF)" OFF
+  DEPENDS "EINSUMS_WITH_PROFILER" CATEGORY "Profiling" ADVANCED
 )
 if(EINSUMS_WITH_PROFILER)
   einsums_add_config_define(EINSUMS_HAVE_PROFILER)
+  if(EINSUMS_WITH_PROFILER_INTERNAL)
+    einsums_add_config_define(EINSUMS_HAVE_PROFILER_INTERNAL)
+  endif()
 endif()
 
 einsums_option(
@@ -495,7 +501,7 @@ include(Einsums_SetupCUDA)
 include(Einsums_SetupHIP)
 include(Einsums_SetupFFT)
 include(Einsums_SetupTracy)
-include(Einsums_SetupHighway)
+# include(Einsums_SetupHighway)   ## This is currently found in LinearAlgebra/examples
 include(Einsums_PerformCXXFeatureTests)
 einsums_perform_cxx_feature_tests()
 

@@ -41,8 +41,9 @@ namespace detail {
  * @todo Document.
  */
 struct InitParams {
-    mutable StartupFunctionType  startup;
-    mutable ShutdownFunctionType shutdown;
+    mutable StartupFunctionType                             startup;
+    mutable ShutdownFunctionType                            shutdown;
+    mutable std::function<void(argparse::ArgumentParser &)> user_command_line;
 };
 
 /// \brief Initialize the runtime and start a function.
