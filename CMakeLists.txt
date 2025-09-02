@@ -532,14 +532,14 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # For Clang and ClangCL
   if(WIN32)
     # ClangCL on Windows
-    add_compile_options(-fcxx-exceptions -fseh-exceptions)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fcxx-exceptions -fseh-exceptions>)
   else()
     # Clang on macOS/Linux
-    add_compile_options(-fcxx-exceptions)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fcxx-exceptions>)
   endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   # For GCC (Linux/macOS)
-  add_compile_options(-fexceptions)
+  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fexceptions>)
 endif()
 
 # Configure Warnings

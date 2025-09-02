@@ -12,12 +12,16 @@ set(BufferAllocatorHeaders
 
 set(BufferAllocatorSources InitModule.cpp ModuleVars.cpp ForwardDeclarations.cpp)
 
+if (TARGET einsums_dependencies_allocator)
+    set(extra_deps einsums_dependencies_allocator)
+endif()
+
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums BufferAllocator
   SOURCES ${BufferAllocatorSources}
   HEADERS ${BufferAllocatorHeaders}
-  DEPENDENCIES einsums_dependencies_allocator
+  DEPENDENCIES ${extra_deps}
   MODULE_DEPENDENCIES Einsums_Runtime Einsums_Logging Einsums_TypeSupport Einsums_Config
                       Einsums_RuntimeConfiguration Einsums_CommandLine Einsums_Print
   CMAKE_SUBDIRS examples tests
