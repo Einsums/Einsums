@@ -1,10 +1,11 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/CommandLine.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/RuntimeConfiguration/RuntimeConfiguration.hpp>
@@ -28,16 +29,13 @@
 #    include <mach-o/dyld.h>
 #endif
 
-#include <argparse/argparse.hpp>
-
 namespace einsums {
 namespace detail {
 
 struct EINSUMS_EXPORT ArgumentList final : design_pats::Lockable<std::mutex> {
     EINSUMS_SINGLETON_DEF(ArgumentList)
 
-  public:
-    std::list<std::function<void(argparse::ArgumentParser &)>> argument_functions{};
+    std::list<std::function<void()>> argument_functions{};
 
   private:
     explicit ArgumentList() = default;
@@ -76,14 +74,14 @@ std::string get_executable_filename() {
 }
 
 std::string get_executable_prefix() {
-    std::filesystem::path p(get_executable_filename());
-    std::string           prefix = p.parent_path().parent_path().string();
+    std::filesystem::path const p(get_executable_filename());
+    std::string                 prefix = p.parent_path().parent_path().string();
 
     return prefix;
 }
 } // namespace detail
 
-void register_arguments(std::function<void(argparse::ArgumentParser &)> func) {
+void register_arguments(std::function<void()> func) {
     auto &argument_list = detail::ArgumentList::get_singleton();
     auto  lock          = std::lock_guard(argument_list);
 
@@ -125,8 +123,7 @@ void RuntimeConfiguration::pre_initialize() {
     global_ints["pid"]                  = getpid();
 }
 
-RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[],
-                                           std::function<void(argparse::ArgumentParser &)> const &user_command_line)
+RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[], std::function<void()> const &user_command_line)
     : original(argc) {
 
     // Make a copy. If a new argv was derived from the argv on entry, then it may not
@@ -140,24 +137,17 @@ RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[],
     parse_command_line(user_command_line);
 }
 
-RuntimeConfiguration::RuntimeConfiguration(std::vector<std::string> const                        &argv,
-                                           std::function<void(argparse::ArgumentParser &)> const &user_command_line)
+RuntimeConfiguration::RuntimeConfiguration(std::vector<std::string> const &argv, std::function<void()> const &user_command_line)
     : original(argv) {
     pre_initialize();
 
     parse_command_line(user_command_line);
 }
 
-std::vector<std::string>
-RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line) {
+std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<void()> const &user_command_line) {
     // Imperative that pre_initialize is called first as it is responsible for setting
     // default values. This is done in the constructor.
     // There should be a mechanism that allows the user to change the program name.
-    if (original[0].length() > 0) {
-        argument_parser.reset(new argparse::ArgumentParser(original[0]));
-    } else {
-        argument_parser.reset(new argparse::ArgumentParser("einsums"));
-    }
 
     /*
      * Acquire locks for the different maps.
