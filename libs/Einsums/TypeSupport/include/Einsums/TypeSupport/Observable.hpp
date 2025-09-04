@@ -167,12 +167,12 @@ struct Observable {
      * @brief The internal state of the observable.
      */
     T                       _state;
-    mutable std::mutex      _mutex{};           /// For thread-safe value access
-    std::condition_variable _cv{};              /// For thread synchronization
-    size_t                  _value_changed = 0; /// Counter indicating how many times the value has changed.
+    mutable std::mutex      _mutex{};           ///< For thread-safe value access
+    std::condition_variable _cv{};              ///< For thread synchronization
+    size_t                  _value_changed = 0; ///< Counter indicating how many times the value has changed.
 
-    std::list<std::function<void(T const &)>> _observers{};      /// List of observers
-    std::mutex                                _observer_mutex{}; /// Protects the observer list
+    std::list<std::function<void(T const &)>> _observers{};      ///< List of observers
+    std::mutex                                _observer_mutex{}; ///< Protects the observer list
 };
 } // namespace design_pats
 } // namespace einsums

@@ -26,8 +26,6 @@ template <typename Result>
 struct Default final {};
 
 /**
- * @struct Switch<SwitchType,Cases...>
- *
  * @brief Like a switch statement, but for types!
  *
  * This struct takes in cases and matches the switch to the conditions for each case.
@@ -43,11 +41,18 @@ struct Default final {};
  */
 template <typename SwitchType, typename... Cases>
 struct Switch final {
+    /**
+     * Function that will fail to compile because the current case is invalid.
+     */
     static void func() { static_assert(false, "Type Switch needs cases, or all cases were false!"); }
 
+    /**
+     * The type that this switch evaluates into.
+     */
     using type = void;
 };
 
+#ifndef DOXYGEN
 // First possibility: We meet a case, but the switch does not match the first condition.
 // In this case, we get what happens when we check the next condition.
 template <typename SwitchType, typename Result, typename FirstCond, typename... Rest, typename... Cases>
@@ -83,6 +88,7 @@ template <typename SwitchType, typename Result>
 struct Switch<SwitchType, Default<Result>> final {
     using type = Result;
 };
+#endif
 
 /**
  * @typedef SwitchT

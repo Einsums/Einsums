@@ -51,11 +51,7 @@ struct Dim : std ::array<std ::int64_t, Rank> {
      * @param[in] start An iterator to the start of the data.
      * @param[in] end An iterator to the end of the data.
      */
-    template <typename Iterator>
-        requires requires(Iterator it) {
-            { *it };
-            { it++ };
-        }
+    template <std::input_iterator Iterator>
     constexpr Dim(Iterator start, Iterator end) {
         auto this_it  = this->begin();
         auto other_it = start;
@@ -64,6 +60,11 @@ struct Dim : std ::array<std ::int64_t, Rank> {
             *this_it = static_cast<std::int64_t>(*other_it);
             this_it++;
             other_it++;
+        }
+
+        while (this_it != this->end()) {
+            *this_it = std::int64_t{0};
+            this_it++;
         }
     }
 };
@@ -82,11 +83,14 @@ struct Stride : std ::array<std ::int64_t, Rank> {
         requires(std::is_integral_v<std::remove_cvref_t<Args>> && ...)
     constexpr explicit Stride(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
 
-    template <typename Iterator>
-        requires requires(Iterator it) {
-            { *it };
-            { it++ };
-        }
+    /**
+     * Construct a stride array from an iterator. If more elements are provided than the rank, then the extra elements are ignored.
+     * If fewer elements are provided than the rank, then the array will be backfilled with zeros.
+     *
+     * @param start The starting iterator.
+     * @param end The ending iterator.
+     */
+    template <std::input_iterator Iterator>
     constexpr Stride(Iterator start, Iterator end) {
         auto this_it  = this->begin();
         auto other_it = start;
@@ -95,6 +99,11 @@ struct Stride : std ::array<std ::int64_t, Rank> {
             *this_it = static_cast<std::int64_t>(*other_it);
             this_it++;
             other_it++;
+        }
+
+        while (this_it != this->end()) {
+            *this_it = std::int64_t{0};
+            this_it++;
         }
     }
 };
@@ -114,11 +123,14 @@ struct Offset : std ::array<std ::int64_t, Rank> {
         requires(std::is_integral_v<std::remove_cvref_t<Args>> && ...)
     constexpr explicit Offset(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
 
-    template <typename Iterator>
-        requires requires(Iterator it) {
-            { *it };
-            { it++ };
-        }
+    /**
+     * Construct an offset array from an iterator. If more elements are provided than the rank, then the extra elements are ignored.
+     * If fewer elements are provided than the rank, then the array will be backfilled with zeros.
+     *
+     * @param start The starting iterator.
+     * @param end The ending iterator.
+     */
+    template <std::input_iterator Iterator>
     constexpr Offset(Iterator start, Iterator end) {
         auto this_it  = this->begin();
         auto other_it = start;
@@ -127,6 +139,11 @@ struct Offset : std ::array<std ::int64_t, Rank> {
             *this_it = static_cast<std::int64_t>(*other_it);
             this_it++;
             other_it++;
+        }
+
+        while (this_it != this->end()) {
+            *this_it = std::int64_t{0};
+            this_it++;
         }
     }
 };
@@ -191,16 +208,50 @@ struct Range : std::array<std::int64_t, 2> {
     constexpr explicit Range(First first, Second second)
         : std::array<std::int64_t, 2>{static_cast<std::int64_t>(first), static_cast<std::int64_t>(second)} {}
 
+    /**
+     * Check if the range can be treated as a single value if its entries are the same.
+     * If it is removable and the entries are the same, then the rank of the tensor view created with this range will
+     * have a lower rank than the parent tensor. If it is not removable, or the entries are different, then the rank
+     * of the view will be the same as the rank of the parent.
+     */
     [[nodiscard]] bool is_removable() const noexcept { return _is_removable; }
 
   protected:
+    /**
+     * Holds whether the range is removable.
+     */
     bool _is_removable{false};
 };
 
 /**
- * @struct Range
+ * @struct RemovableRange
  *
  * Holds two values: a starting value and an ending value. It will be treated as a single value if the start and end are the same.
+ * The usefulness may not be immediately apparent. This class is mostly used in the Python compatibility layer, but as an example,
+ * look at this code segment.
+ *
+ * @code
+ * RuntimeTensor<double> A{"A", 3, 3, 3}; // A is a rank-3 tensor.
+ *
+ * auto A_view_1 = A(Range{0, 1}, Range{0, 1}, Range{0, 0});
+ * auto A_view_2 = A(Range{0, 1}, Range{0, 1}, 0);
+ * auto A_view_3 = A(Range{0, 1}, Range{0, 1}, RemovableRange{0, 0});
+ *
+ * std::vector<Range> indices{Range{0, 1}, Range{0, 1}, RemovableRange{0, 0}};
+ *
+ * auto A_view_4 = A(indices);
+ *
+ * EINSUMS_ASSERT(A_view_1.rank() == 3);
+ * EINSUMS_ASSERT(A_view_2.rank() == 2);
+ * EINSUMS_ASSERT(A_view_3.rank() == 2);
+ * EINSUMS_ASSERT(A_view_4.rank() == 2);
+ * @endcode
+ *
+ * In the first three examples, the RemovableRange is not really needed. It can be replaced with a single value index. However, in the
+ * fourth example, we can't use a single value because the vector can only hold ranges. Since RemovableRange extends Range, we can use it in
+ * this vector where it will be treated as if it were a single index. If the elements in the range are not the same, such as
+ * <tt>RemovableRange{0, 1}</tt>, then it behaves exactly the same as a regular Range. The removable part is a hint to the functions that
+ * look for them that they can be removed if needed.
  */
 struct RemovableRange : Range {
     /**
