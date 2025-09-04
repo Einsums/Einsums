@@ -1259,7 +1259,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param data The pointer to wrap.
      * @param dims The dimensions of the view.
      */
-    explicit TensorView(T const *data, Dim<Rank> const &dims, bool row_major = false)
+    explicit TensorView(T const *data, Dim<Rank> const &dims, bool row_major = row_major_default)
         : _impl(const_cast<T *>(data), dims, row_major), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
         _source_dims = dims;
@@ -1275,7 +1275,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param data The pointer to wrap.
      * @param dims The dimensions of the view.
      */
-    explicit TensorView(T *data, Dim<Rank> const &dims, bool row_major = false)
+    explicit TensorView(T *data, Dim<Rank> const &dims, bool row_major = row_major_default)
         : _impl(const_cast<T *>(data), dims, row_major), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
         _source_dims = dims;

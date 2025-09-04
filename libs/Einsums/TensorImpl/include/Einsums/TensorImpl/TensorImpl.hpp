@@ -164,7 +164,7 @@ struct TensorImpl final {
      * @param row_major Whether to compute the strides in row-major or column-major ordering.
      */
     template <Container Dims>
-    constexpr TensorImpl(pointer ptr, Dims const &dims, bool row_major = false)
+    constexpr TensorImpl(pointer ptr, Dims const &dims, bool row_major = row_major_default)
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _row_major{row_major} {
         _strides.resize(_rank);
 
@@ -195,13 +195,13 @@ struct TensorImpl final {
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
           _size{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {
         if (_rank < 2) {
-            _row_major = true;
+            _row_major = row_major_default;
         } else if (stride(0) > stride(-1)) {
-            _row_major = true;
+            _row_major = row_major_default;
         } else if (stride(0) == stride(-1)) {
             _row_major = (dim(0) > dim(-1));
         } else {
-            _row_major = false;
+            _row_major = row_major_default;
         }
     }
 
@@ -214,7 +214,7 @@ struct TensorImpl final {
      * @param dims The dimensions of the tensor.
      * @param row_major Whether to compute the strides in row-major or column-major ordering.
      */
-    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, bool row_major = false)
+    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, bool row_major = row_major_default)
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _row_major{row_major} {
         _strides.resize(_rank);
 
@@ -245,13 +245,13 @@ struct TensorImpl final {
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
           _size{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {
         if (_rank < 2) {
-            _row_major = true;
+            _row_major = row_major_default;
         } else if (stride(0) > stride(-1)) {
-            _row_major = true;
+            _row_major = row_major_default;
         } else if (stride(0) == stride(-1)) {
             _row_major = (dim(0) > dim(-1));
         } else {
-            _row_major = false;
+            _row_major = row_major_default;
         }
     }
 
@@ -267,13 +267,13 @@ struct TensorImpl final {
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
           _size{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {
         if (_rank < 2) {
-            _row_major = true;
+            _row_major = row_major_default;
         } else if (stride(0) > stride(-1)) {
-            _row_major = true;
+            _row_major = row_major_default;
         } else if (stride(0) == stride(-1)) {
             _row_major = (dim(0) > dim(-1));
         } else {
-            _row_major = false;
+            _row_major = row_major_default;
         }
     }
 
@@ -288,13 +288,13 @@ struct TensorImpl final {
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()),
           _size{std::accumulate(dims.begin(), dims.end(), static_cast<size_t>(1), std::multiplies<size_t>())} {
         if (_rank < 2) {
-            _row_major = true;
+            _row_major = row_major_default;
         } else if (stride(0) > stride(-1)) {
-            _row_major = true;
+            _row_major = row_major_default;
         } else if (stride(0) == stride(-1)) {
             _row_major = (dim(0) > dim(-1));
         } else {
-            _row_major = false;
+            _row_major = row_major_default;
         }
     }
 

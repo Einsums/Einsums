@@ -525,9 +525,17 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
                     }
                 }
             } else if (lvec_data != lvecs->data()) {
-                for (int i = 0; i < lvecs->dim(0); i++) {
-                    for (int j = i + 1; j < lvecs->dim(1); j++) {
-                        lvecs->subscript_no_check(i, j) = lvecs_temp(j, i);
+                if (lvecs_temp.impl().is_column_major()) {
+                    for (int i = 0; i < lvecs->dim(0); i++) {
+                        for (int j = i + 1; j < lvecs->dim(1); j++) {
+                            lvecs->subscript_no_check(i, j) = lvecs_temp(j, i);
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < lvecs->dim(0); i++) {
+                        for (int j = i + 1; j < lvecs->dim(1); j++) {
+                            lvecs->subscript_no_check(i, j) = lvecs_temp(i, j);
+                        }
                     }
                 }
             }
@@ -541,9 +549,17 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
                     }
                 }
             } else if (rvec_data != rvecs->data()) {
-                for (int i = 0; i < rvecs->dim(0); i++) {
-                    for (int j = i + 1; j < rvecs->dim(1); j++) {
-                        rvecs->subscript_no_check(i, j) = rvecs_temp(j, i);
+                if (rvecs_temp.impl().is_column_major()) {
+                    for (int i = 0; i < rvecs->dim(0); i++) {
+                        for (int j = i + 1; j < rvecs->dim(1); j++) {
+                            rvecs->subscript_no_check(i, j) = rvecs_temp(j, i);
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < rvecs->dim(0); i++) {
+                        for (int j = i + 1; j < rvecs->dim(1); j++) {
+                            rvecs->subscript_no_check(i, j) = rvecs_temp(i, j);
+                        }
                     }
                 }
             }
