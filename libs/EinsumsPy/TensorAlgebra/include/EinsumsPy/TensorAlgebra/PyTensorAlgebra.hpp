@@ -370,8 +370,8 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
 
         std::vector<size_t> unique_strides, C_index_strides, A_unique_stride, B_unique_stride, C_unique_stride;
 
-        dims_to_strides(unique_dims, unique_strides);
-        dims_to_strides(C.dims(), C_index_strides);
+        dims_to_strides(unique_dims, unique_strides, true);
+        dims_to_strides(C.dims(), C_index_strides, true);
 
         A_unique_stride.resize(unique_strides.size());
         B_unique_stride.resize(unique_strides.size());
@@ -532,7 +532,7 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
             detail::get_dim_ranges_for_many(C_info, _C_permute, A_info, _A_permute, B_info, _B_permute, _num_inds);
         std::vector<size_t> unique_strides, C_index_strides, C_dims(_C_permute.size());
 
-        size_t elems = dims_to_strides(unique_dims, unique_strides);
+        size_t elems = dims_to_strides(unique_dims, unique_strides, true);
 
         T       *C_data = (T *)C_info.ptr;
         T const *A_data = (T const *)A_info.ptr;
@@ -542,7 +542,7 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
             C_dims[i] = C_info.shape[i];
         }
 
-        dims_to_strides(C_dims, C_index_strides);
+        dims_to_strides(C_dims, C_index_strides, true);
 
         if (C_prefactor == T{0.0}) {
             EINSUMS_OMP_PARALLEL_FOR
@@ -570,37 +570,37 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
             }
         }
 
-        //EINSUMS_OMP_PARALLEL {
-            // auto thread = omp_get_thread_num();
-            // auto kernel = omp_get_num_threads();
+        // EINSUMS_OMP_PARALLEL {
+        //  auto thread = omp_get_thread_num();
+        //  auto kernel = omp_get_num_threads();
 
-            std::vector<size_t> A_index(_A_permute.size()), B_index(_B_permute.size()), C_index(_C_permute.size()),
-                unique_index(unique_dims.size());
+        std::vector<size_t> A_index(_A_permute.size()), B_index(_B_permute.size()), C_index(_C_permute.size()),
+            unique_index(unique_dims.size());
 
-            for (size_t sentinel = 0; sentinel < elems; sentinel++) {
-                size_t quotient = sentinel;
+        for (size_t sentinel = 0; sentinel < elems; sentinel++) {
+            size_t quotient = sentinel;
 
-                for (int i = 0; i < unique_index.size(); i++) {
-                    unique_index[i] = quotient / unique_strides[i];
-                    quotient %= unique_strides[i];
-                }
-
-                size_t A_ord = 0, B_ord = 0, C_ord = 0;
-
-                for (int i = 0; i < _A_permute.size(); i++) {
-                    A_ord += (A_info.strides[i] / sizeof(T)) * unique_index[_A_permute[i]];
-                }
-
-                for (int i = 0; i < _B_permute.size(); i++) {
-                    B_ord += (B_info.strides[i] / sizeof(T)) * unique_index[_B_permute[i]];
-                }
-
-                for (int i = 0; i < _C_permute.size(); i++) {
-                    C_ord += (C_info.strides[i] / sizeof(T)) * unique_index[_C_permute[i]];
-                }
-
-                C_data[C_ord] += AB_prefactor * A_data[A_ord] * B_data[B_ord];
+            for (int i = 0; i < unique_index.size(); i++) {
+                unique_index[i] = quotient / unique_strides[i];
+                quotient %= unique_strides[i];
             }
+
+            size_t A_ord = 0, B_ord = 0, C_ord = 0;
+
+            for (int i = 0; i < _A_permute.size(); i++) {
+                A_ord += (A_info.strides[i] / sizeof(T)) * unique_index[_A_permute[i]];
+            }
+
+            for (int i = 0; i < _B_permute.size(); i++) {
+                B_ord += (B_info.strides[i] / sizeof(T)) * unique_index[_B_permute[i]];
+            }
+
+            for (int i = 0; i < _C_permute.size(); i++) {
+                C_ord += (C_info.strides[i] / sizeof(T)) * unique_index[_C_permute[i]];
+            }
+
+            C_data[C_ord] += AB_prefactor * A_data[A_ord] * B_data[B_ord];
+        }
         //}
     }
 
@@ -851,7 +851,7 @@ class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
     void execute_imp(T C_prefactor, pybind11::buffer &C, T AB_prefactor, pybind11::buffer const &A, pybind11::buffer const &B) const {
         // if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
         //               !std::is_same_v<T, std::complex<double>>) {
-            this->execute_generic(C_prefactor, C, AB_prefactor, A, B);
+        this->execute_generic(C_prefactor, C, AB_prefactor, A, B);
         // } else {
         //     pybind11::buffer_info C_info = C.request(true), A_info = A.request(false), B_info = B.request(false);
 
@@ -990,7 +990,7 @@ class EINSUMS_EXPORT PyEinsumGemvPlan : public PyEinsumGenericPlan {
     void execute_imp(T C_prefactor, pybind11::buffer &C, T AB_prefactor, pybind11::buffer const &A, pybind11::buffer const &B) const {
         // if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
         //               !std::is_same_v<T, std::complex<double>>) {
-            this->execute_generic(C_prefactor, C, AB_prefactor, A, B);
+        this->execute_generic(C_prefactor, C, AB_prefactor, A, B);
         // } else {
         //     pybind11::buffer_info C_info = C.request(true), A_info = A.request(false), B_info = B.request(false);
 
@@ -1205,7 +1205,7 @@ class EINSUMS_EXPORT PyEinsumGemmPlan : public PyEinsumGenericPlan {
     void execute_imp(T C_prefactor, pybind11::buffer &C, T AB_prefactor, pybind11::buffer const &A, pybind11::buffer const &B) const {
         // if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
         //               !std::is_same_v<T, std::complex<double>>) {
-            this->execute_generic(C_prefactor, C, AB_prefactor, A, B);
+        this->execute_generic(C_prefactor, C, AB_prefactor, A, B);
         // } else {
         //     pybind11::buffer_info C_info = C.request(true), A_info = A.request(false), B_info = B.request(false);
 
@@ -1262,10 +1262,12 @@ class EINSUMS_EXPORT PyEinsumGemmPlan : public PyEinsumGenericPlan {
         //     T *C_data = (T *)C_info.ptr;
 
         //     if (!_trans_C) {
-        //         einsums::blas::gemm((_trans_A) ? 'T' : 'N', (_trans_B) ? 'T' : 'N', dA0, dB1, dA1, AB_prefactor, A_data, sA0, B_data, sB0,
+        //         einsums::blas::gemm((_trans_A) ? 'T' : 'N', (_trans_B) ? 'T' : 'N', dA0, dB1, dA1, AB_prefactor, A_data, sA0, B_data,
+        //         sB0,
         //                             C_prefactor, C_data, sC0);
         //     } else {
-        //         einsums::blas::gemm((!_trans_B) ? 'T' : 'N', (!_trans_A) ? 'T' : 'N', dB1, dA0, dA1, AB_prefactor, B_data, sB0, A_data, sA0,
+        //         einsums::blas::gemm((!_trans_B) ? 'T' : 'N', (!_trans_A) ? 'T' : 'N', dB1, dA0, dA1, AB_prefactor, B_data, sB0, A_data,
+        //         sA0,
         //                             C_prefactor, C_data, sC0);
         //     }
         // }

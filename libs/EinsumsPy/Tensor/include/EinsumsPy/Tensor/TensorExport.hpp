@@ -47,7 +47,7 @@ void rdiv(RuntimeTensorView<T> &out, U const &numerator) {
 
     auto strides = out.strides();
 
-    size_t elems = dims_to_strides(out.dims(), index_strides);
+    size_t elems = dims_to_strides(out.dims(), index_strides, true);
 
     EINSUMS_OMP_PARALLEL_FOR_SIMD
     for (size_t i = 0; i < elems; i++) {

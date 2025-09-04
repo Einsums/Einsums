@@ -41,7 +41,7 @@ auto create_incremented_tensor(std::string const &name, MultiIndex... index) -> 
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
     Stride<sizeof...(MultiIndex)> index_strides;
-    size_t                        elements = dims_to_strides(A.dims(), index_strides);
+    size_t                        elements = dims_to_strides(A.dims(), index_strides, true);
 
     for (size_t item = 0; item < elements; item++) {
         size_t sentinel;

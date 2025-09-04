@@ -29,6 +29,7 @@
 #include <stdexcept>
 
 #include "Einsums/LinearAlgebra/Bases/norm.hpp"
+#include "Einsums/TensorImpl/TensorImplOperations.hpp"
 
 namespace einsums::linear_algebra::detail {
 
@@ -246,11 +247,7 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
             // Transpose A if necessary.
             if constexpr (ComputeEigenvectors) {
                 if (A->is_row_major()) {
-                    for (size_t i = 0; i < n; i++) {
-                        for (size_t j = i + 1; j < n; j++) {
-                            std::swap(A->subscript(i, j), A->subscript(j, i));
-                        }
-                    }
+                    einsums::detail::impl_conj(*A);
                 }
             }
 
@@ -315,7 +312,7 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
             }
 
             // We might need to transpose the eigenvectors.
-            if (A->is_row_major()) {
+            if (A->is_row_major() && ComputeEigenvectors) {
                 for (size_t i = 0; i < A->dim(0); i++) {
                     for (size_t j = i + 1; j < A->dim(1); j++) {
                         AType temp                  = A->subscript_no_check(i, j);
