@@ -54,6 +54,11 @@ namespace design_pats {
  *      return 0;
  *  }
  *  @endcode
+ *
+ * @versionadded{1.0.0}
+ * @versionchangeddesc{1.0.1}
+ *      The observable can now be locked and unlocked. When unlocked, it can be told to update its observers or not.
+ * @endversion
  */
 template <typename T>
 struct Observable {
@@ -62,6 +67,8 @@ struct Observable {
      * @brief Constructor.
      *
      * @param initial_value The initial value of the observable.
+     *
+     * @versionadded{1.0.0}
      */
     Observable(T initial_value = T{}) noexcept : _state(std::move(initial_value)) {}
 
@@ -69,6 +76,8 @@ struct Observable {
      * @brief Assignment operator for setting the value
      *
      * @param value The value to assign to the observable.
+     *
+     * @versionadded{1.0.0}
      */
     Observable &operator=(T const &value) {
         _state = value;
@@ -77,11 +86,15 @@ struct Observable {
 
     /**
      * @brief Casting operator for retrievign the value.
+     *
+     * @versionadded{1.0.0}
      */
     operator T() const { return get_value(); }
 
     /**
      * @brief Explicit getter.
+     *
+     * @versionadded{1.0.0}
      */
     T const &get_value() const {
         std::lock_guard<std::mutex> lock(_mutex);
@@ -90,11 +103,15 @@ struct Observable {
 
     /**
      * @brief Get a lock that updates internal values as well as the state.
+     *
+     * @versionadded{1.0.0}
      */
     T &get_value() { return _state; }
 
     /**
      * @brief Lock the state.
+     *
+     * @versionadded{1.0.1}
      */
     void lock() { _mutex.lock(); }
 
@@ -103,6 +120,8 @@ struct Observable {
      *
      * This will automatically notify observers when done if no arguments are passed.
      * If false is passed, then it will not notify the observers.
+     *
+     * @versionadded{1.0.1}
      */
     void unlock(bool notify = true) {
         _mutex.unlock();
@@ -112,10 +131,19 @@ struct Observable {
         }
     }
 
+    /**
+     * Attempt to lock the object.
+     *
+     * @return True if the lock could be acquired. False if otherwise.
+     *
+     * @versionadded{1.0.1}
+     */
     bool try_lock() { return _mutex.try_lock(); }
 
     /**
      * @brief Wait for the value to change.
+     *
+     * @versionadded{1.0.0}
      */
     void wait_for_change() {
         size_t                       check_changed = _value_changed;
@@ -125,6 +153,8 @@ struct Observable {
 
     /**
      * @brief Register an observer callback.
+     *
+     * @versionadded{1.0.0}
      */
     void attach(std::function<void(T const &)> observer) {
         std::lock_guard<std::mutex> lock(_observer_mutex);
@@ -133,6 +163,8 @@ struct Observable {
 
     /**
      * @brief Remove an observer callback.
+     *
+     * @versionadded{1.0.0}
      */
     void detach(std::function<void(T const &)> const &observer) {
         std::lock_guard<std::mutex> lock(_observer_mutex);
@@ -142,12 +174,16 @@ struct Observable {
 
     /**
      * @brief Check to see if the observable has recently changed.
+     *
+     * @versionadded{1.0.0}
      */
     bool changed() const { return _value_changed; }
 
   protected:
     /**
      * @brief Notify all of the observers that observe this observable.
+     *
+     * @versionadded{1.0.0}
      */
     void notify_observers() {
         // Notify things that are waiting for changes.
@@ -165,6 +201,8 @@ struct Observable {
      * @property _state
      *
      * @brief The internal state of the observable.
+     *
+     * @versionadded{1.0.0}
      */
     T                       _state;
     mutable std::mutex      _mutex{};           ///< For thread-safe value access

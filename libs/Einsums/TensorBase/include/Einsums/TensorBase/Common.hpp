@@ -20,6 +20,8 @@ namespace einsums {
  * @def DEFINE_STRUCT
  *
  * @brief Convenience macro for creating a type derived from a std::array.
+ *
+ * @versionadded{1.0.0}
  */
 #define DEFINE_STRUCT(Name, UnderlyingType)                                                                                                \
     template <std::size_t Rank>                                                                                                            \
@@ -35,11 +37,15 @@ namespace einsums {
  * @struct Dim
  *
  * @brief Holds a list of dimensions in an array.
+ *
+ * @versionadded{1.0.0}
  */
 template <std ::size_t Rank>
 struct Dim : std ::array<std ::int64_t, Rank> {
     /**
      * @brief Aggregate constructor.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... Args>
         requires(std::is_integral_v<std::remove_cvref_t<Args>> && ...)
@@ -50,6 +56,8 @@ struct Dim : std ::array<std ::int64_t, Rank> {
      *
      * @param[in] start An iterator to the start of the data.
      * @param[in] end An iterator to the end of the data.
+     *
+     * @versionadded{2.0.0}
      */
     template <std::input_iterator Iterator>
     constexpr Dim(Iterator start, Iterator end) {
@@ -73,11 +81,15 @@ struct Dim : std ::array<std ::int64_t, Rank> {
  * @struct Stride
  *
  * @brief Holds a list of strides in an array.
+ *
+ * @versionadded{1.0.0}
  */
 template <std ::size_t Rank>
 struct Stride : std ::array<std ::int64_t, Rank> {
     /**
      * @brief Aggregate constructor.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... Args>
         requires(std::is_integral_v<std::remove_cvref_t<Args>> && ...)
@@ -87,8 +99,10 @@ struct Stride : std ::array<std ::int64_t, Rank> {
      * Construct a stride array from an iterator. If more elements are provided than the rank, then the extra elements are ignored.
      * If fewer elements are provided than the rank, then the array will be backfilled with zeros.
      *
-     * @param start The starting iterator.
-     * @param end The ending iterator.
+     * @param[in] start The starting iterator.
+     * @param[in] end The ending iterator.
+     *
+     * @versionadded{2.0.0}
      */
     template <std::input_iterator Iterator>
     constexpr Stride(Iterator start, Iterator end) {
@@ -112,12 +126,16 @@ struct Stride : std ::array<std ::int64_t, Rank> {
  * @struct Offset
  *
  * @brief Holds a list of offsets in an array.
+ *
+ * @versionadded{1.0.0}
  */
 template <std ::size_t Rank>
 struct Offset : std ::array<std ::int64_t, Rank> {
     using std::array<std::int64_t, Rank>::array;
     /**
      * @brief Aggregate constructor.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... Args>
         requires(std::is_integral_v<std::remove_cvref_t<Args>> && ...)
@@ -127,8 +145,10 @@ struct Offset : std ::array<std ::int64_t, Rank> {
      * Construct an offset array from an iterator. If more elements are provided than the rank, then the extra elements are ignored.
      * If fewer elements are provided than the rank, then the array will be backfilled with zeros.
      *
-     * @param start The starting iterator.
-     * @param end The ending iterator.
+     * @param[in] start The starting iterator.
+     * @param[in] end The ending iterator.
+     *
+     * @versionadded{2.0.0}
      */
     template <std::input_iterator Iterator>
     constexpr Offset(Iterator start, Iterator end) {
@@ -152,11 +172,15 @@ struct Offset : std ::array<std ::int64_t, Rank> {
  * @struct Count
  *
  * @brief Holds a list of counts in an array.
+ *
+ * @versionadded{1.0.0}
  */
 template <std ::size_t Rank>
 struct Count : std ::array<std ::int64_t, Rank> {
     /**
      * @brief Aggregate constructor.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... Args>
     constexpr explicit Count(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
@@ -166,11 +190,15 @@ struct Count : std ::array<std ::int64_t, Rank> {
  * @struct Chunk
  *
  * @brief Holds a list of chunks in an array.
+ *
+ * @versionadded{1.0.0}
  */
 template <std ::size_t Rank>
 struct Chunk : std ::array<std ::int64_t, Rank> {
     /**
      * @brief Aggregate constructor.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... Args>
     constexpr explicit Chunk(Args... args) : std ::array<std ::int64_t, Rank>{static_cast<std ::int64_t>(args)...} {}
@@ -197,12 +225,16 @@ Chunk(Args... args) -> Chunk<sizeof...(Args)>;
  * @struct Range
  *
  * Holds two values: a starting value and an ending value.
+ *
+ * @versionadded{1.0.0}
  */
 struct Range : std::array<std::int64_t, 2> {
     constexpr Range() = default;
 
     /**
      * Initialize a range.
+     *
+     * @versionadded{1.0.0}
      */
     template <std::integral First, std::integral Second>
     constexpr explicit Range(First first, Second second)
@@ -213,12 +245,16 @@ struct Range : std::array<std::int64_t, 2> {
      * If it is removable and the entries are the same, then the rank of the tensor view created with this range will
      * have a lower rank than the parent tensor. If it is not removable, or the entries are different, then the rank
      * of the view will be the same as the rank of the parent.
+     *
+     * @versionadded{2.0.0}
      */
     [[nodiscard]] bool is_removable() const noexcept { return _is_removable; }
 
   protected:
     /**
      * Holds whether the range is removable.
+     *
+     * @versionadded{2.0.0}
      */
     bool _is_removable{false};
 };
@@ -252,10 +288,14 @@ struct Range : std::array<std::int64_t, 2> {
  * this vector where it will be treated as if it were a single index. If the elements in the range are not the same, such as
  * <tt>RemovableRange{0, 1}</tt>, then it behaves exactly the same as a regular Range. The removable part is a hint to the functions that
  * look for them that they can be removed if needed.
+     *
+     * @versionadded{2.0.0}
  */
 struct RemovableRange : Range {
     /**
      * Initialize a range.
+     *
+     * @versionadded{2.0.0}
      */
     template <std::integral First, std::integral Second>
     constexpr explicit RemovableRange(First first, Second second) : Range{first, second} {
@@ -263,7 +303,18 @@ struct RemovableRange : Range {
     }
 };
 
+/**
+ * Type that indicates that all elements along a dimension should be included in a view.
+ *
+ * @versionadded{1.0.0}
+ */
 struct AllT {};
+
+/**
+ * Implementation of AllT .
+ *
+ * @versionadded{1.0.0}
+ */
 static struct AllT All; // NOLINT
 
 #undef DEFINE_STRUCT

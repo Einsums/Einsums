@@ -13,6 +13,8 @@ namespace einsums {
  * @brief Represents a case in a type switch.
  *
  * If the type switch matches any of the conditions, then the @c Result parameter will be used.
+ *
+ * @versionadded{2.0.0}
  */
 template <typename Result, typename... Conditions>
 struct Case final {};
@@ -21,6 +23,8 @@ struct Case final {};
  * @struct Default
  *
  * @brief Represents the default case.
+ *
+ * @versionadded{2.0.0}
  */
 template <typename Result>
 struct Default final {};
@@ -38,16 +42,22 @@ struct Default final {};
  *
  * @tparam SwitchType The type to compare.
  * @tparam Cases The cases for the switch statement.
+ *
+ * @versionadded{2.0.0}
  */
 template <typename SwitchType, typename... Cases>
 struct Switch final {
     /**
      * Function that will fail to compile because the current case is invalid.
+     *
+     * @versionadded{2.0.0}
      */
     static void func() { static_assert(false, "Type Switch needs cases, or all cases were false!"); }
 
     /**
      * The type that this switch evaluates into.
+     *
+     * @versionadded{2.0.0}
      */
     using type = void;
 };
@@ -94,6 +104,8 @@ struct Switch<SwitchType, Default<Result>> final {
  * @typedef SwitchT
  *
  * @brief Equivalent to <tt>typename Switch<...>::type</tt>.
+ *
+ * @versionadded{2.0.0}
  */
 template <typename... Args>
 using SwitchT = typename Switch<Args...>::type;
