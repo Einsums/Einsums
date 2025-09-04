@@ -29,6 +29,10 @@
 #include <Einsums/HPTT/Plan.hpp>
 #include <Einsums/HPTT/Utils.hpp>
 
+#include <stdexcept>
+
+#include "Einsums/HPTT/Files.hpp"
+
 namespace hptt {
 
 Plan::Plan(std::vector<int> loopOrder, std::vector<int> numThreadsAtLoop)
@@ -53,5 +57,239 @@ void Plan::print() const {
 
 int Plan::getNumTasks() const {
     return rootNodes_.size();
+}
+
+void Plan::writeToFile(std::FILE *fp) const {
+    size_t error = fwrite(&numTasks_, sizeof(int), 1, fp);
+
+    if (error < 1) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    size_t size = loopOrder_.size();
+
+    error = fwrite(&size, sizeof(size_t), 1, fp);
+
+    if (error < 1) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    error = fwrite(loopOrder_.data(), sizeof(int), size, fp);
+
+    if (error < size) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    size = numThreadsAtLoop_.size();
+
+    error = fwrite(&size, sizeof(size_t), 1, fp);
+
+    if (error < 1) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    error = fwrite(numThreadsAtLoop_.data(), sizeof(int), size, fp);
+
+    if (error < size) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    std::vector<uint32_t> offsets(numTasks_);
+
+    long offset_table_pos = ftell(fp);
+
+    int error2 = fseek(fp, (long)numTasks_ * sizeof(uint32_t), SEEK_CUR);
+
+    if (error2 != 0) {
+        perror("Error seeking in file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    for (int i = 0; i < numTasks_; i++) {
+        auto          curr_node = rootNodes_[i];
+        NodeConstants constants{.start      = curr_node.start,
+                                .end        = curr_node.end,
+                                .inc        = curr_node.inc,
+                                .offDiffAB  = curr_node.offDiffAB,
+                                .lda        = curr_node.lda,
+                                .ldb        = curr_node.ldb,
+                                .offsetNext = 0,
+                                .indexA     = curr_node.indexA,
+                                .indexB     = curr_node.indexB};
+        offsets[i] = ftell(fp);
+        error      = fwrite(&constants, sizeof(NodeConstants), 1, fp);
+
+        if (error < 1) {
+            perror("Error writing to file!");
+            throw std::runtime_error("IO error");
+        }
+    }
+
+    error2 = fseek(fp, offset_table_pos, SEEK_SET);
+
+    if (error2 != 0) {
+        perror("Error seeking in file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    error = fwrite(offsets.data(), sizeof(uint32_t), numTasks_, fp);
+
+    if (error < numTasks_) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    for (int i = 0; i < numTasks_; i++) {
+        auto curr_node = rootNodes_[i];
+
+        int index = -1;
+
+        for (int j = 0; j < numTasks_; j++) {
+            if (curr_node.next == &rootNodes_[j]) {
+                index = j;
+                break;
+            }
+        }
+
+        error2 = fseek(fp, (long)offsets[i] + offsetof(NodeConstants, offsetNext), SEEK_SET);
+
+        if (error2 != 0) {
+            perror("Error seeking in file!");
+            throw std::runtime_error("IO error.");
+        }
+
+        if (index != -1) {
+            error = fwrite(&offsets[index], sizeof(uint32_t), 1, fp);
+
+            if (error < numTasks_) {
+                perror("Error writing to file!");
+                throw std::runtime_error("IO error.");
+            }
+        }
+    }
+}
+
+Plan::Plan(std::FILE *fp) {
+    size_t error = fread(&numTasks_, sizeof(int), 1, fp);
+
+    if (error < 1) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    size_t size;
+
+    error = fread(&size, sizeof(size_t), 1, fp);
+
+    if (error < 1) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    loopOrder_.resize(size);
+
+    error = fread(loopOrder_.data(), sizeof(int), size, fp);
+
+    if (error < size) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    error = fread(&size, sizeof(size_t), 1, fp);
+
+    if (error < 1) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    numThreadsAtLoop_.resize(size);
+
+    error = fread(numThreadsAtLoop_.data(), sizeof(int), size, fp);
+
+    if (error < size) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    std::vector<uint32_t> offsets;
+    offsets.reserve(numTasks_);
+
+    long offset_table_pos = ftell(fp);
+
+    int error2 = fseek(fp, (long)numTasks_ * sizeof(uint32_t), SEEK_CUR);
+
+    if (error2 != 0) {
+        perror("Error seeking in file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    rootNodes_.resize(numTasks_);
+
+    for (int i = 0; i < numTasks_; i++) {
+        NodeConstants constants;
+        error = fread(&constants, sizeof(NodeConstants), 1, fp);
+
+        rootNodes_[i].start     = constants.start;
+        rootNodes_[i].end       = constants.end;
+        rootNodes_[i].inc       = constants.inc;
+        rootNodes_[i].lda       = constants.lda;
+        rootNodes_[i].ldb       = constants.ldb;
+        rootNodes_[i].indexA    = constants.indexA;
+        rootNodes_[i].indexB    = constants.indexB;
+        rootNodes_[i].offDiffAB = constants.offDiffAB;
+
+        if (error < 1) {
+            perror("Error writing to file!");
+            throw std::runtime_error("IO error");
+        }
+    }
+
+    error2 = fseek(fp, offset_table_pos, SEEK_SET);
+
+    if (error2 != 0) {
+        perror("Error seeking in file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    error = fread(offsets.data(), sizeof(uint32_t), numTasks_, fp);
+
+    if (error < numTasks_) {
+        perror("Error writing to file!");
+        throw std::runtime_error("IO error.");
+    }
+
+    for (int i = 0; i < numTasks_; i++) {
+        auto curr_node = rootNodes_[i];
+
+        int index = -1;
+
+        for (int j = 0; j < numTasks_; j++) {
+            if (curr_node.next == &rootNodes_[j]) {
+                index = j;
+                break;
+            }
+        }
+
+        error2 = fseek(fp, (long)offsets[i] + offsetof(NodeConstants, offsetNext), SEEK_SET);
+
+        if (error2 != 0) {
+            perror("Error seeking in file!");
+            throw std::runtime_error("IO error.");
+        }
+
+        if (index != -1) {
+            error = fwrite(&offsets[index], sizeof(uint32_t), 1, fp);
+
+            if (error < numTasks_) {
+                perror("Error writing to file!");
+                throw std::runtime_error("IO error.");
+            }
+        }
+    }
 }
 } // namespace hptt
