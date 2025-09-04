@@ -9,14 +9,15 @@
 
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/LinearAlgebra/Unoptimized.hpp>
 #include <Einsums/Print.hpp>
-#include <stdexcept>
 
-#include "Einsums/Config/CompilerSpecific.hpp"
+#include <span>
+#include <stdexcept>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/LinearAlgebra/GPULinearAlgebra.hpp>

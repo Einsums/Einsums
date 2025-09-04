@@ -962,7 +962,7 @@ void gerc(typename AType::ValueType alpha, XYType const &X, XYType const &Y, ATy
  * @endversion
  */
 #ifndef DOXYGEN
-template <MatrixConcept TensorType, typename Pivots, bool resizable = requires(Pivots a) { a.resize(); }>
+template <MatrixConcept TensorType, typename Pivots, bool resizable = requires(Pivots a, typename Pivots::size_type size) { a.resize(size); }>
     requires requires(Pivots a, size_t ind) {
         typename Pivots::value_type;
         typename Pivots::size_type;

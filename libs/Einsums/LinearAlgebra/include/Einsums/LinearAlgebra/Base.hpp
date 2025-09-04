@@ -1153,7 +1153,7 @@ auto pow(AType const &a, typename AType::ValueType alpha,
     return result;
 }
 
-template <typename T, typename Pivots, bool is_resizable = requires(Pivots c, int size) { c.resize(size); }>
+template <typename T, typename Pivots, bool is_resizable = requires(Pivots c, typename Pivots::size_type size) { c.resize(size); }>
     requires requires(Pivots a, size_t ind) {
         typename Pivots::value_type;
         typename Pivots::size_type;
