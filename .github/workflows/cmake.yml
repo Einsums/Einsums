@@ -35,6 +35,10 @@ jobs:
     if: ${{ contains(needs.detect_changes.outputs.filters, 'docs') }}
     uses: ./.github/workflows/docs.yml
 
+  sanitizers:
+    name: Sanitizers
+    uses: ./.github/workflows/linux-build-and-test-sanitizer.yml
+
 #  windows_default:
 #    name: Windows
 #    needs: [ detect_changes ]
