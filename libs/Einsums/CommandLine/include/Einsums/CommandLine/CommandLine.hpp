@@ -922,6 +922,10 @@ inline ParseResult parse_internal(std::vector<std::string> const &args, char con
     (void)builtins();
     std::string prog = programName ? programName : (!args.empty() ? args[0] : "program");
 
+    for (auto *o : Registry::instance().options) {
+        o->finalize_default();
+    }
+
     // Apply config first (defaults < config < CLI)
     if (config && !config->empty()) {
         for (auto *o : Registry::instance().options) {
@@ -951,22 +955,32 @@ inline ParseResult parse_internal(std::vector<std::string> const &args, char con
         return false;
     };
 
-    size_t pos_index          = 0;
-    auto   consume_positional = [&](std::string_view token, std::string &err) -> bool {
+    size_t pos_index = 0;
+
+    auto consume_positional = [&](std::string_view token, std::string &err) -> bool {
         auto pos = detail::positional_options();
         if (pos_index >= pos.size()) {
+            // No positional to consume -> treat as unknown (per your policy)
             if (unknown_args)
                 unknown_args->push_back(std::string(token));
             err.clear();
             return true;
         }
+
         OptionBase *p  = pos[pos_index];
         bool        ok = p->parse_token(p->long_name, token, err);
         if (!ok)
             return false;
+
         p->seen_cli = true;
         ++p->occurrences;
-        ++pos_index;
+
+        // Stay on the same positional if it's a List<std::string>
+        // so it can keep capturing subsequent tokens.
+        if (dynamic_cast<List<std::string> *>(p) == nullptr) {
+            ++pos_index;
+        }
+
         return true;
     };
 
@@ -1003,8 +1017,8 @@ inline ParseResult parse_internal(std::vector<std::string> const &args, char con
                     std::string_view next = args[i + 1];
                     if (!looks_like_option_token(next)) {
                         val = std::string_view(args[++i]); // consume as value
-                    }                                      // else leave val = nullopt to allow ImplicitValue(...)
-                }                                          // else leave val = nullopt
+                    } // else leave val = nullopt to allow ImplicitValue(...)
+                } // else leave val = nullopt
             }
 
             std::string err;
@@ -1049,8 +1063,8 @@ inline ParseResult parse_internal(std::vector<std::string> const &args, char con
                             std::string_view next = args[i + 1];
                             if (!looks_like_option_token(next)) {
                                 val = std::string_view(args[++i]); // consume as value
-                            }                                      // else leave nullopt to allow ImplicitValue(...)
-                        }                                          // else leave nullopt
+                            } // else leave nullopt to allow ImplicitValue(...)
+                        } // else leave nullopt
                     }
                 }
 
