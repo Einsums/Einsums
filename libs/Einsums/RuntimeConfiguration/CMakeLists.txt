@@ -15,7 +15,14 @@ einsums_add_module(
   SOURCES ${RuntimeConfigurationSources}
   HEADERS ${RuntimeConfigurationHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES Einsums_Config Einsums_CommandLine Einsums_Errors Einsums_Logging Einsums_TypeSupport
+  MODULE_DEPENDENCIES
+    Einsums_Config
+    Einsums_CommandLine
+    Einsums_Errors
+    Einsums_Logging
+    Einsums_TypeSupport
+    Einsums_Version
+    Einsums_Print
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME Einsums
 )

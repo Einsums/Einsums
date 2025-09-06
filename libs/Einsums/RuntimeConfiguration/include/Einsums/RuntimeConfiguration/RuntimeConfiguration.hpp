@@ -1,13 +1,12 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/Config.hpp>
 
-#include <Einsums/CommandLine.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/TypeSupport/Observable.hpp>
 
@@ -19,47 +18,11 @@
 #    include <process.h>
 #endif
 
-#include <memory>
+#include <functional>
+#include <string>
+#include <vector>
 
 namespace einsums {
-
-struct RuntimeOptions {
-
-  protected:
-    /// Install signal handlers
-    bool install_signal_handlers = true;
-
-    /// Provide a mechanism to attach debugger on detected errors
-    bool attach_debugger = true;
-
-    /// Print additional diagnostic information on termination
-    bool diagnostics_on_terminate = true;
-
-    struct { /// Set log level
-#if defined(EINSUMS_DEBUG)
-        int64_t level = SPDLOG_LEVEL_DEBUG;
-#else
-        int64_t level = SPDLOG_LEVEL_INFO;
-#endif
-
-        /// Set log destination
-        std::string destination = "cerr";
-
-        /// Log format
-        std::string format = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%-8l%$] [%s:%#/%!] %v";
-    } log;
-
-    struct {
-        /// Profile report?
-        bool report = true;
-
-        /// Profile filename
-        std::string filename = "profile.txt";
-
-        /// Append to profile file
-        bool append = true;
-    } profile;
-};
 
 /**
  * @brief Add a function to the list of startup functions to add module-specific command line arguments.
