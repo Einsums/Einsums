@@ -1,5 +1,7 @@
-name: Linux build and test workflow
+name: Sanitizers
+
 on:
+  workflow_dispatch:
   workflow_call:
     inputs:
       build_ref:
