@@ -9,6 +9,11 @@
 
 using namespace einsums::cl;
 
+struct CLITestFixture {
+    CLITestFixture() { Registry::instance().clear_for_tests(); }
+    ~CLITestFixture() { Registry::instance().clear_for_tests(); }
+};
+
 static std::vector<std::string> to_args(std::initializer_list<char const *> il) {
     std::vector<std::string> v;
     v.reserve(il.size());
@@ -18,9 +23,11 @@ static std::vector<std::string> to_args(std::initializer_list<char const *> il) 
 }
 
 TEST_CASE("Defaults and explicit override", "[opt][defaults]") {
-    static OptionCategory Cat{"T1"};
-    int                   threads_bound = 0;
-    static Opt<int>       Threads{"t1-threads", {'T'}, "threads", Default(4), Cat, RangeBetween(1, 256), ValueName("N")};
+    CLITestFixture _;
+
+    OptionCategory Cat{"T1"};
+    int            threads_bound = 0;
+    Opt<int>       Threads{"t1-threads", {'T'}, "threads", Default(4), Cat, RangeBetween(1, 256), ValueName("N")};
     Threads.OnSet([&](int v) { threads_bound = v; });
 
     SECTION("No args -> default 4") {
@@ -41,8 +48,10 @@ TEST_CASE("Defaults and explicit override", "[opt][defaults]") {
 }
 
 TEST_CASE("Implicit value when present without argument", "[opt][implicit]") {
-    static OptionCategory Cat{"T2"};
-    static Opt<int>       Level{"t2-level", {'l'}, "level", Cat, ImplicitValue(7), ValueName("N")};
+    CLITestFixture _;
+
+    OptionCategory Cat{"T2"};
+    Opt<int>       Level{"t2-level", {'l'}, "level", Cat, ImplicitValue(7), ValueName("N")};
 
     SECTION("Appears without value -> implicit 7") {
         auto args = to_args({"prog", "--t2-level"});
@@ -60,9 +69,9 @@ TEST_CASE("Implicit value when present without argument", "[opt][implicit]") {
 }
 
 TEST_CASE("Flag default and implicit override", "[flag]") {
-    static OptionCategory Cat{"T3"};
-    bool                  verbose_bound = false;
-    static Flag           Verbose{"t3-verbose", {'v'}, "verbose logging", Cat, Default(false), ImplicitValue(true)};
+    OptionCategory Cat{"T3"};
+    bool           verbose_bound = false;
+    Flag           Verbose{"t3-verbose", {'v'}, "verbose logging", Cat, Default(false), ImplicitValue(true)};
     Verbose.OnSet([&](bool on) { verbose_bound = on; });
 
     SECTION("Default false") {
@@ -90,10 +99,12 @@ TEST_CASE("Flag default and implicit override", "[flag]") {
 }
 
 TEST_CASE("Bundled short options and attached value", "[short][bundle]") {
-    static OptionCategory Cat{"T4"};
-    static Flag           A{"t4-a", {'a'}, "flag A", Cat};
-    static Flag           B{"t4-b", {'b'}, "flag B", Cat};
-    static Opt<int>       O{"t4-o", {'o'}, "opt O", Cat, ValueName("N")};
+    CLITestFixture _;
+
+    OptionCategory Cat{"T4"};
+    Flag           A{"t4-a", {'a'}, "flag A", Cat};
+    Flag           B{"t4-b", {'b'}, "flag B", Cat};
+    Opt<int>       O{"t4-o", {'o'}, "opt O", Cat, ValueName("N")};
 
     SECTION("-ab sets both; -o12 attaches value") {
         auto args = to_args({"prog", "-ab", "-o12"});
@@ -113,8 +124,10 @@ TEST_CASE("Bundled short options and attached value", "[short][bundle]") {
 }
 
 TEST_CASE("Positional list captures multiple tokens", "[positional][list]") {
-    static OptionCategory    Cat{"T5"};
-    static List<std::string> Inputs{"t5-inputs", Positional{}, "inputs"};
+    CLITestFixture _;
+
+    OptionCategory    Cat{"T5"};
+    List<std::string> Inputs{"t5-inputs", Positional{}, "inputs"};
 
     auto args = to_args({"prog", "a.txt", "b.txt", "c.txt"});
     auto pr   = parse(args);
@@ -128,6 +141,8 @@ TEST_CASE("Positional list captures multiple tokens", "[positional][list]") {
 
 #if 0
 TEST_CASE("Enum option maps strings to enum values", "[enum]") {
+    CLITestFixture _;
+
     static OptionCategory Cat{"T6"};
     enum struct Mode { Fast, Accurate };
     static OptEnum<Mode> M{"t6-mode", {'m'}, Mode::Fast, {{"fast", Mode::Fast}, {"accurate", Mode::Accurate}}, "mode", Cat};
@@ -156,8 +171,10 @@ TEST_CASE("Enum option maps strings to enum values", "[enum]") {
 #endif
 
 TEST_CASE("Range validation enforces bounds", "[range]") {
-    static OptionCategory Cat{"T7"};
-    static Opt<int>       R{"t7-ranged", {'r'}, "ranged", Default(10), Cat, RangeBetween(5, 15)};
+    CLITestFixture _;
+
+    OptionCategory Cat{"T7"};
+    Opt<int>       R{"t7-ranged", {'r'}, "ranged", Default(10), Cat, RangeBetween(5, 15)};
 
     SECTION("In range ok") {
         auto args = to_args({"prog", "--t7-ranged=12"});
@@ -175,9 +192,11 @@ TEST_CASE("Range validation enforces bounds", "[range]") {
 }
 
 TEST_CASE("Config precedence: defaults < config < CLI", "[config][precedence]") {
-    static OptionCategory Cat{"T8"};
-    int                   threads_cfg = 0;
-    static Opt<int>       T{"t8-threads", {'t'}, "threads", Default(2), Cat, Location<int>(threads_cfg)};
+    CLITestFixture _;
+
+    OptionCategory Cat{"T8"};
+    int            threads_cfg = 0;
+    Opt<int>       T{"t8-threads", {'t'}, "threads", Default(2), Cat, Location<int>(threads_cfg)};
 
     std::map<std::string, std::string, std::less<>> cfg;
     cfg["t8-threads"] = "6";
@@ -202,8 +221,10 @@ TEST_CASE("Config precedence: defaults < config < CLI", "[config][precedence]") 
 }
 
 TEST_CASE("Unknown args collection (including after --)", "[unknown]") {
-    static OptionCategory Cat{"T9"};
-    static Flag           K{"t9-known", {'k'}, "known", Cat};
+    CLITestFixture _;
+
+    OptionCategory Cat{"T9"};
+    Flag           K{"t9-known", {'k'}, "known", Cat};
 
     auto                     args = to_args({"prog", "--nope", "-z", "--", "pos1", "--still", "-x"});
     std::vector<std::string> unknown;
@@ -221,6 +242,8 @@ TEST_CASE("Unknown args collection (including after --)", "[unknown]") {
 }
 
 TEST_CASE("Builtins: --help and --version exit 0", "[builtins]") {
+    CLITestFixture _;
+
     SECTION("--help exits 0") {
         auto args = to_args({"prog", "--help"});
         auto pr   = parse(args, "prog", "9.9");

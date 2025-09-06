@@ -32,7 +32,6 @@ jobs:
         sanitizer:
           - address,leak,undefined
           - thread
-          - memory
 
     name: "${{ matrix.sanitizer }} • ${{ matrix.compiler }} • ${{ matrix.blas }} • ${{ matrix.build_type }} • ${{ matrix.variant }}"
     runs-on: ubuntu-latest

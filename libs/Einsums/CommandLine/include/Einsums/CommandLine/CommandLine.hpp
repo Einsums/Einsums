@@ -60,6 +60,11 @@ struct Registry {
 
     void add_option(OptionBase *o) { options.push_back(o); }
     void add_category(OptionCategory *c) { categories.push_back(c); }
+
+    void clear_for_tests() {
+        options.clear();
+        categories.clear();
+    }
 };
 
 // -------------------------- Categories ----------------------------------- //
@@ -919,7 +924,7 @@ inline void print_help(std::string_view prog) {
 inline ParseResult parse_internal(std::vector<std::string> const &args, char const *programName, std::string_view version,
                                   std::map<std::string, std::string, std::less<>> *config,
                                   std::vector<std::string>                        *unknown_args = nullptr) {
-    (void)builtins();
+    Builtins    _;
     std::string prog = programName ? programName : (!args.empty() ? args[0] : "program");
 
     for (auto *o : Registry::instance().options) {
