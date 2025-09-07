@@ -188,7 +188,7 @@ template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept Y
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
-    LabeledSection1(fmt::format("<TransA={}>", TransA));
+    LabeledSection("<TransA={}>", TransA);
 
     detail::gemv<TransA>(alpha, A, z, beta, y);
 }
@@ -200,7 +200,7 @@ template <MatrixConcept AType, VectorConcept XType, VectorConcept YType, typenam
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(char transA, U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
-    LabeledSection1(fmt::format("<transA={}>", transA));
+    LabeledSection("<transA={}>", transA);
 
     detail::gemv(transA, alpha, A, z, beta, y);
 }
@@ -240,8 +240,7 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
         requires !Complex<AType>;
     }
 void syev(AType *A, WType *W) {
-
-    LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+    LabeledSection("<ComputeEigenvectors={}>", ComputeEigenvectors);
     detail::syev<ComputeEigenvectors>(A, W);
 }
 
@@ -256,7 +255,7 @@ template <MatrixConcept AType, VectorConcept WType>
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
     char jobvl = (lvecs == nullptr) ? 'n' : 'v';
     char jobvr = (rvecs == nullptr) ? 'n' : 'v';
-    LabeledSection1(fmt::format("<jobvl = {}, jobvr = {}>", jobvl, jobvr));
+    LabeledSection("<jobvl = {}, jobvr = {}>", jobvl, jobvr);
 
     detail::geev(A, W, lvecs, rvecs);
 }
@@ -279,7 +278,7 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
         requires std::is_same_v<typename WType::ValueType, RemoveComplexT<typename AType::ValueType>>;
     }
 void heev(AType *A, WType *W) {
-    LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+    LabeledSection("<ComputeEigenvectors={}>", ComputeEigenvectors);
     detail::heev<ComputeEigenvectors>(A, W);
 }
 

@@ -45,6 +45,7 @@ einsums_add_module(
   DEPENDENCIES Einsums::h5cpp ${TensorGPUDeps}
   MODULE_DEPENDENCIES
     Einsums_BLAS
+    Einsums_BufferAllocator
     Einsums_Concepts
     Einsums_Config
     Einsums_Errors

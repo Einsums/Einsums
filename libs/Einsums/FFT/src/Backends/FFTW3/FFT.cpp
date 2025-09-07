@@ -9,7 +9,7 @@
 
 #include <Einsums/FFT/Defines.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #if defined(EINSUMS_HAVE_FFT_LIBRARY_MKL)
 #    include <fftw/fftw3.h>

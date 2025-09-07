@@ -9,7 +9,7 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
-#include <Einsums/Profile/Timer.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 
@@ -36,9 +36,13 @@ int finalize() {
 
     auto &global_config = GlobalConfigMap::get_singleton();
 
+#if defined(EINSUMS_HAVE_PROFILER)
     if (global_config.get_bool("profiler-report")) {
-        profile::report(global_config.get_string("profiler-filename"), global_config.get_bool("profiler-append"));
+        std::ofstream out(global_config.get_string("profiler-filename"),
+                          global_config.get_bool("profiler-append") ? std::ios::ate : std::ios::trunc);
+        profile::Profiler::instance().print(false, out);
     }
+#endif
 
     // this function destroys the runtime.
     rt.deinit_global_data();
@@ -46,7 +50,7 @@ int finalize() {
     // This is the only explicit finalization routine. This is because the runtime depends on the
     // profiler. If the profiler used the normal finalization, then it would also depend on the runtime.
     // This would cause a dependency error.
-    profile::finalize();
+    // profile::finalize();
 
     // Free lost pointers.
     for (auto fn : detail::__deleters) {

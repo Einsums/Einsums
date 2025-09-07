@@ -7,9 +7,10 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/BufferAllocator.hpp>
+
 #include <cstddef>
 #include <vector>
-#include <Einsums/BufferAllocator/BufferAllocator.hpp>
 
 namespace einsums {
 
