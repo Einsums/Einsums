@@ -65,15 +65,4 @@ if(NOT TARGET einsums_dependencies_allocator)
     einsums_add_config_define(EINSUMS_HAVE_MALLOC_${EINSUMS_WITH_MALLOC_UPPER})
   endif()
 
-  if(NOT EINSUMS_WITH_MALLOC_UPPER STREQUAL "SYSTEM")
-    install(
-          TARGETS einsums_dependencies_allocator
-          EXPORT einsums_internal_targets
-          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-          RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT einsums_dependencies_allocator
-      )
-    einsums_export_internal_targets(einsums_dependencies_allocator)
-  endif()
-
 endif()
