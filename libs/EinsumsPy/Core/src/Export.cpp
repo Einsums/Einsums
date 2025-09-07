@@ -3,12 +3,17 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Config/Types.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Logging.hpp>
-#include <Einsums/Profile/Section.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Runtime.hpp>
 
 #include <exception>
@@ -99,11 +104,11 @@ void export_Core(py::module_ &mod) {
             },
             "Set a Boolean option.");
 
-    auto section = py::class_<einsums::Section>(mod, "Section", "Represents a section in the profiling report.");
-
-    section.def(py::init<std::string const &>())
-        .def(py::init<std::string const &, bool>())
-        .def(py::init<std::string const &, std::string const &>())
-        .def(py::init<std::string const &, std::string const &, bool>())
-        .def("end", &Section::end, "End a section early. Usually ended by the destructor.");
+    // auto section = py::class_<einsums::Section>(mod, "Section", "Represents a section in the profiling report.");
+    //
+    // section.def(py::init<std::string const &>())
+    //     .def(py::init<std::string const &, bool>())
+    //     .def(py::init<std::string const &, std::string const &>())
+    //     .def(py::init<std::string const &, std::string const &, bool>())
+    //     .def("end", &Section::end, "End a section early. Usually ended by the destructor.");
 }

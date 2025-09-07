@@ -27,9 +27,9 @@ if(NOT TARGET einsums_dependencies_allocator)
 
   string(TOUPPER "${EINSUMS_WITH_MALLOC}" EINSUMS_WITH_MALLOC_UPPER)
 
-  if(NOT EINSUMS_WITH_MALLOC_UPPER STREQUAL "SYSTEM")
+  add_library(einsums_dependencies_allocator INTERFACE)
 
-    add_library(einsums_dependencies_allocator INTERFACE IMPORTED)
+  if(NOT EINSUMS_WITH_MALLOC_UPPER STREQUAL "SYSTEM")
 
     # ##############################################################################################
     # MIMALLOC
@@ -62,5 +62,16 @@ if(NOT TARGET einsums_dependencies_allocator)
   # convey selected allocator type to the build configuration
   if(NOT EINSUMS_FIND_PACKAGE)
     einsums_add_config_define(EINSUMS_HAVE_MALLOC "\"${EINSUMS_WITH_MALLOC}\"")
+    einsums_add_config_define(EINSUMS_HAVE_MALLOC_${EINSUMS_WITH_MALLOC_UPPER})
   endif()
+
+  install(
+          TARGETS einsums_dependencies_allocator
+          EXPORT einsums_internal_targets
+          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+          RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT einsums_dependencies_allocator
+  )
+  einsums_export_internal_targets(einsums_dependencies_allocator)
+
 endif()

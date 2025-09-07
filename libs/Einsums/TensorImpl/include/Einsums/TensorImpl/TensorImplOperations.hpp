@@ -1,14 +1,14 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Logging.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 
 #include <type_traits>
@@ -649,8 +649,8 @@ void impl_scal(U alpha, TensorImpl<T> &out) {
 
 template <typename T, typename TOther>
 void impl_div_scalar_contiguous(TOther alpha, TensorImpl<T> &out) {
-    if constexpr (std::is_same_v<RemoveComplexT<T>, RemoveComplexT<TOther>> && !(IsComplexV<TOther> && !IsComplexV<T>) &&
-                  blas::IsBlasableV<T>) {
+    if constexpr (std::is_same_v<RemoveComplexT<T>, RemoveComplexT<TOther>> &&
+                  !(IsComplexV<TOther> && !IsComplexV<T>)&&blas::IsBlasableV<T>) {
         blas::rscl(out.size(), alpha, out.data(), out.get_incx());
     } else if constexpr (IsComplexV<TOther> && !IsComplexV<T>) {
         EINSUMS_THROW_EXCEPTION(complex_conversion_error,
@@ -670,8 +670,8 @@ template <typename T, typename TOther, Container HardDims, Container OutStrides>
 void impl_div_scalar_noncontiguous_vectorable(int depth, int hard_rank, size_t easy_size, TOther alpha, HardDims const &dims, T *out,
                                               OutStrides const &out_strides, size_t inc_out) {
     if (depth == hard_rank) {
-        if constexpr (std::is_same_v<RemoveComplexT<T>, RemoveComplexT<TOther>> && !(IsComplexV<TOther> && !IsComplexV<T>) &&
-                      blas::IsBlasableV<T>) {
+        if constexpr (std::is_same_v<RemoveComplexT<T>, RemoveComplexT<TOther>> &&
+                      !(IsComplexV<TOther> && !IsComplexV<T>)&&blas::IsBlasableV<T>) {
             blas::rscl(easy_size, alpha, out, inc_out);
         } else if constexpr (IsComplexV<TOther> && !IsComplexV<T>) {
             EINSUMS_THROW_EXCEPTION(complex_conversion_error,
