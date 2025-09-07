@@ -14,6 +14,8 @@
 #include <complex>
 #include <deque>
 #include <forward_list>
+#include <map>
+#include <set>
 #include <source_location>
 #include <string>
 #include <type_traits>
