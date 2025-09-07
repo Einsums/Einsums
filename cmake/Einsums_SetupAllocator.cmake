@@ -27,7 +27,7 @@ if(NOT TARGET einsums_dependencies_allocator)
 
   string(TOUPPER "${EINSUMS_WITH_MALLOC}" EINSUMS_WITH_MALLOC_UPPER)
 
-  add_library(einsums_dependencies_allocator INTERFACE IMPORTED)
+  add_library(einsums_dependencies_allocator INTERFACE)
 
   if(NOT EINSUMS_WITH_MALLOC_UPPER STREQUAL "SYSTEM")
 
@@ -64,5 +64,14 @@ if(NOT TARGET einsums_dependencies_allocator)
     einsums_add_config_define(EINSUMS_HAVE_MALLOC "\"${EINSUMS_WITH_MALLOC}\"")
     einsums_add_config_define(EINSUMS_HAVE_MALLOC_${EINSUMS_WITH_MALLOC_UPPER})
   endif()
+
+  install(
+          TARGETS einsums_dependencies_allocator
+          EXPORT einsums_internal_targets
+          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+          RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT einsums_dependencies_allocator
+  )
+  einsums_export_internal_targets(einsums_dependencies_allocator)
 
 endif()
