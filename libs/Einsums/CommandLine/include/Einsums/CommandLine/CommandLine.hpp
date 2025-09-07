@@ -38,6 +38,10 @@ struct Range {
     long long max_v = (std::numeric_limits<long long>::max)();
 };
 
+inline Range RangeBetween(long long min_v, long long max_v) {
+    return Range{min_v, max_v};
+}
+
 struct ParseResult {
     bool ok        = true;
     int  exit_code = 0;
@@ -925,7 +929,7 @@ inline ParseResult parse_internal(std::vector<std::string> const &args, char con
                                   std::map<std::string, std::string, std::less<>> *config,
                                   std::vector<std::string>                        *unknown_args = nullptr) {
     Builtins    _;
-    std::string prog = programName ? programName : (!args.empty() ? args[0] : "program");
+    std::string prog = programName ? programName : (!args.empty() ? args[0] : "Einsums");
 
     for (auto *o : Registry::instance().options) {
         o->finalize_default();
@@ -1116,19 +1120,34 @@ inline ParseResult parse_internal(std::vector<std::string> const &args, char con
     return {true, 0};
 }
 
+/**
+ * Parses command-line arguments storing their presence into previously registered Opt/Flag/OpenEnum option.
+ *
+ * @param args command-line arguments converted to a std::vector<std::string>
+ * @param programName the program name to display in help printing
+ * @param version the program version to display in version printing
+ * @param unknown_args arguments not understood by our parser are placed here
+ * @return if ParseResult.ok is true then parsing completed successfully
+ */
 inline ParseResult parse(std::vector<std::string> const &args, char const *programName = nullptr, std::string_view version = {},
                          std::vector<std::string> *unknown_args = nullptr) {
     return parse_internal(args, programName, version, nullptr, unknown_args);
 }
 
+/**
+ * Parses command-line arguments storing their presence into previously registered Opt/Flag/OpenEnum option.
+ *
+ * @param args command-line arguments converted to a std::vector<std::string>
+ * @param programName the program name to display in help printing
+ * @param version the program version to display in version printing
+ * @param config_path key=value or simple json config file that you want to be read in before command line processing
+ * @param unknown_args arguments not understood by our parser are placed here
+ * @return if ParseResult.ok is true then parsing completed successfully
+ */
 inline ParseResult parse_with_config(std::vector<std::string> const &args, char const *programName = nullptr, std::string_view version = {},
                                      std::string_view config_path = {}, std::vector<std::string> *unknown_args = nullptr) {
     auto kv = read_config(config_path);
     return parse_internal(args, programName, version, &kv, unknown_args);
-}
-
-inline Range RangeBetween(long long min_v, long long max_v) {
-    return Range{min_v, max_v};
 }
 
 } // namespace einsums::cl
