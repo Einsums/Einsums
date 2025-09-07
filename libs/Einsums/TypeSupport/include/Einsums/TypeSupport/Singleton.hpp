@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -22,9 +22,9 @@
     class PrivateConstructorStuff {};                                                                                                      \
                                                                                                                                            \
   public:                                                                                                                                  \
-    Type(PrivateConstructorStuff ignore) : Type() {                                                                                        \
+    Type(PrivateConstructorStuff /*ignore*/) : Type() {                                                                                    \
     }                                                                                                                                      \
-    static Type &get_singleton();                                                                                                          \
+    static auto get_singleton() -> Type &;                                                                                                 \
     Type(const Type &) = delete;                                                                                                           \
     Type(Type &&)      = delete;
 
@@ -34,7 +34,7 @@
  * Creates the code for managing a singleton.
  */
 #define EINSUMS_SINGLETON_IMPL(Type)                                                                                                       \
-    Type &Type::get_singleton() {                                                                                                          \
+    auto Type::get_singleton() -> Type & {                                                                                                 \
         static std::unique_ptr<Type> singleton_instance = std::make_unique<Type>(PrivateConstructorStuff());                               \
         return *singleton_instance;                                                                                                        \
     }
