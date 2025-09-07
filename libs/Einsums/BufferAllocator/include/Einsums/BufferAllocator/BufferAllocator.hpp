@@ -25,12 +25,15 @@
 #    include <tracy/Tracy.hpp>
 #endif
 
-#if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
-#    include <mimalloc.h>
-#endif
 
 namespace einsums {
 
+namespace detail {
+
+EINSUMS_EXPORT void *allocate(size_t n);
+EINSUMS_EXPORT void deallocate(void*);
+
+}
 /**
  * @struct BufferAllocator
  *
@@ -139,19 +142,7 @@ struct BufferAllocator {
                                     n, n * type_size, available_size(), max_size());
         }
 
-        void *ptr = nullptr;
-#if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
-        ptr = mi_malloc_aligned(n * type_size, 64);
-#elif defined(_ISOC11_SOURCE) || (__STDC_VERSION__ >= 201112L)
-        ptr = std::aligned_alloc(64, n * type_size);
-#else
-        // returns zero on success, or an error value. On Linux (and other systems), p is not modified on failure.
-        if (posix_memalign(&ptr, 64, n * type_size) != 0) {
-            ptr = nullptr;
-        }
-#endif
-        out = static_cast<pointer>(ptr);
-
+        out = static_cast<pointer>(detail::allocate(n*type_size));
         if (out == nullptr) {
             EINSUMS_THROW_EXCEPTION(
                 std::runtime_error,
@@ -219,11 +210,7 @@ struct BufferAllocator {
 #if defined(EINSUMS_HAVE_TRACY)
             TracyFree(p);
 #endif
-#if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
-            mi_free(p);
-#else
-            free(static_cast<void *>(p));
-#endif
+            detail::deallocate(p);
         }
     }
 

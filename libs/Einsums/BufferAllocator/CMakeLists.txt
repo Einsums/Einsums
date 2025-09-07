@@ -10,7 +10,7 @@ set(BufferAllocatorHeaders
     Einsums/BufferAllocator/BufferAllocator.hpp
 )
 
-set(BufferAllocatorSources InitModule.cpp ModuleVars.cpp ForwardDeclarations.cpp)
+set(BufferAllocatorSources BufferAllocator.cpp InitModule.cpp ModuleVars.cpp ForwardDeclarations.cpp)
 
 if (TARGET einsums_dependencies_allocator)
     set(extra_deps einsums_dependencies_allocator)
@@ -21,9 +21,10 @@ einsums_add_module(
   Einsums BufferAllocator
   SOURCES ${BufferAllocatorSources}
   HEADERS ${BufferAllocatorHeaders}
-  DEPENDENCIES ${extra_deps}
+  DEPENDENCIES
   MODULE_DEPENDENCIES Einsums_Runtime Einsums_Logging Einsums_TypeSupport Einsums_Config
                       Einsums_RuntimeConfiguration Einsums_CommandLine Einsums_Print
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME Einsums
 )
+target_link_libraries(Einsums_BufferAllocator PRIVATE ${extra_deps})
