@@ -19,18 +19,18 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
    :maxdepth: 1
 
    /libs/Einsums/LinearAlgebra/api/LinearAlgebra.rst
-   /libs/Einsums/LinearAlgebra/api/Base.rst
    /libs/Einsums/LinearAlgebra/api/Unoptimized.rst
    /libs/Einsums/LinearAlgebra/api/GPULinearAlgebra.rst
-   /libs/Einsums/LinearAlgebra/api/TiledTensor.rst
+   /libs/Einsums/LinearAlgebra/api/Base.rst
    /libs/Einsums/LinearAlgebra/api/BlockTensor.rst
-   /libs/Einsums/LinearAlgebra/api/triangular.rst
-   /libs/Einsums/LinearAlgebra/api/norm.rst
-   /libs/Einsums/LinearAlgebra/api/syev.rst
-   /libs/Einsums/LinearAlgebra/api/high_precision.rst
-   /libs/Einsums/LinearAlgebra/api/sum_square.rst
+   /libs/Einsums/LinearAlgebra/api/TiledTensor.rst
    /libs/Einsums/LinearAlgebra/api/direct_product.rst
-   /libs/Einsums/LinearAlgebra/api/ger.rst
-   /libs/Einsums/LinearAlgebra/api/gemv.rst
-   /libs/Einsums/LinearAlgebra/api/gemm.rst
    /libs/Einsums/LinearAlgebra/api/dot.rst
+   /libs/Einsums/LinearAlgebra/api/gemv.rst
+   /libs/Einsums/LinearAlgebra/api/sum_square.rst
+   /libs/Einsums/LinearAlgebra/api/high_precision.rst
+   /libs/Einsums/LinearAlgebra/api/triangular.rst
+   /libs/Einsums/LinearAlgebra/api/ger.rst
+   /libs/Einsums/LinearAlgebra/api/syev.rst
+   /libs/Einsums/LinearAlgebra/api/gemm.rst
+   /libs/Einsums/LinearAlgebra/api/norm.rst

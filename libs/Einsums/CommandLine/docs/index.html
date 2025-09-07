@@ -1,0 +1,969 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums CommandLine &#8212; Einsums 2.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=047b7709" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../_static/documentation_options.js?v=ecbcfc14"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/CommandLine/docs/index';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Concepts" href="../../Concepts/docs/index.html" />
+    <link rel="prev" title="BufferAllocator" href="../../BufferAllocator/docs/index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Sep 07, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/absolute_beginners.html">Einsums: The Absolute Basics for Beginners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/python.html">Einsums in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/arguments.html">Command Line Arguments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User's Reference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../overview.html">Overview</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../index.html">Einsums</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../../modules.html">Einsums Modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">Einsums CommandLine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../GPUMemory/docs/index.html">Einsums GPUMemory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../GPUStreams/docs/index.html">GPUStreams</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Logging/docs/index.html">Einsums Logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../RuntimeConfiguration/docs/index.html">RuntimeConfiguration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../TensorImpl/docs/index.html">Einsums TensorImpl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Version/docs/index.html">Einsums Version</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../todo.html">Einsums Library TODO</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../EinsumsPy/index.html">EinsumsPy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../EinsumsPy/modules.html">EinsumsPy Modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/Core/docs/index.html">EinsumsPy Core</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/Errors/docs/index.html">EinsumsPy Errors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/GPU/docs/index.html">EinsumsPy GPU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/LinearAlgebra/docs/index.html">EinsumsPy LinearAlgebra</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/Tensor/docs/index.html">EinsumsPy Tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/TensorAlgebra/docs/index.html">EinsumsPy TensorAlgebra</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../EinsumsPy/TestUtils/docs/index.html">EinsumsPy TestUtils</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../EinsumsPy/todo.html">EinsumsPy Library TODO</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../reference/python_module.html">Einsums Python Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/einsums.core.html">Einsums Core Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.tensor_algebra.html">Einsums Python Tensor Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.gpu_view.html">Einsums Python GPU Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.runtimetensor.html">Einsums Python Runtime Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.globalconfigmap.html">GlobalConfigMap in Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.logging.html">Python Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/einsums.core.errors.html">Einsums Internal Errors</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/einsums.utils.html">Einsums Utilities Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/einsums.gpu_except.html">HIP Exceptions in Python</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Extras</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">Einsums License</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../user/index.html" class="nav-link">Einsums User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Overview</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Einsums</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../modules.html" class="nav-link">Einsums Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums CommandLine</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-commandline">
+<span id="modules-einsums-commandline"></span><h1>Einsums CommandLine<a class="headerlink" href="#einsums-commandline" title="Link to this heading">#</a></h1>
+<p>A minimal, header‑only C++20 command‑line parser designed in the spirit of LLVM’s
+<code class="docutils literal notranslate"><span class="pre">cl::</span></code> utilities, but simplified and dependency‑free (aside from <code class="docutils literal notranslate"><span class="pre">fmt</span></code> for help text).</p>
+<ul class="simple">
+<li><p><strong>Header‑only</strong> (just include <code class="docutils literal notranslate"><span class="pre">Einsums/CommandLine.hpp</span></code>)</p></li>
+<li><p><strong>Options</strong>: <code class="docutils literal notranslate"><span class="pre">Flag</span></code>, <code class="docutils literal notranslate"><span class="pre">Opt&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">List&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">OptEnum&lt;Enum&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Alias</span></code></p></li>
+<li><p><strong>Named parameter tags</strong>: <code class="docutils literal notranslate"><span class="pre">Default(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">ImplicitValue(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">ValueName(&quot;...&quot;)</span></code></p></li>
+<li><p><strong>Bindings</strong>: <code class="docutils literal notranslate"><span class="pre">Location&lt;T&gt;</span></code> (write to external storage), <code class="docutils literal notranslate"><span class="pre">Setter&lt;T&gt;</span></code> (callback)</p></li>
+<li><p><strong>Config precedence</strong>: <em>defaults</em> &lt; <em>config file/map</em> &lt; <em>CLI</em></p></li>
+<li><p><strong>Unknown args</strong>: unrecognized options and everything after <code class="docutils literal notranslate"><span class="pre">--</span></code> are collected</p></li>
+<li><p><strong>Built‑ins</strong>: <code class="docutils literal notranslate"><span class="pre">--help</span></code> and <code class="docutils literal notranslate"><span class="pre">--version</span></code> (always available)</p></li>
+</ul>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/CommandLine.hpp&gt;</span>
+
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="o">::</span><span class="nn">cl</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">args</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">argc</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 1) Group options into categories (affects help layout)</span>
+<span class="w">  </span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">General</span><span class="p">{</span><span class="s">&quot;General&quot;</span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">// 2) Declare options</span>
+<span class="w">  </span><span class="n">Flag</span><span class="w"> </span><span class="n">Verbose</span><span class="p">{</span>
+<span class="w">    </span><span class="s">&quot;verbose&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">&#39;v&#39;</span><span class="p">},</span><span class="w"> </span><span class="s">&quot;Enable verbose logging&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">General</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="nb">false</span><span class="p">),</span><span class="w"> </span><span class="n">ImplicitValue</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">Opt</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Threads</span><span class="p">{</span>
+<span class="w">    </span><span class="s">&quot;threads&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">&#39;t&#39;</span><span class="p">},</span><span class="s">&quot;Number of threads&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">General</span><span class="p">,</span><span class="w"> </span><span class="n">RangeBetween</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">),</span><span class="w"> </span><span class="n">ValueName</span><span class="p">(</span><span class="s">&quot;N&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">Opt</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Output</span><span class="p">{</span>
+<span class="w">    </span><span class="s">&quot;output&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">&#39;o&#39;</span><span class="p">},</span><span class="w"> </span><span class="s">&quot;Output file&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">{</span><span class="s">&quot;a.out&quot;</span><span class="p">}),</span>
+<span class="w">    </span><span class="n">General</span><span class="p">,</span><span class="w"> </span><span class="n">ValueName</span><span class="p">(</span><span class="s">&quot;PATH&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">// Positional “gather the rest”</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Inputs</span><span class="p">{</span><span class="s">&quot;inputs&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Positional</span><span class="p">{},</span><span class="w"> </span><span class="s">&quot;Input file(s)&quot;</span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">// 3) Parse with optional config file and unknown-args collection</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unknown</span><span class="p">;</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">pr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parse_with_config</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;einsums&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2.0.0&quot;</span><span class="p">,</span>
+<span class="w">                              </span><span class="s">&quot;settings.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">unknown</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">pr</span><span class="p">.</span><span class="n">ok</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">pr</span><span class="p">.</span><span class="n">exit_code</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 4) Use the values</span>
+<span class="w">  </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;threads = {}</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Threads</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">  </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;output  = {}</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">  </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;verbose = {}</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Verbose</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Inputs</span><span class="p">.</span><span class="n">values</span><span class="p">())</span><span class="w"> </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;input   = {}</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">unknown</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;unknown: &quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">unknown</span><span class="p">)</span><span class="w"> </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;{} &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">);</span>
+<span class="w">    </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Run it:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./einsums<span class="w"> </span>-v<span class="w"> </span>-t<span class="w"> </span><span class="m">8</span><span class="w"> </span>-o<span class="w"> </span>result.bin<span class="w"> </span>a.txt<span class="w"> </span>b.txt
+<span class="go">threads = 8</span>
+<span class="go">output  = result.bin</span>
+<span class="go">verbose = true</span>
+<span class="go">input   = a.txt</span>
+<span class="go">input   = b.txt</span>
+</pre></div>
+</div>
+<p>Built‑ins:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./einsums<span class="w"> </span>--help
+<span class="go">Usage: einsums [options] &lt;inputs&gt;</span>
+<span class="go">...</span>
+
+<span class="gp">$ </span>./einsums<span class="w"> </span>--version
+<span class="go">einsums 2.0.0</span>
+</pre></div>
+</div>
+</section>
+<section id="core-concepts">
+<h2>Core Concepts<a class="headerlink" href="#core-concepts" title="Link to this heading">#</a></h2>
+<section id="categories">
+<h3>Categories<a class="headerlink" href="#categories" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">OptionCategory</span></code> groups options under a heading in <code class="docutils literal notranslate"><span class="pre">--help</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">IO</span><span class="p">{</span><span class="s">&quot;I/O&quot;</span><span class="p">};</span>
+<span class="n">OptionCategory</span><span class="w"> </span><span class="n">Perf</span><span class="p">{</span><span class="s">&quot;Performance&quot;</span><span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="types-of-options">
+<h3>Types of Options<a class="headerlink" href="#types-of-options" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Flag</span></code> — boolean option. Presence sets true (configurable via <code class="docutils literal notranslate"><span class="pre">ImplicitValue</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Opt&lt;T&gt;</span></code> — single value option. <code class="docutils literal notranslate"><span class="pre">T</span></code> can be <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">double</span></code>, <code class="docutils literal notranslate"><span class="pre">std::string</span></code>, …</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">List&lt;T&gt;</span></code> — repeated or comma‑separated values. As a positional, it <em>gathers remaining tokens</em>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OptEnum&lt;Enum&gt;</span></code> — map string choices to an enum.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Alias</span></code> — forwards to a target option, optionally supplying a preset value.</p></li>
+</ul>
+</section>
+<section id="named-parameter-tags">
+<h3>Named Parameter Tags<a class="headerlink" href="#named-parameter-tags" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Default(value)</span></code> — compile‑time default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ImplicitValue(value)</span></code> — used when the option appears without an explicit value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueName(&quot;NAME&quot;)</span></code> — placeholder in help, e.g., <code class="docutils literal notranslate"><span class="pre">--threads</span> <span class="pre">&lt;N&gt;</span></code>.</p></li>
+</ul>
+</section>
+<section id="bindings-callbacks">
+<h3>Bindings &amp; Callbacks<a class="headerlink" href="#bindings-callbacks" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Location&lt;T&gt;(ref)</span></code> — write the parsed value directly into external storage.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Setter&lt;T&gt;{</span> <span class="pre">[](const</span> <span class="pre">T&amp;</span> <span class="pre">v){</span> <span class="pre">...</span> <span class="pre">}</span> <span class="pre">}</span></code> — invoke on assignment.</p></li>
+</ul>
+</section>
+<section id="occurrences-visibility">
+<h3>Occurrences &amp; Visibility<a class="headerlink" href="#occurrences-visibility" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Occurrence</span></code>: <code class="docutils literal notranslate"><span class="pre">Optional</span></code> (default), <code class="docutils literal notranslate"><span class="pre">Required</span></code>, <code class="docutils literal notranslate"><span class="pre">ZeroOrMore</span></code>, <code class="docutils literal notranslate"><span class="pre">OneOrMore</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Visibility</span></code>: <code class="docutils literal notranslate"><span class="pre">Normal</span></code> (default), <code class="docutils literal notranslate"><span class="pre">Hidden</span></code> (omits from help).</p></li>
+</ul>
+</section>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
+<section id="construction-variadic-namedstyle">
+<h3>Construction (variadic, named‑style)<a class="headerlink" href="#construction-variadic-namedstyle" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Flag</span>
+<span class="n">Flag</span><span class="p">(</span><span class="n">StringRef</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">     </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">     </span><span class="n">StringRef</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">     </span><span class="cm">/* extras: */</span><span class="w"> </span><span class="n">OptionCategory</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">Visibility</span><span class="p">,</span><span class="w"> </span><span class="n">Occurrence</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">Location</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Setter</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="kt">bool</span><span class="p">),</span><span class="w"> </span><span class="n">ImplicitValue</span><span class="p">(</span><span class="kt">bool</span><span class="p">));</span>
+
+<span class="c1">// Opt&lt;T&gt; (without positional default)</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="n">Opt</span><span class="p">(</span><span class="n">StringRef</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">    </span><span class="n">StringRef</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/* extras: */</span><span class="w"> </span><span class="n">OptionCategory</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">Visibility</span><span class="p">,</span><span class="w"> </span><span class="n">Occurrence</span><span class="p">,</span><span class="w"> </span><span class="n">ValueExpected</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">Range</span><span class="p">,</span><span class="w"> </span><span class="n">Location</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Setter</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="n">T</span><span class="p">),</span>
+<span class="w">                 </span><span class="n">ImplicitValue</span><span class="p">(</span><span class="n">T</span><span class="p">),</span><span class="w"> </span><span class="n">ValueNameTag</span><span class="p">);</span>
+
+<span class="c1">// Opt&lt;T&gt; (with positional default value)</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="n">Opt</span><span class="p">(</span><span class="n">StringRef</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="n">defaultValue</span><span class="p">,</span>
+<span class="w">    </span><span class="n">StringRef</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/* extras: ... as above ... */</span><span class="p">);</span>
+
+<span class="c1">// List&lt;T&gt; (named)</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="n">List</span><span class="p">(</span><span class="n">StringRef</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">     </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">     </span><span class="n">StringRef</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">     </span><span class="cm">/* extras: OptionCategory&amp;, Visibility, Occurrence */</span><span class="p">);</span>
+
+<span class="c1">// List&lt;T&gt; (positional gather)</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="n">List</span><span class="p">(</span><span class="n">StringRef</span><span class="w"> </span><span class="n">positionalName</span><span class="p">,</span><span class="w"> </span><span class="n">Positional</span><span class="p">,</span><span class="w"> </span><span class="n">StringRef</span><span class="w"> </span><span class="n">helpText</span><span class="p">);</span>
+
+<span class="c1">// OptEnum&lt;Enum&gt;</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Enum</span><span class="o">&gt;</span>
+<span class="n">OptEnum</span><span class="p">(</span><span class="n">StringRef</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Enum</span><span class="w"> </span><span class="n">defaultValue</span><span class="p">,</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">Enum</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">mapping</span><span class="p">,</span>
+<span class="w">        </span><span class="n">StringRef</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">        </span><span class="cm">/* extras: OptionCategory&amp;, ... */</span><span class="p">);</span>
+
+<span class="c1">// Alias</span>
+<span class="n">Alias</span><span class="p">(</span><span class="n">StringRef</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">      </span><span class="n">OptionBase</span><span class="o">&amp;</span><span class="w"> </span><span class="n">target</span><span class="p">,</span>
+<span class="w">      </span><span class="n">StringRef</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">      </span><span class="cm">/* extras: OptionCategory&amp;, Visibility, Occurrence, std::string presetValue */</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="parsing">
+<h3>Parsing<a class="headerlink" href="#parsing" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">ParseResult</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">ok</span><span class="p">;</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">exit_code</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+
+<span class="n">ParseResult</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">args</span><span class="p">,</span>
+<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">programName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">less</span><span class="o">&lt;&gt;&gt;*</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">unknown_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="n">ParseResult</span><span class="w"> </span><span class="nf">parse_with_config</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">args</span><span class="p">,</span>
+<span class="w">                              </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">programName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                              </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">config_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                              </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">unknown_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="behavior-semantics">
+<h2>Behavior &amp; Semantics<a class="headerlink" href="#behavior-semantics" title="Link to this heading">#</a></h2>
+<section id="option-names">
+<h3>Option Names<a class="headerlink" href="#option-names" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Long: <code class="docutils literal notranslate"><span class="pre">--threads</span></code>, optionally <code class="docutils literal notranslate"><span class="pre">--threads=8</span></code>.</p></li>
+<li><p>Short (bundles allowed): <code class="docutils literal notranslate"><span class="pre">-v</span></code>, <code class="docutils literal notranslate"><span class="pre">-abc</span></code>, <code class="docutils literal notranslate"><span class="pre">-o12</span></code> or <code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">12</span></code>.</p></li>
+</ul>
+</section>
+<section id="implicit-values">
+<h3>Implicit Values<a class="headerlink" href="#implicit-values" title="Link to this heading">#</a></h3>
+<p>For options with <code class="docutils literal notranslate"><span class="pre">ValueExpected::ValueRequired</span></code>, the parser <strong>only consumes the next token
+as a value if it does not look like another option</strong>. Otherwise it passes <code class="docutils literal notranslate"><span class="pre">std::nullopt</span></code> to the
+option, allowing <code class="docutils literal notranslate"><span class="pre">ImplicitValue(...)</span></code> to apply. Examples:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--level</span></code>  ⇒ if <code class="docutils literal notranslate"><span class="pre">ImplicitValue(7)</span></code> set, then 7</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--level=9</span></code> ⇒ 9</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-l</span></code> (last in bundle) ⇒ apply implicit value if configured</p></li>
+</ul>
+</section>
+<section id="numeric-lookahead-rule">
+<h3>Numeric look‑ahead rule<a class="headerlink" href="#numeric-lookahead-rule" title="Link to this heading">#</a></h3>
+<p>Tokens like <code class="docutils literal notranslate"><span class="pre">-5</span></code> or <code class="docutils literal notranslate"><span class="pre">-3.14</span></code> are treated as <strong>values</strong> (not options) when they are expected
+to be consumed as the next value.</p>
+</section>
+<section id="positional-list-gathering">
+<h3>Positional List Gathering<a class="headerlink" href="#positional-list-gathering" title="Link to this heading">#</a></h3>
+<p>A positional <code class="docutils literal notranslate"><span class="pre">List&lt;T&gt;</span></code> stays “active” and gathers subsequent bare tokens. For example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Inputs</span><span class="p">{</span><span class="s">&quot;inputs&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Positional</span><span class="p">{},</span><span class="w"> </span><span class="s">&quot;Input files&quot;</span><span class="p">};</span>
+<span class="c1">// ./app a.txt b.txt c.txt  ⇒ Inputs.values() == {&quot;a.txt&quot;,&quot;b.txt&quot;,&quot;c.txt&quot;}</span>
+</pre></div>
+</div>
+</section>
+<section id="unknown-arguments">
+<h3>Unknown Arguments<a class="headerlink" href="#unknown-arguments" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Any unrecognized option (e.g., <code class="docutils literal notranslate"><span class="pre">--weird</span></code>) or short (e.g., <code class="docutils literal notranslate"><span class="pre">-z</span></code>) is appended to <code class="docutils literal notranslate"><span class="pre">unknown_args</span></code>.</p></li>
+<li><p>Everything <strong>after</strong> a literal <code class="docutils literal notranslate"><span class="pre">--</span></code> is appended to <code class="docutils literal notranslate"><span class="pre">unknown_args</span></code>.</p></li>
+</ul>
+</section>
+<section id="config-files">
+<h3>Config Files<a class="headerlink" href="#config-files" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">parse_with_config</span></code> accepts:</p>
+<ul class="simple">
+<li><p><strong>Key/Value</strong> (<code class="docutils literal notranslate"><span class="pre">.env</span></code>‑ish): lines of <code class="docutils literal notranslate"><span class="pre">key</span> <span class="pre">=</span> <span class="pre">value</span></code>; <code class="docutils literal notranslate"><span class="pre">#</span></code> starts a comment.</p></li>
+<li><p><strong>Flat JSON object</strong>: <code class="docutils literal notranslate"><span class="pre">{&quot;threads&quot;:</span> <span class="pre">12,</span> <span class="pre">&quot;output&quot;:</span> <span class="pre">&quot;a.bin&quot;,</span> <span class="pre">&quot;verbose&quot;:</span> <span class="pre">true}</span></code>.</p></li>
+</ul>
+<p>Keys are matched to long option names (case‑insensitive). Precedence is:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Default</span> <span class="pre">&lt;</span> <span class="pre">Config</span> <span class="pre">&lt;</span> <span class="pre">CLI</span></code></p>
+</section>
+<section id="builtin-options">
+<h3>Built‑in Options<a class="headerlink" href="#builtin-options" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--help</span></code> (alias <code class="docutils literal notranslate"><span class="pre">-h</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--version</span></code></p></li>
+</ul>
+<p>These are always present. The parser <strong>short‑circuits</strong>:</p>
+<ul class="simple">
+<li><p>On <code class="docutils literal notranslate"><span class="pre">--help</span></code>: prints help and returns <code class="docutils literal notranslate"><span class="pre">{ok=false,</span> <span class="pre">exit_code=0}</span></code></p></li>
+<li><p>On <code class="docutils literal notranslate"><span class="pre">--version</span></code>: prints version and returns <code class="docutils literal notranslate"><span class="pre">{ok=false,</span> <span class="pre">exit_code=0}</span></code></p></li>
+</ul>
+</section>
+<section id="help-layout">
+<h3>Help Layout<a class="headerlink" href="#help-layout" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">--help</span></code> prints usage, categories, normal‑visibility options, and positional arguments.
+<code class="docutils literal notranslate"><span class="pre">ValueName(&quot;NAME&quot;)</span></code> customizes the placeholder.</p>
+</section>
+<section id="validation-errors">
+<h3>Validation &amp; Errors<a class="headerlink" href="#validation-errors" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Missing required options or invalid values cause <code class="docutils literal notranslate"><span class="pre">{ok=false,</span> <span class="pre">exit_code=1}</span></code> and a message to <code class="docutils literal notranslate"><span class="pre">stderr</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RangeBetween(min,</span> <span class="pre">max)</span></code> checks integral bounds on numeric <code class="docutils literal notranslate"><span class="pre">Opt&lt;T&gt;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OptEnum</span></code> reports invalid choices and lists allowed keys.</p></li>
+</ul>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
+<section id="flags">
+<h3>Flags<a class="headerlink" href="#flags" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">Log</span><span class="p">{</span><span class="s">&quot;Logging&quot;</span><span class="p">};</span>
+<span class="n">Flag</span><span class="w"> </span><span class="n">Verbose</span><span class="p">{</span>
+<span class="w">  </span><span class="s">&quot;verbose&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">&#39;v&#39;</span><span class="p">},</span><span class="w"> </span><span class="s">&quot;Enable verbose logging&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">Log</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="nb">false</span><span class="p">),</span><span class="w"> </span><span class="n">ImplicitValue</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="integers-with-range-and-implicit">
+<h3>Integers with Range and Implicit<a class="headerlink" href="#integers-with-range-and-implicit" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">Perf</span><span class="p">{</span><span class="s">&quot;Performance&quot;</span><span class="p">};</span>
+<span class="n">Opt</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Threads</span><span class="p">{</span>
+<span class="w">  </span><span class="s">&quot;threads&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">&#39;t&#39;</span><span class="p">},</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;Number of threads&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">Perf</span><span class="p">,</span><span class="w"> </span><span class="n">RangeBetween</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">),</span><span class="w"> </span><span class="n">ValueName</span><span class="p">(</span><span class="s">&quot;N&quot;</span><span class="p">)</span>
+<span class="p">}.</span><span class="n">Implicit</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span><span class="w"> </span><span class="c1">// --threads ⇒ 16, --threads=8 ⇒ 8</span>
+</pre></div>
+</div>
+</section>
+<section id="strings-paths">
+<h3>Strings &amp; Paths<a class="headerlink" href="#strings-paths" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">IO</span><span class="p">{</span><span class="s">&quot;I/O&quot;</span><span class="p">};</span>
+<span class="n">Opt</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Output</span><span class="p">{</span>
+<span class="w">  </span><span class="s">&quot;output&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">&#39;o&#39;</span><span class="p">},</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">{</span><span class="s">&quot;a.out&quot;</span><span class="p">}),</span><span class="w"> </span><span class="s">&quot;Output file&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">IO</span><span class="p">,</span><span class="w"> </span><span class="n">ValueName</span><span class="p">(</span><span class="s">&quot;PATH&quot;</span><span class="p">)</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="lists-named-and-positional">
+<h3>Lists (named and positional)<a class="headerlink" href="#lists-named-and-positional" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Include</span><span class="p">{</span>
+<span class="w">  </span><span class="s">&quot;include&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">&#39;I&#39;</span><span class="p">},</span><span class="w"> </span><span class="s">&quot;Include directories&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">IO</span>
+<span class="p">};</span><span class="w"> </span><span class="c1">// --include=inc1,inc2 or --include inc1 --include inc2</span>
+
+<span class="n">List</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Inputs</span><span class="p">{</span><span class="s">&quot;inputs&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Positional</span><span class="p">{},</span><span class="w"> </span><span class="s">&quot;Input files&quot;</span><span class="p">};</span>
+<span class="c1">// gathers bare tokens at end: ./app a b c</span>
+</pre></div>
+</div>
+</section>
+<section id="enums">
+<h3>Enums<a class="headerlink" href="#enums" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">Mode</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Fast</span><span class="p">,</span><span class="w"> </span><span class="n">Accurate</span><span class="p">,</span><span class="w"> </span><span class="n">Debug</span><span class="w"> </span><span class="p">};</span>
+<span class="n">OptionCategory</span><span class="w"> </span><span class="n">Modes</span><span class="p">{</span><span class="s">&quot;Mode&quot;</span><span class="p">};</span>
+
+<span class="n">OptEnum</span><span class="o">&lt;</span><span class="n">Mode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ModeOpt</span><span class="p">{</span>
+<span class="w">  </span><span class="s">&quot;mode&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="n">Mode</span><span class="o">::</span><span class="n">Fast</span><span class="p">,</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;fast&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Mode</span><span class="o">::</span><span class="n">Fast</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;accurate&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Mode</span><span class="o">::</span><span class="n">Accurate</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;debug&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Mode</span><span class="o">::</span><span class="n">Debug</span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="s">&quot;Execution mode&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Modes</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="aliases">
+<h3>Aliases<a class="headerlink" href="#aliases" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Make --fast an alias for --mode=fast</span>
+<span class="n">Alias</span><span class="w"> </span><span class="n">FastAlias</span><span class="p">{</span>
+<span class="w">  </span><span class="s">&quot;fast&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="n">ModeOpt</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Alias: fast mode&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Modes</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;fast&quot;</span><span class="p">)</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="binding-and-callbacks">
+<h3>Binding and Callbacks<a class="headerlink" href="#binding-and-callbacks" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">Tuning</span><span class="p">{</span><span class="s">&quot;Tuning&quot;</span><span class="p">};</span>
+
+<span class="c1">// Bind to external storage</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">threads_bound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">Opt</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Threads</span><span class="p">{</span>
+<span class="w">  </span><span class="s">&quot;threads&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">&#39;t&#39;</span><span class="p">},</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;Threads&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">Tuning</span><span class="p">,</span><span class="w"> </span><span class="n">Location</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">threads_bound</span><span class="p">)</span>
+<span class="p">};</span>
+
+<span class="c1">// Callback on set (config or CLI). from_config distinguishes source.</span>
+<span class="n">Opt</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Batch</span><span class="p">{</span>
+<span class="w">  </span><span class="s">&quot;batch&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;Batch size&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">Tuning</span><span class="p">,</span><span class="w"> </span><span class="n">Setter</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">{[](</span><span class="kt">int</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">from_cfg</span><span class="p">){</span>
+<span class="w">    </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Reconfiguring batch={} (source: {})</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">from_cfg</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;config&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;cli&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="threadsafety-reentrancy">
+<h2>Thread‑Safety &amp; Reentrancy<a class="headerlink" href="#threadsafety-reentrancy" title="Link to this heading">#</a></h2>
+<ul>
+<li><p>The design uses a <strong>global registry</strong> and <strong>mutable option state</strong> → <strong>not thread‑safe</strong> and
+<strong>not reentrant</strong> for concurrent parses. Serialize calls to <code class="docutils literal notranslate"><span class="pre">parse(...)</span></code> if needed.</p></li>
+<li><p>In unit tests, keeping options/categories <strong>local</strong> and clearing the registry per case/section
+provides deterministic isolation.</p></li>
+<li><p>Optional (coarse) hardening for apps that might parse concurrently:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Guarded parse wrapper sketch</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mutex&gt;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">cli_parse_mutex</span><span class="p">(){</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">m</span><span class="p">;</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="c1">// Acquire lock before calling parse_internal(...)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>How do implicit values work with short options?</dt><dd><p>If a short option that requires a value is the last in a bundle (<code class="docutils literal notranslate"><span class="pre">-l</span></code>), the parser will consume
+the next token only if it <strong>doesn’t look like an option</strong>; otherwise <code class="docutils literal notranslate"><span class="pre">ImplicitValue(...)</span></code> applies.</p>
+</dd>
+<dt>Why are unknown options not an error?</dt><dd><p>To emulate LLVM’s flexibility and to ease integration with upstream tools, unknown tokens and
+passthrough arguments (after <code class="docutils literal notranslate"><span class="pre">--</span></code>) are returned to the caller in <code class="docutils literal notranslate"><span class="pre">unknown_args</span></code> for further dispatch.</p>
+</dd>
+<dt>Can I bind directly into application config structs?</dt><dd><p>Yes—use <code class="docutils literal notranslate"><span class="pre">Location&lt;T&gt;</span></code> to a field that outlives parsing, or use <code class="docutils literal notranslate"><span class="pre">Setter&lt;T&gt;</span></code> to translate/
+validate and write into your own structure.</p>
+</dd>
+</dl>
+<p>See the <a class="reference internal" href="../api/full_api.html#modules-einsums-commandline-api"><span class="std std-ref">API reference</span></a> of this module for more
+details.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../../BufferAllocator/docs/index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">BufferAllocator</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../Concepts/docs/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Concepts</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start">Quick Start</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-concepts">Core Concepts</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#categories">Categories</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-options">Types of Options</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#named-parameter-tags">Named Parameter Tags</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bindings-callbacks">Bindings &amp; Callbacks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#occurrences-visibility">Occurrences &amp; Visibility</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-reference">API Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#construction-variadic-namedstyle">Construction (variadic, named‑style)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parsing">Parsing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#behavior-semantics">Behavior &amp; Semantics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#option-names">Option Names</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implicit-values">Implicit Values</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numeric-lookahead-rule">Numeric look‑ahead rule</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-list-gathering">Positional List Gathering</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unknown-arguments">Unknown Arguments</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#config-files">Config Files</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#builtin-options">Built‑in Options</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#help-layout">Help Layout</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validation-errors">Validation &amp; Errors</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flags">Flags</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#integers-with-range-and-implicit">Integers with Range and Implicit</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#strings-paths">Strings &amp; Paths</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lists-named-and-positional">Lists (named and positional)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enums">Enums</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aliases">Aliases</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#binding-and-callbacks">Binding and Callbacks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#threadsafety-reentrancy">Thread‑Safety &amp; Reentrancy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#faq">FAQ</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
