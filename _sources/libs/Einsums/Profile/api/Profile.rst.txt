@@ -5,16 +5,16 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _modules_Einsums_Einsums/Profile/LabeledSection.hpp_api:
+.. _modules_Einsums_Einsums/Profile/Profile.hpp_api:
 
 -------------------------------------------------------------------------------
-Einsums/Profile/LabeledSection.hpp
+Einsums/Profile/Profile.hpp
 -------------------------------------------------------------------------------
 
-Defined in header Einsums/Profile/LabeledSection.hpp.
+Defined in header Einsums/Profile/Profile.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
-.. autodoxygenfile:: Einsums/Profile/LabeledSection.hpp
+.. autodoxygenfile:: Einsums/Profile/Profile.hpp
    :project: Einsums

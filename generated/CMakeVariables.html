@@ -372,6 +372,7 @@ includes the comprehensive list.</p>
 <li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_TESTS_HEADERS-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_TESTS_HEADERS:BOOL</span></code></a></p></li>
 <li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_TESTS_REGRESSIONS-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_TESTS_REGRESSIONS:BOOL</span></code></a></p></li>
 <li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_TESTS_UNIT-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_TESTS_UNIT:BOOL</span></code></a></p></li>
+<li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_TRACY-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_TRACY:BOOL</span></code></a></p></li>
 <li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_UNITY_BUILD-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_UNITY_BUILD:BOOL</span></code></a></p></li>
 </ul>
 <dl class="std option">
@@ -507,6 +508,12 @@ includes the comprehensive list.</p>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_TRACY-BOOL">
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_TRACY:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_TRACY-BOOL" title="Link to this definition">#</a></dt>
+<dd><p>Enable support for Tracy (default: OFF</p>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_UNITY_BUILD-BOOL">
 <span class="sig-name descname"><span class="pre">EINSUMS_WITH_UNITY_BUILD:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_UNITY_BUILD-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Enable unity build for certain build targets (default: OFF)</p>
@@ -517,11 +524,25 @@ includes the comprehensive list.</p>
 <span id="profiling"></span><h2>Profiling options<a class="headerlink" href="#profiling-options" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_ITTNOTIFY-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_ITTNOTIFY:BOOL</span></code></a></p></li>
+<li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_PROFILER-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_PROFILER:BOOL</span></code></a></p></li>
+<li><p><a class="reference internal" href="#cmdoption-arg-EINSUMS_WITH_PROFILER_INTERNAL-BOOL"><code class="xref std std-option docutils literal notranslate"><span class="pre">EINSUMS_WITH_PROFILER_INTERNAL:BOOL</span></code></a></p></li>
 </ul>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_ITTNOTIFY-BOOL">
 <span class="sig-name descname"><span class="pre">EINSUMS_WITH_ITTNOTIFY:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_ITTNOTIFY-BOOL" title="Link to this definition">#</a></dt>
 <dd><p>Enable Amplifier (ITT) instrumentation support.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_PROFILER-BOOL">
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_PROFILER:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_PROFILER-BOOL" title="Link to this definition">#</a></dt>
+<dd><p>Enable Einsums profiling. (Default: ON)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-EINSUMS_WITH_PROFILER_INTERNAL-BOOL">
+<span class="sig-name descname"><span class="pre">EINSUMS_WITH_PROFILER_INTERNAL:BOOL</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-EINSUMS_WITH_PROFILER_INTERNAL-BOOL" title="Link to this definition">#</a></dt>
+<dd><p>Enable profiling internal Einsums code. (Default: OFF)</p>
 </dd></dl>
 
 </section>

@@ -73,6 +73,7 @@ Build Targets options
 * :option:`EINSUMS_WITH_TESTS_HEADERS:BOOL`
 * :option:`EINSUMS_WITH_TESTS_REGRESSIONS:BOOL`
 * :option:`EINSUMS_WITH_TESTS_UNIT:BOOL`
+* :option:`EINSUMS_WITH_TRACY:BOOL`
 * :option:`EINSUMS_WITH_UNITY_BUILD:BOOL`
 
 .. option:: BUILD_SHARED_LIBS:BOOL
@@ -163,6 +164,10 @@ Build Targets options
 
    Build unit tests (default: ON)
 
+.. option:: EINSUMS_WITH_TRACY:BOOL
+
+   Enable support for Tracy (default: OFF
+
 .. option:: EINSUMS_WITH_UNITY_BUILD:BOOL
 
    Enable unity build for certain build targets (default: OFF)
@@ -173,10 +178,20 @@ Profiling options
 -----------------
 
 * :option:`EINSUMS_WITH_ITTNOTIFY:BOOL`
+* :option:`EINSUMS_WITH_PROFILER:BOOL`
+* :option:`EINSUMS_WITH_PROFILER_INTERNAL:BOOL`
 
 .. option:: EINSUMS_WITH_ITTNOTIFY:BOOL
 
    Enable Amplifier (ITT) instrumentation support.
+
+.. option:: EINSUMS_WITH_PROFILER:BOOL
+
+   Enable Einsums profiling. (Default: ON)
+
+.. option:: EINSUMS_WITH_PROFILER_INTERNAL:BOOL
+
+   Enable profiling internal Einsums code. (Default: OFF)
 
 .. _Debugging:
 
