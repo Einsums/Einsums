@@ -5,16 +5,16 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _modules_Einsums_Einsums/Tensor/H5.hpp_api:
+.. _modules_Einsums_Einsums/Tensor/InitModule.hpp_api:
 
 -------------------------------------------------------------------------------
-Einsums/Tensor/H5.hpp
+Einsums/Tensor/InitModule.hpp
 -------------------------------------------------------------------------------
 
-Defined in header Einsums/Tensor/H5.hpp.
+Defined in header Einsums/Tensor/InitModule.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
-.. autodoxygenfile:: Einsums/Tensor/H5.hpp
+.. autodoxygenfile:: Einsums/Tensor/InitModule.hpp
    :project: Einsums

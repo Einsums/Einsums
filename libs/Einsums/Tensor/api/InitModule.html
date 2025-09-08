@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Einsums/Utilities/Random.hpp &#8212; Einsums 2.0.0-trunk documentation</title>
+    <title>Einsums/Tensor/InitModule.hpp &#8212; Einsums 2.0.0-trunk documentation</title>
   
   
   
@@ -47,7 +47,7 @@
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/Utilities/api/Random';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/Tensor/api/InitModule';</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -264,10 +264,19 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="Tuple.html">Einsums/Utilities/Tuple.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="InitModule.html">Einsums/Utilities/InitModule.hpp</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Utilities/Random.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="InCollection.html">Einsums/Utilities/InCollection.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RuntimeTensor.html">Einsums/Tensor/RuntimeTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FunctionTensor.html">Einsums/Tensor/FunctionTensor.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Tensor/InitModule.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tensor.html">Einsums/Tensor/Tensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ModuleVars.html">Einsums/Tensor/ModuleVars.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DiskTensor.html">Einsums/Tensor/DiskTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TensorForward.html">Einsums/Tensor/TensorForward.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DeviceTensor.html">Einsums/Tensor/DeviceTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BlockTensor.html">Einsums/Tensor/BlockTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArithmeticTensor.html">Einsums/Tensor/ArithmeticTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TiledTensor.html">Einsums/Tensor/TiledTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DeviceTensorView.html">Einsums/Tensor/Backends/DeviceTensorView.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Backends_DeviceTensor.html">Einsums/Tensor/Backends/DeviceTensor.hpp</a></li>
 </ul>
 </div>
 </nav></div>
@@ -308,7 +317,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/Utilities/Random.hpp</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/Tensor/InitModule.hpp</span></li>
   </ul>
 </nav>
 </div>
@@ -325,9 +334,9 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="einsums-utilities-random-hpp">
-<span id="modules-einsums-einsums-utilities-random-hpp-api"></span><h1>Einsums/Utilities/Random.hpp<a class="headerlink" href="#einsums-utilities-random-hpp" title="Link to this heading">#</a></h1>
-<p>Defined in header Einsums/Utilities/Random.hpp.</p>
+  <section id="einsums-tensor-initmodule-hpp">
+<span id="modules-einsums-einsums-tensor-initmodule-hpp-api"></span><h1>Einsums/Tensor/InitModule.hpp<a class="headerlink" href="#einsums-tensor-initmodule-hpp" title="Link to this heading">#</a></h1>
+<p>Defined in header Einsums/Tensor/InitModule.hpp.</p>
 <p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
 <em>Einsums</em> API.</p>
 <dl class="cpp type">
@@ -342,24 +351,34 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums11seed_randomENSt21default_random_engine11result_typeE">
-<span id="_CPPv3N7einsums11seed_randomENSt21default_random_engine11result_typeE"></span><span id="_CPPv2N7einsums11seed_randomENSt21default_random_engine11result_typeE"></span><span id="einsums::seed_random__std::default_random_engine::result_type"></span><span class="target" id="namespaceeinsums_1a35e60e52968e99bb153de726cf004f3a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">seed_random</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">default_random_engine</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">result_type</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">seed</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11seed_randomENSt21default_random_engine11result_typeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Set the seed of the random number generator. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>seed</strong> – The new seed for the random number generator. </p>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums20setup_Einsums_TensorEv">
+<span id="_CPPv3N7einsums20setup_Einsums_TensorEv"></span><span id="_CPPv2N7einsums20setup_Einsums_TensorEv"></span><span id="einsums::setup_Einsums_Tensor"></span><span class="target" id="namespaceeinsums_1aa009fd69a3493da7bb8f91ae0dfd16c9"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setup_Einsums_Tensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums20setup_Einsums_TensorEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
 
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums13random_engineE">
-<span id="_CPPv3N7einsums13random_engineE"></span><span id="_CPPv2N7einsums13random_engineE"></span><span id="einsums::random_engine__std::default_random_engine"></span><span class="target" id="namespaceeinsums_1aeb4de05b7c3797742ea12df76c1e0aeb"></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">default_random_engine</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">random_engine</span></span></span><a class="headerlink" href="#_CPPv4N7einsums13random_engineE" title="Link to this definition">#</a><br /></dt>
-<dd><p>The global random engine for random number generation. </p>
-</dd></dl>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums28add_Einsums_Tensor_argumentsEv">
+<span id="_CPPv3N7einsums28add_Einsums_Tensor_argumentsEv"></span><span id="_CPPv2N7einsums28add_Einsums_Tensor_argumentsEv"></span><span id="einsums::add_Einsums_Tensor_arguments"></span><span class="target" id="namespaceeinsums_1a577e0a44a7a78a378499913515da2a1b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_Einsums_Tensor_arguments</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums28add_Einsums_Tensor_argumentsEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums25initialize_Einsums_TensorEv">
+<span id="_CPPv3N7einsums25initialize_Einsums_TensorEv"></span><span id="_CPPv2N7einsums25initialize_Einsums_TensorEv"></span><span id="einsums::initialize_Einsums_Tensor"></span><span class="target" id="namespaceeinsums_1aabd0ee3c8484875d282416a7cb8f84fd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initialize_Einsums_Tensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums25initialize_Einsums_TensorEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums23finalize_Einsums_TensorEv">
+<span id="_CPPv3N7einsums23finalize_Einsums_TensorEv"></span><span id="_CPPv2N7einsums23finalize_Einsums_TensorEv"></span><span id="einsums::finalize_Einsums_Tensor"></span><span class="target" id="namespaceeinsums_1a6a8f504d8a82da02803e0853b85d2f65"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">finalize_Einsums_Tensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums23finalize_Einsums_TensorEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14open_hdf5_fileERKNSt6stringE">
+<span id="_CPPv3N7einsums14open_hdf5_fileERKNSt6stringE"></span><span id="_CPPv2N7einsums14open_hdf5_fileERKNSt6stringE"></span><span id="einsums::open_hdf5_file__ssCR"></span><span class="target" id="namespaceeinsums_1a04843c6939e8cff5fac475e092f8195c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">open_hdf5_file</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fname</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums14open_hdf5_fileERKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16create_hdf5_fileERKNSt6stringE">
+<span id="_CPPv3N7einsums16create_hdf5_fileERKNSt6stringE"></span><span id="_CPPv2N7einsums16create_hdf5_fileERKNSt6stringE"></span><span id="einsums::create_hdf5_file__ssCR"></span><span class="target" id="namespaceeinsums_1af1e0201f669288d61739ad3018c610fe"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_hdf5_file</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fname</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums16create_hdf5_fileERKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
 
 </div>
 </dd></dl>
@@ -396,8 +415,12 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv47einsums"><code class="docutils literal notranslate"><span class="pre">einsums</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums11seed_randomENSt21default_random_engine11result_typeE"><code class="docutils literal notranslate"><span class="pre">seed_random()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums13random_engineE"><code class="docutils literal notranslate"><span class="pre">random_engine</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums20setup_Einsums_TensorEv"><code class="docutils literal notranslate"><span class="pre">setup_Einsums_Tensor()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums28add_Einsums_Tensor_argumentsEv"><code class="docutils literal notranslate"><span class="pre">add_Einsums_Tensor_arguments()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums25initialize_Einsums_TensorEv"><code class="docutils literal notranslate"><span class="pre">initialize_Einsums_Tensor()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums23finalize_Einsums_TensorEv"><code class="docutils literal notranslate"><span class="pre">finalize_Einsums_Tensor()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums14open_hdf5_fileERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">open_hdf5_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums16create_hdf5_fileERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">create_hdf5_file()</span></code></a></li>
 </ul>
 </li>
 </ul>

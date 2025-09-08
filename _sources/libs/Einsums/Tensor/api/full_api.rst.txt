@@ -20,8 +20,9 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 
    /libs/Einsums/Tensor/api/RuntimeTensor.rst
    /libs/Einsums/Tensor/api/FunctionTensor.rst
-   /libs/Einsums/Tensor/api/H5.rst
+   /libs/Einsums/Tensor/api/InitModule.rst
    /libs/Einsums/Tensor/api/Tensor.rst
+   /libs/Einsums/Tensor/api/ModuleVars.rst
    /libs/Einsums/Tensor/api/DiskTensor.rst
    /libs/Einsums/Tensor/api/TensorForward.rst
    /libs/Einsums/Tensor/api/DeviceTensor.rst
