@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/CommandLine/CommandLine.hpp>
 #include <Einsums/Config/Types.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Runtime.hpp>
@@ -13,12 +14,9 @@
 #include <H5Ppublic.h>
 #include <H5Tdevelop.h>
 #include <H5public.h>
-#include <argparse/argparse.hpp>
 #include <filesystem>
 #include <mutex>
 #include <string>
-
-#include "Einsums/CommandLine/CommandLine.hpp"
 
 namespace einsums {
 
