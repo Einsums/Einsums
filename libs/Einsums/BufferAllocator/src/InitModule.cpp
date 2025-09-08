@@ -5,10 +5,10 @@
 
 #include <Einsums/BufferAllocator/InitModule.hpp>
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
+#include <Einsums/CommandLine.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Runtime.hpp>
-
-#include <argparse/argparse.hpp>
+#include <Einsums/StringUtil/MemoryString.hpp>
 
 namespace einsums {
 
@@ -34,16 +34,19 @@ int init_Einsums_BufferAllocator() {
     return 0;
 }
 
-EINSUMS_EXPORT void add_Einsums_BufferAllocator_arguments(argparse::ArgumentParser &parser) {
+EINSUMS_EXPORT void add_Einsums_BufferAllocator_arguments() {
     auto &global_config = GlobalConfigMap::get_singleton();
     auto &global_string = global_config.get_string_map()->get_value();
 
-    parser.add_argument("--einsums:buffer-size")
-        .default_value("4MB")
-        .help("Total size of buffers allocated for tensor contractions.")
-        .store_into(global_string["buffer-size"]);
+    static cl::OptionCategory bufferCategory("Buffer Allocator");
+    static cl::Opt<std::string> bufferSize("einsums:buffer-size", {}, "Total size of buffers allocated for tensor contractions",
+                                           bufferCategory, cl::Location(global_string["buffer-size"]), cl::Default(std::string("4MB")));
 
     global_config.attach(detail::Einsums_BufferAllocator_vars::update_max_size);
+
+    auto &singleton = detail::Einsums_BufferAllocator_vars::get_singleton();
+    auto  lock      = std::lock_guard(singleton);
+    singleton.set_max_size(string_util::memory_string("4MB"));
 }
 
 void initialize_Einsums_BufferAllocator() {

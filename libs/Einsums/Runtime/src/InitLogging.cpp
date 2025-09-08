@@ -64,17 +64,15 @@ struct HostnameFormatterFlag : spdlog::custom_flag_formatter {
     std::unique_ptr<custom_flag_formatter> clone() const override { return spdlog::details::make_unique<HostnameFormatterFlag>(); }
 };
 
-static void handle_loglevel_changes(config_mapping_type<std::int64_t> const &map) {
-    // Set log level
-    get_einsums_logger().set_level(static_cast<spdlog::level::level_enum>(map.at("log-level")));
-}
-
 void init_logging(RuntimeConfiguration &config) {
     auto &global_config = GlobalConfigMap::get_singleton();
     // Set log destination
     auto &sinks = get_einsums_logger().sinks();
     sinks.clear();
     sinks.push_back(get_spdlog_sink(global_config.get_string("log-destination")));
+#if defined(EINSUMS_HAVE_TRACY)
+    sinks.push_back(get_spdlog_sink("tracy"));
+#endif
 
     // Set log pattern
     auto formatter = std::make_unique<spdlog::pattern_formatter>();
@@ -86,7 +84,7 @@ void init_logging(RuntimeConfiguration &config) {
 
     // Set log level
     get_einsums_logger().set_level(static_cast<spdlog::level::level_enum>(global_config.get_int("log-level")));
-    global_config.attach(handle_loglevel_changes);
+    // global_config.attach(handle_loglevel_changes);
 
 #ifdef EINSUMS_COMPUTE_CODE
     // Check to see if setenv is available for your system.

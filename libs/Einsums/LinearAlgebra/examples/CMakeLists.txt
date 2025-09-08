@@ -30,6 +30,7 @@ foreach(example_program ${example_programs})
     FOLDER "Examples/Modules/LinearAlgebra"
     NOINSTALL
   )
+  target_include_directories(LA_${example_program} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
   einsums_add_example_target_dependencies("Modules.Einsums.LinearAlgebra" LA_${example_program})
 

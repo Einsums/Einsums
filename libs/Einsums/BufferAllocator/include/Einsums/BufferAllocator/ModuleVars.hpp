@@ -70,6 +70,11 @@ class EINSUMS_EXPORT Einsums_BufferAllocator_vars final : public design_pats::Lo
     size_t get_max_size() const;
 
     /**
+     * @brief Set the maximum size of the counter.
+     */
+    void set_max_size(size_t val);
+
+    /**
      * @brief Get available bytes.
      *
      * @versionadded{1.1.0}
@@ -88,21 +93,21 @@ class EINSUMS_EXPORT Einsums_BufferAllocator_vars final : public design_pats::Lo
      *
      * @versionadded{1.1.0}
      */
-    size_t max_size_{4294967296};
+    size_t _max_size{4294967296};
 
     /**
      * The current number of bytes allocated by Einsums.
      *
      * @versionadded{1.1.0}
      */
-    size_t curr_size_{0};
+    size_t _curr_size{0};
 
     /**
      * Mutex for avoiding race conditions.
      *
      * @versionadded{1.1.0}
      */
-    std::mutex lock_;
+    std::mutex _lock;
 };
 
 } // namespace detail

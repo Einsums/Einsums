@@ -572,6 +572,19 @@ class EINSUMS_EXPORT GlobalConfigMap {
     std::shared_ptr<ConfigMap<bool>> bool_map_;
 };
 
+struct GlobalConfigMapLockScope {
+    GlobalConfigMapLockScope() : _singleton(GlobalConfigMap::get_singleton()){
+        _singleton.lock();
+    }
+
+    ~GlobalConfigMapLockScope() {
+        _singleton.unlock();
+    }
+
+private:
+    GlobalConfigMap& _singleton;
+};
+
 } // namespace einsums
 
 /**

@@ -10,7 +10,7 @@
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/FFT/Defines.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include <mkl_dfti.h>
 

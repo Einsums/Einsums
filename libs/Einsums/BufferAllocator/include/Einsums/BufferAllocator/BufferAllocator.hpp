@@ -9,23 +9,36 @@
 
 #pragma once
 
-#include <Einsums/BufferAllocator/InitModule.hpp>
+#include <Einsums/Config.hpp>
+
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
-#include <Einsums/Errors/Error.hpp>
-#include <Einsums/Errors/ThrowException.hpp>
-#include <Einsums/StringUtil/MemoryString.hpp>
+#include <Einsums/Errors.hpp>
 
 #include <complex>
+#include <cstdlib>
 #include <deque>
 #include <forward_list>
+#include <map>
+#include <set>
 #include <source_location>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <unordered_set>
 
+#if defined(EINSUMS_HAVE_TRACY)
+#    include <tracy/Tracy.hpp>
+#endif
+
+
 namespace einsums {
 
+namespace detail {
+
+EINSUMS_EXPORT void *allocate(size_t n);
+EINSUMS_EXPORT void deallocate(void*);
+
+}
 /**
  * @struct BufferAllocator
  *
@@ -49,7 +62,6 @@ namespace einsums {
  */
 template <typename T>
 struct BufferAllocator {
-  public:
     /**
      * @typedef pointer
      *
@@ -159,14 +171,17 @@ struct BufferAllocator {
                                     n, n * type_size, available_size(), max_size());
         }
 
-        out = static_cast<pointer>(malloc(n * type_size));
-
+        out = static_cast<pointer>(detail::allocate(n*type_size));
         if (out == nullptr) {
             EINSUMS_THROW_EXCEPTION(
                 std::runtime_error,
                 "Could not allocate enough memory for buffers. Requested {} elements or {} bytes, but malloc returned a null pointer.", n,
                 n * type_size);
         }
+
+#if defined(EINSUMS_HAVE_TRACY)
+        TracyAlloc(out, n * type_size);
+#endif
 
         return out;
     }
@@ -234,7 +249,10 @@ struct BufferAllocator {
         release(n);
 
         if (p != nullptr) {
-            free(static_cast<void *>(p));
+#if defined(EINSUMS_HAVE_TRACY)
+            TracyFree(p);
+#endif
+            detail::deallocate(p);
         }
     }
 
@@ -247,7 +265,7 @@ struct BufferAllocator {
      *
      * @versionadded{1.1.0}
      */
-    size_type max_size() const {
+    [[nodiscard]] size_type max_size() const {
         try {
             return detail::Einsums_BufferAllocator_vars::get_singleton().get_max_size() / type_size;
         } catch (std::runtime_error &) {
@@ -264,9 +282,11 @@ struct BufferAllocator {
      *
      * @versionadded{1.1.0}
      */
-    size_type available_size() const {
+    [[nodiscard]] size_type available_size() const {
+       
         try {
             return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size;
+   
         } catch (std::runtime_error &) {
             return 0;
         }
@@ -297,7 +317,7 @@ struct BufferAllocator {
     constexpr bool operator!=(BufferAllocator<T> const &other) const { return false; }
 };
 
-#ifndef WINDOWS
+#ifndef EINSUMS_WINDOWS
 
 extern template struct EINSUMS_EXPORT BufferAllocator<void>;
 extern template struct EINSUMS_EXPORT BufferAllocator<signed char>;

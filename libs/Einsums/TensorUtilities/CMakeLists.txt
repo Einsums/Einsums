@@ -7,6 +7,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(TensorUtilitiesHeaders
     Einsums/TensorUtilities/ARange.hpp
+    Einsums/TensorUtilities/BlockViews.hpp
     Einsums/TensorUtilities/CreateIdentity.hpp
     Einsums/TensorUtilities/CreateIncrementedTensor.hpp
     Einsums/TensorUtilities/CreateRandomDefinite.hpp

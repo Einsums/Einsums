@@ -145,6 +145,33 @@ void fprint_line(std::ostream &os, std::string const &line) {
 } // namespace
 
 namespace detail {
+
+#if defined(EINSUMS_WINDOWS)
+inline bool is_terminal(std::ostream const &os) {
+    if (&os == &std::cout)
+        return _isatty(_fileno(stdout));
+    if (&os == &std::cerr)
+        return _isatty(_fileno(stderr));
+    return false;
+}
+
+bool is_terminal(FILE *file) {
+    return __isatty(_fileno(file));
+}
+#else
+bool is_terminal(std::ostream const &os) {
+    if (&os == &std::cout)
+        return isatty(fileno(stdout));
+    if (&os == &std::cerr)
+        return isatty(fileno(stderr));
+    return false;
+}
+
+bool is_terminal(FILE *file) {
+    return isatty(fileno(file));
+}
+#endif
+
 void println(std::string const &str) {
     if (!print::suppress) {
         std::istringstream iss(str);
