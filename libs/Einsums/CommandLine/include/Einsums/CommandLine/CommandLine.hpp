@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <Einsums/Config.hpp>
+
 #include <fmt/core.h>
 
 #include <algorithm>
@@ -929,7 +931,9 @@ inline ParseResult parse_internal(std::vector<std::string> const &args, char con
                                   std::map<std::string, std::string, std::less<>> *config,
                                   std::vector<std::string>                        *unknown_args = nullptr) {
     Builtins    _;
+    GlobalConfigMapLockScope __;
     std::string prog = programName ? programName : (!args.empty() ? args[0] : "Einsums");
+
 
     for (auto *o : Registry::instance().options) {
         o->finalize_default();
