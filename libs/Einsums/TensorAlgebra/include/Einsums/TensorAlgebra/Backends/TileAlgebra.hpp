@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -15,8 +15,8 @@
 
 namespace einsums::tensor_algebra::detail {
 
-template <bool OnlyUseGenericAlgorithm, TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, TiledTensorConcept AType, TiledTensorConcept BType,
+          TiledTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
     requires(CType::Rank != 0)
 auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
@@ -86,14 +86,14 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
         auto &C_tile = C->tile(C_tile_index);
         C->unlock();
         C_tile.lock();
-        einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
-                                        B.tile(B_tile_index));
+        einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices,
+                                                             A.tile(A_tile_index), B_indices, B.tile(B_tile_index));
         C_tile.unlock();
     }
 }
 
-template <bool OnlyUseGenericAlgorithm, TiledTensorConcept AType, TiledTensorConcept BType, ScalarConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, TiledTensorConcept AType, TiledTensorConcept BType, ScalarConcept CType,
+          typename... CIndices, typename... AIndices, typename... BIndices>
 auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
@@ -149,8 +149,8 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
         }
 
         CDataType C_tile{0.0};
-        einsum<OnlyUseGenericAlgorithm>(CDataType{0.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
-                                        B.tile(B_tile_index));
+        einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType{0.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
+                                               B.tile(B_tile_index));
         out += C_tile;
     }
 

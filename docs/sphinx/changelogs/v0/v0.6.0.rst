@@ -1,0 +1,30 @@
+.. 
+    ---------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
+
+==============
+v0.6.0 Release
+==============
+
+What's New
+----------
+
+* Element operations on GPU tensors
+* Macro-based exception system
+* True dot product for complex tensors. This does :math:`\mathbf{u}^*\mathbf{v}`, while the normal
+  dot product does :math:`\mathbf{u}^T\mathbf{v}`, with the difference being that the first vector
+  is conjugated.
+* Added in-line tensor arithmetic
+* Permutations for block and tiled tensors
+* Function tensors
+
+Bug Fixes
+---------
+
+* Miscellaneous block tensor fixes
+* GPU synchronization fixes
+* GPU linear algebra fixes

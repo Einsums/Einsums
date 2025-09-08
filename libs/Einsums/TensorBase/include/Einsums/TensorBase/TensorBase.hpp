@@ -1,12 +1,13 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
-#include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/Config.hpp>
+
+#include <Einsums/TensorBase/Common.hpp>
 
 #include <complex>
 #include <memory>
@@ -17,7 +18,6 @@
 #endif
 
 namespace einsums::tensor_base {
-
 
 #if defined(EINSUMS_COMPUTE_CODE)
 /**
@@ -62,9 +62,7 @@ struct DeviceTypedTensor {
  *
  * @brief Represents a tensor only available to the core.
  */
-struct EINSUMS_EXPORT CoreTensor {
-
-};
+struct EINSUMS_EXPORT CoreTensor {};
 
 #if defined(EINSUMS_COMPUTE_CODE)
 /**
@@ -72,9 +70,7 @@ struct EINSUMS_EXPORT CoreTensor {
  *
  * @brief Represents a tensor available to graphics hardware.
  */
-struct EINSUMS_EXPORT DeviceTensorBase {
-
-};
+struct EINSUMS_EXPORT DeviceTensorBase {};
 #endif
 
 /**
@@ -82,9 +78,7 @@ struct EINSUMS_EXPORT DeviceTensorBase {
  *
  * @brief Represents a tensor stored on disk.
  */
-struct EINSUMS_EXPORT DiskTensor {
-
-};
+struct EINSUMS_EXPORT DiskTensor {};
 
 /*===================
  * Other properties.
@@ -97,9 +91,7 @@ struct EINSUMS_EXPORT DiskTensor {
  *
  * Only used internally. Use TiledTensorBase in your code.
  */
-struct TiledTensorNoExtra {
-
-};
+struct TiledTensorNoExtra {};
 
 #ifndef DOXYGEN
 // Large class. See TiledTensor.hpp for code.
@@ -115,9 +107,7 @@ struct TiledTensor;
  * Specifies that a tensor is a block tensor without needing template parameters. Internal use only.
  * Use BlockTensorBase in your code.
  */
-struct EINSUMS_EXPORT BlockTensorNoExtra {
-
-};
+struct EINSUMS_EXPORT BlockTensorNoExtra {};
 
 // Large class. See BlockTensor.hpp for code.
 template <typename T, size_t Rank, typename TensorType>
@@ -128,9 +118,7 @@ struct BlockTensor;
  *
  * @brief Specifies that the tensor type can be used by einsum to select different routines other than the generic algorithm.
  */
-struct EINSUMS_EXPORT AlgebraOptimizedTensor {
-
-};
+struct EINSUMS_EXPORT AlgebraOptimizedTensor {};
 
 class EINSUMS_EXPORT RuntimeTensorNoType {};
 

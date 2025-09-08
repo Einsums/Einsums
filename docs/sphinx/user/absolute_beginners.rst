@@ -92,7 +92,8 @@ Setting up a program
 
 To create a program using Einsums, you must initialize the library before you do anything with Einsums,
 and finalize it after you finish using Einsums. Make sure you wrap your code in OpenMP directives,
-otherwise the threading environment won't be set up properly.
+otherwise the threading environment won't be set up properly and you will notice a significant
+slow down as each call will need to set it up again.
 
 .. code:: C++
 
@@ -384,9 +385,12 @@ Most procedures provided by LAPACK and BLAS are available to use with tensors. H
     // passed as template parameters.
     linear_algebra::gemm<false, false>(A, B, &C);
 
-    // We can also do eigendecomposition. Whether to compute 
-    // the eigenvectors is passed as a template parameter.
-    linear_algebra::geev<true>(&A, &evals, &B, &C);
+    // We can also do eigendecomposition. The following computes
+    // both the left and right eigenvectors.
+    linear_algebra::geev(&A, &evals, &B, &C);
+
+    // Whereas this only computes the right eigenvectors.
+    linear_algebra::geev(&A, &evals, nullptr, &C);
 
     // And dot products. This one does not conjugate the first argument.
     auto val = linear_algebra::dot(u, v);

@@ -1,17 +1,38 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/TensorBase/Common.hpp>
+#include <Einsums/TensorImpl/TensorImpl.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
+#include <Einsums/TypeSupport/TypeName.hpp>
 
 #include <tuple>
 
 namespace einsums::tensor_algebra {
+
+namespace detail {
+/**
+ * @enum AlgorithmChoice
+ *
+ * @brief Indicates which algorithm the einsum call used.
+ *
+ * This is an enum for testing purposes only.
+ */
+enum AlgorithmChoice {
+    GENERIC,      /// Generic algorithm
+    DOT,          /// Dot product
+    DIRECT,       /// Direct product
+    GER,          /// Outer product
+    GEMV,         /// Matrix-vector product
+    GEMM,         /// Matrix-matrix product
+    INDETERMINATE /// Something happened and the einsum call failed.
+};
+} // namespace detail
 
 #if !defined(DOXYGEN)
 namespace detail {
@@ -362,7 +383,20 @@ constexpr auto is_same_dims(std::tuple<PositionsInX...> const &indices, XType co
 
 template <TensorConcept XType, typename... PositionsInX>
 constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, XType const &X) -> size_t {
-    return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
+    if (X.impl().is_row_major()) {
+        return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
+    } else {
+        return X.stride(std::get<1>(indices));
+    }
+}
+
+template <TensorConcept XType, typename... PositionsInX>
+constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, einsums::detail::TensorImpl<XType> const &X) -> size_t {
+    if (X.is_row_major()) {
+        return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
+    } else {
+        return X.stride(std::get<1>(indices));
+    }
 }
 
 template <typename XType, typename... PositionsInX>
@@ -513,6 +547,42 @@ auto get_grid_ranges_for_many(CType const &C, std::tuple<CIndices...> const &C_i
 }
 
 } // namespace detail
+
+namespace detail {
+
+template <typename CheckType1, typename CheckType2, TensorConcept TensorType>
+auto get_stride_for_index(TensorType const &tensor, size_t index) {
+    if constexpr (std::is_same_v<std::remove_cvref_t<CheckType1>, std::remove_cvref_t<CheckType2>>) {
+        return tensor.stride(index);
+    } else {
+        return 0;
+    }
+}
+
+template <size_t N, TensorConcept TensorType, typename... TensIndexWithPos, typename... OutIndex, size_t... I>
+auto get_stride_for(TensorType const &tensor, std::tuple<TensIndexWithPos...> const &args, std::tuple<OutIndex...> const &out_indices,
+                    std::array<size_t, sizeof...(OutIndex)> &out, std::index_sequence<I...> const &seq) {
+    if constexpr (N >= sizeof...(OutIndex)) {
+        return;
+    } else {
+        out[N] =
+            (get_stride_for_index<std::tuple_element_t<N, std::remove_cvref_t<decltype(out_indices)>>,
+                                  std::tuple_element_t<2 * I, std::remove_cvref_t<decltype(args)>>>(tensor, std::get<2 * I + 1>(args)) +
+             ... + 0);
+        get_stride_for<N + 1>(tensor, args, out_indices, out, seq);
+    }
+}
+} // namespace detail
+
+template <TensorConcept TensorType, typename... TensIndexWithPos, typename... OutIndex>
+auto get_stride_for(TensorType const &tensor, std::tuple<TensIndexWithPos...> const &args, std::tuple<OutIndex...> const &out_indices) {
+    std::array<size_t, sizeof...(OutIndex)> out;
+    out.fill(0);
+
+    detail::get_stride_for<0>(tensor, args, out_indices, out, std::make_index_sequence<sizeof...(TensIndexWithPos) / 2>{});
+
+    return out;
+}
 
 namespace detail {
 template <typename T, typename Tuple>
@@ -672,5 +742,28 @@ struct CUnique {
  */
 template <class T>
 using CUniqueT = typename CUnique<T>::type;
+
+/**
+ * @struct Reverse
+ *
+ * Reverses the elements of a tuple.
+ */
+template <typename First, typename... Args>
+struct Reverse {
+    using type = decltype(std::tuple_cat(std::declval<typename Reverse<Args...>::type>(), std::declval<std::tuple<First>>()));
+};
+
+template <typename First>
+struct Reverse<First> {
+    using type = std::tuple<First>;
+};
+
+/**
+ * @typedef ReverseT
+ *
+ * Reverses the elements of a tuple.
+ */
+template <typename... Args>
+using ReverseT = Reverse<Args...>::type;
 
 } // namespace einsums::tensor_algebra

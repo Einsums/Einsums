@@ -1,14 +1,5 @@
-#  Copyright (c) The Einsums Developers. All rights reserved.
-#  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-#
-# SPDX-License-Identifier: BSL-1.0
-# Distributed under the Boost Software License, Version 1.0. (See accompanying
-# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-
-# This cmake-format configuration file is a suggested configuration file for
-# formatting CMake files for the EINSUMS project.
-
-# PLEASE NOTE: This file has been created and tested with cmake-format V0.6.10
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 # -----------------------------
 # Options affecting formatting.
@@ -290,6 +281,7 @@ with section("parse"):
                                                        'AUTOGLOB',
                                                        'INTERNAL_FLAGS',
                                                        'NOLIBS',
+                                                       'NOINSTALL',
                                                        'NOEINSUMS_INIT'],
                                              'nargs': '1+'}},
         'einsums_add_header_tests': {'kwargs': {'COMPONENT_DEPENDENCIES': '+',

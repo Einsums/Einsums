@@ -22,11 +22,25 @@ namespace einsums {
 
 namespace hashes {
 
+/**
+ * @struct insensitive_hash
+ *
+ * @brief Hashes a string without regard for letter case, along with some other conversions.
+ *
+ * This hash object first converts a string to all capital letters and converts hyphens to underscores.
+ * Then it computes a hash based on the new string.
+ */
 template <typename str_type>
 struct insensitive_hash {
   public:
     constexpr insensitive_hash() = default;
 
+    /**
+     * @brief Perform the hashing operation.
+     *
+     * @param str The string to hash.
+     * @return The hash of the string.
+     */
     size_t operator()(str_type const &str) const {
         size_t hash = 0;
 
@@ -56,6 +70,7 @@ struct insensitive_hash {
     }
 };
 
+#ifndef DOXYGEN
 template <>
 struct insensitive_hash<std::string> {
   public:
@@ -64,21 +79,56 @@ struct insensitive_hash<std::string> {
     size_t operator()(std::string const &str) const noexcept;
 };
 
+template <>
+struct insensitive_hash<char *> {
+  public:
+    constexpr insensitive_hash() = default;
+
+    size_t operator()(char const *str) const noexcept;
+};
+#endif
+
 } // namespace hashes
 
 namespace detail {
 
+/**
+ * @struct insensitive_equals
+ *
+ * @brief Compares two strings, ignoring letter case and some other things.
+ *
+ * This will compare the two strings, ignoring letter case. Also, hyphens and underscores will match together.
+ * This means that an option like @c buffer-size will be matched with @c BUFFER_SIZE .
+ */
 template <typename str_type>
 struct insensitive_equals {
     constexpr insensitive_equals() = default;
 
+    /**
+     * @brief Compare two strings using the rules stated before.
+     *
+     * @param a The first string to compare.
+     * @param b The second string to compare.
+     *
+     * @return True if the strings match based on the rules stated before, false if they don't.
+     */
     bool operator()(str_type const &a, str_type const &b) const {
         if (a.size() != b.size()) {
             return false;
         }
 
         for (size_t i = 0; i < a.size(); i++) {
-            if (std::toupper(a[i]) != std::toupper(b[i])) {
+            char a_ch = std::toupper(a[i]), b_ch = std::toupper(b[i]);
+
+            if (a_ch == '-') {
+                a_ch = '_';
+            }
+
+            if (b_ch == '-') {
+                b_ch = '_';
+            }
+
+            if (a_ch != b_ch) {
                 return false;
             }
         }
@@ -200,17 +250,26 @@ class EINSUMS_EXPORT GlobalConfigMap {
     /**
      * @brief Get the string value stored at the given key.
      *
-     * Throws an error if the key is not in the map.
+     * Returns the empty string if the key is not in the map.
+     *
+     * @param key The key to query.
+     */
+    std::string get_string(std::string const &key) const;
+
+    /**
+     * @brief Get the string value stored at the given key.
+     *
+     * Returns an optional default value if the key is not in the map.
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
      */
-    std::string const &get_string(std::string const &key, std::string const &dephault = "") const;
+    std::string get_string(std::string const &key, std::string const &dephault) const;
 
     /**
      * @brief Get the integer value stored at the given key.
      *
-     * Throws an error if the key is not in the map.
+     * Returns an optional default value if the key is not in the map.
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
@@ -220,7 +279,7 @@ class EINSUMS_EXPORT GlobalConfigMap {
     /**
      * @brief Get the floating point value stored at the given key.
      *
-     * Throws an error if the key is not in the map.
+     * Returns an optional default value if the key is not in the map.
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
@@ -230,12 +289,44 @@ class EINSUMS_EXPORT GlobalConfigMap {
     /**
      * @brief Get the boolean flag stored at the given key.
      *
-     * Throws an error if the key is not in the map.
+     * Returns an optional default value if the key is not in the map.
      *
      * @param key The key to query.
      * @param dephault The default value. If the key is not in the map, this is what will be returned.
      */
-    bool get_bool(std::string const &key, bool dephaul = false) const;
+    bool get_bool(std::string const &key, bool dephault = false) const;
+
+    /**
+     * @brief Set the string value stored at the given key.
+     *
+     * @param key The key to query.
+     * @param value The new value.
+     */
+    void set_string(std::string const &key, std::string const &value);
+
+    /**
+     * @brief Set the integer value stored at the given key.
+     *
+     * @param key The key to query.
+     * @param value The new value.
+     */
+    void set_int(std::string const &key, std::int64_t value);
+
+    /**
+     * @brief Set the floating point value stored at the given key.
+     *
+     * @param key The key to query.
+     * @param value The new value.
+     */
+    void set_double(std::string const &key, double value);
+
+    /**
+     * @brief Set the Boolean value stored at the given key.
+     *
+     * @param key The key to query.
+     * @param value The new value.
+     */
+    void set_bool(std::string const &key, bool value);
 
     /**
      * @brief Returns the map containing string options.
@@ -318,10 +409,23 @@ class EINSUMS_EXPORT GlobalConfigMap {
         }
     }
 
+    /**
+     * @brief Lock all of the maps contained in this object.
+     */
     void lock();
 
+    /**
+     * @brief Try to lock all of the maps contained in this object.
+     *
+     * @return True if a lock could be obtained for all of the maps, false if any map could not be locked.
+     */
     bool try_lock();
 
+    /**
+     * @brief Unlock all of the maps contained in this object.
+     *
+     * @param notify If true, notify all of the observers that an option was changed.
+     */
     void unlock(bool notify = true);
 
   private:
@@ -356,8 +460,24 @@ class EINSUMS_EXPORT GlobalConfigMap {
     std::shared_ptr<ConfigMap<bool>> bool_map_;
 };
 
+struct GlobalConfigMapLockScope {
+    GlobalConfigMapLockScope() : _singleton(GlobalConfigMap::get_singleton()){
+        _singleton.lock();
+    }
+
+    ~GlobalConfigMapLockScope() {
+        _singleton.unlock();
+    }
+
+private:
+    GlobalConfigMap& _singleton;
+};
+
 } // namespace einsums
 
+/**
+ * @brief Compare a ConfigMap with an object of the same contained mapping type.
+ */
 template <class Value>
 bool operator==(std::unordered_map<std::string, Value, einsums::hashes::insensitive_hash<std::string>,
                                    einsums::detail::insensitive_equals<std::string>> const &lhs,
@@ -365,12 +485,18 @@ bool operator==(std::unordered_map<std::string, Value, einsums::hashes::insensit
     return lhs == rhs.get_value();
 }
 
+/**
+ * @brief Compare a ConfigMap with an object of the same contained mapping type.
+ */
 template <class Value>
 bool operator==(einsums::ConfigMap<Value> const &lhs, std::unordered_map<std::string, Value, einsums::hashes::insensitive_hash<std::string>,
                                                                          einsums::detail::insensitive_equals<std::string>> const &rhs) {
     return lhs.get_value() == rhs;
 }
 
+/**
+ * @brief Compare two ConfigMaps.
+ */
 template <class Value>
 bool operator==(einsums::ConfigMap<Value> const &lhs, einsums::ConfigMap<Value> const &rhs) {
     return lhs.get_value() == rhs.get_value();

@@ -19,7 +19,6 @@ foreach(test ${StringUtilTests})
   get_filename_component(TestName ${test} NAME_WE)
   # Extract extension of the test Example1.cpp -> .cpp, Example.2.hip -> .2.hip
   get_filename_component(Extension ${test} EXT)
-  message("Test name ${TestName}")
 
   # Remove the leading dot and replace any periods with underscores
   string(SUBSTRING ${Extension} 1 -1 EXT_NO_DOT) # Remove the leading dot
@@ -36,10 +35,8 @@ foreach(test ${StringUtilTests})
   source_group("Source Files" FILES ${Sources})
 
   einsums_add_executable(
-    ${TestName}_test
-    INTERNAL_FLAGS
-    SOURCES ${Sources}
-    ${${TestName}_${TestExtension}_FLAGS}
+    ${TestName}_test INTERNAL_FLAGS
+    SOURCES ${Sources} ${${TestName}_${TestExtension}_FLAGS}
     NOINSTALL
   )
 

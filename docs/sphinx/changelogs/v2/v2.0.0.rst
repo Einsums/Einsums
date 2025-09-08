@@ -1,0 +1,30 @@
+.. 
+    ---------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
+
+==============
+v2.0.0 Release
+==============
+
+What's New
+----------
+* Tensors are now stored in column-major ordering by default.
+    * The ordering of the tensors can be selected by the users.
+* Tensors are now based on a common implementation class to reduce the amount of code that needs to be maintained.
+* The QR decomposition routine now outputs the Q and R matrices, rather than the intermediates needed to compute these.
+
+What's Removed
+--------------
+* The `q` function from the C++ and Python interfaces, and the `r` function from the Python interface.
+* CP and Tucker decomposition broke and were not able to be fixed. They have been moved to experimental.
+
+Bug Fixes
+---------
+
+Known Issues
+------------
+* CP and Tucker decomposition do not work.

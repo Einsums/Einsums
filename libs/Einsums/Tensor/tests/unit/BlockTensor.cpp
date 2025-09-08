@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/Tensor.hpp>
 #include <Einsums/TensorUtilities.hpp>
@@ -56,8 +56,9 @@ TEMPLATE_TEST_CASE("Block Tensor creation", "[tensor][block-tensor]", float, dou
     }
 
     // Set up C using a different method.
-    C.push_block(Tensor<TestType, 2>("block2", 3, 3));
-    C.insert_block(0, Tensor<TestType, 2>("block1", 3, 3));
+    auto block1 = Tensor<TestType, 2>("block1", 3, 3), block2 = Tensor<TestType, 2>("block2", 3, 3);
+    C.push_block(block2);
+    C.insert_block(0, block1);
     C.set_name("C");
     C.zero();
 

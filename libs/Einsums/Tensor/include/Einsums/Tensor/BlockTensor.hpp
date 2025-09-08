@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 /**
  * @file BlockTensor.hpp
@@ -343,7 +343,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     }
 
     /**
-     * @brief Add a block to the end of the list of blocks.
+     * @brief Add a tensor to the end of the list of blocks.
      *
      * @param value The tensor to push.
      * @throws dimension_error if the tensor being pushed is not square.
@@ -360,7 +360,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     }
 
     /**
-     * @brief Add a block to the specified position in the list of blocks.
+     * @brief Add a tensor to the specified position in the list of blocks.
      *
      * @param pos The position to insert at.
      * @param value The tensor to insert.
@@ -377,6 +377,27 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
         _blocks.insert(std::next(_blocks.begin(), pos), value);
 
         update_dims();
+    }
+
+    /**
+     * @brief Create a new block with the given dimensions.
+     *
+     * @param pos The position to insert at.
+     * @param args The arguments for the constructor.
+     * @throws dimension_error if the tensor is not square.
+     */
+    template <typename... Args>
+    void emplace_block(int pos, Args &&...args) {
+        auto tensor = TensorType(std::forward<Args>(args)...);
+
+        for (int i = 0; i < Rank; i++) {
+            if (tensor.dim(i) != tensor.dim(0)) {
+                EINSUMS_THROW_EXCEPTION(
+                    dimension_error, "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
+            }
+        }
+
+        _blocks.emplace(std::next(_blocks.begin(), pos), std::move(tensor));
     }
 
     /**
@@ -591,7 +612,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
             requires !std::is_same_v<Container, Offset<Rank>>;
             requires !std::is_same_v<Container, Range>;
         }
-    const T &operator()(Container const &index) const {
+    T const &operator()(Container const &index) const {
         if (index.size() < Rank) [[unlikely]] {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) [[unlikely]] {

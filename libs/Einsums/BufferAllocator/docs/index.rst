@@ -5,7 +5,7 @@
 .. _modules_Einsums_BufferAllocator:
 
 =======================
-Einsums BufferAllocator
+BufferAllocator
 =======================
 
 This module contains an allocator that keeps track of how much memory has been allocated for buffers.

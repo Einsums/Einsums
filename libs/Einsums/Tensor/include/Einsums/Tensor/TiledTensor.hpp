@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -240,7 +240,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      */
     template <std::integral... MultiIndex>
         requires(sizeof...(MultiIndex) == rank)
-    const TensorType &tile(MultiIndex... index) const {
+    TensorType const &tile(MultiIndex... index) const {
         std::array<int, rank> arr_index{static_cast<int>(index)...};
 
         for (int i = 0; i < rank; i++) {
@@ -262,7 +262,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      */
     template <typename Storage>
         requires(!std::integral<Storage>)
-    const TensorType &tile(Storage index) const {
+    TensorType const &tile(Storage index) const {
         std::array<int, rank> arr_index;
 
         for (int i = 0; i < rank; i++) {
@@ -1337,7 +1337,17 @@ struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums:
      *
      * This does not add a tile to the viewed tensor, only to the view.
      */
-    void insert_tile(std::array<int, Rank> pos, einsums::TensorView<T, Rank> &&view) {
+    void insert_tile(std::array<int, Rank> pos, einsums::TensorView<T, Rank> &view) {
+        std::lock_guard lock(*this);
+        this->_tiles.emplace(pos, view);
+    }
+
+    /**
+     * @brief Add a tile to the view.
+     *
+     * This does not add a tile to the viewed tensor, only to the view.
+     */
+    void insert_tile(std::array<int, Rank> pos, einsums::TensorView<T, Rank> const &view) {
         std::lock_guard lock(*this);
         this->_tiles.emplace(pos, view);
     }

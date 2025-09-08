@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/Errors/Error.hpp>
 
@@ -15,6 +15,7 @@ void export_Errors(py::module_ &mod) {
 
     py::module_ error_mod = mod.def_submodule("errors", "This module contains all possible errors that can be thrown by Einsums.");
 
+    EXCEPTION(rank_error);
     EXCEPTION(dimension_error);
     EXCEPTION(tensor_compat_error);
     EXCEPTION(num_argument_error);
@@ -22,9 +23,12 @@ void export_Errors(py::module_ &mod) {
     EXCEPTION(too_many_args);
     EXCEPTION(access_denied);
     EXCEPTION(todo_error);
+    EXCEPTION(not_implemented);
     EXCEPTION(bad_logic);
     EXCEPTION(uninitialized_error);
+    EXCEPTION(system_error);
     EXCEPTION(enum_error);
+    EXCEPTION(complex_conversion_error);
 
 #ifdef EINSUMS_COMPUTE_CODE
     py::register_exception<einsums::Success>(error_mod, "Success");

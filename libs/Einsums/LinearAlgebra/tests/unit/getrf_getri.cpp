@@ -14,19 +14,18 @@ void getrf_and_getri_test() {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    auto                     A = create_tensor<T>("A", 4, 4);
-    std::vector<blas::int_t> pivot(4);
+    auto                      A = create_tensor<T>("A", 4, 4);
+    BufferVector<blas::int_t> pivot(4);
 
-    A.vector_data() =
-        VectorData<T>{1.80, 2.88, 2.05, -0.89, 5.25, -2.95, -0.95, -3.80, 1.58, -2.69, -2.90, -1.04, -1.11, -0.66, -0.59, 0.80};
+    A.vector_data() = {1.80, 2.88, 2.05, -0.89, 5.25, -2.95, -0.95, -3.80, 1.58, -2.69, -2.90, -1.04, -1.11, -0.66, -0.59, 0.80};
 
     einsums::linear_algebra::getrf(&A, &pivot);
     einsums::linear_algebra::getri(&A, pivot);
 
     CHECK_THAT(A.vector_data(),
                Catch::Matchers::Approx(VectorData<T>{1.77199817, 0.57569082, 0.08432537, 4.81550236, -0.11746607, -0.44561501, 0.41136261,
-                                                      -1.71258093, 0.17985639, 0.45266204, -0.66756530, 1.48240005, 2.49438204, 0.76497689,
-                                                      -0.03595380, 7.61190029})
+                                                     -1.71258093, 0.17985639, 0.45266204, -0.66756530, 1.48240005, 2.49438204, 0.76497689,
+                                                     -0.03595380, 7.61190029})
                    .margin(0.01));
 }
 

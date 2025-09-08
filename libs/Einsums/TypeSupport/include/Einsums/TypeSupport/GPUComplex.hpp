@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -12,6 +12,19 @@
 #include <hip/hip_runtime_api.h>
 
 namespace einsums::gpu_ops {
+
+__device__ inline float conj(float x) {
+    return x;
+}
+__device__ inline double conj(double x) {
+    return x;
+}
+__device__ inline hipFloatComplex conj(hipFloatComplex x) {
+    return make_hipFloatComplex(x.x, -x.y);
+}
+__device__ inline hipDoubleComplex conj(hipDoubleComplex x) {
+    return make_hipDoubleComplex(x.x, -x.y);
+}
 
 __device__ inline float fma(float x, float y, float z) {
     return ::fmaf(x, y, z);
@@ -93,53 +106,53 @@ __device__ inline hipDoubleComplex mult(hipDoubleComplex x, hipDoubleComplex y) 
     return make_hipDoubleComplex(::fma(-x.y, y.y, x.x * y.x), ::fma(x.y, y.x, x.x * y.y));
 }
 
-template<typename T1, typename T2>
-__device__ inline auto mult(T1 x, T2 y) -> std::conditional_t<(sizeof(T1) >= sizeof(T2)), T1, T2>{
+template <typename T1, typename T2>
+__device__ inline auto mult(T1 x, T2 y) -> std::conditional_t<(sizeof(T1) >= sizeof(T2)), T1, T2> {
     return x * y;
 }
 
 __device__ inline hipFloatComplex div(hipFloatComplex x, hipFloatComplex y) {
-    const float denom = y.x * y.x + y.y * y.y;
+    float const denom = y.x * y.x + y.y * y.y;
     return make_hipFloatComplex(::fmaf(x.y, y.y, x.x * y.x) / denom, ::fmaf(x.y, y.x, -x.x * y.y) / denom);
 }
 
 __device__ inline hipDoubleComplex div(hipDoubleComplex x, hipFloatComplex y) {
-    const double denom = y.x * y.x + y.y * y.y;
+    double const denom = y.x * y.x + y.y * y.y;
     return make_hipDoubleComplex(::fmaf(x.y, y.y, x.x * y.x) / denom, ::fmaf(x.y, y.x, -x.x * y.y) / denom);
 }
 
 __device__ inline hipDoubleComplex div(hipFloatComplex x, hipDoubleComplex y) {
-    const double denom = y.x * y.x + y.y * y.y;
+    double const denom = y.x * y.x + y.y * y.y;
     return make_hipDoubleComplex(::fmaf(x.y, y.y, x.x * y.x) / denom, ::fmaf(x.y, y.x, -x.x * y.y) / denom);
 }
 
 __device__ inline hipDoubleComplex div(hipDoubleComplex x, hipDoubleComplex y) {
-    const double denom = y.x * y.x + y.y * y.y;
+    double const denom = y.x * y.x + y.y * y.y;
     return make_hipDoubleComplex(::fmaf(x.y, y.y, x.x * y.x) / denom, ::fmaf(x.y, y.x, -x.x * y.y) / denom);
 }
 
 __device__ inline hipFloatComplex div(float x, hipFloatComplex y) {
-    const float denom = y.x * y.x + y.y * y.y;
+    float const denom = y.x * y.x + y.y * y.y;
     return make_hipFloatComplex((x * y.x) / denom, (-x * y.y) / denom);
 }
 
 __device__ inline hipFloatComplex div(double x, hipFloatComplex y) {
-    const double denom = y.x * y.x + y.y * y.y;
+    double const denom = y.x * y.x + y.y * y.y;
     return make_hipFloatComplex((x * y.x) / denom, (-x * y.y) / denom);
 }
 
 __device__ inline hipDoubleComplex div(float x, hipDoubleComplex y) {
-    const double denom = y.x * y.x + y.y * y.y;
+    double const denom = y.x * y.x + y.y * y.y;
     return make_hipDoubleComplex((x * y.x) / denom, (-x * y.y) / denom);
 }
 
 __device__ inline hipDoubleComplex div(double x, hipDoubleComplex y) {
-    const double denom = y.x * y.x + y.y * y.y;
+    double const denom = y.x * y.x + y.y * y.y;
     return make_hipDoubleComplex((x * y.x) / denom, (-x * y.y) / denom);
 }
 
-template<typename T1, typename T2>
-__device__ inline auto div(T1 x, T2 y) -> std::conditional_t<(sizeof(T1) >= sizeof(T2)), T1, T2>{
+template <typename T1, typename T2>
+__device__ inline auto div(T1 x, T2 y) -> std::conditional_t<(sizeof(T1) >= sizeof(T2)), T1, T2> {
     return x / y;
 }
 

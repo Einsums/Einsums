@@ -16,10 +16,10 @@ Einsums Modules
     /libs/Einsums/BLASBase/docs/index.rst
     /libs/Einsums/BLASVendor/docs/index.rst
     /libs/Einsums/BufferAllocator/docs/index.rst
+    /libs/Einsums/CommandLine/docs/index.rst
     /libs/Einsums/Concepts/docs/index.rst
     /libs/Einsums/Config/docs/index.rst
     /libs/Einsums/Debugging/docs/index.rst
-    /libs/Einsums/Decomposition/docs/index.rst
     /libs/Einsums/Errors/docs/index.rst
     /libs/Einsums/FFT/docs/index.rst
     /libs/Einsums/GPUMemory/docs/index.rst
@@ -37,6 +37,7 @@ Einsums Modules
     /libs/Einsums/Tensor/docs/index.rst
     /libs/Einsums/TensorAlgebra/docs/index.rst
     /libs/Einsums/TensorBase/docs/index.rst
+    /libs/Einsums/TensorImpl/docs/index.rst
     /libs/Einsums/TensorUtilities/docs/index.rst
     /libs/Einsums/TypeSupport/docs/index.rst
     /libs/Einsums/Utilities/docs/index.rst

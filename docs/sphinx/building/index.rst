@@ -58,6 +58,8 @@ other system-level dependencies to build it on your system.
 
     * CMake
 
+    * Ninja for building. Since cpptrace 1.0, Unix Makefiles are no longer supported.
+
     The following are also required, but will be downloaded if not given:
 
     * fmtlib >= 11
@@ -68,7 +70,17 @@ other system-level dependencies to build it on your system.
     
     * gabime/spdlog >= 1
 
+    * HDF5 for disk operations.
+
+    * ZLIB headers
+
+    Recommended
+
+    * MIMalloc for faster memory allocation.
+
     Optional:
+
+    * jeremy-rifkin/cpptrace to create backtraces when errors occur.
 
     * For the Fourier Transform abilities, you will need either `FFTW3 <https://www.fftw.org>`__
       or MKL.
@@ -78,6 +90,10 @@ other system-level dependencies to build it on your system.
     * LibreTT for high-performance GPU tensor transposes.
 
     * pybind11 for the Python extension module.
+
+    * SciPy for the Python tests.
+
+    * NumPy for the Python tests.
 
 
   .. tab-item:: Linux

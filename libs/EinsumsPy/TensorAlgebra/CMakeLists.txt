@@ -21,7 +21,8 @@ einsums_add_module(
   SOURCES ${TensorAlgebraSources}
   HEADERS ${TensorAlgebraHeaders}
   DEPENDENCIES Einsums ${TensorAlgebraGPUDeps}
-  MODULE_DEPENDENCIES ${EINSUMS_PYTHON_LIB_NAME}_Tensor ${TensorAlgebraGPUModules}
+  MODULE_DEPENDENCIES ${EINSUMS_PYTHON_LIB_NAME}_Tensor ${EINSUMS_PYTHON_LIB_NAME}_LinearAlgebra
+                      ${TensorAlgebraGPUModules}
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME EinsumsPy
 )

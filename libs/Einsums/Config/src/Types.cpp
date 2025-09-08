@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #include <Einsums/Config/Types.hpp>
 
 #include <memory>
@@ -23,13 +28,22 @@ size_t GlobalConfigMap::max_size() const noexcept {
     return str_map_->get_value().max_size() + int_map_->get_value().max_size() + double_map_->get_value().max_size();
 }
 
-std::string const &GlobalConfigMap::get_string(std::string const &key, std::string const &dephault) const {
+std::string GlobalConfigMap::get_string(std::string const &key) const {
+    if (str_map_->get_value().contains(key)) {
+        return str_map_->get_value().at(key);
+    } else {
+        return "";
+    }
+}
+
+std::string GlobalConfigMap::get_string(std::string const &key, std::string const &dephault) const {
     if (str_map_->get_value().contains(key)) {
         return str_map_->get_value().at(key);
     } else {
         return dephault;
     }
 }
+
 std::int64_t GlobalConfigMap::get_int(std::string const &key, std::int64_t dephault) const {
     if (int_map_->get_value().contains(key)) {
         return int_map_->get_value().at(key);
@@ -50,6 +64,22 @@ bool GlobalConfigMap::get_bool(std::string const &key, bool dephault) const {
     } else {
         return dephault;
     }
+}
+
+void GlobalConfigMap::set_string(std::string const &key, std::string const &value) {
+    (*str_map_).get_value()[key] = value;
+}
+
+void GlobalConfigMap::set_int(std::string const &key, std::int64_t value) {
+    (*int_map_).get_value()[key] = value;
+}
+
+void GlobalConfigMap::set_double(std::string const &key, double value) {
+    (*double_map_).get_value()[key] = value;
+}
+
+void GlobalConfigMap::set_bool(std::string const &key, bool value) {
+    (*bool_map_).get_value()[key] = value;
 }
 
 std::shared_ptr<ConfigMap<std::string>> GlobalConfigMap::get_string_map() {
@@ -86,6 +116,33 @@ size_t einsums::hashes::insensitive_hash<std::string>::operator()(std::string co
             hash ^= mask >> (6 * sizeof(size_t));
             hash &= ~mask;
         }
+    }
+    return hash;
+}
+
+size_t einsums::hashes::insensitive_hash<char *>::operator()(char const *str) const noexcept {
+    size_t hash = 0;
+
+    // Calculate the mask. If size_t is N bytes, mask for the top N bits.
+    // The first part creates a Mersenne value with the appropriate number of bits.
+    // The second shifts it to the top.
+    constexpr size_t mask       = (((size_t)1 << sizeof(size_t)) - 1) << (7 * sizeof(size_t));
+    size_t           curr_index = 0;
+
+    while (str[curr_index] != 0) {
+        char upper = std::toupper(str[curr_index]);
+        if (upper == '-') { // Convert dashes to underscores.
+            upper = '_';
+        }
+
+        hash <<= sizeof(size_t); // Shift left a number of bits equal to the number of bytes in size_t.
+        hash += (uint8_t)upper;
+
+        if ((hash & mask) != (size_t)0) {
+            hash ^= mask >> (6 * sizeof(size_t));
+            hash &= ~mask;
+        }
+        curr_index++;
     }
     return hash;
 }

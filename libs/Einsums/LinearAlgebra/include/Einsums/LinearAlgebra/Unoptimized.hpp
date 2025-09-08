@@ -8,12 +8,12 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Complex.hpp>
-#include <Einsums/Concepts/TensorConcepts.hpp>
-#include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
+#include <Einsums/Errors/ThrowException.hpp>
 
 #include <cstdint>
-#include <Einsums/Config/CompilerSpecific.hpp>
 
 namespace einsums::linear_algebra::detail {
 
@@ -245,6 +245,28 @@ void ger(U alpha, XType const &X, YType const &Y, AType *A) {
     for (size_t i = 0; i < rows; i++) {
         for (size_t j = 0; j < cols; j++) {
             (*A)(i, j) += alpha * X(i) * Y(j);
+        }
+    }
+}
+
+template <MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U>
+    requires requires { requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<XType> || !AlgebraTensorConcept<YType>; }
+void gerc(U alpha, XType const &X, YType const &Y, AType *A) {
+    if (A->dim(0) != X.dim(0) || A->dim(1) != Y.dim(0)) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Incompatible matrix and vector sizes!");
+    }
+
+    size_t rows = A->dim(0);
+    size_t cols = A->dim(1);
+
+#pragma omp parallel for collapse(2) default(none)
+    for (size_t i = 0; i < rows; i++) {
+        for (size_t j = 0; j < cols; j++) {
+            if constexpr (IsComplex<typename YType::ValueType>) {
+                (*A)(i, j) += alpha * X(i) * std::conj(Y(j));
+            } else {
+                (*A)(i, j) += alpha * X(i) * Y(j);
+            }
         }
     }
 }

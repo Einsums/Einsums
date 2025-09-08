@@ -1,14 +1,14 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
 #ifndef DOXYGEN
 
 #    include <Einsums/Concepts/TensorConcepts.hpp>
-#    include <Einsums/Profile/LabeledSection.hpp>
+#    include <Einsums/Profile.hpp>
 #    include <Einsums/Tensor/Tensor.hpp>
 #    include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 
@@ -25,14 +25,14 @@
 #    include <utility>
 
 namespace einsums::tensor_algebra {
-template <TensorConcept AType, TensorConcept BType, typename... AIndices, typename... BIndices>
+template <bool ConjA, bool ConjB, TensorConcept AType, TensorConcept BType, typename... AIndices, typename... BIndices>
     requires requires {
         requires InSamePlace<AType, BType>;
         requires AType::Rank == sizeof...(AIndices);
         requires BType::Rank == sizeof...(BIndices);
     }
-auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BIndices...> const &,
-                BType const &B) -> BasicTensorLike<AType, typename AType::ValueType, 2> {
+auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BIndices...> const &, BType const &B)
+    -> BasicTensorLike<AType, typename AType::ValueType, 2> {
     using OutType = BasicTensorLike<AType, typename AType::ValueType, 2>;
     using T       = typename AType::ValueType;
     LabeledSection0();
@@ -73,7 +73,8 @@ auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BInd
         // Construct resulting tensor
         auto result = std::make_from_tuple<DeviceTensor<T, std::tuple_size_v<decltype(result_dims)> - 2>>(result_dims);
         // Perform the actual Khatri-Rao product using our einsum routine.
-        einsum(std::tuple_cat(A_only, B_only, common), &result, std::tuple_cat(A_only, common), A, std::tuple_cat(B_only, common), B);
+        einsum<ConjA, ConjB>(std::tuple_cat(A_only, B_only, common), &result, std::tuple_cat(A_only, common), A,
+                             std::tuple_cat(B_only, common), B);
 
         // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
 
@@ -84,7 +85,8 @@ auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BInd
         // Construct resulting tensor
         auto result = std::make_from_tuple<Tensor<T, std::tuple_size_v<decltype(result_dims)> - 1>>(result_dims);
         // Perform the actual Khatri-Rao product using our einsum routine.
-        einsum(std::tuple_cat(A_only, B_only, common), &result, std::tuple_cat(A_only, common), A, std::tuple_cat(B_only, common), B);
+        einsum<ConjA, ConjB>(std::tuple_cat(A_only, B_only, common), &result, std::tuple_cat(A_only, common), A,
+                             std::tuple_cat(B_only, common), B);
 
         // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
 

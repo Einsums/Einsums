@@ -3,8 +3,20 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-set(TensorTests ArithmeticTensor.cpp BlockTensor.cpp BlockDeviceTensor.hip RuntimeTensors.cpp TensorView.cpp DeviceTensor_extras.hip
-DeviceTensor.hip DeviceTensorView.hip DeviceTiledTensor.hip FunctionTensor.cpp TiledTensor.cpp Tensor.cpp Disk.cpp)
+set(TensorTests
+    ArithmeticTensor.cpp
+    BlockTensor.cpp
+    BlockDeviceTensor.hip
+    RuntimeTensors.cpp
+    TensorView.cpp
+    DeviceTensor_extras.hip
+    DeviceTensor.hip
+    DeviceTensorView.hip
+    DeviceTiledTensor.hip
+    FunctionTensor.cpp
+    TiledTensor.cpp
+    Tensor.cpp
+ Disk.cpp)
 
 foreach(test ${TensorTests})
   # Extract base name of test Example1.cpp -> Example1, Example.2.hip -> Example
@@ -27,14 +39,10 @@ foreach(test ${TensorTests})
   source_group("Source Files" FILES ${Sources})
 
   einsums_add_executable(
-    ${TestName}_test
-    INTERNAL_FLAGS
-    SOURCES ${Sources}
-    ${${TestName}_${TestExtension}_FLAGS}
+    ${TestName}_test INTERNAL_FLAGS
+    SOURCES ${Sources} ${${TestName}_${TestExtension}_FLAGS}
     NOINSTALL
   )
 
-  einsums_add_unit_test(
-    "Modules.Tensor" ${TestName} ${${TestName}_${TestExtension}_PARAMETERS}
-  )
+  einsums_add_unit_test("Modules.Tensor" ${TestName} ${${TestName}_${TestExtension}_PARAMETERS})
 endforeach()

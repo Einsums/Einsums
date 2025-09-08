@@ -1,8 +1,9 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
+#include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateZeroTensor.hpp>
 
@@ -12,6 +13,13 @@ TEMPLATE_TEST_CASE("element transform", "[tensor_algebra]", float, double, std::
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
+
+    {
+        auto &singleton = GlobalConfigMap::get_singleton();
+        singleton.lock();
+        singleton.set_string("buffer-size", "1GB");
+        singleton.unlock();
+    }
 
     SECTION("tensor") {
         Tensor A     = create_random_tensor<TestType>("A", 32, 32, 32, 32);
@@ -95,6 +103,8 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
+    tensor_algebra::detail::AlgorithmChoice alg_choice;
+
     int const _i{5}, _j{5};
 
     SECTION("1") {
@@ -106,7 +116,8 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         element([](TestType const & /*Cval*/, TestType const &Aval, TestType const &Bval) { return Aval * Bval; }, &C0, A, B);
 
-        einsum(Indices{i, j}, &C, Indices{i, j}, A, Indices{i, j}, B);
+        einsum(Indices{i, j}, &C, Indices{i, j}, A, Indices{i, j}, B, &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::DIRECT);
 
         // std::stringstream stream;
 
@@ -131,7 +142,8 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         element([](TestType const &Cval, TestType const &Aval) { return Cval * Aval; }, &C, A);
 
-        einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A);
+        einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A, &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::DIRECT);
 
         for (int w = 0; w < _i; w++) {
             for (int x = 0; x < _j; x++) {
@@ -160,7 +172,8 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         element([](TestType const &Cval, TestType const &Aval) { return Cval * Aval; }, &C, A);
 
-        einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A);
+        einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A, &alg_choice);
+        REQUIRE(alg_choice == tensor_algebra::detail::DIRECT);
 
         for (int w = 0; w < _i; w++) {
             for (int x = 0; x < _j; x++) {

@@ -30,12 +30,12 @@ if(EINSUMS_WITH_GPU_SUPPORT)
   set(TensorGPUDeps hip::host hip::device)
 
   if(EINSUMS_WITH_CUDA)
-  foreach(f IN LISTS TensorSources)
-    if(f MATCHES ".*\.hip")
-      set_source_files_properties("src/${f}" PROPERTIES LANGUAGE CUDA)
-    endif()
-  endforeach()
-endif()
+    foreach(f IN LISTS TensorSources)
+      if(f MATCHES ".*\.hip")
+        set_source_files_properties("src/${f}" PROPERTIES LANGUAGE CUDA)
+      endif()
+    endforeach()
+  endif()
 endif()
 
 include(Einsums_AddModule)
@@ -46,12 +46,14 @@ einsums_add_module(
   DEPENDENCIES tgt::hdf5 ZLIB::ZLIB ${TensorGPUDeps}
   MODULE_DEPENDENCIES
     Einsums_BLAS
+    Einsums_BufferAllocator
     Einsums_Concepts
     Einsums_Config
     Einsums_Errors
     Einsums_Iterator
     Einsums_Logging
     Einsums_TensorBase
+    Einsums_TensorImpl
     Einsums_TypeSupport
     Einsums_Profile
     Einsums_Print

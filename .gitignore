@@ -73,8 +73,9 @@ docs/build
 .DS_Store
 
 # JetBrains project files
-.idea
-*.env
+#.idea/*
+!.idea/misc.xml
+!.idea/modules.xml
 
 # File created by merge_yaml.py script
 conda.yml

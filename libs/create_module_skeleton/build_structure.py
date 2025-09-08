@@ -1,5 +1,5 @@
-#  Copyright (c) The Einsums Developers. All rights reserved.
-#  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 import os
 import sys
@@ -18,7 +18,7 @@ def parse_template(filename, output_file, **kwargs):
 def build_layer(input_dir, output_dir, **kwargs):
     for item in os.listdir(input_dir):
         # Skip exports if we don't need them.
-        if item in ["Export.cpp"] and not kwargs["python"]:
+        if item in ["Export.cpp.fstring"] and not kwargs["python"]:
             continue
         item_out = kwargs.get(item, item)
 

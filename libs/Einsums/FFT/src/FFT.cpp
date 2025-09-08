@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/FFT.hpp>
@@ -41,8 +41,8 @@ void check_size(Tensor<T, 1> const &a, Tensor<std::complex<T>, 1> const *result)
     if (result->dim(0) >= a.dim(0) / 2 + 1)
         return;
 
-    println_abort("fft called with too small result tensor size\nsize of \"{}\" is {}\nsize of \"{}\" is {}", a.name(), a.dim(0),
-                  result->name(), result->dim(0));
+    EINSUMS_THROW_EXCEPTION(dimension_error, "fft called with too small result tensor size\nsize of \"{}\" is {}\nsize of \"{}\" is {}",
+                            a.name(), a.dim(0), result->name(), result->dim(0));
 }
 
 template <typename T>
@@ -50,7 +50,8 @@ void icheck_size(Tensor<std::complex<T>, 1> const &a, Tensor<T, 1> const *result
     if (a.dim(0) >= result->dim(0) / 2 + 1)
         return;
 
-    println_abort("ifft called with too small");
+    EINSUMS_THROW_EXCEPTION(dimension_error, "fft called with too small result tensor size\nsize of \"{}\" is {}\nsize of \"{}\" is {}",
+                            a.name(), a.dim(0), result->name(), result->dim(0));
 }
 } // namespace
 

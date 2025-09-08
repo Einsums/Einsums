@@ -1,15 +1,28 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 /*
   Copyright 2018 Paul Springer
-  
-  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-  
+
+  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are
+  met:
+
   1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-  
-  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-  
-  3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-  
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+
+  3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
@@ -43,30 +56,34 @@
 
 namespace hptt {
 
-template <typename floatType, int betaIsZero, bool conjA>
+template <typename floatType, bool betaIsZero, bool conjA>
 struct micro_kernel {
-    static void execute(floatType const *A, size_t const lda, 
-                        const size_t innerStrideA, floatType *B, 
-                        size_t const ldb, const size_t innerStrideB,
-                        floatType const alpha, floatType const beta) {
-        constexpr int n = (REGISTER_BITS / 8) / sizeof(floatType);
+    static void execute(floatType const *A, size_t const lda, size_t const innerStrideA, floatType *B, size_t const ldb,
+                        size_t const innerStrideB, floatType const alpha, floatType const beta) {
+        constexpr size_t n = (REGISTER_BITS / 8) / sizeof(floatType);
 
-        if (betaIsZero)
-            for (int j = 0; j < n; ++j)
-                for (int i = 0; i < n; ++i)
-                    if (conjA)
+        if constexpr (betaIsZero) {
+            for (size_t j = 0; j < n; ++j) {
+                for (size_t i = 0; i < n; ++i) {
+                    if constexpr (conjA)
                         B[(i * innerStrideB) + (j * ldb)] = alpha * conj(A[(j * innerStrideA) + (lda * i)]);
                     else
                         B[(i * innerStrideB) + (j * ldb)] = alpha * A[(j * innerStrideA) + (lda * i)];
-        else
-            for (int j = 0; j < n; ++j)
-                for (int i = 0; i < n; ++i)
-                    if (conjA)
-                        B[(i * innerStrideB) + (j * ldb)] = alpha * conj(A[(j * innerStrideA) + (lda * i)]) 
-                                                          + beta * B[(i * innerStrideB) + (j * ldb)];
-                    else
-                        B[(i * innerStrideB) + (j * ldb)] = alpha * A[(j * innerStrideA) + (lda * i)] 
-                                                          + beta * B[(i * innerStrideB) + (j * ldb)];
+                }
+            }
+        } else {
+            for (size_t j = 0; j < n; ++j) {
+                for (size_t i = 0; i < n; ++i) {
+                    if constexpr (conjA) {
+                        B[(i * innerStrideB) + (j * ldb)] =
+                            alpha * conj(A[(j * innerStrideA) + (lda * i)]) + beta * B[(i * innerStrideB) + (j * ldb)];
+                    } else {
+                        B[(i * innerStrideB) + (j * ldb)] =
+                            alpha * A[(j * innerStrideA) + (lda * i)] + beta * B[(i * innerStrideB) + (j * ldb)];
+                    }
+                }
+            }
+        }
     }
 };
 
@@ -81,33 +98,33 @@ static void streamingStore(floatType *out, floatType const *in) {
 #    include <immintrin.h>
 
 template <typename floatType>
-static INLINE void prefetch(const floatType *A, const int lda) {
-    constexpr int blocking_micro_ = REGISTER_BITS / 8 / sizeof(floatType);
-    for (int i = 0; i < blocking_micro_; ++i)
+static INLINE void prefetch(floatType const *A, size_t const lda) {
+    constexpr size_t blocking_micro_ = REGISTER_BITS / 8 / sizeof(floatType);
+    for (size_t i = 0; i < blocking_micro_; ++i)
         _mm_prefetch((char *)(A + i * lda), _MM_HINT_T2);
 }
-template <int betaIsZero, bool conjA>
+template <bool betaIsZero, bool conjA>
 struct micro_kernel<double, betaIsZero, conjA> {
-    static void execute(double const *A, size_t const lda, const size_t innerStrideA, double *B, size_t const ldb, 
-                        const size_t innerStrideB, double const alpha, double const beta) {
+    static void execute(double const *A, size_t const lda, size_t const innerStrideA, double *B, size_t const ldb,
+                        size_t const innerStrideB, double const alpha, double const beta) {
         __m256d reg_alpha = _mm256_set1_pd(alpha); // do not alter the content of B
         __m256d reg_beta  = _mm256_set1_pd(beta);  // do not alter the content of B
-        // Load A
-       __m256d rowA0, rowA1, rowA2, rowA3;
-       __m256i indicesA;
-       if (innerStrideA != 1) {
-         indicesA = _mm256_set_epi32(7 * innerStrideA, 6 * innerStrideA, 5 * innerStrideA, 4 * innerStrideA, 
-                                     3 * innerStrideA, 2 * innerStrideA, 1 * innerStrideA, 0 * innerStrideA);
-         rowA0 = _mm256_i32gather_pd((A +0*lda), indicesA, sizeof(double));
-         rowA1 = _mm256_i32gather_pd((A +1*lda), indicesA, sizeof(double));
-         rowA2 = _mm256_i32gather_pd((A +2*lda), indicesA, sizeof(double));
-         rowA3 = _mm256_i32gather_pd((A +3*lda), indicesA, sizeof(double));
-       } else {
-         rowA0 = _mm256_loadu_pd((A +0*lda));
-         rowA1 = _mm256_loadu_pd((A +1*lda));
-         rowA2 = _mm256_loadu_pd((A +2*lda));
-         rowA3 = _mm256_loadu_pd((A +3*lda));
-       }
+                                                   // Load A
+        __m256d rowA0, rowA1, rowA2, rowA3;
+        __m256i indicesA;
+        if (innerStrideA != 1) {
+            indicesA = _mm256_set_epi32(7 * innerStrideA, 6 * innerStrideA, 5 * innerStrideA, 4 * innerStrideA, 3 * innerStrideA,
+                                        2 * innerStrideA, 1 * innerStrideA, 0 * innerStrideA);
+            rowA0    = _mm256_i32gather_pd((A + 0 * lda), indicesA, sizeof(double));
+            rowA1    = _mm256_i32gather_pd((A + 1 * lda), indicesA, sizeof(double));
+            rowA2    = _mm256_i32gather_pd((A + 2 * lda), indicesA, sizeof(double));
+            rowA3    = _mm256_i32gather_pd((A + 3 * lda), indicesA, sizeof(double));
+        } else {
+            rowA0 = _mm256_loadu_pd((A + 0 * lda));
+            rowA1 = _mm256_loadu_pd((A + 1 * lda));
+            rowA2 = _mm256_loadu_pd((A + 2 * lda));
+            rowA3 = _mm256_loadu_pd((A + 3 * lda));
+        }
 
         // 4x4 transpose micro kernel
         __m256d r4, r34, r3, r33;
@@ -127,21 +144,21 @@ struct micro_kernel<double, betaIsZero, conjA> {
         rowA3 = _mm256_mul_pd(rowA3, reg_alpha);
 
         // Load B
-        if (!betaIsZero) {
+        if constexpr (!betaIsZero) {
             __m256d rowB0, rowB1, rowB2, rowB3;
             __m256i indicesB;
             if (innerStrideB != 1) {
-                indicesB = _mm256_set_epi32(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB, 
-                                            3 * innerStrideB, 2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
-                rowB0 = _mm256_i32gather_pd((B +0*ldb), indicesB, sizeof(double));
-                rowB1 = _mm256_i32gather_pd((B +1*ldb), indicesB, sizeof(double));
-                rowB2 = _mm256_i32gather_pd((B +2*ldb), indicesB, sizeof(double));
-                rowB3 = _mm256_i32gather_pd((B +3*ldb), indicesB, sizeof(double));
+                indicesB = _mm256_set_epi32(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB, 3 * innerStrideB,
+                                            2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
+                rowB0    = _mm256_i32gather_pd((B + 0 * ldb), indicesB, sizeof(double));
+                rowB1    = _mm256_i32gather_pd((B + 1 * ldb), indicesB, sizeof(double));
+                rowB2    = _mm256_i32gather_pd((B + 2 * ldb), indicesB, sizeof(double));
+                rowB3    = _mm256_i32gather_pd((B + 3 * ldb), indicesB, sizeof(double));
             } else {
-                rowB0 = _mm256_loadu_pd((B +0*ldb));
-                rowB1 = _mm256_loadu_pd((B +1*ldb));
-                rowB2 = _mm256_loadu_pd((B +2*ldb));
-                rowB3 = _mm256_loadu_pd((B +3*ldb));
+                rowB0 = _mm256_loadu_pd((B + 0 * ldb));
+                rowB1 = _mm256_loadu_pd((B + 1 * ldb));
+                rowB2 = _mm256_loadu_pd((B + 2 * ldb));
+                rowB3 = _mm256_loadu_pd((B + 3 * ldb));
             }
 
             rowB0 = _mm256_add_pd(_mm256_mul_pd(rowB0, reg_beta), rowA0);
@@ -150,10 +167,10 @@ struct micro_kernel<double, betaIsZero, conjA> {
             rowB3 = _mm256_add_pd(_mm256_mul_pd(rowB3, reg_beta), rowA3);
             // Store B
             if (innerStrideB != 1) {
-                _mm256_i32scatter_epi32((B +0*ldb), indicesB, rowB0, sizeof(double));
-                _mm256_i32scatter_epi32((B +1*ldb), indicesB, rowB1, sizeof(double));
-                _mm256_i32scatter_epi32((B +2*ldb), indicesB, rowB2, sizeof(double));
-                _mm256_i32scatter_epi32((B +3*ldb), indicesB, rowB3, sizeof(double));
+                _mm256_i32scatter_epi32((B + 0 * ldb), indicesB, rowB0, sizeof(double));
+                _mm256_i32scatter_epi32((B + 1 * ldb), indicesB, rowB1, sizeof(double));
+                _mm256_i32scatter_epi32((B + 2 * ldb), indicesB, rowB2, sizeof(double));
+                _mm256_i32scatter_epi32((B + 3 * ldb), indicesB, rowB3, sizeof(double));
             } else {
                 _mm256_storeu_pd((B + 0 * ldb), rowB0);
                 _mm256_storeu_pd((B + 1 * ldb), rowB1);
@@ -163,12 +180,12 @@ struct micro_kernel<double, betaIsZero, conjA> {
         } else {
             // Store B
             if (innerStrideB != 1) {
-                __m256i indicesB = _mm256_set_epi32(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB, 
+                __m256i indicesB = _mm256_set_epi32(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB,
                                                     3 * innerStrideB, 2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
-                _mm256_i32scatter_epi32((B +0*ldb), indicesB, rowA0, sizeof(double));
-                _mm256_i32scatter_epi32((B +1*ldb), indicesB, rowA1, sizeof(double));
-                _mm256_i32scatter_epi32((B +2*ldb), indicesB, rowA2, sizeof(double));
-                _mm256_i32scatter_epi32((B +3*ldb), indicesB, rowA3, sizeof(double));
+                _mm256_i32scatter_epi32((B + 0 * ldb), indicesB, rowA0, sizeof(double));
+                _mm256_i32scatter_epi32((B + 1 * ldb), indicesB, rowA1, sizeof(double));
+                _mm256_i32scatter_epi32((B + 2 * ldb), indicesB, rowA2, sizeof(double));
+                _mm256_i32scatter_epi32((B + 3 * ldb), indicesB, rowA3, sizeof(double));
             } else {
                 _mm256_storeu_pd((B + 0 * ldb), rowA0);
                 _mm256_storeu_pd((B + 1 * ldb), rowA1);
@@ -179,35 +196,34 @@ struct micro_kernel<double, betaIsZero, conjA> {
     }
 };
 
-template <int betaIsZero, bool conjA>
+template <bool betaIsZero, bool conjA>
 struct micro_kernel<float, betaIsZero, conjA> {
-    static void execute(float const *A, size_t const lda, float *B, size_t const ldb, float const alpha,
-                        float const beta) {
+    static void execute(float const *A, size_t const lda, float *B, size_t const ldb, float const alpha, float const beta) {
         __m256 reg_alpha = _mm256_set1_ps(alpha); // do not alter the content of B
         __m256 reg_beta  = _mm256_set1_ps(beta);  // do not alter the content of B
         // Load A
-        __m256 rowA0, rowA1, rowA2, rowA3, rowA4, rowA5, rowA6, rowA7;
+        __m256  rowA0, rowA1, rowA2, rowA3, rowA4, rowA5, rowA6, rowA7;
         __m256i indicesA;
         if (innerStrideA == 1) {
-            rowA0 = _mm256_loadu_ps((A +0*lda));
-            rowA1 = _mm256_loadu_ps((A +1*lda));
-            rowA2 = _mm256_loadu_ps((A +2*lda));
-            rowA3 = _mm256_loadu_ps((A +3*lda));
-            rowA4 = _mm256_loadu_ps((A +4*lda));
-            rowA5 = _mm256_loadu_ps((A +5*lda));
-            rowA6 = _mm256_loadu_ps((A +6*lda));
-            rowA7 = _mm256_loadu_ps((A +7*lda));
+            rowA0 = _mm256_loadu_ps((A + 0 * lda));
+            rowA1 = _mm256_loadu_ps((A + 1 * lda));
+            rowA2 = _mm256_loadu_ps((A + 2 * lda));
+            rowA3 = _mm256_loadu_ps((A + 3 * lda));
+            rowA4 = _mm256_loadu_ps((A + 4 * lda));
+            rowA5 = _mm256_loadu_ps((A + 5 * lda));
+            rowA6 = _mm256_loadu_ps((A + 6 * lda));
+            rowA7 = _mm256_loadu_ps((A + 7 * lda));
         } else {
-            indicesA = _mm256_set_epi32(7 * innerStrideA, 6 * innerStrideA, 5 * innerStrideA, 4 * innerStrideA, 
-                                        3 * innerStrideA, 2 * innerStrideA, 1 * innerStrideA, 0 * innerStrideA);
-            rowA0 = _mm256_i32gather_ps((A +0*lda), indicesA, sizeof(float));
-            rowA1 = _mm256_i32gather_ps((A +1*lda), indicesA, sizeof(float));
-            rowA2 = _mm256_i32gather_ps((A +2*lda), indicesA, sizeof(float));
-            rowA3 = _mm256_i32gather_ps((A +3*lda), indicesA, sizeof(float));
-            rowA4 = _mm256_i32gather_ps((A +4*lda), indicesA, sizeof(float));
-            rowA5 = _mm256_i32gather_ps((A +5*lda), indicesA, sizeof(float));
-            rowA6 = _mm256_i32gather_ps((A +6*lda), indicesA, sizeof(float));
-            rowA7 = _mm256_i32gather_ps((A +7*lda), indicesA, sizeof(float));
+            indicesA = _mm256_set_epi32(7 * innerStrideA, 6 * innerStrideA, 5 * innerStrideA, 4 * innerStrideA, 3 * innerStrideA,
+                                        2 * innerStrideA, 1 * innerStrideA, 0 * innerStrideA);
+            rowA0    = _mm256_i32gather_ps((A + 0 * lda), indicesA, sizeof(float));
+            rowA1    = _mm256_i32gather_ps((A + 1 * lda), indicesA, sizeof(float));
+            rowA2    = _mm256_i32gather_ps((A + 2 * lda), indicesA, sizeof(float));
+            rowA3    = _mm256_i32gather_ps((A + 3 * lda), indicesA, sizeof(float));
+            rowA4    = _mm256_i32gather_ps((A + 4 * lda), indicesA, sizeof(float));
+            rowA5    = _mm256_i32gather_ps((A + 5 * lda), indicesA, sizeof(float));
+            rowA6    = _mm256_i32gather_ps((A + 6 * lda), indicesA, sizeof(float));
+            rowA7    = _mm256_i32gather_ps((A + 7 * lda), indicesA, sizeof(float));
         }
 
         // 8x8 transpose micro kernel
@@ -249,28 +265,28 @@ struct micro_kernel<float, betaIsZero, conjA> {
 
         // Load B
         if (!betaIsZero) {
-            __m256 rowB0, rowB1, rowB2, rowB3, rowB4, rowB5, rowB6, rowB7;
+            __m256  rowB0, rowB1, rowB2, rowB3, rowB4, rowB5, rowB6, rowB7;
             __m256i indicesB;
             if (innerStrideB != 1) {
-                indicesB = _mm256_set_epi32(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB, 
-                                            3 * innerStrideB, 2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
-                rowB0 = _mm256_i32gather_ps((B +0*ldb), indicesB, sizeof(float));
-                rowB1 = _mm256_i32gather_ps((B +1*ldb), indicesB, sizeof(float));
-                rowB2 = _mm256_i32gather_ps((B +2*ldb), indicesB, sizeof(float));
-                rowB3 = _mm256_i32gather_ps((B +3*ldb), indicesB, sizeof(float));
-                rowB4 = _mm256_i32gather_ps((B +4*ldb), indicesB, sizeof(float));
-                rowB5 = _mm256_i32gather_ps((B +5*ldb), indicesB, sizeof(float));
-                rowB6 = _mm256_i32gather_ps((B +6*ldb), indicesB, sizeof(float));
-                rowB7 = _mm256_i32gather_ps((B +7*ldb), indicesB, sizeof(float));
+                indicesB = _mm256_set_epi32(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB, 3 * innerStrideB,
+                                            2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
+                rowB0    = _mm256_i32gather_ps((B + 0 * ldb), indicesB, sizeof(float));
+                rowB1    = _mm256_i32gather_ps((B + 1 * ldb), indicesB, sizeof(float));
+                rowB2    = _mm256_i32gather_ps((B + 2 * ldb), indicesB, sizeof(float));
+                rowB3    = _mm256_i32gather_ps((B + 3 * ldb), indicesB, sizeof(float));
+                rowB4    = _mm256_i32gather_ps((B + 4 * ldb), indicesB, sizeof(float));
+                rowB5    = _mm256_i32gather_ps((B + 5 * ldb), indicesB, sizeof(float));
+                rowB6    = _mm256_i32gather_ps((B + 6 * ldb), indicesB, sizeof(float));
+                rowB7    = _mm256_i32gather_ps((B + 7 * ldb), indicesB, sizeof(float));
             } else {
-                rowB0 = _mm256_loadu_ps((B +0*ldb));
-                rowB1 = _mm256_loadu_ps((B +1*ldb));
-                rowB2 = _mm256_loadu_ps((B +2*ldb));
-                rowB3 = _mm256_loadu_ps((B +3*ldb));
-                rowB4 = _mm256_loadu_ps((B +4*ldb));
-                rowB5 = _mm256_loadu_ps((B +5*ldb));
-                rowB6 = _mm256_loadu_ps((B +6*ldb));
-                rowB7 = _mm256_loadu_ps((B +7*ldb));
+                rowB0 = _mm256_loadu_ps((B + 0 * ldb));
+                rowB1 = _mm256_loadu_ps((B + 1 * ldb));
+                rowB2 = _mm256_loadu_ps((B + 2 * ldb));
+                rowB3 = _mm256_loadu_ps((B + 3 * ldb));
+                rowB4 = _mm256_loadu_ps((B + 4 * ldb));
+                rowB5 = _mm256_loadu_ps((B + 5 * ldb));
+                rowB6 = _mm256_loadu_ps((B + 6 * ldb));
+                rowB7 = _mm256_loadu_ps((B + 7 * ldb));
             }
 
             rowB0 = _mm256_add_ps(_mm256_mul_ps(rowB0, reg_beta), rowA0);
@@ -283,14 +299,14 @@ struct micro_kernel<float, betaIsZero, conjA> {
             rowB7 = _mm256_add_ps(_mm256_mul_ps(rowB7, reg_beta), rowA7);
             // Store B
             if (innerStrideB != 1) {
-                _mm256_i32scatter_epi32((B +0*ldb), indicesB, rowB0, sizeof(float));
-                _mm256_i32scatter_epi32((B +1*ldb), indicesB, rowB1, sizeof(float));
-                _mm256_i32scatter_epi32((B +2*ldb), indicesB, rowB2, sizeof(float));
-                _mm256_i32scatter_epi32((B +3*ldb), indicesB, rowB3, sizeof(float));
-                _mm256_i32scatter_epi32((B +4*ldb), indicesB, rowB4, sizeof(float));
-                _mm256_i32scatter_epi32((B +5*ldb), indicesB, rowB5, sizeof(float));
-                _mm256_i32scatter_epi32((B +6*ldb), indicesB, rowB6, sizeof(float));
-                _mm256_i32scatter_epi32((B +7*ldb), indicesB, rowB7, sizeof(float));
+                _mm256_i32scatter_epi32((B + 0 * ldb), indicesB, rowB0, sizeof(float));
+                _mm256_i32scatter_epi32((B + 1 * ldb), indicesB, rowB1, sizeof(float));
+                _mm256_i32scatter_epi32((B + 2 * ldb), indicesB, rowB2, sizeof(float));
+                _mm256_i32scatter_epi32((B + 3 * ldb), indicesB, rowB3, sizeof(float));
+                _mm256_i32scatter_epi32((B + 4 * ldb), indicesB, rowB4, sizeof(float));
+                _mm256_i32scatter_epi32((B + 5 * ldb), indicesB, rowB5, sizeof(float));
+                _mm256_i32scatter_epi32((B + 6 * ldb), indicesB, rowB6, sizeof(float));
+                _mm256_i32scatter_epi32((B + 7 * ldb), indicesB, rowB7, sizeof(float));
             } else {
                 _mm256_storeu_ps((B + 0 * ldb), rowB0);
                 _mm256_storeu_ps((B + 1 * ldb), rowB1);
@@ -303,16 +319,16 @@ struct micro_kernel<float, betaIsZero, conjA> {
             }
         } else {
             if (innerStrideB != 1) {
-                __m256i indicesB = _mm256_set_epi32(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB, 
+                __m256i indicesB = _mm256_set_epi32(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB,
                                                     3 * innerStrideB, 2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
-                _mm256_i32scatter_epi32((B +0*ldb), indicesB, rowA0, sizeof(float));
-                _mm256_i32scatter_epi32((B +1*ldb), indicesB, rowA1, sizeof(float));
-                _mm256_i32scatter_epi32((B +2*ldb), indicesB, rowA2, sizeof(float));
-                _mm256_i32scatter_epi32((B +3*ldb), indicesB, rowA3, sizeof(float));
-                _mm256_i32scatter_epi32((B +4*ldb), indicesB, rowA4, sizeof(float));
-                _mm256_i32scatter_epi32((B +5*ldb), indicesB, rowA5, sizeof(float));
-                _mm256_i32scatter_epi32((B +6*ldb), indicesB, rowA6, sizeof(float));
-                _mm256_i32scatter_epi32((B +7*ldb), indicesB, rowA7, sizeof(float));
+                _mm256_i32scatter_epi32((B + 0 * ldb), indicesB, rowA0, sizeof(float));
+                _mm256_i32scatter_epi32((B + 1 * ldb), indicesB, rowA1, sizeof(float));
+                _mm256_i32scatter_epi32((B + 2 * ldb), indicesB, rowA2, sizeof(float));
+                _mm256_i32scatter_epi32((B + 3 * ldb), indicesB, rowA3, sizeof(float));
+                _mm256_i32scatter_epi32((B + 4 * ldb), indicesB, rowA4, sizeof(float));
+                _mm256_i32scatter_epi32((B + 5 * ldb), indicesB, rowA5, sizeof(float));
+                _mm256_i32scatter_epi32((B + 6 * ldb), indicesB, rowA6, sizeof(float));
+                _mm256_i32scatter_epi32((B + 7 * ldb), indicesB, rowA7, sizeof(float));
             } else {
                 _mm256_storeu_ps((B + 0 * ldb), rowA0);
                 _mm256_storeu_ps((B + 1 * ldb), rowA1);
@@ -337,42 +353,42 @@ void streamingStore<double>(double *out, double const *in) {
 }
 #else
 template <typename floatType>
-static INLINE void prefetch(const floatType *A, const int lda) {
+static INLINE void prefetch(floatType const *A, size_t const lda) {
 }
 #endif
 
 #ifdef __aarch64__
 #    include <arm_neon.h>
 
-template <int betaIsZero, bool conjA>
+template <bool betaIsZero, bool conjA>
 struct micro_kernel<float, betaIsZero, conjA> {
-    static void execute(float const * A, size_t const lda, const size_t innerStrideA, float * B, size_t const ldb, 
-                        const size_t innerStrideB, float const alpha, float const beta) {
+    static void execute(float const *A, size_t const lda, size_t const innerStrideA, float *B, size_t const ldb, size_t const innerStrideB,
+                        float const alpha, float const beta) {
         float32x4_t reg_alpha = vdupq_n_f32(alpha);
         float32x4_t reg_beta  = vdupq_n_f32(beta);
 
         // Load A
         float32x4_t rowA0, rowA1, rowA2, rowA3;
         if (innerStrideA == 1) {
-            rowA0 = vld1q_f32((A +0*lda));
-            rowA1 = vld1q_f32((A +1*lda));
-            rowA2 = vld1q_f32((A +2*lda));
-            rowA3 = vld1q_f32((A +3*lda));
+            rowA0 = vld1q_f32((A + 0 * lda));
+            rowA1 = vld1q_f32((A + 1 * lda));
+            rowA2 = vld1q_f32((A + 2 * lda));
+            rowA3 = vld1q_f32((A + 3 * lda));
         } else if (innerStrideA == 2) {
-            rowA0 = vld2q_f32((A +0*lda)).val[0];
-            rowA1 = vld2q_f32((A +1*lda)).val[0];
-            rowA2 = vld2q_f32((A +2*lda)).val[0];
-            rowA3 = vld2q_f32((A +3*lda)).val[0];
+            rowA0 = vld2q_f32((A + 0 * lda)).val[0];
+            rowA1 = vld2q_f32((A + 1 * lda)).val[0];
+            rowA2 = vld2q_f32((A + 2 * lda)).val[0];
+            rowA3 = vld2q_f32((A + 3 * lda)).val[0];
         } else if (innerStrideA == 3) {
-            rowA0 = vld3q_f32((A +0*lda)).val[0];
-            rowA1 = vld3q_f32((A +1*lda)).val[0];
-            rowA2 = vld3q_f32((A +2*lda)).val[0];
-            rowA3 = vld3q_f32((A +3*lda)).val[0];
+            rowA0 = vld3q_f32((A + 0 * lda)).val[0];
+            rowA1 = vld3q_f32((A + 1 * lda)).val[0];
+            rowA2 = vld3q_f32((A + 2 * lda)).val[0];
+            rowA3 = vld3q_f32((A + 3 * lda)).val[0];
         } else if (innerStrideA == 4) {
-            rowA0 = vld4q_f32((A +0*lda)).val[0];
-            rowA1 = vld4q_f32((A +1*lda)).val[0];
-            rowA2 = vld4q_f32((A +2*lda)).val[0];
-            rowA3 = vld4q_f32((A +3*lda)).val[0];
+            rowA0 = vld4q_f32((A + 0 * lda)).val[0];
+            rowA1 = vld4q_f32((A + 1 * lda)).val[0];
+            rowA2 = vld4q_f32((A + 2 * lda)).val[0];
+            rowA3 = vld4q_f32((A + 3 * lda)).val[0];
         } else {
             rowA0 = vdupq_n_f32(0);
             rowA1 = vdupq_n_f32(0);
@@ -412,30 +428,30 @@ struct micro_kernel<float, betaIsZero, conjA> {
         rowA1 = vmulq_f32(t3.val[0], reg_alpha);
         rowA2 = vmulq_f32(t2.val[1], reg_alpha);
         rowA3 = vmulq_f32(t3.val[1], reg_alpha);
-        
+
         // Load B
-        if (!betaIsZero) {
+        if constexpr (!betaIsZero) {
             float32x4_t rowB0, rowB1, rowB2, rowB3;
             if (innerStrideB == 1) {
-                rowB0 = vld1q_f32((B +0*ldb));
-                rowB1 = vld1q_f32((B +1*ldb));
-                rowB2 = vld1q_f32((B +2*ldb));
-                rowB3 = vld1q_f32((B +3*ldb));
+                rowB0 = vld1q_f32((B + 0 * ldb));
+                rowB1 = vld1q_f32((B + 1 * ldb));
+                rowB2 = vld1q_f32((B + 2 * ldb));
+                rowB3 = vld1q_f32((B + 3 * ldb));
             } else if (innerStrideB == 2) {
-                rowB0 = vld2q_f32((B +0*ldb)).val[0];
-                rowB1 = vld2q_f32((B +1*ldb)).val[0];
-                rowB2 = vld2q_f32((B +2*ldb)).val[0];
-                rowB3 = vld2q_f32((B +3*ldb)).val[0];
+                rowB0 = vld2q_f32((B + 0 * ldb)).val[0];
+                rowB1 = vld2q_f32((B + 1 * ldb)).val[0];
+                rowB2 = vld2q_f32((B + 2 * ldb)).val[0];
+                rowB3 = vld2q_f32((B + 3 * ldb)).val[0];
             } else if (innerStrideB == 3) {
-                rowB0 = vld3q_f32((B +0*ldb)).val[0];
-                rowB1 = vld3q_f32((B +1*ldb)).val[0];
-                rowB2 = vld3q_f32((B +2*ldb)).val[0];
-                rowB3 = vld3q_f32((B +3*ldb)).val[0];
+                rowB0 = vld3q_f32((B + 0 * ldb)).val[0];
+                rowB1 = vld3q_f32((B + 1 * ldb)).val[0];
+                rowB2 = vld3q_f32((B + 2 * ldb)).val[0];
+                rowB3 = vld3q_f32((B + 3 * ldb)).val[0];
             } else if (innerStrideB == 4) {
-                rowB0 = vld4q_f32((B +0*ldb)).val[0];
-                rowB1 = vld4q_f32((B +1*ldb)).val[0];
-                rowB2 = vld4q_f32((B +2*ldb)).val[0];
-                rowB3 = vld4q_f32((B +3*ldb)).val[0];
+                rowB0 = vld4q_f32((B + 0 * ldb)).val[0];
+                rowB1 = vld4q_f32((B + 1 * ldb)).val[0];
+                rowB2 = vld4q_f32((B + 2 * ldb)).val[0];
+                rowB3 = vld4q_f32((B + 3 * ldb)).val[0];
             } else {
                 rowB0 = vdupq_n_f32(0);
                 rowB1 = vdupq_n_f32(0);
@@ -476,18 +492,22 @@ struct micro_kernel<float, betaIsZero, conjA> {
             } else {
                 float tmp[4];
                 vst1q_f32(tmp, rowB0);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB] = tmp[i];
                 }
                 vst1q_f32(tmp, rowB1);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 1 * ldb] = tmp[i];
                 }
                 vst1q_f32(tmp, rowB2);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 2 * ldb] = tmp[i];
                 }
                 vst1q_f32(tmp, rowB3);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 3 * ldb] = tmp[i];
                 }
@@ -502,18 +522,22 @@ struct micro_kernel<float, betaIsZero, conjA> {
             } else {
                 float tmp[4];
                 vst1q_f32(tmp, rowA0);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB] = tmp[i];
                 }
                 vst1q_f32(tmp, rowA1);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 1 * ldb] = tmp[i];
                 }
                 vst1q_f32(tmp, rowA2);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 2 * ldb] = tmp[i];
                 }
                 vst1q_f32(tmp, rowA3);
+#    pragma unroll
                 for (int i = 0; i < 4; ++i) {
                     B[i * innerStrideB + 3 * ldb] = tmp[i];
                 }
@@ -592,38 +616,40 @@ struct micro_kernel<float, betaIsZero, conjA> {
 // };
 #endif
 
-template <int betaIsZero, typename floatType, bool conjA>
-static INLINE void macro_kernel_scalar(const floatType * A, const size_t lda, int blockingA,  size_t innerStrideA, 
-                                       floatType * B, const size_t ldb, int blockingB, size_t innerStrideB, 
-                                       const floatType alpha, const floatType beta) {
+template <bool betaIsZero, typename floatType, bool conjA>
+static INLINE void macro_kernel_scalar(floatType const *A, const size_t lda, int blockingA, size_t innerStrideA, floatType *B,
+                                       const size_t ldb, int blockingB, size_t innerStrideB, const floatType alpha, const floatType beta) {
 #ifdef DEBUG
     assert(blockingA > 0 && blockingB > 0);
 #endif
 
-    if (betaIsZero)
-        for (int j = 0; j < blockingA; ++j)
+    if constexpr (betaIsZero) {
+        for (int j = 0; j < blockingA; ++j) {
             for (int i = 0; i < blockingB; ++i) {
                 if (conjA)
                     B[(i * innerStrideB) + (j * ldb)] = alpha * conj(A[(i * lda) + (j * innerStrideA)]);
                 else
                     B[(i * innerStrideB) + (j * ldb)] = alpha * A[(i * lda) + (j * innerStrideA)];
             }
-    else
-        for (int j = 0; j < blockingA; ++j)
+        }
+    } else {
+        for (int j = 0; j < blockingA; ++j) {
             for (int i = 0; i < blockingB; ++i) {
                 if (conjA)
-                    B[(i * innerStrideB) + (j * ldb)] = alpha * conj(A[(i * lda) + (j * innerStrideA)]) 
-                                                      + beta * B[(i * innerStrideB) + (j * ldb)];
+                    B[(i * innerStrideB) + (j * ldb)] =
+                        alpha * conj(A[(i * lda) + (j * innerStrideA)]) + beta * B[(i * innerStrideB) + (j * ldb)];
                 else
-                    B[(i * innerStrideB) + (j * ldb)] = alpha * A[(i * lda) + (j * innerStrideA)] 
-                                                      + beta * B[(i * innerStrideB) + (j * ldb)];
+                    B[(i * innerStrideB) + (j * ldb)] =
+                        alpha * A[(i * lda) + (j * innerStrideA)] + beta * B[(i * innerStrideB) + (j * ldb)];
             }
+        }
+    }
 }
 
-template <int blockingA, int blockingB, int betaIsZero, typename floatType, bool useStreamingStores_, bool conjA>
-static INLINE void macro_kernel(floatType const * A, floatType const * Anext, size_t const lda, size_t innerStrideA, 
-                                floatType * B, floatType const * Bnext, size_t const ldb,  size_t innerStrideB, 
-                                floatType const alpha, floatType const beta) {
+template <int blockingA, int blockingB, bool betaIsZero, typename floatType, bool useStreamingStores_, bool conjA>
+static INLINE void macro_kernel(floatType const *A, floatType const *Anext, size_t const lda, size_t innerStrideA, floatType *B,
+                                floatType const *Bnext, size_t const ldb, size_t innerStrideB, floatType const alpha,
+                                floatType const beta) {
     constexpr int blocking_micro_ = REGISTER_BITS / 8 / sizeof(floatType);
     constexpr int blocking_       = blocking_micro_ * 4;
 
@@ -638,150 +664,165 @@ static INLINE void macro_kernel(floatType const * A, floatType const * Anext, si
         ldb_tmp = blockingB;
     }
 
-    if (blockingA == blocking_ && blockingB == blocking_) {
+    if constexpr (blockingA == blocking_ && blockingB == blocking_) {
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (0 * ldb_tmp + 0), ldb_tmp);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (0 * lda + 0), lda);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * 0)), lda, innerStrideA, 
-                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 0)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (blocking_micro_ * lda + 0), lda);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * 0)), lda, innerStrideA, 
-                                                            Btmp + (0 * ldb_tmp + (innerStrideB * blocking_micro_)),
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (0 * lda + 0), lda);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * 0)), lda, innerStrideA,
+                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 0)), ldb_tmp, innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (blocking_micro_ * lda + 0), lda);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * 0)), lda, innerStrideA,
+                                                            Btmp + (0 * ldb_tmp + (innerStrideB * blocking_micro_)), ldb_tmp, innerStrideB,
+                                                            alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (0 * ldb_tmp + 2 * blocking_micro_), ldb_tmp);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (2 * blocking_micro_ * lda + 0), lda);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (2 * blocking_micro_ * lda + 0), lda);
         micro_kernel<floatType, betaIsZero, conjA>::execute(A + (2 * blocking_micro_ * lda + (innerStrideA * 0)), lda, innerStrideA,
-                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (3 * blocking_micro_ * lda + 0), lda);
+                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), ldb_tmp,
+                                                            innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (3 * blocking_micro_ * lda + 0), lda);
         micro_kernel<floatType, betaIsZero, conjA>::execute(A + (3 * blocking_micro_ * lda + (innerStrideA * 0)), lda, innerStrideA,
-                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), ldb_tmp,
+                                                            innerStrideB, alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (blocking_micro_ * ldb_tmp + 0), ldb_tmp);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA, 
-                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 0)),
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
+                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 0)), ldb_tmp, innerStrideB,
+                                                            alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
+            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (blocking_micro_ * ldb_tmp + 2 * blocking_micro_), ldb_tmp);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (2 * blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (3 * blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (2 * blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
+            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (3 * blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
+            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (2 * blocking_micro_ * ldb_tmp + 0), ldb_tmp);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (0 * lda + 2 * blocking_micro_), lda);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (0 * lda + 2 * blocking_micro_), lda);
         micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * 2 * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * 0)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (blocking_micro_ * lda + 2 * blocking_micro_), lda);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * 2 * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+                                                            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * 0)), ldb_tmp,
+                                                            innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (blocking_micro_ * lda + 2 * blocking_micro_), lda);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (blocking_micro_ * lda + (innerStrideA * 2 * blocking_micro_)), lda, innerStrideA,
+            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (2 * blocking_micro_ * ldb_tmp + 2 * blocking_micro_), ldb_tmp);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (2 * blocking_micro_ * lda + 2 * blocking_micro_), lda);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (2 * blocking_micro_ * lda + (innerStrideA * 2 * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (3 * blocking_micro_ * lda + 2 * blocking_micro_), lda);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (3 * blocking_micro_ * lda + (innerStrideA * 2 * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (2 * blocking_micro_ * lda + 2 * blocking_micro_), lda);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (2 * blocking_micro_ * lda + (innerStrideA * 2 * blocking_micro_)), lda, innerStrideA,
+            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (3 * blocking_micro_ * lda + 2 * blocking_micro_), lda);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (3 * blocking_micro_ * lda + (innerStrideA * 2 * blocking_micro_)), lda, innerStrideA,
+            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (3 * blocking_micro_ * ldb_tmp + 0), ldb_tmp);
         micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * 3 * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (3 * blocking_micro_ * ldb_tmp + (innerStrideB * 0)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * 3 * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (3 * blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+                                                            Btmp + (3 * blocking_micro_ * ldb_tmp + (innerStrideB * 0)), ldb_tmp,
+                                                            innerStrideB, alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (blocking_micro_ * lda + (innerStrideA * 3 * blocking_micro_)), lda, innerStrideA,
+            Btmp + (3 * blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (3 * blocking_micro_ * ldb_tmp + 2 * blocking_micro_), ldb_tmp);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (2 * blocking_micro_ * lda + (innerStrideA * 3 * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (3 * blocking_micro_ * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (3 * blocking_micro_ * lda + (innerStrideA * 3 * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (3 * blocking_micro_ * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-    } else if (blockingA == 2 * blocking_micro_ && blockingB == blocking_) {
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (2 * blocking_micro_ * lda + (innerStrideA * 3 * blocking_micro_)), lda, innerStrideA,
+            Btmp + (3 * blocking_micro_ * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (3 * blocking_micro_ * lda + (innerStrideA * 3 * blocking_micro_)), lda, innerStrideA,
+            Btmp + (3 * blocking_micro_ * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
+    } else if constexpr (blockingA == 2 * blocking_micro_ && blockingB == blocking_) {
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (0 * ldb_tmp + 0), ldb_tmp);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (0 * lda + 0), lda);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * 0)), lda, innerStrideA, Btmp + (0 * ldb_tmp + (innerStrideB * 0)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (blocking_micro_ * lda + 0), lda);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * 0)), lda, innerStrideA, 
-                                                            Btmp + (0 * ldb_tmp + (innerStrideB * blocking_micro_)),
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (0 * lda + 0), lda);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * 0)), lda, innerStrideA,
+                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 0)), ldb_tmp, innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (blocking_micro_ * lda + 0), lda);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * 0)), lda, innerStrideA,
+                                                            Btmp + (0 * ldb_tmp + (innerStrideB * blocking_micro_)), ldb_tmp, innerStrideB,
+                                                            alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (0 * ldb_tmp + 2 * blocking_micro_), ldb_tmp);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (2 * blocking_micro_ * lda + 0), lda);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (2 * blocking_micro_ * lda + 0), lda);
         micro_kernel<floatType, betaIsZero, conjA>::execute(A + (2 * blocking_micro_ * lda + (innerStrideA * 0)), lda, innerStrideA,
-                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (3 * blocking_micro_ * lda + (innerStrideA * 0)), lda);
+                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), ldb_tmp,
+                                                            innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (3 * blocking_micro_ * lda + (innerStrideA * 0)), lda);
         micro_kernel<floatType, betaIsZero, conjA>::execute(A + (3 * blocking_micro_ * lda + (innerStrideA * 0)), lda, innerStrideA,
-                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), ldb_tmp,
+                                                            innerStrideB, alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (blocking_micro_ * ldb_tmp + 0), ldb_tmp);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA, 
-                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 0)),
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
+                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 0)), ldb_tmp, innerStrideB,
+                                                            alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
+            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (blocking_micro_ * ldb_tmp + 2 * blocking_micro_), ldb_tmp);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (2 * blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (3 * blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-    } else if (blockingA == blocking_ && blockingB == 2 * blocking_micro_) {
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (2 * blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
+            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 2 * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (3 * blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
+            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 3 * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
+    } else if constexpr (blockingA == blocking_ && blockingB == 2 * blocking_micro_) {
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (0 * ldb_tmp + 0), ldb_tmp);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (0 * lda + 0), lda);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * 0)), lda, innerStrideA, Btmp + (0 * ldb_tmp + (innerStrideB * 0)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (blocking_micro_ * lda + 0), lda);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * 0)), lda, innerStrideA, 
-                                                            Btmp + (0 * ldb_tmp + (innerStrideB * blocking_micro_)),
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (0 * lda + 0), lda);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * 0)), lda, innerStrideA,
+                                                            Btmp + (0 * ldb_tmp + (innerStrideB * 0)), ldb_tmp, innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (blocking_micro_ * lda + 0), lda);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * 0)), lda, innerStrideA,
+                                                            Btmp + (0 * ldb_tmp + (innerStrideB * blocking_micro_)), ldb_tmp, innerStrideB,
+                                                            alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (blocking_micro_ * ldb_tmp + 0), ldb_tmp);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA, 
-                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 0)),
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
+                                                            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * 0)), ldb_tmp, innerStrideB,
+                                                            alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (blocking_micro_ * lda + (innerStrideA * blocking_micro_)), lda, innerStrideA,
+            Btmp + (blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (2 * blocking_micro_ * ldb_tmp + 0), ldb_tmp);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (0 * lda + 2 * blocking_micro_), lda);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (0 * lda + 2 * blocking_micro_), lda);
         micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * 2 * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * 0)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
-        if (innerStrideA == 1) prefetch<floatType>(Anext + (blocking_micro_ * lda + 2 * blocking_micro_), lda);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * 2 * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+                                                            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * 0)), ldb_tmp,
+                                                            innerStrideB, alpha, beta);
+        if (innerStrideA == 1)
+            prefetch<floatType>(Anext + (blocking_micro_ * lda + 2 * blocking_micro_), lda);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (blocking_micro_ * lda + (innerStrideA * 2 * blocking_micro_)), lda, innerStrideA,
+            Btmp + (2 * blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
         if (!(useStreamingStores_ && useStreamingStores) && innerStrideB == 1)
             prefetch<floatType>(Bnext + (3 * blocking_micro_ * ldb_tmp + 0), ldb_tmp);
         micro_kernel<floatType, betaIsZero, conjA>::execute(A + (0 * lda + (innerStrideA * 3 * blocking_micro_)), lda, innerStrideA,
                                                             Btmp + (3 * blocking_micro_ * ldb_tmp + 0), ldb_tmp, innerStrideB, alpha, beta);
-        micro_kernel<floatType, betaIsZero, conjA>::execute(A + (blocking_micro_ * lda + (innerStrideA * 3 * blocking_micro_)), lda, innerStrideA,
-                                                            Btmp + (3 * blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), 
-                                                            ldb_tmp, innerStrideB, alpha, beta);
+        micro_kernel<floatType, betaIsZero, conjA>::execute(
+            A + (blocking_micro_ * lda + (innerStrideA * 3 * blocking_micro_)), lda, innerStrideA,
+            Btmp + (3 * blocking_micro_ * ldb_tmp + (innerStrideB * blocking_micro_)), ldb_tmp, innerStrideB, alpha, beta);
     } else {
         // invoke micro-transpose
         if (blockingA > 0 && blockingB > 0)
@@ -789,163 +830,165 @@ static INLINE void macro_kernel(floatType const * A, floatType const * Anext, si
 
         // invoke micro-transpose
         if (blockingA > 0 && blockingB > blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + blocking_micro_ * lda, lda, innerStrideA, Btmp + (innerStrideB * blocking_micro_), 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(
+                A + blocking_micro_ * lda, lda, innerStrideA, Btmp + (innerStrideB * blocking_micro_), ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > 0 && blockingB > 2 * blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + 2 * blocking_micro_ * lda, lda, innerStrideA, Btmp + (innerStrideB * 2 * blocking_micro_), 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(A + 2 * blocking_micro_ * lda, lda, innerStrideA,
+                                                                Btmp + (innerStrideB * 2 * blocking_micro_), ldb_tmp, innerStrideB, alpha,
+                                                                beta);
 
         // invoke micro-transpose
         if (blockingA > 0 && blockingB > 3 * blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + 3 * blocking_micro_ * lda, lda, innerStrideA, Btmp + (innerStrideB * 3 * blocking_micro_), 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(A + 3 * blocking_micro_ * lda, lda, innerStrideA,
+                                                                Btmp + (innerStrideB * 3 * blocking_micro_), ldb_tmp, innerStrideB, alpha,
+                                                                beta);
 
         // invoke micro-transpose
         if (blockingA > blocking_micro_ && blockingB > 0)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * blocking_micro_), lda, innerStrideA, Btmp + blocking_micro_ * ldb_tmp, 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * blocking_micro_), lda, innerStrideA,
+                                                                Btmp + blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > blocking_micro_ && blockingB > blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * blocking_micro_) + blocking_micro_ * lda, lda, innerStrideA,
-                                                                Btmp + (innerStrideB * blocking_micro_) + blocking_micro_ * ldb_tmp, 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(
+                A + (innerStrideA * blocking_micro_) + blocking_micro_ * lda, lda, innerStrideA,
+                Btmp + (innerStrideB * blocking_micro_) + blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > blocking_micro_ && blockingB > 2 * blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * blocking_micro_) + 2 * blocking_micro_ * lda, lda, innerStrideA,
-                                                                Btmp + (innerStrideB * 2 * blocking_micro_) + blocking_micro_ * ldb_tmp, 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(
+                A + (innerStrideA * blocking_micro_) + 2 * blocking_micro_ * lda, lda, innerStrideA,
+                Btmp + (innerStrideB * 2 * blocking_micro_) + blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > blocking_micro_ && blockingB > 3 * blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * blocking_micro_) + 3 * blocking_micro_ * lda, lda, innerStrideA,
-                                                                Btmp + (innerStrideB * 3 * blocking_micro_) + blocking_micro_ * ldb_tmp, 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(
+                A + (innerStrideA * blocking_micro_) + 3 * blocking_micro_ * lda, lda, innerStrideA,
+                Btmp + (innerStrideB * 3 * blocking_micro_) + blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > 2 * blocking_micro_ && blockingB > 0)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * 2 * blocking_micro_), lda, innerStrideA, 
+            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * 2 * blocking_micro_), lda, innerStrideA,
                                                                 Btmp + 2 * blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > 2 * blocking_micro_ && blockingB > blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * 2 * blocking_micro_) + blocking_micro_ * lda, lda, innerStrideA,
-                                                                Btmp + (innerStrideB * blocking_micro_) + 2 * blocking_micro_ * ldb_tmp, 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(
+                A + (innerStrideA * 2 * blocking_micro_) + blocking_micro_ * lda, lda, innerStrideA,
+                Btmp + (innerStrideB * blocking_micro_) + 2 * blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > 2 * blocking_micro_ && blockingB > 2 * blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * 2 * blocking_micro_) + 2 * blocking_micro_ * lda, lda, innerStrideA,
-                                                                Btmp + (innerStrideB * 2 * blocking_micro_) + 2 * blocking_micro_ * ldb_tmp, 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(
+                A + (innerStrideA * 2 * blocking_micro_) + 2 * blocking_micro_ * lda, lda, innerStrideA,
+                Btmp + (innerStrideB * 2 * blocking_micro_) + 2 * blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > 2 * blocking_micro_ && blockingB > 3 * blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * 2 * blocking_micro_) + 3 * blocking_micro_ * lda, lda, innerStrideA,
-                                                                Btmp + (innerStrideB * 3 * blocking_micro_) + 2 * blocking_micro_ * ldb_tmp, 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(
+                A + (innerStrideA * 2 * blocking_micro_) + 3 * blocking_micro_ * lda, lda, innerStrideA,
+                Btmp + (innerStrideB * 3 * blocking_micro_) + 2 * blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > 3 * blocking_micro_ && blockingB > 0)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * 3 * blocking_micro_), lda, innerStrideA, 
+            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * 3 * blocking_micro_), lda, innerStrideA,
                                                                 Btmp + 3 * blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > 3 * blocking_micro_ && blockingB > blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * 3 * blocking_micro_) + blocking_micro_ * lda, lda, innerStrideA,
-                                                                Btmp + (innerStrideB * blocking_micro_) + 3 * blocking_micro_ * ldb_tmp, 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(
+                A + (innerStrideA * 3 * blocking_micro_) + blocking_micro_ * lda, lda, innerStrideA,
+                Btmp + (innerStrideB * blocking_micro_) + 3 * blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > 3 * blocking_micro_ && blockingB > 2 * blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * 3 * blocking_micro_) + 2 * blocking_micro_ * lda, lda, innerStrideA,
-                                                                Btmp + (innerStrideB * 2 * blocking_micro_) + 3 * blocking_micro_ * ldb_tmp, 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(
+                A + (innerStrideA * 3 * blocking_micro_) + 2 * blocking_micro_ * lda, lda, innerStrideA,
+                Btmp + (innerStrideB * 2 * blocking_micro_) + 3 * blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
 
         // invoke micro-transpose
         if (blockingA > 3 * blocking_micro_ && blockingB > 3 * blocking_micro_)
-            micro_kernel<floatType, betaIsZero, conjA>::execute(A + (innerStrideA * 3 * blocking_micro_) + 3 * blocking_micro_ * lda, lda, innerStrideA,
-                                                                Btmp + (innerStrideB * 3 * blocking_micro_) + 3 * blocking_micro_ * ldb_tmp, 
-                                                                ldb_tmp, innerStrideB, alpha, beta);
+            micro_kernel<floatType, betaIsZero, conjA>::execute(
+                A + (innerStrideA * 3 * blocking_micro_) + 3 * blocking_micro_ * lda, lda, innerStrideA,
+                Btmp + (innerStrideB * 3 * blocking_micro_) + 3 * blocking_micro_ * ldb_tmp, ldb_tmp, innerStrideB, alpha, beta);
     }
 
     // write buffer to main-memory via non-temporal stores
-    if ((useStreamingStores_ && useStreamingStores && innerStrideB == 1))
+    if ((useStreamingStores_ && useStreamingStores && innerStrideB == 1)) {
         for (int i = 0; i < blockingA; i++) {
             for (int j = 0; j < blockingB; j += blocking_micro_)
                 streamingStore<floatType>(B + i * ldb + j, buffer + i * ldb_tmp + j);
         }
+    }
 }
 
-template <int betaIsZero, typename floatType, bool conjA>
-void transpose_int_scalar(floatType const * A, int sizeStride1A, size_t innerStrideA, 
-                          floatType * B, int sizeStride1B, size_t innerStrideB,
-                          floatType const alpha, floatType const beta, ComputeNode const *plan) {
-    int32_t const end = plan->end;
-    size_t const  lda = plan->lda;
-    size_t const  ldb = plan->ldb;
-    int32_t const offDiffAB = plan->offDiffAB;
+template <bool betaIsZero, typename floatType, bool conjA>
+void transpose_int_scalar(floatType const *A, size_t sizeStride1A, size_t innerStrideA, floatType *B, size_t sizeStride1B,
+                          size_t innerStrideB, floatType const alpha, floatType const beta, ComputeNode const *plan) {
+    ptrdiff_t const end       = plan->end;
+    size_t const    lda       = plan->lda;
+    size_t const    ldb       = plan->ldb;
+    ptrdiff_t const offDiffAB = plan->offDiffAB;
     if (plan->next->next != nullptr) {
         // recurse
-        int i = plan->start;
-        if (plan->indexA )
-            transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], end - plan->start, innerStrideA, 
-                                                               &B[i * ldb], sizeStride1B, innerStrideB, alpha, beta, plan->next);
-        else if (plan->indexB )
-            transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], sizeStride1A, innerStrideA, 
-                                                               &B[i * ldb], end - plan->start, innerStrideB, alpha, beta, plan->next);
+        ptrdiff_t i = plan->start;
+        if (plan->indexA)
+            transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], end - plan->start, innerStrideA, &B[i * ldb],
+                                                               sizeStride1B, innerStrideB, alpha, beta, plan->next);
+        else if (plan->indexB)
+            transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], sizeStride1A, innerStrideA, &B[i * ldb],
+                                                               end - plan->start, innerStrideB, alpha, beta, plan->next);
         else
             for (; i < end; i++)
-                transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], sizeStride1A, innerStrideA, 
-                                                                   &B[i * ldb], sizeStride1B, innerStrideB, alpha, beta, plan->next);
+                transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], sizeStride1A, innerStrideA, &B[i * ldb],
+                                                                   sizeStride1B, innerStrideB, alpha, beta, plan->next);
     } else {
         // macro-kernel
-        size_t const lda_macro       = plan->next->lda;
-        size_t const ldb_macro       = plan->next->ldb;
-        int          i               = plan->start;
-        size_t const scalarRemainder = plan->end - plan->start;
+        size_t const    lda_macro       = plan->next->lda;
+        size_t const    ldb_macro       = plan->next->ldb;
+        ptrdiff_t       i               = plan->start;
+        ptrdiff_t const scalarRemainder = plan->end - plan->start;
         if (scalarRemainder > 0) {
             if (lda == 1)
-                macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, scalarRemainder, innerStrideA, 
+                macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, scalarRemainder, innerStrideA,
                                                                   &B[i * ldb], ldb_macro, sizeStride1B, innerStrideB, alpha, beta);
             else if (ldb == 1)
-                macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, sizeStride1A, innerStrideA, 
+                macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, sizeStride1A, innerStrideA,
                                                                   &B[i * ldb], ldb_macro, scalarRemainder, innerStrideB, alpha, beta);
             else
-                for(; i < end; i++)
-                    macro_kernel_scalar<betaIsZero,floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, sizeStride1A, innerStrideA,
-                                                                     &B[i * ldb], ldb_macro, sizeStride1B, innerStrideB, alpha, beta);
+                for (; i < end; i++)
+                    macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, sizeStride1A, innerStrideA,
+                                                                      &B[i * ldb], ldb_macro, sizeStride1B, innerStrideB, alpha, beta);
         }
     }
 }
-template <int blockingA, int blockingB, int betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
-void transpose_int(floatType const * A, floatType const * Anext, size_t innerStrideA, floatType * B, floatType const * Bnext, 
+template <int blockingA, int blockingB, bool betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
+void transpose_int(floatType const *A, floatType const *Anext, size_t innerStrideA, floatType *B, floatType const *Bnext,
                    size_t innerStrideB, floatType const alpha, floatType const beta, ComputeNode const *plan) {
-    int32_t const end = plan->end - (plan->inc - 1);
-    int32_t const inc = plan->inc;
-    size_t const  lda = plan->lda;
-    size_t const  ldb = plan->ldb;
-    int32_t const offDiffAB = plan->offDiffAB;
+    ptrdiff_t const end       = plan->end - (plan->inc - 1);
+    ptrdiff_t const inc       = plan->inc;
+    size_t const    lda       = plan->lda;
+    size_t const    ldb       = plan->ldb;
+    int32_t const   offDiffAB = plan->offDiffAB;
 
     constexpr int blocking_micro_ = REGISTER_BITS / 8 / sizeof(floatType);
     constexpr int blocking_       = blocking_micro_ * 4;
 
     if (plan->next->next != nullptr) {
         // recurse
-        int32_t i;
+        ptrdiff_t i;
         for (i = plan->start; i < end; i += inc) {
             if (i + inc < end)
                 transpose_int<blockingA, blockingB, betaIsZero, floatType, useStreamingStores, conjA>(
-                    &A[(i + offDiffAB) * lda], &A[(i + 1 + offDiffAB) * lda], innerStrideA, &B[i * ldb], &B[(i + 1) * ldb], 
-                    innerStrideB, alpha, beta, plan->next);
+                    &A[(i + offDiffAB) * lda], &A[(i + 1 + offDiffAB) * lda], innerStrideA, &B[i * ldb], &B[(i + 1) * ldb], innerStrideB,
+                    alpha, beta, plan->next);
             else if (i == plan->start || i + inc >= end)
                 transpose_int<blockingA, blockingB, betaIsZero, floatType, useStreamingStores, conjA>(
-                    &A[(i + offDiffAB) * lda], &A[(i + offDiffAB) * lda], innerStrideA, &B[i * ldb], &B[i * ldb], innerStrideB, 
-                    alpha, beta, plan->next);
-            else 
+                    &A[(i + offDiffAB) * lda], &A[(i + offDiffAB) * lda], innerStrideA, &B[i * ldb], &B[i * ldb], innerStrideB, alpha, beta,
+                    plan->next);
+            else
                 transpose_int<blockingA, blockingB, betaIsZero, floatType, useStreamingStores, conjA>(
                     &A[(i + offDiffAB) * lda], Anext, innerStrideA, &B[i * ldb], Bnext, innerStrideB, alpha, beta, plan->next);
         }
@@ -968,16 +1011,16 @@ void transpose_int(floatType const * A, floatType const * Anext, size_t innerStr
                     &A[(i + offDiffAB) * lda], Anext, innerStrideA, &B[i * ldb], Bnext, innerStrideB, alpha, beta, plan->next);
             i += blocking_ / 4;
         }
-        size_t const scalarRemainder = plan->end - i;
+        ptrdiff_t const scalarRemainder = plan->end - i;
         if (scalarRemainder > 0) {
             if (plan->indexA)
-                transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], scalarRemainder, innerStrideA, &B[i * ldb], 
+                transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], scalarRemainder, innerStrideA, &B[i * ldb],
                                                                    blockingB, innerStrideB, alpha, beta, plan->next);
             else if (plan->indexB)
-                transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], blockingA, innerStrideA, &B[i * ldb], 
+                transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], blockingA, innerStrideA, &B[i * ldb],
                                                                    scalarRemainder, innerStrideB, alpha, beta, plan->next);
             else
-                transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], blockingA, innerStrideA, &B[i * ldb], 
+                transpose_int_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], blockingA, innerStrideA, &B[i * ldb],
                                                                    blockingB, innerStrideB, alpha, beta, plan->next);
         }
     } else {
@@ -985,11 +1028,11 @@ void transpose_int(floatType const * A, floatType const * Anext, size_t innerStr
         size_t const ldb_macro = plan->next->ldb;
         // invoke macro-kernel
 
-        int32_t i;
+        ptrdiff_t i;
         for (i = plan->start; i < end; i += inc)
             if (i + inc < end)
                 macro_kernel<blockingA, blockingB, betaIsZero, floatType, useStreamingStores, conjA>(
-                    &A[(i + offDiffAB) * lda], &A[(i + 1) * lda], lda_macro, innerStrideA, &B[i * ldb], &B[(i + 1) * ldb], ldb_macro, 
+                    &A[(i + offDiffAB) * lda], &A[(i + 1) * lda], lda_macro, innerStrideA, &B[i * ldb], &B[(i + 1) * ldb], ldb_macro,
                     innerStrideB, alpha, beta);
             else
                 macro_kernel<blockingA, blockingB, betaIsZero, floatType, useStreamingStores, conjA>(
@@ -1013,75 +1056,85 @@ void transpose_int(floatType const * A, floatType const * Anext, size_t innerStr
                     &A[(i + offDiffAB) * lda], Anext, lda_macro, innerStrideA, &B[i * ldb], Bnext, ldb_macro, innerStrideB, alpha, beta);
             i += blocking_ / 4;
         }
-        size_t const scalarRemainder = plan->end - i;
+        ptrdiff_t const scalarRemainder = plan->end - i;
         if (scalarRemainder > 0) {
             if (plan->indexA)
-                macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, scalarRemainder, innerStrideA, 
+                macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, scalarRemainder, innerStrideA,
                                                                   &B[i * ldb], ldb_macro, blockingB, innerStrideB, alpha, beta);
             else if (plan->indexB)
-                macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, blockingA, innerStrideA, 
+                macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, blockingA, innerStrideA,
                                                                   &B[i * ldb], ldb_macro, scalarRemainder, innerStrideB, alpha, beta);
             else
-                macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, blockingA, innerStrideA, 
+                macro_kernel_scalar<betaIsZero, floatType, conjA>(&A[(i + offDiffAB) * lda], lda_macro, blockingA, innerStrideA,
                                                                   &B[i * ldb], ldb_macro, blockingB, innerStrideB, alpha, beta);
         }
     }
 }
 
-template <int betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
-void transpose_int_constStride1(floatType const * A, floatType * B, floatType const alpha, floatType const beta,
-                                ComputeNode const *plan) {
-    int32_t const     end = plan->end - (plan->inc - 1);
+template <bool betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
+void transpose_int_constStride1(floatType const *A, floatType *B, floatType const alpha, floatType const beta, ComputeNode const *plan) {
+    ptrdiff_t const end = plan->end - (plan->inc - 1);
     /// @todo Fix code.
-    constexpr int32_t inc = 1;
-    size_t const      lda = plan->lda;
-    size_t const      ldb = plan->ldb;
-    int32_t const     offDiffAB = plan->offDiffAB;
+    constexpr ptrdiff_t inc       = 1;
+    size_t const        lda       = plan->lda;
+    size_t const        ldb       = plan->ldb;
+    ptrdiff_t const     offDiffAB = plan->offDiffAB;
 
-    if (plan->next != nullptr)
-        for (int i = plan->start; i < end; i += inc)
+    if (plan->next != nullptr) {
+        for (ptrdiff_t i = plan->start; i < end; i += inc) {
             // recurse
-            transpose_int_constStride1<betaIsZero, floatType, useStreamingStores, conjA>(&A[(i + offDiffAB) * lda], &B[i * ldb], alpha, beta, plan->next);
-    else if (!betaIsZero) {
-        for (int32_t i = plan->start; i < end; i += inc)
-            if (conjA)
+            transpose_int_constStride1<betaIsZero, floatType, useStreamingStores, conjA>(&A[(i + offDiffAB) * lda], &B[i * ldb], alpha,
+                                                                                         beta, plan->next);
+        }
+    } else if constexpr (!betaIsZero) {
+        for (ptrdiff_t i = plan->start; i < end; i += inc) {
+            if constexpr (conjA)
                 B[i * ldb] = alpha * conj(A[(i + offDiffAB) * lda]) + beta * B[i * ldb];
             else
                 B[i * ldb] = alpha * A[(i + offDiffAB) * lda] + beta * B[i * ldb];
+        }
     } else {
-        if (useStreamingStores)
-            if (conjA)
+        if constexpr (useStreamingStores) {
+            if constexpr (conjA) {
 #pragma vector nontemporal
-                for (int32_t i = plan->start; i < end; i += inc)
+                for (ptrdiff_t i = plan->start; i < end; i += inc) {
                     B[i * ldb] = alpha * conj(A[(i + offDiffAB) * lda]);
-            else
+                }
+            } else {
 #pragma vector nontemporal
-                for (int32_t i = plan->start; i < end; i += inc)
+                for (ptrdiff_t i = plan->start; i < end; i += inc) {
                     B[i * ldb] = alpha * A[(i + offDiffAB) * lda];
-        else if (conjA)
-            for (int32_t i = plan->start; i < end; i += inc)
+                }
+            }
+        } else if constexpr (conjA) {
+            for (ptrdiff_t i = plan->start; i < end; i += inc) {
                 B[i * ldb] = alpha * conj(A[(i + offDiffAB) * lda]);
-        else
-            for (int32_t i = plan->start; i < end; i += inc)
+            }
+        } else {
+            for (ptrdiff_t i = plan->start; i < end; i += inc) {
                 B[i * ldb] = alpha * A[(i + offDiffAB) * lda];
+            }
+        }
     }
 }
 
 template <typename floatType>
-Transpose<floatType>::Transpose(int const *sizeA, int const *perm, int const *outerSizeA, int const *outerSizeB, 
-                                const int *offsetA, const int *offsetB, const size_t innerStrideA, const size_t innerStrideB, int const dim, 
-                                floatType const *A, floatType const alpha, floatType *B, floatType const beta, SelectionMethod const selectionMethod, 
-                                int const numThreads, int const *threadIds, bool const useRowMajor)
-    : A_(A), B_(B), alpha_(alpha), beta_(beta), dim_(-1), innerStrideA_(-1), innerStrideB_(-1), numThreads_(numThreads), masterPlan_(nullptr), 
-      selectionMethod_(selectionMethod), maxAutotuningCandidates_(-1), selectedParallelStrategyId_(-1), selectedLoopOrderId_(-1), conjA_(false) {
+Transpose<floatType>::Transpose(size_t const *sizeA, int const *perm, size_t const *outerSizeA, size_t const *outerSizeB,
+                                size_t const *offsetA, size_t const *offsetB, size_t const innerStrideA, size_t const innerStrideB,
+                                int const dim, floatType const *A, floatType const alpha, floatType *B, floatType const beta,
+                                SelectionMethod const selectionMethod, int const numThreads, int const *threadIds, bool const useRowMajor)
+    : A_(A), B_(B), alpha_(alpha), beta_(beta), dim_(-1), innerStrideA_(0), innerStrideB_(0), numThreads_(numThreads), masterPlan_(nullptr),
+      selectionMethod_(selectionMethod), maxAutotuningCandidates_(-1), selectedParallelStrategyId_(-1), selectedLoopOrderId_(-1),
+      conjA_(false) {
 #ifdef _OPENMP
     omp_init_lock(&writelock);
 #endif
 
-    std::vector<int> tmpPerm(dim), tmpSizeA(dim), tmpOuterSizeA(dim), tmpOuterSizeB(dim), tmpOffsetA(dim), tmpOffsetB(dim);
+    std::vector<int>    tmpPerm(dim);
+    std::vector<size_t> tmpSizeA(dim), tmpOuterSizeA(dim), tmpOuterSizeB(dim), tmpOffsetA(dim), tmpOffsetB(dim);
 
-    accountForRowMajor(sizeA, outerSizeA, outerSizeB, offsetA, offsetB, perm, tmpSizeA.data(), tmpOuterSizeA.data(), tmpOuterSizeB.data(), tmpOffsetA.data(), 
-                       tmpOffsetB.data(), tmpPerm.data(), dim, useRowMajor);
+    accountForRowMajor(sizeA, outerSizeA, outerSizeB, offsetA, offsetB, perm, tmpSizeA.data(), tmpOuterSizeA.data(), tmpOuterSizeB.data(),
+                       tmpOffsetA.data(), tmpOffsetB.data(), tmpPerm.data(), dim, useRowMajor);
 
     sizeA_.resize(dim);
     perm_.resize(dim);
@@ -1102,12 +1155,12 @@ Transpose<floatType>::Transpose(int const *sizeA, int const *perm, int const *ou
             threadIds_.push_back(i);
     }
 
-    verifyParameter(tmpSizeA.data(), tmpPerm.data(), tmpOuterSizeA.data(), tmpOuterSizeB.data(), tmpOffsetA.data(), tmpOffsetB.data(), innerStrideA, 
-                    innerStrideB, dim);
+    verifyParameter(tmpSizeA.data(), tmpPerm.data(), tmpOuterSizeA.data(), tmpOuterSizeB.data(), tmpOffsetA.data(), tmpOffsetB.data(),
+                    innerStrideA, innerStrideB, dim);
 
     innerStrideA_ = innerStrideA;
     innerStrideB_ = innerStrideB;
-    
+
     // initializes dim_, outerSizeA, outerSizeB, sizeA and perm
     skipIndices(tmpSizeA.data(), tmpPerm.data(), tmpOuterSizeA.data(), tmpOuterSizeB.data(), tmpOffsetA.data(), tmpOffsetB.data(), dim);
     fuseIndices();
@@ -1157,18 +1210,18 @@ void Transpose<floatType>::executeEstimate(Plan const *plan) noexcept {
             auto rootNode = plan->getRootNode(taskId);
             if (std::abs(beta_) < getZeroThreshold<floatType>()) {
                 if (conjA_)
-                    transpose_int<blocking_, blocking_, 1, floatType, useStreamingStores, true>(
-                                A_, A_,innerStrideA_, B_, B_,innerStrideB_, 0.0, 1.0, rootNode);
+                    transpose_int<blocking_, blocking_, 1, floatType, useStreamingStores, true>(A_, A_, innerStrideA_, B_, B_,
+                                                                                                innerStrideB_, 0.0, 1.0, rootNode);
                 else
-                    transpose_int<blocking_, blocking_, 1, floatType, useStreamingStores, false>(
-                                A_, A_,innerStrideA_, B_, B_,innerStrideB_, 0.0, 1.0, rootNode);
+                    transpose_int<blocking_, blocking_, 1, floatType, useStreamingStores, false>(A_, A_, innerStrideA_, B_, B_,
+                                                                                                 innerStrideB_, 0.0, 1.0, rootNode);
             } else {
                 if (conjA_)
-                    transpose_int<blocking_, blocking_, 0, floatType, useStreamingStores, true>(
-                                A_, A_,innerStrideA_, B_, B_,innerStrideB_, 0.0, 1.0, rootNode);
+                    transpose_int<blocking_, blocking_, 0, floatType, useStreamingStores, true>(A_, A_, innerStrideA_, B_, B_,
+                                                                                                innerStrideB_, 0.0, 1.0, rootNode);
                 else
-                    transpose_int<blocking_, blocking_, 0, floatType, useStreamingStores, false>(
-                                A_, A_,innerStrideA_, B_, B_,innerStrideB_, 0.0, 1.0, rootNode);
+                    transpose_int<blocking_, blocking_, 0, floatType, useStreamingStores, false>(A_, A_, innerStrideA_, B_, B_,
+                                                                                                 innerStrideB_, 0.0, 1.0, rootNode);
             }
         } else {
             auto rootNode = plan->getRootNode(taskId);
@@ -1186,47 +1239,54 @@ void Transpose<floatType>::executeEstimate(Plan const *plan) noexcept {
         }
 }
 
-template <int betaIsZero, typename floatType, bool useStreamingStores, bool spawnThreads, bool conjA>
-static void axpy_1D(floatType const * A, floatType * B, int const myStart, int const myEnd, const int &offDiffAB_,
-                    const size_t lda, const size_t ldb, floatType const alpha, floatType const beta, int numThreads) {
-    if (!betaIsZero) {
-        HPTT_DUPLICATE(spawnThreads, for (int32_t i = myStart; i < myEnd; i++) if (conjA) B[i * ldb] = alpha * conj(A[(i + offDiffAB_) * lda]) 
-                                                                                                     + beta * B[i * ldb];
+template <bool betaIsZero, typename floatType, bool useStreamingStores, bool spawnThreads, bool conjA>
+static void axpy_1D(floatType const *A, floatType *B, size_t const myStart, size_t const myEnd, ptrdiff_t const offDiffAB_,
+                    size_t const lda, size_t const ldb, floatType const alpha, floatType const beta, int numThreads) {
+    if constexpr (!betaIsZero) {
+        HPTT_DUPLICATE(spawnThreads, for (size_t i = myStart; i < myEnd; i++) if (conjA) B[i * ldb] =
+                                         alpha * conj(A[(i + offDiffAB_) * lda]) + beta * B[i * ldb];
                        else B[i * ldb] = alpha * A[(i + offDiffAB_) * lda] + beta * B[i * ldb];)
     } else {
-        if (useStreamingStores)
-            HPTT_DUPLICATE(spawnThreads, for (int32_t i = myStart; i < myEnd; i++) if (conjA) B[i * ldb] = alpha * conj(A[(i + offDiffAB_) * lda]);
+        if constexpr (useStreamingStores)
+            HPTT_DUPLICATE(spawnThreads, for (size_t i = myStart; i < myEnd; i++) if constexpr (conjA) B[i * ldb] =
+                                             alpha * conj(A[(i + offDiffAB_) * lda]);
                            else B[i * ldb] = alpha * A[(i + offDiffAB_) * lda];)
         else
-            HPTT_DUPLICATE(spawnThreads, for (int32_t i = myStart; i < myEnd; i++) if (conjA) B[i * ldb] = alpha * conj(A[(i + offDiffAB_) * lda]);
+            HPTT_DUPLICATE(spawnThreads, for (size_t i = myStart; i < myEnd; i++) if constexpr (conjA) B[i * ldb] =
+                                             alpha * conj(A[(i + offDiffAB_) * lda]);
                            else B[i * ldb] = alpha * A[(i + offDiffAB_) * lda];)
     }
 }
 
-template <int betaIsZero, typename floatType, bool useStreamingStores, bool spawnThreads, bool conjA>
-static void axpy_2D(floatType const * A, size_t const (&lda)[2], floatType * B, size_t const (&ldb)[2], int const n0,
-                    int const myStart, int const myEnd, const int (&offDiffAB_)[2], const int offsetB_, 
-                    floatType const alpha, floatType const beta, int numThreads) {
-    if (!betaIsZero) {
-        HPTT_DUPLICATE(spawnThreads, for (int32_t j = myStart; j < myEnd; j++) for (int32_t i = offsetB_; i < n0 + offsetB_; i++) if (conjA) B[(i * ldb[0]) + j * ldb[1]] =
-                                         alpha * conj(A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]]) + beta * B[(i * ldb[0]) + j * ldb[1]];
-                       else B[(i * ldb[0]) + j * ldb[1]] = alpha * A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]] + beta * B[(i * ldb[0]) + j * ldb[1]];)
+template <bool betaIsZero, typename floatType, bool useStreamingStores, bool spawnThreads, bool conjA>
+static void axpy_2D(floatType const *A, size_t const (&lda)[2], floatType *B, size_t const (&ldb)[2], size_t const n0, size_t const myStart,
+                    size_t const myEnd, ptrdiff_t const offDiffAB_[2], size_t const offsetB_, floatType const alpha, floatType const beta,
+                    int numThreads) {
+    if constexpr (!betaIsZero) {
+        HPTT_DUPLICATE(spawnThreads,
+                       for (size_t j = myStart; j < myEnd; j++) for (size_t i = offsetB_; i < n0 + offsetB_; i++) if constexpr (conjA)
+                           B[(i * ldb[0]) + j * ldb[1]] = alpha * conj(A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]]) +
+                                                          beta * B[(i * ldb[0]) + j * ldb[1]];
+                       else B[(i * ldb[0]) + j * ldb[1]] =
+                           alpha * A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]] + beta * B[(i * ldb[0]) + j * ldb[1]];)
     } else {
-        if (useStreamingStores)
-            HPTT_DUPLICATE(spawnThreads, for (int32_t j = myStart; j < myEnd; j++)
-                                             _Pragma("vector nontemporal") for (int32_t i = offsetB_; i < n0 + offsetB_; i++) if (conjA) B[(i * ldb[0]) + j * ldb[1]] =
+        if constexpr (useStreamingStores)
+            HPTT_DUPLICATE(spawnThreads, for (size_t j = myStart; j < myEnd; j++)
+                                             _Pragma("vector nontemporal") for (size_t i = offsetB_; i < n0 + offsetB_;
+                                                                                i++) if constexpr (conjA) B[(i * ldb[0]) + j * ldb[1]] =
                                                  alpha * conj(A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]]);
                            else B[(i * ldb[0]) + j * ldb[1]] = alpha * A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]];)
         else
-            HPTT_DUPLICATE(spawnThreads, for (int32_t j = myStart; j < myEnd; j++) for (int32_t i = offsetB_; i < n0 + offsetB_; i++) if (conjA)
-                                             B[(i * ldb[0]) + j * ldb[1]] = alpha * conj(A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]]);
-                           else B[(i * ldb[0]) + j * ldb[1]]              = alpha * A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]];)
+            HPTT_DUPLICATE(spawnThreads, for (size_t j = myStart; j < myEnd; j++) for (size_t i = offsetB_; i < n0 + offsetB_;
+                                                                                       i++) if (conjA) B[(i * ldb[0]) + j * ldb[1]] =
+                                             alpha * conj(A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]]);
+                           else B[(i * ldb[0]) + j * ldb[1]] = alpha * A[((i + offDiffAB_[0]) * lda[0]) + (j + offDiffAB_[1]) * lda[1]];)
     }
 }
 
 template <typename floatType>
 template <bool spawnThreads>
-void Transpose<floatType>::getStartEnd(int n, int &myStart, int &myEnd) const {
+void Transpose<floatType>::getStartEnd(size_t n, size_t &myStart, size_t &myEnd) const {
 #ifdef _OPENMP
     int myLocalThreadId = getLocalThreadId(omp_get_thread_num());
 #else
@@ -1239,15 +1299,15 @@ void Transpose<floatType>::getStartEnd(int n, int &myStart, int &myEnd) const {
         myEnd   = n;
         return;
     }
-    if (spawnThreads) { // worksharing will be handled by the OpenMP runtime
+    if constexpr (spawnThreads) { // worksharing will be handled by the OpenMP runtime
         myStart = 0;
         myEnd   = n;
         return;
     }
 
-    int const workPerThread = (n + numThreads_ - 1) / numThreads_;
-    myStart                 = std::min(n, myLocalThreadId * workPerThread);
-    myEnd                   = std::min(n, (myLocalThreadId + 1) * workPerThread);
+    size_t const workPerThread = (n + numThreads_ - 1) / numThreads_;
+    myStart                    = std::min(n, myLocalThreadId * workPerThread);
+    myEnd                      = std::min(n, (myLocalThreadId + 1) * workPerThread);
 }
 
 template <typename floatType>
@@ -1267,29 +1327,30 @@ void Transpose<floatType>::execute_expert() noexcept {
         exit(-1);
     }
 
-    int myStart = 0;
-    int myEnd   = 0;
+    size_t myStart = 0;
+    size_t myEnd   = 0;
 
     if (dim_ == 1) {
         getStartEnd<spawnThreads>(sizeA_[0], myStart, myEnd);
-        const int offDiffAB_ = (int)offsetA_[0] - (int)offsetB_[0];
+        ptrdiff_t const offDiffAB_ = (ptrdiff_t)offsetA_[0] - (ptrdiff_t)offsetB_[0];
         if (conjA_)
-            axpy_1D<betaIsZero, floatType, useStreamingStores, spawnThreads, true>(A_, B_, myStart + offsetB_[0], myEnd + offsetB_[0], 
-                                                                                   offDiffAB_, lda_[0], ldb_[0], alpha_, beta_, numThreads_);
+            axpy_1D<betaIsZero, floatType, useStreamingStores, spawnThreads, true>(
+                A_, B_, myStart + offsetB_[0], myEnd + offsetB_[0], offDiffAB_, lda_[0], ldb_[0], alpha_, beta_, numThreads_);
         else
-            axpy_1D<betaIsZero, floatType, useStreamingStores, spawnThreads, false>(A_, B_, myStart + offsetB_[0], myEnd + offsetB_[0], 
-                                                                                    offDiffAB_, lda_[0], ldb_[0], alpha_, beta_, numThreads_);
+            axpy_1D<betaIsZero, floatType, useStreamingStores, spawnThreads, false>(
+                A_, B_, myStart + offsetB_[0], myEnd + offsetB_[0], offDiffAB_, lda_[0], ldb_[0], alpha_, beta_, numThreads_);
         return;
     } else if (dim_ == 2 && perm_[0] == 0) {
         getStartEnd<spawnThreads>(sizeA_[1], myStart, myEnd);
-        const int offDiffAB_[2] = {((int)offsetA_[0] - (int)offsetB_[0]), ((int)offsetA_[1] - (int)offsetB_[1])};
+        ptrdiff_t const offDiffAB_[2] = {((ptrdiff_t)offsetA_[0] - (ptrdiff_t)offsetB_[0]),
+                                         ((ptrdiff_t)offsetA_[1] - (ptrdiff_t)offsetB_[1])};
         if (conjA_)
-            axpy_2D<betaIsZero, floatType, useStreamingStores, spawnThreads, true>(A_, {lda_[0], lda_[1]}, B_, {ldb_[0], ldb_[1]}, sizeA_[0], 
-                                                                                   myStart + offsetB_[1], myEnd + offsetB_[1], 
+            axpy_2D<betaIsZero, floatType, useStreamingStores, spawnThreads, true>(A_, {lda_[0], lda_[1]}, B_, {ldb_[0], ldb_[1]},
+                                                                                   sizeA_[0], myStart + offsetB_[1], myEnd + offsetB_[1],
                                                                                    offDiffAB_, offsetB_[0], alpha_, beta_, numThreads_);
         else
-            axpy_2D<betaIsZero, floatType, useStreamingStores, spawnThreads, false>(A_, {lda_[0], lda_[1]}, B_, {ldb_[0], ldb_[1]}, sizeA_[0], 
-                                                                                    myStart + offsetB_[1], myEnd + offsetB_[1], 
+            axpy_2D<betaIsZero, floatType, useStreamingStores, spawnThreads, false>(A_, {lda_[0], lda_[1]}, B_, {ldb_[0], ldb_[1]},
+                                                                                    sizeA_[0], myStart + offsetB_[1], myEnd + offsetB_[1],
                                                                                     offDiffAB_, offsetB_[0], alpha_, beta_, numThreads_);
         return;
     }
@@ -1303,11 +1364,11 @@ void Transpose<floatType>::execute_expert() noexcept {
         for (int taskId = myStart; taskId < myEnd; taskId++) if (perm_[0] != 0) {
             auto rootNode = masterPlan_->getRootNode(taskId);
             if (conjA_)
-                transpose_int<blocking_, blocking_, betaIsZero, floatType, useStreamingStores, true>(A_, A_, innerStrideA_, B_, B_, 
-                                                                                                     innerStrideB_, alpha_, beta_, rootNode);
+                transpose_int<blocking_, blocking_, betaIsZero, floatType, useStreamingStores, true>(
+                    A_, A_, innerStrideA_, B_, B_, innerStrideB_, alpha_, beta_, rootNode);
             else
-                transpose_int<blocking_, blocking_, betaIsZero, floatType, useStreamingStores, false>(A_, A_, innerStrideA_, B_, B_, 
-                                                                                                     innerStrideB_, alpha_, beta_, rootNode);
+                transpose_int<blocking_, blocking_, betaIsZero, floatType, useStreamingStores, false>(
+                    A_, A_, innerStrideA_, B_, B_, innerStrideB_, alpha_, beta_, rootNode);
         } else {
             auto rootNode = masterPlan_->getRootNode(taskId);
             if (conjA_)
@@ -1347,8 +1408,8 @@ void Transpose<floatType>::print() noexcept {
 }
 
 template <typename floatType>
-int Transpose<floatType>::getIncrement(int loopIdx) const {
-    int inc = 1;
+size_t Transpose<floatType>::getIncrement(int loopIdx) const {
+    size_t inc = 1;
     if (perm_[0] != 0) {
         if (loopIdx == 0 || loopIdx == perm_[0])
             inc = blocking_;
@@ -1360,7 +1421,7 @@ template <typename floatType>
 void Transpose<floatType>::getAvailableParallelism(std::vector<int> &numTasksPerLoop) const {
     numTasksPerLoop.resize(dim_);
     for (int loopIdx = 0; loopIdx < dim_; ++loopIdx) {
-        int inc                  = this->getIncrement(loopIdx);
+        size_t inc               = this->getIncrement(loopIdx);
         numTasksPerLoop[loopIdx] = (sizeA_[loopIdx] + inc - 1) / inc;
     }
 }
@@ -1396,7 +1457,7 @@ void Transpose<floatType>::getAllParallelismStrategies(std::list<int> &primeFact
 // balancing if one tries to parallelize avail many tasks with req many threads
 // e.g., balancing(3,4) = 0.75
 static float getBalancing(int avail, int req) {
-    return ((float)(avail)) / (((avail + req - 1) / req) * req);
+    return ((float)(avail)) / (float)((int)((avail + req - 1) / req) * req);
 }
 
 template <typename floatType>
@@ -1405,10 +1466,10 @@ float Transpose<floatType>::getLoadBalance(std::vector<int> const &parallelismSt
     int   totalTasks   = 1;
     for (int i = 0; i < dim_; ++i) {
 
-        int inc = this->getIncrement(i);
+        size_t inc = this->getIncrement(i);
         while (sizeA_[i] < inc)
             inc /= 2;
-        int availableParallelism = (sizeA_[i] + inc - 1) / inc;
+        size_t availableParallelism = (sizeA_[i] + inc - 1) / inc;
 
         if (i == 0 || perm_[i] == 0)
             // account for the load-imbalancing due to blocking
@@ -1676,9 +1737,9 @@ void Transpose<floatType>::getParallelismStrategies(std::vector<std::vector<int>
 }
 
 template <typename floatType>
-void Transpose<floatType>::verifyParameter(int const *size, int const *perm, int const *outerSizeA, int const *outerSizeB,
-                                           const int* offsetA, const int* offsetB, const size_t innerStrideA, const size_t innerStrideB, 
-                                           int const dim) const {
+void Transpose<floatType>::verifyParameter(size_t const *size, int const *perm, size_t const *outerSizeA, size_t const *outerSizeB,
+                                           size_t const *offsetA, size_t const *offsetB, size_t const innerStrideA,
+                                           size_t const innerStrideB, int const dim) const {
     if (dim < 1) {
         fprintf(stderr, "[HPTT] ERROR: dimensionality too low.\n");
         exit(-1);
@@ -1717,26 +1778,26 @@ void Transpose<floatType>::verifyParameter(int const *size, int const *perm, int
     if (offsetA != NULL)
         for (int i = 0; i < dim; ++i)
             if (offsetA[i] + size[i] > outerSizeA[i]) {
-                fprintf(stderr,"[HPTT] ERROR: offsetA invalid\n");
+                fprintf(stderr, "[HPTT] ERROR: offsetA invalid\n");
                 exit(-1);
-         }
+            }
 
-   if (offsetB != NULL)
+    if (offsetB != NULL)
         for (int i = 0; i < dim; ++i)
             if (offsetB[i] + size[perm[i]] > outerSizeB[i]) {
-                fprintf(stderr,"[HPTT] ERROR: offsetB invalid\n");
+                fprintf(stderr, "[HPTT] ERROR: offsetB invalid\n");
                 exit(-1);
-         }
-        
-   if ( innerStrideA < 0 ) {
-        fprintf(stderr,"[HPTT] ERROR: innerStrideA invalid\n");
-        exit(-1);
-   }
+            }
 
-   if ( innerStrideB < 0 ) {
-        fprintf(stderr,"[HPTT] ERROR: innerStrideB invalid\n");
+    if (innerStrideA < 0) {
+        fprintf(stderr, "[HPTT] ERROR: innerStrideA invalid\n");
         exit(-1);
-   }
+    }
+
+    if (innerStrideB < 0) {
+        fprintf(stderr, "[HPTT] ERROR: innerStrideB invalid\n");
+        exit(-1);
+    }
 }
 
 template <typename floatType>
@@ -1759,8 +1820,8 @@ void Transpose<floatType>::computeLeadingDimensions() {
 }
 
 template <typename floatType>
-void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int const *outerSizeA, int const *outerSizeB, const int *offsetA, 
-                                       const int *offsetB, int const dim) {
+void Transpose<floatType>::skipIndices(size_t const *sizeA, int const *perm, size_t const *outerSizeA, size_t const *outerSizeB,
+                                       size_t const *offsetA, size_t const *offsetB, int const dim) {
     for (int i = 0; i < dim; ++i) {
         perm_[i]  = perm[i];
         sizeA_[i] = sizeA[i];
@@ -1772,17 +1833,17 @@ void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int co
             outerSizeB_[i] = outerSizeB[i];
         else
             outerSizeB_[i] = sizeA[perm[i]];
-        if(offsetA)
+        if (offsetA)
             offsetA_[i] = offsetA[i];
         else
             offsetA_[i] = 0;
-        if(offsetB)
+        if (offsetB)
             offsetB_[i] = offsetB[i];
         else
             offsetB_[i] = 0;
     }
 
-    int skipped = 0;
+    size_t skipped = 0;
     for (int i = 0; i < dim; ++i) {
         int idxB = 0;
         for (; idxB < dim; ++idxB)
@@ -1792,8 +1853,8 @@ void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int co
             sizeA_[i]         = -1;
             outerSizeA_[i]    = -1;
             outerSizeB_[idxB] = -1;
-            offsetA_[i] = -1;
-            offsetB_[idxB] = -1;
+            offsetA_[i]       = -1;
+            offsetB_[idxB]    = -1;
             perm_[idxB]       = -1;
             skipped++;
         }
@@ -1851,8 +1912,8 @@ void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int co
         sizeA_[0]      = 1;
         outerSizeA_[0] = 1;
         outerSizeB_[0] = 1;
-        offsetA_[0] = 0;
-        offsetB_[0] = 0;
+        offsetA_[0]    = 0;
+        offsetB_[0]    = 0;
     } else {
         perm_.resize(dim_);
         sizeA_.resize(dim_);
@@ -1865,7 +1926,7 @@ void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int co
         int currentValue = 0;
         for (int i = 0; i < dim_; ++i) {
             // find smallest element in perm_ and rename it to currentValue
-            int minValue = 1000000;
+            int minValue = std::numeric_limits<int>::max();
             int minPos   = -1;
             for (int pos = 0; pos < dim_; ++pos) {
                 if (perm_[pos] >= currentValue && perm_[pos] < minValue) {
@@ -1888,8 +1949,8 @@ void Transpose<floatType>::skipIndices(int const *sizeA, int const *perm, int co
     printf("dim: %d\n", dim_);
     printf("alpha: %f\n", alpha_);
     printf("beta: %f\n", beta_);
-    printf("innerStrideA: %lu\n",innerStrideA_);
-    printf("innerStrideB: %lu\n",innerStrideB_);
+    printf("innerStrideA: %lu\n", innerStrideA_);
+    printf("innerStrideB: %lu\n", innerStrideB_);
 #endif
 }
 
@@ -1909,10 +1970,10 @@ void Transpose<floatType>::fuseIndices() {
     for (int i = 0; i < dim_; ++i) {
         // merge indices if the two consecutive entries are identical
         int toMerge = i;
-        perm.push_back(perm_[i]); 
+        perm.push_back(perm_[i]);
         /* By definition if size == outerSize, then no offsets are present. However,
-        *  by merging with the subsequent dimension the stride the offset depends upon
-        *  is lost. Therefore, the offset of the next offset must be zero too! */
+         *  by merging with the subsequent dimension the stride the offset depends upon
+         *  is lost. Therefore, the offset of the next offset must be zero too! */
         while (i + 1 < dim_ && perm_[i] + 1 == perm_[i + 1] && (sizeA_[perm_[i]] == outerSizeA_[perm_[i]]) &&
                (sizeA_[perm_[i]] == outerSizeB_[i]) && (offsetA_[perm_[i + 1]] == 0) && (offsetB_[i + 1] == 0)) {
 #ifdef DEBUG
@@ -1928,13 +1989,13 @@ void Transpose<floatType>::fuseIndices() {
         sizeA_[std::get<0>(tup)] *= sizeA_[std::get<1>(tup)];
         outerSizeA_[std::get<0>(tup)] *= outerSizeA_[std::get<1>(tup)];
         outerSizeA_[std::get<1>(tup)] = -1;
-        offsetA_[std::get<1>(tup)] = -1;
+        offsetA_[std::get<1>(tup)]    = -1;
 
         auto pos1 = std::find(perm_.begin(), perm_.end(), std::get<0>(tup)) - perm_.begin();
         auto pos2 = std::find(perm_.begin(), perm_.end(), std::get<1>(tup)) - perm_.begin();
         outerSizeB_[pos1] *= outerSizeB_[pos2];
         outerSizeB_[pos2] = -1;
-        offsetB_[pos2] = -1;
+        offsetB_[pos2]    = -1;
     }
 
     if (fusedIndices.size() > 0) {
@@ -1943,7 +2004,7 @@ void Transpose<floatType>::fuseIndices() {
         int currentValue = 0;
         for (int i = 0; i < perm_.size(); ++i) {
             // find smallest element in perm_ and rename it to currentValue
-            int minValue = 1000000;
+            int minValue = std::numeric_limits<int>::max();
             int minPos   = -1;
             for (int pos = 0; pos < perm_.size(); ++pos) {
                 if (perm_[pos] >= currentValue && perm_[pos] < minValue) {
@@ -2005,11 +2066,11 @@ void Transpose<floatType>::fuseIndices() {
         for (int i = 0; i < dim_; ++i)
             printf("%lu ", outerSizeB_[i]);
         printf("\noffsetA_new: ");
-        for(int i=0;i < dim_ ; ++i)
-            printf("%lu ",offsetA_[i]);
+        for (int i = 0; i < dim_; ++i)
+            printf("%lu ", offsetA_[i]);
         printf("\noffsetB_new: ");
-        for(int i=0;i < dim_ ; ++i)
-            printf("%lu ",offsetB_[i]);
+        for (int i = 0; i < dim_; ++i)
+            printf("%lu ", offsetB_[i]);
         printf("\n");
 #endif
     }
@@ -2255,14 +2316,18 @@ void Transpose<floatType>::createPlans(std::vector<std::shared_ptr<Plan>> &plans
                         taskIdComm       = taskIdComm % numThreadsPerComm;   // local taskId in next
                                                                              // communicator // 0,1,0,1,0,1
 
-                        if (index == 0) currentNode->indexA = true;
-                        if (findPos(index, perm_) == 0) currentNode->indexB = true;
-                        currentNode->start = std::min(sizeA_[index] + offsetB_[findPos(index, perm_)], commId * workPerThread * currentNode->inc + offsetB_[findPos(index, perm_)]);
-                        currentNode->end   = std::min(sizeA_[index] + offsetB_[findPos(index, perm_)], (commId + 1) * workPerThread * currentNode->inc + offsetB_[findPos(index, perm_)]);
+                        if (index == 0)
+                            currentNode->indexA = true;
+                        if (findPos(index, perm_) == 0)
+                            currentNode->indexB = true;
+                        currentNode->start = std::min(sizeA_[index] + offsetB_[findPos(index, perm_)],
+                                                      commId * workPerThread * currentNode->inc + offsetB_[findPos(index, perm_)]);
+                        currentNode->end   = std::min(sizeA_[index] + offsetB_[findPos(index, perm_)],
+                                                      (commId + 1) * workPerThread * currentNode->inc + offsetB_[findPos(index, perm_)]);
 
-                        currentNode->lda = lda_[index];
-                        currentNode->ldb = ldb_[findPos(index, perm_)];
-                        currentNode->offDiffAB = (int)offsetA_[index] - (int)offsetB_[findPos(index, perm_)];
+                        currentNode->lda       = lda_[index];
+                        currentNode->ldb       = ldb_[findPos(index, perm_)];
+                        currentNode->offDiffAB = (ptrdiff_t)offsetA_[index] - (ptrdiff_t)offsetB_[findPos(index, perm_)];
 
                         if (perm_[0] != 0 || l != dim_ - 1) {
                             currentNode->next = new ComputeNode;
@@ -2272,14 +2337,15 @@ void Transpose<floatType>::createPlans(std::vector<std::shared_ptr<Plan>> &plans
 
                     // macro-kernel
                     if (perm_[0] != 0) {
-                        if (posStride1A_inB == 0) currentNode->indexB = true;
-                        currentNode->start = -1;
-                        currentNode->end   = -1;
-                        currentNode->inc   = -1;
-                        currentNode->lda   = lda_[posStride1B_inA];
-                        currentNode->ldb   = ldb_[posStride1A_inB];
-                        currentNode->offDiffAB = (int)offsetA_[ posStride1B_inA ] - (int)offsetB_[ posStride1A_inB ];
-                        currentNode->next  = nullptr;
+                        if (posStride1A_inB == 0)
+                            currentNode->indexB = true;
+                        currentNode->start     = -1;
+                        currentNode->end       = -1;
+                        currentNode->inc       = -1;
+                        currentNode->lda       = lda_[posStride1B_inA];
+                        currentNode->ldb       = ldb_[posStride1A_inB];
+                        currentNode->offDiffAB = (ptrdiff_t)offsetA_[posStride1B_inA] - (ptrdiff_t)offsetB_[posStride1A_inB];
+                        currentNode->next      = nullptr;
                     }
                 }
                 plans.push_back(plan);

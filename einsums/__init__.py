@@ -1,3 +1,6 @@
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 """
 einsums
 -------
@@ -27,7 +30,7 @@ except (ModuleNotFoundError, ImportError):
 
 from . import utils  # pylint: disable=wrong-import-position
 
-def initialize() :
+def __initialize() :
     """
     Filter out Python arguments and pass on einsums arguments. Einsums arguments are prefixed with
     '--einsums'.
@@ -45,6 +48,6 @@ def initialize() :
 
     core.initialize(pass_args)
 
-initialize()
+__initialize()
 
 atexit.register(core.finalize)

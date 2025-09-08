@@ -17,8 +17,8 @@ with the following statement.
 .. code::
 
   ----------------------------------------------------------------------------------------------
-    Copyright (c) The Einsums Developers. All rights reserved.
-    Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+   Copyright (c) The Einsums Developers. All rights reserved.
+   Licensed under the MIT License. See LICENSE.txt in the project root for license information.
   ----------------------------------------------------------------------------------------------
 
 
@@ -72,11 +72,11 @@ Names should follow these conventions.
   * ``einsum(...)``
   * ``A.full_view_of_underlying()``
 
-* Private and protected properties in a class should end in a single underscore. However,
-  some code will have them end in a single underscore instead. Some examples.
+* Private and protected properties in a class should begin in a single underscore. However,
+  some older code will have them end in a single underscore instead. Some examples.
 
-  * ``this->dims_``
-  * ``this->_dims``
+  * ``this->dims_``: Discouraged for consistency.
+  * ``this->_dims``: Preferred.
 
 * Variables and parameters should usually be in ``snake_case``. However, to be consistent with
   mathematical notation, tensor variables and parameters are usually capitalized. This includes
@@ -104,7 +104,7 @@ Order of Things
 
   * ``size_t size()``
   * ``Tensor<double, 2> &create_tensor()`` or ``auto create_tensor() -> Tensor<double, 2> &``
-    are both alright. Use your best jugement here.
+    are both alright. Use your best judgement here.
   * ``auto common_initialization(TensorType<T, OtherRank> const &other, Args &&...args) -> std::enable_if_t<std::is_base_of_v<::einsums::tensor_base::Tensor<T, OtherRank>, TensorType<T, OtherRank>>>``
     This is a complicated return type. Use the ``auto`` keyword for readability.
 
@@ -119,7 +119,7 @@ Miscellaneous
     This is fast, but can only be used on certain kinds of tensors, so be careful. It can be used when iterating over
     a tensor's elements in order. If you are skipping around, it is better to use something else for better readability.
   * Using :cpp:func:`sentinel_to_sentinels` and :code:`tensor.data()[index]`. This should be faster than subscripting tensors,
-    but be careful, since it can only be used on certain kinds of tensors. As the previous method, it can be used when iterating
+    but be careful, since it can only be used on certain kinds of tensors. As with the previous method, it can be used when iterating
     over a tensor's elements in order. It is still readable even when skipping around, but it will only work on :cpp:class:`Tensor`s
     and :cpp:class:`TensorView`s.
   * Using :cpp:func:`sentinel_to_indices` and :cpp:func:`subscript_tensor`. This will make the choice between 
@@ -153,7 +153,8 @@ The approach to Python style is to generally follow the standard Python style gu
   
   * ``def set_name(name)``: Bad.
   * ``def set_name(name: str)``: Good.
-  * ``def iterate_elements(param)``: Fine.
+  * ``def iterate_elements(param)``: Fine. ``param`` can be pretty much any type. ``def iterate_elements(param: Any)`` would be preferred,
+    but brevity is sometimes better than verbosity.
 
 * Prefer ``PascalCase`` for type names.
 * Prefer ``snake_case`` for functions, methods, and variables.
@@ -162,3 +163,139 @@ The approach to Python style is to generally follow the standard Python style gu
 
   * ``A``: Tensor variable. 
   * ``A_indices``: References a tensor variable, but is not a tensor variable.
+
+CMake Style
+-----------
+
+A ``.cmake-format.py`` file is provided to ensure consist formatting of CMake files. You may need to
+install the package cmake-format to use it.
+
+Using pre-commit with Einsums
+=============================
+
+Einsums uses `pre-commit <https://pre-commit.com/>`_ to enforce consistent code style, license headers, and formatting standards for C++, CMake, and Python files. This helps maintain code quality and reduces stylistic differences across contributors.
+
+Installation
+------------
+
+First, install the ``pre-commit`` Python package:
+
+.. code-block:: bash
+
+   pip install pre-commit
+
+Alternatively, you may use ``conda`` or ``pipx``:
+
+.. code-block:: bash
+
+   conda install -c conda-forge pre-commit
+   # or
+   pipx install pre-commit
+
+Enabling pre-commit Hooks
+-------------------------
+
+Once installed, enable the hooks in your local clone of the Einsums repository:
+
+.. code-block:: bash
+
+   cd /path/to/Einsums
+   pre-commit install
+
+This installs Git hook scripts so that ``pre-commit`` runs automatically when you commit.
+
+To manually run checks on all files (useful before a PR):
+
+.. code-block:: bash
+
+   pre-commit run --all-files
+
+Hook Summary
+------------
+
+The following hooks are configured in ``.pre-commit-config.yaml``:
+
+**C++ formatting**
+
+- **Hook**: ``clang-format`` (`v16.0.6 <https://github.com/pre-commit/mirrors-clang-format>`_)
+- **Files checked**: ``.cpp``, ``.hpp``
+- **Config**: Uses project’s ``.clang-format`` style
+- **Purpose**: Ensures consistent formatting of C++ source and header files.
+
+**CMake formatting**
+
+- **Hook**: ``cmake-format`` (`v0.6.10 <https://github.com/cheshirekow/cmake-format-precommit>`_)
+- **Files checked**: ``CMakeLists.txt``, ``*.cmake``
+- **Purpose**: Applies consistent formatting to all CMake files.
+
+**License header checks**
+
+- **Hook**: ``insert-license`` (`v1.5.4 <https://github.com/Lucas-C/pre-commit-hooks>`_)
+- **Files checked**:
+  - C++: ``.cpp``, ``.hpp`` (C++-style comments)
+  - CMake: ``CMakeLists.txt``, ``*.cmake`` (hash comments)
+  - Python: ``.py`` (hash comments)
+- **License template**: ``devtools/LicenseHeader.txt``
+- **Purpose**: Verifies that all relevant files begin with a consistent license header.
+
+All hooks are configured to **exclude build directories** such as ``build/`` and ``cmake-build-*`` automatically.
+
+Updating Hooks
+--------------
+
+To update all hooks to their latest compatible versions:
+
+.. code-block:: bash
+
+   pre-commit autoupdate
+
+To update a specific hook:
+
+.. code-block:: bash
+
+   pre-commit autoupdate --repo <repo-url>
+
+If you encounter caching or hook resolution issues, you can clear the cache:
+
+.. code-block:: bash
+
+   pre-commit clean
+
+Troubleshooting
+---------------
+
+**Common tasks**:
+
+- Run a specific hook manually:
+
+  .. code-block:: bash
+
+     pre-commit run clang-format --all-files
+
+- Temporarily skip hooks (not recommended unless necessary):
+
+  .. code-block:: bash
+
+     git commit --no-verify
+
+- Reinstall hooks:
+
+  .. code-block:: bash
+
+     pre-commit uninstall
+     pre-commit install
+
+Contributing
+------------
+
+All contributors to Einsums are expected to run ``pre-commit`` before pushing code or submitting a pull request.
+
+The typical workflow is:
+
+.. code-block:: bash
+
+   pre-commit run --all-files
+   git add .
+   git commit -m "Apply pre-commit fixes"
+
+This minimizes unnecessary review cycles and helps maintain code consistency.

@@ -7,6 +7,8 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/BufferAllocator.hpp>
+
 #include <cstddef>
 #include <vector>
 
@@ -90,7 +92,7 @@ template <typename T>
 struct RuntimeTensorView;
 
 template <typename T>
-using VectorData = std::vector<T>;
+using VectorData = BufferVector<T>;
 #endif
 
 } // namespace einsums

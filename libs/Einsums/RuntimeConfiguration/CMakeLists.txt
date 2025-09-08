@@ -9,15 +9,20 @@ set(RuntimeConfigurationHeaders Einsums/RuntimeConfiguration/RuntimeConfiguratio
 
 set(RuntimeConfigurationSources RuntimeConfiguration.cpp)
 
-find_package(argparse 3 REQUIRED)
-
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums RuntimeConfiguration
   SOURCES ${RuntimeConfigurationSources}
   HEADERS ${RuntimeConfigurationHeaders}
-  DEPENDENCIES argparse::argparse
-  MODULE_DEPENDENCIES Einsums_Config Einsums_Errors Einsums_Logging Einsums_TypeSupport
+  DEPENDENCIES
+  MODULE_DEPENDENCIES
+    Einsums_Config
+    Einsums_CommandLine
+    Einsums_Errors
+    Einsums_Logging
+    Einsums_TypeSupport
+    Einsums_Version
+    Einsums_Print
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME Einsums
 )

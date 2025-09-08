@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -15,8 +15,8 @@
 
 namespace einsums::tensor_algebra::detail {
 
-template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, TensorConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, TensorConcept AType, TensorConcept BType, TensorConcept CType,
+          typename... CIndices, typename... AIndices, typename... BIndices>
     requires requires {
         requires(TiledTensorConcept<AType> || BlockTensorConcept<AType>);
         requires(TiledTensorConcept<BType> || BlockTensorConcept<BType>);
@@ -63,12 +63,12 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
 
     EINSUMS_OMP_PARALLEL_FOR
     for (size_t sentinel = 0; sentinel < unique_grid[0] * unique_strides[0]; sentinel++) {
-        thread_local std::array<size_t, std::tuple_size<decltype(unique_indices)>::value> unique_index_table;
+        std::array<size_t, std::tuple_size<decltype(unique_indices)>::value> unique_index_table;
 
         sentinel_to_indices(sentinel, unique_strides, unique_index_table);
-        thread_local std::array<int, ARank> A_tile_index;
-        thread_local std::array<int, BRank> B_tile_index;
-        thread_local std::array<int, CRank> C_tile_index;
+        std::array<int, ARank> A_tile_index;
+        std::array<int, BRank> B_tile_index;
+        std::array<int, CRank> C_tile_index;
 
         bool skip = false;
 
@@ -141,11 +141,11 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
             C->unlock();
             C_block.lock();
             if constexpr (IsBlockTensorV<AType>) {
-                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_block, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
-                                                B.tile(B_tile_index));
+                einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType{1.0}, C_indices, &C_block, AB_prefactor, A_indices,
+                                                                     A[A_tile_index[0]], B_indices, B.tile(B_tile_index));
             } else if constexpr (IsBlockTensorV<BType>) {
-                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_block, AB_prefactor, A_indices, A.tile(A_tile_index),
-                                                B_indices, B[B_tile_index[0]]);
+                einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType{1.0}, C_indices, &C_block, AB_prefactor, A_indices,
+                                                                     A.tile(A_tile_index), B_indices, B[B_tile_index[0]]);
             }
             C_block.unlock();
         } else {
@@ -158,14 +158,14 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
             C->unlock();
             C_tile.lock();
             if constexpr (IsBlockTensorV<AType> && IsBlockTensorV<BType>) {
-                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
-                                                B[B_tile_index[0]]);
+                einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices,
+                                                                     A[A_tile_index[0]], B_indices, B[B_tile_index[0]]);
             } else if constexpr (IsBlockTensorV<AType>) {
-                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
-                                                B.tile(B_tile_index));
+                einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices,
+                                                                     A[A_tile_index[0]], B_indices, B.tile(B_tile_index));
             } else if constexpr (IsBlockTensorV<BType>) {
-                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index),
-                                                B_indices, B[B_tile_index[0]]);
+                einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices,
+                                                                     A.tile(A_tile_index), B_indices, B[B_tile_index[0]]);
             }
             C_tile.unlock();
         }

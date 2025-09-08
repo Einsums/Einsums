@@ -1,14 +1,17 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/CommandLine.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
+#include <Einsums/Print.hpp>
 #include <Einsums/RuntimeConfiguration/RuntimeConfiguration.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
+#include <Einsums/Version.hpp>
 
 #include <filesystem>
 #include <string>
@@ -27,8 +30,6 @@
 #elif __APPLE__
 #    include <mach-o/dyld.h>
 #endif
-
-#include <argparse/argparse.hpp>
 
 namespace einsums {
 
@@ -56,8 +57,7 @@ namespace detail {
 struct EINSUMS_EXPORT ArgumentList final : design_pats::Lockable<std::mutex> {
     EINSUMS_SINGLETON_DEF(ArgumentList)
 
-  public:
-    std::list<std::function<void(argparse::ArgumentParser &)>> argument_functions{};
+    std::list<std::function<void()>> argument_functions{};
 
   private:
     explicit ArgumentList() = default;
@@ -77,8 +77,8 @@ std::string get_executable_filename() {
 #elif defined(__linux) || defined(linux) || defined(__linux__)
     r     = std::filesystem::canonical("/proc/self/exe").string();
     errno = 0; // errno seems to be set by the previous call. However, since the call does not throw an exception,
-    // and the specification for the call requires it to throw an exception when it encounters an error,
-    // it can be assumed that the error is actually not important.
+               // and the specification for the call requires it to throw an exception when it encounters an error,
+               // it can be assumed that the error is actually not important.
 #elif defined(__APPLE__)
     char          exe_path[PATH_MAX + 1];
     std::uint32_t len = sizeof(exe_path) / sizeof(exe_path[0]);
@@ -96,14 +96,14 @@ std::string get_executable_filename() {
 }
 
 std::string get_executable_prefix() {
-    std::filesystem::path p(get_executable_filename());
-    std::string           prefix = p.parent_path().parent_path().string();
+    std::filesystem::path const p(get_executable_filename());
+    std::string                 prefix = p.parent_path().parent_path().string();
 
     return prefix;
 }
 } // namespace detail
 
-void register_arguments(std::function<void(argparse::ArgumentParser &)> func) {
+void register_arguments(std::function<void()> func) {
     auto &argument_list = detail::ArgumentList::get_singleton();
     auto  lock          = std::lock_guard(argument_list);
 
@@ -145,8 +145,7 @@ void RuntimeConfiguration::pre_initialize() {
     global_ints["pid"]                  = getpid();
 }
 
-RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[],
-                                           std::function<void(argparse::ArgumentParser &)> const &user_command_line)
+RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[], std::function<void()> const &user_command_line)
     : original(argc) {
 
     // Make a copy. If a new argv was derived from the argv on entry, then it may not
@@ -160,24 +159,17 @@ RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[],
     parse_command_line(user_command_line);
 }
 
-RuntimeConfiguration::RuntimeConfiguration(std::vector<std::string> const                        &argv,
-                                           std::function<void(argparse::ArgumentParser &)> const &user_command_line)
+RuntimeConfiguration::RuntimeConfiguration(std::vector<std::string> const &argv, std::function<void()> const &user_command_line)
     : original(argv) {
     pre_initialize();
 
     parse_command_line(user_command_line);
 }
 
-std::vector<std::string>
-RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line) {
+std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<void()> const &user_command_line) {
     // Imperative that pre_initialize is called first as it is responsible for setting
     // default values. This is done in the constructor.
     // There should be a mechanism that allows the user to change the program name.
-    if (original[0].length() > 0) {
-        argument_parser.reset(new argparse::ArgumentParser(original[0]));
-    } else {
-        argument_parser.reset(new argparse::ArgumentParser("einsums"));
-    }
 
     /*
      * Acquire locks for the different maps.
@@ -191,48 +183,49 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
         std::scoped_lock lock{*global_config.get_string_map(), *global_config.get_int_map(), *global_config.get_double_map(),
                               *global_config.get_bool_map()};
 
-        no_flag(*argument_parser, global_bools["install-signal-handlers"], "--einsums:install-signal-handlers",
-                "--einsums:no-install-signal-handlers", "Install signal handlers", "Do not install signal handlers", true);
+        // These options are static but all use Location to initialize the
+        // members of the parent class.
+        static cl::OptionCategory debugCategory("Debug");
+        static cl::Flag noInstallSignalHandlers("einsums:debug:no-install-signal-handlers", {}, "Do not install signal handlers",
+                                                debugCategory, cl::Location(global_bools["install-signal-handlers"]), cl::Default(true),
+                                                cl::ImplicitValue(false));
 
-        no_flag(*argument_parser, global_bools["attach-debugger"], "--einsums:attach-debugger", "--einsums:no-attach-debugger",
-                "Provide a mechanism to attach debugger on detected errors.",
-                "Do not provide a mechanism to attach debugger on detected errors", true);
+        static cl::Flag noAttachDebugger("einsums:debug:no-attach-debugger", {},
+                                         "Do not provide a mechanism to attach a debugger on detected errors",
+                                         debugCategory, cl::Location(global_bools["attach-debugger"]), cl::Default(true), cl::ImplicitValue(false));
 
-        no_flag(*argument_parser, global_bools["diagnostics-on-terminate"], "--einsums:diagnostics-on-terminate",
-                "--einsums:no-diagnostics-on-terminate", "Print additional diagnostic information on termination.",
-                "Do not print additional diagnostic information on termination.", true);
+        static cl::Flag noDiagnosticsOnTerminate(
+            "einsums:debug:no-diagnostics-on-terminate", {}, "Print additional diagnostic information on termination",
+            debugCategory, cl::Location(global_bools["diagnostics-on-terminate"]), cl::Default(true), cl::ImplicitValue(false));
 
-        argument_parser
-            ->add_argument("--einsums:log-level")
-#ifdef EINSUMS_DEBUG
-            .default_value<std::int64_t>(SPDLOG_LEVEL_DEBUG)
+        static cl::OptionCategory logCategory("Logging");
+        static cl::Opt<int64_t> logLevel("einsums:log:level", {}, "Log level", logCategory, cl::Location(global_ints["log-level"]),
+                                         cl::Default(static_cast<int64_t>(
+#if defined(EINSUMS_DEBUG)
+                                             SPDLOG_LEVEL_DEBUG
 #else
-            .default_value<std::int64_t>(SPDLOG_LEVEL_INFO)
+                                             SPDLOG_LEVEL_INFO
 #endif
-            .help("set log level")
-            .choices(0, 1, 2, 3, 4)
-            .store_into(global_ints["log-level"]);
-        argument_parser->add_argument("--einsums:log-destination")
-            .default_value("cerr")
-            .help("set log destination")
-            .choices("cerr", "cout")
-            .store_into(global_strings["log-destination"]);
-        argument_parser->add_argument("--einsums:log-format")
-            .default_value("[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%-8l%$] [%s:%#/%!] %v")
-            .store_into(global_strings["log-format"]);
+                                             )),
+                                         cl::RangeBetween(0, 4), cl::ValueName("LogLevel"));
 
-        no_flag(*argument_parser, global_bools["profiler-report"], "--einsums:profiler-report", "--einsums:no-profiler-report",
-                "Generate profiling report.", "Do not generate profiling report.", true);
+        static cl::Opt<std::string> logDestination("einsums:log:destination", {}, "Log destination",
+                                                   logCategory, cl::Location(global_strings["log-destination"]), cl::Default(std::string("cerr")));
 
-        argument_parser->add_argument("--einsums:profiler-filename")
-            .default_value("profile.txt")
-            .help("filename of the profiling report")
-            .store_into(global_strings["profiler-filename"]);
+        static cl::Opt<std::string> logFormat("einsums:log:format", {}, "Log format", logCategory, cl::Location(global_strings["log-format"]),
+                                              cl::Default(std::string("[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%-8l%$] [%s:%#/%!] %v")));
 
+        static cl::OptionCategory profileCategory("Profile");
+        static cl::Flag noProfileReport("einsums:profile:no-report", {}, "Don't generate profile report",
+                                        profileCategory, cl::Location(global_bools["profiler-report"]), cl::Default(true), cl::ImplicitValue(false));
 
-        no_flag(*argument_parser, global_bools["profiler-append"], "--einsums:profiler-append", "--einsums:no-profiler-append",
-                "Append to an existing profiling file.", "Replace the contents of the profiling file with the new profiling information.",
-                true);
+        static cl::Opt<std::string> profileFilename("einsums:profile;filename", {}, "Generate profile filename",
+                                                    profileCategory, cl::Location(global_strings["profiler-filename"]),
+                                                    cl::Default(std::string("profile.txt")), cl::ValueName("filename"));
+
+        static cl::Opt<bool> noProfileAppend("einsums:profile:no-append", {}, "Don't append to profile file",
+                                             profileCategory, cl::Location(global_bools["profiler-append"]), cl::Default(true), cl::ImplicitValue(false),
+                                             cl::ValueName("N"));
     }
 
     {
@@ -242,23 +235,25 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
 
         // Inject module-specific command lines.
         for (auto &func : argument_list.argument_functions) {
-            func(*argument_parser);
+            func();
         }
     }
 
     // Allow the user to inject their own command line options
     if (user_command_line) {
-        user_command_line(*argument_parser);
+        user_command_line();
     }
 
     try {
-        global_config.lock();
-        auto out = argument_parser->parse_known_args(original);
-        global_config.unlock();
-        return out;
-    } catch (std::exception const &err) {
-        std::cerr << err.what() << std::endl;
-        std::cerr << argument_parser;
+        std::vector<std::string> unknown_args;
+
+        auto pr = cl::parse(original, "Einsums", full_version_as_string(), &unknown_args);
+
+        if (!pr.ok) {
+            std::exit(pr.exit_code);
+        }
+        return unknown_args;
+    } catch (std::exception const &) {
         std::exit(1);
     }
 }

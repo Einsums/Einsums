@@ -14,10 +14,10 @@ set(_Einsums_modules
   BLASBase
   BLASVendor
   BufferAllocator
+  CommandLine
   Concepts
   Config
   Debugging
-  Decomposition
   Errors
   FFT
   GPUMemory
@@ -35,6 +35,7 @@ set(_Einsums_modules
   Tensor
   TensorAlgebra
   TensorBase
+  TensorImpl
   TensorUtilities
   TypeSupport
   Utilities

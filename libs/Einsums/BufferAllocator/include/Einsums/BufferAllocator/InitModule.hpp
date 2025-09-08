@@ -1,12 +1,11 @@
-//--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All Rights Reserved.
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/Config.hpp>
-#include <argparse/argparse.hpp>
 
 /*
  * Exported definitions for initialization. If the module does not need to be initialized,
@@ -19,7 +18,7 @@ namespace einsums {
 
 EINSUMS_EXPORT int init_Einsums_BufferAllocator();
 
-EINSUMS_EXPORT void add_Einsums_BufferAllocator_arguments(argparse::ArgumentParser &);
+EINSUMS_EXPORT void add_Einsums_BufferAllocator_arguments();
 EINSUMS_EXPORT void initialize_Einsums_BufferAllocator();
 EINSUMS_EXPORT void finalize_Einsums_BufferAllocator();
 
@@ -29,4 +28,4 @@ static int initialize_module_Einsums_BufferAllocator = init_Einsums_BufferAlloca
 
 }
 
-}
+} // namespace einsums

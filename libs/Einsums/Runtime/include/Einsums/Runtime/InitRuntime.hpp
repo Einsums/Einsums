@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -41,8 +41,8 @@ namespace detail {
  * @todo Document.
  */
 struct InitParams {
-    mutable StartupFunctionType  startup;
-    mutable ShutdownFunctionType shutdown;
+    mutable StartupFunctionType                             startup;
+    mutable ShutdownFunctionType                            shutdown;
 };
 
 /// \brief Initialize the runtime and start a function.

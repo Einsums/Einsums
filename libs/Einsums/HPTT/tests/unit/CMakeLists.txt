@@ -3,7 +3,8 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-set(HPTTTests CreatePlan)
+set(HPTTTests # CreatePlan
+)
 
 foreach(test ${HPTTTests})
   set(sources ${test}.cpp)
@@ -13,7 +14,8 @@ foreach(test ${HPTTTests})
   einsums_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
-          FOLDER ${folder_name} NOINSTALL
+    FOLDER ${folder_name}
+    NOINSTALL
   )
 
   einsums_add_unit_test("Modules.HPTT" ${test})

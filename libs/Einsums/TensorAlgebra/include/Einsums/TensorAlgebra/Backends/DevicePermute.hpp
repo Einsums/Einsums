@@ -33,7 +33,7 @@ void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipDoubleComplex
                                 hipDoubleComplex const beta, hipDoubleComplex *B);
 #endif
 
-template <typename T, size_t Rank>
+template <bool ConjA, typename T, size_t Rank>
 __global__ void permute_kernel(int const *perm, T const alpha, T const *A, size_t const *strideA, T const beta, T *B, size_t const *strideB,
                                size_t size) {
     int thread_id, kernel_size;
@@ -58,7 +58,11 @@ __global__ void permute_kernel(int const *perm, T const alpha, T const *A, size_
             B_sentinel += strideB[i] * A_index[perm[i]];
         }
 
-        B[B_sentinel] = gpu_ops::fma(alpha, A[A_sentinel], beta * B[B_sentinel]);
+        if constexpr (ConjA && IsComplexV<T>) {
+            B[B_sentinel] = gpu_ops::fma(alpha, gpu_ops::conj(A[A_sentinel]), beta * B[B_sentinel]);
+        } else {
+            B[B_sentinel] = gpu_ops::fma(alpha, A[A_sentinel], beta * B[B_sentinel]);
+        }
     }
 }
 
@@ -78,18 +82,19 @@ auto reverse_inds(std::tuple<Head, Tail...> const &inds) {
 //
 // permute algorithm
 //
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename CType, size_t CRank,
-          typename... CIndices, typename... AIndices, typename U, typename T = double>
+template <bool ConjA = false, template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename CType,
+          size_t CRank, typename... CIndices, typename... AIndices, typename U, typename T = double>
     requires requires {
         requires DeviceRankTensor<AType<T, ARank>, ARank, T>;
         requires DeviceRankTensor<CType<T, CRank>, CRank, T>;
+        requires std::is_arithmetic_v<U> || IsComplexV<U>;
     }
 auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType<T, CRank> *C, U const UA_prefactor,
              std::tuple<AIndices...> const &A_indices, AType<T, ARank> const &A)
     -> std::enable_if_t<sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
                         std::is_arithmetic_v<U>> {
 
-    LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
+    LabeledSection1((std::abs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices,
                                       UC_prefactor, C->name(), C_indices)
                         : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices));
@@ -103,6 +108,20 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
 
     // Librett uses the reverse order for indices.
     auto target_position_in_A = detail::find_type_with_position(detail::reverse_inds(C_indices), detail::reverse_inds(A_indices));
+
+    auto check_target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
+
+    einsums::for_sequence<ARank>([&](auto n) {
+        if (C->dim((size_t)n) < A.dim(std::get<2 * (size_t)n + 1>(check_target_position_in_A))) {
+            EINSUMS_THROW_EXCEPTION(dimension_error,
+                                    "The {} dimension of the output tensor is smaller than the {} dimension of the input tensor!",
+                                    print::ordinal((size_t)n), print::ordinal(std::get<2 * (size_t)n + 1>(check_target_position_in_A)));
+        }
+
+        if (C->dim((size_t)n) == 0) {
+            return;
+        }
+    });
 
     // LibreTT interface currently only works for full Tensors and not TensorViews
 #if defined(EINSUMS_USE_LIBRETT)
@@ -130,7 +149,7 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         }
     }
 #endif
-    if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
+    if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)> && !(ConjA && IsComplexV<T>)) {
         einsums::linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
     } else {
         int *index_table = new int[sizeof...(AIndices)];
@@ -158,7 +177,7 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
         using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
 
-        detail::permute_kernel<T_devtype, ARank><<<gpu::blocks(A.size()), gpu::block_size(A.size()), 0, stream>>>(
+        detail::permute_kernel<ConjA, T_devtype, ARank><<<gpu::blocks(A.size()), gpu::block_size(A.size()), 0, stream>>>(
             gpu_index_table, HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(), stride_A_gpu,
             HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data(), stride_C_gpu, A.size());
         hipEvent_t wait_event;

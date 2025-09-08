@@ -1,11 +1,12 @@
-//--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All Rights Reserved.
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
-#include <{lib_name}/{module_name}/InitModule.hpp>
+#include <Einsums/CommandLine.hpp>
 #include <Einsums/Runtime.hpp>
-#include <argparse/argparse.hpp>
+
+#include "InitModule.hpp"
 
 namespace einsums {{
     
@@ -26,9 +27,9 @@ int setup_{lib_name}_{module_name}() {{
     static bool is_initialized = false;
 
     if(!is_initialized) {{
-        einsums::register_arguments(einsums::add_{lib_name}_{module_name}_arguments);
-        einsums::register_startup_function(einsums::initialize_{lib_name}_{module_name});
-        einsums::register_shutdown_function(einsums::finalize_{lib_name}_{module_name});
+        register_arguments(add_{lib_name}_{module_name}_arguments);
+        register_startup_function(initialize_{lib_name}_{module_name});
+        register_shutdown_function(finalize_{lib_name}_{module_name});
 
         is_initialized = true;
     }}
@@ -48,57 +49,6 @@ EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments(argparse::ArgumentPar
     auto &global_double = global_config.get_double_map()->get_value();
     auto &global_int = global_config.get_int_map()->get_value();
     auto &global_bool = global_config.get_bool_map()->get_value();
-
-    auto lock = std::lock_guard(global_string, global_double, global_int, global_bool);
-
-    /* Examples:
-     * String argument: 
-     * parser.add_argument("--einsums:dummy-str")
-     *   .default_value("default value")
-     *   .help("Dummy string argument.")
-     *   .store_into(global_string["dummy-str"]);
-     *
-     * Double argument:
-     * parser.add_argument("--einsums:dummy-double")
-     *   .default_value(1.23)
-     *   .help("Dummy double argument.")
-     *   .store_into(global_double["dummy-double"]);
-     *
-     * Integer argument: Be careful! These are int64_t, not int, so
-     * literals need to be handled with care.
-     *
-     * parser.add_argument("--einsums:dummy-int")
-     *   .default_value<int64_t>(1)
-     *   .help("Dummy int argument.")
-     *   .store_into(global_int["dummy-int"]);
-     *
-     * parser.add_argument("--einsums:dummy-int2")
-     *   .default_value(1L)
-     *   .help("Dummy int argument, another way.")
-     *   .store_into(global_int["dummy-int2"]);
-     *
-     * Boolean argument:
-     * This one adds a flag that is normally false, but is set when provided.
-     * parser.add_argument("--einsums:dummy-bool")
-     *   .flag()
-     *   .help("Dummy bool argument.")
-     *   .store_into(global_bool["dummy-bool"]);
-     *
-     * A function in RuntimeConfiguration.hpp provides more customization options. It creates two arguments
-     * that are inverses of each other and are mutually exclusive.
-     *
-     * This creates a flag that is normally false. If --einsums:dummy-bool2 is present, then true is stored. Otherwise, false is stored.
-     * no_flag(parser, global_bool["dummy-bool2"], "--einsums:dummy-bool2", "--einsums:no-dummy-bool2", "Dummy bool 2", "Not dummy bool 2", false);
-     *
-     * This does the opposite, creating a flag that is normally true, but if --einsums:no-dummy-bool2 is present, false is stored.
-     * no_flag(parser, global_bool["dummy-bool3"], "--einsums:dummy-bool3", "--einsums:no-dummy-bool3", "Dummy bool 3", "Not dummy bool 3", true);
-     *
-     * Simpler versions can also be created that only require a help statement for the non-default value. The default flag's help will just say
-     * "Negation of [default flag]." The following creates an argument that is normally false and has the given help statement on the true flag.
-     * The default help statement will be on the false flag.
-     * no_flag(parser, global_bool["dummy-bool4"], "--einsums:dummy-bool4", "--einsums:no-dummy-bool4", "Dummy bool 4", false);
-     */
-
 }}
 
 void initialize_{lib_name}_{module_name}() {{

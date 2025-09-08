@@ -1,8 +1,9 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
+#include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 
 #include <Einsums/Testing.hpp>
@@ -11,6 +12,8 @@ TEMPLATE_TEST_CASE("einsum5", "[tensor_algebra]", float, double) {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
+
+    tensor_algebra::detail::AlgorithmChoice alg_choice;
 
     SECTION("3x3x3x3 <- 3x3x3x3 * 3x3") {
         // This one is to represent a two-electron integral transformation
@@ -21,7 +24,8 @@ TEMPLATE_TEST_CASE("einsum5", "[tensor_algebra]", float, double) {
         auto A = create_random_tensor<TestType>("A", 3, 3, 3, 3);
         auto B = create_random_tensor<TestType>("B", 3, 3);
 
-        REQUIRE_NOTHROW(einsum(Indices{p, q, r, l}, &gMO0, Indices{p, q, r, s}, A, Indices{s, l}, B));
+        REQUIRE_NOTHROW(einsum(Indices{p, q, r, l}, &gMO0, Indices{p, q, r, s}, A, Indices{s, l}, B, &alg_choice));
+        REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
 
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
@@ -45,7 +49,8 @@ TEMPLATE_TEST_CASE("einsum5", "[tensor_algebra]", float, double) {
             }
         }
 
-        REQUIRE_NOTHROW(einsum(Indices{p, q, k, s}, &gMO0, Indices{p, q, r, s}, A, Indices{r, k}, B));
+        REQUIRE_NOTHROW(einsum(Indices{p, q, k, s}, &gMO0, Indices{p, q, r, s}, A, Indices{r, k}, B, &alg_choice));
+        REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
 
         gMO1.zero();
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {

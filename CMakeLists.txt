@@ -1,7 +1,7 @@
-#---------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------
 # Copyright (c) The Einsums Developers. All rights reserved.
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-#---------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 3.25.2 FATAL_ERROR) # 3.25.2 for CUDA20 support.
 
@@ -25,7 +25,7 @@ if(NOT CMAKE_BUILD_TYPE)
   )
 endif()
 
-project(Einsums LANGUAGES C CXX)
+project(Einsums LANGUAGES C CXX ASM)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -40,8 +40,8 @@ endif()
 # ##################################################################################################
 # Build all of Einsums
 # ##################################################################################################
-set(EINSUMS_VERSION_MAJOR 1)
-set(EINSUMS_VERSION_MINOR 1)
+set(EINSUMS_VERSION_MAJOR 2)
+set(EINSUMS_VERSION_MINOR 0)
 set(EINSUMS_VERSION_PATCH 0)
 string(TIMESTAMP EINSUMS_VERSION_DATE "%Y%m%d" UTC)
 set(EINSUMS_VERSION_TAG "-trunk")
@@ -142,13 +142,13 @@ einsums_option(
   "Define which allocator should be linked in. Options are: system and mimalloc. (default: ${DEFAULT_MALLOC})"
   ${DEFAULT_MALLOC}
   STRINGS "system;mimalloc"
-  CATEGORY "Build Targets"
-  ADVANCED
+  CATEGORY "Build Targets" ADVANCED
 )
 
 # Compiler related build options
 einsums_option(
-  EINSUMS_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)" ON ADVANCED CATEGORY "Debugging"
+  EINSUMS_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)" ON ADVANCED
+  CATEGORY "Debugging"
 )
 
 einsums_option(
@@ -157,9 +157,10 @@ einsums_option(
 )
 
 einsums_option(
-  EINSUMS_WITH_EXECUTABLE_PREFIX STRING "Sets a string to be prepended to executable names (default: none)." ""
+  EINSUMS_WITH_EXECUTABLE_PREFIX STRING
+  "Sets a string to be prepended to executable names (default: none)." ""
+  CATEGORY "Build Targets" ADVANCED
   CATEGORY "Build Targets"
-  ADVANCED CATEGORY "Build Targets"
 )
 
 einsums_option(
@@ -191,11 +192,12 @@ einsums_option(
   PATH
   "Root directory for libraries and executables for the build. This does not affect the installed location of libraries and executables."
   "${PROJECT_BINARY_DIR}"
-  CATEGORY "Build Targets"
-  ADVANCED
+  CATEGORY "Build Targets" ADVANCED
 )
 
-einsums_option(EINSUMS_WITH_COVERAGE BOOL "Enable code coverage generation" OFF ADVANCED CATEGORY "Debugging")
+einsums_option(
+  EINSUMS_WITH_COVERAGE BOOL "Enable code coverage generation" OFF ADVANCED CATEGORY "Debugging"
+)
 
 # ##################################################################################################
 
@@ -221,8 +223,7 @@ endif()
 
 einsums_option(
   EINSUMS_WITH_PRECOMPILED_HEADERS BOOL
-  "Enabled precompiled headers for certain build targets (experimental) (default: OFF)" OFF
-  ADVANCED
+  "Enabled precompiled headers for certain build targets (experimental) (default: OFF)" OFF ADVANCED
   CATEGORY "Build Targets"
 )
 if(EINSUMS_WITH_PRECOMPILED_HEADERS)
@@ -290,6 +291,11 @@ einsums_option(
 einsums_option(
   EINSUMS_WITH_FAIL_COMPILE_TESTS BOOL
   "Create build system support for fail compile tests (default: ON)" ON DEPENDS "EINSUMS_WITH_TESTS"
+  CATEGORY "Build Targets"
+)
+
+einsums_option(
+  EINSUMS_WITH_EXPERIMENTAL BOOL "If true, build experimental Einsums modules (default: OFF)" OFF
   CATEGORY "Build Targets"
 )
 
@@ -366,8 +372,7 @@ einsums_option(
 
 einsums_option(
   EINSUMS_WITH_BACKTRACES BOOL "Attach backtraces to einsums exceptions (default: ON)" ON
-  CATEGORY "Debugging"
-  ADVANCED
+  CATEGORY "Debugging" ADVANCED
 )
 
 # ##################################################################################################
@@ -385,9 +390,7 @@ if(EINSUMS_WITH_BACKTRACES)
 
   einsums_option(
     EINSUMS_WITH_THREAD_BACKTRACE_DEPTH STRING
-    "Thread stack back trace depth being captured (default: 20)" "20"
-    CATEGORY "Debugging"
-    ADVANCED
+    "Thread stack back trace depth being captured (default: 20)" "20" CATEGORY "Debugging" ADVANCED
   )
   einsums_add_config_define(
     EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH ${EINSUMS_WITH_THREAD_BACKTRACE_DEPTH}
@@ -400,36 +403,45 @@ if(EINSUMS_WITH_BACKTRACES)
 endif()
 
 einsums_option(
+  EINSUMS_WITH_PROFILER BOOL "Enable Einsums profiling. (Default: ON)" ON CATEGORY "Profiling"
+                                                                                   ADVANCED
+)
+einsums_option(
+  EINSUMS_WITH_PROFILER_INTERNAL BOOL "Enable profiling internal Einsums code. (Default: OFF)" OFF
+  DEPENDS "EINSUMS_WITH_PROFILER" CATEGORY "Profiling" ADVANCED
+)
+if(EINSUMS_WITH_PROFILER)
+  einsums_add_config_define(EINSUMS_HAVE_PROFILER)
+  if(EINSUMS_WITH_PROFILER_INTERNAL)
+    einsums_add_config_define(EINSUMS_HAVE_PROFILER_INTERNAL)
+  endif()
+endif()
+
+einsums_option(
   EINSUMS_WITH_ITTNOTIFY BOOL "Enable Amplifier (ITT) instrumentation support." OFF
-  CATEGORY "Profiling"
-  ADVANCED
+  CATEGORY "Profiling" ADVANCED
 )
 
 # Debugging related build options
 einsums_option(
-  EINSUMS_WITH_VALGRIND BOOL "Enable Valgrind instrumentation support." OFF
-  CATEGORY "Debugging"
-  ADVANCED
+  EINSUMS_WITH_VALGRIND BOOL "Enable Valgrind instrumentation support." OFF CATEGORY "Debugging"
+                                                                                     ADVANCED
 )
 
 einsums_option(
-  EINSUMS_WITH_TESTS_VALGRIND BOOL "Run selected tests with valgrind." OFF
-  CATEGORY "Debugging"
-  ADVANCED
+  EINSUMS_WITH_TESTS_VALGRIND BOOL "Run selected tests with valgrind." OFF CATEGORY "Debugging"
+                                                                                    ADVANCED
 )
 
 einsums_option(
   EINSUMS_WITH_TESTS_VALGRIND_OPTIONS STRING "Use these options when running tests under valgrind."
-  "--error-exitcode=1"
-  CATEGORY "Debugging"
-  ADVANCED
+  "--error-exitcode=1" CATEGORY "Debugging" ADVANCED
 )
 
 einsums_option(
-        EINSUMS_WITH_SANITIZERS STRING "Configure with sanitizer instrumentation support." OFF
-        STRINGS "OFF;;address;leak;memory;thread;undefined"
-  CATEGORY "Debugging"
-  ADVANCED
+  EINSUMS_WITH_SANITIZERS STRING "Configure with sanitizer instrumentation support." OFF
+  STRINGS "OFF;;address;leak;memory;thread;undefined"
+  CATEGORY "Debugging" ADVANCED
 )
 
 # ##################################################################################################
@@ -437,8 +449,7 @@ einsums_option(
 einsums_option(
   EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES BOOL
   "Verify that no modules are cross-referenced from a different module category (default: OFF)" OFF
-  ADVANCED
-  CATEGORY "Debugging"
+  ADVANCED CATEGORY "Debugging"
 )
 
 einsums_option(
@@ -447,8 +458,7 @@ einsums_option(
   "Build the Python module. A version for the Python build may be specified, or the value may be set to 'ON' for your current Python interpreter.
   Disable by specifying 'OFF'. Defaults to 'ON'."
   ON
-  CATEGORY "Features"
-  ADVANCED
+  CATEGORY "Features" ADVANCED
 )
 
 if(EINSUMS_WITH_ITTNOTIFY)
@@ -480,7 +490,7 @@ einsums_info("EINSUMS_LINALG_INT_INTERFACE ${EINSUMS_LINALG_INT_INTERFACE}")
 
 find_package(OpenMP REQUIRED MODULE COMPONENTS CXX)
 target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
-#einsums_info("OpenMP Version ${OpenMP_CXX_MAJOR_VERSION}")
+# einsums_info("OpenMP Version ${OpenMP_CXX_MAJOR_VERSION}")
 einsums_check_for_omp_tools_h(DEFINITIONS EINSUMS_HAVE_OMP_TOOLS_H)
 
 # ##################################################################################################
@@ -490,6 +500,8 @@ einsums_check_for_omp_tools_h(DEFINITIONS EINSUMS_HAVE_OMP_TOOLS_H)
 include(Einsums_SetupCUDA)
 include(Einsums_SetupHIP)
 include(Einsums_SetupFFT)
+include(Einsums_SetupTracy)
+# include(Einsums_SetupHighway)   ## This is currently found in LinearAlgebra/examples
 include(Einsums_PerformCXXFeatureTests)
 einsums_perform_cxx_feature_tests()
 
@@ -520,14 +532,14 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # For Clang and ClangCL
   if(WIN32)
     # ClangCL on Windows
-    add_compile_options(-fcxx-exceptions -fseh-exceptions)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fcxx-exceptions -fseh-exceptions>)
   else()
     # Clang on macOS/Linux
-    add_compile_options(-fcxx-exceptions)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fcxx-exceptions>)
   endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   # For GCC (Linux/macOS)
-  add_compile_options(-fexceptions)
+  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fexceptions>)
 endif()
 
 # Configure Warnings
@@ -645,13 +657,8 @@ else()
     einsums_add_compile_flag_if_available(-Wno-delete-non-virtual-dtor)
   endif()
 
-  # Check if our libraries have unresolved symbols
-  if(NOT APPLE
-     AND NOT WIN32
-     AND NOT EINSUMS_WITH_SANITIZERS
-  )
-    einsums_add_link_flag_if_available(-Wl,-z,defs)
-  endif()
+  # Check if our libraries have unresolved symbols if(NOT APPLE AND NOT WIN32 AND NOT
+  # EINSUMS_WITH_SANITIZERS ) einsums_add_link_flag_if_available(-Wl,-z,defs) endif()
   if(WIN32)
     target_link_libraries(einsums_base_libraries INTERFACE psapi WS2_32 mswsock)
   endif()
@@ -718,27 +725,21 @@ if(EINSUMS_USE_LIBRETT AND EINSUMS_WITH_GPU_SUPPORT)
   include(Einsums_SetupLibreTT)
 endif()
 
-if (EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
-  if (EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
+if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
+  if(EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
     find_package(
-            Python "${EINSUMS_BUILD_PYTHON}" EXACT
-            COMPONENTS Interpreter Development NumPy
-            REQUIRED
+      Python "${EINSUMS_BUILD_PYTHON}" EXACT COMPONENTS Interpreter Development NumPy REQUIRED
     )
-  else ()
-    find_package(
-            Python 3.10
-            COMPONENTS Interpreter Development NumPy
-            REQUIRED
-    )
-  endif ()
+  else()
+    find_package(Python 3.10 COMPONENTS Interpreter Development NumPy REQUIRED)
+  endif()
 
   include(Einsums_SetupPybind11)
 
   find_package(pybind11)
-endif ()
+endif()
 
-if (EINSUMS_WITH_SANITIZERS AND NOT MSVC)
+if(EINSUMS_WITH_SANITIZERS AND NOT MSVC)
   einsums_info("Adding sanitizer flags for ${EINSUMS_WITH_SANITIZERS}")
   target_compile_options(einsums_public_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})
   target_link_options(einsums_public_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})
@@ -833,6 +834,7 @@ install(
   COMPONENT core
   FILES_MATCHING
   PATTERN "*.hpp"
+  PATTERN "*.h"
   PATTERN ".git" EXCLUDE
   PATTERN "CMakeFiles" EXCLUDE
   PATTERN "CTestFiles" EXCLUDE

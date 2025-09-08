@@ -1,18 +1,28 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/BLAS/Types.hpp>
+#include <Einsums/Config/ExportDefinitions.hpp>
 
 #include <complex>
 
+extern "C" {
+extern EINSUMS_EXPORT int sdirprod_kernel(size_t n, float alpha, float const *x, float const *y, float *z);
+extern EINSUMS_EXPORT int ddirprod_kernel(size_t n, double alpha, double const *x, double const *y, double *z);
+extern EINSUMS_EXPORT int cdirprod_kernel(size_t n, std::complex<float> alpha, std::complex<float> const *x, std::complex<float> const *y,
+                                          std::complex<float> *z);
+extern EINSUMS_EXPORT int zdirprod_kernel(size_t n, std::complex<double> alpha, std::complex<double> const *x,
+                                          std::complex<double> const *y, std::complex<double> *z);
+}
+
 namespace einsums::blas::vendor {
 
-void initialize();
-void finalize();
+EINSUMS_EXPORT void initialize();
+EINSUMS_EXPORT void finalize();
 
 /*!
  * Performs matrix multiplication for general square matrices of type double.
@@ -51,6 +61,12 @@ void zaxpby(int_t const n, std::complex<double> const a, std::complex<double> co
 auto ssyev(char job, char uplo, int_t n, float *a, int_t lda, float *w, float *work, int_t lwork) -> int_t;
 auto dsyev(char job, char uplo, int_t n, double *a, int_t lda, double *w, double *work, int_t lwork) -> int_t;
 
+/**
+ * Other diagonalization routines.
+ */
+auto ssterf(int_t n, float *d, float *e) -> int_t;
+auto dsterf(int_t n, double *d, double *e) -> int_t;
+
 /*!
  * Computes all eigenvalues and left and right eigenvectors of a general matrix.
  */
@@ -87,6 +103,11 @@ void zscal(int_t n, std::complex<double> alpha, std::complex<double> *vec, int_t
 void csscal(int_t n, float alpha, std::complex<float> *vec, int_t inc);
 void zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc);
 
+void srscl(int_t n, float alpha, float *vec, int_t inc);
+void drscl(int_t n, double alpha, double *vec, int_t inc);
+void csrscl(int_t n, float alpha, std::complex<float> *vec, int_t inc);
+void zdrscl(int_t n, double alpha, std::complex<double> *vec, int_t inc);
+
 auto sdot(int_t n, float const *x, int_t incx, float const *y, int_t incy) -> float;
 auto ddot(int_t n, double const *x, int_t incx, double const *y, int_t incy) -> double;
 auto cdot(int_t n, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy) -> std::complex<float>;
@@ -116,6 +137,10 @@ void cger(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const
           std::complex<float> *a, int_t lda);
 void zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
           int_t inc_y, std::complex<double> *a, int_t lda);
+void cgerc(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x, std::complex<float> const *y,
+           int_t inc_y, std::complex<float> *a, int_t lda);
+void zgerc(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
+           int_t inc_y, std::complex<double> *a, int_t lda);
 
 /*!
  * Computes the LU factorization of a general M-by-N matrix A
@@ -157,8 +182,17 @@ void dlassq(int_t n, double const *x, int_t incx, double *scale, double *sumsq);
 void classq(int_t n, std::complex<float> const *x, int_t incx, float *scale, float *sumsq);
 void zlassq(int_t n, std::complex<double> const *x, int_t incx, double *scale, double *sumsq);
 
+float snrm2(int_t n, float const *x, int_t incx);
+double dnrm2(int_t n, double const *x, int_t incx);
+float scnrm2(int_t n, std::complex<float> const *x, int_t incx);
+double dznrm2(int_t n, std::complex<double> const *x, int_t incx);
+
 auto sgesvd(char, char, int_t, int_t, float *, int_t, float *, float *, int_t, float *, int_t, float *) -> int_t;
 auto dgesvd(char, char, int_t, int_t, double *, int_t, double *, double *, int_t, double *, int_t, double *) -> int_t;
+auto cgesvd(char jobu, char jobvt, int_t m, int_t n, std::complex<float> *a, int_t lda, float *s, std::complex<float> *u, int_t ldu,
+            std::complex<float> *vt, int_t ldvt, std::complex<float> *superb) -> int_t;
+auto zgesvd(char jobu, char jobvt, int_t m, int_t n, std::complex<double> *a, int_t lda, double *s, std::complex<double> *u, int_t ldu,
+            std::complex<double> *vt, int_t ldvt, std::complex<double> *superb) -> int_t;
 
 auto dgesdd(char, int_t, int_t, double *, int_t, double *, double *, int_t, double *, int_t) -> int_t;
 auto sgesdd(char, int_t, int_t, float *, int_t, float *, float *, int_t, float *, int_t) -> int_t;
@@ -169,11 +203,19 @@ auto cgesdd(char jobz, int_t m, int_t n, std::complex<float> *a, int_t lda, floa
 
 auto dgees(char jobvs, int_t n, double *a, int_t lda, int_t *sdim, double *wr, double *wi, double *vs, int_t ldvs) -> int_t;
 auto sgees(char jobvs, int_t n, float *a, int_t lda, int_t *sdim, float *wr, float *wi, float *vs, int_t ldvs) -> int_t;
+auto cgees(char jobvs, int_t n, std::complex<float> *a, int_t lda, int_t *sdim, std::complex<float> *w, std::complex<float> *vs, int_t ldvs)
+    -> int_t;
+auto zgees(char jobvs, int_t n, std::complex<double> *a, int_t lda, int_t *sdim, std::complex<double> *w, std::complex<double> *vs,
+           int_t ldvs) -> int_t;
 
 auto dtrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, double const *a, int_t lda, double const *b, int_t ldb, double *c,
             int_t ldc, double *scale) -> int_t;
 auto strsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, float const *a, int_t lda, float const *b, int_t ldb, float *c, int_t ldc,
             float *scale) -> int_t;
+auto ztrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, std::complex<double> const *a, int_t lda, std::complex<double> const *b,
+            int_t ldb, std::complex<double> *c, int_t ldc, double *scale) -> int_t;
+auto ctrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, std::complex<float> const *a, int_t lda, std::complex<float> const *b,
+            int_t ldb, std::complex<float> *c, int_t ldc, float *scale) -> int_t;
 
 auto sorgqr(int_t m, int_t n, int_t k, float *a, int_t lda, float const *tau) -> int_t;
 auto dorgqr(int_t m, int_t n, int_t k, double *a, int_t lda, double const *tau) -> int_t;
@@ -185,4 +227,28 @@ auto sgeqrf(int_t m, int_t n, float *a, int_t lda, float *tau) -> int_t;
 auto cgeqrf(int_t m, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *tau) -> int_t;
 auto zgeqrf(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t;
 
+void scopy(int_t n, float const *x, int_t incx, float *y, int_t incy);
+void dcopy(int_t n, double const *x, int_t incx, double *y, int_t incy);
+void ccopy(int_t n, std::complex<float> const *x, int_t incx, std::complex<float> *y, int_t incy);
+void zcopy(int_t n, std::complex<double> const *x, int_t incx, std::complex<double> *y, int_t incy);
+
+int_t slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int_t n, float *vec, int_t lda);
+int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, int_t n, double *vec, int_t lda);
+
+void sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, int_t incy, float *z, int_t incz);
+void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *y, int_t incy, double *z, int_t incz);
+void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy,
+              std::complex<float> *z, int_t incz);
+void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy,
+              std::complex<double> *z, int_t incz);
+
+float  sasum(int_t n, float const *x, int_t incx);
+double dasum(int_t n, double const *x, int_t incx);
+float  scasum(int_t n, std::complex<float> const *x, int_t incx);
+double dzasum(int_t n, std::complex<double> const *x, int_t incx);
+float  scsum1(int_t n, std::complex<float> const *x, int_t incx);
+double dzsum1(int_t n, std::complex<double> const *x, int_t incx);
+
+void clacgv(int_t n, std::complex<float> *x, int_t incx);
+void zlacgv(int_t n, std::complex<double> *x, int_t incx);
 } // namespace einsums::blas::vendor

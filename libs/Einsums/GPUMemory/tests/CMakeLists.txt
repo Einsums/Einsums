@@ -33,7 +33,7 @@ if(EINSUMS_WITH_TESTS)
       Modules.Einsums.GPUMemory
       HEADERS ${GPUMemoryHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
-      DEPENDENCIES Einsums_GPUMemory 
+      DEPENDENCIES Einsums_GPUMemory
     )
   endif()
 endif()

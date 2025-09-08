@@ -9,6 +9,7 @@ include(Einsums_Message)
 
 # cmake-format: off
 set(_EinsumsExperimental_modules
+  Decomposition
   Graph
   )
 # cmake-format: on

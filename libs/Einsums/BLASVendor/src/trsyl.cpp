@@ -6,8 +6,9 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLASVendor/Vendor.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -18,55 +19,83 @@ extern void FC_GLOBAL(dtrsyl, DTRSYL)(char *, char *, int_t *, int_t *, int_t *,
                                       int_t *, double *, int_t *);
 extern void FC_GLOBAL(strsyl, STRSYL)(char *, char *, int_t *, int_t *, int_t *, float const *, int_t *, float const *, int_t *, float *,
                                       int_t *, float *, int_t *);
+extern void FC_GLOBAL(ztrsyl, ZTRSYL)(char *, char *, int_t *, int_t *, int_t *, std::complex<double> const *, int_t *,
+                                      std::complex<double> const *, int_t *, std::complex<double> *, int_t *, double *, int_t *);
+extern void FC_GLOBAL(ctrsyl, CTRSYL)(char *, char *, int_t *, int_t *, int_t *, std::complex<float> const *, int_t *,
+                                      std::complex<float> const *, int_t *, std::complex<float> *, int_t *, float *, int_t *);
 }
 
 #define TRSYL(Type, lc, uc)                                                                                                                \
     auto lc##trsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, const Type *a, int_t lda, const Type *b, int_t ldb, Type *c,      \
                    int_t ldc, Type *scale) -> int_t {                                                                                      \
-        int_t info  = 0;                                                                                                                   \
-        int_t lda_t = std::max(int_t{1}, m);                                                                                               \
-        int_t ldb_t = std::max(int_t{1}, n);                                                                                               \
-        int_t ldc_t = std::max(int_t{1}, m);                                                                                               \
-                                                                                                                                           \
+        LabeledSection0();                                                                                                                 \
+        int_t info = 0;                                                                                                                    \
         /* Check leading dimensions */                                                                                                     \
         if (lda < m) {                                                                                                                     \
-            println_warn("trsyl warning: lda < m, lda = {}, m = {}", lda, m);                                                              \
+            EINSUMS_LOG_WARN("trsyl warning: lda < m, lda = {}, m = {}", lda, m);                                                          \
             return -7;                                                                                                                     \
         }                                                                                                                                  \
         if (ldb < n) {                                                                                                                     \
-            println_warn("trsyl warning: ldb < n, ldb = {}, n = {}", ldb, n);                                                              \
+            EINSUMS_LOG_WARN("trsyl warning: ldb < n, ldb = {}, n = {}", ldb, n);                                                          \
             return -9;                                                                                                                     \
         }                                                                                                                                  \
         if (ldc < n) {                                                                                                                     \
-            println_warn("trsyl warning: ldc < n, ldc = {}, n = {}", ldc, n);                                                              \
+            EINSUMS_LOG_WARN("trsyl warning: ldc < n, ldc = {}, n = {}", ldc, n);                                                          \
             return -11;                                                                                                                    \
         }                                                                                                                                  \
                                                                                                                                            \
-        /* Allocate memory for temporary array(s) */                                                                                       \
-        std::vector<Type> a_t(lda_t *std::max(int_t{1}, m));                                                                               \
-        std::vector<Type> b_t(ldb_t *std::max(int_t{1}, n));                                                                               \
-        std::vector<Type> c_t(ldc_t *std::max(int_t{1}, n));                                                                               \
+        /* Call LAPACK function and adjust info */                                                                                         \
+        FC_GLOBAL(lc##trsyl, UC##TRSYL)                                                                                                    \
+        (&trana, &tranb, &isgn, &m, &n, a, &lda, b, &ldb, c, &ldc, scale, &info);                                                          \
                                                                                                                                            \
-        /* Transpose input matrices */                                                                                                     \
-        transpose<OrderMajor::Row>(m, m, a, lda, a_t, lda_t);                                                                              \
-        transpose<OrderMajor::Row>(n, n, b, ldb, b_t, ldb_t);                                                                              \
-        transpose<OrderMajor::Row>(m, n, c, ldc, c_t, ldc_t);                                                                              \
+        if (info < 0) {                                                                                                                    \
+            EINSUMS_LOG_WARN("trsyl warning: the {} argument had an illegal value.", print::ordinal(-info));                               \
+        }                                                                                                                                  \
+        if (info == 1) {                                                                                                                   \
+            EINSUMS_LOG_INFO("trsyl warning: The input matrices have common or very close eigenvalues. Pertubed values were used to "      \
+                             "solve the equation, but the matrices are unchanged.");                                                       \
+        }                                                                                                                                  \
+                                                                                                                                           \
+        return info;                                                                                                                       \
+    } /**/
+
+#define TRSYL_complex(Type, lc, uc)                                                                                                        \
+    auto lc##trsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, const std::complex<Type> *a, int_t lda,                           \
+                   const std::complex<Type> *b, int_t ldb, std::complex<Type> *c, int_t ldc, Type *scale) -> int_t {                       \
+        LabeledSection0();                                                                                                                 \
+        int_t info = 0;                                                                                                                    \
+        /* Check leading dimensions */                                                                                                     \
+        if (lda < m) {                                                                                                                     \
+            EINSUMS_LOG_WARN("trsyl warning: lda < m, lda = {}, m = {}", lda, m);                                                          \
+            return -7;                                                                                                                     \
+        }                                                                                                                                  \
+        if (ldb < n) {                                                                                                                     \
+            EINSUMS_LOG_WARN("trsyl warning: ldb < n, ldb = {}, n = {}", ldb, n);                                                          \
+            return -9;                                                                                                                     \
+        }                                                                                                                                  \
+        if (ldc < n) {                                                                                                                     \
+            EINSUMS_LOG_WARN("trsyl warning: ldc < n, ldc = {}, n = {}", ldc, n);                                                          \
+            return -11;                                                                                                                    \
+        }                                                                                                                                  \
                                                                                                                                            \
         /* Call LAPACK function and adjust info */                                                                                         \
         FC_GLOBAL(lc##trsyl, UC##TRSYL)                                                                                                    \
-        (&trana, &tranb, &isgn, &m, &n, a_t.data(), &lda_t, b_t.data(), &ldb_t, c_t.data(), &ldc_t, scale, &info);                         \
+        (&trana, &tranb, &isgn, &m, &n, a, &lda, b, &ldb, c, &ldc, scale, &info);                                                          \
                                                                                                                                            \
         if (info < 0) {                                                                                                                    \
-            return info;                                                                                                                   \
+            EINSUMS_LOG_WARN("trsyl warning: the {} argument had an illegal value.", print::ordinal(-info));                               \
         }                                                                                                                                  \
-                                                                                                                                           \
-        /* Transpose output matrices */                                                                                                    \
-        transpose<OrderMajor::Column>(m, n, c_t, ldc_t, c, ldc);                                                                           \
+        if (info == 1) {                                                                                                                   \
+            EINSUMS_LOG_INFO("trsyl warning: The input matrices have common or very close eigenvalues. Pertubed values were used to "      \
+                             "solve the equation, but the matrices are unchanged.");                                                       \
+        }                                                                                                                                  \
                                                                                                                                            \
         return info;                                                                                                                       \
     } /**/
 
 TRSYL(double, d, D);
 TRSYL(float, s, S);
+TRSYL_complex(double, z, Z);
+TRSYL_complex(float, c, C);
 
 } // namespace einsums::blas::vendor

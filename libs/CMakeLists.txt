@@ -51,15 +51,19 @@ set(CONFIG_STRINGS_MODULES_ENTRIES)
 
 # List of sub-directories to work through
 set(EINSUMS_LIBS
-    Einsums EinsumsExperimental
+    Einsums
     CACHE INTERNAL "List of Einsums libraries" FORCE
 )
 
+if(EINSUMS_WITH_EXPERIMENTAL)
+  list(APPEND EINSUMS_LIBS EinsumsExperimental)
+endif()
+
 include(Einsums_CodeCoverage)
 set(einsums_libs_public_static SHARED)
-if (EINSUMS_WITH_COVERAGE OR NOT BUILD_SHARED_LIBS)
+if(EINSUMS_WITH_COVERAGE OR NOT BUILD_SHARED_LIBS)
   set(einsums_libs_public_static STATIC)
-endif ()
+endif()
 
 foreach(lib ${EINSUMS_LIBS})
   add_library(${lib} ${einsums_libs_public_static} src/dummy.cpp)
@@ -103,11 +107,8 @@ foreach(lib ${EINSUMS_LIBS})
   endif()
 
   set_target_properties(
-    ${lib}
-    PROPERTIES VERSION ${EINSUMS_VERSION}
-               SOVERSION ${EINSUMS_SOVERSION}
-               OUTPUT_NAME ${lib}
-               FOLDER "Core"
+    ${lib} PROPERTIES VERSION ${EINSUMS_VERSION} SOVERSION ${EINSUMS_SOVERSION} OUTPUT_NAME ${lib}
+                      FOLDER "Core"
   )
   install(
     TARGETS ${lib}
@@ -133,12 +134,7 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
     set(EINSUMS_PYTHON_LIB_NAME ${lib})
     pybind11_add_module(${lib} MODULE src/dummy.cpp)
 
-    set_target_properties(
-      ${lib}
-      PROPERTIES OUTPUT_NAME ${lib}
-                 EXPORT_NAME ${lib}
-                 FOLDER "Core"
-    )
+    set_target_properties(${lib} PROPERTIES OUTPUT_NAME ${lib} EXPORT_NAME ${lib} FOLDER "Core")
 
     # adds some RPATH and link flags
     einsums_extend_with_python(${lib})

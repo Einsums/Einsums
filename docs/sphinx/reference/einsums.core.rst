@@ -24,22 +24,16 @@ This module contains many functions and classes implemented in C++.
 
     :return: :code:`True` if GPU capabilities are enabled.
 
-.. py:function:: initialize()
+.. py:function:: __initialize()
 
-    Initialize the Einsums library. It does not need to be called directly, and instead
-    it is called when you import :code:`einsums`. 
+    Initializes the Einsums library. This is an internal function that is called automatically. 
+    It does not need to be called directly, and instead it is called when you import :code:`einsums`. 
 
 .. py:function:: finalize(arg: bool | str)
 
     Finalize the Einsums library, optionally printing timing info. See :py:func:`einsums.set_finalize_arg`
     to change how the module calls this function. This does not need to be called directly, as it is
     registered with the :code:`atexit` module. 
-
-.. py:function:: report([output_file: str])
-
-    Print the timing report to standard output. If an output file is provided, print to that file instead.
-
-    :param output_file: The file to optionally print to.
 
 .. py:function:: get_buffer_format(buffer) -> str
 
@@ -57,3 +51,7 @@ This module contains many functions and classes implemented in C++.
     einsums.core.runtimetensorview
     einsums.core.testing_utils
     einsums.core.tensoriterator
+    einsums.core.globalconfigmap
+    einsums.core.logging
+    einsums.core.secion
+    einsums.core.errors

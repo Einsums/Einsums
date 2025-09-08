@@ -22,11 +22,11 @@
     class PrivateConstructorStuff {};                                                                                                      \
                                                                                                                                            \
   public:                                                                                                                                  \
-    Type(PrivateConstructorStuff ignore) : Type() {                                                                                        \
+    Type(PrivateConstructorStuff /*ignore*/) : Type() {                                                                                    \
     }                                                                                                                                      \
-    static Type &get_singleton(); \
-    Type(const Type &) = delete; \
-    Type(Type &&) = delete;
+    static auto get_singleton() -> Type &;                                                                                                 \
+    Type(const Type &) = delete;                                                                                                           \
+    Type(Type &&)      = delete;
 
 /**
  * @def EINSUMS_SINGLETON_IMPL
@@ -34,7 +34,7 @@
  * Creates the code for managing a singleton.
  */
 #define EINSUMS_SINGLETON_IMPL(Type)                                                                                                       \
-    Type &Type::get_singleton() {                                                                                                          \
+    auto Type::get_singleton() -> Type & {                                                                                                 \
         static std::unique_ptr<Type> singleton_instance = std::make_unique<Type>(PrivateConstructorStuff());                               \
         return *singleton_instance;                                                                                                        \
     }

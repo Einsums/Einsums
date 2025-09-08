@@ -33,7 +33,7 @@ if(EINSUMS_WITH_TESTS)
       Modules.TensorAlgebra
       HEADERS ${TensorAlgebraHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
-      DEPENDENCIES einsums_TensorAlgebra
+      DEPENDENCIES Einsums_TensorAlgebra
     )
   endif()
 endif()

@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -212,7 +212,7 @@ struct fmt::formatter<einsums::RuntimeState> : formatter<string_view> {
             name = "PreShutdown";
             break;
         case einsums::RuntimeState::Shutdown:
-            name = "Shutown";
+            name = "Shutdown";
             break;
         case einsums::RuntimeState::Stopping:
             name = "Stopping";

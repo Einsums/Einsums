@@ -1,22 +1,39 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
-#include <Einsums/BufferAllocator/InitModule.hpp>
+#include <Einsums/Config.hpp>
+
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
-#include <Einsums/Errors/Error.hpp>
-#include <Einsums/Errors/ThrowException.hpp>
-#include <Einsums/StringUtil/MemoryString.hpp>
+#include <Einsums/Errors.hpp>
 
 #include <complex>
+#include <cstdlib>
+#include <deque>
+#include <forward_list>
+#include <map>
+#include <set>
 #include <source_location>
+#include <string>
 #include <type_traits>
+#include <unordered_set>
+
+#if defined(EINSUMS_HAVE_TRACY)
+#    include <tracy/Tracy.hpp>
+#endif
+
 
 namespace einsums {
 
+namespace detail {
+
+EINSUMS_EXPORT void *allocate(size_t n);
+EINSUMS_EXPORT void deallocate(void*);
+
+}
 /**
  * @struct BufferAllocator
  *
@@ -36,7 +53,6 @@ namespace einsums {
  */
 template <typename T>
 struct BufferAllocator {
-  public:
     /**
      * @typedef pointer
      *
@@ -66,7 +82,7 @@ struct BufferAllocator {
     using const_void_pointer = void const *;
 
     /**
-     * @typedef T
+     * @typedef value_type
      *
      * The type of buffers this allocator makes.
      */
@@ -126,14 +142,17 @@ struct BufferAllocator {
                                     n, n * type_size, available_size(), max_size());
         }
 
-        out = static_cast<pointer>(malloc(n * type_size));
-
+        out = static_cast<pointer>(detail::allocate(n*type_size));
         if (out == nullptr) {
             EINSUMS_THROW_EXCEPTION(
                 std::runtime_error,
                 "Could not allocate enough memory for buffers. Requested {} elements or {} bytes, but malloc returned a null pointer.", n,
                 n * type_size);
         }
+
+#if defined(EINSUMS_HAVE_TRACY)
+        TracyAlloc(out, n * type_size);
+#endif
 
         return out;
     }
@@ -188,7 +207,10 @@ struct BufferAllocator {
         release(n);
 
         if (p != nullptr) {
-            free(static_cast<void *>(p));
+#if defined(EINSUMS_HAVE_TRACY)
+            TracyFree(p);
+#endif
+            detail::deallocate(p);
         }
     }
 
@@ -199,7 +221,7 @@ struct BufferAllocator {
      *
      * @return The number of elements specified by the buffer size option.
      */
-    size_type max_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_max_size() / type_size; }
+    [[nodiscard]] size_type max_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_max_size() / type_size; }
 
     /**
      * @brief Query the number of elements the allocator has free.
@@ -208,19 +230,90 @@ struct BufferAllocator {
      *
      * @return The number of elements available to allocate.
      */
-    size_type available_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size; }
+    [[nodiscard]] size_type available_size() const {
+        return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size;
+    }
 
-    bool operator==(BufferAllocator<T> const &other) const { return true; }
-    bool operator!=(BufferAllocator<T> const &other) const { return false; }
+    /**
+     * @brief Test whether two buffer allocators are the same.
+     *
+     * All buffer allocators are considered to be the same, so this will always return true.
+     *
+     * @param other The allocator to compare to.
+     * @return Always returns true.
+     */
+    constexpr bool operator==(BufferAllocator<T> const &other) const { return true; }
+
+    /**
+     * @brief Test whether two buffer allocators are not the same.
+     *
+     * All buffer allocators are considered to be the same, so this will always return false.
+     *
+     * @param other The allocator to compare to.
+     * @return Always returns false.
+     */
+    constexpr bool operator!=(BufferAllocator<T> const &other) const { return false; }
 };
 
-#ifndef WINDOWS
+#ifndef EINSUMS_WINDOWS
 
+extern template struct EINSUMS_EXPORT BufferAllocator<void>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed char>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed short>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed int>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed long>;
+extern template struct EINSUMS_EXPORT BufferAllocator<signed long long>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned char>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned short>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned int>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned long>;
+extern template struct EINSUMS_EXPORT BufferAllocator<unsigned long long>;
 extern template struct EINSUMS_EXPORT BufferAllocator<float>;
 extern template struct EINSUMS_EXPORT BufferAllocator<double>;
 extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<float>>;
 extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<double>>;
 
 #endif
+
+template <typename T>
+using BufferVector = std::vector<T, BufferAllocator<T>>;
+
+template <typename T>
+using BufferDeque = std::deque<T, BufferAllocator<T>>;
+
+template <typename T>
+using BufferForwardList = std::forward_list<T, BufferAllocator<T>>;
+
+template <typename T>
+using BufferList = std::list<T, BufferAllocator<T>>;
+
+template <typename Key, typename Compare = std::less<Key>>
+using BufferSet = std::set<Key, Compare, BufferAllocator<Key>>;
+
+template <typename Key, typename T, typename Compare = std::less<Key>>
+using BufferMap = std::map<Key, T, Compare, BufferAllocator<std::pair<Key const, T>>>;
+
+template <typename Key, typename Compare = std::less<Key>>
+using BufferMultiSet = std::multiset<Key, Compare, BufferAllocator<Key>>;
+
+template <typename Key, typename T, typename Compare = std::less<Key>>
+using BufferMultiMap = std::multimap<Key, T, Compare, BufferAllocator<std::pair<Key const, T>>>;
+
+template <typename Key, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+using BufferUnorderedSet = std::unordered_set<Key, Hash, KeyEqual, BufferAllocator<Key>>;
+
+template <typename Key, typename T, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+using BufferUnorderedMap = std::unordered_map<Key, T, Hash, KeyEqual, BufferAllocator<std::pair<Key const, T>>>;
+
+template <typename Key, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+using BufferUnorderedMultiSet = std::unordered_multiset<Key, Hash, KeyEqual, BufferAllocator<Key>>;
+
+template <typename Key, typename T, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+using BufferUnorderedMultiMap = std::unordered_multimap<Key, T, Hash, KeyEqual, BufferAllocator<std::pair<Key const, T>>>;
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+using BufferBasicString = std::basic_string<CharT, Traits, BufferAllocator<CharT>>;
+
+using BufferString = BufferBasicString<char>;
 
 } // namespace einsums

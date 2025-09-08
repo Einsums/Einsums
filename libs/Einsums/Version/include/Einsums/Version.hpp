@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -71,6 +71,6 @@ constexpr std::string_view copyright() {
     return copyright;
 }
 
-// Returns the full version string.
+/// Returns the full version string.
 EINSUMS_EXPORT std::string complete_version();
 } // namespace einsums

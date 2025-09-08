@@ -59,14 +59,13 @@ set(EINSUMS_CXX_COMPILER_VERSION
 )
 
 einsums_find_package(fmt 11 REQUIRED)
-einsums_find_package(argparse 3 REQUIRED)
 einsums_find_package(spdlog 1 REQUIRED)
 einsums_find_package(ZLIB REQUIRED)
 einsums_find_package(TargetHDF5 REQUIRED)
 einsums_find_package(OpenMP MODULE COMPONENTS CXX)
 
 if (@EINSUMS_WITH_BACKTRACES@)
-  einsums_find_package(cpptrace 0.7 REQUIRED)
+  einsums_find_package(cpptrace 1.0 REQUIRED)
 endif ()
 
 if (NOT TARGET tgt::lapack)
@@ -110,8 +109,14 @@ if (@EINSUMS_BUILD_PYTHON@)
   find_package(pybind11 REQUIRED)
 endif ()
 
-
 # If using hip...then dependencies need to be found and listed here.
+if(@EINSUMS_WITH_HIP@)
+  set(HIP_ROCM_ROOT "@CMAKE_HIP_COMPILER_ROCM_ROOT@")
+  include(Einsums_SetupHIP)
+elseif(@EINSUMS_WITH_CUDA@)
+  set(HIP_ROCM_ROOT "@CMAKE_HIP_COMPILER_ROCM_ROOT@")
+  include(Einsums_SetupCUDA)
+endif()
 
 if (NOT EINSUMS_CMAKE_LOGLEVEL)
   set(EINSUMS_CMAKE_LOGLEVEL "WARN")

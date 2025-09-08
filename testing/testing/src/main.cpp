@@ -1,8 +1,14 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 //--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/Profile.hpp>
 #include <Einsums/Runtime.hpp>
 #include <Einsums/Runtime/ShutdownFunction.hpp>
 #include <Einsums/Utilities/Random.hpp>
@@ -16,7 +22,7 @@
 #include <catch2/catch_all.hpp>
 
 int einsums_main(int argc, char *const *const argv) {
-    int result;
+    int result = 0;
 #pragma omp parallel
     {
 #pragma omp single
@@ -30,7 +36,10 @@ int einsums_main(int argc, char *const *const argv) {
 
             einsums::seed_random(seed);
 
-            result = session.run();
+            {
+                LabeledSection("einsums_main");
+                result = session.run();
+            }
             einsums::finalize();
         }
     }

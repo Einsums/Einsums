@@ -1,9 +1,9 @@
-//--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All Rights Reserved.
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
-#include <Einsums/Runtime.hpp>
+#include <Einsums/Runtime/Runtime.hpp>
 #include <Einsums/Runtime/ShutdownFunction.hpp>
 #include <Einsums/Runtime/StartupFunction.hpp>
 #include <Einsums/Utilities/InitModule.hpp>
@@ -18,7 +18,7 @@
  * aren't being used otherwise.
  */
 
-int init_Einsums_Utilities() {
+int einsums::init_Einsums_Utilities() {
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
     static bool is_initialized = false;

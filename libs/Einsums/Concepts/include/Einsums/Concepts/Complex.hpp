@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -9,6 +9,12 @@
 
 #include <complex>
 #include <type_traits>
+
+#ifdef EINSUMS_COMPUTE_CODE
+#    include <hip/hip_common.h>
+#    include <hip/hip_runtime.h>
+#    include <hip/hip_runtime_api.h>
+#endif
 
 namespace einsums {
 
@@ -27,6 +33,13 @@ inline constexpr bool IsComplexV = false;
  */
 template <typename T>
 inline constexpr bool IsComplexV<std::complex<T>> = std::is_arithmetic_v<T>;
+
+#ifdef EINSUMS_COMPUTE_CODE
+template <>
+inline constexpr bool IsComplexV<hipFloatComplex> = true;
+template <>
+inline constexpr bool IsComplexV<hipDoubleComplex> = true;
+#endif
 
 /**
  * @concept IsComplex

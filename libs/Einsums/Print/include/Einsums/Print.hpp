@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -63,7 +63,6 @@ struct Indent {
  */
 template <std::integral IntType>
 struct ordinal {
-  public:
     constexpr ordinal() = default;
 
     /**
@@ -182,6 +181,9 @@ namespace detail {
 void EINSUMS_EXPORT println(std::string const &str);
 void EINSUMS_EXPORT fprintln(std::FILE *fp, std::string const &str);
 void EINSUMS_EXPORT fprintln(std::ostream &os, std::string const &str);
+
+bool EINSUMS_EXPORT is_terminal(std::ostream const &os);
+bool EINSUMS_EXPORT is_terminal(FILE *os);
 } // namespace detail
 /// \endcond NOINTERNAL
 
@@ -239,7 +241,7 @@ void fprintln(std::FILE *fp, std::string_view const &f, Ts const... ts) {
 template <typename... Ts>
 void fprintln(std::FILE *fp, fmt::text_style const &style, std::string_view const &format, Ts const... ts) {
     std::string s;
-    if (fp == stdout || fp == stderr) {
+    if (detail::is_terminal(fp)) {
         s = fmt::format(style, format, ts...);
     } else {
         s = fmt::format(format, ts...);
@@ -253,7 +255,7 @@ inline void fprintln(std::FILE *fp, std::string const &format) {
 
 inline void fprintln(std::FILE *fp, fmt::text_style const &style, std::string_view const &format) {
     std::string s;
-    if (fp == stdout || fp == stderr) {
+    if (detail::is_terminal(fp)) {
         s = fmt::format(style, fmt::runtime(format));
     } else {
         s = format;
@@ -294,6 +296,7 @@ inline void fprintln(std::ostream &fp) {
 /**
  * Calls println to generate an error message, then aborts.
  */
+
 template <typename... Ts>
 void println_abort(std::string_view const &format, Ts const... ts) {
     std::string message = std::string("ERROR: ") + format.data();

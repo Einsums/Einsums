@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
 
@@ -25,7 +30,8 @@ TEMPLATE_TEST_CASE("Allocations", "[memory]", double, void, std::complex<double>
 
         REQUIRE_NOTHROW(alloc.deallocate(ptr, 101));
 
-        REQUIRE_THROWS(ptr = alloc.allocate(4194304 / alloc.type_size + 1));
+        // Try to allocate some absurd amount of memory.
+        REQUIRE_THROWS(ptr = alloc.allocate(4194304000000 / alloc.type_size + 1));
     }
 
     SECTION("Small allocations") {

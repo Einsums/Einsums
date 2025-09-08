@@ -1,15 +1,16 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include "FFT.hpp"
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/FFT/Defines.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include <mkl_dfti.h>
 
@@ -20,7 +21,7 @@ inline void verify(MKL_LONG status) {
     if (status == DFTI_NO_ERROR)
         return;
 
-    println_abort("MKL DFTI failure: {}", status);
+    EINSUMS_THROW_EXCEPTION(std::runtime_error, "MKL DFTI failure: {}", status);
 }
 } // namespace
 
@@ -28,7 +29,7 @@ inline void verify(MKL_LONG status) {
  * Forward transforms                                                          *
  *******************************************************************************/
 
-void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
+void scfft(Tensor<float, 1> const &a, Tensor<std::complex<float>, 1> *result) {
     LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
@@ -46,7 +47,7 @@ void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
     DftiFreeDescriptor(&handle);
 }
 
-void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result) {
+void ccfft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 1> *result) {
     LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
@@ -64,7 +65,7 @@ void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 
     DftiFreeDescriptor(&handle);
 }
 
-void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) {
+void dzfft(Tensor<double, 1> const &a, Tensor<std::complex<double>, 1> *result) {
     LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
@@ -82,7 +83,7 @@ void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) 
     DftiFreeDescriptor(&handle);
 }
 
-void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
+void zzfft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>, 1> *result) {
     LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
@@ -104,7 +105,7 @@ void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>
  * Backward transforms                                                         *
  *******************************************************************************/
 
-void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
+void csifft(Tensor<std::complex<float>, 1> const &a, Tensor<float, 1> *result) {
     LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
@@ -125,7 +126,7 @@ void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
     DftiFreeDescriptor(&handle);
 }
 
-void zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result) {
+void zdifft(Tensor<std::complex<double>, 1> const &a, Tensor<double, 1> *result) {
     LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
@@ -143,7 +144,7 @@ void zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result)
     DftiFreeDescriptor(&handle);
 }
 
-void ccifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result) {
+void ccifft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 1> *result) {
     LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
@@ -161,7 +162,7 @@ void ccifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>,
     DftiFreeDescriptor(&handle);
 }
 
-void zzifft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
+void zzifft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>, 1> *result) {
     LabeledSection0();
 
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
@@ -179,4 +180,4 @@ void zzifft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double
     DftiFreeDescriptor(&handle);
 }
 
-} // namespace einsums::fft::backend::fftw3
+} // namespace einsums::fft::backend::mkl

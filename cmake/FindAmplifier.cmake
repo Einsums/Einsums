@@ -1,3 +1,8 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
 if(NOT TARGET Amplifier::amplifier)
   # compatibility with older CMake versions
   if(AMPLIFIER_ROOT AND NOT Amplifier_ROOT)
