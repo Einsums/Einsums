@@ -200,23 +200,13 @@ def test_geev(width, dtype, array):
                 expected_vecs[j, min_pos] = temp
 
 
-    # The algorithm is very unstable for 32-bit floats.
-    if dtype == np.float32 or dtype == np.complex64:
-        for exp, res in zip(expected_vals, got_vals):
-            assert exp == pytest.approx(res, 1e-3)
-        # Don't even check the eigenvectors. They are really bad!
-        # for i in range(width):
-        #     for j in range(width):
-        #         assert (expected_vecs[i, j] == pytest.approx(A[i, j], rel=1e-2)) or (
-        #             expected_vecs[i, j] == pytest.approx(-A[i, j], rel=1e-2)
-        #        )
-    else:
-        for exp, res in zip(expected_vals, got_vals):
-            assert exp == pytest.approx(res)
-        for i in range(width):
-            scale = expected_vecs[0, i] / A_vecs[0, i]
-            for j in range(width):
-                assert expected_vecs[j, i] == pytest.approx(A_vecs[j, i] * scale)
+    for i in range(width):
+        assert got_vals[i] == pytest.approx(expected_vals[i])
+
+    for i in range(width):
+        scale = expected_vecs[0, i] / A_vecs[0, i]
+        for j in range(width):
+            assert A_vecs[j, i] * scale == pytest.approx(expected_vecs[j, i])
 
     # for i in range(width) :
     #     for j in range(width) :
@@ -567,15 +557,11 @@ def test_qr(a, b, dtype, array):
 
     Q, R = ein.core.qr(A)
 
-    Q_expected, R_expected = np.linalg.qr(A_copy)
+    A_test = Q @ R
 
-    for i in range(Q_expected.shape[0]):
-        for j in range(Q_expected.shape[1]):
-            assert Q[i, j] == pytest.approx(Q_expected[i, j])
-
-    for i in range(R_expected.shape[0]):
-        for j in range(R_expected.shape[1]):
-            assert R[i, j] == pytest.approx(R_expected[i, j])
+    for i in range(a) :
+        for j in range(b) :
+            assert A_test[i, j] == pytest.approx(A_copy[i, j])
 
 
 @pytest.mark.parametrize("dims", [[10, 10], [10, 10, 10], [11, 12, 13], [100]])
