@@ -321,6 +321,7 @@ void PyGPUView::update_H2D() {
 
 void PyGPUView::update_D2H() {
     if (_mode == detail::COPY) {
+        einsums::gpu::stream_wait();
         hip_catch(hipMemcpy(_host_data, _dev_data, _alloc_size, hipMemcpyDeviceToHost));
     }
 }
