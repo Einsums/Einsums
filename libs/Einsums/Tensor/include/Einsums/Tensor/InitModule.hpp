@@ -6,7 +6,6 @@
 #pragma once
 
 #include <Einsums/Config.hpp>
-#include <argparse/argparse.hpp>
 
 /*
  * Exported definitions for initialization. If the module does not need to be initialized,
