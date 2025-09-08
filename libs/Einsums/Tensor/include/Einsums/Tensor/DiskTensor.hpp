@@ -97,7 +97,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      * @param name The name for the tensor.
      * @param dims The dimensions of the tensor.
      */
-    explicit DiskTensor(hid_t file, std::string name, Dim<Rank> dims, int deflate_level = -1) : _file{file}, _name{std::move(name)}, _dims{dims} {
+    explicit DiskTensor(hid_t file, std::string name, Dim<Rank> dims, int deflate_level = -1)
+        : _file{file}, _name{std::move(name)}, _dims{dims} {
 
         size_t size = dims_to_strides(_dims, _strides);
 
@@ -154,24 +155,24 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
             err = H5Pset_chunk(_creation_props, rank, reinterpret_cast<hsize_t const *>(chunk_dims.data()));
 
-            if(err < 0) {
+            if (err < 0) {
                 EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set up the chunk properties!");
             }
 
             err = H5Pset_chunk_opts(_creation_props, H5D_CHUNK_DONT_FILTER_PARTIAL_CHUNKS);
 
-            if(err < 0) {
+            if (err < 0) {
                 EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set up the chunk options!");
             }
 
-            if(deflate_level < 0 && size > 0xffffffff) {
+            if (deflate_level < 0 && size > 0xffffffff) {
                 deflate_level = 1;
             }
 
-            if(deflate_level > 0) {
+            if (deflate_level > 0) {
                 err = H5Pset_deflate(_creation_props, deflate_level);
 
-                if(err < 0) {
+                if (err < 0) {
                     EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set up compression options!");
                 }
             }
@@ -734,7 +735,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     auto get() -> Tensor<T, rank> & {
         auto lock = std::lock_guard(*this);
         if (!_constructed) {
-            _tensor      = Tensor<T, Rank>{_dims};
+            _tensor      = Tensor<T, Rank>{true, _dims};
             _constructed = true;
 
             auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
@@ -752,7 +753,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     auto get() const -> Tensor<T, rank> const & {
         auto lock = std::lock_guard(*this);
         if (!_constructed) {
-            _tensor      = Tensor<T, Rank>{_dims};
+            _tensor      = Tensor<T, Rank>{true, _dims};
             _constructed = true;
 
             auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
