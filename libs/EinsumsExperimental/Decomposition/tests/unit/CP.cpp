@@ -28,8 +28,8 @@ TEMPLATE_TEST_CASE("CP 1", "[decomposition]", float, double) {
 
     INFO(fmt::format("Diff is {}.\n", diff));
 
-    REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, TestType{0.17392}));
+    REQUIRE(diff >= 0.0);
+    REQUIRE(diff <= TestType{0.17392});
 }
 
 TEMPLATE_TEST_CASE("CP 2", "[decomposition]", float, double) {
@@ -49,8 +49,8 @@ TEMPLATE_TEST_CASE("CP 2", "[decomposition]", float, double) {
 
     TestType diff = rmsd(test2, test2_cp);
 
-    REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, 0.122492));
+    REQUIRE(diff >= 0.0);
+    REQUIRE(diff <= 0.122492);
 }
 
 TEMPLATE_TEST_CASE("CP 3", "[decomposition]", float, double) {
@@ -71,8 +71,8 @@ TEMPLATE_TEST_CASE("CP 3", "[decomposition]", float, double) {
 
     TestType diff = rmsd(test3, test3_cp);
 
-    REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, 0.228200));
+    REQUIRE(diff >= 0.0);
+    REQUIRE(diff <= 0.228200);
 }
 
 // This test seems to be pretty sensitive and works consistently with double and randomly with float.
@@ -98,6 +98,6 @@ TEMPLATE_TEST_CASE("CP 4", "[decomposition]", double) {
 
     INFO(fmt::format("diff {}", diff));
 
-    REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, 1.0e-4));
+    REQUIRE(diff >= 0.0);
+    REQUIRE(diff <= 1.0e-4);
 }

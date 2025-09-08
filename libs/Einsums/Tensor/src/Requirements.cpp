@@ -85,32 +85,32 @@ static void check_requirements() {
         static_assert(!AlgebraTensorConcept<DiskTensor<T, Rank>>);
         static_assert(requires(DiskTensor<T, Rank> tensor) { println(tensor); });
 
-        static_assert(TensorConcept<DiskView<T, Rank, Rank>>);
-        static_assert(!NotTensorConcept<DiskView<T, Rank, Rank>>);
-        static_assert(TypedTensorConcept<DiskView<T, Rank, Rank>, T>);
-        static_assert(!TypedTensorConcept<DiskView<T, Rank, Rank>, BadT>);
-        static_assert(RankTensorConcept<DiskView<T, Rank, Rank>>);
-        static_assert(RankTensorConcept<DiskView<T, Rank, Rank>, Rank>);
-        static_assert(!RankTensorConcept<DiskView<T, Rank, Rank>, BadRank>);
-        static_assert(BasicLockableConcept<DiskView<T, Rank, Rank>>);
-        static_assert(LockableConcept<DiskView<T, Rank, Rank>>);
-        static_assert(TRTensorConcept<DiskView<T, Rank, Rank>, Rank, T>);
-        static_assert(TRLTensorConcept<DiskView<T, Rank, Rank>, Rank, T>);
-        static_assert(!CoreTensorConcept<DiskView<T, Rank, Rank>>);
-        static_assert(!DeviceTensorConcept<DiskView<T, Rank, Rank>>);
-        static_assert(DiskTensorConcept<DiskView<T, Rank, Rank>>);
-        static_assert(TensorViewConcept<DiskView<T, Rank, Rank>>);
-        static_assert(!BasicTensorConcept<DiskView<T, Rank, Rank>>);
-        static_assert(!CollectedTensorConcept<DiskView<T, Rank, Rank>>);
-        static_assert(!TiledTensorConcept<DiskView<T, Rank, Rank>>);
-        static_assert(!TiledTensorConcept<DiskView<T, Rank, Rank>, Tensor<T, Rank>>);
-        static_assert(!BlockTensorConcept<DiskView<T, Rank, Rank>>);
-        static_assert(!BlockTensorConcept<DiskView<T, Rank, Rank>, Tensor<T, Rank>>);
+        static_assert(TensorConcept<DiskView<T, Rank>>);
+        static_assert(!NotTensorConcept<DiskView<T, Rank>>);
+        static_assert(TypedTensorConcept<DiskView<T, Rank>, T>);
+        static_assert(!TypedTensorConcept<DiskView<T, Rank>, BadT>);
+        static_assert(RankTensorConcept<DiskView<T, Rank>>);
+        static_assert(RankTensorConcept<DiskView<T, Rank>, Rank>);
+        static_assert(!RankTensorConcept<DiskView<T, Rank>, BadRank>);
+        static_assert(BasicLockableConcept<DiskView<T, Rank>>);
+        static_assert(LockableConcept<DiskView<T, Rank>>);
+        static_assert(TRTensorConcept<DiskView<T, Rank>, Rank, T>);
+        static_assert(TRLTensorConcept<DiskView<T, Rank>, Rank, T>);
+        static_assert(!CoreTensorConcept<DiskView<T, Rank>>);
+        static_assert(!DeviceTensorConcept<DiskView<T, Rank>>);
+        static_assert(DiskTensorConcept<DiskView<T, Rank>>);
+        static_assert(TensorViewConcept<DiskView<T, Rank>>);
+        static_assert(!BasicTensorConcept<DiskView<T, Rank>>);
+        static_assert(!CollectedTensorConcept<DiskView<T, Rank>>);
+        static_assert(!TiledTensorConcept<DiskView<T, Rank>>);
+        static_assert(!TiledTensorConcept<DiskView<T, Rank>, Tensor<T, Rank>>);
+        static_assert(!BlockTensorConcept<DiskView<T, Rank>>);
+        static_assert(!BlockTensorConcept<DiskView<T, Rank>, Tensor<T, Rank>>);
         if constexpr (Rank > 0) {
-            static_assert(FunctionTensorConcept<DiskView<T, Rank, Rank>>);
+            static_assert(FunctionTensorConcept<DiskView<T, Rank>>);
         }
-        static_assert(!AlgebraTensorConcept<DiskView<T, Rank, Rank>>);
-        static_assert(requires(DiskView<T, Rank, Rank> tensor) { println(tensor); });
+        static_assert(!AlgebraTensorConcept<DiskView<T, Rank>>);
+        static_assert(requires(DiskView<T, Rank> tensor) { println(tensor); });
 
         if constexpr (Rank == 2) {
             static_assert(TensorConcept<KroneckerDelta<T>>);
