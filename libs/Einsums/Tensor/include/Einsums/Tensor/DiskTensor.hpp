@@ -862,7 +862,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
                 j++;
             }
 
-            while (block[j] == 1 && j < rank) {
+            while (j < rank && block[j] == 1) {
                 j++;
             }
         }
