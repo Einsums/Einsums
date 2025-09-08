@@ -3,9 +3,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/CommandLine.hpp>
 #include <Einsums/Runtime.hpp>
-
-#include <argparse/argparse.hpp>
 
 #include "InitModule.hpp"
 
@@ -50,48 +49,6 @@ EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments(argparse::ArgumentPar
     auto &global_double = global_config.get_double_map()->get_value();
     auto &global_int = global_config.get_int_map()->get_value();
     auto &global_bool = global_config.get_bool_map()->get_value();
-
-    /* Examples:
-     * String argument: 
-     * parser.add_argument("--einsums:dummy-str")
-     *   .default_value("default value")
-     *   .help("Dummy string argument.")
-     *   .store_into(global_string["dummy-str"]);
-     *
-     * Double argument:
-     * parser.add_argument("--einsums:dummy-double")
-     *   .default_value(1.23)
-     *   .help("Dummy double argument.")
-     *   .store_into(global_double["dummy-double"]);
-     *
-     * Integer argument: Be careful! These are int64_t, not int, so
-     * literals need to be handled with care.
-     *
-     * parser.add_argument("--einsums:dummy-int")
-     *   .default_value<int64_t>(1)
-     *   .help("Dummy int argument.")
-     *   .store_into(global_int["dummy-int"]);
-     *
-     * parser.add_argument("--einsums:dummy-int2")
-     *   .default_value(1L)
-     *   .help("Dummy int argument, another way.")
-     *   .store_into(global_int["dummy-int2"]);
-     *
-     * Boolean argument:
-     * This one adds a flag that is normally false, but is set when provided.
-     * parser.add_argument("--einsums:dummy-bool")
-     *   .flag()
-     *   .help("Dummy int argument.")
-     *   .store_into(global_int["dummy-bool"]);
-     *
-     * This one adds a flag that is normally true, but is unset when provided.
-     * parser.add_argument("--einsums:no-dummy-bool2")
-     *   .default_value(true)
-     *   .implicit_value(false)
-     *   .help("Dummy int argument.")
-     *   .store_into(global_int["dummy-bool2"]);
-     */
-
 }}
 
 void initialize_{lib_name}_{module_name}() {{
