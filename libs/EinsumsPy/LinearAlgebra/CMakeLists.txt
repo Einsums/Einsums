@@ -8,22 +8,22 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(LinearAlgebraHeaders EinsumsPy/LinearAlgebra/LinearAlgebra.hpp)
 
 set(LinearAlgebraSources
-        Export.cpp
-        sum_square.cpp
-        gemm.cpp
-        gemv.cpp
-        eigen.cpp
-        solver.cpp
-        scale.cpp
-        dot.cpp
-        helpers.cpp
-        axpy.cpp
-        ger.cpp
-        factor.cpp
-        norm.cpp
-        svd.cpp
-        det.cpp
-        direct_product.cpp
+    Export.cpp
+    sum_square.cpp
+    gemm.cpp
+    gemv.cpp
+    eigen.cpp
+    solver.cpp
+    scale.cpp
+    dot.cpp
+    helpers.cpp
+    axpy.cpp
+    ger.cpp
+    factor.cpp
+    norm.cpp
+    svd.cpp
+    det.cpp
+    direct_product.cpp
 )
 
 include(Einsums_AddModule)
@@ -32,15 +32,15 @@ einsums_add_module(
   SOURCES ${LinearAlgebraSources}
   HEADERS ${LinearAlgebraHeaders}
   DEPENDENCIES Einsums
-        MODULE_DEPENDENCIES
-        Einsums_Runtime
-        Einsums_Logging
-        Einsums_TypeSupport
-        Einsums_Config
-        EinsumsPy_Tensor
-        Einsums_HPTT
-        Einsums_TensorAlgebra
-        Einsums_LinearAlgebra
+  MODULE_DEPENDENCIES
+    Einsums_Runtime
+    Einsums_Logging
+    Einsums_TypeSupport
+    Einsums_Config
+    EinsumsPy_Tensor
+    Einsums_HPTT
+    Einsums_TensorAlgebra
+    Einsums_LinearAlgebra
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME EinsumsPy
 )
@@ -48,8 +48,8 @@ einsums_add_module(
 include(Einsums_ExtendWithPython)
 einsums_extend_with_python_headers(${EINSUMS_PYTHON_LIB_NAME}_LinearAlgebra)
 
-if (EINSUMS_WITH_CUDA)
-  foreach (f IN LISTS LinearAlgebraSources)
+if(EINSUMS_WITH_CUDA)
+  foreach(f IN LISTS LinearAlgebraSources)
     set_source_file_properties("src/${f}" PROPERTIES LANGUAGE CUDA)
-  endforeach ()
-endif ()
+  endforeach()
+endif()

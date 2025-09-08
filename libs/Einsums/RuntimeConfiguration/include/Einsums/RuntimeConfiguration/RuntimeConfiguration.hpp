@@ -7,6 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Logging.hpp>
 #include <Einsums/TypeSupport/Observable.hpp>
 
 #if defined(EINSUMS_HAVE_UNISTD_H)
@@ -17,19 +18,18 @@
 #    include <process.h>
 #endif
 
-#include <argparse/argparse.hpp>
-#include <memory>
+#include <functional>
+#include <string>
+#include <vector>
 
 namespace einsums {
-
-namespace detail {} // namespace detail
 
 /**
  * @brief Add a function to the list of startup functions to add module-specific command line arguments.
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT void register_arguments(std::function<void(argparse::ArgumentParser &)>);
+EINSUMS_EXPORT void register_arguments(std::function<void()>);
 
 /**
  * @struct RuntimeConfiguration
@@ -56,15 +56,6 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
     std::vector<std::string> original;
 
     /**
-     * @property argument_parser
-     *
-     * @brief Holds the parser used to parse the arguments passed to Einsums.
-     *
-     * @versionadded{1.0.0}
-     */
-    std::unique_ptr<argparse::ArgumentParser> argument_parser;
-
-    /**
      * Constructor of the runtime configuration object of einsums.
      *
      * @param[in] argc the argc argument from main
@@ -73,7 +64,7 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
      *
      * @versionadded{1.0.0}
      */
-    RuntimeConfiguration(int argc, char const *const *argv, std::function<void(argparse::ArgumentParser &)> const &user_command_line = {});
+    RuntimeConfiguration(int argc, char const *const *argv, std::function<void()> const &user_command_line = {});
 
     /**
      * Constructor of the runtime configuration object of einsums. This is used when argv has been packaged into a vector.
@@ -83,8 +74,7 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
      *
      * @versionadded{1.0.0}
      */
-    explicit RuntimeConfiguration(std::vector<std::string> const                        &argv,
-                                  std::function<void(argparse::ArgumentParser &)> const &user_command_line = {});
+    explicit RuntimeConfiguration(std::vector<std::string> const &argv, std::function<void()> const &user_command_line = {});
 
     RuntimeConfiguration() = delete;
 
@@ -103,7 +93,7 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
      *
      * @versionadded{1.0.0}
      */
-    std::vector<std::string> parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line = {});
+    std::vector<std::string> parse_command_line(std::function<void()> const &user_command_line = {});
 };
 
 } // namespace einsums

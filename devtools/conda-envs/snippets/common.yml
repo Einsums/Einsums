@@ -11,7 +11,6 @@ dependencies:
   - lcov
   - pre-commit
   # Prebuilts to save einsums the work
-  - cpp-argparse
   - catch2
   - fftw
   - fmt

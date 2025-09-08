@@ -8,6 +8,8 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/TensorAlgebra/Detail/Index.hpp>
+#include <Einsums/TensorAlgebra/Permute.hpp>
 
 #include <EinsumsPy/LinearAlgebra/LinearAlgebra.hpp>
 #include <EinsumsPy/Tensor/PyTensor.hpp>
@@ -16,9 +18,6 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
-#include "Einsums/LinearAlgebra.hpp"
-#include "Einsums/TensorAlgebra/Detail/Index.hpp"
-#include "Einsums/TensorAlgebra/Permute.hpp"
 #include "macros.hpp"
 
 namespace py = pybind11;

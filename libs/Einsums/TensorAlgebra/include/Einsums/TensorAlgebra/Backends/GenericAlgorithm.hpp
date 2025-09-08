@@ -10,7 +10,7 @@
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Logging.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 
 #include <cmath>

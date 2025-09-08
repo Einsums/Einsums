@@ -5,6 +5,7 @@
 
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
 #include <Einsums/Logging.hpp>
+#include <Einsums/Print.hpp>
 #include <Einsums/StringUtil/MemoryString.hpp>
 
 namespace einsums::detail {
@@ -16,43 +17,47 @@ void Einsums_BufferAllocator_vars::update_max_size(config_mapping_type<std::stri
     auto        lock      = std::lock_guard(singleton);
     auto const &value     = options.at("buffer-size");
 
-    singleton.max_size_ = string_util::memory_string(value);
+    singleton._max_size = string_util::memory_string(value);
 
-    if (singleton.max_size_ == 0) {
-        singleton.max_size_ = std::allocator_traits<std::allocator<uint8_t>>::max_size(std::allocator<uint8_t>());
+    if (singleton._max_size == 0) {
+        singleton._max_size = std::allocator_traits<std::allocator<uint8_t>>::max_size(std::allocator<uint8_t>());
     }
 }
 
 size_t Einsums_BufferAllocator_vars::get_max_size() const {
-    return max_size_;
+    return _max_size;
+}
+
+void Einsums_BufferAllocator_vars::set_max_size(size_t val) {
+    _max_size = val;
 }
 
 bool Einsums_BufferAllocator_vars::request_bytes(size_t bytes) {
-    auto lock = std::lock_guard(lock_);
+    auto lock = std::lock_guard(_lock);
 
-    if (bytes + curr_size_ > max_size_) {
+    if (bytes + _curr_size > _max_size) {
         return false;
     }
 
-    curr_size_ += bytes;
+    _curr_size += bytes;
     return true;
 }
 
 void Einsums_BufferAllocator_vars::release_bytes(size_t bytes) {
-    auto lock = std::lock_guard(lock_);
+    auto lock = std::lock_guard(_lock);
 
-    if (bytes > curr_size_) {
-        curr_size_ = 0;
+    if (bytes > _curr_size) {
+        _curr_size = 0;
     } else {
-        curr_size_ -= bytes;
+        _curr_size -= bytes;
     }
 }
 
 size_t Einsums_BufferAllocator_vars::get_available() const {
-    if (curr_size_ > max_size_) {
+    if (_curr_size > _max_size) {
         return 0;
     }
-    return max_size_ - curr_size_;
+    return _max_size - _curr_size;
 }
 
 } // namespace einsums::detail

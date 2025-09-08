@@ -9,7 +9,7 @@
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -29,7 +29,7 @@ extern void FC_GLOBAL(zgees, ZGEES)(char *, char *, int_t (*)(double *, double *
 }
 
 #define GEES(Type, lc, UC)                                                                                                                 \
-    auto lc##gees(char jobvs, int_t n, Type *a, int_t lda, int_t *sdim, Type *wr, Type *wi, Type *vs, int_t ldvs) -> int_t {               \
+    auto lc##gees(char jobvs, int_t n, Type *a, int_t lda, int_t *sdim, Type *wr, Type *wi, Type *vs, int_t ldvs)->int_t {                 \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t  info  = 0;                                                                                                                  \
@@ -37,6 +37,9 @@ extern void FC_GLOBAL(zgees, ZGEES)(char *, char *, int_t (*)(double *, double *
         int_t *bwork = nullptr;                                                                                                            \
                                                                                                                                            \
         Type work_query;                                                                                                                   \
+                                                                                                                                           \
+        int_t lda_t  = std::max(int_t{1}, n);                                                                                              \
+        int_t ldvs_t = std::max(int_t{1}, n);                                                                                              \
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
@@ -69,7 +72,8 @@ GEES(float, s, S);
 #undef GEES
 #define GEES(Type, lc, UC)                                                                                                                 \
     auto lc##gees(char jobvs, int_t n, std::complex<Type> *a, int_t lda, int_t *sdim, std::complex<Type> *w, std::complex<Type> *vs,       \
-                  int_t ldvs) -> int_t {                                                                                                   \
+                  int_t ldvs)                                                                                                              \
+        ->int_t {                                                                                                                          \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t  info  = 0;                                                                                                                  \

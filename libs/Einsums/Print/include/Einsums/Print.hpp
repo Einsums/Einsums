@@ -87,7 +87,6 @@ struct Indent {
  */
 template <std::integral IntType>
 struct ordinal {
-  public:
     constexpr ordinal() = default;
 
     /**
@@ -247,6 +246,9 @@ namespace detail {
 void EINSUMS_EXPORT println(std::string const &str);
 void EINSUMS_EXPORT fprintln(std::FILE *fp, std::string const &str);
 void EINSUMS_EXPORT fprintln(std::ostream &os, std::string const &str);
+
+bool EINSUMS_EXPORT is_terminal(std::ostream const &os);
+bool EINSUMS_EXPORT is_terminal(FILE *os);
 } // namespace detail
 /// \endcond NOINTERNAL
 
@@ -313,7 +315,7 @@ void fprintln(std::FILE *fp, std::string_view const &f, Ts const... ts) {
 template <typename... Ts>
 void fprintln(std::FILE *fp, fmt::text_style const &style, std::string_view const &format, Ts const... ts) {
     std::string s;
-    if (fp == stdout || fp == stderr) {
+    if (detail::is_terminal(fp)) {
         s = fmt::format(style, format, ts...);
     } else {
         s = fmt::format(format, ts...);
@@ -327,7 +329,7 @@ inline void fprintln(std::FILE *fp, std::string const &format) {
 
 inline void fprintln(std::FILE *fp, fmt::text_style const &style, std::string_view const &format) {
     std::string s;
-    if (fp == stdout || fp == stderr) {
+    if (detail::is_terminal(fp)) {
         s = fmt::format(style, fmt::runtime(format));
     } else {
         s = format;

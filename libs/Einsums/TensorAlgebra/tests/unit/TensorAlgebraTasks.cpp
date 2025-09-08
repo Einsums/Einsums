@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include <Einsums/Profile/Timer.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
@@ -21,21 +21,19 @@ TEST_CASE("Test dependence timing", "[jobs]") {
     auto D = create_tensor("D", 100, 100);
 
     SECTION("Sequential") {
-        profile::push("Sequential");
+        LabeledSection("Sequential");
 
         for (int sentinel = 0; sentinel < 10; sentinel++) {
             einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
             einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B);
         }
-
-        profile::pop();
     }
 
     SECTION("Tasked") {
 #pragma omp parallel
 #pragma omp single
         {
-            profile::push("Tasked");
+            LabeledSection("Tasked");
 
             for (int sentinel = 0; sentinel < 10; sentinel++) {
 #pragma omp task depend(in : A, B), depend(out : C)
@@ -52,8 +50,6 @@ TEST_CASE("Test dependence timing", "[jobs]") {
                     D.unlock();
                 }
             }
-
-            profile::pop();
         }
     }
 }

@@ -7,7 +7,7 @@
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -26,20 +26,17 @@ extern double FC_GLOBAL(dznrm2, DZNRM2)(int_t *n, std::complex<double> const *x,
 }
 
 void slassq(int_t n, float const *x, int_t incx, float *scale, float *sumsq) {
-    LabeledSection0();
-
+    LabeledSection("slassq");
     FC_GLOBAL(slassq, SLASSQ)(&n, x, &incx, scale, sumsq);
 }
 
 void dlassq(int_t n, double const *x, int_t incx, double *scale, double *sumsq) {
-    LabeledSection0();
-
+    LabeledSection("dlassq");
     FC_GLOBAL(dlassq, DLASSQ)(&n, x, &incx, scale, sumsq);
 }
 
 void classq(int_t n, std::complex<float> const *x, int_t incx, float *scale, float *sumsq) {
-    LabeledSection0();
-
+    LabeledSection("classq");
     FC_GLOBAL(classq, CLASSQ)(&n, x, &incx, scale, sumsq);
 }
 

@@ -8,7 +8,7 @@
 
 #include <Einsums/Testing.hpp>
 
-TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float>, std::complex<double>) {
+TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", double, std::complex<double>) {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 

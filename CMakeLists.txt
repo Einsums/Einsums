@@ -295,8 +295,7 @@ einsums_option(
 )
 
 einsums_option(
-  EINSUMS_WITH_EXPERIMENTAL BOOL
-  "If true, build experimental Einsums modules (default: OFF)" OFF
+  EINSUMS_WITH_EXPERIMENTAL BOOL "If true, build experimental Einsums modules (default: OFF)" OFF
   CATEGORY "Build Targets"
 )
 
@@ -404,6 +403,21 @@ if(EINSUMS_WITH_BACKTRACES)
 endif()
 
 einsums_option(
+  EINSUMS_WITH_PROFILER BOOL "Enable Einsums profiling. (Default: ON)" ON CATEGORY "Profiling"
+                                                                                   ADVANCED
+)
+einsums_option(
+  EINSUMS_WITH_PROFILER_INTERNAL BOOL "Enable profiling internal Einsums code. (Default: OFF)" OFF
+  DEPENDS "EINSUMS_WITH_PROFILER" CATEGORY "Profiling" ADVANCED
+)
+if(EINSUMS_WITH_PROFILER)
+  einsums_add_config_define(EINSUMS_HAVE_PROFILER)
+  if(EINSUMS_WITH_PROFILER_INTERNAL)
+    einsums_add_config_define(EINSUMS_HAVE_PROFILER_INTERNAL)
+  endif()
+endif()
+
+einsums_option(
   EINSUMS_WITH_ITTNOTIFY BOOL "Enable Amplifier (ITT) instrumentation support." OFF
   CATEGORY "Profiling" ADVANCED
 )
@@ -486,6 +500,8 @@ einsums_check_for_omp_tools_h(DEFINITIONS EINSUMS_HAVE_OMP_TOOLS_H)
 include(Einsums_SetupCUDA)
 include(Einsums_SetupHIP)
 include(Einsums_SetupFFT)
+include(Einsums_SetupTracy)
+# include(Einsums_SetupHighway)   ## This is currently found in LinearAlgebra/examples
 include(Einsums_PerformCXXFeatureTests)
 einsums_perform_cxx_feature_tests()
 
@@ -516,14 +532,14 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # For Clang and ClangCL
   if(WIN32)
     # ClangCL on Windows
-    add_compile_options(-fcxx-exceptions -fseh-exceptions)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fcxx-exceptions -fseh-exceptions>)
   else()
     # Clang on macOS/Linux
-    add_compile_options(-fcxx-exceptions)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fcxx-exceptions>)
   endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   # For GCC (Linux/macOS)
-  add_compile_options(-fexceptions)
+  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fexceptions>)
 endif()
 
 # Configure Warnings
@@ -701,7 +717,6 @@ set(EINSUMS_WITH_TARGET_ARCHITECTURE
 include(Einsums_SetupFmt)
 include(Einsums_SetupCatch)
 include(Einsums_SetupH5cpp)
-include(Einsums_SetupArgparse)
 include(Einsums_SetupSpdlog)
 include(Einsums_SetupAllocator)
 

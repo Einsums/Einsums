@@ -9,7 +9,7 @@
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -25,7 +25,7 @@ extern void FC_GLOBAL(zungqr, ZUNGQR)(int_t *, int_t *, int_t *, std::complex<do
 }
 
 #define ORGQR(Type, lc, uc)                                                                                                                \
-    auto lc##orgqr(int_t m, int_t n, int_t k, Type *a, int_t lda, const Type *tau) -> int_t {                                              \
+    auto lc##orgqr(int_t m, int_t n, int_t k, Type *a, int_t lda, const Type *tau)->int_t {                                                \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t info{0};                                                                                                                     \
@@ -57,7 +57,7 @@ ORGQR(double, d, D);
 ORGQR(float, s, S);
 
 #define UNGQR(Type, lc, uc)                                                                                                                \
-    auto lc##ungqr(int_t m, int_t n, int_t k, Type *a, int_t lda, const Type *tau) -> int_t {                                              \
+    auto lc##ungqr(int_t m, int_t n, int_t k, Type *a, int_t lda, const Type *tau)->int_t {                                                \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         int_t info{0};                                                                                                                     \
