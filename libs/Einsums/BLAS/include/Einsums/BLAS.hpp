@@ -1631,6 +1631,117 @@ inline auto ungqr<std::complex<double>>(int_t m, int_t n, int_t k, std::complex<
 
 #ifndef DOXYGEN
 namespace detail {
+auto EINSUMS_EXPORT sgelqf(int_t m, int_t n, float *a, int_t lda, float *tau) -> int_t;
+auto EINSUMS_EXPORT dgelqf(int_t m, int_t n, double *a, int_t lda, double *tau) -> int_t;
+auto EINSUMS_EXPORT cgelqf(int_t m, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *tau) -> int_t;
+auto EINSUMS_EXPORT zgelqf(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t;
+} // namespace detail
+#endif
+
+/**
+ * Set up for computing the LQ decomposition of a matrix.
+ *
+ * @f[
+ * \mathbf{A} = \mathbf{LQ}
+ * @f]
+ *
+ * Here, @f$\mathbf{Q}@f$ is an orthogonal matrix and @f$\mathbf{L}@f$ is a lower triangular matrix.
+ *
+ * @tparam T The type this function handles.
+ * @param[in] m The number of rows in the input matrix.
+ * @param[in] n The number of columns in the input matrix.
+ * @param[inout] a The input matrix. On exit, contains the data needed to compute the Q and L matrices. The
+ * entries on and below the diagonal are the entries of the L matrix. The rest is needed to find the Q matrix.
+ * @param[in] lda The leading dimension of the input matrix.
+ * @param[out] tau On exit, holds the Householder reflector parameters for computing the Q matrix.
+ *
+ * @return 0 on success. If negative, one of the inputs had a bad value, and the absolute value of the return
+ * tells you which one it was.
+ *
+ * @versionadded{1.0.0}
+ */
+template <typename T>
+auto gelqf(int_t m, int_t n, T *a, int_t lda, T *tau) -> int_t;
+
+#ifndef DOXYGEN
+template <>
+inline auto gelqf<float>(int_t m, int_t n, float *a, int_t lda, float *tau) -> int_t {
+    return detail::sgelqf(m, n, a, lda, tau);
+}
+
+template <>
+inline auto gelqf<double>(int_t m, int_t n, double *a, int_t lda, double *tau) -> int_t {
+    return detail::dgelqf(m, n, a, lda, tau);
+}
+
+template <>
+inline auto gelqf<std::complex<float>>(int_t m, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *tau) -> int_t {
+    return detail::cgelqf(m, n, a, lda, tau);
+}
+
+template <>
+inline auto gelqf<std::complex<double>>(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t {
+    return detail::zgelqf(m, n, a, lda, tau);
+}
+#endif
+
+#ifndef DOXYGEN
+namespace detail {
+auto EINSUMS_EXPORT sorglq(int_t m, int_t n, int_t k, float *a, int_t lda, float const *tau) -> int_t;
+auto EINSUMS_EXPORT dorglq(int_t m, int_t n, int_t k, double *a, int_t lda, double const *tau) -> int_t;
+auto EINSUMS_EXPORT cunglq(int_t m, int_t n, int_t k, std::complex<float> *a, int_t lda, std::complex<float> const *tau) -> int_t;
+auto EINSUMS_EXPORT zunglq(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::complex<double> const *tau) -> int_t;
+} // namespace detail
+#endif
+
+/**
+ * Extract the Q matrix after a call to gelqf.
+ *
+ * @tparam T The type this function handles.
+ * @param[in] m The number of rows of the input matrix.
+ * @param[in] n The number of columns in the input matrix.
+ * @param[in] k The number of elementary reflectors used in the calculation.
+ * @param[inout] a The input matrix after being processed by gelqf.
+ * @param[in] lda The leading dimension of the input matrix.
+ * @param[in] tau The scales for the elementary reflectors from gelqf.
+ *
+ * @return 0 on success. If negative, then one of the inputs had an invalid value, and the absolute value indicates
+ * which parameter it is.
+ *
+ * @versionadded{1.0.0}
+ */
+template <typename T>
+auto orglq(int_t m, int_t n, int_t k, T *a, int_t lda, T const *tau) -> int_t;
+
+#ifndef DOXYGEN
+template <>
+inline auto orglq<float>(int_t m, int_t n, int_t k, float *a, int_t lda, float const *tau) -> int_t {
+    return detail::sorglq(m, n, k, a, lda, tau);
+}
+
+template <>
+inline auto orglq<double>(int_t m, int_t n, int_t k, double *a, int_t lda, double const *tau) -> int_t {
+    return detail::dorglq(m, n, k, a, lda, tau);
+}
+
+template <typename T>
+auto unglq(int_t m, int_t n, int_t k, T *a, int_t lda, T const *tau) -> int_t;
+
+template <>
+inline auto unglq<std::complex<float>>(int_t m, int_t n, int_t k, std::complex<float> *a, int_t lda, std::complex<float> const *tau)
+    -> int_t {
+    return detail::cunglq(m, n, k, a, lda, tau);
+}
+
+template <>
+inline auto unglq<std::complex<double>>(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::complex<double> const *tau)
+    -> int_t {
+    return detail::zunglq(m, n, k, a, lda, tau);
+}
+#endif
+
+#ifndef DOXYGEN
+namespace detail {
 void EINSUMS_EXPORT scopy(int_t n, float const *x, int_t inc_x, float *y, int_t inc_y);
 void EINSUMS_EXPORT dcopy(int_t n, double const *x, int_t inc_x, double *y, int_t inc_y);
 void EINSUMS_EXPORT ccopy(int_t n, std::complex<float> const *x, int_t inc_x, std::complex<float> *y, int_t inc_y);

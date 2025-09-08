@@ -28,6 +28,7 @@
 #include <optional>
 #include <stdexcept>
 
+#include "Einsums/Config/CompilerSpecific.hpp"
 #include "Einsums/LinearAlgebra/Bases/norm.hpp"
 #include "Einsums/TensorImpl/TensorImplOperations.hpp"
 
@@ -593,31 +594,35 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
                     }
                 }
 
-                if constexpr (!IsComplexV<T>) {
-                    // Go through and conjugate as well.
-                    for (int i = 0; i < lvecs->dim(0); i++) {
-                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
-                            for (int j = 0; j < lvecs->dim(1); j++) {
-                                lvecs->subscript_no_check(j, i + 1) = -lvecs->subscript_no_check(j, i + 1);
-                            }
-                            i++;
-                        }
-                    }
-                }
+                // if constexpr (!IsComplexV<T>) {
+                //     // Go through and conjugate as well.
+                //     for (int i = 0; i < lvecs->dim(0); i++) {
+                //         if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
+                //             for (int j = 0; j < lvecs->dim(1); j++) {
+                //                 lvecs->subscript_no_check(j, i + 1) = -lvecs->subscript_no_check(j, i + 1);
+                //             }
+                //             i++;
+                //         }
+                //     }
+                // }
             } else if (lvec_data != lvecs->data()) {
-                if constexpr (IsComplexV<T>) {
-                    einsums::detail::impl_conj(lvecs_temp.impl());
-                } else {
-                    for (int i = 0; i < lvecs->dim(0); i++) {
-                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
-                            for (int j = 0; j < lvecs->dim(1); j++) {
-                                lvecs_temp(j, i + 1) = -lvecs_temp(j, i + 1);
+                if (lvecs_temp.impl().is_column_major()) {
+                    if constexpr (IsComplexV<T>) {
+                        einsums::detail::impl_conj(lvecs_temp.impl());
+                    } else {
+                        for (int i = 0; i < lvecs->dim(0); i++) {
+                            if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
+                                for (int j = 0; j < lvecs->dim(1); j++) {
+                                    lvecs_temp(j, i + 1) = -lvecs_temp(j, i + 1);
+                                }
+                                i++;
                             }
-                            i++;
                         }
                     }
+                    einsums::detail::copy_to(lvecs_temp.impl(), *lvecs);
+                } else {
+                    einsums::detail::copy_to(lvecs_temp.impl(), *lvecs);
                 }
-                einsums::detail::copy_to(lvecs_temp.impl(), *lvecs);
             }
         }
 
@@ -635,31 +640,35 @@ void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComp
                     }
                 }
 
-                if constexpr (!IsComplexV<T>) {
-                    // Go through and conjugate as well.
-                    for (int i = 0; i < rvecs->dim(0); i++) {
-                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
-                            for (int j = 0; j < rvecs->dim(1); j++) {
-                                rvecs->subscript_no_check(j, i + 1) = -rvecs->subscript_no_check(j, i + 1);
-                            }
-                            i++;
-                        }
-                    }
-                }
+                // if constexpr (!IsComplexV<T>) {
+                //     // Go through and conjugate as well.
+                //     for (int i = 0; i < rvecs->dim(0); i++) {
+                //         if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
+                //             for (int j = 0; j < rvecs->dim(1); j++) {
+                //                 rvecs->subscript_no_check(j, i + 1) = -rvecs->subscript_no_check(j, i + 1);
+                //             }
+                //             i++;
+                //         }
+                //     }
+                // }
             } else if (rvec_data != rvecs->data()) {
-                if constexpr (IsComplexV<T>) {
-                    einsums::detail::impl_conj(rvecs_temp.impl());
-                } else {
-                    for (int i = 0; i < rvecs->dim(0); i++) {
-                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
-                            for (int j = 0; j < rvecs->dim(1); j++) {
-                                rvecs_temp(j, i + 1) = -rvecs_temp(j, i + 1);
+                if (rvecs_temp.impl().is_column_major()) {
+                    if constexpr (IsComplexV<T>) {
+                        einsums::detail::impl_conj(rvecs_temp.impl());
+                    } else {
+                        for (int i = 0; i < rvecs->dim(0); i++) {
+                            if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
+                                for (int j = 0; j < rvecs->dim(1); j++) {
+                                    rvecs_temp(j, i + 1) = -rvecs_temp(j, i + 1);
+                                }
+                                i++;
                             }
-                            i++;
                         }
                     }
+                    einsums::detail::copy_to(rvecs_temp.impl(), *rvecs);
+                } else {
+                    einsums::detail::copy_to(rvecs_temp.impl(), *rvecs);
                 }
-                einsums::detail::copy_to(rvecs_temp.impl(), *rvecs);
             }
         }
     }
@@ -1398,7 +1407,8 @@ auto svd(einsums::detail::TensorImpl<T> const &_A, char jobu, char jobvt)
     }
 
     // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> A = _A;
+    Tensor<T, 2> A{false, "A temp", _A.dim(0), _A.dim(1)};
+    einsums::detail::copy_to(_A, A.impl());
 
     size_t m   = A.dim(0);
     size_t n   = A.dim(1);
@@ -1410,7 +1420,7 @@ auto svd(einsums::detail::TensorImpl<T> const &_A, char jobu, char jobvt)
 
     // Test if it is absolutely necessary to zero out these tensors first.
     if (std::tolower(jobu) != 'n') {
-        U = create_tensor<T>("U (stored columnwise)", m, m);
+        U = create_tensor<T, false>("U (stored columnwise)", m, m);
         U.zero();
         U_data = U.data();
         ldu    = U.impl().get_lda();
@@ -1418,12 +1428,12 @@ auto svd(einsums::detail::TensorImpl<T> const &_A, char jobu, char jobvt)
     auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     S.zero();
     if (std::tolower(jobvt) != 'n') {
-        Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
+        Vt = create_tensor<T, false>("Vt (stored rowwise)", n, n);
         Vt.zero();
         Vt_data = Vt.data();
         ldvt    = Vt.impl().get_lda();
     }
-    auto superb = create_tensor<T>("superb", std::min(m, n));
+    auto superb = create_tensor<T, false>("superb", std::min(m, n));
     superb.zero();
 
     //    int info{0};
@@ -1436,6 +1446,24 @@ auto svd(einsums::detail::TensorImpl<T> const &_A, char jobu, char jobvt)
             lda, ldu, ldvt);
     } else if (info > 0) {
         EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: Algorithm did not converge!", info);
+    }
+
+    if (std::tolower(jobu) != 'n' && row_major_default) {
+        U.impl() = U.impl().transpose_view();
+        for (size_t i = 0; i < m; i++) {
+            for (size_t j = 0; j < i; j++) {
+                std::swap(U(i, j), U(j, i));
+            }
+        }
+    }
+
+    if (std::tolower(jobvt) != 'n' && row_major_default) {
+        Vt.impl() = Vt.impl().transpose_view();
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = 0; j < i; j++) {
+                std::swap(Vt(i, j), Vt(j, i));
+            }
+        }
     }
 
     return std::make_tuple((std::tolower(jobu) != 'n') ? option(std::move(U)) : option(), S,
@@ -1563,7 +1591,8 @@ auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job)
     }
 
     // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> A = _A;
+    Tensor<T, 2> A{false, "A temp", _A.dim(0), _A.dim(1)};
+    einsums::detail::copy_to(_A, A.impl());
 
     size_t m = A.dim(0);
     size_t n = A.dim(1);
@@ -1574,9 +1603,9 @@ auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job)
 
     // Test if it absolutely necessary to zero out these tensors first.
     if (std::tolower(job) != 'n') {
-        U = create_tensor<T>("U (stored columnwise)", m, m);
+        U = create_tensor<T, false>("U (stored columnwise)", m, m);
         zero(U);
-        Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
+        Vt = create_tensor<T, false>("Vt (stored rowwise)", n, n);
         zero(Vt);
         U_data  = U.data();
         Vt_data = Vt.data();
@@ -1601,6 +1630,22 @@ auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job)
         }
     }
 
+    if (std::tolower(job) != 'n' && row_major_default) {
+        U.impl() = U.impl().transpose_view();
+        for (size_t i = 0; i < m; i++) {
+            for (size_t j = 0; j < i; j++) {
+                std::swap(U(i, j), U(j, i));
+            }
+        }
+
+        Vt.impl() = Vt.impl().transpose_view();
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = 0; j < i; j++) {
+                std::swap(Vt(i, j), Vt(j, i));
+            }
+        }
+    }
+
     return std::make_tuple((std::tolower(job) != 'n') ? option(std::move(U)) : option(), S,
                            (std::tolower(job) != 'n') ? option(std::move(Vt)) : option());
 }
@@ -1622,13 +1667,24 @@ auto qr(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, Te
     blas::int_t const m = A.dim(0);
     blas::int_t const n = A.dim(1);
 
+    blas::int_t info;
+
     Tensor<T, 1> tau("tau", std::min(m, n));
     // Compute QR factorization of Y
-    blas::int_t info = blas::geqrf(m, n, A.data(), A.impl().get_lda(), tau.data());
-
-    if (info != 0) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "{} parameter to geqrf has an illegal value. #1: (m) {}, #2: (n) {}, #4: (lda) {}.",
-                                print::ordinal(-info), m, n, A.impl().get_lda());
+    if constexpr (row_major_default) {
+        info = blas::gelqf(n, m, A.data(), A.impl().get_lda(), tau.data());
+        if (info != 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "{} parameter to gelqf has an illegal value. #1: (m) {}, #2: (n) {}, #4: (lda) {}.",
+                                    print::ordinal(-info), n, m, A.impl().get_lda());
+        }
+    } else {
+        info = blas::geqrf(m, n, A.data(), A.impl().get_lda(), tau.data());
+        if (info != 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "{} parameter to geqrf has an illegal value. #1: (m) {}, #2: (n) {}, #4: (lda) {}.",
+                                    print::ordinal(-info), m, n, A.impl().get_lda());
+        }
     }
 
     Tensor<T, 2> Q{"Q", m, m};
@@ -1644,16 +1700,30 @@ auto qr(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, Te
     }
 
     // Extract Matrix Q out of QR factorization
-    if constexpr (IsComplexV<T>) {
-        info = blas::ungqr(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
-    } else {
-        info = blas::orgqr(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
-    }
+    if constexpr (row_major_default) {
+        if constexpr (IsComplexV<T>) {
+            info = blas::unglq(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
+        } else {
+            info = blas::orglq(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
+        }
 
-    if (info != 0) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument,
-                                "{} parameter to {{or,un}}gqr was invalid! #1: (m) {}, #2: (n) {}, #3: (k) {}, #5: (lda) {}.",
-                                print::ordinal(-info), m, m, tau.dim(0), Q.impl().get_lda());
+        if (info != 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "{} parameter to {{or,un}}gqr was invalid! #1: (m) {}, #2: (n) {}, #3: (k) {}, #5: (lda) {}.",
+                                    print::ordinal(-info), m, m, tau.dim(0), Q.impl().get_lda());
+        }
+    } else {
+        if constexpr (IsComplexV<T>) {
+            info = blas::ungqr(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
+        } else {
+            info = blas::orgqr(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
+        }
+
+        if (info != 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "{} parameter to {{or,un}}gqr was invalid! #1: (m) {}, #2: (n) {}, #3: (k) {}, #5: (lda) {}.",
+                                    print::ordinal(-info), m, m, tau.dim(0), Q.impl().get_lda());
+        }
     }
 
     return {Q, A};

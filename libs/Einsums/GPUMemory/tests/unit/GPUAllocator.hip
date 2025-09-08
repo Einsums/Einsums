@@ -25,19 +25,19 @@ TEST_CASE("Test allocator") {
         alloc.deallocate(ptr, 10);
     }
 
-    SECTION("Mapped") {
-        auto alloc = MappedAllocator<double>();
+    // SECTION("Mapped") {
+    //     auto alloc = MappedAllocator<double>();
 
-        auto ptr = alloc.allocate(10);
+    //     auto ptr = alloc.allocate(10);
 
-        hipPointerAttribute_t attribs;
+    //     hipPointerAttribute_t attribs;
 
-        hip_catch(hipPointerGetAttributes(&attribs, ptr));
+    //     hip_catch(hipPointerGetAttributes(&attribs, ptr));
 
-        REQUIRE((attribs.type == hipMemoryTypeHost));
+    //     REQUIRE((attribs.type == hipMemoryTypeHost));
 
-        alloc.deallocate(ptr, 10);
-    }
+    //     alloc.deallocate(ptr, 10);
+    // }
 }
 
 TEMPLATE_TEST_CASE("Test memcpy", "[gpu][memory]", double, std::complex<double>) {

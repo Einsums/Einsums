@@ -181,6 +181,8 @@ def test_gesv(a, b, dtype, array):
     A = ein.utils.random_definite_tensor_factory("A", a, dtype=dtype, method=array)
     B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
 
+    print(A.strides)
+
     A_copy = A.copy()
     B_copy = B.copy()
 

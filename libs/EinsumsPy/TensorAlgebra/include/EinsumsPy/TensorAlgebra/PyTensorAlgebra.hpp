@@ -824,20 +824,38 @@ class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
                 std::swap(gpu_A, gpu_B);
             }
 
-            if constexpr (std::is_same_v<T, float>) {
-                hipblas_catch(hipblasSger(gpu::get_blas_handle(), dC1, dC0, gpu_AB_prefactor, gpu_B, 1, gpu_A, 1,
-                                          (DevDatatype<T> *)C.dev_data(), dC1));
-            } else if constexpr (std::is_same_v<T, double>) {
-                hipblas_catch(hipblasDger(gpu::get_blas_handle(), dC1, dC0, gpu_AB_prefactor, gpu_B, 1, gpu_A, 1,
-                                          (DevDatatype<T> *)C.dev_data(), dC1));
-            } else if constexpr (std::is_same_v<T, std::complex<float>>) {
-                hipblas_catch(hipblasCgeru(gpu::get_blas_handle(), dC1, dC0, (hipblasComplex const *)gpu_AB_prefactor,
-                                           (hipblasComplex const *)gpu_B, 1, (hipblasComplex const *)gpu_A, 1,
-                                           (hipblasComplex *)C.dev_data(), dC1));
-            } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-                hipblas_catch(hipblasZgeru(gpu::get_blas_handle(), dC1, dC0, (hipblasDoubleComplex const *)gpu_AB_prefactor,
-                                           (hipblasDoubleComplex const *)gpu_B, 1, (hipblasDoubleComplex const *)gpu_A, 1,
-                                           (hipblasDoubleComplex *)C.dev_data(), dC1));
+            if (C.stride(0) < C.stride(1)) {
+                if constexpr (std::is_same_v<T, float>) {
+                    hipblas_catch(hipblasSger(gpu::get_blas_handle(), dC0, dC1, gpu_AB_prefactor, gpu_A, 1, gpu_B, 1,
+                                              (DevDatatype<T> *)C.dev_data(), dC0));
+                } else if constexpr (std::is_same_v<T, double>) {
+                    hipblas_catch(hipblasDger(gpu::get_blas_handle(), dC0, dC1, gpu_AB_prefactor, gpu_A, 1, gpu_B, 1,
+                                              (DevDatatype<T> *)C.dev_data(), dC0));
+                } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+                    hipblas_catch(hipblasCgeru(gpu::get_blas_handle(), dC0, dC1, (hipblasComplex const *)gpu_AB_prefactor,
+                                               (hipblasComplex const *)gpu_A, 1, (hipblasComplex const *)gpu_B, 1,
+                                               (hipblasComplex *)C.dev_data(), dC0));
+                } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+                    hipblas_catch(hipblasZgeru(gpu::get_blas_handle(), dC0, dC1, (hipblasDoubleComplex const *)gpu_AB_prefactor,
+                                               (hipblasDoubleComplex const *)gpu_A, 1, (hipblasDoubleComplex const *)gpu_B, 1,
+                                               (hipblasDoubleComplex *)C.dev_data(), dC0));
+                }
+            } else {
+                if constexpr (std::is_same_v<T, float>) {
+                    hipblas_catch(hipblasSger(gpu::get_blas_handle(), dC1, dC0, gpu_AB_prefactor, gpu_B, 1, gpu_A, 1,
+                                              (DevDatatype<T> *)C.dev_data(), dC1));
+                } else if constexpr (std::is_same_v<T, double>) {
+                    hipblas_catch(hipblasDger(gpu::get_blas_handle(), dC1, dC0, gpu_AB_prefactor, gpu_B, 1, gpu_A, 1,
+                                              (DevDatatype<T> *)C.dev_data(), dC1));
+                } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+                    hipblas_catch(hipblasCgeru(gpu::get_blas_handle(), dC1, dC0, (hipblasComplex const *)gpu_AB_prefactor,
+                                               (hipblasComplex const *)gpu_B, 1, (hipblasComplex const *)gpu_A, 1,
+                                               (hipblasComplex *)C.dev_data(), dC1));
+                } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+                    hipblas_catch(hipblasZgeru(gpu::get_blas_handle(), dC1, dC0, (hipblasDoubleComplex const *)gpu_AB_prefactor,
+                                               (hipblasDoubleComplex const *)gpu_B, 1, (hipblasDoubleComplex const *)gpu_A, 1,
+                                               (hipblasDoubleComplex *)C.dev_data(), dC1));
+                }
             }
 
             gpu::stream_wait();

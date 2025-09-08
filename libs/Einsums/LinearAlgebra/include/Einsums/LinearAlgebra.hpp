@@ -962,7 +962,8 @@ void gerc(typename AType::ValueType alpha, XYType const &X, XYType const &Y, ATy
  * @endversion
  */
 #ifndef DOXYGEN
-template <MatrixConcept TensorType, typename Pivots, bool resizable = requires(Pivots a, typename Pivots::size_type size) { a.resize(size); }>
+template <MatrixConcept TensorType, typename Pivots,
+          bool          resizable = requires(Pivots a, typename Pivots::size_type size) { a.resize(size); }>
     requires requires(Pivots a, size_t ind) {
         typename Pivots::value_type;
         typename Pivots::size_type;
@@ -1234,7 +1235,8 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
     LabeledSection0();
 
     // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> A = _A;
+    Tensor<T, 2> A{false, "A temp", _A.dim(0), _A.dim(1)};
+    A = _A;
 
     size_t m   = A.dim(0);
     size_t n   = A.dim(1);
@@ -1243,9 +1245,9 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
     // Test if it is absolutely necessary to zero out these tensors first.
     auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     S.zero();
-    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
+    auto Vt = create_tensor<T, false>("Vt (stored rowwise)", n, n);
     Vt.zero();
-    auto superb = create_tensor<T>("superb", std::min(m, n));
+    auto superb = create_tensor<T, false>("superb", std::min(m, n));
     superb.zero();
 
     //    int info{0};
@@ -1564,16 +1566,18 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
 
     /// @todo Break this off into a separate schur function
     // Compute Schur Decomposition of A
-    Tensor<T, 2>              R = A; // R is a copy of A
-    Tensor<T, 2>              wr("Schur Real Buffer", n, n);
-    Tensor<T, 2>              wi("Schur Imaginary Buffer", n, n);
-    Tensor<T, 2>              U("Lyapunov U", n, n);
+    Tensor<T, 2> R(false, "A copy", n, n);
+    R = A; // R is a copy of A
+    Tensor<T, 2>              wr(false, "Schur Real Buffer", n, n);
+    Tensor<T, 2>              wi(false, "Schur Imaginary Buffer", n, n);
+    Tensor<T, 2>              U(false, "Lyapunov U", n, n);
     BufferVector<blas::int_t> sdim(1);
     blas::gees('V', n, R.data(), R.impl().get_lda(), sdim.data(), wr.data(), wi.data(), U.data(), U.impl().get_lda());
 
     // Compute F = U^T * Q * U
     Tensor<T, 2> Fbuff = gemm<true, false>(1.0, U, Q);
-    Tensor<T, 2> F     = gemm<false, false>(1.0, Fbuff, U);
+    Tensor<T, 2> F(false, "F matrix", n, n);
+    gemm<false, false>(1.0, Fbuff, U, 0.0, &F);
 
     // Call the Sylvester Solve
     BufferVector<T> scale(1);

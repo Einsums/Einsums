@@ -40,5 +40,8 @@
 #define EINSUMS_SINGLETON_IMPL(Type)                                                                                                       \
     Type &Type::get_singleton() {                                                                                                          \
         static std::unique_ptr<Type> singleton_instance = std::make_unique<Type>(PrivateConstructorStuff());                               \
+        if (!singleton_instance) {                                                                                                         \
+            singleton_instance = std::make_unique<Type>(PrivateConstructorStuff());                                                        \
+        }                                                                                                                                  \
         return *singleton_instance;                                                                                                        \
     }

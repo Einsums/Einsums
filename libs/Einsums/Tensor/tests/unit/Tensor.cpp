@@ -8,6 +8,8 @@
 #include <Einsums/TensorUtilities/ARange.hpp>
 #include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
 
+#include "Einsums/Config/CompilerSpecific.hpp"
+
 #include <Einsums/Testing.hpp>
 
 TEST_CASE("Tensor creation", "[tensor]") {
@@ -56,9 +58,9 @@ TEST_CASE("Tensor creation", "[tensor]") {
 }
 
 TEST_CASE("Tensor GEMMs", "[tensor]") {
-    einsums::Tensor A( "A", 3, 3);
-    einsums::Tensor B( "B", 3, 3);
-    einsums::Tensor C( "C", 3, 3);
+    einsums::Tensor A("A", 3, 3);
+    einsums::Tensor B("B", 3, 3);
+    einsums::Tensor C("C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -67,27 +69,45 @@ TEST_CASE("Tensor GEMMs", "[tensor]") {
     A.vector_data() = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     B.vector_data() = {11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
 
-    einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(),
-               Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
+    if (einsums::row_major_default) {
+        einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+        CHECK_THAT(C.vector_data(),
+                   Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
 
-    einsums::linear_algebra::gemm<true, false>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(),
-               Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0}));
+        einsums::linear_algebra::gemm<true, false>(1.0, A, B, 0.0, &C);
+        CHECK_THAT(C.vector_data(),
+                   Catch::Matchers::Equals(einsums::VectorData<double>{726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0}));
 
-    einsums::linear_algebra::gemm<false, true>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(),
-               Catch::Matchers::Equals(einsums::VectorData<double>{726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0}));
+        einsums::linear_algebra::gemm<false, true>(1.0, A, B, 0.0, &C);
+        CHECK_THAT(C.vector_data(),
+                   Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0}));
 
-    einsums::linear_algebra::gemm<true, true>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(),
-               Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0}));
+        einsums::linear_algebra::gemm<true, true>(1.0, A, B, 0.0, &C);
+        CHECK_THAT(C.vector_data(),
+                   Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0}));
+    } else {
+        einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+        CHECK_THAT(C.vector_data(),
+                   Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
+
+        einsums::linear_algebra::gemm<true, false>(1.0, A, B, 0.0, &C);
+        CHECK_THAT(C.vector_data(),
+                   Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0}));
+
+        einsums::linear_algebra::gemm<false, true>(1.0, A, B, 0.0, &C);
+        CHECK_THAT(C.vector_data(),
+                   Catch::Matchers::Equals(einsums::VectorData<double>{726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0}));
+
+        einsums::linear_algebra::gemm<true, true>(1.0, A, B, 0.0, &C);
+        CHECK_THAT(C.vector_data(),
+                   Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0}));
+    }
 }
 
 TEST_CASE("Tensor GEMVs", "[tensor]") {
-    einsums::Tensor A( "A", 3, 3);
-    einsums::Tensor x( "x", 3);
-    einsums::Tensor y( "y", 3);
+    einsums::Tensor A("A", 3, 3);
+    einsums::Tensor x("x", 3);
+    einsums::Tensor y("y", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
@@ -96,11 +116,19 @@ TEST_CASE("Tensor GEMVs", "[tensor]") {
     A.vector_data() = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     x.vector_data() = {11.0, 22.0, 33.0};
 
-    einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
-    CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0}));
+    if (einsums::row_major_default) {
+        einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0}));
 
-    einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
-    CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0}));
+        einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0}));
+    } else {
+        einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0}));
+
+        einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0}));
+    }
 }
 
 TEST_CASE("Tensor SYEVs", "[tensor]") {
@@ -156,9 +184,15 @@ TEST_CASE("TensorView creation", "[tensor]") {
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3 && A.dim(2) == 3));
     REQUIRE((viewA.dim(0) == 3 && viewA.dim(1) == 9));
 
-    for (int i = 0, ij = 0; i < 3; i++)
-        for (int j = 0; j < 9; j++, ij++)
-            REQUIRE(viewA(i, j) == A(i, j % 3, j / 3));
+    if (einsums::row_major_default) {
+        for (int i = 0, ij = 0; i < 3; i++)
+            for (int j = 0; j < 9; j++, ij++)
+                REQUIRE(viewA(i, j) == A(i, j / 3, j % 3));
+    } else {
+        for (int i = 0, ij = 0; i < 3; i++)
+            for (int j = 0; j < 9; j++, ij++)
+                REQUIRE(viewA(i, j) == A(i, j % 3, j / 3));
+    }
 
     double *array = new double[100];
 
@@ -174,8 +208,13 @@ TEST_CASE("TensorView creation", "[tensor]") {
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                REQUIRE(view1(i, j) == array[i + j * 10]);
-                REQUIRE(const_view1(i, j) == array[i + j * 10]);
+                if constexpr (einsums::row_major_default) {
+                    REQUIRE(view1(j, i) == array[i + j * 10]);
+                    REQUIRE(const_view1(j, i) == array[i + j * 10]);
+                } else {
+                    REQUIRE(view1(i, j) == array[i + j * 10]);
+                    REQUIRE(const_view1(i, j) == array[i + j * 10]);
+                }
                 REQUIRE(view2(i, j) == array[10 * i + j]);
                 REQUIRE(const_view2(i, j) == array[10 * i + j]);
             }

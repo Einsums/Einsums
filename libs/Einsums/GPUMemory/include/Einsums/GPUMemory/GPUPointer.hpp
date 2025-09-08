@@ -579,7 +579,7 @@ struct GPUPointer<T const> final {
     constexpr GPUPointer(std::nullptr_t) noexcept : gpu_ptr_{nullptr} {}
 
     constexpr GPUPointer<T const> &operator=(std::nullptr_t) noexcept {
-        gpu_ptr_ = nullptr;
+        this->gpu_ptr_ = nullptr;
         return *this;
     }
 
@@ -599,7 +599,7 @@ struct GPUPointer<T const> final {
         return *this;
     }
 
-    constexpr bool operator==(GPUPointer<T const> const &other) noexcept const { return gpu_ptr_ == other.gpu_ptr_; }
+    constexpr bool operator==(GPUPointer<T const> const &other) const noexcept { return gpu_ptr_ == other.gpu_ptr_; }
 
     template <typename U>
     constexpr bool operator==(GPUPointer<U> const &other) const noexcept {

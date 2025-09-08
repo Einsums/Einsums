@@ -44,7 +44,7 @@ extern void FC_GLOBAL(cgesvd, CGESVD)(char *jobu, char *jobvt, int_t *m, int_t *
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
         if (lda < m) {                                                                                                                     \
-            EINSUMS_LOG_WARN("gesvd warning: lda < n, lda = {}, n = {}", lda, n);                                                          \
+            EINSUMS_LOG_WARN("gesvd warning: lda < m, lda = {}, m = {}", lda, m);                                                          \
         }                                                                                                                                  \
         if (ldu < ncols_u) {                                                                                                               \
             EINSUMS_LOG_WARN("gesvd warning: ldu < ncols_u, ldu = {}, ncols_u = {}", ldu, ncols_u);                                        \
@@ -99,7 +99,7 @@ GESVD(float, s, S);
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
         if (lda < m) {                                                                                                                     \
-            EINSUMS_LOG_WARN("gesvd warning: lda < m, lda = {}, m = {}", lda, n);                                                          \
+            EINSUMS_LOG_WARN("gesvd warning: lda < m, lda = {}, m = {}", lda, m);                                                          \
         }                                                                                                                                  \
         if (ldu < ncols_u) {                                                                                                               \
             EINSUMS_LOG_WARN("gesvd warning: ldu < ncols_u, ldu = {}, ncols_u = {}", ldu, ncols_u);                                        \

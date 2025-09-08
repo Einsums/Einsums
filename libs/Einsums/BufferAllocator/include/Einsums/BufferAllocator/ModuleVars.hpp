@@ -76,6 +76,10 @@ class EINSUMS_EXPORT Einsums_BufferAllocator_vars final : public design_pats::Lo
      */
     size_t get_available() const;
 
+    ~Einsums_BufferAllocator_vars() {
+      ;
+    }
+
   private:
     explicit Einsums_BufferAllocator_vars() = default;
 
@@ -84,7 +88,7 @@ class EINSUMS_EXPORT Einsums_BufferAllocator_vars final : public design_pats::Lo
      *
      * @versionadded{1.1.0}
      */
-    size_t max_size_{0};
+    size_t max_size_{4294967296};
 
     /**
      * The current number of bytes allocated by Einsums.

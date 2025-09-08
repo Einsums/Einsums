@@ -600,9 +600,14 @@ bool einsum_do_matrix_product(ValueTypeT<CType> const C_prefactor, std::tuple<CI
     TensorView<BDataType, 2> const tB{const_cast<BType &>(B), dB, sB};
     TensorView<CDataType, 2>       tC{*C, dC, sC};
 #    endif
-
-    if (!tA.impl().is_gemmable() || !tB.impl().is_gemmable() || !tC.impl().is_gemmable()) {
-        return false;
+    if constexpr (CoreTensorConcept<decltype(tA)>) {
+        if (!tA.impl().is_gemmable() || !tB.impl().is_gemmable() || !tC.impl().is_gemmable()) {
+            return false;
+        }
+    } else {
+        if (tA.stride(1) != 1 || tB.stride(1) != 1 || tC.stride(1) != 1) {
+            return false;
+        }
     }
 
     if constexpr (DryRun) {
