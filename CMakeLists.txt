@@ -717,7 +717,6 @@ set(EINSUMS_WITH_TARGET_ARCHITECTURE
 include(Einsums_SetupFmt)
 include(Einsums_SetupCatch)
 include(Einsums_SetupHDF5)
-include(Einsums_SetupArgparse)
 include(Einsums_SetupSpdlog)
 include(Einsums_SetupAllocator)
 
