@@ -33,25 +33,6 @@
 
 namespace einsums {
 
-void no_flag(argparse::ArgumentParser &arg, bool &output, std::string const &true_flag, std::string const &false_flag,
-             std::string const &true_help, std::string const &false_help, bool default_value) {
-    auto &group = arg.add_mutually_exclusive_group();
-
-    group.add_argument(true_flag).action([&output](auto const &) { output = true; }).help(true_help).default_value(false).implicit_value(true);
-    group.add_argument(false_flag).action([&output](auto const &) { output = false; }).help(false_help).default_value(true).implicit_value(false);
-
-    output = default_value;
-}
-
-void no_flag(argparse::ArgumentParser &arg, bool &output, std::string const &true_flag, std::string const &false_flag,
-             std::string const &non_default_help, bool default_value) {
-    if (!default_value) {
-        no_flag(arg, output, true_flag, false_flag, non_default_help, fmt::format("Negation of {}.", true_flag), default_value);
-    } else {
-        no_flag(arg, output, true_flag, false_flag, fmt::format("Negation of {}.", false_flag), non_default_help, default_value);
-    }
-}
-
 namespace detail {
 
 struct EINSUMS_EXPORT ArgumentList final : design_pats::Lockable<std::mutex> {

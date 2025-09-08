@@ -18,6 +18,8 @@
 #include <mutex>
 #include <string>
 
+#include "Einsums/CommandLine/CommandLine.hpp"
+
 namespace einsums {
 
 /*
@@ -47,13 +49,7 @@ int setup_Einsums_Tensor() {
     return 0;
 }
 
-EINSUMS_EXPORT void add_Einsums_Tensor_arguments(argparse::ArgumentParser &parser) {
-    /** @todo Fill in.
-     *
-     * If you are not using one of the following maps, you may remove references to it.
-     * The maps may not need to be locked before use, but it should still be done just in
-     * case.
-     */
+EINSUMS_EXPORT void add_Einsums_Tensor_arguments() {
 
     auto pid = getpid();
 
@@ -65,15 +61,17 @@ EINSUMS_EXPORT void add_Einsums_Tensor_arguments(argparse::ArgumentParser &parse
 
     auto lock = std::lock_guard(global_config);
 
-    parser.add_argument("--einsums:scratch-dir")
-        .default_value(std::filesystem::temp_directory_path().string())
-        .help("The scratch directory for Einsums tensor files.")
-        .store_into(global_string["scratch-dir"]);
+    static cl::OptionCategory TensorCategory("Tensor Options");
 
-    parser.add_argument("--einsums:hdf5-file-name")
-        .default_value(fmt::format("einsums.{}.h5", pid))
-        .help("The name of the HDF5 file for Einsums. Defaults to einsums.[pid].h5, where [pid] is the PID of the current process.")
-        .store_into(global_string["hdf5-file-name"]);
+    static cl::Opt<std::string> scratch_dir("einsums:scratch-dir", {}, "The scratch directory for Einsums tensor files.", TensorCategory,
+                                            cl::Location(global_string["scratch-dir"]),
+                                            cl::Default(std::filesystem::temp_directory_path().string()));
+    static cl::Opt<std::string> file_name(
+        "einsums:hdf5-file-name", {},
+        "The name of the HDF5 file for Einsums. Defaults to einsums.[pid].h5, where [pid] is the PID of the current process.",
+        TensorCategory, cl::Location(global_string["hdf5-file-name"]), cl::Default(fmt::format("einsums.{}.h5", pid)));
+    
+    static cl::Opt<bool> delete_files("einsums::delete-hdf5-files")
 
     no_flag(parser, global_bool["delete-hdf5-files"], "--einsums:delete-hdf5-files", "--einsums:no-delete-hdf5-files",
             "Tells Einsums not to clean up HDF5 files on exit.", true);
@@ -93,7 +91,7 @@ static void create_complex_types() {
         std::terminate();
     } else {
         int err = 1;
-        err = H5Tinsert(singleton.double_complex_type, "x", 0, H5T_NATIVE_DOUBLE);
+        err     = H5Tinsert(singleton.double_complex_type, "x", 0, H5T_NATIVE_DOUBLE);
 
         if (err < 0) {
             EINSUMS_LOG_ERROR("Could not assign members to double complex data type!");
@@ -102,7 +100,6 @@ static void create_complex_types() {
             H5Fclose(singleton.double_complex_type);
             std::terminate();
         }
-
 
         err = H5Tinsert(singleton.double_complex_type, "y", 8, H5T_NATIVE_DOUBLE);
 
@@ -133,7 +130,7 @@ static void create_complex_types() {
         std::terminate();
     } else {
         int err = 1;
-        err = H5Tinsert(singleton.float_complex_type, "x", 0, H5T_NATIVE_FLOAT);
+        err     = H5Tinsert(singleton.float_complex_type, "x", 0, H5T_NATIVE_FLOAT);
 
         if (err < 0) {
             EINSUMS_LOG_ERROR("Could not assign members to float complex data type!");
@@ -184,7 +181,7 @@ static void open_complex_types() {
             std::terminate();
         } else {
             int err = 1;
-            err = H5Tinsert(singleton.double_complex_type, "x", 0, H5T_NATIVE_DOUBLE);
+            err     = H5Tinsert(singleton.double_complex_type, "x", 0, H5T_NATIVE_DOUBLE);
 
             if (err < 0) {
                 EINSUMS_LOG_ERROR("Could not assign members to double complex data type!");
@@ -227,7 +224,7 @@ static void open_complex_types() {
             std::terminate();
         } else {
             int err = 1;
-            err = H5Tinsert(singleton.float_complex_type, "x", 0, H5T_NATIVE_FLOAT);
+            err     = H5Tinsert(singleton.float_complex_type, "x", 0, H5T_NATIVE_FLOAT);
 
             if (err < 0) {
                 EINSUMS_LOG_ERROR("Could not assign members to float complex data type!");
@@ -377,7 +374,7 @@ void finalize_Einsums_Tensor() {
         H5Fdelete(fname.c_str(), H5P_DEFAULT);
     }
 
-    if(singleton.link_property_list != H5I_INVALID_HID) {
+    if (singleton.link_property_list != H5I_INVALID_HID) {
         H5Pclose(singleton.link_property_list);
     }
 
