@@ -314,14 +314,15 @@ size_t PyGPUView::itemsize() const noexcept {
 }
 
 void PyGPUView::update_H2D() {
+    einsums::gpu::stream_wait();
     if (_mode == detail::COPY) {
         hip_catch(hipMemcpy(_dev_data, _host_data, _alloc_size, hipMemcpyHostToDevice));
     }
 }
 
 void PyGPUView::update_D2H() {
+    einsums::gpu::stream_wait();
     if (_mode == detail::COPY) {
-        einsums::gpu::stream_wait();
         hip_catch(hipMemcpy(_host_data, _dev_data, _alloc_size, hipMemcpyDeviceToHost));
     }
 }

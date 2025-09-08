@@ -970,6 +970,14 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
     detail::TensorImpl<T> const &impl() const { return _impl; }
 
+    bool is_row_major() const {
+        return _impl.is_row_major();
+    }
+
+    bool is_column_major() const {
+        return _impl.is_column_major();
+    }
+
   private:
     std::string _name{"(unnamed)"};
 
@@ -1777,6 +1785,14 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * Get the underlying implementation details.
      */
     detail::TensorImpl<T> const &impl() const noexcept { return _impl; }
+
+    bool is_row_major() const {
+        return _impl.is_row_major();
+    }
+
+    bool is_column_major() const {
+        return _impl.is_column_major();
+    }
 
   private:
     /**

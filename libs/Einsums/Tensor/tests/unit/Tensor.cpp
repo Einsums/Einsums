@@ -322,10 +322,17 @@ TEST_CASE("TensorView Ranges") {
 
         // einsums::println("C strides: %zu %zu\n", C.strides()[0], C.strides()[1]);
 
-        REQUIRE(C(1, 1) == viewC(0, 0));
-        REQUIRE(C(1, 2) == viewC(1, 0));
-        REQUIRE(C(2, 1) == viewC(0, 1));
-        REQUIRE(C(2, 2) == viewC(1, 1));
+        if (C.is_row_major()) {
+            REQUIRE(C(1, 1) == viewC(0, 0));
+            REQUIRE(C(2, 1) == viewC(1, 0));
+            REQUIRE(C(1, 2) == viewC(0, 1));
+            REQUIRE(C(2, 2) == viewC(1, 1));
+        } else {
+            REQUIRE(C(1, 1) == viewC(0, 0));
+            REQUIRE(C(1, 2) == viewC(1, 0));
+            REQUIRE(C(2, 1) == viewC(0, 1));
+            REQUIRE(C(2, 2) == viewC(1, 1));
+        }
     }
 
     SECTION("Subviews 2") {
@@ -337,8 +344,8 @@ TEST_CASE("TensorView Ranges") {
         // einsums::println(viewC);
 
         REQUIRE(C(1, 1) == viewC(0, 0));
-        REQUIRE(C(1, 2) == viewC(0, 1));
         REQUIRE(C(2, 1) == viewC(1, 0));
+        REQUIRE(C(1, 2) == viewC(0, 1));
         REQUIRE(C(2, 2) == viewC(1, 1));
     }
 

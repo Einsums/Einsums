@@ -16,6 +16,7 @@
 #include <type_traits>
 
 #include "Einsums/Concepts/Complex.hpp"
+#include "Einsums/Config/CompilerSpecific.hpp"
 #include "Einsums/Print.hpp"
 
 namespace einsums {
@@ -98,7 +99,7 @@ struct TensorImpl final {
     /**
      * @brief Default constructor.
      */
-    constexpr TensorImpl() noexcept : _ptr{nullptr}, _dims(), _strides(), _rank{0}, _size{0}, _row_major{false} {};
+    constexpr TensorImpl() noexcept : _ptr{nullptr}, _dims(), _strides(), _rank{0}, _size{0}, _row_major{row_major_default} {};
 
     /**
      * @brief Copy constructor.
@@ -709,6 +710,8 @@ struct TensorImpl final {
         if (_rank != 2) {
             return false;
         } else if (_strides[0] != 1 && _strides[1] != 1) {
+            return false;
+        } else if (_strides[0] == _strides[1]) {
             return false;
         } else {
             if (lda != nullptr) {
