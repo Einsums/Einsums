@@ -6,9 +6,9 @@
 {gpu_head}
 list(APPEND CMAKE_MODULE_PATH "${{CMAKE_CURRENT_SOURCE_DIR}}/cmake")
 
-set({module_name}Headers )
+set({module_name}Headers {lib_name}/{module_name}/InitModule.hpp {lib_name}/{module_name}/ModuleVars.hpp)
 
-set({module_name}Sources {export_source} InitModule.hpp ModuleVars.hpp InitModule.cpp ModuleVars.cpp)
+set({module_name}Sources {export_source} InitModule.cpp ModuleVars.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(

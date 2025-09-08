@@ -7,8 +7,6 @@
 
 #include <Einsums/Config.hpp>
 
-#include <argparse/argparse.hpp>
-
 /*
  * Exported definitions for initialization. If the module does not need to be initialized,
  * this header can be safely deleted. Just make sure to remove the reference in CMakeLists.txt,
@@ -20,7 +18,7 @@ namespace einsums {
 #ifndef DOXYGEN
 EINSUMS_EXPORT int init_Einsums_GPUMemory();
 
-EINSUMS_EXPORT void add_Einsums_GPUMemory_arguments(argparse::ArgumentParser &);
+EINSUMS_EXPORT void add_Einsums_GPUMemory_arguments();
 EINSUMS_EXPORT void initialize_Einsums_GPUMemory();
 EINSUMS_EXPORT void finalize_Einsums_GPUMemory();
 

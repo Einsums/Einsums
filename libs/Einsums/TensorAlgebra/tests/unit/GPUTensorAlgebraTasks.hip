@@ -3,11 +3,12 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include <Einsums/Testing.hpp>
 #include <Einsums/Tensor/DeviceTensor.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
-#include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 #include <Einsums/TensorUtilities/CreateIdentity.hpp>
+#include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
+
+#include <Einsums/Testing.hpp>
 
 TEST_CASE("Test dependence GPU timing", "[jobs][gpu]") {
     using namespace einsums;
@@ -27,31 +28,27 @@ TEST_CASE("Test dependence GPU timing", "[jobs][gpu]") {
     D.zero();
 
     SECTION("Sequential") {
-        profile::push("Sequential GPU");
-
         for (int sentinel = 0; sentinel < 10; sentinel++) {
             REQUIRE_NOTHROW(einsums::tensor_algebra::einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B));
             REQUIRE_NOTHROW(einsums::tensor_algebra::einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B));
         }
-
-        profile::pop();
     }
 
     SECTION("Tasked") {
 #pragma omp parallel
 #pragma omp single
         {
-            profile::push("Tasked GPU");
-
             for (int sentinel = 0; sentinel < 10; sentinel++) {
 #pragma omp task depend(in : A, B), depend(out : C)
-                { REQUIRE_NOTHROW(einsums::tensor_algebra::einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B)); }
+                {
+                    REQUIRE_NOTHROW(einsums::tensor_algebra::einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B));
+                }
 
 #pragma omp task depend(in : A, B), depend(out : D)
-                { REQUIRE_NOTHROW(einsums::tensor_algebra::einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B)); }
+                {
+                    REQUIRE_NOTHROW(einsums::tensor_algebra::einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B));
+                }
             }
-
-            profile::pop();
         }
     }
 }
