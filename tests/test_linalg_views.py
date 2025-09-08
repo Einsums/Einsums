@@ -557,7 +557,7 @@ def test_qr(a, b, dtype, array):
 
     Q, R = ein.core.qr(A)
 
-    A_test = Q @ R
+    A_test = np.array(Q) @ np.array(R)
 
     for i in range(a) :
         for j in range(b) :
