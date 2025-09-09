@@ -518,9 +518,13 @@ def test_nullspace(a, b, dtype, array):
     assert Null.shape[1] == Null_expected.shape[1]
 
     for j in range(Null_expected.shape[1]):
-        scale = Null_expected[0, j] / Null[0, j]
+        scale = 1.0
+        for i in range(b) :
+            if Null[i, j] != 0.0 :
+                scale = Null_expected[i, j] / Null[i, j]
+                break
         for i in range(b):
-            assert Null[i, j] == pytest.approx(Null_expected[i, j])
+            assert Null[i, j] * scale == pytest.approx(Null_expected[i, j])
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13)])
