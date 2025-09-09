@@ -689,6 +689,7 @@ inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_stri
  *
  * @param dims The list of dimensions.
  * @param out The calculated strides.
+ * @param row_major If true, then the first stride will be the largest. If false, then the first stride will be the smallest.
  * @return The size calculated from the dimensions. Can be safely ignored.
  */
 template <typename Alloc1, typename Alloc2>
@@ -717,6 +718,7 @@ size_t dims_to_strides(std::vector<size_t, Alloc1> const &dims, std::vector<size
  *
  * @param dims The list of dimensions.
  * @param out The calculated strides.
+ * @param row_major If true, then the first stride will be the largest. If false, then the first stride will be the smallest.
  * @return The size calculated from the dimensions. Can be safely ignored.
  */
 template <typename arr_type1, typename arr_type2, size_t Dims>
@@ -774,6 +776,7 @@ constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::arra
  *
  * @param dims The list of dimensions.
  * @param out The calculated strides.
+ * @param row_major If true, then the first stride will be the largest. If false, then the first stride will be the smallest.
  * @return The size calculated from the dimensions. Can be safely ignored.
  */
 template <typename arr_type2, size_t Dims, typename... TupleDims>

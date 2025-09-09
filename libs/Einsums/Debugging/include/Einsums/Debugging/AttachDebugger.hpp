@@ -11,6 +11,7 @@ namespace einsums::util {
 
 /// Tries to break an attached debugger, if not supported a loop is
 /// invoked which gives enough time to attach a debugger manually.
+/// @versionadded{1.0.0}
 EINSUMS_EXPORT void attach_debugger();
 
 } // namespace einsums::util

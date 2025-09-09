@@ -28,15 +28,21 @@ much code to itself.
 
     Very basic class. Should not be instantiated. It is the superclass for all :py:class:`RuntimeTensorX` and :py:class:`RuntimeTensorViewX` types.
 
+    .. versionadded:: 1.0.0
+
 .. py:class:: RuntimeTensorX
 
     These are the tensor classes that allow the Einsums Python code to interface with the C++ library.
     It has a runtime-computed rank, since compile-time computed ranks are not available in Python. This
     wraps the :cpp:class:`einsums::RuntimeTensor` class with a trampoline class provided by :cpp:class:`einsums::python::PyTensor`.
 
+    .. versionadded:: 1.0.0
+
     .. py:method:: __init__()
 
         Construct a new empty tensor.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: __init__(name: str, dims: list[int])
         :noindex:
@@ -46,12 +52,16 @@ much code to itself.
         :param name: The name of the tensor.
         :param dims: The dimensions of the tensor. The rank is determined from the length of this argument.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: __init__(dims: list[int])
         :noindex:
 
         Construct a new tensor with the given dimensions. Its name will be initialized to a default value.
 
         :param dims: The dimensions of the tensor. The rank is determined from the length of this argument.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: __init__(buffer_object)
         :noindex:
@@ -61,9 +71,13 @@ much code to itself.
 
         :param buffer_object: The object to copy from. Can only be an object implementing the Python buffer protocol.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: zero() -> None
 
         Zero out the data in the tensor. Wraps :cpp:func:`einsums::RuntimeTensor::zero`.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: set_all(value) -> None
 
@@ -71,12 +85,16 @@ much code to itself.
 
         :param value: The value to fill the tensor with.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: __getitem__(index)
 
         Get the value at an index using Python's bracket syntax.
 
         :param index: The index to pass. Can be a single value, a tuple, a slice, or pretty much anything that normally works.
         :return: Return value depends on the index passed. It may be a single value or it may be a :py:class:`einsums.core.RuntimeTensorView` object.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: __setitem__(key, value)
 
@@ -89,6 +107,8 @@ much code to itself.
         :param key: Which item or items to set.
         :param value: The value or buffer of values to set that key to.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: __imul__(other)
     .. py:method:: __itruediv__(other)
     .. py:method:: __iadd__(other)
@@ -100,6 +120,12 @@ much code to itself.
         will then perform the element-wise operation between the elements of the tensor and the buffer.
 
         :param other: The object to operate with.
+
+        .. versionadded:: 1.0.0
+        .. versionchanged:: 1.1.0
+
+            Operations between a real tensor on the left and a complex tensor on the right are no longer
+            permitted.
 
     .. py:method:: __mul__(other)
     .. py:method:: __truediv__(other)
@@ -118,11 +144,18 @@ much code to itself.
 
         :param other: The object to operate with.
 
+        .. versionadded:: 1.1.0
+
     .. py:method:: assign(buffer)
 
         Copy the buffer into this tensor. The tensor will resize and reshape to fit the buffer.
 
         :param buffer: The buffer object to assign from.
+
+        .. versionadded:: 1.0.0
+        .. versionchanged:: 1.1.0
+
+            A complex buffer can not be assigned to a real buffer.
 
     .. py:method:: dim(axis: int) -> int
 
@@ -130,9 +163,13 @@ much code to itself.
 
         :param axis: The axis whose dimension should be found.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: dims() -> list[int]
 
         Get the dimensions of the tensor.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: stride(axis: int) -> int
 
@@ -140,9 +177,13 @@ much code to itself.
 
         :param axis: The axis whos stride should be found.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: strides() -> list[int]
 
         Get the strides of the tensor, in elements.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: to_rank_1_view() -> einsums.core.RuntimeTensorViewX
 
@@ -177,10 +218,14 @@ much code to itself.
             (6):     0.45176621 
             (7):     0.25069921 
             (8):     0.54104020
+
+        .. versionadded:: 1.0.0
     
     .. py:method:: get_name() -> str
 
         Get the name of the tensor.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: set_name(name: str)
 
@@ -188,9 +233,13 @@ much code to itself.
 
         :param name: The new name of the tensor.
 
+        .. versionadded:: 1.0.0
+
     .. py:property:: name
 
         Python property wrapping :py:meth:`get_name` and :py:meth:`set_name`.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: size() -> int
     .. py:method:: __len__() -> int
@@ -199,11 +248,15 @@ much code to itself.
 
         :return: The number of elements in the tensor.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: __iter__() -> einsums.core.PyTensorIteratorX
 
         Get an iterator that iterates over the elements in the tensor.
 
         :return: An iterator that will iterate over the elements.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: __reversed__() -> einsums.core.PyTensorIteratorX
 
@@ -211,11 +264,15 @@ much code to itself.
 
         :return: An iterator that will iterate over the elements in reverse.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: rank() -> int
 
         Get the rank of the tensor, or the number of dimensions.
 
         :return: The rank of the tensor.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: __copy__()
     .. py:method:: __deepcopy__()
@@ -226,7 +283,11 @@ much code to itself.
 
         :return: A copy of the tensor.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: __str__() -> str
 
         Return a string representation of the tensor.
+
+        .. versionadded:: 1.0.0
 

@@ -24,8 +24,10 @@ namespace einsums {
  * @brief Tests whether a type is a complex type.
  *
  * @tparam T The type to test.
+ *
+ * @versionadded{1.0.0}
  */
-template <typename>
+template <typename T>
 inline constexpr bool IsComplexV = false;
 
 /**
@@ -47,6 +49,8 @@ inline constexpr bool IsComplexV<hipDoubleComplex> = true;
  * @brief Tests whether a type is a complex type.
  *
  * @tparam T The type to test.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 concept IsComplex = IsComplexV<T>;
@@ -57,6 +61,8 @@ concept IsComplex = IsComplexV<T>;
  * @brief Tests whether a type is an arithmetic type including complex.
  *
  * @tparam T The type to test.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T>
 concept CanBeComplex = IsComplexV<T> || !IsComplexV<T>;
@@ -67,6 +73,8 @@ concept CanBeComplex = IsComplexV<T> || !IsComplexV<T>;
  * @brief Tests whether a tensor stores a complex data type.
  *
  * @tparam T The type to test.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 concept IsComplexTensor = requires {
@@ -75,11 +83,11 @@ concept IsComplexTensor = requires {
 };
 
 /**
- * @concept Complex
- *
  * @brief Tests whether a type is complex, or is a tensor storing a complex value.
  *
  * @tparam T The type to test.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 concept Complex = IsComplex<T> || IsComplexTensor<T>;
@@ -90,6 +98,8 @@ concept Complex = IsComplex<T> || IsComplexTensor<T>;
  * @brief The opposite of Complex.
  *
  * @tparam T The type to test.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 concept NotComplex = !Complex<T>;
@@ -102,12 +112,23 @@ namespace detail {
  * @brief If given a complex type, it will give the real equivalent. If given a real type, no change will happen.
  *
  * @tparam T The type to modify.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 struct RemoveComplex {
     using type = T;
 };
 
+/**
+ * @struct RemoveComplex
+ *
+ * @brief If given a complex type, it will give the real equivalent. If given a real type, no change will happen.
+ *
+ * @tparam T The type to modify.
+ *
+ * @versionadded{1.0.0}
+ */
 template <typename T>
 struct RemoveComplex<std::complex<T>> {
     using type = T;
@@ -120,6 +141,8 @@ struct RemoveComplex<std::complex<T>> {
  * @brief If given a complex type, it will give the real equivalent. If given a real type, no change will happen.
  *
  * @tparam T The type to modify.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 using RemoveComplexT = typename detail::RemoveComplex<T>::type;
@@ -132,12 +155,23 @@ namespace detail {
  * @brief If given a real type, it will give the complex equivalent. If given a complex type, no change will happen.
  *
  * @tparam T The type to modify.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 struct AddComplex {
     using type = std::complex<T>;
 };
 
+/**
+ * @struct AddComplex
+ *
+ * @brief If given a real type, it will give the complex equivalent. If given a complex type, no change will happen.
+ *
+ * @tparam T The type to modify.
+ *
+ * @versionadded{1.0.0}
+ */
 template <typename T>
 struct AddComplex<std::complex<T>> {
     using type = std::complex<T>;
@@ -150,6 +184,8 @@ struct AddComplex<std::complex<T>> {
  * @brief If given a real type, it will give the complex equivalent. If given a complex type, no change will happen.
  *
  * @tparam T The type to modify.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 using AddComplexT = typename detail::AddComplex<T>::type;

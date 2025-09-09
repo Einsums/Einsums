@@ -9,7 +9,15 @@
 
 namespace einsums::linear_algebra::detail {
 
-template <typename T, Container Pivots>
+template <typename T, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+    }
 int impl_lu_decomp(einsums::detail::TensorImpl<T> &A, Pivots &pivot) {
     size_t const m = A.dim(0), n = A.dim(1), min_dim = std::min(m, n);
     int          ret = 0;
@@ -29,7 +37,9 @@ int impl_lu_decomp(einsums::detail::TensorImpl<T> &A, Pivots &pivot) {
 
         // If the current column only has zeros, then skip this iteration.
         if (max_elem == T{0.0}) {
-            ret = (int)k + 1;
+            if (ret == 0) {
+                ret = (int)k + 1;
+            }
             continue;
         }
 
@@ -62,7 +72,15 @@ int impl_lu_decomp(einsums::detail::TensorImpl<T> &A, Pivots &pivot) {
     return ret;
 }
 
-template <typename T, Container Pivots>
+template <typename T, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+    }
 int impl_solve(einsums::detail::TensorImpl<T> &A, einsums::detail::TensorImpl<T> &X, Pivots &pivot) {
     size_t const m = A.dim(0), n = A.dim(1), min_dim = std::min(m, n), nrhs = X.dim(1);
 
@@ -142,7 +160,15 @@ int impl_solve(einsums::detail::TensorImpl<T> &A, einsums::detail::TensorImpl<T>
     return info;
 }
 
-template <typename T, Container Pivots>
+template <typename T, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+    }
 int impl_invert_lu(einsums::detail::TensorImpl<T> &A_lu, Pivots const &pivot, T *work) {
     // Assume A_lu has been already put into impl_lu_decomp, and pivot is the result.
     size_t const m = A_lu.dim(0), n = A_lu.dim(1), min_dim = std::min(m, n);

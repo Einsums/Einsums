@@ -812,7 +812,9 @@ set(EINSUMS_DEBUG_POSTFIX "d")
 # Add libraries
 # ##################################################################################################
 add_subdirectory(libs)
-add_subdirectory(einsums)
+if(EINSUMS_BUILD_PYTHON)
+  add_subdirectory(einsums)
+endif()
 
 # ##################################################################################################
 # Documentation toolchain (Sphinx, Doxygen, Breathe)

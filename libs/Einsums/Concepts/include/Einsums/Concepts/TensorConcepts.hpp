@@ -40,6 +40,8 @@ struct DeviceTensor;
  * Checks to see if the given type defines the functions full_view_of_underlying, name, dim, and dims.
  *
  * @tparam D The type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsTensorV = requires(D tensor) {
@@ -57,6 +59,8 @@ constexpr inline bool IsTensorV = requires(D tensor) {
  *
  * @tparam D The tensor type to check.
  * @tparam T The type the tensor should store.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, typename T>
 constexpr inline bool IsTypedTensorV = requires {
@@ -71,6 +75,8 @@ constexpr inline bool IsTypedTensorV = requires {
  *
  * @tparam D The tensor type to check.
  * @tparam Rank The rank the tensor should have. If the rank is -1, it only checks that the tensor has a rank that is known at compile time.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, ptrdiff_t Rank = -1>
 constexpr inline bool IsRankTensorV = requires {
@@ -86,6 +92,8 @@ constexpr inline bool IsRankTensorV = requires {
  * Checks to see if a type is either a tensor with rank 0 or a scalar type such as double or complex<float>.
  *
  * @tparam D The type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsScalarV = IsRankTensorV<D, 0> || !IsTensorV<D>;
@@ -94,6 +102,8 @@ constexpr inline bool IsScalarV = IsRankTensorV<D, 0> || !IsTensorV<D>;
  * @property IsBasicLockableV
  *
  * @brief Tests whether a given type satisfies C++'s BasicLockable requirement.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsBasicLockableV = requires(D var) {
@@ -107,6 +117,8 @@ constexpr inline bool IsBasicLockableV = requires(D var) {
  * @brief Tests whether the given type satisfies C++'s Lockable requirement.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsLockableV = requires(D var) {
@@ -122,6 +134,8 @@ constexpr inline bool IsLockableV = requires(D var) {
  * @tparam D The tensor type to check.
  * @tparam T The storage type stored by the tensor.
  * @tparam Rank The expected rank of the tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsTRTensorV = IsTypedTensorV<D, T> && IsRankTensorV<D, Rank>;
@@ -134,6 +148,8 @@ constexpr inline bool IsTRTensorV = IsTypedTensorV<D, T> && IsRankTensorV<D, Ran
  * @tparam D The tensor type to check.
  * @tparam Rank The expected rank of the tensor.
  * @tparam T The expected storage type stored by the tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsTRLTensorV = IsTypedTensorV<D, T> && IsRankTensorV<D, Rank> && IsBasicLockableV<D>;
@@ -146,6 +162,8 @@ constexpr inline bool IsTRLTensorV = IsTypedTensorV<D, T> && IsRankTensorV<D, Ra
  * Checks the tensor against tensor_base::CoreTensor.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsIncoreTensorV = std::is_base_of_v<einsums::tensor_base::CoreTensor, D>;
@@ -159,6 +177,8 @@ constexpr inline bool IsIncoreTensorV = std::is_base_of_v<einsums::tensor_base::
  * Checks the tensor against tensor_base::DeviceTensor.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsDeviceTensorV = std::is_base_of_v<einsums::tensor_base::DeviceTensorBase, D>;
@@ -175,6 +195,8 @@ constexpr inline bool IsDeviceTensorV = false;
  * Checks whether the tensor inherits tensor_base::DiskTensor.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsDiskTensorV = std::is_base_of_v<einsums::tensor_base::DiskTensor, D>;
@@ -198,6 +220,8 @@ constexpr inline bool IsTensorViewV = requires { typename D::underlying_type; };
  *
  * @tparam D The tensor type to check.
  * @tparam Viewed The type of tensor expected to be viewed.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, typename Viewed>
 constexpr inline bool IsViewOfV = requires {
@@ -213,6 +237,8 @@ constexpr inline bool IsViewOfV = requires {
  * Checks to see if the type defines the functions data, stride, and strides.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsBasicTensorV = requires(D tensor) {
@@ -230,6 +256,8 @@ constexpr inline bool IsBasicTensorV = requires(D tensor) {
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, typename stored_type = void>
 constexpr inline bool IsCollectedTensorV = requires {
@@ -247,6 +275,8 @@ constexpr inline bool IsCollectedTensorV = requires {
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, typename StoredType = void>
 constexpr inline bool IsTiledTensorV = requires {
@@ -264,6 +294,8 @@ constexpr inline bool IsTiledTensorV = requires {
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, typename StoredType = void>
 constexpr inline bool IsBlockTensorV = requires {
@@ -271,6 +303,7 @@ constexpr inline bool IsBlockTensorV = requires {
     requires std::is_void_v<StoredType> || std::is_same_v<typename std::remove_cvref_t<D>::StoredType, StoredType>;
 };
 
+#ifndef DOXYGEN
 namespace detail {
 
 template <size_t index>
@@ -307,6 +340,7 @@ constexpr bool test_fastsubscript(std::index_sequence<ints...> const &) {
 }
 
 } // namespace detail
+#endif
 
 /**
  * @property IsFunctionTensorV
@@ -319,6 +353,8 @@ constexpr bool test_fastsubscript(std::index_sequence<ints...> const &) {
  * whereas the function call operator should.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsFunctionTensorV = requires {
@@ -334,6 +370,10 @@ constexpr inline bool IsFunctionTensorV = requires {
  * The subscript function should not do any bounds checking, nor should it accept negative indices as valid,
  * unless negative indices have some sort of meaning outside of index wrapping. These checks add up when iterating over
  * a tensor with millions of entries, so being able to skip them when bounds compliance is guaranteed can speed up code.
+ *
+ * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsFastSubscriptableV = requires {
@@ -347,6 +387,8 @@ constexpr inline bool IsFastSubscriptableV = requires {
  * @brief Checks to see if operations with the tensor can be optimized using libraries, indicated by deriving AlgebraOptimizedTensor.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsAlgebraTensorV = std::is_base_of_v<einsums::tensor_base::AlgebraOptimizedTensor, D>;
@@ -361,6 +403,8 @@ constexpr inline bool IsAlgebraTensorV = std::is_base_of_v<einsums::tensor_base:
  * @brief Requires that all tensors are in the same storage place.
  *
  * @tparam Tensors The tensors to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename... Tensors>
 constexpr inline bool IsInSamePlaceV =
@@ -374,6 +418,8 @@ constexpr inline bool IsInSamePlaceV =
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsIncoreRankTensorV = IsIncoreTensorV<D> && IsTRTensorV<D, Rank, T>;
@@ -386,6 +432,8 @@ constexpr inline bool IsIncoreRankTensorV = IsIncoreTensorV<D> && IsTRTensorV<D,
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsDeviceRankTensorV = IsDeviceTensorV<D> && IsTRTensorV<D, Rank, T>;
@@ -398,6 +446,8 @@ constexpr inline bool IsDeviceRankTensorV = IsDeviceTensorV<D> && IsTRTensorV<D,
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsDiskRankTensorV = IsDiskTensorV<D> && IsTRTensorV<D, Rank, T>;
@@ -410,6 +460,8 @@ constexpr inline bool IsDiskRankTensorV = IsDiskTensorV<D> && IsTRTensorV<D, Ran
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsRankBasicTensorV = IsBasicTensorV<D> && IsTRTensorV<D, Rank, T>;
@@ -422,6 +474,8 @@ constexpr inline bool IsRankBasicTensorV = IsBasicTensorV<D> && IsTRTensorV<D, R
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsRankTiledTensorV = IsTiledTensorV<D> && IsTRTensorV<D, Rank, T>;
@@ -434,6 +488,8 @@ constexpr inline bool IsRankTiledTensorV = IsTiledTensorV<D> && IsTRTensorV<D, R
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, Rank, T>;
@@ -446,6 +502,8 @@ constexpr inline bool IsRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, R
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsIncoreRankBasicTensorV = IsBasicTensorV<D> && IsTRTensorV<D, Rank, T> && IsIncoreTensorV<D>;
@@ -458,6 +516,8 @@ constexpr inline bool IsIncoreRankBasicTensorV = IsBasicTensorV<D> && IsTRTensor
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsDeviceRankBasicTensorV = IsBasicTensorV<D> && IsTRTensorV<D, Rank, T> && IsDeviceTensorV<D>;
@@ -470,6 +530,8 @@ constexpr inline bool IsDeviceRankBasicTensorV = IsBasicTensorV<D> && IsTRTensor
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsIncoreRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, Rank, T> && IsIncoreTensorV<D>;
@@ -482,6 +544,8 @@ constexpr inline bool IsIncoreRankBlockTensorV = IsBlockTensorV<D> && IsTRTensor
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsDeviceRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, Rank, T> && IsDeviceTensorV<D>;
@@ -494,6 +558,8 @@ constexpr inline bool IsDeviceRankBlockTensorV = IsBlockTensorV<D> && IsTRTensor
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsIncoreRankTiledTensorV = IsTiledTensorV<D> && IsTRTensorV<D, Rank, T> && IsIncoreTensorV<D>;
@@ -506,6 +572,8 @@ constexpr inline bool IsIncoreRankTiledTensorV = IsTiledTensorV<D> && IsTRTensor
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 constexpr inline bool IsDeviceRankTiledTensorV = IsTiledTensorV<D> && IsTRTensorV<D, Rank, T> && IsDeviceTensorV<D>;
@@ -518,6 +586,8 @@ constexpr inline bool IsDeviceRankTiledTensorV = IsTiledTensorV<D> && IsTRTensor
  * Checks the tensor against CoreTensorBase and BasicTensorBase.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsIncoreBasicTensorV = IsIncoreTensorV<D> && IsBasicTensorV<D>;
@@ -530,6 +600,8 @@ constexpr inline bool IsIncoreBasicTensorV = IsIncoreTensorV<D> && IsBasicTensor
  * Checks the tensor against DeviceTensorBase and BasicTensorBase.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsDeviceBasicTensorV = IsDeviceTensorV<D> && IsBasicTensorV<D>;
@@ -542,6 +614,8 @@ constexpr inline bool IsDeviceBasicTensorV = IsDeviceTensorV<D> && IsBasicTensor
  * Checks whether the tensor inherits DiskTensorBase and BasicTensorBase.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsDiskBasicTensorV = IsDiskTensorV<D> && IsBasicTensorV<D>;
@@ -554,6 +628,8 @@ constexpr inline bool IsDiskBasicTensorV = IsDiskTensorV<D> && IsBasicTensorV<D>
  * Checks the tensor against CoreTensorBase and TiledTensorBase.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsIncoreTiledTensorV = IsIncoreTensorV<D> && IsTiledTensorV<D>;
@@ -566,6 +642,8 @@ constexpr inline bool IsIncoreTiledTensorV = IsIncoreTensorV<D> && IsTiledTensor
  * Checks the tensor against DeviceTensorBase and TiledTensorBase.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsDeviceTiledTensorV = IsDeviceTensorV<D> && IsTiledTensorV<D>;
@@ -578,6 +656,8 @@ constexpr inline bool IsDeviceTiledTensorV = IsDeviceTensorV<D> && IsTiledTensor
  * Checks whether the tensor inherits DiskTensorBase and TiledTensorBase.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsDiskTiledTensorV = IsDiskTensorV<D> && IsTiledTensorV<D>;
@@ -590,21 +670,28 @@ constexpr inline bool IsDiskTiledTensorV = IsDiskTensorV<D> && IsTiledTensorV<D>
  * Checks the tensor against CoreTensorBase and BlockTensorBase.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsIncoreBlockTensorV = IsIncoreTensorV<D> && IsBlockTensorV<D>;
 
 /**
- * @property IsDeviceBLockTensorV
+ * @property IsDeviceBlockTensorV
  *
  * @brief Checks to see if the tensor is available to graphics hardware and is a block tensor.
  *
  * Checks the tensor against DeviceTensorBase and BlockTensorBase.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *      Fixed a typo. Was @c IsDeviceBLockTensorV , now it is @c IsDeviceBlockTensorV .
+ * @endversion
  */
 template <typename D>
-constexpr inline bool IsDeviceBLockTensorV = IsDeviceTensorV<D> && IsBlockTensorV<D>;
+constexpr inline bool IsDeviceBlockTensorV = IsDeviceTensorV<D> && IsBlockTensorV<D>;
 
 /**
  * @property IsDiskBlockTensorV
@@ -614,6 +701,8 @@ constexpr inline bool IsDeviceBLockTensorV = IsDeviceTensorV<D> && IsBlockTensor
  * Checks whether the tensor inherits DiskTensorBase and BlockTensorBase.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr inline bool IsDiskBlockTensorV = IsDiskTensorV<D> && IsBlockTensorV<D>;
@@ -625,6 +714,8 @@ constexpr inline bool IsDiskBlockTensorV = IsDiskTensorV<D> && IsBlockTensorV<D>
  *
  * @tparam First The first tensor.
  * @tparam Rest The rest of the tensors.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename First, typename... Rest>
 constexpr inline bool IsSameUnderlyingV = (std::is_same_v<typename First::ValueType, typename Rest::ValueType> && ...);
@@ -636,6 +727,8 @@ constexpr inline bool IsSameUnderlyingV = (std::is_same_v<typename First::ValueT
  *
  * @tparam First The first tensor.
  * @tparam Rest The rest of the tensors
+ *
+ * @versionadded{1.0.0}
  */
 template <typename First, typename... Rest>
 constexpr inline bool IsSameRankV = ((First::Rank == Rest::Rank) && ...);
@@ -647,6 +740,8 @@ constexpr inline bool IsSameRankV = ((First::Rank == Rest::Rank) && ...);
  *
  * @tparam First The first tensor.
  * @tparam Rest The rest of the tensors
+ *
+ * @versionadded{1.0.0}
  */
 template <typename First, typename... Rest>
 constexpr inline bool IsSameUnderlyingAndRankV = IsSameUnderlyingV<First, Rest...> && IsSameRankV<First, Rest...>;
@@ -659,10 +754,23 @@ constexpr inline bool IsSameUnderlyingAndRankV = IsSameUnderlyingV<First, Rest..
  * Checks to see if the given type is derived from einsums::tensor_props::TensorBase.
  *
  * @tparam D The type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept TensorConcept = IsTensorV<D>;
 
+/**
+ * \concept TensorConcept
+ *
+ * @brief Tests whether the given type is a tensor or not.
+ *
+ * Checks to see if the given type is derived from einsums::tensor_props::TensorBase.
+ *
+ * @tparam D The type to check.
+ *
+ * @versionadded{1.0.0}
+ */
 template <typename D>
 concept NotTensorConcept = !IsTensorV<D>;
 
@@ -673,6 +781,8 @@ concept NotTensorConcept = !IsTensorV<D>;
  *
  * @tparam D The tensor type to check.
  * @tparam T The type the tensor should store.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, typename T>
 concept TypedTensorConcept = IsTypedTensorV<D, T>;
@@ -684,6 +794,8 @@ concept TypedTensorConcept = IsTypedTensorV<D, T>;
  *
  * @tparam D The tensor type to check.
  * @tparam Rank The rank the tensor should have.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, ptrdiff_t Rank = -1>
 concept RankTensorConcept = IsRankTensorV<D, Rank>;
@@ -694,6 +806,8 @@ concept RankTensorConcept = IsRankTensorV<D, Rank>;
  * @brief Tests whether the given type statisfies the C++ BasicLockable requirement.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept BasicLockableConcept = IsBasicLockableV<D>;
@@ -704,6 +818,8 @@ concept BasicLockableConcept = IsBasicLockableV<D>;
  * @brief Tests whether the given type satisfies the C++ Lockable requirement.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept LockableConcept = IsLockableV<D>;
@@ -719,6 +835,8 @@ concept LockableConcept = IsLockableV<D>;
  * @tparam D The tensor type to check.
  * @tparam T The storage type stored by the tensor.
  * @tparam Rank The expected rank of the tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept TRTensorConcept = IsTRTensorV<D, Rank, T>;
@@ -734,6 +852,8 @@ concept TRTensorConcept = IsTRTensorV<D, Rank, T>;
  * @tparam D The tensor type to check.
  * @tparam Rank The expected rank of the tensor.
  * @tparam T The expected storage type stored by the tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept TRLTensorConcept = IsTRLTensorV<D, Rank, T>;
@@ -746,6 +866,8 @@ concept TRLTensorConcept = IsTRLTensorV<D, Rank, T>;
  * Checks the tensor against CoreTensorBase.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept CoreTensorConcept = IsIncoreTensorV<D>;
@@ -758,6 +880,8 @@ concept CoreTensorConcept = IsIncoreTensorV<D>;
  * Checks the tensor against DeviceTensorBase.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept DeviceTensorConcept = IsDeviceTensorV<D>;
@@ -770,6 +894,8 @@ concept DeviceTensorConcept = IsDeviceTensorV<D>;
  * Checks whether the tensor inherits DiskTensorBase.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept DiskTensorConcept = IsDiskTensorV<D>;
@@ -782,6 +908,8 @@ concept DiskTensorConcept = IsDiskTensorV<D>;
  * Checks whether the tensor inherits TensorViewBaseNoExtra.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept TensorViewConcept = IsTensorViewV<D>;
@@ -795,6 +923,8 @@ concept TensorViewConcept = IsTensorViewV<D>;
  *
  * @tparam D The tensor type to check.
  * @tparam Viewed The type of tensor expected to be viewed.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, typename Viewed>
 concept ViewOfConcept = IsViewOfV<D, Viewed>;
@@ -807,6 +937,8 @@ concept ViewOfConcept = IsViewOfV<D, Viewed>;
  * Checks to see if the tensor inherits BasicTensorBaseNoExtra.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept BasicTensorConcept = IsBasicTensorV<D>;
@@ -821,6 +953,8 @@ concept BasicTensorConcept = IsBasicTensorV<D>;
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, typename StoredType = void>
 concept CollectedTensorConcept = IsCollectedTensorV<D, StoredType>;
@@ -835,6 +969,8 @@ concept CollectedTensorConcept = IsCollectedTensorV<D, StoredType>;
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, typename StoredType = void>
 concept TiledTensorConcept = IsTiledTensorV<D, StoredType>;
@@ -849,6 +985,8 @@ concept TiledTensorConcept = IsTiledTensorV<D, StoredType>;
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, typename StoredType = void>
 concept BlockTensorConcept = IsBlockTensorV<D, StoredType>;
@@ -859,6 +997,8 @@ concept BlockTensorConcept = IsBlockTensorV<D, StoredType>;
  * @brief Checks to see if the tensor is a function tensor.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept FunctionTensorConcept = IsFunctionTensorV<D>;
@@ -869,6 +1009,8 @@ concept FunctionTensorConcept = IsFunctionTensorV<D>;
  * @brief Checks to see if the tensor has a faster method of subscripting.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept FastSubscriptableConcept = IsFastSubscriptableV<D>;
@@ -879,6 +1021,8 @@ concept FastSubscriptableConcept = IsFastSubscriptableV<D>;
  * @brief Checks to see if operations with the tensor can be optimized with libraries.
  *
  * @tparam D The tensor type to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept AlgebraTensorConcept = IsAlgebraTensorV<D>;
@@ -891,6 +1035,8 @@ concept AlgebraTensorConcept = IsAlgebraTensorV<D>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept CoreRankTensor = IsIncoreRankTensorV<D, Rank, T>;
@@ -903,6 +1049,8 @@ concept CoreRankTensor = IsIncoreRankTensorV<D, Rank, T>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept DeviceRankTensor = IsDeviceRankTensorV<D, Rank, T>;
@@ -915,6 +1063,8 @@ concept DeviceRankTensor = IsDeviceRankTensorV<D, Rank, T>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept DiskRankTensor = IsDiskRankTensorV<D, Rank, T>;
@@ -927,6 +1077,8 @@ concept DiskRankTensor = IsDiskRankTensorV<D, Rank, T>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept RankBasicTensor = IsRankBasicTensorV<D, Rank, T>;
@@ -939,6 +1091,8 @@ concept RankBasicTensor = IsRankBasicTensorV<D, Rank, T>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept RankTiledTensor = IsRankTiledTensorV<D, Rank, T>;
@@ -951,6 +1105,8 @@ concept RankTiledTensor = IsRankTiledTensorV<D, Rank, T>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept RankBlockTensor = IsRankBlockTensorV<D, Rank, T>;
@@ -963,6 +1119,8 @@ concept RankBlockTensor = IsRankBlockTensorV<D, Rank, T>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept CoreRankBasicTensor = IsIncoreRankBasicTensorV<D, Rank, T>;
@@ -975,6 +1133,8 @@ concept CoreRankBasicTensor = IsIncoreRankBasicTensorV<D, Rank, T>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept DeviceRankBasicTensor = IsDeviceRankBasicTensorV<D, Rank, T>;
@@ -987,6 +1147,8 @@ concept DeviceRankBasicTensor = IsDeviceRankBasicTensorV<D, Rank, T>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept CoreRankBlockTensor = IsIncoreRankBlockTensorV<D, Rank, T>;
@@ -999,6 +1161,8 @@ concept CoreRankBlockTensor = IsIncoreRankBlockTensorV<D, Rank, T>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept DeviceRankBlockTensor = IsDeviceRankBlockTensorV<D, Rank, T>;
@@ -1011,6 +1175,8 @@ concept DeviceRankBlockTensor = IsDeviceRankBlockTensorV<D, Rank, T>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept CoreRankTiledTensor = IsIncoreRankTiledTensorV<D, Rank, T>;
@@ -1023,6 +1189,8 @@ concept CoreRankTiledTensor = IsIncoreRankTiledTensorV<D, Rank, T>;
  * @tparam D The tensor to check.
  * @tparam Rank The rank of the tensor.
  * @tparam T The type that should be stored.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D, size_t Rank, typename T>
 concept DeviceRankTiledTensor = IsDeviceRankTiledTensorV<D, Rank, T>;
@@ -1033,6 +1201,8 @@ concept DeviceRankTiledTensor = IsDeviceRankTiledTensorV<D, Rank, T>;
  * @brief Requires that a tensor is a basic tensor stored in-core.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept CoreBasicTensorConcept = IsIncoreBasicTensorV<D>;
@@ -1043,6 +1213,8 @@ concept CoreBasicTensorConcept = IsIncoreBasicTensorV<D>;
  * @brief Requires that a tensor is a basic tensor available to graphics hardware.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept DeviceBasicTensorConcept = IsDeviceBasicTensorV<D>;
@@ -1053,6 +1225,8 @@ concept DeviceBasicTensorConcept = IsDeviceBasicTensorV<D>;
  * @brief Requires that a tensor is a block tensor stored in-core.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept CoreBlockTensorConcept = IsIncoreBlockTensorV<D>;
@@ -1063,9 +1237,11 @@ concept CoreBlockTensorConcept = IsIncoreBlockTensorV<D>;
  * @brief Requires that a tensor is a block tensor available to graphics hardware.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
-concept DeviceBlockTensorConcept = IsDeviceBLockTensorV<D>;
+concept DeviceBlockTensorConcept = IsDeviceBlockTensorV<D>;
 
 /**
  * \concept CoreTiledTensorConcept
@@ -1073,6 +1249,8 @@ concept DeviceBlockTensorConcept = IsDeviceBLockTensorV<D>;
  * @brief Requires that a tensor is a tiled tensor stored in-core.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept CoreTiledTensorConcept = IsIncoreTiledTensorV<D>;
@@ -1083,6 +1261,8 @@ concept CoreTiledTensorConcept = IsIncoreTiledTensorV<D>;
  * @brief Requires that a tensor is a tiled tensor available to graphics hardware.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept DeviceTiledTensorConcept = IsDeviceTiledTensorV<D>;
@@ -1093,6 +1273,8 @@ concept DeviceTiledTensorConcept = IsDeviceTiledTensorV<D>;
  * @brief Requires that all tensors are in the same storage place.
  *
  * @tparam Tensors The tensors to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename... Tensors>
 concept InSamePlace = IsInSamePlaceV<Tensors...>;
@@ -1105,6 +1287,8 @@ concept InSamePlace = IsInSamePlaceV<Tensors...>;
  * Shorthand for requiring that a tensor be a matrix.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept MatrixConcept = RankTensorConcept<D, 2>;
@@ -1117,6 +1301,8 @@ concept MatrixConcept = RankTensorConcept<D, 2>;
  * Shorthand for requiring that a tensor be a vector.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept VectorConcept = RankTensorConcept<D, 1>;
@@ -1130,6 +1316,8 @@ concept VectorConcept = RankTensorConcept<D, 1>;
  * std::complex<float>.
  *
  * @tparam D The tensor to check.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 concept ScalarConcept = IsScalarV<D>;
@@ -1141,6 +1329,8 @@ concept ScalarConcept = IsScalarV<D>;
  *
  * @tparam First The first tensor.
  * @tparam Rest The rest of the tensors.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename First, typename... Rest>
 concept SameUnderlying = IsSameUnderlyingV<First, Rest...>;
@@ -1152,6 +1342,8 @@ concept SameUnderlying = IsSameUnderlyingV<First, Rest...>;
  *
  * @tparam First The first tensor.
  * @tparam Rest The rest of the tensors.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename First, typename... Rest>
 concept SameRank = IsSameRankV<First, Rest...>;
@@ -1163,6 +1355,8 @@ concept SameRank = IsSameRankV<First, Rest...>;
  *
  * @tparam First The first tensor.
  * @tparam Rest The rest of the tensors.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename First, typename... Rest>
 concept SameUnderlyingAndRank = IsSameUnderlyingAndRankV<First, Rest...>;
@@ -1173,6 +1367,8 @@ concept SameUnderlyingAndRank = IsSameUnderlyingAndRankV<First, Rest...>;
  * @brief Gets the underlying type of view.
  *
  * @tparam D The tensor type to strip.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 struct RemoveView {
@@ -1181,6 +1377,8 @@ struct RemoveView {
      *
      * This will contain the type of tensor being viewed by the tensor view, if given a view.
      * Otherwise, it will be the same as the tensor being passed.
+     *
+     * @versionadded{1.0.0}
      */
     using base_type = D;
 };
@@ -1198,6 +1396,8 @@ struct RemoveView<D> {
  * @brief Gets the underlying type of a view.
  *
  * @tparam D The tensor type to strip.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 using RemoveViewT = typename RemoveView<D>::base_type;
@@ -1210,6 +1410,8 @@ namespace detail {
  *
  * @param tensor The tensor whose type is being copied.
  * @tparam TensorType The type of the
+ *
+ * @versionadded{1.0.0}
  */
 template <typename NewT, size_t NewRank, template <typename, size_t> typename TensorType, typename T, size_t Rank>
     requires(TensorConcept<TensorType<T, Rank>>)
@@ -1224,6 +1426,8 @@ TensorType<NewT, NewRank> create_tensor_of_same_type(TensorType<T, Rank> const &
  *
  * @param tensor The tensor whose type is being copied.
  * @tparam TensorType The type of the tensor to be copied.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename NewT, size_t NewRank, CoreTensorConcept TensorType>
 Tensor<NewT, NewRank> create_basic_tensor_like(TensorType const &tensor) {
@@ -1254,6 +1458,8 @@ disk::Tensor<NewT, NewRank> create_basic_tensor_like(TensorType const &) {
  * @tparam D The underlying tensor type.
  * @tparam T The new type.
  * @tparam Rank The new rank.
+ *
+ * @versionadded{1.0.0}
  */
 template <TensorConcept D, typename T, size_t Rank>
 using TensorLike = decltype(detail::create_tensor_of_same_type<T, Rank>(D()));
@@ -1266,6 +1472,8 @@ using TensorLike = decltype(detail::create_tensor_of_same_type<T, Rank>(D()));
  * @tparam D The underlying tensor type.
  * @tparam T The new type.
  * @tparam Rank The new rank.
+ *
+ * @versionadded{1.0.0}
  */
 template <TensorConcept D, typename T, size_t Rank>
 using BasicTensorLike = decltype(detail::create_basic_tensor_like<T, Rank>(D()));
@@ -1302,6 +1510,8 @@ struct ValueType<D> {
  *
  * Normally, you can get the data type using an expression such as typename AType::ValueType. However, if you want
  * to support both zero-rank tensors and scalars, then this typedef can help with brevity.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 using ValueTypeT = typename ValueType<D>::type;
@@ -1313,6 +1523,8 @@ using ValueTypeT = typename ValueType<D>::type;
  *
  * Normally, you can get the rank using an expression such as AType::Rank. However,
  * if you want to support both zero-rank tensors and scalars, then this constant can help with brevity.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 constexpr size_t TensorRank = 0;
@@ -1326,6 +1538,8 @@ constexpr size_t TensorRank<D> = D::Rank;
  * @struct BiggestType
  *
  * @brief Gets the type with the biggest storage specification.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename First, typename... Rest>
 struct BiggestType {
@@ -1333,6 +1547,8 @@ struct BiggestType {
      * @typedef type
      *
      * The result of the operation. This will be the biggest type passed to this struct.
+     *
+     * @versionadded{1.0.0}
      */
     using type =
         std::conditional_t<(sizeof(First) > sizeof(typename BiggestType<Rest...>::type)), First, typename BiggestType<Rest...>::type>;
@@ -1349,6 +1565,8 @@ struct BiggestType<First> {
  * @typedef BiggestTypeT
  *
  * @brief Gets the type with the biggest storage specification.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename... Args>
 using BiggestTypeT = typename BiggestType<Args...>::type;
@@ -1359,6 +1577,8 @@ using BiggestTypeT = typename BiggestType<Args...>::type;
  * @brief Gets the location base (CoreTensorBase, DiskTensorBase, etc.) of the argument.
  *
  * @tparam D The tensor type to query.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 struct LocationTensorBaseOf {};
@@ -1390,12 +1610,14 @@ struct LocationTensorBaseOf<D> {
  * This typedef can be used as a base class for tensors.
  *
  * @tparam D The tensor type to query.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename D>
 using LocationTensorBaseOfT = typename LocationTensorBaseOf<D>::type;
 
 namespace detail {
-
+#ifndef DOXYGEN
 template <typename T>
 constexpr size_t count_of_type() {
     return 0;
@@ -1409,21 +1631,74 @@ constexpr size_t count_of_type(/*Args... args*/) {
         return count_of_type<T, Args...>();
     }
 }
+#endif
 } // namespace detail
 
+/**
+ * @concept NoneOfType
+ *
+ * Checks each type against a key. If any type matches, returns false.
+ *
+ * @tparam T The type to check against.
+ * @tparam Args The list of types.
+ *
+ * @versionadded{1.0.0}
+ */
 template <typename T, typename... Args>
 concept NoneOfType = !(std::is_same_v<T, std::remove_cvref_t<Args>> || ... || false);
 
+/**
+ * @concept AtLeastOneOfType
+ *
+ * Checks each type against a key. If any type matches, returns true.
+ *
+ * @tparam T The type to check against.
+ * @tparam Args The list of types.
+ *
+ * @versionadded{1.0.0}
+ */
 template <typename T, typename... Args>
 concept AtLeastOneOfType = (std::is_same_v<T, std::remove_cvref_t<Args>> || ... || false);
 
+/**
+ * @concept NumOfType
+ *
+ * Checks each type against a key. If the number of matches matches the number, returns true.
+ *
+ * @tparam T The type to check against.
+ * @tparam Num The expected number of matches.
+ * @tparam Args The list of types.
+ *
+ * @versionadded{1.0.0}
+ */
 template <typename T, size_t Num, typename... Args>
 concept NumOfType = detail::count_of_type<T, std::remove_cvref_t<Args>...>() == Num;
 
+/**
+ * @concept AllOfType
+ *
+ * Checks each type against a key. If all types match, returns true.
+ *
+ * @tparam T The type to check against.
+ * @tparam Args The list of types.
+ *
+ * @versionadded{1.0.0}
+ */
 template <typename T, typename... Args>
 concept AllOfType = (std::is_same_v<T, std::remove_cvref_t<Args>> && ... && true);
 
 #ifdef EINSUMS_COMPUTE_CODE
+/**
+ * @typedef DevDatatype
+ *
+ * Complex types on the GPU are not the same as the standard C++ complex types. This type
+ * converts between them. If a real type is passed, nothing happens. If a complex type is
+ * passed, this resolves to the HIP equivalent.
+ *
+ * @tparam T The type to convert.
+ *
+ * @versionadded{1.0.0}
+ */
 template <typename T>
 using DevDatatype = typename tensor_base::DeviceTypedTensor<T>::dev_datatype;
 #endif

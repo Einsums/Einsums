@@ -937,7 +937,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     /**
      * Returns the tile offsets.
      */
-    std::array<std::vector<int>, rank> tile_offsets() const { return _tile_offsets; }
+    std::array<std::vector<int>, rank> const &tile_offsets() const { return _tile_offsets; }
 
     /**
      * Returns the tile offsets along a given dimension.
@@ -945,7 +945,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param i The axis to retrieve.
      *
      */
-    std::vector<int> tile_offset(int i = 0) const { return _tile_offsets.at(i); }
+    std::vector<int> const &tile_offset(int i = 0) const { return _tile_offsets.at(i); }
 
     /**
      * Returns the tile sizes.
@@ -958,7 +958,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param i The axis to retrieve.
      *
      */
-    std::vector<int> tile_size(int i = 0) const { return _tile_sizes.at(i); }
+    std::vector<int> const &tile_size(int i = 0) const { return _tile_sizes.at(i); }
 
     /**
      * Get a reference to the tile map.

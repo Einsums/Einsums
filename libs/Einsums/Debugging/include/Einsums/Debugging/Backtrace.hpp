@@ -16,6 +16,8 @@ namespace einsums::util {
 
 /**
  * @brief Generate a backtrace.
+ *
+ * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT std::string backtrace(std::size_t frames_no = EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH);
 
@@ -27,6 +29,8 @@ namespace einsums::util {
 
 /**
  * @brief Generate a backtrace.
+ *
+ * @versionadded{1.0.0}
  */
 inline std::string backtrace(std::size_t frames_no = 0) {
     return "";

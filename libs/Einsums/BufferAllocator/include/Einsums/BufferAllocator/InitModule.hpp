@@ -16,6 +16,7 @@
 
 namespace einsums {
 
+#ifndef DOXYGEN
 EINSUMS_EXPORT int init_Einsums_BufferAllocator();
 
 EINSUMS_EXPORT void add_Einsums_BufferAllocator_arguments();
@@ -27,5 +28,6 @@ namespace detail {
 static int initialize_module_Einsums_BufferAllocator = init_Einsums_BufferAllocator();
 
 }
+#endif
 
 } // namespace einsums

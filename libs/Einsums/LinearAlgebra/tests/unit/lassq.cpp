@@ -4,14 +4,17 @@
 //----------------------------------------------------------------------------------------------
 
 #include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/Tensor/BlockTensor.hpp>
+#include <Einsums/Tensor/TiledTensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
+#include <random>
 
 #include <Einsums/Testing.hpp>
 
 using namespace einsums;
 
-template <typename T>
-void lassq_test() {
+TEMPLATE_TEST_CASE("Base Tensors", "[linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
+    using T      = TestType;
     auto A       = create_random_tensor<T>("a", 10);
     auto scale   = RemoveComplexT<T>{1.0};
     auto result  = RemoveComplexT<T>{0.0};
@@ -27,9 +30,65 @@ void lassq_test() {
         }
     }
 
-    CHECK_THAT(result, Catch::Matchers::WithinAbs(result0, 0.00001));
+    REQUIRE_THAT(result * scale * scale, Catch::Matchers::WithinAbs(result0, 0.00001));
 }
 
-TEMPLATE_TEST_CASE("sum_square", "[linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
-    lassq_test<TestType>();
+TEMPLATE_TEST_CASE("Block Tensors", "[linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
+    BlockTensor<TestType, 2> A{"A", 4, 0, 1, 2};
+
+    A.block(0) = create_random_tensor<TestType>("A tile 1", 4, 4);
+    A.block(2) = create_random_tensor<TestType>("A tile 3", 1, 1);
+    A.block(3) = create_random_tensor<TestType>("A tile 4", 2, 2);
+
+    RemoveComplexT<TestType> scale{0.0}, sumsq{0.0}, result{0.0};
+
+    linear_algebra::sum_square(A, &scale, &sumsq);
+
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+            TestType value = A(i, j);
+            if constexpr (IsComplexV<TestType>) {
+                result += value.real() * value.real() + value.imag() * value.imag();
+            } else {
+                result += value * value;
+            }
+        }
+    }
+
+    REQUIRE_THAT(scale * scale * sumsq, Catch::Matchers::WithinAbs(result, 0.00001));
+}
+
+TEMPLATE_TEST_CASE("Tiled Tensors", "[linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
+    TiledTensor<TestType, 2> A{"A", std::vector<int>{4, 0, 1, 2}};
+
+    std::uniform_int_distribution random(0, 1);
+
+    for(int i = 0; i < 4; i++) {
+        for(int j = 0; j < 4; j++) {
+            if(i == 1 || j == 1) {
+                continue;
+            }
+
+            if(random(einsums::random_engine) == 1) {
+                A.tile(i, j) = create_random_tensor<TestType>("A tile", A.tile_size(0)[i], A.tile_size(1)[j]);
+            }
+        } 
+    }
+
+    RemoveComplexT<TestType> scale{0.0}, sumsq{0.0}, result{0.0};
+
+    linear_algebra::sum_square(A, &scale, &sumsq);
+
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+            TestType value = A(i, j);
+            if constexpr (IsComplexV<TestType>) {
+                result += value.real() * value.real() + value.imag() * value.imag();
+            } else {
+                result += value * value;
+            }
+        }
+    }
+
+    REQUIRE_THAT(scale * scale * sumsq, Catch::Matchers::WithinAbs(result, 0.00001));
 }

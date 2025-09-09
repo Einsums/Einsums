@@ -25,12 +25,14 @@ namespace einsums {
  * with the given mean, defaulting to 1. If desired, a number of eigenvalues can be forced to be zero.
  * Then, the returned matrix is formed by computing @f$P^TDP@f$.
  *
- * @param name The name for the matrix.
- * @param rows The number of rows.
- * @param cols The number of columns. Should equal the number of rows.
- * @param mean The mean for the eigenvalues. Defaults to 1. If negative, the result is a negative semi-definite matrix.
- * @param force_zeros The number of elements to force to be zero. Defaults to 1.
+ * @param[in] name The name for the matrix.
+ * @param[in] rows The number of rows.
+ * @param[in] cols The number of columns. Should equal the number of rows.
+ * @param[in] mean The mean for the eigenvalues. Defaults to 1. If negative, the result is a negative semi-definite matrix.
+ * @param[in] force_zeros The number of elements to force to be zero. Defaults to 1.
  * @return A new positive or negative semi-definite matrix.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T = double, bool Normalize = false>
 auto create_random_semidefinite(std::string const &name, int rows, int cols, RemoveComplexT<T> mean = RemoveComplexT<T>{1.0},

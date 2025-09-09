@@ -9,11 +9,15 @@
 
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/LinearAlgebra/Unoptimized.hpp>
 #include <Einsums/Print.hpp>
+
+#include <span>
+#include <stdexcept>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/LinearAlgebra/GPULinearAlgebra.hpp>
@@ -24,6 +28,18 @@
 #endif
 
 namespace einsums::linear_algebra::detail {
+
+template <BlockTensorConcept AType, typename T = RemoveComplexT<typename AType::ValueType>>
+void sum_square(AType const &A, T *scale, T *sumsq) {
+
+    for (size_t i = 0; i < A.num_blocks(); i++) {
+        if (A.block_dim(i) == 0) {
+            continue;
+        }
+
+        sum_square(A.block(i), scale, sumsq);
+    }
+}
 
 template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename U>
     requires requires {
@@ -548,43 +564,55 @@ auto pow(AType const &a, typename AType::ValueType alpha,
     return out;
 }
 
-template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
-    requires(BlockTensorConcept<TensorType>)
-auto getrf(TensorType *A, Pivots *pivot) -> int {
+template <MatrixConcept TensorType, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+        requires(BlockTensorConcept<TensorType>);
+    }
+[[nodiscard]] auto getrf(TensorType *A, Pivots *pivot) -> int {
+    blas::int_t out_value = 0;
+
     for (size_t i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
             continue;
         }
-        BufferVector<blas::int_t> hold_pivot(A->block().dim(0));
-        int                       ret = getrf(A->block(i), &hold_pivot);
 
-        for (int j = 0; j < A->block().dim(0); j++) {
-            pivot->at(j + A->block_range(i)[0]) = hold_pivot[j];
-        }
+        std::span<blas::int_t> pivot_view(std::next(pivot->begin(), A->block_range(i)[0]), A->block_dim(i));
+        int                    ret = getrf(A->block(i), &pivot_view);
 
-        if (ret != 0) {
-            return ret + A->block_range(i)[0];
+        if (ret > 0 && out_value == 0) {
+            out_value = ret + A->block_range(i)[0];
         }
     }
+
+    return out_value;
 }
 
-template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
-    requires(BlockTensorConcept<TensorType>)
-auto getri(TensorType *A, Pivots const &pivot) -> int {
+template <MatrixConcept TensorType, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+        requires(BlockTensorConcept<TensorType>);
+    }
+void getri(TensorType *A, Pivots const &pivot) {
     for (size_t i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
             continue;
         }
-        BufferVector<blas::int_t> hold_pivot(A->block().dim(0));
+        std::span<blas::int_t> pivot_view(std::next(pivot->begin(), A->block_range(i)[0]), A->block_dim(i));
 
-        for (int j = 0; j < A->block().dim(0); j++) {
-            hold_pivot[j] = pivot->at(j + A->block_range(i)[0]);
-        }
-
-        int ret = getri(A->block(i), hold_pivot);
-        if (ret != 0) {
-            return ret + A->block_range(i)[0];
-        }
+        getri(A->block(i), pivot_view);
     }
 }
 

@@ -17,28 +17,38 @@ namespace design_pats {
  * Simply inherit this class and the new class will have everything it needs to satisfy
  * the Lockable requirement. You can even specify what kind of mutex to use to handle
  * the locks.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename Mutex>
 class Lockable {
   public:
     /**
      * Default constructor.
+     *
+     * @versionadded{1.0.0}
      */
     Lockable() = default;
 
     /**
      * "Copy constructor." It doesn't perform any copies and is only
      * necessary for subclasses so that they can define copy constructors.
+     *
+     * @versionadded{1.0.0}
      */
     Lockable(Lockable<Mutex> const &) : lock_{} {};
 
     /**
      * @brief Lock the object.
+     *
+     * @versionadded{1.0.0}
      */
     void lock() const { this->lock_.lock(); }
 
     /**
      * @brief Try to lock the object. Returns true if successful.
+     *
+     * @versionadded{1.0.0}
      */
     bool try_lock() const { return this->lock_.try_lock(); }
 
@@ -49,6 +59,8 @@ class Lockable {
 
     /**
      * @brief Get the underlying mutex.
+     *
+     * @versionadded{1.0.0}
      */
     Mutex &get_mutex() { return lock_; }
 
@@ -57,6 +69,8 @@ class Lockable {
      * @property lock_
      *
      * @brief The underlying locking object. Usually some sort of mutex.
+     *
+     * @versionadded{1.0.0}
      */
     mutable Mutex lock_;
 };

@@ -142,20 +142,12 @@ void getri(pybind11::buffer &A, std::vector<blas::int_t> &pivot) {
         EINSUMS_THROW_EXCEPTION(py::value_error, "The pivot list has not been initialized! Have you performed getrf on this matrix first?");
     }
 
-    int result = 0;
-
     EINSUMS_PY_LINALG_CALL((A_info.format == py::format_descriptor<Float>::format()), [&]() {
         auto A_tens = buffer_to_tensor<Float>(A);
-        result      = einsums::linear_algebra::detail::getri(&A_tens, pivot);
+        einsums::linear_algebra::detail::getri(&A_tens, pivot);
     }())
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only decompose matrices of real or complex floating point values!");
-    }
-
-    if (result < 0) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The {} argument had an illegal value!", print::ordinal(-result));
-    } else if (result > 0) {
-        EINSUMS_THROW_EXCEPTION(std::runtime_error, "The matrix is singular!");
     }
 }
 
@@ -185,15 +177,15 @@ RuntimeTensor<T> pseudoinverse_work(pybind11::buffer const &_A, RemoveComplexT<T
     for (size_t v = 0; v < S.dim(0); v++) {
         RemoveComplexT<T> val = S(v);
         if (val > tol)
-            linear_algebra::scale_column(v, T{1.0} / val, &U);
+            linear_algebra::scale_column(v, T{1.0} / val, &U.value());
         else {
             new_dim = v;
             break;
         }
     }
 
-    TensorView<T, 2> U_view = U(All, Range{0, new_dim});
-    TensorView<T, 2> V_view = Vh(Range{0, new_dim}, All);
+    TensorView<T, 2> U_view = U.value()(All, Range{0, new_dim});
+    TensorView<T, 2> V_view = Vh.value()(Range{0, new_dim}, All);
 
     Tensor<T, 2> pinv("pinv", A.dim(0), A.dim(1));
     linear_algebra::gemm<false, false>(T{1.0}, U_view, V_view, T{0.0}, &pinv);
