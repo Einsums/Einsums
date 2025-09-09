@@ -106,7 +106,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    RuntimeTensor(std::string name, Dim const &dims, bool row_major = false) : _name{name}, _impl(nullptr, dims, row_major) {
+    RuntimeTensor(std::string name, Dim const &dims, bool row_major = row_major_default) : _name{name}, _impl(nullptr, dims, row_major) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -118,7 +118,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    explicit RuntimeTensor(Dim const &dims, bool row_major = false) : _impl(nullptr, dims, row_major) {
+    explicit RuntimeTensor(Dim const &dims, bool row_major = row_major_default) : _impl(nullptr, dims, row_major) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -130,7 +130,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param name the new name of the tensor.
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    RuntimeTensor(std::string name, std::initializer_list<size_t> dims, bool row_major = false)
+    RuntimeTensor(std::string name, std::initializer_list<size_t> dims, bool row_major = row_major_default)
         : RuntimeTensor(name, std::vector<size_t>(dims), row_major) {}
 
     /**
@@ -138,7 +138,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    explicit RuntimeTensor(std::initializer_list<size_t> dims, bool row_major = false)
+    explicit RuntimeTensor(std::initializer_list<size_t> dims, bool row_major = row_major_default)
         : RuntimeTensor(std::vector<size_t>(dims), row_major) {}
 
     /**
@@ -664,6 +664,14 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     virtual detail::TensorImpl<T> &impl() noexcept { return _impl; }
 
     virtual detail::TensorImpl<T> const &impl() const noexcept { return _impl; }
+
+    bool is_row_major() const {
+        return _impl.is_row_major();
+    }
+
+    bool is_column_major() const {
+        return _impl.is_column_major();
+    }
 
   protected:
     BufferVector<T> _data{};
@@ -1243,6 +1251,14 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
     virtual detail::TensorImpl<T> &impl() { return _impl; }
 
     virtual detail::TensorImpl<T> const &impl() const { return _impl; }
+
+    bool is_row_major() const {
+        return _impl.is_row_major();
+    }
+
+    bool is_column_major() const {
+        return _impl.is_column_major();
+    }
 
   protected:
     /**

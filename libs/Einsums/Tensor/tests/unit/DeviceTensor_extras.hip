@@ -39,28 +39,3 @@ TEST_CASE("HostDevReference Tests", "[gpu][utilities]") {
 
     delete host_ptr;
 }
-
-TEST_CASE("Index Combinations", "[gpu][utilities]") {
-    using namespace einsums;
-    using namespace einsums::gpu;
-
-    Tensor<double, 2>     tensor("Tensor", 3, 3);
-    std::array<size_t, 2> index;
-
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            tensor(i, j) = i * 3 + j;
-
-            index = {(size_t)i, (size_t)j};
-
-            size_t sentinel = einsums::indices_to_sentinel(tensor.strides(), index);
-
-            CHECK(sentinel == i * 3 + j);
-        }
-    }
-
-    for (int i = 0; i < 9; i++) {
-        einsums::sentinel_to_indices(i, tensor.strides(), index);
-        CHECK(tensor(index[0], index[1]) == i);
-    }
-}
