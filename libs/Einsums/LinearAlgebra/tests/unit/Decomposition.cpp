@@ -32,7 +32,7 @@ TEST_CASE("Lyapunov") {
     einsums::linear_algebra::axpy(1.0, Q2, &Qtest);
 
     for (size_t i = 0; i < 9; i++) {
-        CHECK_THAT(Q.data()[i], Catch::Matchers::WithinAbs(Qtest.data()[i], 0.00001));
+        REQUIRE_THAT(Q.data()[i], Catch::Matchers::WithinAbs(Qtest.data()[i], 0.00001));
     }
 }
 

@@ -385,7 +385,7 @@ constexpr auto is_same_dims(std::tuple<PositionsInX...> const &indices, XType co
     return true;
 }
 
-template <TensorConcept XType, typename... PositionsInX>
+template <CoreTensorConcept XType, typename... PositionsInX>
 constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, XType const &X) -> size_t {
     if (X.impl().is_row_major()) {
         return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
@@ -394,7 +394,14 @@ constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, XType con
     }
 }
 
-template <TensorConcept XType, typename... PositionsInX>
+#ifdef EINSUMS_COMPUTE_CODE
+template <DeviceTensorConcept XType, typename... PositionsInX>
+constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, XType const &X) -> size_t {
+        return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
+}
+#endif
+
+template <typename XType, typename... PositionsInX>
 constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, einsums::detail::TensorImpl<XType> const &X) -> size_t {
     if (X.is_row_major()) {
         return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));

@@ -79,9 +79,9 @@ class EINSUMS_EXPORT PyGPUView {
     template <typename T, size_t Rank>
     PyGPUView(DeviceTensor<T, Rank> &tensor)
         : _dims{tensor.dims()}, _strides(Rank), _gpu_dims{tensor.gpu_dims()}, _rank{Rank}, _itemsize{sizeof(T)},
-          _alloc_size{sizeof(T) * tensor.dims(0) * tensor.strides(0)}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
-          _fmt_spec{pybind11::format_descriptor<T>::format()}, _host_data{(void *)tensor.host_data()}, _dev_data{(void *)tensor.data()},
-          _dev_tensor_mode{tensor.mode()} {
+          _alloc_size{sizeof(T) * std::max(tensor.dims(0) * tensor.strides(0), tensor.dims(-1) * tensor.strides(-1))},
+          _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR}, _fmt_spec{pybind11::format_descriptor<T>::format()},
+          _host_data{(void *)tensor.host_data()}, _dev_data{(void *)tensor.data()}, _dev_tensor_mode{tensor.mode()} {
         hip_catch(hipMalloc((void **)&_gpu_strides, Rank * sizeof(size_t)));
 
         for (int i = 0; i < Rank; i++) {
@@ -101,9 +101,9 @@ class EINSUMS_EXPORT PyGPUView {
     template <typename T, size_t Rank>
     PyGPUView(DeviceTensorView<T, Rank> &tensor)
         : _dims{tensor.dims()}, _strides(Rank), _gpu_dims{tensor.gpu_dims()}, _rank{Rank}, _itemsize{sizeof(T)},
-          _alloc_size{sizeof(T) * tensor.dims(0) * tensor.strides(0)}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
-          _fmt_spec{pybind11::format_descriptor<T>::format()}, _host_data{(void *)tensor.host_data()}, _dev_data{(void *)tensor.data()},
-          _dev_tensor_mode{tensor.mode()} {
+          _alloc_size{sizeof(T) * std::max(tensor.dims(0) * tensor.strides(0), tensor.dims(-1) * tensor.strides(-1))},
+          _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR}, _fmt_spec{pybind11::format_descriptor<T>::format()},
+          _host_data{(void *)tensor.host_data()}, _dev_data{(void *)tensor.data()}, _dev_tensor_mode{tensor.mode()} {
         hip_catch(hipMalloc((void **)&_gpu_strides, Rank * sizeof(size_t)));
 
         for (int i = 0; i < Rank; i++) {
@@ -123,7 +123,7 @@ class EINSUMS_EXPORT PyGPUView {
     template <typename T, size_t Rank>
     PyGPUView(DeviceTensor<T, Rank> const &tensor)
         : _dims{tensor.dims()}, _strides(Rank), _gpu_dims{tensor.gpu_dims()}, _rank{Rank}, _itemsize{sizeof(T)},
-          _alloc_size{sizeof(T) * tensor.dims(0) * tensor.strides(0)}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
+          _alloc_size{sizeof(T) * std::max(tensor.dims(0) * tensor.strides(0), tensor.dims(-1) * tensor.strides(-1))}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
           _fmt_spec{pybind11::format_descriptor<T>::format()} {
         hip_catch(hipMalloc((void **)&_gpu_strides, Rank * sizeof(size_t)));
 
@@ -144,7 +144,7 @@ class EINSUMS_EXPORT PyGPUView {
     template <typename T, size_t Rank>
     PyGPUView(DeviceTensorView<T, Rank> const &tensor)
         : _dims{tensor.dims()}, _strides(Rank), _gpu_dims{tensor.gpu_dims()}, _rank{Rank}, _itemsize{sizeof(T)},
-          _alloc_size{sizeof(T) * tensor.dims(0) * tensor.strides(0)}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
+          _alloc_size{sizeof(T) * std::max(tensor.dims(0) * tensor.strides(0), tensor.dims(-1) * tensor.strides(-1))}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
           _fmt_spec{pybind11::format_descriptor<T>::format()} {
         hip_catch(hipMalloc((void **)&_gpu_strides, Rank * sizeof(size_t)));
 
@@ -267,10 +267,10 @@ class EINSUMS_EXPORT PyGPUView {
     void *_dev_data;
 
     BufferVector<size_t> _dims, _strides;
-    size_t             *_gpu_dims, *_gpu_strides;
-    size_t              _rank;
-    size_t              _itemsize;
-    size_t              _alloc_size, _num_items;
+    size_t              *_gpu_dims, *_gpu_strides;
+    size_t               _rank;
+    size_t               _itemsize;
+    size_t               _alloc_size, _num_items;
 
     std::string _fmt_spec;
 
