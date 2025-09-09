@@ -27,9 +27,12 @@ void setupFile(std::FILE *fp) {
         std::perror("Error encountered while writing to HPTT file!");
         throw std::runtime_error("IO error");
     }
+
+    std::fflush(fp);
 }
 
 uint32_t computeChecksum(std::FILE *fp) {
+    std::fflush(fp);
     int error = fseek(fp, 0, SEEK_END);
     if (error != 0) {
         std::perror("Error encountered while trying to seek in HPTT file!");

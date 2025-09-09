@@ -2482,7 +2482,7 @@ void Transpose<FloatType>::writeToFile(std::FILE *fp) const {
         goto write_to_file_error;
     }
 
-    if (!strncmp(header.magic, "HPTT", 4)) {
+    if (strncmp(header.magic, "HPTT", 4) != 0) {
         throw std::runtime_error("Trying to write to a file that is not a HPTT transpose file!");
     }
 
@@ -2492,15 +2492,14 @@ void Transpose<FloatType>::writeToFile(std::FILE *fp) const {
         goto write_to_file_error;
     }
 
-    constants = {
-        .dim                      = dim_,
-        .numThreads               = numThreads_,
-        .innerStrideA             = innerStrideA_,
-        .innerStrideB             = innerStrideB_,
-        .selectedParallelStrategy = selectedParallelStrategyId_,
-        .selectedLoopOrderId      = selectedLoopOrderId_,
-        .conjA                    = conjA_,
-    };
+    constants = {.dim                      = dim_,
+                 .numThreads               = numThreads_,
+                 .innerStrideA             = innerStrideA_,
+                 .innerStrideB             = innerStrideB_,
+                 .selectedParallelStrategy = selectedParallelStrategyId_,
+                 .selectedLoopOrderId      = selectedLoopOrderId_,
+                 .conjA                    = conjA_,
+                 .pad                      = 0};
 
     error2 = fwrite(&constants, sizeof(TransposeConstants), 1, fp);
 
@@ -2508,11 +2507,15 @@ void Transpose<FloatType>::writeToFile(std::FILE *fp) const {
         goto write_to_file_error;
     }
 
+    std::fflush(fp);
+
     error2 = fwrite(sizeA_.data(), sizeof(size_t), dim_, fp);
 
     if (error2 < dim_) {
         goto write_to_file_error;
     }
+
+    std::fflush(fp);
 
     error2 = fwrite(outerSizeA_.data(), sizeof(size_t), dim_, fp);
 
@@ -2520,11 +2523,15 @@ void Transpose<FloatType>::writeToFile(std::FILE *fp) const {
         goto write_to_file_error;
     }
 
+    std::fflush(fp);
+
     error2 = fwrite(outerSizeB_.data(), sizeof(size_t), dim_, fp);
 
     if (error2 < dim_) {
         goto write_to_file_error;
     }
+
+    std::fflush(fp);
 
     error2 = fwrite(offsetA_.data(), sizeof(size_t), dim_, fp);
 
@@ -2532,11 +2539,15 @@ void Transpose<FloatType>::writeToFile(std::FILE *fp) const {
         goto write_to_file_error;
     }
 
+    std::fflush(fp);
+
     error2 = fwrite(offsetB_.data(), sizeof(size_t), dim_, fp);
 
     if (error2 < dim_) {
         goto write_to_file_error;
     }
+
+    std::fflush(fp);
 
     error2 = fwrite(lda_.data(), sizeof(size_t), dim_, fp);
 
@@ -2544,17 +2555,23 @@ void Transpose<FloatType>::writeToFile(std::FILE *fp) const {
         goto write_to_file_error;
     }
 
+    std::fflush(fp);
+
     error2 = fwrite(ldb_.data(), sizeof(size_t), dim_, fp);
 
     if (error2 < dim_) {
         goto write_to_file_error;
     }
 
+    std::fflush(fp);
+
     error2 = fwrite(perm_.data(), sizeof(int), dim_, fp);
 
     if (error2 < dim_) {
         goto write_to_file_error;
     }
+
+    std::fflush(fp);
 
     masterPlan_->writeToFile(fp);
 
@@ -2567,6 +2584,8 @@ void Transpose<FloatType>::writeToFile(std::FILE *fp) const {
     }
 
     error2 = fwrite(&check, sizeof(uint32_t), 1, fp);
+
+    std::fflush(fp);
 
     if (error2 < 1) {
         goto write_to_file_error;
@@ -2581,6 +2600,9 @@ write_to_file_error:
 
 template <typename FloatType>
 Transpose<FloatType>::Transpose(std::FILE *fp, FloatType alpha, FloatType const *A, FloatType beta, FloatType *B) {
+#ifdef _OPENMP
+    omp_init_lock(&writelock);
+#endif
     // Get the file header.
     FileHeader         header;
     size_t             error2;
@@ -2599,7 +2621,7 @@ Transpose<FloatType>::Transpose(std::FILE *fp, FloatType alpha, FloatType const 
         goto read_from_file_error;
     }
 
-    if (!strncmp(header.magic, "HPTT", 4)) {
+    if (strncmp(header.magic, "HPTT", 4) != 0) {
         throw std::runtime_error("Trying to read from a file that is not a HPTT transpose file!");
     }
 

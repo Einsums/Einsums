@@ -67,6 +67,8 @@ void Plan::writeToFile(std::FILE *fp) const {
         throw std::runtime_error("IO error.");
     }
 
+    std::fflush(fp);
+
     size_t size = loopOrder_.size();
 
     error = fwrite(&size, sizeof(size_t), 1, fp);
@@ -76,12 +78,16 @@ void Plan::writeToFile(std::FILE *fp) const {
         throw std::runtime_error("IO error.");
     }
 
+    std::fflush(fp);
+
     error = fwrite(loopOrder_.data(), sizeof(int), size, fp);
 
     if (error < size) {
         perror("Error writing to file!");
         throw std::runtime_error("IO error.");
     }
+
+    std::fflush(fp);
 
     size = numThreadsAtLoop_.size();
 
@@ -92,12 +98,16 @@ void Plan::writeToFile(std::FILE *fp) const {
         throw std::runtime_error("IO error.");
     }
 
+    std::fflush(fp);
+
     error = fwrite(numThreadsAtLoop_.data(), sizeof(int), size, fp);
 
     if (error < size) {
         perror("Error writing to file!");
         throw std::runtime_error("IO error.");
     }
+
+    std::fflush(fp);
 
     // Offsets for the root nodes.
     std::vector<uint32_t> offsets(numTasks_);
@@ -126,13 +136,18 @@ void Plan::writeToFile(std::FILE *fp) const {
                                     .ldb       = curr_node->ldb,
                                     .indexA    = curr_node->indexA,
                                     .indexB    = curr_node->indexB,
-                                    .has_next  = (uint16_t)((curr_node->next == nullptr) ? 0 : 1)};
+                                    .has_next  = (uint16_t)((curr_node->next == nullptr) ? 0 : 1),
+                                    .pad       = 0};
             error = fwrite(&constants, sizeof(NodeConstants), 1, fp);
 
             if (error < 1) {
                 perror("Error writing to file!");
                 throw std::runtime_error("IO error");
             }
+
+            std::fflush(fp);
+
+            curr_node = curr_node->next;
         }
     }
 
@@ -144,6 +159,8 @@ void Plan::writeToFile(std::FILE *fp) const {
     }
 
     error = fwrite(offsets.data(), sizeof(uint32_t), numTasks_, fp);
+
+    std::fflush(fp);
 
     if (error < numTasks_) {
         perror("Error writing to file!");
@@ -219,7 +236,7 @@ Plan::Plan(std::FILE *fp, bool swap_endian) {
 
     // Get the offsets for each root node.
     std::vector<uint32_t> offsets;
-    offsets.reserve(numTasks_);
+    offsets.resize(numTasks_);
 
     error = fread(offsets.data(), sizeof(uint32_t), numTasks_, fp);
 
@@ -270,6 +287,7 @@ Plan::Plan(std::FILE *fp, bool swap_endian) {
                 } else {
                     curr_node->next = nullptr;
                 }
+                curr_node = curr_node->next;
             } while (constants.has_next);
         }
     } else {
@@ -306,6 +324,7 @@ Plan::Plan(std::FILE *fp, bool swap_endian) {
                 } else {
                     curr_node->next = nullptr;
                 }
+                curr_node = curr_node->next;
             } while (constants.has_next);
         }
     }

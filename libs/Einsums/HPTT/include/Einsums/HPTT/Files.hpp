@@ -1,8 +1,13 @@
 #pragma once
 
+#include <algorithm>
+#include <array>
+#include <bit>
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <stdexcept>
 namespace hptt {
 
 constexpr char endian_char() {
@@ -23,12 +28,12 @@ constexpr T byteswap(T value) noexcept {
 }
 
 template <>
-constexpr uint8_t byteswap(uint8_t value) noexcept {
+constexpr uint8_t byteswap<uint8_t>(uint8_t value) noexcept {
     return value;
 }
 
 template <>
-constexpr uint16_t byteswap(uint16_t value) noexcept {
+constexpr uint16_t byteswap<uint16_t>(uint16_t value) noexcept {
     union {
         uint16_t whole;
         uint8_t  bytes[2];
@@ -40,7 +45,7 @@ constexpr uint16_t byteswap(uint16_t value) noexcept {
 }
 
 template <>
-constexpr uint32_t byteswap(uint32_t value) noexcept {
+constexpr uint32_t byteswap<uint32_t>(uint32_t value) noexcept {
     union {
         uint32_t whole;
         uint8_t  bytes[4];
@@ -53,7 +58,7 @@ constexpr uint32_t byteswap(uint32_t value) noexcept {
 }
 
 template <>
-constexpr int32_t byteswap(int32_t value) noexcept {
+constexpr int32_t byteswap<int32_t>(int32_t value) noexcept {
     union {
         int32_t whole;
         uint8_t bytes[4];
@@ -65,31 +70,33 @@ constexpr int32_t byteswap(int32_t value) noexcept {
     return convert.whole;
 }
 
-struct NodeConstants {
+typedef struct NodeConstants {
     ptrdiff_t start, end, inc, offDiffAB;
     size_t    lda, ldb;
-    uint16_t      indexA, indexB, has_next;
-};
+    uint16_t  indexA, indexB, has_next;
+    uint16_t  pad;
+} NodeConstants;
 
-struct TransposeConstants {
-    int    dim;
-    int    numThreads;
-    size_t innerStrideA;
-    size_t innerStrideB;
-    int    selectedParallelStrategy;
-    int    selectedLoopOrderId;
-    bool   conjA;
-};
+typedef struct TransposeConstants {
+    int32_t dim;
+    int32_t numThreads;
+    size_t  innerStrideA;
+    size_t  innerStrideB;
+    int32_t selectedParallelStrategy;
+    int32_t selectedLoopOrderId;
+    int32_t conjA;
+    int32_t pad;
+} TransposeConstants;
 
 /**
  * File header specification for transpose files.
  */
-struct FileHeader {
+typedef struct FileHeader {
     char magic[4];
     char version[4];
 
     uint32_t checksum;
-};
+} FileHeader;
 
 void setupFile(std::FILE *fp);
 
