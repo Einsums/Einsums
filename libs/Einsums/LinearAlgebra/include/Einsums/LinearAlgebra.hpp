@@ -394,52 +394,23 @@ void syev(AType *A, WType *W) {
  *      though this is done by copying data. It can also handle row- and column-major order without a copy.
  * @endversion
  */
-template <MatrixConcept AType, VectorConcept WType>
+template <MatrixConcept AType, VectorConcept WType, typename LVecPtr, typename RVecPtr>
     requires requires {
         requires InSamePlace<AType, WType>;
         requires std::is_same_v<typename WType::ValueType, AddComplexT<typename AType::ValueType>>;
+        requires std::is_null_pointer_v<LVecPtr> ||
+                     (MatrixConcept<std::remove_pointer_t<LVecPtr>> &&
+                      std::is_same_v<typename std::remove_pointer_t<LVecPtr>::ValueType, AddComplexT<typename AType::ValueType>>);
+        requires std::is_null_pointer_v<RVecPtr> ||
+                     (MatrixConcept<std::remove_pointer_t<RVecPtr>> &&
+                      std::is_same_v<typename std::remove_pointer_t<RVecPtr>::ValueType, AddComplexT<typename AType::ValueType>>);
     }
-void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
+void geev(AType *A, WType *W, LVecPtr lvecs, RVecPtr rvecs) {
     char jobvl = (lvecs == nullptr) ? 'n' : 'v';
     char jobvr = (rvecs == nullptr) ? 'n' : 'v';
     LabeledSection("<jobvl = {}, jobvr = {}>", jobvl, jobvr);
 
     detail::geev(A, W, lvecs, rvecs);
-}
-
-/**
- * @brief Take the packed real eigenvectors and convert them into complex eigenvectors.
- *
- * Normally, when geev exits it will store complex eigenvectors in a weird way, where conjugate
- * pairs are stored with the real part in one column and the imaginary part in the other. This function
- * takes those pairs and turns them into their complex representation.
- *
- * @note This function is not needed for complex inputs since the special storage layout only applies to real inputs.
- * A compilation error will be thrown in case this is run on complex inputs.
- *
- * @tparam InType The type for the input tensors.
- * @tparam OutType The type for the output tensors.
- * @tparam WType The type for the eigenvalues.
- * @param[in] W The eigenvectors.
- * @param[in] lvecs_in The left eigenvector input. If null, then this will not be processed.
- * @param[in] rvecs_in The right eignevector input. If null, then this will not be processed.
- * @param[out] lvecs_out The left eigenvector output. If null, then this will not be processed.
- * @param[out] rvecs_out The right eigenvector output. If null, then this will not be processed.
- *
- * @throws std::invalid_argument If one of the output tensors is null but its corresponding input is not.
- * @throws rank_error If any of the input or output vectors are not rank-2, or the eigenvalue input is not rank-1.
- * @throws dimension_error If any of the dimensions on any of the axes of any of the tensors is different from another.
- *
- * @versionadded{2.0.0}
- */
-template <MatrixConcept InType, MatrixConcept OutType, VectorConcept WType>
-    requires requires {
-        requires InSamePlace<InType, OutType, WType>;
-        requires std::is_same_v<AddComplexT<typename InType::ValueType>, typename OutType::ValueType>;
-        requires std::is_same_v<typename OutType::ValueType, typename WType::ValueType>;
-    }
-void process_geev_vectors(WType const &W, InType const *lvecs_in, InType const *rvecs_in, OutType *lvecs_out, OutType *rvecs_out) {
-    detail::process_geev_vectors(W, lvecs_in, rvecs_in, lvecs_out, rvecs_out);
 }
 
 /**
