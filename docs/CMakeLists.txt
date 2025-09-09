@@ -16,6 +16,12 @@ set(doxygen_definition_list
     "EINSUMS_HOSTDEV="
 )
 
+set(SPHINX_PYTHON_DEPENDS)
+
+if(EINSUMS_BUILD_PYTHON)
+  set(SPHINX_PYTHON_DEPENDS EinsumsPy)
+endif()
+
 foreach(doxygen_predef ${doxygen_definition_list})
   set(doxygen_definitions "${doxygen_definitions} \"${doxygen_predef}\"")
 endforeach()
@@ -213,7 +219,7 @@ foreach(output_format ${EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS})
 
   add_custom_command(
     OUTPUT "${SPHINX_DOCS_OUTPUT_FILE}"
-    DEPENDS "${sphinx_source_files_build}"
+    DEPENDS "${sphinx_source_files_build}" Einsums ${SPHINX_PYTHON_DEPENDS}
     COMMAND ${SPHINX_DOCS_BUILD_COMMAND}
   )
 

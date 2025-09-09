@@ -20,6 +20,8 @@ namespace detail {
  * For real numbers, this will give a uniform distribution on an interval. For complex numbers,
  * the distribution will be such that the probability of a point being within a subregion
  * is proportional to the area of that subregion.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T>
 struct circle_distribution {};
@@ -87,6 +89,8 @@ struct circle_distribution<std::complex<T>> {
  * For real numbers, this will give a uniform distribution on (-1, 1). The endpoints are not included.
  * For complex numbers, the distribution will be such that the probability of a point being within a subregion
  * is proportional to the area of that subregion. The region will be the unit disc without its boundary.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T>
 struct unit_circle_distribution {};
@@ -150,6 +154,8 @@ struct unit_circle_distribution<std::complex<T>> {
  * @property random_engine
  *
  * @brief The global random engine for random number generation.
+ *
+ * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT extern std::default_random_engine random_engine;
 
@@ -157,6 +163,8 @@ EINSUMS_EXPORT extern std::default_random_engine random_engine;
  * @brief Set the seed of the random number generator.
  *
  * @param seed The new seed for the random number generator.
+ *
+ * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT void seed_random(std::default_random_engine::result_type seed);
 

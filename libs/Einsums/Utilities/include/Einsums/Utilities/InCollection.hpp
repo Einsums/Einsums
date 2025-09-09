@@ -28,6 +28,8 @@ constexpr bool is_in(T &&needle, Haystack const &haystack, std::index_sequence<I
 
 /**
  * @brief Check to see if an element is contained in a container or tuple.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T, typename Haystack>
     requires requires {
@@ -41,6 +43,8 @@ constexpr bool is_in(T &&needle, Haystack const &haystack) {
 
 /**
  * @brief Check to see if an element is contained in a container.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T, Container Haystack>
 constexpr bool is_in(T &&needle, Haystack const &haystack) {
@@ -54,6 +58,8 @@ constexpr bool is_in(T &&needle, Haystack const &haystack) {
 
 /**
  * @brief Check to see if an element is contained in an initializer list.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T>
 constexpr bool is_in(T &&needle, std::initializer_list<std::decay_t<T>> haystack) {
@@ -67,6 +73,8 @@ constexpr bool is_in(T &&needle, std::initializer_list<std::decay_t<T>> haystack
 
 /**
  * @brief Check to see if an element is not contained in a container or tuple.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T, typename Haystack>
     requires requires {
@@ -80,6 +88,8 @@ constexpr bool not_in(T &&needle, Haystack const &haystack) {
 
 /**
  * @brief Check to see if an element is not contained in a container.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T, Container Haystack>
 constexpr bool not_in(T &&needle, Haystack const &haystack) {
@@ -93,6 +103,8 @@ constexpr bool not_in(T &&needle, Haystack const &haystack) {
 
 /**
  * @brief Check to see if an element is not contained in an initializer list.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T>
 constexpr bool not_in(T &&needle, std::initializer_list<std::decay_t<T>> haystack) {

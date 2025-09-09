@@ -53,6 +53,24 @@ void icheck_size(Tensor<std::complex<T>, 1> const &a, Tensor<T, 1> const *result
     EINSUMS_THROW_EXCEPTION(dimension_error, "fft called with too small result tensor size\nsize of \"{}\" is {}\nsize of \"{}\" is {}",
                             a.name(), a.dim(0), result->name(), result->dim(0));
 }
+
+template <typename T>
+void check_size(Tensor<std::complex<T>, 1> const &a, Tensor<std::complex<T>, 1> const *result) {
+    if (result->dim(0) >= a.dim(0))
+        return;
+
+    EINSUMS_THROW_EXCEPTION(dimension_error, "fft called with too small result tensor size\nsize of \"{}\" is {}\nsize of \"{}\" is {}",
+                            a.name(), a.dim(0), result->name(), result->dim(0));
+}
+
+template <typename T>
+void icheck_size(Tensor<std::complex<T>, 1> const &a, Tensor<std::complex<T>, 1> const *result) {
+    if (a.dim(0) >= result->dim(0))
+        return;
+
+    EINSUMS_THROW_EXCEPTION(dimension_error, "fft called with too small result tensor size\nsize of \"{}\" is {}\nsize of \"{}\" is {}",
+                            a.name(), a.dim(0), result->name(), result->dim(0));
+}
 } // namespace
 
 void scfft(Tensor<float, 1> const &a, Tensor<std::complex<float>, 1> *result) {
@@ -62,6 +80,7 @@ void scfft(Tensor<float, 1> const &a, Tensor<std::complex<float>, 1> *result) {
 }
 
 void ccfft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 1> *result) {
+    check_size(a, result);
     // backend::mkl::ccfft(a, result);
     backend::FFT_BACKEND::ccfft(a, result);
 }
@@ -73,6 +92,7 @@ void dzfft(Tensor<double, 1> const &a, Tensor<std::complex<double>, 1> *result) 
 }
 
 void zzfft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>, 1> *result) {
+    check_size(a, result);
     // backend::mkl::zzfft(a, result);
     backend::FFT_BACKEND::zzfft(a, result);
 }
@@ -90,13 +110,13 @@ void zdifft(Tensor<std::complex<double>, 1> const &a, Tensor<double, 1> *result)
 }
 
 void ccifft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 1> *result) {
-    /// @todo Add appropriate icheck_size(...);
+    icheck_size(a, result);
     // backend::mkl::ccifft(a, result);
     backend::FFT_BACKEND::ccifft(a, result);
 }
 
 void zzifft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>, 1> *result) {
-    /// @todo Add appropriate icheck_size(...);
+    icheck_size(a, result);
     // backend::mkl::zzifft(a, result);
     backend::FFT_BACKEND::zzifft(a, result);
 }

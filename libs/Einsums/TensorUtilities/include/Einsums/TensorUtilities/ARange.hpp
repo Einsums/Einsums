@@ -21,10 +21,12 @@ namespace einsums {
  * @endcode
  *
  * @tparam T Underlying datatype of the tensor
- * @param start Value to start the tensor with
- * @param stop Value to stop the tensor with
- * @param step Increment value
+ * @param[in] start Value to start the tensor with
+ * @param[in] stop Value to stop the tensor with
+ * @param[in] step Increment value
  * @return new rank-1 tensor filled with digits from \p start to \p stop in \p step increments
+ *
+ * @versionadded{1.0.0}
  */
 template <NotComplex T>
 auto arange(T start, T stop, T step = T{1}) -> Tensor<T, 1> {
@@ -52,8 +54,10 @@ auto arange(T start, T stop, T step = T{1}) -> Tensor<T, 1> {
  * @endcode
  *
  * @tparam T Underlying datatype of the tensor
- * @param stop Value to stop the tensor with
+ * @param[in] stop Value to stop the tensor with
  * @return new rank-1 tensor filled with digits from 0 to \p stop
+ *
+ * @versionadded{1.0.0}
  */
 template <NotComplex T>
 auto arange(T stop) -> Tensor<T, 1> {

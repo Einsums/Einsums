@@ -22,6 +22,8 @@ This class is an advanced topic. It is used internally in :py:deco:`einsums.util
 
     Represents a section in the profiler report.
 
+    .. versionadded:: 1.1.0
+
     .. py:method:: __init__(name: str, [domain: str], [push_timer: bool = True])
 
         Create a new section with the given name and domain.
@@ -30,6 +32,10 @@ This class is an advanced topic. It is used internally in :py:deco:`einsums.util
         :param domain: If VTune is available, then this label will be used for VTune.
         :param push_timer: Enable timing for this section.
 
+        .. versionadded:: 1.1.0
+
     .. py:method:: end()
 
         End timing early.
+
+        .. versionadded:: 1.1.0

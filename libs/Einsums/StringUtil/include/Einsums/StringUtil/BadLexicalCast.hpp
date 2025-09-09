@@ -15,6 +15,8 @@ namespace einsums {
  * @struct bad_lexical_cast
  *
  * Indicates that a string could not be converted to a different type.
+ *
+ * @versionadded{1.0.0}
  */
 struct EINSUMS_EXPORT bad_lexical_cast : std::bad_cast {
     using std::bad_cast::bad_cast;

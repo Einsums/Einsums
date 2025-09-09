@@ -12,6 +12,7 @@
 namespace einsums {
 /// The type of a function which is registered to be executed as a
 /// shutdown or pre-shutdown function.
+/// @versionadded{1.0.0}
 using ShutdownFunctionType = std::function<void()>;
 
 /// \brief Add a function to be executed during
@@ -31,6 +32,7 @@ using ShutdownFunctionType = std::function<void()>;
 ///       exception.
 ///
 /// \see    \a einsums::register_shutdown_function()
+/// @versionadded{1.0.0}
 EINSUMS_EXPORT void register_pre_shutdown_function(ShutdownFunctionType f);
 
 /// \brief Add a function to be executed during
@@ -50,6 +52,7 @@ EINSUMS_EXPORT void register_pre_shutdown_function(ShutdownFunctionType f);
 ///       exception.
 ///
 /// \see    \a einsums::register_pre_shutdown_function()
+/// @versionadded{1.0.0}
 EINSUMS_EXPORT void register_shutdown_function(ShutdownFunctionType f);
 
 namespace detail {
@@ -61,6 +64,8 @@ namespace detail {
  * This function makes the shutdown routine aware of these pointers so that they can be freed.
  *
  * @param f The function that deletes the pointer.
+ *
+ * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT void register_free_pointer(std::function<void()> f);
 

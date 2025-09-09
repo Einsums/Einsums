@@ -9,6 +9,7 @@
 
 #if defined(DOXYGEN)
 /// Marks a function to be forced inline.
+/// @versionadded{1.0.0}
 #    define EINSUMS_FORCEINLINE
 #else
 

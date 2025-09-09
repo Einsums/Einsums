@@ -28,9 +28,11 @@ namespace detail {}
  *
  * @tparam T The datatype of the underlying tensor. Defaults to double.
  * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
- * @param name The name of the new tensor.
- * @param index The arguments needed to construct the tensor.
+ * @param[in] name The name of the new tensor.
+ * @param[in] index The arguments needed to construct the tensor.
  * @return A new tensor filled with random data
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T = double, typename... MultiIndex>
 auto create_identity_tensor(std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {

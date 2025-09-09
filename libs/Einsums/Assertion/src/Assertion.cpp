@@ -21,23 +21,24 @@ auto get_handler() -> assertion_handler_type & {
 } // namespace
 
 void default_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg) {
-    std::cerr << complete_version() << "\n" << loc.function_name() << ":" << loc.line() << " : Assertion '" << expr << "' failed";
+    std::ostringstream err_str;
+    err_str << complete_version() << "\n" << loc.function_name() << ":" << loc.line() << " : Assertion '" << expr << "' failed";
     if (!msg.empty()) {
-        std::cerr << " (" << msg << ")\n";
+        err_str << " (" << msg << ")\n";
     } else {
-        std::cerr << "\n";
+        err_str << "\n";
     }
 
-    std::cerr << "\n" << util::backtrace() << "\n";
+    err_str << "\n" << util::backtrace() << "\n";
 
-    std::exit(EXIT_FAILURE);
+    throw assertion_error(err_str.str());
 }
 
 void set_assertion_handler(assertion_handler_type handler) {
     get_handler() = handler;
 }
 
-void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) noexcept {
+void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) {
     if (get_handler() == nullptr) {
         default_assertion_handler(loc, expr, msg);
     }

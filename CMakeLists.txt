@@ -716,7 +716,7 @@ set(EINSUMS_WITH_TARGET_ARCHITECTURE
 # Find other dependencies.
 include(Einsums_SetupFmt)
 include(Einsums_SetupCatch)
-include(Einsums_SetupH5cpp)
+include(Einsums_SetupHDF5)
 include(Einsums_SetupSpdlog)
 include(Einsums_SetupAllocator)
 
@@ -812,7 +812,9 @@ set(EINSUMS_DEBUG_POSTFIX "d")
 # Add libraries
 # ##################################################################################################
 add_subdirectory(libs)
-add_subdirectory(einsums)
+if(EINSUMS_BUILD_PYTHON)
+  add_subdirectory(einsums)
+endif()
 
 # ##################################################################################################
 # Documentation toolchain (Sphinx, Doxygen, Breathe)

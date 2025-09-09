@@ -23,6 +23,14 @@
 
 namespace einsums::linear_algebra::detail {
 
+template <TiledTensorConcept AType, typename T = RemoveComplexT<typename AType::ValueType>>
+void sum_square(AType const &A, T *scale, T *sumsq) {
+
+    for (auto const &[key, tile] : A.tiles()) {
+        sum_square(tile, scale, sumsq);
+    }
+}
+
 template <TiledTensorConcept AType, TiledTensorConcept BType>
     requires(SameRank<AType, BType>)
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {

@@ -25,19 +25,27 @@ the ones defined by Einsums. In fact, much of the testing for these is done on N
 
     Base class for the enumerated values for the GPU views. It is created by Pybind11.
 
+    .. versionadded:: 1.0.0
+
     .. py:property:: name
         
         Gets the name of the enumerated value.
+
+        .. versionadded:: 1.0.0
     
     .. py:property:: value
 
         Gets the underlying value of the enumerated symbol.
+
+        .. versionadded:: 1.0.0
 
 .. py:data:: COPY
     :type: GPUViewMode
 
     When creating a view, this indicates that the view should allocate memory on the device and
     copy the data back and forth.
+
+    .. versionadded:: 1.0.0
 
 .. py:data:: MAP
     :type: GPUViewMode
@@ -46,11 +54,15 @@ the ones defined by Einsums. In fact, much of the testing for these is done on N
     address space on the device. Data will be synchronized automatically, but data validity should 
     not be assumed until all kernels affecting the data have finished.
 
+    .. versionadded:: 1.0.0
+
 .. py:data:: DEVICE_TENSOR
     :type: GPUViewMode
 
     This mode is used by C++ extensions to create a Python-compatible wrapper around Einsums device
     tensors. Views can not be created with this mode from Python.
+
+    .. versionadded:: 1.0.0
 
 .. py:class:: GPUView
 
@@ -79,6 +91,8 @@ the ones defined by Einsums. In fact, much of the testing for these is done on N
      [ 66.  81.  96.]
      [102. 126. 150.]]
 
+    .. versionadded:: 1.0.0
+
     .. py:method:: __init__(buffer, mode: GPUViewMode)
 
         Creates a new :py:class:`GPUView` around the given buffer object with the given mode.
@@ -86,13 +100,19 @@ the ones defined by Einsums. In fact, much of the testing for these is done on N
         :param buffer: The buffer object to wrap. Can be anything that implements the Python buffer protocol.
         :param mode: The mode to use when creating this. Can either be :py:data:`MAP` or :py:data:`COPY`.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: dims() -> list[int]
 
         Get the dimensions of the view.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: strides() -> list[int]
 
         Get the strides of the view in bytes.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: dim(axis: int) -> int
 
@@ -101,6 +121,8 @@ the ones defined by Einsums. In fact, much of the testing for these is done on N
         :param axis: The axis to query.
         :return: The width of the view along that axis.
         :raises IndexError: If the axis is outside of the range of dimensions.
+
+        .. versionadded:: 1.0.0
     
     .. py:method:: stride(axis: int) -> int
         
@@ -110,27 +132,41 @@ the ones defined by Einsums. In fact, much of the testing for these is done on N
         :return: The stride of the view in bytes along that axis.
         :raises IndexError: If the axis is outside of the range of dimensions.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: fmt_spec() -> str
 
         Get the format specifier for the view.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: update_H2D()
 
         Synchronize the view's data by moving the host data to the device.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: update_D2H()
 
         Synchronize the view's data by moving the device data to the host.
+
+        .. versionadded:: 1.0.0
     
     .. py:method:: size() -> int
     .. py:method:: __len__() -> int
 
         Get the number of elements in the view. These two are synonyms.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: rank() -> int
 
         Get the rank of the view, or the number of dimensions.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: itemsize() -> int
 
         Get the number of bytes in each element.
+
+        .. versionadded:: 1.0.0
