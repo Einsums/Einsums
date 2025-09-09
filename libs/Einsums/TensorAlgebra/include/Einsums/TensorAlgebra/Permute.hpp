@@ -175,9 +175,9 @@ std::shared_ptr<hptt::Transpose<T>> compile_permute(T beta, std::string const &C
                                                     std::string const &A_indices, einsums::detail::TensorImpl<T> const &A,
                                                     hptt::SelectionMethod method = hptt::ESTIMATE) {
     LabeledSection((std::abs(beta) > EINSUMS_ZERO)
-                        ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices, beta,
-                                      C->name(), C_indices)
-                        : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices));
+                       ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices, beta,
+                                     C->name(), C_indices)
+                       : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices));
 
     // Error check:  If there are any remaining indices then we cannot perform a permute
     auto check = difference(A_indices, C_indices);
@@ -406,6 +406,22 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     }
 }
 
+/**
+ * Compiles a permutation so that it can be used multiple times.
+ *
+ * @param UC_prefactor The prefactor for the output.
+ * @param C_indices The indices for the output.
+ * @param C The output tensor.
+ * @param UA_prefactor The prefactor for the input.
+ * @param A_indices The indices for the input.
+ * @param A The input tensor.
+ * @param method Indicates which method HPTT should use to optimize the permutation. By default, it is hptt::ESTIMATE , which is the
+ * simplest of the options.
+ *
+ * @return The compiled plan.
+ *
+ * @versionadded{2.0.0}
+ */
 template <bool ConjA = false, CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
     requires requires {
         requires sizeof...(CIndices) == sizeof...(AIndices);
@@ -421,6 +437,15 @@ compile_permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, 
     return detail::compile_permute<ConjA>((T)UC_prefactor, C_indices, &C->impl(), (T)UA_prefactor, A_indices, A.impl(), method);
 }
 
+/**
+ * Perform a permuation using the provided plan.
+ *
+ * @param C The output tensor.
+ * @param A The input tensor.
+ * @param plan The pre-compiled plan.
+ *
+ * @versionadded{2.0.0}
+ */
 template <CoreTensorConcept AType, CoreTensorConcept CType>
     requires SameUnderlyingAndRank<AType, CType>
 void permute(CType *C, AType const &A, std::shared_ptr<hptt::Transpose<typename AType::ValueType>> plan) {
