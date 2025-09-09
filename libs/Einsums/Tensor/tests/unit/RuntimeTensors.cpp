@@ -187,13 +187,13 @@ TEST_CASE("Runtime Tensor Assignment") {
 TEST_CASE("Runtime Tensor View Creation") {
     using namespace einsums;
 
-    RuntimeTensor<double>        Base       = create_random_tensor("Base", 10, 10, 10);
+    RuntimeTensor<double>        Base       = create_random_tensor(false, "Base", 10, 10, 10);
     RuntimeTensor<double> const &const_base = Base;
 
     RuntimeTensorView<double>        base_view{Base};
     RuntimeTensorView<double> const &const_base_view = base_view;
 
-    Tensor<double, 3>        rank_base       = create_random_tensor("rank_base", 10, 10, 10);
+    Tensor<double, 3>        rank_base       = create_random_tensor(false, "rank_base", 10, 10, 10);
     Tensor<double, 3> const &const_rank_base = rank_base;
 
     TensorView<double, 3>        rank_view       = rank_base(All, All, All);

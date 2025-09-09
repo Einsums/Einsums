@@ -2150,7 +2150,6 @@ TEST_CASE("GPU F12 - V term") {
 
     result.set_all(0.0);
     result2.set_all(0.0);
-    profile::push("raw for loops");
     for (size_t _i = 0; _i < nocc; _i++) {
         for (size_t _j = 0; _j < nocc; _j++) {
             for (size_t _k = 0; _k < nocc; _k++) {
@@ -2168,7 +2167,6 @@ TEST_CASE("GPU F12 - V term") {
             }
         }
     }
-    profile::pop();
 
     // println(result);
     // println(ijkl_1);

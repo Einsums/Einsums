@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/CommandLine/CommandLine.hpp>
 #include <Einsums/GPUMemory/GPUAllocator.hpp>
 #include <Einsums/GPUMemory/InitModule.hpp>
 #include <Einsums/GPUMemory/ModuleVars.hpp>
@@ -35,15 +36,14 @@ int init_Einsums_GPUMemory() {
     return 0;
 }
 
-void add_Einsums_GPUMemory_arguments(argparse::ArgumentParser &parser) {
+void add_Einsums_GPUMemory_arguments() {
     auto &global_config = GlobalConfigMap::get_singleton();
     auto &global_string = global_config.get_string_map()->get_value();
 
-    parser.add_argument("--einsums:gpu-buffer-size")
-        .default_value("4MB")
-        .help("Total size of buffers allocated on the GPU for tensor contractions. Up to four buffers may be allocated, whose total will "
-              "add to this size.")
-        .store_into(global_string["gpu-buffer-size"]);
+    static cl::OptionCategory   GPUAllocatorCategory("GPU Buffer Allocator");
+    static cl::Opt<std::string> bufferSize("einsums:gpu-buffer-size", {}, "Total size of GPU buffers allocated for tensor contractions.",
+                                           GPUAllocatorCategory, cl::Location(global_string["gpu-buffer-size"]),
+                                           cl::Default(std::string("4MB")));
 
     global_config.attach(gpu::detail::Einsums_GPUMemory_vars::update_max_size);
 }

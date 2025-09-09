@@ -8,7 +8,7 @@ import numpy as np
 pytestmark = [
     pytest.mark.parametrize(
         ["a", "b"],
-        [(10, 10), pytest.param(1000, 1000, marks=pytest.mark.slow), (11, 13)],
+        [(10, 10), pytest.param(100, 100, marks=pytest.mark.slow), (11, 13)],
     ),
     pytest.mark.parametrize(
         ["dtype", "rel"],

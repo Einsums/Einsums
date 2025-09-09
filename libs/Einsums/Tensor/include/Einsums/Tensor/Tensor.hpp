@@ -50,6 +50,7 @@
 #include <utility>
 #include <vector>
 
+#include "Einsums/Config/CompilerSpecific.hpp"
 #include "Einsums/TensorImpl/TensorImplOperations.hpp"
 
 #if defined(EINSUMS_COMPUTE_CODE)
@@ -187,7 +188,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     template <std::integral... Dims>
         requires(sizeof...(Dims) == Rank)
     Tensor(std::string name, Dims... dims)
-        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, false) {
+        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, row_major_default) {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
         // Resize the data structure
@@ -349,7 +350,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param other The tensor view to copy.
      */
-    Tensor(TensorView<T, rank> const &other) : _name{other.name()}, _impl(nullptr, other.dims(), false) {
+    Tensor(TensorView<T, rank> const &other) : _name{other.name()}, _impl(nullptr, other.dims(), row_major_default) {
         // Resize the data structure
         _data.resize(_impl.size());
 
@@ -969,6 +970,14 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
     detail::TensorImpl<T> const &impl() const { return _impl; }
 
+    bool is_row_major() const {
+        return _impl.is_row_major();
+    }
+
+    bool is_column_major() const {
+        return _impl.is_column_major();
+    }
+
   private:
     std::string _name{"(unnamed)"};
 
@@ -1264,7 +1273,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param data The pointer to wrap.
      * @param dims The dimensions of the view.
      */
-    explicit TensorView(T const *data, Dim<Rank> const &dims, bool row_major = false)
+    explicit TensorView(T const *data, Dim<Rank> const &dims, bool row_major = row_major_default)
         : _impl(const_cast<T *>(data), dims, row_major), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
         _source_dims = dims;
@@ -1280,7 +1289,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param data The pointer to wrap.
      * @param dims The dimensions of the view.
      */
-    explicit TensorView(T *data, Dim<Rank> const &dims, bool row_major = false)
+    explicit TensorView(T *data, Dim<Rank> const &dims, bool row_major = row_major_default)
         : _impl(const_cast<T *>(data), dims, row_major), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
         _source_dims = dims;
@@ -1351,7 +1360,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     }
 
     /**
-     * Copy data from a pointer into this view.
+     * Copy data from a pointer into this view. It always assumes that the source array is stored in row-major
+     * order.
      *
      * @attention This is an expert function only. If you are using it, you must know what you are doing!
      */
@@ -1776,6 +1786,14 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     detail::TensorImpl<T> const &impl() const noexcept { return _impl; }
 
+    bool is_row_major() const {
+        return _impl.is_row_major();
+    }
+
+    bool is_column_major() const {
+        return _impl.is_column_major();
+    }
+
   private:
     /**
      * Initialize a view using a tensor.
@@ -2066,7 +2084,7 @@ TensorView(std::string, Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> T
  * @param args The arguments needed to construct the tensor.
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
-template <typename Type = double, bool RowMajor = false, typename... Args>
+template <typename Type = double, bool RowMajor = einsums::row_major_default, typename... Args>
 auto create_tensor(std::string const &name, Args... args) {
     EINSUMS_LOG_TRACE("creating tensor {}, {}", name, std::forward_as_tuple(args...));
     return Tensor<Type, sizeof...(Args)>{RowMajor, name, args...};
@@ -2095,7 +2113,7 @@ auto create_tensor(std::string const &name, Args... args) {
  * @param args The arguments needed to construct the tensor.
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
-template <typename Type = double, bool RowMajor = false, std::integral... Args>
+template <typename Type = double, bool RowMajor = einsums::row_major_default, std::integral... Args>
 auto create_tensor(Args... args) {
     return Tensor<Type, sizeof...(Args)>{RowMajor, "Temporary", args...};
 }

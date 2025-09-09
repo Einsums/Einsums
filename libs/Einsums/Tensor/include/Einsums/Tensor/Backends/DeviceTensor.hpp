@@ -1529,10 +1529,10 @@ DeviceTensor<T, rank> &DeviceTensor<T, rank>::div_assign(DeviceTensor<T, rank> c
 template <typename T, size_t rank>
 DeviceTensor<T, rank>::DeviceTensor(Tensor<T, rank> const &copy, einsums::detail::HostToDeviceMode mode) {
     using namespace einsums::gpu;
-    this->_name    = copy.name();
-    this->_dims    = copy.dims();
-    this->_strides = copy.strides();
-    this->_mode    = mode;
+    this->_name = copy.name();
+    this->_dims = copy.dims();
+    dims_to_strides(_dims, _strides, true);
+    this->_mode = mode;
 
     if (mode == einsums::detail::MAPPED) {
         this->_host_data = new T[copy.size()];
