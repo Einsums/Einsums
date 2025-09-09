@@ -99,6 +99,7 @@ void Plan::writeToFile(std::FILE *fp) const {
         throw std::runtime_error("IO error.");
     }
 
+    // Offsets for the root nodes.
     std::vector<uint32_t> offsets(numTasks_);
 
     long offset_table_pos = ftell(fp);
@@ -110,23 +111,28 @@ void Plan::writeToFile(std::FILE *fp) const {
         throw std::runtime_error("IO error.");
     }
 
+    // Write the root nodes.
     for (int i = 0; i < numTasks_; i++) {
-        auto          curr_node = rootNodes_[i];
-        NodeConstants constants{.start      = curr_node.start,
-                                .end        = curr_node.end,
-                                .inc        = curr_node.inc,
-                                .offDiffAB  = curr_node.offDiffAB,
-                                .lda        = curr_node.lda,
-                                .ldb        = curr_node.ldb,
-                                .offsetNext = 0,
-                                .indexA     = curr_node.indexA,
-                                .indexB     = curr_node.indexB};
+        auto *curr_node = &rootNodes_[i];
+        // Get the offset of the root node.
         offsets[i] = ftell(fp);
-        error      = fwrite(&constants, sizeof(NodeConstants), 1, fp);
 
-        if (error < 1) {
-            perror("Error writing to file!");
-            throw std::runtime_error("IO error");
+        while (curr_node != nullptr) {
+            NodeConstants constants{.start     = curr_node->start,
+                                    .end       = curr_node->end,
+                                    .inc       = curr_node->inc,
+                                    .offDiffAB = curr_node->offDiffAB,
+                                    .lda       = curr_node->lda,
+                                    .ldb       = curr_node->ldb,
+                                    .indexA    = curr_node->indexA,
+                                    .indexB    = curr_node->indexB,
+                                    .has_next  = (uint16_t)((curr_node->next == nullptr) ? 0 : 1)};
+            error = fwrite(&constants, sizeof(NodeConstants), 1, fp);
+
+            if (error < 1) {
+                perror("Error writing to file!");
+                throw std::runtime_error("IO error");
+            }
         }
     }
 
@@ -143,43 +149,18 @@ void Plan::writeToFile(std::FILE *fp) const {
         perror("Error writing to file!");
         throw std::runtime_error("IO error.");
     }
-
-    for (int i = 0; i < numTasks_; i++) {
-        auto curr_node = rootNodes_[i];
-
-        int index = -1;
-
-        for (int j = 0; j < numTasks_; j++) {
-            if (curr_node.next == &rootNodes_[j]) {
-                index = j;
-                break;
-            }
-        }
-
-        error2 = fseek(fp, (long)offsets[i] + offsetof(NodeConstants, offsetNext), SEEK_SET);
-
-        if (error2 != 0) {
-            perror("Error seeking in file!");
-            throw std::runtime_error("IO error.");
-        }
-
-        if (index != -1) {
-            error = fwrite(&offsets[index], sizeof(uint32_t), 1, fp);
-
-            if (error < numTasks_) {
-                perror("Error writing to file!");
-                throw std::runtime_error("IO error.");
-            }
-        }
-    }
 }
 
-Plan::Plan(std::FILE *fp) {
+Plan::Plan(std::FILE *fp, bool swap_endian) {
     size_t error = fread(&numTasks_, sizeof(int), 1, fp);
 
     if (error < 1) {
-        perror("Error writing to file!");
+        perror("Error reading from file!");
         throw std::runtime_error("IO error.");
+    }
+
+    if (swap_endian) {
+        numTasks_ = byteswap(numTasks_);
     }
 
     size_t size;
@@ -187,8 +168,12 @@ Plan::Plan(std::FILE *fp) {
     error = fread(&size, sizeof(size_t), 1, fp);
 
     if (error < 1) {
-        perror("Error writing to file!");
+        perror("Error reading from file!");
         throw std::runtime_error("IO error.");
+    }
+
+    if (swap_endian) {
+        size = byteswap(size);
     }
 
     loopOrder_.resize(size);
@@ -196,15 +181,25 @@ Plan::Plan(std::FILE *fp) {
     error = fread(loopOrder_.data(), sizeof(int), size, fp);
 
     if (error < size) {
-        perror("Error writing to file!");
+        perror("Error reading from file!");
         throw std::runtime_error("IO error.");
+    }
+
+    if (swap_endian) {
+        for (int i = 0; i < loopOrder_.size(); i++) {
+            loopOrder_[i] = byteswap(loopOrder_[i]);
+        }
     }
 
     error = fread(&size, sizeof(size_t), 1, fp);
 
     if (error < 1) {
-        perror("Error writing to file!");
+        perror("Error reading from file!");
         throw std::runtime_error("IO error.");
+    }
+
+    if (swap_endian) {
+        size = byteswap(size);
     }
 
     numThreadsAtLoop_.resize(size);
@@ -212,83 +207,106 @@ Plan::Plan(std::FILE *fp) {
     error = fread(numThreadsAtLoop_.data(), sizeof(int), size, fp);
 
     if (error < size) {
-        perror("Error writing to file!");
+        perror("Error reading from file!");
         throw std::runtime_error("IO error.");
     }
 
-    std::vector<uint32_t> offsets;
-    offsets.reserve(numTasks_);
-
-    long offset_table_pos = ftell(fp);
-
-    int error2 = fseek(fp, (long)numTasks_ * sizeof(uint32_t), SEEK_CUR);
-
-    if (error2 != 0) {
-        perror("Error seeking in file!");
-        throw std::runtime_error("IO error.");
-    }
-
-    rootNodes_.resize(numTasks_);
-
-    for (int i = 0; i < numTasks_; i++) {
-        NodeConstants constants;
-        error = fread(&constants, sizeof(NodeConstants), 1, fp);
-
-        rootNodes_[i].start     = constants.start;
-        rootNodes_[i].end       = constants.end;
-        rootNodes_[i].inc       = constants.inc;
-        rootNodes_[i].lda       = constants.lda;
-        rootNodes_[i].ldb       = constants.ldb;
-        rootNodes_[i].indexA    = constants.indexA;
-        rootNodes_[i].indexB    = constants.indexB;
-        rootNodes_[i].offDiffAB = constants.offDiffAB;
-
-        if (error < 1) {
-            perror("Error writing to file!");
-            throw std::runtime_error("IO error");
+    if (swap_endian) {
+        for (int i = 0; i < numThreadsAtLoop_.size(); i++) {
+            numThreadsAtLoop_[i] = byteswap(numThreadsAtLoop_[i]);
         }
     }
 
-    error2 = fseek(fp, offset_table_pos, SEEK_SET);
-
-    if (error2 != 0) {
-        perror("Error seeking in file!");
-        throw std::runtime_error("IO error.");
-    }
+    // Get the offsets for each root node.
+    std::vector<uint32_t> offsets;
+    offsets.reserve(numTasks_);
 
     error = fread(offsets.data(), sizeof(uint32_t), numTasks_, fp);
 
     if (error < numTasks_) {
-        perror("Error writing to file!");
-        throw std::runtime_error("IO error.");
+        perror("Error reading from file!");
+        throw std::runtime_error("IO error");
     }
 
-    for (int i = 0; i < numTasks_; i++) {
-        auto curr_node = rootNodes_[i];
-
-        int index = -1;
-
-        for (int j = 0; j < numTasks_; j++) {
-            if (curr_node.next == &rootNodes_[j]) {
-                index = j;
-                break;
-            }
+    if (swap_endian) {
+        for (int i = 0; i < numTasks_; i++) {
+            offsets[i] = byteswap(offsets[i]);
         }
+    }
 
-        error2 = fseek(fp, (long)offsets[i] + offsetof(NodeConstants, offsetNext), SEEK_SET);
+    rootNodes_.resize(numTasks_);
 
-        if (error2 != 0) {
-            perror("Error seeking in file!");
-            throw std::runtime_error("IO error.");
-        }
+    if (swap_endian) {
+        for (int i = 0; i < numTasks_; i++) {
+            NodeConstants constants;
+            auto         *curr_node = &rootNodes_[i];
 
-        if (index != -1) {
-            error = fwrite(&offsets[index], sizeof(uint32_t), 1, fp);
+            int error2 = fseek(fp, offsets[i], SEEK_SET);
 
-            if (error < numTasks_) {
-                perror("Error writing to file!");
-                throw std::runtime_error("IO error.");
+            if (error2 < 0) {
+                perror("Error while seeking!");
+                throw std::runtime_error("IO error");
             }
+
+            do {
+                error = fread(&constants, sizeof(NodeConstants), 1, fp);
+
+                if (error < 1) {
+                    perror("Error reading from file!");
+                    throw std::runtime_error("IO error");
+                }
+
+                curr_node->start     = byteswap(constants.start);
+                curr_node->end       = byteswap(constants.end);
+                curr_node->inc       = byteswap(constants.inc);
+                curr_node->lda       = byteswap(constants.lda);
+                curr_node->ldb       = byteswap(constants.ldb);
+                curr_node->indexA    = byteswap(constants.indexA);
+                curr_node->indexB    = byteswap(constants.indexB);
+                curr_node->offDiffAB = byteswap(constants.offDiffAB);
+
+                if (constants.has_next) {
+                    curr_node->next = new ComputeNode;
+                } else {
+                    curr_node->next = nullptr;
+                }
+            } while (constants.has_next);
+        }
+    } else {
+        for (int i = 0; i < numTasks_; i++) {
+            NodeConstants constants;
+            auto         *curr_node = &rootNodes_[i];
+
+            int error2 = fseek(fp, offsets[i], SEEK_SET);
+
+            if (error2 < 0) {
+                perror("Error while seeking!");
+                throw std::runtime_error("IO error");
+            }
+
+            do {
+                error = fread(&constants, sizeof(NodeConstants), 1, fp);
+
+                if (error < 1) {
+                    perror("Error reading from file!");
+                    throw std::runtime_error("IO error");
+                }
+
+                curr_node->start     = constants.start;
+                curr_node->end       = constants.end;
+                curr_node->inc       = constants.inc;
+                curr_node->lda       = constants.lda;
+                curr_node->ldb       = constants.ldb;
+                curr_node->indexA    = constants.indexA;
+                curr_node->indexB    = constants.indexB;
+                curr_node->offDiffAB = constants.offDiffAB;
+
+                if (constants.has_next) {
+                    curr_node->next = new ComputeNode;
+                } else {
+                    curr_node->next = nullptr;
+                }
+            } while (constants.has_next);
         }
     }
 }

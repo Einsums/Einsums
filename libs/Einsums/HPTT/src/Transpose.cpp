@@ -46,13 +46,12 @@
 #include <tuple>
 #include <vector>
 
-#include "Einsums/HPTT/Files.hpp"
-
 #ifdef _OPENMP
 #    include <omp.h>
 #endif
 
 #include <Einsums/HPTT/ComputeNode.hpp>
+#include <Einsums/HPTT/Files.hpp>
 #include <Einsums/HPTT/HPTTTypes.hpp>
 #include <Einsums/HPTT/Macros.hpp>
 #include <Einsums/HPTT/Plan.hpp>
@@ -2621,6 +2620,11 @@ Transpose<FloatType>::Transpose(std::FILE *fp, FloatType alpha, FloatType const 
     alpha_ = alpha;
     beta_  = beta;
     dim_   = constants.dim;
+
+    if (endian_char() != header.version[3]) {
+        dim_ = byteswap(dim_);
+    }
+
     sizeA_.resize(dim_);
     perm_.resize(dim_);
     outerSizeA_.resize(dim_);
@@ -2636,6 +2640,14 @@ Transpose<FloatType>::Transpose(std::FILE *fp, FloatType alpha, FloatType const 
     selectedParallelStrategyId_ = constants.selectedParallelStrategy;
     selectedLoopOrderId_        = constants.selectedLoopOrderId;
     conjA_                      = constants.conjA;
+
+    if (endian_char() != header.version[3]) {
+        innerStrideA_               = byteswap(constants.innerStrideA);
+        innerStrideB_               = byteswap(constants.innerStrideB);
+        numThreads_                 = byteswap(constants.numThreads);
+        selectedParallelStrategyId_ = byteswap(constants.selectedParallelStrategy);
+        selectedLoopOrderId_        = byteswap(constants.selectedLoopOrderId);
+    }
 
     for (int i = 0; i < numThreads_; ++i)
         threadIds_.push_back(i);
@@ -2688,7 +2700,20 @@ Transpose<FloatType>::Transpose(std::FILE *fp, FloatType alpha, FloatType const 
         goto read_from_file_error;
     }
 
-    masterPlan_ = std::make_shared<Plan>(fp);
+    if (endian_char() != header.version[3]) {
+        for (int i = 0; i < dim_; i++) {
+            sizeA_[i]      = byteswap(sizeA_[i]);
+            perm_[i]       = byteswap(perm_[i]);
+            outerSizeA_[i] = byteswap(outerSizeA_[i]);
+            outerSizeB_[i] = byteswap(outerSizeB_[i]);
+            offsetA_[i]    = byteswap(offsetA_[i]);
+            offsetB_[i]    = byteswap(offsetB_[i]);
+            lda_[i]        = byteswap(lda_[i]);
+            ldb_[i]        = byteswap(ldb_[i]);
+        }
+    }
+
+    masterPlan_ = std::make_shared<Plan>(fp, endian_char() != header.version[3]);
 
     return;
 

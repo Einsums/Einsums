@@ -53,7 +53,7 @@ class Plan {
      */
     Plan(std::vector<int> loopOrder, std::vector<int> numThreadsAtLoop);
 
-    Plan(std::FILE *fp);
+    Plan(std::FILE *fp, bool swap_endian);
 
     ~Plan() = default;
 
