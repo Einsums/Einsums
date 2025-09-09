@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -332,7 +346,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -342,6 +356,10 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums18register_argumentsENSt8functionIFvvEEE">
 <span id="_CPPv3N7einsums18register_argumentsENSt8functionIFvvEEE"></span><span id="_CPPv2N7einsums18register_argumentsENSt8functionIFvvEEE"></span><span class="target" id="namespaceeinsums_1a21d5262f867e8913320d9f9c3cb86818"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">register_arguments</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums18register_argumentsENSt8functionIFvvEEE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Add a function to the list of startup functions to add module-specific command line arguments. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -352,19 +370,28 @@
 <em>#include &lt;RuntimeConfiguration.hpp&gt;</em></div>
 <p>Handles the current configuration state of the running instance.</p>
 <p>Currently, defaults are handled in pre_initialize. Eventually, some kind of configuration file will be implemented that will override the defaults set in pre_initialize.</p>
-<p>The current instance of the <a class="reference internal" href="#structeinsums_1_1_runtime_configuration"><span class="std std-ref">RuntimeConfiguration</span></a> can be obtained from Runtime::config() or from <a class="reference internal" href="../../Runtime/api/Runtime_Runtime.html#namespaceeinsums_1acd9c21d35677bbbe6c171ca8e117bc55"><span class="std std-ref">runtime_config()</span></a> functions. </p>
+<p>The current instance of the <a class="reference internal" href="#structeinsums_1_1_runtime_configuration"><span class="std std-ref">RuntimeConfiguration</span></a> can be obtained from Runtime::config() or from <a class="reference internal" href="../../Runtime/api/Runtime_Runtime.html#namespaceeinsums_1acd9c21d35677bbbe6c171ca8e117bc55"><span class="std std-ref">runtime_config()</span></a> functions.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums20RuntimeConfiguration20RuntimeConfigurationEiPPCKcRKNSt8functionIFvvEEE">
 <span id="_CPPv3N7einsums20RuntimeConfiguration20RuntimeConfigurationEiPPCKcRKNSt8functionIFvvEEE"></span><span id="_CPPv2N7einsums20RuntimeConfiguration20RuntimeConfigurationEiPPCKcRKNSt8functionIFvvEEE"></span><span class="target" id="structeinsums_1_1_runtime_configuration_1a4523a6e99f9030ee2d60d974eca23a58"></span><span class="sig-name descname"><span class="n"><span class="pre">RuntimeConfiguration</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">argc</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">argv</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">user_command_line</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums20RuntimeConfiguration20RuntimeConfigurationEiPPCKcRKNSt8functionIFvvEEE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Constructor of the runtime configuration object of einsums.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>argc</strong> – the argc argument from main </p></li>
-<li><p><strong>argv</strong> – the argv argument from main </p></li>
-<li><p><strong>user_command_line</strong> – callback function that can be used to register additional command-line options </p></li>
+<li><p><strong>argc</strong> – <strong>[in]</strong> the argc argument from main </p></li>
+<li><p><strong>argv</strong> – <strong>[in]</strong> the argv argument from main </p></li>
+<li><p><strong>user_command_line</strong> – <strong>[in]</strong> callback function that can be used to register additional command-line options</p></li>
 </ul>
 </dd>
 </dl>
@@ -374,11 +401,16 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums20RuntimeConfiguration20RuntimeConfigurationERKNSt6vectorINSt6stringEEERKNSt8functionIFvvEEE">
 <span id="_CPPv3N7einsums20RuntimeConfiguration20RuntimeConfigurationERKNSt6vectorINSt6stringEEERKNSt8functionIFvvEEE"></span><span id="_CPPv2N7einsums20RuntimeConfiguration20RuntimeConfigurationERKNSt6vectorINSt6stringEEERKNSt8functionIFvvEEE"></span><span class="target" id="structeinsums_1_1_runtime_configuration_1a113962e422b06d4629fb883bd19462c5"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RuntimeConfiguration</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">argv</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">user_command_line</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums20RuntimeConfiguration20RuntimeConfigurationERKNSt6vectorINSt6stringEEERKNSt8functionIFvvEEE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Constructor of the runtime configuration object of einsums. This is used when argv has been packaged into a vector.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>argv</strong> – The argv that has been packaged up. </p></li>
-<li><p><strong>user_command_line</strong> – callback function that can be used to register additional command-line options </p></li>
+<li><p><strong>argv</strong> – <strong>[in]</strong> The argv that has been packaged up. </p></li>
+<li><p><strong>user_command_line</strong> – <strong>[in]</strong> callback function that can be used to register additional command-line options</p></li>
 </ul>
 </dd>
 </dl>
@@ -397,10 +429,14 @@
 <span id="_CPPv3N7einsums20RuntimeConfiguration8originalE"></span><span id="_CPPv2N7einsums20RuntimeConfiguration8originalE"></span><span id="einsums::RuntimeConfiguration::original__std::vector:ss:"></span><span class="target" id="structeinsums_1_1_runtime_configuration_1a29f1792000de3bdab82a3a91460bb09d"></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">original</span></span></span><a class="headerlink" href="#_CPPv4N7einsums20RuntimeConfiguration8originalE" title="Link to this definition">#</a><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000011"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
-<dd><p>Document. </p>
+<a class="reference internal" href="../../todo.html#todo_1_todo000012"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>Document.</p>
 </dd></dl>
 
+</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </p>
 </dd></dl>
 
@@ -410,13 +446,27 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums20RuntimeConfiguration14pre_initializeEv">
 <span id="_CPPv3N7einsums20RuntimeConfiguration14pre_initializeEv"></span><span id="_CPPv2N7einsums20RuntimeConfiguration14pre_initializeEv"></span><span id="einsums::RuntimeConfiguration::pre_initialize"></span><span class="target" id="structeinsums_1_1_runtime_configuration_1a23d124a96e6f08472495ad7cf33d114b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pre_initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums20RuntimeConfiguration14pre_initializeEv" title="Link to this definition">#</a><br /></dt>
-<dd><p>Currently sets reasonable defaults for the development of Einsums. </p>
+<dd><p>Currently sets reasonable defaults for the development of Einsums.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums20RuntimeConfiguration18parse_command_lineERKNSt8functionIFvvEEE">
 <span id="_CPPv3N7einsums20RuntimeConfiguration18parse_command_lineERKNSt8functionIFvvEEE"></span><span id="_CPPv2N7einsums20RuntimeConfiguration18parse_command_lineERKNSt8functionIFvvEEE"></span><span class="target" id="structeinsums_1_1_runtime_configuration_1a5e3ebf67b6af7651b7f53a9c80a164e3"></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse_command_line</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">user_command_line</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums20RuntimeConfiguration18parse_command_lineERKNSt8functionIFvvEEE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Parse the command line arguments provided in argc and argv. Returns unknown command line arguments. </p>
+<dd><p>Parse the command line arguments provided in argc and argv. Returns unknown command line arguments.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_command_line</strong> – <strong>[in]</strong> Callbiack function that can be used to register additional command-line arguments.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

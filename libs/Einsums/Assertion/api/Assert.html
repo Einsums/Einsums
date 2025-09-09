@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -333,27 +347,57 @@
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_ASSERT">
 <span class="target" id="_assert_8hpp_1a18119cc88afdd9285976c5acc6d3393c"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_ASSERT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">expr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_ASSERT" title="Link to this definition">#</a><br /></dt>
-<dd><p>This macro asserts that <em>expr</em> evaluates to true, but does not have a custom message. </p>
-<p><div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>EINSUMS_ASSERT_MSG </p>
+<dd><p>This macro asserts that <code class="docutils literal notranslate"><span class="pre">expr</span></code> evaluates to true, but does not have a custom message. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
 </div>
 </p>
+ <p><div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>Throws an exception instead of calling exit when the expression is false.</p>
+</div>
+</p>
+ <div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>EINSUMS_ASSERT_MSG</p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expr</strong> – <strong>[in]</strong> The expression to test.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws assertion_error<span class="colon">:</span></dt>
+<dd class="field-even"><p>If the expression is false.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_ASSERT_MSG">
 <span class="target" id="_assert_8hpp_1a5bdefe73766f853576786da48abf3531"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_ASSERT_MSG</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">expr</span></span>, <span class="n"><span class="pre">msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_ASSERT_MSG" title="Link to this definition">#</a><br /></dt>
-<dd><p>This macro asserts that <em>expr</em> evaluates to true. </p>
+<dd><p>This macro asserts that <code class="docutils literal notranslate"><span class="pre">expr</span></code> evaluates to true. </p>
 <p>
 If <code class="docutils literal notranslate"><span class="pre">expr</span></code> evaluates to false, The source location and <code class="docutils literal notranslate"><span class="pre">msg</span></code> is printed along with the expression and additional. Afterwards the program is aborted. The assertion handler can be customized by calling einsums::assertion::set_assertion_handler().</p>
 <p>Asserts are enabled if <em>EINSUMS_DEBUG</em> is set. This is the default for <code class="docutils literal notranslate"><span class="pre">CMAKE_BUILD_TYPE=Debug</span></code></p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ <p><div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>Throws an exception instead of calling exit when the expression is false.</p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>expr</strong> – The expression to assert on. This can either be an expression that’s convertible to bool or a callable which returns bool </p></li>
-<li><p><strong>msg</strong> – The optional message that is used to give further information if the assert fails. This should be convertible to a std::string</p></li>
+<li><p><strong>expr</strong> – <strong>[in]</strong> The expression to assert on. This can either be an expression that’s convertible to bool or a callable which returns bool </p></li>
+<li><p><strong>msg</strong> – <strong>[in]</strong> The optional message that is used to give further information if the assert fails. This should be convertible to a std::string</p></li>
 </ul>
+</dd>
+<dt class="field-even">Throws assertion_error<span class="colon">:</span></dt>
+<dd class="field-even"><p>If the expression is false.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -364,7 +408,7 @@ If <code class="docutils literal notranslate"><span class="pre">expr</span></cod
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><a class="headerlink" href="#_CPPv47einsums" title="Link to this definition">#</a><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>

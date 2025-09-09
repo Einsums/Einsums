@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -424,32 +438,29 @@
 <dd class="field-odd"><p><code class="code docutils literal notranslate"><span class="pre">True</span></code> if GPU capabilities are enabled.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="einsums.core.__initialize">
-<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">__initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.__initialize" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="einsums.core.initialize">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.initialize" title="Link to this definition">#</a></dt>
 <dd><p>Initializes the Einsums library. This is an internal function that is called automatically.
 It does not need to be called directly, and instead it is called when you import <code class="code docutils literal notranslate"><span class="pre">einsums</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="einsums.core.finalize">
-<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">finalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.finalize" title="Link to this definition">#</a></dt>
-<dd><p>Finalize the Einsums library, optionally printing timing info. See <code class="xref py py-func docutils literal notranslate"><span class="pre">einsums.set_finalize_arg</span></code>
-to change how the module calls this function. This does not need to be called directly, as it is
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">finalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.finalize" title="Link to this definition">#</a></dt>
+<dd><p>Finalize the Einsums library, optionally printing timing info. This does not need to be called directly, as it is
 registered with the <code class="code docutils literal notranslate"><span class="pre">atexit</span></code> module.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="einsums.core.get_buffer_format">
-<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">get_buffer_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffer</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#einsums.core.get_buffer_format" title="Link to this definition">#</a></dt>
-<dd><p>Get the format string for a buffer as seen from C++.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>buffer</strong> – The buffer object to query.</p>
-</dd>
-</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <div class="toctree-wrapper compound">
@@ -636,6 +647,7 @@ registered with the <code class="code docutils literal notranslate"><span class=
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.emtpy"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.emtpy</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.size"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.size</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.max_size"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.max_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.get_string"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_string</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.get_str"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_str</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.get_int"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_int</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.globalconfigmap.html#einsums.core.GlobalConfigMap.get_float"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_float</span></code></a></li>
@@ -727,9 +739,8 @@ registered with the <code class="code docutils literal notranslate"><span class=
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.gpu_enabled"><code class="docutils literal notranslate"><span class="pre">gpu_enabled</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.__initialize"><code class="docutils literal notranslate"><span class="pre">__initialize</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.initialize"><code class="docutils literal notranslate"><span class="pre">initialize</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.finalize"><code class="docutils literal notranslate"><span class="pre">finalize</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.get_buffer_format"><code class="docutils literal notranslate"><span class="pre">get_buffer_format</span></code></a></li>
 </ul>
   </nav></div>
 

@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -334,7 +348,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -343,72 +357,255 @@
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums12BufferVectorE">
 <span id="_CPPv3I0EN7einsums12BufferVectorE"></span><span id="_CPPv2I0EN7einsums12BufferVectorE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a2bca99d1d5eadca425a107a90d38477c"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferVector</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12BufferVectorE" title="einsums::BufferVector::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12BufferVectorE" title="einsums::BufferVector::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums12BufferVectorE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for a vector that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The data type stored by the container.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums11BufferDequeE">
 <span id="_CPPv3I0EN7einsums11BufferDequeE"></span><span id="_CPPv2I0EN7einsums11BufferDequeE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a7a86c2493956011d1e9350d76ae1c11f"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferDeque</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">deque</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums11BufferDequeE" title="einsums::BufferDeque::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums11BufferDequeE" title="einsums::BufferDeque::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums11BufferDequeE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for a deque that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The data type stored by the container.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums17BufferForwardListE">
 <span id="_CPPv3I0EN7einsums17BufferForwardListE"></span><span id="_CPPv2I0EN7einsums17BufferForwardListE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1ae15d36ea3ec415e39c158f5b8a97532c"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferForwardList</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">forward_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums17BufferForwardListE" title="einsums::BufferForwardList::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums17BufferForwardListE" title="einsums::BufferForwardList::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums17BufferForwardListE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for a forward list that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The data type stored by the container.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums10BufferListE">
 <span id="_CPPv3I0EN7einsums10BufferListE"></span><span id="_CPPv2I0EN7einsums10BufferListE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1aefa98d4a5b9983343dedce241acd59fc"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferList</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums10BufferListE" title="einsums::BufferList::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums10BufferListE" title="einsums::BufferList::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums10BufferListE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for a linked list that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The data type stored by the container.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN7einsums9BufferSetE">
 <span id="_CPPv3I00EN7einsums9BufferSetE"></span><span id="_CPPv2I00EN7einsums9BufferSetE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Compare</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">less</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums9BufferSetE" title="einsums::BufferSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1afbe56144475d100abe1eaafe939e6293"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSet</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">set</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums9BufferSetE" title="einsums::BufferSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7einsums9BufferSetE" title="einsums::BufferSet::Compare"><span class="n"><span class="pre">Compare</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums9BufferSetE" title="einsums::BufferSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I00EN7einsums9BufferSetE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for a set that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Key</strong> – The data stored by the container. </p></li>
+<li><p><strong>Compare</strong> – A comparison function for the elements.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I000EN7einsums9BufferMapE">
 <span id="_CPPv3I000EN7einsums9BufferMapE"></span><span id="_CPPv2I000EN7einsums9BufferMapE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Compare</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">less</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums9BufferMapE" title="einsums::BufferMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a69133c72919ef36bb5871d5dc970ce24"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferMap</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums9BufferMapE" title="einsums::BufferMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN7einsums9BufferMapE" title="einsums::BufferMap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN7einsums9BufferMapE" title="einsums::BufferMap::Compare"><span class="n"><span class="pre">Compare</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums9BufferMapE" title="einsums::BufferMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN7einsums9BufferMapE" title="einsums::BufferMap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I000EN7einsums9BufferMapE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for a map that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Key</strong> – The type for the keys for indexing the container. </p></li>
+<li><p><strong>T</strong> – The data type stored by the container. </p></li>
+<li><p><strong>Compare</strong> – A function that checks keys against each other.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN7einsums14BufferMultiSetE">
 <span id="_CPPv3I00EN7einsums14BufferMultiSetE"></span><span id="_CPPv2I00EN7einsums14BufferMultiSetE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Compare</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">less</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums14BufferMultiSetE" title="einsums::BufferMultiSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a6b155101fbc138ecdec88202a23b141d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferMultiSet</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">multiset</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums14BufferMultiSetE" title="einsums::BufferMultiSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7einsums14BufferMultiSetE" title="einsums::BufferMultiSet::Compare"><span class="n"><span class="pre">Compare</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums14BufferMultiSetE" title="einsums::BufferMultiSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I00EN7einsums14BufferMultiSetE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for a multiset that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Key</strong> – The data stored by the container. </p></li>
+<li><p><strong>Compare</strong> – A comparison function for the elements.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I000EN7einsums14BufferMultiMapE">
 <span id="_CPPv3I000EN7einsums14BufferMultiMapE"></span><span id="_CPPv2I000EN7einsums14BufferMultiMapE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Compare</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">less</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums14BufferMultiMapE" title="einsums::BufferMultiMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a0a7542a2aa4e5dc781db916ec5434758"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferMultiMap</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">multimap</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums14BufferMultiMapE" title="einsums::BufferMultiMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN7einsums14BufferMultiMapE" title="einsums::BufferMultiMap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN7einsums14BufferMultiMapE" title="einsums::BufferMultiMap::Compare"><span class="n"><span class="pre">Compare</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums14BufferMultiMapE" title="einsums::BufferMultiMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN7einsums14BufferMultiMapE" title="einsums::BufferMultiMap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I000EN7einsums14BufferMultiMapE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for a multimap that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Key</strong> – The type for the keys for indexing the container. </p></li>
+<li><p><strong>T</strong> – The data type stored by the container. </p></li>
+<li><p><strong>Compare</strong> – A function that checks keys against each other.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I000EN7einsums18BufferUnorderedSetE">
 <span id="_CPPv3I000EN7einsums18BufferUnorderedSetE"></span><span id="_CPPv2I000EN7einsums18BufferUnorderedSetE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Hash</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">hash</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums18BufferUnorderedSetE" title="einsums::BufferUnorderedSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KeyEqual</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">equal_to</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums18BufferUnorderedSetE" title="einsums::BufferUnorderedSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1aa79d6435649b47a85e3ae1b104d78210"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferUnorderedSet</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unordered_set</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums18BufferUnorderedSetE" title="einsums::BufferUnorderedSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN7einsums18BufferUnorderedSetE" title="einsums::BufferUnorderedSet::Hash"><span class="n"><span class="pre">Hash</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN7einsums18BufferUnorderedSetE" title="einsums::BufferUnorderedSet::KeyEqual"><span class="n"><span class="pre">KeyEqual</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums18BufferUnorderedSetE" title="einsums::BufferUnorderedSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I000EN7einsums18BufferUnorderedSetE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for an unordered set that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Key</strong> – The type for the keys for indexing the container. </p></li>
+<li><p><strong>Hash</strong> – A function for hashing keys. </p></li>
+<li><p><strong>KeyEqual</strong> – A function to determine if two keys are the same.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I0000EN7einsums18BufferUnorderedMapE">
 <span id="_CPPv3I0000EN7einsums18BufferUnorderedMapE"></span><span id="_CPPv2I0000EN7einsums18BufferUnorderedMapE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Hash</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">hash</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN7einsums18BufferUnorderedMapE" title="einsums::BufferUnorderedMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KeyEqual</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">equal_to</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN7einsums18BufferUnorderedMapE" title="einsums::BufferUnorderedMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a03a5ca30875dc3b40cbbcef7abb3cc2e"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferUnorderedMap</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unordered_map</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN7einsums18BufferUnorderedMapE" title="einsums::BufferUnorderedMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN7einsums18BufferUnorderedMapE" title="einsums::BufferUnorderedMap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN7einsums18BufferUnorderedMapE" title="einsums::BufferUnorderedMap::Hash"><span class="n"><span class="pre">Hash</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN7einsums18BufferUnorderedMapE" title="einsums::BufferUnorderedMap::KeyEqual"><span class="n"><span class="pre">KeyEqual</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN7einsums18BufferUnorderedMapE" title="einsums::BufferUnorderedMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN7einsums18BufferUnorderedMapE" title="einsums::BufferUnorderedMap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0000EN7einsums18BufferUnorderedMapE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for an unordered map that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Key</strong> – The type for the keys for indexing the container. </p></li>
+<li><p><strong>T</strong> – The data type stored by the container. </p></li>
+<li><p><strong>Hash</strong> – A function that hashes keys. </p></li>
+<li><p><strong>KeyEqual</strong> – A function to determine if two keys are the same.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I000EN7einsums23BufferUnorderedMultiSetE">
 <span id="_CPPv3I000EN7einsums23BufferUnorderedMultiSetE"></span><span id="_CPPv2I000EN7einsums23BufferUnorderedMultiSetE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Hash</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">hash</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums23BufferUnorderedMultiSetE" title="einsums::BufferUnorderedMultiSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KeyEqual</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">equal_to</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums23BufferUnorderedMultiSetE" title="einsums::BufferUnorderedMultiSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1afafbcca518dcb05c0127447ddce85863"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferUnorderedMultiSet</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unordered_multiset</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums23BufferUnorderedMultiSetE" title="einsums::BufferUnorderedMultiSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN7einsums23BufferUnorderedMultiSetE" title="einsums::BufferUnorderedMultiSet::Hash"><span class="n"><span class="pre">Hash</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN7einsums23BufferUnorderedMultiSetE" title="einsums::BufferUnorderedMultiSet::KeyEqual"><span class="n"><span class="pre">KeyEqual</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN7einsums23BufferUnorderedMultiSetE" title="einsums::BufferUnorderedMultiSet::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I000EN7einsums23BufferUnorderedMultiSetE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for an unordered multiset that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Key</strong> – The type for the keys for indexing the container. </p></li>
+<li><p><strong>Hash</strong> – A function for hashing keys. </p></li>
+<li><p><strong>KeyEqual</strong> – A function to determine if two keys are the same.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I0000EN7einsums23BufferUnorderedMultiMapE">
 <span id="_CPPv3I0000EN7einsums23BufferUnorderedMultiMapE"></span><span id="_CPPv2I0000EN7einsums23BufferUnorderedMultiMapE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Hash</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">hash</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN7einsums23BufferUnorderedMultiMapE" title="einsums::BufferUnorderedMultiMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KeyEqual</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">equal_to</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN7einsums23BufferUnorderedMultiMapE" title="einsums::BufferUnorderedMultiMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a66d80e8bf4faa88dc0619a44dbb626ef"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferUnorderedMultiMap</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unordered_multimap</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN7einsums23BufferUnorderedMultiMapE" title="einsums::BufferUnorderedMultiMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN7einsums23BufferUnorderedMultiMapE" title="einsums::BufferUnorderedMultiMap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN7einsums23BufferUnorderedMultiMapE" title="einsums::BufferUnorderedMultiMap::Hash"><span class="n"><span class="pre">Hash</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN7einsums23BufferUnorderedMultiMapE" title="einsums::BufferUnorderedMultiMap::KeyEqual"><span class="n"><span class="pre">KeyEqual</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN7einsums23BufferUnorderedMultiMapE" title="einsums::BufferUnorderedMultiMap::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN7einsums23BufferUnorderedMultiMapE" title="einsums::BufferUnorderedMultiMap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0000EN7einsums23BufferUnorderedMultiMapE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for an unordered multimap that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Key</strong> – The type for the keys for indexing the container. </p></li>
+<li><p><strong>T</strong> – The data type stored by the container. </p></li>
+<li><p><strong>Hash</strong> – A function that hashes keys. </p></li>
+<li><p><strong>KeyEqual</strong> – A function to determine if two keys are the same.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN7einsums17BufferBasicStringE">
 <span id="_CPPv3I00EN7einsums17BufferBasicStringE"></span><span id="_CPPv2I00EN7einsums17BufferBasicStringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CharT</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Traits</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">char_traits</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums17BufferBasicStringE" title="einsums::BufferBasicString::CharT"><span class="n"><span class="pre">CharT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a9c9599f06acf904ad7bb05071f430475"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferBasicString</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">basic_string</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums17BufferBasicStringE" title="einsums::BufferBasicString::CharT"><span class="n"><span class="pre">CharT</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7einsums17BufferBasicStringE" title="einsums::BufferBasicString::Traits"><span class="n"><span class="pre">Traits</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7einsums17BufferBasicStringE" title="einsums::BufferBasicString::CharT"><span class="n"><span class="pre">CharT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I00EN7einsums17BufferBasicStringE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for a basic string that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>CharT</strong> – The type of character stored by the string. </p></li>
+<li><p><strong>Traits</strong> – The character traits of the character type.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12BufferStringE">
 <span id="_CPPv3N7einsums12BufferStringE"></span><span id="_CPPv2N7einsums12BufferStringE"></span><span class="target" id="namespaceeinsums_1a4b4c10c8979b235d2fc16099494f017a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferString</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7einsums17BufferBasicStringE" title="einsums::BufferBasicString"><span class="n"><span class="pre">BufferBasicString</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums12BufferStringE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Alias for a string that uses a <a class="reference internal" href="#structeinsums_1_1_buffer_allocator"><span class="std std-ref">BufferAllocator&lt;T&gt;</span></a> as its allocator.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 </div>
 <dl class="cpp struct">
@@ -419,55 +616,97 @@
 <p>Allocator whose maximum size can be restricted by runtime variables. </p>
 <p>The maximum size is controlled by the global configuration options. In particular, the option to control the size is <code class="docutils literal notranslate"><span class="pre">--einsums:buffer-size</span></code> and the string in the configuration mapping is <code class="docutils literal notranslate"><span class="pre">buffer-size</span></code> with the standard variants, such as <code class="docutils literal notranslate"><span class="pre">BUFFER_SIZE</span></code> .</p>
 <p>Use in dynamic allocations with frequent resizing is discouraged, such as in a vector. Resizing requires the buffer to be reallocated while still being allocated. If the buffers are big when resized, this means that the buffer allocation will fail even though the result would be expected to fall within the range of acceptable sizes. However, when using this to allocate a buffer once, this should be fine.</p>
-<p>This allocator follows the C++ standard for allocators, and can be used in templates that use them, such as containers, smart pointers, and more. </p>
+<p>This allocator follows the C++ standard for allocators, and can be used in templates that use them, such as containers, smart pointers, and more.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The data type returned by this allocator.</p>
+</dd>
+</dl>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator7pointerE">
 <span id="_CPPv3N7einsums15BufferAllocator7pointerE"></span><span id="_CPPv2N7einsums15BufferAllocator7pointerE"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a4afdef9e05601cd131b97b9469988fa8"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator7pointerE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Represents the type of pointer handled by this allocator. </p>
+<dd><p>Represents the type of pointer handled by this allocator.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator13const_pointerE">
 <span id="_CPPv3N7einsums15BufferAllocator13const_pointerE"></span><span id="_CPPv2N7einsums15BufferAllocator13const_pointerE"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a33aa7de8ce32d3f28bf04f9d7ff5250b"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator13const_pointerE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Represents the type of pointer handled by this allocator, but for const operations. </p>
+<dd><p>Represents the type of pointer handled by this allocator, but for const operations.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator12void_pointerE">
 <span id="_CPPv3N7einsums15BufferAllocator12void_pointerE"></span><span id="_CPPv2N7einsums15BufferAllocator12void_pointerE"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1aeaae15eb608ee95fe6bb85edcf3b7100"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">void_pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator12void_pointerE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Represents the type of typeless pointer handled by this allocator. </p>
+<dd><p>Represents the type of typeless pointer handled by this allocator.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator18const_void_pointerE">
 <span id="_CPPv3N7einsums15BufferAllocator18const_void_pointerE"></span><span id="_CPPv2N7einsums15BufferAllocator18const_void_pointerE"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1ae8d8f802ce4507b6810fba11573afbae"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_void_pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator18const_void_pointerE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Represents the type of typeless pointer handled by this allocator, but for const operations. </p>
+<dd><p>Represents the type of typeless pointer handled by this allocator, but for const operations.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator10value_typeE">
 <span id="_CPPv3N7einsums15BufferAllocator10value_typeE"></span><span id="_CPPv2N7einsums15BufferAllocator10value_typeE"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a35117bafa5e33bd83fe28717bf8a3330"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator10value_typeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>The type of buffers this allocator makes. </p>
+<dd><p>The type of buffers this allocator makes.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator9size_typeE">
 <span id="_CPPv3N7einsums15BufferAllocator9size_typeE"></span><span id="_CPPv2N7einsums15BufferAllocator9size_typeE"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a1b85672b88bd852567bff9f4676ea6d2"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator9size_typeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>The type used to represent sizes for this buffer. </p>
+<dd><p>The type used to represent sizes for this buffer.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator15difference_typeE">
 <span id="_CPPv3N7einsums15BufferAllocator15difference_typeE"></span><span id="_CPPv2N7einsums15BufferAllocator15difference_typeE"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a93032a07b5825edecb024dfeb4ea64c8"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">difference_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">ptrdiff_t</span></span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator15difference_typeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>The type used to represent address offsets. </p>
+<dd><p>The type used to represent address offsets.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator15is_always_equalE">
 <span id="_CPPv3N7einsums15BufferAllocator15is_always_equalE"></span><span id="_CPPv2N7einsums15BufferAllocator15is_always_equalE"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1aa296fa05cfffbc2b4b82b1a7355238eb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_always_equal</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">true_type</span></span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator15is_always_equalE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Flag that indicates that all allocators of this type are considered to be equal. </p>
+<dd><p>Flag that indicates that all allocators of this type are considered to be equal.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -478,12 +717,17 @@
 <span id="_CPPv3N7einsums15BufferAllocator8allocateE9size_type"></span><span id="_CPPv2N7einsums15BufferAllocator8allocateE9size_type"></span><span id="einsums::BufferAllocator::allocate__size_type"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a4e61d37754eb9817383d050497e92e78"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums15BufferAllocator7pointerE" title="einsums::BufferAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums15BufferAllocator9size_typeE" title="einsums::BufferAllocator::size_type"><span class="n"><span class="pre">size_type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator8allocateE9size_type" title="Link to this definition">#</a><br /></dt>
 <dd><p>Allocate an array of values. </p>
 <p>This does not initialize the values in the array. If given zero, this will return the null pointer.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n</strong> – The number of elements in the array.</p>
 </dd>
 <dt class="field-even">Throws<span class="colon">:</span></dt>
-<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">runtime_error</span></span></span> – When the allocation size is too large or the allocation returns an unexpected null pointer. </p>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">runtime_error</span></span></span> – When the allocation size is too large or the allocation returns an unexpected null pointer.</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A pointer to the newly allocated memory.</p>
@@ -496,12 +740,17 @@
 <span id="_CPPv3N7einsums15BufferAllocator7reserveE9size_type"></span><span id="_CPPv2N7einsums15BufferAllocator7reserveE9size_type"></span><span id="einsums::BufferAllocator::reserve__size_type"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a9a728708b3199bbf9cc79b51d462c28d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reserve</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums15BufferAllocator9size_typeE" title="einsums::BufferAllocator::size_type"><span class="n"><span class="pre">size_type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator7reserveE9size_type" title="Link to this definition">#</a><br /></dt>
 <dd><p>Reserve a number of elements without allocating. </p>
 <p>This function is used when you want to allocate some memory with some other allocator, such as the default allocator, but still want to track and limit the memory being used.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n</strong> – The number of elements to reserve.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the allocation will be successful, false if it will fail. </p>
+<dd class="field-even"><p>True if the allocation will be successful, false if it will fail.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -511,9 +760,14 @@
 <span id="_CPPv3N7einsums15BufferAllocator7releaseE9size_type"></span><span id="_CPPv2N7einsums15BufferAllocator7releaseE9size_type"></span><span id="einsums::BufferAllocator::release__size_type"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1ae2487b3816a83de99b33a189203b5461"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">release</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums15BufferAllocator9size_typeE" title="einsums::BufferAllocator::size_type"><span class="n"><span class="pre">size_type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator7releaseE9size_type" title="Link to this definition">#</a><br /></dt>
 <dd><p>Release a number of elements without freeing. </p>
 <p>This function is used when you want to deallocate some memory with some other allocator, such as the default allocator, but still want to track the memory being used.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> – The number of elements to release. </p>
+<dd class="field-odd"><p><strong>n</strong> – The number of elements to release.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -522,11 +776,16 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator10deallocateE7pointer9size_type">
 <span id="_CPPv3N7einsums15BufferAllocator10deallocateE7pointer9size_type"></span><span id="_CPPv2N7einsums15BufferAllocator10deallocateE7pointer9size_type"></span><span id="einsums::BufferAllocator::deallocate__pointer.size_type"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1af3c12c29ddbed6103d3ddc8be29db4a5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deallocate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums15BufferAllocator7pointerE" title="einsums::BufferAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span>, <a class="reference internal" href="#_CPPv4N7einsums15BufferAllocator9size_typeE" title="einsums::BufferAllocator::size_type"><span class="n"><span class="pre">size_type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator10deallocateE7pointer9size_type" title="Link to this definition">#</a><br /></dt>
 <dd><p>Deallocate a number of elements. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>p</strong> – The pointer to free. </p></li>
-<li><p><strong>n</strong> – The number of elements the pointer points to. </p></li>
+<li><p><strong>n</strong> – The number of elements the pointer points to.</p></li>
 </ul>
 </dd>
 </dl>
@@ -537,9 +796,14 @@
 <span id="_CPPv3NK7einsums15BufferAllocator8max_sizeEv"></span><span id="_CPPv2NK7einsums15BufferAllocator8max_sizeEv"></span><span id="einsums::BufferAllocator::max_sizeC"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a9b7943fb4e61349ab2cc64d88d13557e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums15BufferAllocator9size_typeE" title="einsums::BufferAllocator::size_type"><span class="n"><span class="pre">size_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums15BufferAllocator8max_sizeEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Query the maximum number of elements the allocator can accept. </p>
 <p>This will return the number of elements as determined by the global buffer size limit.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The number of elements specified by the buffer size option. </p>
+<dd class="field-odd"><p>The number of elements specified by the buffer size option.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -549,9 +813,14 @@
 <span id="_CPPv3NK7einsums15BufferAllocator14available_sizeEv"></span><span id="_CPPv2NK7einsums15BufferAllocator14available_sizeEv"></span><span id="einsums::BufferAllocator::available_sizeC"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a27932923609ade401a2e967052c544ac"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums15BufferAllocator9size_typeE" title="einsums::BufferAllocator::size_type"><span class="n"><span class="pre">size_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">available_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums15BufferAllocator14available_sizeEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Query the number of elements the allocator has free. </p>
 <p>This will return the number of elements that have not yet been allocated.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The number of elements available to allocate. </p>
+<dd class="field-odd"><p>The number of elements available to allocate.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -561,12 +830,17 @@
 <span id="_CPPv3NK7einsums15BufferAllocatoreqERK15BufferAllocatorI1TE"></span><span id="_CPPv2NK7einsums15BufferAllocatoreqERK15BufferAllocatorI1TE"></span><span id="einsums::BufferAllocator::eq-operator__BufferAllocator:T:CRC"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a670df2e885c5d4e5c62abc781e299d0e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums15BufferAllocatoreqERK15BufferAllocatorI1TE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Test whether two buffer allocators are the same. </p>
 <p>All buffer allocators are considered to be the same, so this will always return true.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>other</strong> – The allocator to compare to. </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Always returns true. </p>
+<dd class="field-even"><p>Always returns true.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -576,12 +850,17 @@
 <span id="_CPPv3NK7einsums15BufferAllocatorneERK15BufferAllocatorI1TE"></span><span id="_CPPv2NK7einsums15BufferAllocatorneERK15BufferAllocatorI1TE"></span><span id="einsums::BufferAllocator::neq-operator__BufferAllocator:T:CRC"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a48f5b054cbfc790e568e46eceb7fc7a9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator"><span class="n"><span class="pre">BufferAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums15BufferAllocatorneERK15BufferAllocatorI1TE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Test whether two buffer allocators are not the same. </p>
 <p>All buffer allocators are considered to be the same, so this will always return false.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>other</strong> – The allocator to compare to. </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Always returns false. </p>
+<dd class="field-even"><p>Always returns false.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -592,7 +871,11 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums15BufferAllocator9type_sizeE">
 <span id="_CPPv3N7einsums15BufferAllocator9type_sizeE"></span><span id="_CPPv2N7einsums15BufferAllocator9type_sizeE"></span><span id="einsums::BufferAllocator::type_size__s"></span><span class="target" id="structeinsums_1_1_buffer_allocator_1a6862f318b881bc26f2286ed030381bd7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type_size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_void_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_cv_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums15BufferAllocatorE" title="einsums::BufferAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N7einsums15BufferAllocator9type_sizeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>The size of the types handled by this allocator. This is needed to handle void pointers, which traditionally don’t have a size, but should be treated as one byte. </p>
+<dd><p>The size of the types handled by this allocator. This is needed to handle void pointers, which traditionally don’t have a size, but should be treated as one byte.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>

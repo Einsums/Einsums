@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -437,6 +451,9 @@ This will only evaluate when the program is set to debug. Otherwise it will have
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="c macro">
@@ -452,6 +469,9 @@ This will only evaluate when the program is set to debug. Otherwise it will have
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <section id="example-usage">
@@ -466,7 +486,7 @@ make sure that it is correct.</p>
 <span class="n">EINSUMS_ASSERT_MSG</span><span class="p">(</span><span class="n">out</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;The dot product can not be negative! What happened!?&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>The <a href="#id1"><span class="problematic" id="id2">:cpp:macro:`EINSUMS_ASSERT`</span></a> macro is similar, but it doesn’t take any debug info.</p>
+<p>The <a class="reference internal" href="../api/Assert.html#c.EINSUMS_ASSERT" title="EINSUMS_ASSERT"><code class="xref c c-macro docutils literal notranslate"><span class="pre">EINSUMS_ASSERT</span></code></a> macro is similar, but it doesn’t take any debug info.</p>
 <div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// No debug info this time.</span>
 <span class="n">EINSUMS_ASSERT</span><span class="p">(</span><span class="n">out</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 </pre></div>

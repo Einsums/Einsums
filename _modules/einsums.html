@@ -6,9 +6,8 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>&lt;no title&gt; &#8212; Einsums 2.0.0-trunk documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>einsums &#8212; Einsums 2.0.0-trunk documentation</title>
   
   
   
@@ -47,7 +46,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/index';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/einsums';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -152,7 +151,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="overview.html">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
     Devolpers' Guide
   </a>
 </li>
@@ -243,7 +242,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="overview.html">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
     Devolpers' Guide
   </a>
 </li>
@@ -305,7 +304,10 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">&lt;no title&gt;</span></li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">einsums</span></li>
   </ul>
 </nav>
 </div>
@@ -322,17 +324,64 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <div class="toctree-wrapper compound">
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Modules</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Einsums/index.html">Einsums</a></li>
-<li class="toctree-l2"><a class="reference internal" href="EinsumsPy/index.html">EinsumsPy</a></li>
-</ul>
-</li>
-</ul>
-</div>
+  <h1>Source code for einsums</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) The Einsums Developers. All rights reserved.</span>
+<span class="c1"># Licensed under the MIT License. See LICENSE.txt in the project root for license information.</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">einsums</span>
+<span class="sd">-------</span>
+
+<span class="sd">This module allows for interaction with the C++ Einsums library.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
+
+<span class="n">__modpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__modpath</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">__modpath</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span>
+<span class="k">except</span> <span class="p">(</span><span class="ne">ModuleNotFoundError</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Importing core in a different way.&quot;</span><span class="p">)</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">core</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ModuleNotFoundError</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;File is </span><span class="si">{</span><span class="vm">__file__</span><span class="si">}</span><span class="s2">, path is </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> and version is </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>  <span class="c1"># pylint: disable=wrong-import-position</span>
+
+<div class="viewcode-block" id="__initialize">
+<a class="viewcode-back" href="../reference/python_module.html#einsums.__initialize">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__initialize</span><span class="p">()</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filter out Python arguments and pass on einsums arguments. Einsums arguments are prefixed with</span>
+<span class="sd">    &#39;--einsums&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pass_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">:</span>
+        <span class="n">einsums_arg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">einsums_arg</span> <span class="p">:</span>
+                <span class="n">pass_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+                <span class="n">einsums_arg</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">arg</span> <span class="o">==</span> <span class="s2">&quot;--einsums&quot;</span> <span class="p">:</span>
+                <span class="n">einsums_arg</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">core</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">pass_args</span><span class="p">)</span></div>
+
+
+<span class="n">__initialize</span><span class="p">()</span>
+
+<span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">core</span><span class="o">.</span><span class="n">finalize</span><span class="p">)</span>
+</pre></div>
 
                 </article>
               

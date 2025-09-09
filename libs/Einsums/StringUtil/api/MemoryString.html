@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -336,7 +350,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -349,7 +363,16 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11string_util13memory_stringERKNSt6stringE">
 <span id="_CPPv3N7einsums11string_util13memory_stringERKNSt6stringE"></span><span id="_CPPv2N7einsums11string_util13memory_stringERKNSt6stringE"></span><span id="einsums::string_util::memory_string__ssCR"></span><span class="target" id="_memory_string_8hpp_1a17e2c5945e517178d2dc43122f08b5f4"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memory_string</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">mem_spec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11string_util13memory_stringERKNSt6stringE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Converts a memory specification string into a number of bytes. </p>
-<p>A memory specification has a number followed by a unit. The number must be positive, but it can be either integral or decimal. The unit is made up of a prefix followed by a unit. The case of the prefix does not matter The prefix is either nothing, ‘k’, ‘m’, ‘g’, or ‘t’, representing a binary kilo (1024), mega (1024 k), giga (1024 M), or tera (1024 G). After the prefix, if ‘b’, ‘B’, ‘o’, or ‘O’ are given, then the number will be treated as a number of bytes. If ‘w’ or ‘W’ are given, then the number will be treated as a number of words. The size of a word is platform dependent, but is considered to be the size of <code class="docutils literal notranslate"><span class="pre">size_t</span></code> , which is usually 8 bytes on 64-bit systems. Both comma and period decimals are recognized. </p>
+<p>A memory specification has a number followed by a unit. The number must be positive, but it can be either integral or decimal. The unit is made up of a prefix followed by a unit. The case of the prefix does not matter The prefix is either nothing, ‘k’, ‘m’, ‘g’, or ‘t’, representing a binary kilo (1024), mega (1024 k), giga (1024 M), or tera (1024 G). After the prefix, if ‘b’, ‘B’, ‘o’, or ‘O’ are given, then the number will be treated as a number of bytes. If ‘w’ or ‘W’ are given, then the number will be treated as a number of words. The size of a word is platform dependent, but is considered to be the size of <code class="docutils literal notranslate"><span class="pre">size_t</span></code> , which is usually 8 bytes on 64-bit systems. Both comma and period decimals are recognized.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">runtime_error</span></span></span> – If the string is improperly formatted. </p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

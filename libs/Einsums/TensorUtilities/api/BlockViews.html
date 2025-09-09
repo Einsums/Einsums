@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -343,7 +357,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -359,15 +373,20 @@
 </pre></div>
 </div>
 <p>This will create a view where the first block has been restricted to the top-left 3x3 block and the second has been restricted to the middle 3x3 block.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tensor</strong> – The tensor to view. </p></li>
-<li><p><strong>spec</strong> – A vector of ranges that will be passed to the internal tensors to construct the view.</p></li>
+<li><p><strong>tensor</strong> – <strong>[in]</strong> The tensor to view. </p></li>
+<li><p><strong>spec</strong> – <strong>[in]</strong> A vector of ranges that will be passed to the internal tensors to construct the view.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1_tiled_tensor_view"><span class="std std-ref">TiledTensorView</span></a> that contains the resulting views. </p>
+<dd class="field-even"><p>A <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1_tiled_tensor_view"><span class="std std-ref">TiledTensorView</span></a> that contains the resulting views.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -383,8 +402,11 @@
 </pre></div>
 </div>
 <p>This will create a view where the first block has been restricted to the first three rows and middle three columns, and the second block has been restricted to the middle three rows and the first three columns.</p>
-<p>
-This function takes in several vectors of ranges and applies the ranges to the respective dimension of each tile. For instance:</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+<p>This function takes in several vectors of ranges and applies the ranges to the respective dimension of each tile. For instance:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">TiledTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tensor</span><span class="p">(</span><span class="s">&quot;tensor&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">});</span>
 <span class="n">apply_view</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Range</span><span class="o">&gt;</span><span class="p">{</span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">}},</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Range</span><span class="o">&gt;</span><span class="p">{</span><span class="n">Range</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">}});</span>
 </pre></div>
@@ -396,20 +418,25 @@ This function takes in several vectors of ranges and applies the ranges to the r
 <li><p>The (1,1) tile is restricted to the middle three columns and first three rows.</p></li>
 </ul>
 </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tensor</strong> – The tensor to view. </p></li>
-<li><p><strong>spec</strong> – Several vectors of ranges that will be passed to the internal tensors to construct the view.</p></li>
-<li><p><strong>tensor</strong> – The tensor to view. </p></li>
-<li><p><strong>spec</strong> – Several vectors of ranges that will be passed to the internal tensors to construct the view.</p></li>
+<li><p><strong>tensor</strong> – <strong>[in]</strong> The tensor to view. </p></li>
+<li><p><strong>spec</strong> – <strong>[in]</strong> Several vectors of ranges that will be passed to the internal tensors to construct the view.</p></li>
+<li><p><strong>tensor</strong> – <strong>[in]</strong> The tensor to view. </p></li>
+<li><p><strong>spec</strong> – <strong>[in]</strong> Several vectors of ranges that will be passed to the internal tensors to construct the view.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1_tiled_tensor_view"><span class="std std-ref">TiledTensorView</span></a> that contains the resulting views.</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1_tiled_tensor_view"><span class="std std-ref">TiledTensorView</span></a> that contains the resulting views. </p>
+<dd class="field-odd"><p>A <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1_tiled_tensor_view"><span class="std std-ref">TiledTensorView</span></a> that contains the resulting views.</p>
 </dd>
 </dl>
 </dd></dl>

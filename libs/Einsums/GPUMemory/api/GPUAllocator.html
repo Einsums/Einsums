@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -335,7 +349,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -350,62 +364,104 @@
 <p>Allocator whose maximum size can be restricted by runtime variables and which allocates memory on a GPU. </p>
 <p>The maximum size is controlled by the global configuration options. In particular, the option to control the size is <code class="docutils literal notranslate"><span class="pre">--einsums:gpu-buffer-size</span></code> and the string in the configuration mapping is <code class="docutils literal notranslate"><span class="pre">gpu-buffer-size</span></code> with the standard variants, such as <code class="docutils literal notranslate"><span class="pre">GPU_BUFFER_SIZE</span></code> .</p>
 <p>Use in dynamic allocations with frequent resizing is discouraged, such as in a vector. Resizing requires the buffer to be reallocated while still being allocated. If the buffers are big when resized, this means that the buffer allocation will fail even though the result would be expected to fall within the range of acceptable sizes. However, when using this to allocate a buffer once, this should be fine.</p>
-<p>This allocator follows the C++ standard for allocators, and can be used in templates that use them, such as containers, smart pointers, and more. </p>
+<p>This allocator follows the C++ standard for allocators, and can be used in templates that use them, such as containers, smart pointers, and more.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type that buffers created by this allocator contain.</p>
+</dd>
+</dl>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator12dev_datatypeE">
 <span id="_CPPv3N7einsums3gpu12GPUAllocator12dev_datatypeE"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator12dev_datatypeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1ab9f896d46e28a28a874730d5c1c1a603"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dev_datatype</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_same_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_cv_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu12GPUAllocatorE" title="einsums::gpu::GPUAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">complex</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">hipFloatComplex</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_same_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_cv_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu12GPUAllocatorE" title="einsums::gpu::GPUAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">complex</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">hipDoubleComplex</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_cv_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu12GPUAllocatorE" title="einsums::gpu::GPUAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator12dev_datatypeE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The data type stored on the device. This is only different if T is complex. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator7pointerE">
 <span id="_CPPv3N7einsums3gpu12GPUAllocator7pointerE"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator7pointerE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a2b28848aac90de30ab80cd69e0e0f76b"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu12GPUAllocatorE" title="einsums::gpu::GPUAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator7pointerE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The pointer type returned by this allocator. </p>
-<p>Required by the allocator protocol. </p>
+<p>Required by the allocator protocol.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator13const_pointerE">
 <span id="_CPPv3N7einsums3gpu12GPUAllocator13const_pointerE"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator13const_pointerE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1abd18583d8ae7a7ae27bebee59662b36d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu12GPUAllocatorE" title="einsums::gpu::GPUAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator13const_pointerE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The const pointer type returned by this allocator. </p>
-<p>Required by the allocator protocol. </p>
+<p>Required by the allocator protocol.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator12void_pointerE">
 <span id="_CPPv3N7einsums3gpu12GPUAllocator12void_pointerE"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator12void_pointerE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a4acf5f161f60a7f35e327c304c535bdb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">void_pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator12void_pointerE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The void pointer type returned by this allocator. </p>
-<p>Required by the allocator protocol. </p>
+<p>Required by the allocator protocol.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator18const_void_pointerE">
 <span id="_CPPv3N7einsums3gpu12GPUAllocator18const_void_pointerE"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator18const_void_pointerE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a3f812d766631c2d6b1f204804b2f948b"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_void_pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4I0EN7einsums3gpu10GPUPointerE" title="einsums::gpu::GPUPointer"><span class="n"><span class="pre">GPUPointer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator18const_void_pointerE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The const void pointer type returned by this allocator. </p>
-<p>Required by the allocator protocol. </p>
+<p>Required by the allocator protocol.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator10value_typeE">
 <span id="_CPPv3N7einsums3gpu12GPUAllocator10value_typeE"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator10value_typeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1ad45a598b9cbb81f9d9eeb33c5d3cb16a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu12GPUAllocator12dev_datatypeE" title="einsums::gpu::GPUAllocator::dev_datatype"><span class="n"><span class="pre">dev_datatype</span></span></a><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator10value_typeE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The data type stored by the pointers generated by this allocator. </p>
-<p>Required by the allocator protocol. </p>
+<p>Required by the allocator protocol.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator9size_typeE">
 <span id="_CPPv3N7einsums3gpu12GPUAllocator9size_typeE"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator9size_typeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a09bff73a3322ba804bc1e6e6a0bbb115"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator9size_typeE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The type used by size operations for this allocator. </p>
-<p>Required by the allocator protocol. </p>
+<p>Required by the allocator protocol.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator15difference_typeE">
 <span id="_CPPv3N7einsums3gpu12GPUAllocator15difference_typeE"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator15difference_typeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1ac9958dfd6f21eec6513e3400ad6c9831"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">difference_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">ptrdiff_t</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator15difference_typeE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The type used for pointer offsets and pointer distances. </p>
-<p>Required by the allocator protocol. </p>
+<p>Required by the allocator protocol.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -415,12 +471,17 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator8allocateE6size_t">
 <span id="_CPPv3N7einsums3gpu12GPUAllocator8allocateE6size_t"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator8allocateE6size_t"></span><span id="einsums::gpu::GPUAllocator::allocate__s"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a9748fd9354d757b4e9509d6c69d7ea5d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu12GPUAllocator7pointerE" title="einsums::gpu::GPUAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator8allocateE6size_t" title="Link to this definition">#</a><br /></dt>
 <dd><p>Allocate a number of elements. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> – The number of elements to allocate.</p>
+<dd class="field-odd"><p><strong>n</strong> – <strong>[in]</strong> The number of elements to allocate.</p>
 </dd>
 <dt class="field-even">Throws<span class="colon">:</span></dt>
-<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">runtime_error</span></span></span> – If there is not enough buffer memory to allocate the requested pointer. </p>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">runtime_error</span></span></span> – If there is not enough buffer memory to allocate the requested pointer.</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A pointer to the allocated buffer.</p>
@@ -432,11 +493,16 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator10deallocateE7pointer6size_t">
 <span id="_CPPv3N7einsums3gpu12GPUAllocator10deallocateE7pointer6size_t"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator10deallocateE7pointer6size_t"></span><span id="einsums::gpu::GPUAllocator::deallocate__pointer.s"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1aca5a68f24a084508512d177880bf3af2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deallocate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu12GPUAllocator7pointerE" title="einsums::gpu::GPUAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator10deallocateE7pointer6size_t" title="Link to this definition">#</a><br /></dt>
 <dd><p>Deallocate a number of elements. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>p</strong> – The pointer to deallocate. </p></li>
-<li><p><strong>n</strong> – The number of elements to deallocate. </p></li>
+<li><p><strong>p</strong> – <strong>[in]</strong> The pointer to deallocate. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements to deallocate.</p></li>
 </ul>
 </dd>
 </dl>
@@ -447,20 +513,38 @@
 <span id="_CPPv3N7einsums3gpu12GPUAllocator9constructE7pointerRK1T"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator9constructE7pointerRK1T"></span><span id="einsums::gpu::GPUAllocator::construct__pointer.TCR"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a7337b68803f391be5f41a98cbd82895d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">construct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu12GPUAllocator7pointerE" title="einsums::gpu::GPUAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">xp</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums3gpu12GPUAllocatorE" title="einsums::gpu::GPUAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator9constructE7pointerRK1T" title="Link to this definition">#</a><br /></dt>
 <dd><p>Construct a value at a pointer. </p>
 <p>This copies the data from the value to the requested location.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>xp</strong> – The destination pointer. </p></li>
-<li><p><strong>value</strong> – The value to copy. </p></li>
+<li><p><strong>xp</strong> – <strong>[inout]</strong> The destination pointer. </p></li>
+<li><p><strong>value</strong> – <strong>[in]</strong> The value to copy.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/api/Error.html#_CPPv4N7einsums27ErrorInvalidMemcpyDirectionE" title="einsums::ErrorInvalidMemcpyDirection"><span class="n">ErrorInvalidMemcpyDirection</span></a></span></span> – If the pointer provided is not a device pointer.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator7destroyE7pointer">
-<span id="_CPPv3N7einsums3gpu12GPUAllocator7destroyE7pointer"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator7destroyE7pointer"></span><span id="einsums::gpu::GPUAllocator::destroy__pointer"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a5104ac2a5becbb6ad65a8f6920c9c5d7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">destroy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu12GPUAllocator7pointerE" title="einsums::gpu::GPUAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">xp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator7destroyE7pointer" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums3gpu12GPUAllocator7destroyE7pointer"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator7destroyE7pointer"></span><span id="einsums::gpu::GPUAllocator::destroy__pointer"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a7d6877fe749c589747dfa2039bf5b95d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">destroy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu12GPUAllocator7pointerE" title="einsums::gpu::GPUAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">xp</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator7destroyE7pointer" title="Link to this definition">#</a><br /></dt>
 <dd><p>Does nothing, but is required by the allocator protocol. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>xp</strong> – <strong>[in]</strong> The pointer to “destroy”.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
@@ -468,79 +552,17 @@
 <span id="_CPPv3NK7einsums3gpu12GPUAllocator8max_sizeEv"></span><span id="_CPPv2NK7einsums3gpu12GPUAllocator8max_sizeEv"></span><span id="einsums::gpu::GPUAllocator::max_sizeC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a846094fa38e0d1faa2eb1bcb030bdb32"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu12GPUAllocator9size_typeE" title="einsums::gpu::GPUAllocator::size_type"><span class="n"><span class="pre">size_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu12GPUAllocator8max_sizeEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Get the maximum number of elements this allocator can allocate. </p>
 <p>This is controlled by options passed to Einsums.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The maximum number of elements that can be allocated. </p>
+<dd class="field-odd"><p>The maximum number of elements that can be allocated.</p>
 </dd>
 </dl>
 </dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums3gpu15MappedAllocatorE">
-<span id="_CPPv3I0EN7einsums3gpu15MappedAllocatorE"></span><span id="_CPPv2I0EN7einsums3gpu15MappedAllocatorE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MappedAllocator</span></span></span><a class="headerlink" href="#_CPPv4I0EN7einsums3gpu15MappedAllocatorE" title="Link to this definition">#</a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu15MappedAllocator12dev_datatypeE">
-<span id="_CPPv3N7einsums3gpu15MappedAllocator12dev_datatypeE"></span><span id="_CPPv2N7einsums3gpu15MappedAllocator12dev_datatypeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator_1a49fa4307fe9e4df02fc20a753174665a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dev_datatype</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_same_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_cv_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu15MappedAllocatorE" title="einsums::gpu::MappedAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">complex</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">hipFloatComplex</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_same_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_cv_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu15MappedAllocatorE" title="einsums::gpu::MappedAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">complex</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">hipDoubleComplex</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_cv_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu15MappedAllocatorE" title="einsums::gpu::MappedAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu15MappedAllocator12dev_datatypeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>The data type stored on the device. This is only different if T is complex. </p>
-</dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu15MappedAllocator7pointerE">
-<span id="_CPPv3N7einsums3gpu15MappedAllocator7pointerE"></span><span id="_CPPv2N7einsums3gpu15MappedAllocator7pointerE"></span><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator_1ac2ad26bdeeb23fd92c49c94dc16c3ae4"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu15MappedAllocatorE" title="einsums::gpu::MappedAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu15MappedAllocator7pointerE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu15MappedAllocator13const_pointerE">
-<span id="_CPPv3N7einsums3gpu15MappedAllocator13const_pointerE"></span><span id="_CPPv2N7einsums3gpu15MappedAllocator13const_pointerE"></span><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator_1a4114db83aceaae2c948cf6e7a4b30ae7"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu15MappedAllocatorE" title="einsums::gpu::MappedAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu15MappedAllocator13const_pointerE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu15MappedAllocator12void_pointerE">
-<span id="_CPPv3N7einsums3gpu15MappedAllocator12void_pointerE"></span><span id="_CPPv2N7einsums3gpu15MappedAllocator12void_pointerE"></span><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator_1a11486f8ca37593da12fe2571c8d5b8fb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">void_pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu15MappedAllocator12void_pointerE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu15MappedAllocator18const_void_pointerE">
-<span id="_CPPv3N7einsums3gpu15MappedAllocator18const_void_pointerE"></span><span id="_CPPv2N7einsums3gpu15MappedAllocator18const_void_pointerE"></span><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator_1adaee3be731cb59394c19cf1996a67ed4"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_void_pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu15MappedAllocator18const_void_pointerE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu15MappedAllocator10value_typeE">
-<span id="_CPPv3N7einsums3gpu15MappedAllocator10value_typeE"></span><span id="_CPPv2N7einsums3gpu15MappedAllocator10value_typeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator_1a424e93cd8e7da90f08d61627ccdf386f"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu15MappedAllocatorE" title="einsums::gpu::MappedAllocator::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N7einsums3gpu15MappedAllocator10value_typeE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu15MappedAllocator9size_typeE">
-<span id="_CPPv3N7einsums3gpu15MappedAllocator9size_typeE"></span><span id="_CPPv2N7einsums3gpu15MappedAllocator9size_typeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator_1af03fb7769374f65f11ccbc109aad34f2"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu15MappedAllocator9size_typeE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu15MappedAllocator15difference_typeE">
-<span id="_CPPv3N7einsums3gpu15MappedAllocator15difference_typeE"></span><span id="_CPPv2N7einsums3gpu15MappedAllocator15difference_typeE"></span><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator_1ae73b0fbe8d254259af51d475e6cbad6d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">difference_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">ptrdiff_t</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu15MappedAllocator15difference_typeE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu15MappedAllocator8allocateE6size_t">
-<span id="_CPPv3N7einsums3gpu15MappedAllocator8allocateE6size_t"></span><span id="_CPPv2N7einsums3gpu15MappedAllocator8allocateE6size_t"></span><span id="einsums::gpu::MappedAllocator::allocate__s"></span><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator_1ab21964fb1feaa69a8f2abce26d2ad5fa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu15MappedAllocator7pointerE" title="einsums::gpu::MappedAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu15MappedAllocator8allocateE6size_t" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu15MappedAllocator10deallocateE7pointer6size_t">
-<span id="_CPPv3N7einsums3gpu15MappedAllocator10deallocateE7pointer6size_t"></span><span id="_CPPv2N7einsums3gpu15MappedAllocator10deallocateE7pointer6size_t"></span><span id="einsums::gpu::MappedAllocator::deallocate__pointer.s"></span><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator_1a61bf8571d572ec4dc3db3ccc92e9e874"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deallocate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu15MappedAllocator7pointerE" title="einsums::gpu::MappedAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu15MappedAllocator10deallocateE7pointer6size_t" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums3gpu15MappedAllocator9constructEv7pointerDpRR4Args">
-<span id="_CPPv3IDpEN7einsums3gpu15MappedAllocator9constructE7pointerDpRR4Args"></span><span id="_CPPv2IDpEN7einsums3gpu15MappedAllocator9constructE7pointerDpRR4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1gpu_1_1_mapped_allocator_1a9ffd297d39674ac7eecc7adfa4bed933"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">construct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu15MappedAllocator7pointerE" title="einsums::gpu::MappedAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">xp</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums3gpu15MappedAllocator9constructEv7pointerDpRR4Args" title="einsums::gpu::MappedAllocator::construct::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums3gpu15MappedAllocator9constructEv7pointerDpRR4Args" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
 
 </div>
 </dd></dl>
@@ -596,20 +618,6 @@
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu12GPUAllocator9constructE7pointerRK1T"><code class="docutils literal notranslate"><span class="pre">construct()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu12GPUAllocator7destroyE7pointer"><code class="docutils literal notranslate"><span class="pre">destroy()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu12GPUAllocator8max_sizeEv"><code class="docutils literal notranslate"><span class="pre">max_size()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums3gpu15MappedAllocatorE"><code class="docutils literal notranslate"><span class="pre">einsums::gpu::MappedAllocator</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu15MappedAllocator12dev_datatypeE"><code class="docutils literal notranslate"><span class="pre">dev_datatype</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu15MappedAllocator7pointerE"><code class="docutils literal notranslate"><span class="pre">pointer</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu15MappedAllocator13const_pointerE"><code class="docutils literal notranslate"><span class="pre">const_pointer</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu15MappedAllocator12void_pointerE"><code class="docutils literal notranslate"><span class="pre">void_pointer</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu15MappedAllocator18const_void_pointerE"><code class="docutils literal notranslate"><span class="pre">const_void_pointer</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu15MappedAllocator10value_typeE"><code class="docutils literal notranslate"><span class="pre">value_type</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu15MappedAllocator9size_typeE"><code class="docutils literal notranslate"><span class="pre">size_type</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu15MappedAllocator15difference_typeE"><code class="docutils literal notranslate"><span class="pre">difference_type</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu15MappedAllocator8allocateE6size_t"><code class="docutils literal notranslate"><span class="pre">allocate()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu15MappedAllocator10deallocateE7pointer6size_t"><code class="docutils literal notranslate"><span class="pre">deallocate()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7einsums3gpu15MappedAllocator9constructEv7pointerDpRR4Args"><code class="docutils literal notranslate"><span class="pre">construct()</span></code></a></li>
 </ul>
 </li>
 </ul>

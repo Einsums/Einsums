@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -332,7 +346,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -341,37 +355,76 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums7printlnEvDp2Ts">
 <span id="_CPPv3IDpEN7einsums7printlnEDp2Ts"></span><span id="_CPPv2IDpEN7einsums7printlnEDp2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a198c4d6368bc62939a752285f8d70a32"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">println</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums7printlnEvDp2Ts" title="einsums::println::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums7printlnEvDp2Ts" title="Link to this definition">#</a><br /></dt>
-<dd><p>Prints something to standard output. A new line is emmitted after the print is done. </p>
+<dd><p>Prints something to standard output. A new line is emmitted after the print is done.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – <strong>[in]</strong> The arguments passed to the printer.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums8fprintlnEv7OutTypeDp2Ts">
 <span id="_CPPv3I0DpEN7einsums8fprintlnE7OutTypeDp2Ts"></span><span id="_CPPv2I0DpEN7einsums8fprintlnE7OutTypeDp2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OutType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1ab64d8a3b7d51f517b22b076d40c49af5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0DpEN7einsums8fprintlnEv7OutTypeDp2Ts" title="einsums::fprintln::OutType"><span class="n"><span class="pre">OutType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">out</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums8fprintlnEv7OutTypeDp2Ts" title="einsums::fprintln::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN7einsums8fprintlnEv7OutTypeDp2Ts" title="Link to this definition">#</a><br /></dt>
-<dd><p>Prints something to a file pointer or output stream. A new line is emmitted after the print is done. </p>
+<dd><p>Prints something to a file pointer or output stream. A new line is emmitted after the print is done.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>out</strong> – <strong>[inout]</strong> The output stream or file. </p></li>
+<li><p><strong>args</strong> – <strong>[in]</strong> The arguments passed to the printer.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums13println_abortEvRKNSt11string_viewEDpK2Ts">
 <span id="_CPPv3IDpEN7einsums13println_abortERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums13println_abortERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a04414cc794fd00c81b1d314ec666829e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">println_abort</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums13println_abortEvRKNSt11string_viewEDpK2Ts" title="einsums::println_abort::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums13println_abortEvRKNSt11string_viewEDpK2Ts" title="Link to this definition">#</a><br /></dt>
-<dd><p>Calls println to generate an error message, then aborts. </p>
+<dd><p>Calls println to generate an error message, then aborts.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums12println_warnEvRKNSt11string_viewEDpK2Ts">
 <span id="_CPPv3IDpEN7einsums12println_warnERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums12println_warnERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a09a71e17d0f47c61adcb951f4d26e632"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">println_warn</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums12println_warnEvRKNSt11string_viewEDpK2Ts" title="einsums::println_warn::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums12println_warnEvRKNSt11string_viewEDpK2Ts" title="Link to this definition">#</a><br /></dt>
-<dd><p>Calls println to generate a warning message. </p>
+<dd><p>Calls println to generate a warning message.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums14fprintln_abortEvPNSt4FILEERKNSt11string_viewEDpK2Ts">
 <span id="_CPPv3IDpEN7einsums14fprintln_abortEPNSt4FILEERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums14fprintln_abortEPNSt4FILEERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1afa16c745b1104d3ad313567589f14489"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln_abort</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums14fprintln_abortEvPNSt4FILEERKNSt11string_viewEDpK2Ts" title="einsums::fprintln_abort::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums14fprintln_abortEvPNSt4FILEERKNSt11string_viewEDpK2Ts" title="Link to this definition">#</a><br /></dt>
-<dd><p>Calls fprintln to generate an error message, then aborts. </p>
+<dd><p>Calls fprintln to generate an error message, then aborts.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums13fprintln_warnEvPNSt4FILEERKNSt11string_viewEDpK2Ts">
 <span id="_CPPv3IDpEN7einsums13fprintln_warnEPNSt4FILEERKNSt11string_viewEDpK2Ts"></span><span id="_CPPv2IDpEN7einsums13fprintln_warnEPNSt4FILEERKNSt11string_viewEDpK2Ts"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a5720dd13f5f28a9869aa87cb1e1f9498"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fprintln_warn</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums13fprintln_warnEvPNSt4FILEERKNSt11string_viewEDpK2Ts" title="einsums::fprintln_warn::Ts"><span class="n"><span class="pre">Ts</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums13fprintln_warnEvPNSt4FILEERKNSt11string_viewEDpK2Ts" title="Link to this definition">#</a><br /></dt>
-<dd><p>Calls fprintln to generate a warning message. </p>
+<dd><p>Calls fprintln to generate a warning message.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -383,28 +436,51 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print6indentEv">
 <span id="_CPPv3N7einsums5print6indentEv"></span><span id="_CPPv2N7einsums5print6indentEv"></span><span id="einsums::print::indent"></span><span class="target" id="_print_8hpp_1a338f8df3dc31a53462b2d36ebf66f416"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print6indentEv" title="Link to this definition">#</a><br /></dt>
-<dd><p>Add spaces to the global indentation counter. </p>
+<dd><p>Add spaces to the global indentation counter.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print8deindentEv">
 <span id="_CPPv3N7einsums5print8deindentEv"></span><span id="_CPPv2N7einsums5print8deindentEv"></span><span id="einsums::print::deindent"></span><span class="target" id="_print_8hpp_1a245f2c117c0bb67367217e67ab6169e0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deindent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print8deindentEv" title="Link to this definition">#</a><br /></dt>
-<dd><p>Removes spaces from the global indentation counter. </p>
+<dd><p>Removes spaces from the global indentation counter.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print20current_indent_levelEv">
 <span id="_CPPv3N7einsums5print20current_indent_levelEv"></span><span id="_CPPv2N7einsums5print20current_indent_levelEv"></span><span id="einsums::print::current_indent_level"></span><span class="target" id="_print_8hpp_1a7204885db4c31cf9af9d06467d6c98f8"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">current_indent_level</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print20current_indent_levelEv" title="Link to this definition">#</a><br /></dt>
-<dd><p>Returns the current indentation level. </p>
+<dd><p>Gets the current indentation level.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current indentation level.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print22always_print_thread_idEb">
 <span id="_CPPv3N7einsums5print22always_print_thread_idEb"></span><span id="_CPPv2N7einsums5print22always_print_thread_idEb"></span><span id="einsums::print::always_print_thread_id__b"></span><span class="target" id="_print_8hpp_1a47c539e95a8327cff0c065123c9bae4d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">always_print_thread_id</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">onoff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print22always_print_thread_idEb" title="Link to this definition">#</a><br /></dt>
 <dd><p>Controls whether a line header is printed for the main thread or not. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>onoff</strong> – If true, print thread id for main and child threads, otherwise just print for child threads. </p>
+<dd class="field-odd"><p><strong>onoff</strong> – <strong>[in]</strong> If true, print thread id for main and child threads, otherwise just print for child threads.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -413,9 +489,30 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print15suppress_outputEb">
 <span id="_CPPv3N7einsums5print15suppress_outputEb"></span><span id="_CPPv2N7einsums5print15suppress_outputEb"></span><span id="einsums::print::suppress_output__b"></span><span class="target" id="_print_8hpp_1a0888e513e1cd70b71b60ef967b943c76"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">suppress_output</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">onoff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print15suppress_outputEb" title="Link to this definition">#</a><br /></dt>
 <dd><p>Silences all output. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>onoff</strong> – If true, output is suppressed, otherwise printing is allowed. </p>
+<dd class="field-odd"><p><strong>onoff</strong> – <strong>[in]</strong> If true, output is suppressed, otherwise printing is allowed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums5printli3_thEy">
+<span id="_CPPv3N7einsums5printli3_thEy"></span><span id="_CPPv2N7einsums5printli3_thEy"></span><span class="target" id="_print_8hpp_1a0ed2c244cc365916578d3e65f4f8fc26"></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="s"><span class="pre">&quot;&quot;</span></span><span class="n"><span class="pre">_th</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5printli3_thEy" title="Link to this definition">#</a><br /></dt>
+<dd><p>Creates a literal ordinal.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – The value to wrap.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -427,6 +524,10 @@
 <dd><div class="docutils container">
 <em>#include &lt;Print.hpp&gt;</em></div>
 <p>Controls indentation. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -447,7 +548,17 @@
 <span id="_CPPv3I_NSt8integralEEN7einsums5print7ordinalE"></span><span id="_CPPv2I_NSt8integralEEN7einsums5print7ordinalE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">integral</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IntType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1print_1_1ordinal"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ordinal</span></span></span><a class="headerlink" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="Link to this definition">#</a><br /></dt>
 <dd><div class="docutils container">
 <em>#include &lt;Print.hpp&gt;</em></div>
-<p>Wraps an integer. When the ordinal is printed, it will add the appropriate ordinal suffix to that integer. </p>
+<p>Wraps an integer. When the ordinal is printed, it will add the appropriate ordinal suffix to that integer.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IntType</strong> – The integer type the ordinal will wrap.</p>
+</dd>
+</dl>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -458,37 +569,91 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinal7ordinalERK7ordinalI7IntTypeE">
 <span id="_CPPv3N7einsums5print7ordinal7ordinalERK7ordinalI7IntTypeE"></span><span id="_CPPv2N7einsums5print7ordinal7ordinalERK7ordinalI7IntTypeE"></span><span id="einsums::print::ordinal::ordinal__ordinal:IntType:CRCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1a811f09896d3370c87dac56089bf530c8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ordinal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums5print7ordinal7ordinalERK7ordinalI7IntTypeE" title="einsums::print::ordinal::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinal7ordinalERK7ordinalI7IntTypeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Copy constructor. </p>
+<dd><p>Copy constructor.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> – <strong>[in]</strong> The ordinal to copy.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinal7ordinalERR7ordinalI7IntTypeE">
 <span id="_CPPv3N7einsums5print7ordinal7ordinalERR7ordinalI7IntTypeE"></span><span id="_CPPv2N7einsums5print7ordinal7ordinalERR7ordinalI7IntTypeE"></span><span id="einsums::print::ordinal::ordinal__ordinal:IntType:RRCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1af5f38ef93635a6066ebac7b1523f019b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ordinal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums5print7ordinal7ordinalERR7ordinalI7IntTypeE" title="einsums::print::ordinal::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinal7ordinalERR7ordinalI7IntTypeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Move constructor. </p>
+<dd><p>Move constructor.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> – <strong>[inout]</strong> The ordinal to move. On exit, this may be invalidated.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinal7ordinalERK7IntType">
 <span id="_CPPv3N7einsums5print7ordinal7ordinalERK7IntType"></span><span id="_CPPv2N7einsums5print7ordinal7ordinalERK7IntType"></span><span id="einsums::print::ordinal::ordinal__IntTypeCRCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1ac9014f94a1f83e0f412e834ea657ef4f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ordinal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinal7ordinalERK7IntType" title="Link to this definition">#</a><br /></dt>
-<dd><p>Cast constructor. </p>
+<dd><p>Cast constructor.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – <strong>[in]</strong> The integer to wrap.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinalD0Ev">
 <span id="_CPPv3N7einsums5print7ordinalD0Ev"></span><span id="_CPPv2N7einsums5print7ordinalD0Ev"></span><span id="einsums::print::ordinal::~ordinalCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1a819461c6a0b6613755aa25491a22b169"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~ordinal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinalD0Ev" title="Link to this definition">#</a><br /></dt>
-<dd><p>Deleter. </p>
+<dd><p>Destructor.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinalaSERK7ordinalI7IntTypeE">
 <span id="_CPPv3N7einsums5print7ordinalaSERK7ordinalI7IntTypeE"></span><span id="_CPPv2N7einsums5print7ordinalaSERK7ordinalI7IntTypeE"></span><span id="einsums::print::ordinal::assign-operator__ordinal:IntType:CR"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1a5f5f176b2435e5fe874ad547303de9f0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinalaSERK7ordinalI7IntTypeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Copy assignment. </p>
+<dd><p>Copy assignment.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> – <strong>[in]</strong> The ordinal to copy.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinalaSERR7ordinalI7IntTypeE">
 <span id="_CPPv3N7einsums5print7ordinalaSERR7ordinalI7IntTypeE"></span><span id="_CPPv2N7einsums5print7ordinalaSERR7ordinalI7IntTypeE"></span><span id="einsums::print::ordinal::assign-operator__ordinal:IntType:RR"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1a9df3e14682643fa70fb332f48cbcb0d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal"><span class="n"><span class="pre">ordinal</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinalaSERR7ordinalI7IntTypeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Move assignment. </p>
+<dd><p>Move assignment.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> – <strong>[inout]</strong> The ordinal to move. On exit, this may be invalidated.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
@@ -500,13 +665,27 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinalcvR7IntTypeEv">
 <span id="_CPPv3N7einsums5print7ordinalcvR7IntTypeEv"></span><span id="_CPPv2N7einsums5print7ordinalcvR7IntTypeEv"></span><span id="einsums::print::ordinal::castto-IntTypeR-operatorCE"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1adf5d06cd507d835d781897717ae3069e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="p"><span class="pre">&amp;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinalcvR7IntTypeEv" title="Link to this definition">#</a><br /></dt>
-<dd><p>Cast to reference of the underlying integer type. </p>
+<dd><p>Cast to reference of the underlying integer type.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A reference to the storage member.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0ENK7einsums5print7ordinalcv1TEv">
 <span id="_CPPv3I0ENK7einsums5print7ordinalcv1TEv"></span><span id="_CPPv2I0ENK7einsums5print7ordinalcv1TEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1print_1_1ordinal_1ab03ef59ad07c69807a119e507d0eb1fd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0ENK7einsums5print7ordinalcv1TEv" title="einsums::print::ordinal::operator T::T"><span class="n"><span class="pre">T</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK7einsums5print7ordinalcv1TEv" title="Link to this definition">#</a><br /></dt>
-<dd><p>Cast to arbitrary type. </p>
+<dd><p>Cast to arbitrary type.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -515,7 +694,11 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5print7ordinal4val_E">
 <span id="_CPPv3N7einsums5print7ordinal4val_E"></span><span id="_CPPv2N7einsums5print7ordinal4val_E"></span><span id="einsums::print::ordinal::val___IntType"></span><span class="target" id="structeinsums_1_1print_1_1ordinal_1aea0b0795c500b52e30a13c329f3b6d08"></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN7einsums5print7ordinalE" title="einsums::print::ordinal::IntType"><span class="n"><span class="pre">IntType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">val_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums5print7ordinal4val_E" title="Link to this definition">#</a><br /></dt>
-<dd><p>The value wrapped by the ordinal. </p>
+<dd><p>The value wrapped by the ordinal.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -569,6 +752,7 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums5print20current_indent_levelEv"><code class="docutils literal notranslate"><span class="pre">current_indent_level()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums5print22always_print_thread_idEb"><code class="docutils literal notranslate"><span class="pre">always_print_thread_id()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums5print15suppress_outputEb"><code class="docutils literal notranslate"><span class="pre">suppress_output()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums5printli3_thEy"><code class="docutils literal notranslate"><span class="pre">operator""_th()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums5print6IndentE"><code class="docutils literal notranslate"><span class="pre">einsums::print::Indent</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums5print6Indent6IndentEv"><code class="docutils literal notranslate"><span class="pre">Indent()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums5print6IndentD0Ev"><code class="docutils literal notranslate"><span class="pre">~Indent()</span></code></a></li>

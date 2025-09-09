@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -153,6 +153,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -236,6 +243,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -426,7 +440,7 @@
 details.</p>
 <section id="public-api">
 <h2>Public API<a class="headerlink" href="#public-api" title="Link to this heading">#</a></h2>
-<p>Here are some of the public symbols that are available to use.</p>
+<p>Here are some of the public symbols that are available to use. More can be found in the <a class="reference internal" href="../api/full_api.html#modules-einsums-linearalgebra-api"><span class="std std-ref">API reference</span></a>.</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_13TensorConceptE10sum_squarevRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE">
 <span id="_CPPv3I_13TensorConceptE10sum_squareRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE"></span><span id="_CPPv2I_13TensorConceptE10sum_squareRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sum_square</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConceptE10sum_squarevRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="sum_square::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConceptE10sum_squarevRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="sum_square::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">scale</span></span>, <span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConceptE10sum_squarevRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="sum_square::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sumsq</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConceptE10sum_squarevRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE" title="Link to this definition">#</a><br /></dt>
@@ -439,15 +453,21 @@ result of the sum would have caused either an overflow or an underflow.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> – The tensor to evaluate.</p></li>
-<li><p><strong>scale</strong> – The scale factor. It is both an input and output parameter.</p></li>
-<li><p><strong>sumsq</strong> – The starting point and result. It is both an input and output parameter.</p></li>
+<li><p><strong>A[in]</strong> – The tensor to evaluate.</p></li>
+<li><p><strong>scale[inout]</strong> – The scale factor. It is both an input and output parameter.</p></li>
+<li><p><strong>sumsq[inout]</strong> – The starting point and result. It is both an input and output parameter.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Template Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>AType</strong> – The type of the tensor A.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This function can now handle general-rank tensors, as well as block and tiled tensors.</p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -468,11 +488,11 @@ to match if it does not.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alpha</strong> – Scale factor for the matrix product.</p></li>
-<li><p><strong>A</strong> – The left matrix in the product.</p></li>
-<li><p><strong>B</strong> – The right matrix in the product.</p></li>
-<li><p><strong>beta</strong> – The scale factor to apply to the C matrix on input.</p></li>
-<li><p><strong>C</strong> – The result. If <code class="code docutils literal notranslate"><span class="pre">beta</span></code> is not zero, then the value of <code class="code docutils literal notranslate"><span class="pre">C</span></code> on input will be scaled and added to the result.</p></li>
+<li><p><strong>alpha[in]</strong> – Scale factor for the matrix product.</p></li>
+<li><p><strong>A[in]</strong> – The left matrix in the product.</p></li>
+<li><p><strong>B[in]</strong> – The right matrix in the product.</p></li>
+<li><p><strong>beta[in]</strong> – The scale factor to apply to the C matrix on input.</p></li>
+<li><p><strong>C[inout]</strong> – The result. If <code class="code docutils literal notranslate"><span class="pre">beta</span></code> is not zero, then the value of <code class="code docutils literal notranslate"><span class="pre">C</span></code> on input will be scaled and added to the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Template Parameters<span class="colon">:</span></dt>
@@ -485,7 +505,63 @@ to match if it does not.</p>
 <li><p><strong>U</strong> – The type of the scale factors. It will be converted if needed.</p></li>
 </ul>
 </dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the tensor arguments are not rank-2.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv419tensor_compat_error" title="tensor_compat_error"><span class="n">tensor_compat_error</span></a></span></span> – If the tensor arguments have incompatible dimensions.</p></li>
+</ul>
+</dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemmcc1URK5ATypeRK5BType1UP5CType">
+<span id="_CPPv3I_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemmcc1URK5ATypeRK5BType1UP5CType"></span><span id="_CPPv2I_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemmcc1URK5ATypeRK5BType1UP5CType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="sig-name descname"><span class="n"><span class="pre">gemm</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">transA</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">transB</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemmcc1URK5ATypeRK5BType1UP5CType" title="gemm::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemmcc1URK5ATypeRK5BType1UP5CType" title="gemm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemmcc1URK5ATypeRK5BType1UP5CType" title="gemm::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemmcc1URK5ATypeRK5BType1UP5CType" title="gemm::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemmcc1URK5ATypeRK5BType1UP5CType" title="gemm::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemmcc1URK5ATypeRK5BType1UP5CType" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the matrix product between two matrices.</p>
+<p>Currently supports the following:</p>
+<p>For all of these, <code class="code docutils literal notranslate"><span class="pre">U,</span> <span class="pre">T</span> <span class="pre">=</span> <span class="pre">float,</span> <span class="pre">double,</span> <span class="pre">std::complex&lt;float&gt;,</span> <span class="pre">std::complex&lt;double&gt;</span></code>.</p>
+<p>For all of these, the rank is always rank 2.</p>
+<p>All of the stored types must match, though the prefactor’s type does not. It will be converted
+to match if it does not.</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">BasicTensor</span> <span class="pre">*</span> <span class="pre">BasicTensor</span> <span class="pre">=</span> <span class="pre">BasicTensor</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">BlockTensor</span> <span class="pre">*</span> <span class="pre">BlockTensor</span> <span class="pre">=</span> <span class="pre">BlockTensor</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">TiledTensor</span> <span class="pre">*</span> <span class="pre">TiledTensor</span> <span class="pre">=</span> <span class="pre">TiledTensor</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">OtherTensor</span> <span class="pre">*</span> <span class="pre">OtherTensor</span> <span class="pre">=</span> <span class="pre">OtherTensor</span></code></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transA[in]</strong> – Whether to transpose the A matrix. Case insensitive. Can be either ‘n’, ‘t’, or ‘c’.</p></li>
+<li><p><strong>transB[in]</strong> – Whether to transpose the A matrix. Case insensitive. Can be either ‘n’, ‘t’, or ‘c’.</p></li>
+<li><p><strong>alpha[in]</strong> – Scale factor for the matrix product.</p></li>
+<li><p><strong>A[in]</strong> – The left matrix in the product.</p></li>
+<li><p><strong>B[in]</strong> – The right matrix in the product.</p></li>
+<li><p><strong>beta[in]</strong> – The scale factor to apply to the C matrix on input.</p></li>
+<li><p><strong>C[inout]</strong> – The result. If <code class="code docutils literal notranslate"><span class="pre">beta</span></code> is not zero, then the value of <code class="code docutils literal notranslate"><span class="pre">C</span></code> on input will be scaled and added to the result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>AType</strong> – The type of the A matrix.</p></li>
+<li><p><strong>BType</strong> – The type of the B matrix.</p></li>
+<li><p><strong>CType</strong> – The type  of the C matrix.</p></li>
+<li><p><strong>U</strong> – The type of the scale factors. It will be converted if needed.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the tensor arguments are not rank-2.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv419tensor_compat_error" title="tensor_compat_error"><span class="n">tensor_compat_error</span></a></span></span> – If the tensor arguments have incompatible dimensions.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -498,15 +574,30 @@ a view, it will remove that view.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alpha</strong> – The scale factor on the matrix product.</p></li>
-<li><p><strong>A</strong> – The left matrix.</p></li>
-<li><p><strong>B</strong> – The right matrix.</p></li>
+<li><p><strong>alpha[in]</strong> – The scale factor on the matrix product.</p></li>
+<li><p><strong>A[in]</strong> – The left matrix.</p></li>
+<li><p><strong>B[in]</strong> – The right matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TransA</strong> – Whether to transpose the A matrix.</p></li>
+<li><p><strong>TransB</strong> – Whether to transpose the B matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the tensor arguments are not rank-2.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv419tensor_compat_error" title="tensor_compat_error"><span class="n">tensor_compat_error</span></a></span></span> – If the tensor arguments have incompatible dimensions.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The matrix product scaled by <code class="code docutils literal notranslate"><span class="pre">alpha</span></code>.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -517,9 +608,9 @@ as <code class="code docutils literal notranslate"><span class="pre">gemm</span>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> – The middle tensor.</p></li>
-<li><p><strong>B</strong> – The tensor that will be multiplied on either side.</p></li>
-<li><p><strong>C</strong> – The output of the operation.</p></li>
+<li><p><strong>A[in]</strong> – The middle tensor.</p></li>
+<li><p><strong>B[in]</strong> – The tensor that will be multiplied on either side.</p></li>
+<li><p><strong>C[out]</strong> – The output of the operation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Template Parameters<span class="colon">:</span></dt>
@@ -531,7 +622,16 @@ as <code class="code docutils literal notranslate"><span class="pre">gemm</span>
 <li><p><strong>CType</strong> – The matrix type of the output.</p></li>
 </ul>
 </dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the tensor arguments are not rank-2.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv419tensor_compat_error" title="tensor_compat_error"><span class="n">tensor_compat_error</span></a></span></span> – If the tensor arguments have incompatible dimensions.</p></li>
+</ul>
+</dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -554,11 +654,11 @@ as <code class="code docutils literal notranslate"><span class="pre">gemm</span>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alpha</strong> – The scale factor on the product.</p></li>
-<li><p><strong>A</strong> – The matrix in the product.</p></li>
-<li><p><strong>z</strong> – The vector in the product.</p></li>
-<li><p><strong>beta</strong> – The scale factor on the result vector.</p></li>
-<li><p><strong>y</strong> – The result vector. If <code class="code docutils literal notranslate"><span class="pre">beta</span></code> is not zero, then the value of this on entry will be scaled and added to the result.</p></li>
+<li><p><strong>alpha[in]</strong> – The scale factor on the product.</p></li>
+<li><p><strong>A[in]</strong> – The matrix in the product.</p></li>
+<li><p><strong>z[in]</strong> – The vector in the product.</p></li>
+<li><p><strong>beta[in]</strong> – The scale factor on the result vector.</p></li>
+<li><p><strong>y[inout]</strong> – The result vector. If <code class="code docutils literal notranslate"><span class="pre">beta</span></code> is not zero, then the value of this on entry will be scaled and added to the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Template Parameters<span class="colon">:</span></dt>
@@ -570,7 +670,16 @@ as <code class="code docutils literal notranslate"><span class="pre">gemm</span>
 <li><p><strong>U</strong> – The type of the scale factors. If it is not the same as the types stored by the tensors, it will be cast to match.</p></li>
 </ul>
 </dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the first tensor is not rank-2, or the other tensors are not rank-1.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv419tensor_compat_error" title="tensor_compat_error"><span class="n">tensor_compat_error</span></a></span></span> – If the tensor arguments have incompatible dimensions.</p></li>
+</ul>
+</dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -598,7 +707,20 @@ as <code class="code docutils literal notranslate"><span class="pre">gemm</span>
 <li><p><strong>WType</strong> – The type of the vector.</p></li>
 </ul>
 </dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv415dimension_error" title="dimension_error"><span class="n">dimension_error</span></a></span></span> – If the matrix input is not square.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv419tensor_compat_error" title="tensor_compat_error"><span class="n">tensor_compat_error</span></a></span></span> – If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If values passed to internal functions were invalid. This is often due to passing uninitialized or</p></li>
+</ul>
+</dd>
 </dl>
+<p>zero-size tensors.
+:throws std::runtime_error: If the eigenvalue algorithm fails to converge.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -627,12 +749,25 @@ type of the values of <code class="code docutils literal notranslate"><span clas
 <li><p><strong>WType</strong> – The type of the vector.</p></li>
 </ul>
 </dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv415dimension_error" title="dimension_error"><span class="n">dimension_error</span></a></span></span> – If the matrix input is not square.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv419tensor_compat_error" title="tensor_compat_error"><span class="n">tensor_compat_error</span></a></span></span> – If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If values passed to internal functions were invalid. This is often due to passing uninitialized or</p></li>
+</ul>
+</dd>
 </dl>
+<p>zero-size tensors.
+:throws std::runtime_error: If the eigenvalue algorithm fails to converge.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType">
-<span id="_CPPv3I_b_13MatrixConcept_13VectorConceptE4geevP5ATypeP5WTypeP5ATypeP5AType"></span><span id="_CPPv2I_b_13MatrixConcept_13VectorConceptE4geevP5ATypeP5WTypeP5ATypeP5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeLeftRightEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">geev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::WType"><span class="n"><span class="pre">WType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">W</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lvecs</span></span>, <a class="reference internal" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rvecs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType">
+<span id="_CPPv3I_13MatrixConcept_13VectorConceptE4geevP5ATypeP5WTypeP5ATypeP5AType"></span><span id="_CPPv2I_13MatrixConcept_13VectorConceptE4geevP5ATypeP5WTypeP5ATypeP5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">geev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::WType"><span class="n"><span class="pre">WType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">W</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lvecs</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rvecs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType" title="Link to this definition">#</a><br /></dt>
 <dd><p>Compute the eingendecomposition of a general matrix. If a real matrix has a complex eigenvalue, it will
 always come in a conjugate pair. In this case, the columns of the eigenvector matrix will
 act as the real and imaginary parts. The first column of the two will be the real part,
@@ -651,35 +786,65 @@ or <code class="code docutils literal notranslate"><span class="pre">std::comple
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> – The matrix to decompose. It will be overwritten on exit.</p></li>
-<li><p><strong>W</strong> – The eigenvalues of the matrix.</p></li>
-<li><p><strong>lvecs</strong> – If specified, it will contain the left eigenvectors.</p></li>
-<li><p><strong>rvecs</strong> – If specified, it will contain the right eigenvectors.</p></li>
+<li><p><strong>A[inout]</strong> – The matrix to decompose. It will be overwritten on exit.</p></li>
+<li><p><strong>W[out]</strong> – The eigenvalues of the matrix.</p></li>
+<li><p><strong>lvecs[out]</strong> – If specified, it will contain the left eigenvectors.</p></li>
+<li><p><strong>rvecs[out]</strong> – If specified, it will contain the right eigenvectors.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Template Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>ComputeLeftrightEigenvectors</strong> – If true, the eigenvectors will be computed.</p></li>
+<li><p><strong>ComputeLeftrightEigenvectors</strong> – If true, the eigenvectors will be computed.
+.. versionremoved:: 2.0.0</p></li>
 <li><p><strong>AType</strong> – The type of the matrix and the vector outputs.</p></li>
 <li><p><strong>WType</strong> – The type of the value output.</p></li>
 </ul>
 </dd>
 </dl>
+<p>::throws rank_error: If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.
+:throws dimension_error: If the matrix input is not square.
+:throws tensor_compat_error: If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix,
+or the eigenvector outputs, if not null, do not have the same dimensions as the input.
+:throws std::invalid_argument: If values passed to internal functions were invalid. This is often due to passing uninitialized or
+zero-size tensors.
+:throws std::runtime_error: If the eigenvalue algorithm fails to converge.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>The option to compute eigenvectors is no longer a template argument. It is now decided by whether the appropriate parameter is
+a null pointer or not. For instance, if <code class="code docutils literal notranslate"><span class="pre">lvecs</span></code> is a null pointer then it will not be computed.</p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept_13MatrixConceptE4gesviP5ATypeP5BType">
-<span id="_CPPv3I_13MatrixConcept_13MatrixConceptE4gesvP5ATypeP5BType"></span><span id="_CPPv2I_13MatrixConcept_13MatrixConceptE4gesvP5ATypeP5BType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BTyep</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gesv</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13MatrixConceptE4gesviP5ATypeP5BType" title="gesv::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">BType</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConcept_13MatrixConceptE4gesviP5ATypeP5BType" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept_13TensorConceptE4gesviP5ATypeP5BType">
+<span id="_CPPv3I_13MatrixConcept_13TensorConceptE4gesvP5ATypeP5BType"></span><span id="_CPPv2I_13MatrixConcept_13TensorConceptE4gesvP5ATypeP5BType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gesv</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13TensorConceptE4gesviP5ATypeP5BType" title="gesv::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13TensorConceptE4gesviP5ATypeP5BType" title="gesv::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConcept_13TensorConceptE4gesviP5ATypeP5BType" title="Link to this definition">#</a><br /></dt>
 <dd><p>Solves a system of linear equations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>A</strong> – The coefficient matrix. On exit, it contains the upper and lower triangular factors. The</p>
+<dd class="field-odd"><p><strong>A[inout[]]</strong> – The coefficient matrix. On exit, it contains the upper and lower triangular factors, even if the return value is greater than zero. The</p>
 </dd>
 </dl>
 <p>elements of the lower triangular factor are all 1, so they are not stored.
-:param B: The constant matrix. If this function returns 0, then on exit, this will contain the solutions.
+:param B[inout]: The constant matrix. If this function returns 0, then on exit, this will contain the solutions.
 :return: If the return value is greater than 0, then the input matrix is singular. If it is less than zero,
 then the input contains an invalid value, such as infinity. If it is zero, then the system could be solved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the coefficient matrix is not rank-2 or the result matrix is not rank-1 or rank-2.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv415dimension_error" title="dimension_error"><span class="n">dimension_error</span></a></span></span> – If the coefficient matrix is not square, or the number of rows of the result matrix is not the same as the number</p></li>
+</ul>
+</dd>
+</dl>
+<p>of rows of the coefficient matrix.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>Fixed a bug with how the matrices were being handled. The B tensor is now able to be a vector as well.</p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -694,6 +859,9 @@ then the input contains an invalid value, such as infinity. If it is zero, then 
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -705,6 +873,24 @@ then the input contains an invalid value, such as infinity. If it is zero, then 
 <dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptE12scale_columnv6size_tN5AType9ValueTypeEP5AType">
 <span id="_CPPv3I_13MatrixConceptE12scale_column6size_tN5AType9ValueTypeEP5AType"></span><span id="_CPPv2I_13MatrixConceptE12scale_column6size_tN5AType9ValueTypeEP5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scale_column</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span>, <span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">AType</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scale</span></span>, <span class="n"><span class="pre">AType</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptE12scale_columnv6size_tN5AType9ValueTypeEP5AType" title="Link to this definition">#</a><br /></dt>
 <dd><p>Scale a row or column of a matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>row,col[in]</strong> – The row or column to scale.</p></li>
+<li><p><strong>scale[in]</strong> – The scale factor.</p></li>
+<li><p><strong>A[inout]</strong> – The matrix to scale.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">out_of_range</span></span></span> – If the row or column is outside of what the input matrix stores.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the input matrix is not rank-2.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -715,239 +901,241 @@ then recombining the matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> – The matrix to exponentiate.</p></li>
-<li><p><strong>alpha</strong> – The power to raise the matrix to.</p></li>
-<li><p><strong>cutoff</strong> – If an eigenvalue is below this parameter after exponentiation, then set it to be zero.</p></li>
+<li><p><strong>a[in]</strong> – The matrix to exponentiate.</p></li>
+<li><p><strong>alpha[in]</strong> – The power to raise the matrix to.</p></li>
+<li><p><strong>cutoff[in]</strong> – If an eigenvalue is below this parameter after exponentiation, then set it to be zero.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The result of raising the matrix to a power.</p>
 </dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the inputs have the wrong ranks. The A tensor needs to be rank-2.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv415dimension_error" title="dimension_error"><span class="n">dimension_error</span></a></span></span> – If the matrix input is not square.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If values passed to internal functions were invalid. This is often due to passing uninitialized or</p></li>
+</ul>
+</dd>
 </dl>
+<p>zero-size tensors.
+:throws std::runtime_error: If the eigenvalue algorithm fails to converge.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType">
 <span id="_CPPv3I_13TensorConcept_13TensorConceptE3dotRK5ATypeRK5BType"></span><span id="_CPPv2I_13TensorConcept_13TensorConceptE3dotRK5ATypeRK5BType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dot</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">BiggestTypeT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="Link to this definition">#</a><br /></dt>
 <dd><p>Compute the dot product between two tensors. This form does not conjugate either element if complex.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A,B[in]</strong> – The tensors to dot together.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dot product between the two tensors.</p>
+</dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the input tensors do not have the same rank.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv415dimension_error" title="dimension_error"><span class="n">dimension_error</span></a></span></span> – If the input tensors do not have the same shape.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConceptE8true_dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType">
 <span id="_CPPv3I_13TensorConcept_13TensorConceptE8true_dotRK5ATypeRK5BType"></span><span id="_CPPv2I_13TensorConcept_13TensorConceptE8true_dotRK5ATypeRK5BType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">true_dot</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE8true_dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="true_dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE8true_dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="true_dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">BiggestTypeT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE8true_dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="true_dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE8true_dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="true_dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConceptE8true_dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BType" title="Link to this definition">#</a><br /></dt>
 <dd><p>Compute the dot product between two tensors. This form conjugates the first parameter if complex.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A,B[in]</strong> – The tensors to dot together.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dot product between the two tensors.</p>
+</dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the input tensors do not have the same rank.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv415dimension_error" title="dimension_error"><span class="n">dimension_error</span></a></span></span> – If the input tensors do not have the same shape.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType">
 <span id="_CPPv3I_13TensorConcept_13TensorConcept_13TensorConceptE3dotRK5ATypeRK5BTypeRK5CType"></span><span id="_CPPv2I_13TensorConcept_13TensorConcept_13TensorConceptE3dotRK5ATypeRK5BTypeRK5CType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dot</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="dot::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">BiggestTypeT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="dot::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="dot::BType"><span class="n"><span class="pre">BType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="dot::CType"><span class="n"><span class="pre">CType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConceptE3dot12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEN5CType9ValueTypeEERK5ATypeRK5BTypeRK5CType" title="Link to this definition">#</a><br /></dt>
 <dd><p>Computes the dot product between three tensors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A,B,C[in]</strong> – The tensors to dot together.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dot product between the three tensors.</p>
+</dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the input tensors do not have the same rank.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv415dimension_error" title="dimension_error"><span class="n">dimension_error</span></a></span></span> – If the input tensors do not have the same shape.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConceptE4axpyvN5XType9ValueTypeERK5XTypeP5YType">
 <span id="_CPPv3I_13TensorConcept_13TensorConceptE4axpyN5XType9ValueTypeERK5XTypeP5YType"></span><span id="_CPPv2I_13TensorConcept_13TensorConceptE4axpyN5XType9ValueTypeERK5XTypeP5YType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">YType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">axpy</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE4axpyvN5XType9ValueTypeERK5XTypeP5YType" title="axpy::XType"><span class="n"><span class="pre">XType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE4axpyvN5XType9ValueTypeERK5XTypeP5YType" title="axpy::XType"><span class="n"><span class="pre">XType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">X</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE4axpyvN5XType9ValueTypeERK5XTypeP5YType" title="axpy::YType"><span class="n"><span class="pre">YType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConceptE4axpyvN5XType9ValueTypeERK5XTypeP5YType" title="Link to this definition">#</a><br /></dt>
 <dd><p>Adds two tensors together. The values from the first tensor will be scaled during addition.
-This is equivalent to <span class="math notranslate nohighlight">\(Y = aX + Y\)</span>.</p>
+This is equivalent to <span class="math notranslate nohighlight">\(\mathbf{Y} = \alpha\mathbf{X} + \mathbf{Y}\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alpha</strong> – The scale factor for the input tensor.</p></li>
-<li><p><strong>X</strong> – The input tensor.</p></li>
-<li><p><strong>Y</strong> – The accumulated tensor.</p></li>
+<li><p><strong>alpha[in]</strong> – The scale factor for the input tensor.</p></li>
+<li><p><strong>X[in]</strong> – The input tensor.</p></li>
+<li><p><strong>Y[out]</strong> – The accumulated tensor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the tensors do not have the same rank.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv415dimension_error" title="dimension_error"><span class="n">dimension_error</span></a></span></span> – If the tensors do not have the same shape.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConceptE5axpbyvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType">
 <span id="_CPPv3I_13TensorConcept_13TensorConceptE5axpbyN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType"></span><span id="_CPPv2I_13TensorConcept_13TensorConceptE5axpbyN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">YType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">axpby</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE5axpbyvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType" title="axpby::XType"><span class="n"><span class="pre">XType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE5axpbyvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType" title="axpby::XType"><span class="n"><span class="pre">XType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">X</span></span>, <span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE5axpbyvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType" title="axpby::XType"><span class="n"><span class="pre">XType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConceptE5axpbyvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType" title="axpby::YType"><span class="n"><span class="pre">YType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConceptE5axpbyvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType" title="Link to this definition">#</a><br /></dt>
 <dd><p>Adds two tensors together. The values from the both tensors will be scaled during addition.
-This is equivalent to <span class="math notranslate nohighlight">\(Y = aX + bY\)</span>.</p>
+This is equivalent to <span class="math notranslate nohighlight">\(\mathbf{Y} = \alpha\mathbf{X} + \beta\mathbf{Y}\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alpha</strong> – The scale factor for the input tensor.</p></li>
-<li><p><strong>X</strong> – The input tensor.</p></li>
-<li><p><strong>beta</strong> – The scale factor for the accumulated tensor.</p></li>
-<li><p><strong>Y</strong> – The accumulated tensor.</p></li>
+<li><p><strong>alpha[in]</strong> – The scale factor for the input tensor.</p></li>
+<li><p><strong>X[in]</strong> – The input tensor.</p></li>
+<li><p><strong>beta[in]</strong> – The scale factor for the accumulated tensor.</p></li>
+<li><p><strong>Y[out]</strong> – The accumulated tensor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the tensors do not have the same rank.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv415dimension_error" title="dimension_error"><span class="n">dimension_error</span></a></span></span> – If the tensors do not have the same shape.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept_13VectorConceptE3gervN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType">
 <span id="_CPPv3I_13MatrixConcept_13VectorConceptE3gerN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType"></span><span id="_CPPv2I_13MatrixConcept_13VectorConceptE3gerN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XYType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ger</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE3gervN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="ger::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE3gervN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="ger::XYType"><span class="n"><span class="pre">XYType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">X</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE3gervN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="ger::XYType"><span class="n"><span class="pre">XYType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">Y</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE3gervN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="ger::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConcept_13VectorConceptE3gervN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="Link to this definition">#</a><br /></dt>
-<dd><p>Computes the outer product of two vectors and adds it to the output tensor. Equivalent to <span class="math notranslate nohighlight">\(A = a X Y^T + A\)</span>.</p>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept_13VectorConceptE4gercvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType">
+<span id="_CPPv3I_13MatrixConcept_13VectorConceptE4gercN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType"></span><span id="_CPPv2I_13MatrixConcept_13VectorConceptE4gercN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XYType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gerc</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4gercvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="gerc::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4gercvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="gerc::XYType"><span class="n"><span class="pre">XYType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">X</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4gercvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="gerc::XYType"><span class="n"><span class="pre">XYType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">Y</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4gercvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="gerc::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4gercvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the outer product of two vectors and adds it to the output tensor. Equivalent to <span class="math notranslate nohighlight">\(\mathbf{A} = \alpha\mathbf{XY}^T + \mathbf{A}\)</span>,
+or <span class="math notranslate nohighlight">\(\mathbf{A} = \alpha\mathbf{XY}^H + \mathbf{A}\)</span> for <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4gercvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="gerc"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">gerc</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alpha</strong> – The amount to scale the outer product.</p></li>
-<li><p><strong>X</strong> – The left vector.</p></li>
-<li><p><strong>Y</strong> – The right vector.</p></li>
-<li><p><strong>A</strong> – The output matrix.</p></li>
+<li><p><strong>alpha[in]</strong> – The amount to scale the outer product.</p></li>
+<li><p><strong>X[in]</strong> – The left vector.</p></li>
+<li><p><strong>Y[in]</strong> – The right vector.</p></li>
+<li><p><strong>A[out]</strong> – The output matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the X and Y tensors are not rank-1 or the A tensor is not rank-2.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv419tensor_compat_error" title="tensor_compat_error"><span class="n">tensor_compat_error</span></a></span></span> – If the number of elements in the X vector is not the same as the number of rows in A, or the number of</p></li>
 </ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptE5getrfiP10TensorTypePNSt6vectorIN4blas5int_tEEE">
-<span id="_CPPv3I_13MatrixConceptE5getrfP10TensorTypePNSt6vectorIN4blas5int_tEEE"></span><span id="_CPPv2I_13MatrixConceptE5getrfP10TensorTypePNSt6vectorIN4blas5int_tEEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getrf</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE5getrfiP10TensorTypePNSt6vectorIN4blas5int_tEEE" title="getrf::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">blas</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pivot</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptE5getrfiP10TensorTypePNSt6vectorIN4blas5int_tEEE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Computes the LU factorization of a general <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>A</strong> – The matrix to factorize. On exit, it contains the L and U matrices. The diagonal elements of the</p>
-</dd>
-</dl>
-<p>L matrix are not stored, since they are all 1.
-:param pivot: The pivot table. Indicates which rows were swapped.
-:return: If 0, then the procedure succeded. Otherwise, the procedure failed.</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptE5getri3itnP10TensorTypeRKNSt6vectorIN4blas5int_tEEE">
-<span id="_CPPv3I_13MatrixConceptE5getriP10TensorTypeRKNSt6vectorIN4blas5int_tEEE"></span><span id="_CPPv2I_13MatrixConceptE5getriP10TensorTypeRKNSt6vectorIN4blas5int_tEEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="n"><span class="pre">itn</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getri</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE5getri3itnP10TensorTypeRKNSt6vectorIN4blas5int_tEEE" title="getri::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">blas</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">int_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">pivot</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptE5getri3itnP10TensorTypeRKNSt6vectorIN4blas5int_tEEE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Computes the inverse of a matrix using the data obtained from <a class="reference internal" href="#_CPPv4I_13MatrixConceptE5getrfiP10TensorTypePNSt6vectorIN4blas5int_tEEE" title="getrf"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">getrf</span></code></a>.</p>
+<p>elements in the Y vector is not the same as the number of columns of A.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0: </span>Added <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE3gervN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="ger"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">ger</span></code></a>.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0: </span>Added <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4gercvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType" title="gerc"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">gerc</span></code></a>.</p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptE6invertvP10TensorType">
 <span id="_CPPv3I_13MatrixConceptE6invertP10TensorType"></span><span id="_CPPv2I_13MatrixConceptE6invertP10TensorType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">invert</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE6invertvP10TensorType" title="invert::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptE6invertvP10TensorType" title="Link to this definition">#</a><br /></dt>
-<dd><p>Combines <a class="reference internal" href="#_CPPv4I_13MatrixConceptE5getrfiP10TensorTypePNSt6vectorIN4blas5int_tEEE" title="getrf"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">getrf</span></code></a> and <a class="reference internal" href="#_CPPv4I_13MatrixConceptE5getri3itnP10TensorTypeRKNSt6vectorIN4blas5int_tEEE" title="getri"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">getri</span></code></a> into one function call, calculating the inverse of the matrix.</p>
-</dd></dl>
-
-<dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv44Norm">
-<span id="_CPPv34Norm"></span><span id="_CPPv24Norm"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Norm</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><a class="headerlink" href="#_CPPv44Norm" title="Link to this definition">#</a><br /></dt>
-<dd><p>Allows selecting of the kind of norm to perform.</p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N4Norm4Norm6MaxAbsE">
-<span id="_CPPv3N4Norm4Norm6MaxAbsE"></span><span id="_CPPv2N4Norm4Norm6MaxAbsE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Norm</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">MaxAbs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'M'</span></span><a class="headerlink" href="#_CPPv4N4Norm4Norm6MaxAbsE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Use the maximum absolute value of the tensor as the norm.</p>
-</dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N4Norm4Norm3OneE">
-<span id="_CPPv3N4Norm4Norm3OneE"></span><span id="_CPPv2N4Norm4Norm3OneE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Norm</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">One</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'1'</span></span><a class="headerlink" href="#_CPPv4N4Norm4Norm3OneE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Use the 1-norm of the matrix, or the maximum column sum.</p>
-</dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N4Norm4Norm8InfinityE">
-<span id="_CPPv3N4Norm4Norm8InfinityE"></span><span id="_CPPv2N4Norm4Norm8InfinityE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Norm</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Infinity</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'I'</span></span><a class="headerlink" href="#_CPPv4N4Norm4Norm8InfinityE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Use the infinity norm of the matrix, or the maximum row sum.</p>
-</dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N4Norm4Norm9FrobeniusE">
-<span id="_CPPv3N4Norm4Norm9FrobeniusE"></span><span id="_CPPv2N4Norm4Norm9FrobeniusE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Norm</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Frobenius</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'F'</span></span><a class="headerlink" href="#_CPPv4N4Norm4Norm9FrobeniusE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Use the Frobenius norm of the matrix, or the square root of the sum of squares of the elements.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_12MarixConceptE4norm14RemoveComplexTIN5AType9ValueTypeEE4NormRK5AType">
-<span id="_CPPv3I_12MarixConceptE4norm4NormRK5AType"></span><span id="_CPPv2I_12MarixConceptE4norm4NormRK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MarixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">norm</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv44Norm" title="Norm"><span class="n"><span class="pre">Norm</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">norm_type</span></span>, <a class="reference internal" href="#_CPPv4I_12MarixConceptE4norm14RemoveComplexTIN5AType9ValueTypeEE4NormRK5AType" title="norm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_12MarixConceptE4norm14RemoveComplexTIN5AType9ValueTypeEE4NormRK5AType" title="norm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_12MarixConceptE4norm14RemoveComplexTIN5AType9ValueTypeEE4NormRK5AType" title="Link to this definition">#</a><br /></dt>
-<dd><p>Computes the norm of a matrix. The norm can be selected by the first argument, and can come from
-<a class="reference internal" href="#_CPPv44Norm" title="Norm"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">Norm</span></code></a>.</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_13TensorConceptE8vec_norm14RemoveComplexTIN5AType9ValueTypeEERK5AType">
-<span id="_CPPv3I_13TensorConceptE8vec_normRK5AType"></span><span id="_CPPv2I_13TensorConceptE8vec_normRK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vec_norm</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13TensorConceptE8vec_norm14RemoveComplexTIN5AType9ValueTypeEERK5AType" title="vec_norm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13TensorConceptE8vec_norm14RemoveComplexTIN5AType9ValueTypeEERK5AType" title="vec_norm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_13TensorConceptE8vec_norm14RemoveComplexTIN5AType9ValueTypeEERK5AType" title="Link to this definition">#</a><br /></dt>
-<dd><p>Compute the Euclidean norm of a vector. This is the usual geometric norm.</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptE3svdNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType">
-<span id="_CPPv3I_13MatrixConceptE3svdRK5AType"></span><span id="_CPPv2I_13MatrixConceptE3svdRK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">svd</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE3svdNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType" title="svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">_A</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE3svdNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType" title="svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE3svdNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType" title="svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE3svdNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType" title="svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_13MatrixConceptE3svdNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType" title="Link to this definition">#</a><br /></dt>
-<dd><p>Compute the singular value decomposition of a matrix. The order of the elements in the returned tuple
-is the unitary matrix is first, the rectangular diagonal matrix is second, and the other unitary matrix, transposed.</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptE13svd_nullspace6TensorIN5AType9ValueTypeEXL2EEERK5AType">
-<span id="_CPPv3I_13MatrixConceptE13svd_nullspaceRK5AType"></span><span id="_CPPv2I_13MatrixConceptE13svd_nullspaceRK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">svd_nullspace</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE13svd_nullspace6TensorIN5AType9ValueTypeEXL2EEERK5AType" title="svd_nullspace::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">_A</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE13svd_nullspace6TensorIN5AType9ValueTypeEXL2EEERK5AType" title="svd_nullspace::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_13MatrixConceptE13svd_nullspace6TensorIN5AType9ValueTypeEXL2EEERK5AType" title="Link to this definition">#</a><br /></dt>
-<dd><p>Compute the nullspace of a matrix using singular value decomposition.</p>
-</dd></dl>
-
-<dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv47Vectors">
-<span id="_CPPv37Vectors"></span><span id="_CPPv27Vectors"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Vectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><a class="headerlink" href="#_CPPv47Vectors" title="Link to this definition">#</a><br /></dt>
-<dd><p>Allows selecting of the vectors to use for singular value decomposition.</p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N7Vectors7Vectors3AllE">
-<span id="_CPPv3N7Vectors7Vectors3AllE"></span><span id="_CPPv2N7Vectors7Vectors3AllE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Vectors</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">All</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'A'</span></span><a class="headerlink" href="#_CPPv4N7Vectors7Vectors3AllE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Compute all vectors.</p>
-</dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N7Vectors7Vectors4SomeE">
-<span id="_CPPv3N7Vectors7Vectors4SomeE"></span><span id="_CPPv2N7Vectors7Vectors4SomeE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Vectors</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Some</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'S'</span></span><a class="headerlink" href="#_CPPv4N7Vectors7Vectors4SomeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Computes only some of the vectors. The number computed is the same as the smallest dimension
-of the input matrix.</p>
-</dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N7Vectors7Vectors9OverwriteE">
-<span id="_CPPv3N7Vectors7Vectors9OverwriteE"></span><span id="_CPPv2N7Vectors7Vectors9OverwriteE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Vectors</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Overwrite</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'O'</span></span><a class="headerlink" href="#_CPPv4N7Vectors7Vectors9OverwriteE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Overwrites the input matrix with some of the vectors.</p>
-</dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N7Vectors7Vectors4NoneE">
-<span id="_CPPv3N7Vectors7Vectors4NoneE"></span><span id="_CPPv2N7Vectors7Vectors4NoneE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">Vectors</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'N'</span></span><a class="headerlink" href="#_CPPv4N7Vectors7Vectors4NoneE" title="Link to this definition">#</a><br /></dt>
-<dd><p>None of the vectors are computed.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptE6svd_ddNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors">
-<span id="_CPPv3I_13MatrixConceptE6svd_ddRK5AType7Vectors"></span><span id="_CPPv2I_13MatrixConceptE6svd_ddRK5AType7Vectors"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">svd_dd</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE6svd_ddNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors" title="svd_dd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">_A</span></span>, <a class="reference internal" href="#_CPPv47Vectors" title="Vectors"><span class="n"><span class="pre">Vectors</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">job</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv47Vectors" title="Vectors"><span class="n"><span class="pre">Vectors</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">All</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE6svd_ddNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors" title="svd_dd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE6svd_ddNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors" title="svd_dd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE6svd_ddNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors" title="svd_dd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_13MatrixConceptE6svd_ddNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors" title="Link to this definition">#</a><br /></dt>
-<dd><p>Compute the singular value decomposition of a matrix, optionally selecting the vectors to compute.</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptE2qrNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType">
-<span id="_CPPv3I_13MatrixConceptE2qrRK5AType"></span><span id="_CPPv2I_13MatrixConceptE2qrRK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">qr</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE2qrNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType" title="qr::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">_A</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE2qrNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType" title="qr::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE2qrNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType" title="qr::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_13MatrixConceptE2qrNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType" title="Link to this definition">#</a><br /></dt>
-<dd><p>Compute the QR decomposition of the input matrix. The output is what is needed to pass into later functions.
-The upper trapezoid of the tensor in the first part of the tuple is the R matrix.</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConcept_13VectorConceptE1q6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType">
-<span id="_CPPv3I_13MatrixConcept_13VectorConceptE1qRK5ATypeRK7TauType"></span><span id="_CPPv2I_13MatrixConcept_13VectorConceptE1qRK5ATypeRK7TauType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VectorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TauType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">q</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE1q6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType" title="q::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">qr</span></span>, <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE1q6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType" title="q::TauType"><span class="n"><span class="pre">TauType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tau</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE1q6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType" title="q::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_13MatrixConcept_13VectorConceptE1q6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType" title="Link to this definition">#</a><br /></dt>
-<dd><p>Use the data from <a class="reference internal" href="#_CPPv4I_13MatrixConcept_13VectorConceptE1q6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType" title="q::qr"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">qr</span></code></a> to compute the Q matrix.</p>
+<dd><p>Combines <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">getrf</span></code> and <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">getri</span></code> into one function call, calculating the inverse of the matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A[inout]</strong> – The matrix to invert. On exit, it contains the inverse.</p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv410rank_error" title="rank_error"><span class="n">rank_error</span></a></span></span> – If the input is not a matrix.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/docs/index.html#_CPPv415dimension_error" title="dimension_error"><span class="n">dimension_error</span></a></span></span> – If the matrix is not square.</p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">runtime_error</span></span></span> – If the matrix is singular.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0E14direct_productv1TRK5ATypeRK5BType1TP5CType">
 <span id="_CPPv3I_13TensorConcept_13TensorConcept_13TensorConcept0E14direct_product1TRK5ATypeRK5BType1TP5CType"></span><span id="_CPPv2I_13TensorConcept_13TensorConcept_13TensorConcept0E14direct_product1TRK5ATypeRK5BType1TP5CType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">TensorConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">direct_product</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0E14direct_productv1TRK5ATypeRK5BType1TP5CType" title="direct_product::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0E14direct_productv1TRK5ATypeRK5BType1TP5CType" title="direct_product::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0E14direct_productv1TRK5ATypeRK5BType1TP5CType" title="direct_product::BType"><span class="n"><span class="pre">BType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0E14direct_productv1TRK5ATypeRK5BType1TP5CType" title="direct_product::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0E14direct_productv1TRK5ATypeRK5BType1TP5CType" title="direct_product::CType"><span class="n"><span class="pre">CType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0E14direct_productv1TRK5ATypeRK5BType1TP5CType" title="Link to this definition">#</a><br /></dt>
 <dd><p>Compute the direct product. This is essentially the element-wise product between two matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha[in]</strong> – The scale factor for the product.</p></li>
+<li><p><strong>A,B[in]</strong> – The tensors to multiply.</p></li>
+<li><p><strong>beta[in]</strong> – The scale factor for the accumulation tensor.</p></li>
+<li><p><strong>C[out]</strong> – The accumulation tensor.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_13MatrixConceptE3detN5AType9ValueTypeERK5AType">
 <span id="_CPPv3I_13MatrixConceptE3detRK5AType"></span><span id="_CPPv2I_13MatrixConceptE3detRK5AType"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">MatrixConcept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE3detN5AType9ValueTypeERK5AType" title="det::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ValueType</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">det</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_13MatrixConceptE3detN5AType9ValueTypeERK5AType" title="det::AType"><span class="n"><span class="pre">AType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_13MatrixConceptE3detN5AType9ValueTypeERK5AType" title="Link to this definition">#</a><br /></dt>
 <dd><p>Computes the determinant of a matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A[in]</strong> – The matrix to analyze.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The determinant of the matrix.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
-<div class="admonition-todo admonition" id="id3">
-<p class="admonition-title">Todo</p>
-<p>A few functions have not been documented because the author of this page was unsure about the concepts,
-and could not explain them.</p>
-<ul class="simple">
-<li><p><code class="code docutils literal notranslate"><span class="pre">truncated_svd</span></code></p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">truncated_syev</span></code></p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">pseudoinverse</span></code></p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">solve_continuous_lyapunov</span></code></p></li>
-</ul>
-</div>
 </section>
 </section>
 
@@ -1001,13 +1189,14 @@ and could not explain them.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#public-api">Public API</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13TensorConceptE10sum_squarevRK5ATypeP14RemoveComplexTIN5AType9ValueTypeEEP14RemoveComplexTIN5AType9ValueTypeEE"><code class="docutils literal notranslate"><span class="pre">sum_square</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemm1URK5ATypeRK5BType1UP5CType"><code class="docutils literal notranslate"><span class="pre">gemm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConcept_13MatrixConcept_13MatrixConcept0E4gemmcc1URK5ATypeRK5BType1UP5CType"><code class="docutils literal notranslate"><span class="pre">gemm</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept0E4gemm11RemoveViewTI5ATypeEK1URK5ATypeRK5BType"><code class="docutils literal notranslate"><span class="pre">gemm</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_b_b_13MatrixConcept_13MatrixConcept_13MatrixConceptE9symm_gemmvRK5ATypeRK5BTypeP5CType"><code class="docutils literal notranslate"><span class="pre">symm_gemm</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_b_13MatrixConcept_13VectorConcept_13VectorConcept0E4gemvvK1URK5ATypeRK5XTypeK1UP5YType"><code class="docutils literal notranslate"><span class="pre">gemv</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4syevvP5ATypeP5WType"><code class="docutils literal notranslate"><span class="pre">syev</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4heevvP5ATypeP5WType"><code class="docutils literal notranslate"><span class="pre">heev</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_b_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType"><code class="docutils literal notranslate"><span class="pre">geev</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConcept_13MatrixConceptE4gesviP5ATypeP5BType"><code class="docutils literal notranslate"><span class="pre">gesv</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4geevvP5ATypeP5WTypeP5ATypeP5AType"><code class="docutils literal notranslate"><span class="pre">geev</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConcept_13TensorConceptE4gesviP5ATypeP5BType"><code class="docutils literal notranslate"><span class="pre">gesv</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13TensorConceptE5scalevN5AType9ValueTypeEP5AType"><code class="docutils literal notranslate"><span class="pre">scale</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConceptE9scale_rowv6size_tN5AType9ValueTypeEP5AType"><code class="docutils literal notranslate"><span class="pre">scale_row</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConceptE12scale_columnv6size_tN5AType9ValueTypeEP5AType"><code class="docutils literal notranslate"><span class="pre">scale_column</span></code></a></li>
@@ -1018,30 +1207,8 @@ and could not explain them.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13TensorConcept_13TensorConceptE4axpyvN5XType9ValueTypeERK5XTypeP5YType"><code class="docutils literal notranslate"><span class="pre">axpy</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13TensorConcept_13TensorConceptE5axpbyvN5XType9ValueTypeERK5XTypeN5XType9ValueTypeEP5YType"><code class="docutils literal notranslate"><span class="pre">axpby</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConcept_13VectorConceptE3gervN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType"><code class="docutils literal notranslate"><span class="pre">ger</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConceptE5getrfiP10TensorTypePNSt6vectorIN4blas5int_tEEE"><code class="docutils literal notranslate"><span class="pre">getrf</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConceptE5getri3itnP10TensorTypeRKNSt6vectorIN4blas5int_tEEE"><code class="docutils literal notranslate"><span class="pre">getri</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConcept_13VectorConceptE4gercvN5AType9ValueTypeERK6XYTypeRK6XYTypeP5AType"><code class="docutils literal notranslate"><span class="pre">gerc</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConceptE6invertvP10TensorType"><code class="docutils literal notranslate"><span class="pre">invert</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv44Norm"><code class="docutils literal notranslate"><span class="pre">Norm</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4Norm4Norm6MaxAbsE"><code class="docutils literal notranslate"><span class="pre">Norm::MaxAbs</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4Norm4Norm3OneE"><code class="docutils literal notranslate"><span class="pre">Norm::One</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4Norm4Norm8InfinityE"><code class="docutils literal notranslate"><span class="pre">Norm::Infinity</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4Norm4Norm9FrobeniusE"><code class="docutils literal notranslate"><span class="pre">Norm::Frobenius</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_12MarixConceptE4norm14RemoveComplexTIN5AType9ValueTypeEE4NormRK5AType"><code class="docutils literal notranslate"><span class="pre">norm</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13TensorConceptE8vec_norm14RemoveComplexTIN5AType9ValueTypeEERK5AType"><code class="docutils literal notranslate"><span class="pre">vec_norm</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConceptE3svdNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType"><code class="docutils literal notranslate"><span class="pre">svd</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConceptE13svd_nullspace6TensorIN5AType9ValueTypeEXL2EEERK5AType"><code class="docutils literal notranslate"><span class="pre">svd_nullspace</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv47Vectors"><code class="docutils literal notranslate"><span class="pre">Vectors</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7Vectors7Vectors3AllE"><code class="docutils literal notranslate"><span class="pre">Vectors::All</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7Vectors7Vectors4SomeE"><code class="docutils literal notranslate"><span class="pre">Vectors::Some</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7Vectors7Vectors9OverwriteE"><code class="docutils literal notranslate"><span class="pre">Vectors::Overwrite</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7Vectors7Vectors4NoneE"><code class="docutils literal notranslate"><span class="pre">Vectors::None</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConceptE6svd_ddNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorI14RemoveComplexTIN5AType9ValueTypeEEXL1EEE6TensorIN5AType9ValueTypeEXL2EEEEERK5AType7Vectors"><code class="docutils literal notranslate"><span class="pre">svd_dd</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConceptE2qrNSt5tupleI6TensorIN5AType9ValueTypeEXL2EEE6TensorIN5AType9ValueTypeEXL1EEEEERK5AType"><code class="docutils literal notranslate"><span class="pre">qr</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConcept_13VectorConceptE1q6TensorIN5AType9ValueTypeEXL2EEERK5ATypeRK7TauType"><code class="docutils literal notranslate"><span class="pre">q</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13TensorConcept_13TensorConcept_13TensorConcept0E14direct_productv1TRK5ATypeRK5BType1TP5CType"><code class="docutils literal notranslate"><span class="pre">direct_product</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_13MatrixConceptE3detN5AType9ValueTypeERK5AType"><code class="docutils literal notranslate"><span class="pre">det</span></code></a></li>
 </ul>

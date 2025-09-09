@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -428,24 +442,39 @@ for these arguments.</p>
 <li><p>4: Errors.</p></li>
 <li><p>5: Critical errors.</p></li>
 </ul>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.1.0: </span>This option now also sets the HIP log level if Einsums was built with GPU support.</p>
+</div>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-einsums-log-destination">
 <span class="sig-name descname"><span class="pre">--einsums:log-destination</span></span><span class="sig-prename descclassname"> <span class="pre">[cerr</span> <span class="pre">|</span> <span class="pre">cout]</span></span><a class="headerlink" href="#cmdoption-einsums-log-destination" title="Link to this definition">#</a></dt>
 <dd><p>Set whether the logger will log to standard output or standard error.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-einsums-no-profiler-report">
 <span class="sig-name descname"><span class="pre">--einsums:no-profiler-report</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-no-profiler-report" title="Link to this definition">#</a></dt>
 <dd><p>Tells Einsums not to output the profiling information.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-einsums-profiler-filename">
 <span class="sig-name descname"><span class="pre">--einsums:profiler-filename</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profiler-filename" title="Link to this definition">#</a></dt>
 <dd><p>The name of the file for the profiler output.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="std option">
@@ -453,6 +482,9 @@ for these arguments.</p>
 <span class="sig-name descname"><span class="pre">--einsums:buffer-size</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-buffer-size" title="Link to this definition">#</a></dt>
 <dd><p>The amount of memory Einsums is allowed to use. It takes a string containing a number and units.
 The units are either bytes or words. See <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memory_string</span></code> for more information.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="std option">
@@ -460,6 +492,9 @@ The units are either bytes or words. See <code class="xref cpp cpp-func docutils
 <span class="sig-name descname"><span class="pre">--einsums:gpu-buffer-size</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-gpu-buffer-size" title="Link to this definition">#</a></dt>
 <dd><p>The amount of memory Einsums is allowed to use on the GPU. It takes a string containing a number and units.
 The units are either bytes or words. See <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memory_string</span></code> for more information.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 </section>
@@ -469,24 +504,36 @@ The units are either bytes or words. See <code class="xref cpp cpp-func docutils
 <dt class="sig sig-object std" id="cmdoption-einsums-no-install-signal-handlers">
 <span class="sig-name descname"><span class="pre">--einsums:no-install-signal-handlers</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-no-install-signal-handlers" title="Link to this definition">#</a></dt>
 <dd><p>Tells Einsums not to install its custom signal handlers.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-einsums-no-attach-debugger">
 <span class="sig-name descname"><span class="pre">--einsums:no-attach-debugger</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-no-attach-debugger" title="Link to this definition">#</a></dt>
 <dd><p>Tells Einsums not to allow users the ability to attach a debugger when an error is detected.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-einsums-no-diagnostics-on-terminate">
 <span class="sig-name descname"><span class="pre">--einsums:no-diagnostics-on-terminate</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-no-diagnostics-on-terminate" title="Link to this definition">#</a></dt>
 <dd><p>When present, Einsums won’t print extra diagnostics on termination.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-einsums-log-format">
 <span class="sig-name descname"><span class="pre">--einsums:log-format</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-log-format" title="Link to this definition">#</a></dt>
 <dd><p>A format string used for the logger output.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="std option">
@@ -494,6 +541,9 @@ The units are either bytes or words. See <code class="xref cpp cpp-func docutils
 <span class="sig-name descname"><span class="pre">--einsums:profiler-append</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profiler-append" title="Link to this definition">#</a></dt>
 <dd><p>If present, the profiling information will be appended to the profiling file. Otherwise, the profiling
 file will be overwritten.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 </section>

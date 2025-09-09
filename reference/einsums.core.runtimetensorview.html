@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -429,6 +443,9 @@ is reflected in the other.</p>
 <dt class="sig sig-object py" id="einsums.core.RuntimeTensorView">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">RuntimeTensorView</span></span><a class="headerlink" href="#einsums.core.RuntimeTensorView" title="Link to this definition">#</a></dt>
 <dd><p>Very basic class. Should not be instantiated. It is the superclass for all <a class="reference internal" href="#einsums.core.RuntimeTensorViewX" title="einsums.core.RuntimeTensorViewX"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeTensorViewX</span></code></a> types.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py class">
@@ -438,10 +455,16 @@ is reflected in the other.</p>
 It has a runtime-computed rank, since compile-time computed ranks are not available in Python. This
 wraps the <a class="reference internal" href="../libs/Einsums/Tensor/api/RuntimeTensor.html#_CPPv4I0EN7einsums17RuntimeTensorViewE" title="einsums::RuntimeTensorView"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::RuntimeTensorView</span></code></a> class with a trampoline class provided by <a class="reference internal" href="../libs/EinsumsPy/Tensor/api/PyTensor.html#_CPPv4I0EN7einsums6python12PyTensorViewE" title="einsums::python::PyTensorView"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::python::PyTensorView</span></code></a>.
 The data contained in these views is shared with a tensor so that changes in either are reflected in both.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.RuntimeTensorViewX.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.RuntimeTensorViewX.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Construct a new empty tensor view.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -458,12 +481,18 @@ object of the same underlying type. The <code class="code docutils literal notra
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.RuntimeTensorViewX.zero">
 <span class="sig-name descname"><span class="pre">zero</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.RuntimeTensorViewX.zero" title="Link to this definition">#</a></dt>
 <dd><p>Zero out the data in the tensor. Wraps <a class="reference internal" href="../libs/Einsums/Tensor/api/RuntimeTensor.html#_CPPv4N7einsums17RuntimeTensorView4zeroEv" title="einsums::RuntimeTensorView::zero"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::RuntimeTensorView::zero</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -475,6 +504,9 @@ object of the same underlying type. The <code class="code docutils literal notra
 <dd class="field-odd"><p><strong>value</strong> – The value to fill the tensor with.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -489,6 +521,9 @@ object of the same underlying type. The <code class="code docutils literal notra
 <dd class="field-even"><p>Return value depends on the index passed. It may be a single value or it may be a <code class="code docutils literal notranslate"><span class="pre">einsums.core.RuntimeTensorView</span></code> object.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -507,6 +542,9 @@ dimensions as that buffer object. It will then copy that object into the view.</
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -536,6 +574,13 @@ will then perform the element-wise operation between the elements of the tensor 
 <dd class="field-odd"><p><strong>other</strong> – The object to operate with.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.1.0: </span>Operations between a real tensor on the left and a complex tensor on the right are no longer
+permitted.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -586,6 +631,9 @@ These will create a new tensor before operating and will return that new tensor.
 <dd class="field-odd"><p><strong>other</strong> – The object to operate with.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -597,6 +645,12 @@ These will create a new tensor before operating and will return that new tensor.
 <dd class="field-odd"><p><strong>buffer</strong> – The buffer object to assign from.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.1.0: </span>A complex buffer can not be assigned to a real buffer.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -608,12 +662,18 @@ These will create a new tensor before operating and will return that new tensor.
 <dd class="field-odd"><p><strong>axis</strong> – The axis whose dimension should be found.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.RuntimeTensorViewX.dims">
 <span class="sig-name descname"><span class="pre">dims</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#einsums.core.RuntimeTensorViewX.dims" title="Link to this definition">#</a></dt>
 <dd><p>Get the dimensions of the tensor.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -625,18 +685,27 @@ These will create a new tensor before operating and will return that new tensor.
 <dd class="field-odd"><p><strong>axis</strong> – The axis whos stride should be found.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.RuntimeTensorViewX.strides">
 <span class="sig-name descname"><span class="pre">strides</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#einsums.core.RuntimeTensorViewX.strides" title="Link to this definition">#</a></dt>
 <dd><p>Get the strides of the tensor, in elements.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.RuntimeTensorViewX.get_name">
 <span class="sig-name descname"><span class="pre">get_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#einsums.core.RuntimeTensorViewX.get_name" title="Link to this definition">#</a></dt>
 <dd><p>Get the name of the tensor.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -648,12 +717,18 @@ These will create a new tensor before operating and will return that new tensor.
 <dd class="field-odd"><p><strong>name</strong> – The new name of the tensor.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="einsums.core.RuntimeTensorViewX.name">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#einsums.core.RuntimeTensorViewX.name" title="Link to this definition">#</a></dt>
 <dd><p>Python property wrapping <a class="reference internal" href="#einsums.core.RuntimeTensorViewX.get_name" title="einsums.core.RuntimeTensorViewX.get_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_name</span></code></a> and <a class="reference internal" href="#einsums.core.RuntimeTensorViewX.set_name" title="einsums.core.RuntimeTensorViewX.set_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_name</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -670,6 +745,9 @@ These will create a new tensor before operating and will return that new tensor.
 <dd class="field-odd"><p>The number of elements in the tensor.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -681,6 +759,9 @@ These will create a new tensor before operating and will return that new tensor.
 <dd class="field-odd"><p>An iterator that will iterate over the elements.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -692,6 +773,9 @@ These will create a new tensor before operating and will return that new tensor.
 <dd class="field-odd"><p>An iterator that will iterate over the elements in reverse.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -703,6 +787,9 @@ These will create a new tensor before operating and will return that new tensor.
 <dd class="field-odd"><p>The rank of the tensor.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -729,12 +816,18 @@ These will create a new tensor before operating and will return that new tensor.
 <dd class="field-odd"><p>A copy of the tensor.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.RuntimeTensorViewX.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#einsums.core.RuntimeTensorViewX.__str__" title="Link to this definition">#</a></dt>
 <dd><p>Return a string representation of the tensor.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 </dd></dl>

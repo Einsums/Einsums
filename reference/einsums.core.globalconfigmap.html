@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -423,10 +437,16 @@ or set by its modules. This functionality has been exposed to Python so that use
 <dt class="sig sig-object py" id="einsums.core.GlobalConfigMap">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">GlobalConfigMap</span></span><a class="headerlink" href="#einsums.core.GlobalConfigMap" title="Link to this definition">#</a></dt>
 <dd><p>A data structure containing all of the various options provided by Einsums. Users can add their own as well.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.GlobalConfigMap.get_singleton">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_singleton</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#einsums.core.GlobalConfigMap" title="einsums.core.GlobalConfigMap"><span class="pre">einsums.core.GlobalConfigMap</span></a></span></span><a class="headerlink" href="#einsums.core.GlobalConfigMap.get_singleton" title="Link to this definition">#</a></dt>
 <dd><p>Returns the single unique instance of the map.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -438,6 +458,9 @@ or set by its modules. This functionality has been exposed to Python so that use
 <dd class="field-odd"><p>True if the map is empy, false if there is data in the map.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -449,6 +472,9 @@ or set by its modules. This functionality has been exposed to Python so that use
 <dd class="field-odd"><p>The number of items in the map.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -461,6 +487,29 @@ past this size, it will need to be reallocated.</p>
 <dd class="field-odd"><p>The maximum number of elements the map can contain.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="einsums.core.GlobalConfigMap.get_string">
+<span class="sig-name descname"><span class="pre">get_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#einsums.core.GlobalConfigMap.get_string" title="Link to this definition">#</a></dt>
+<dd><p>Gets the value of a string option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> – The option name to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value associated with the given key, or the empty string <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> if there is no value.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionremoved">
+<p><span class="versionmodified removed">Removed in version 1.1.0: </span>Use <a class="reference internal" href="#einsums.core.GlobalConfigMap.get_str" title="einsums.core.GlobalConfigMap.get_str"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_str</span></code></a> instead. Name changed to match Python data types instead of C++.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -475,6 +524,9 @@ past this size, it will need to be reallocated.</p>
 <dd class="field-even"><p>The value associated with the given key, or the empty string <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> if there is no value.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -489,6 +541,9 @@ past this size, it will need to be reallocated.</p>
 <dd class="field-even"><p>The value associated with the given key, or 0 if there is no value.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -503,6 +558,9 @@ past this size, it will need to be reallocated.</p>
 <dd class="field-even"><p>The value associated with the given key, or 0.0 if there is no value.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -517,6 +575,9 @@ past this size, it will need to be reallocated.</p>
 <dd class="field-even"><p>The value associated with the given key, or false if there is no value.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -531,6 +592,9 @@ past this size, it will need to be reallocated.</p>
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -545,6 +609,9 @@ past this size, it will need to be reallocated.</p>
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -559,6 +626,9 @@ past this size, it will need to be reallocated.</p>
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -573,6 +643,9 @@ past this size, it will need to be reallocated.</p>
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -631,6 +704,7 @@ past this size, it will need to be reallocated.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GlobalConfigMap.emtpy"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.emtpy</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GlobalConfigMap.size"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.size</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GlobalConfigMap.max_size"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.max_size</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GlobalConfigMap.get_string"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_string</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GlobalConfigMap.get_str"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_str</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GlobalConfigMap.get_int"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_int</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.GlobalConfigMap.get_float"><code class="docutils literal notranslate"><span class="pre">GlobalConfigMap.get_float</span></code></a></li>

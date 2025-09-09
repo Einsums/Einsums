@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -424,6 +438,9 @@
 <dd><p>This class is a minimal implementation of a Python buffer object. However, it allows users
 to set its properties arbitrarily. This allows us to test code paths that are normally not
 allowed if the data in an object is validated properly, thus improving code coverage.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.BadBuffer.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">copy</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.BadBuffer.__init__" title="Link to this definition">#</a></dt>
@@ -433,12 +450,18 @@ allowed if the data in an object is validated properly, thus improving code cove
 <dd class="field-odd"><p><strong>copy</strong> – The buffer to copy from.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.BadBuffer.get_ptr">
 <span class="sig-name descname"><span class="pre">get_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.BadBuffer.get_ptr" title="Link to this definition">#</a></dt>
 <dd><p>Get the underlying pointer to the data.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -446,12 +469,18 @@ allowed if the data in an object is validated properly, thus improving code cove
 <span class="sig-name descname"><span class="pre">clear_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.BadBuffer.clear_ptr" title="Link to this definition">#</a></dt>
 <dd><p>Set the pointer in the buffer to the null pointer. This helps to test code when invalid
 addresses are passed in.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.BadBuffer.get_ndim">
 <span class="sig-name descname"><span class="pre">get_ndim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#einsums.core.BadBuffer.get_ndim" title="Link to this definition">#</a></dt>
 <dd><p>Get the number of dimensions.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -464,6 +493,9 @@ to match the new strides and shape.</p>
 <dd class="field-odd"><p><strong>ndim</strong> – The new number of dimensions.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -476,12 +508,18 @@ state. This is intentional, as this is a tool for testing invalid code paths.</p
 <dd class="field-odd"><p><strong>ndim</strong> – The new number of dimensions.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.BadBuffer.get_itemsize">
 <span class="sig-name descname"><span class="pre">get_itemsize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#einsums.core.BadBuffer.get_itemsize" title="Link to this definition">#</a></dt>
 <dd><p>Get the number of bytes in an item.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -493,12 +531,18 @@ state. This is intentional, as this is a tool for testing invalid code paths.</p
 <dd class="field-odd"><p><strong>itemsize</strong> – The new size of the items.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.BadBuffer.get_format">
 <span class="sig-name descname"><span class="pre">get_format</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#einsums.core.BadBuffer.get_format" title="Link to this definition">#</a></dt>
 <dd><p>Gets the format string.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -513,12 +557,18 @@ should be handled in general by any error handling code. This will leave the buf
 <dd class="field-odd"><p><strong>str</strong> – The new format string.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.BadBuffer.get_dims">
 <span class="sig-name descname"><span class="pre">get_dims</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#einsums.core.BadBuffer.get_dims" title="Link to this definition">#</a></dt>
 <dd><p>Get the dimensions or shape of the buffer.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -526,6 +576,9 @@ should be handled in general by any error handling code. This will leave the buf
 <span class="sig-name descname"><span class="pre">set_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.BadBuffer.set_dims" title="Link to this definition">#</a></dt>
 <dd><p>Set the dimensions of the buffer. This does not update any of the other data, leaving
 the buffer in an invalid state.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -544,12 +597,18 @@ the buffer in an invalid state.</p>
 <dd class="field-even"><p><strong>IndexError</strong> – When <code class="code docutils literal notranslate"><span class="pre">axis</span></code> is outside of the size of the dimension array.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.BadBuffer.get_strides">
 <span class="sig-name descname"><span class="pre">get_strides</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#einsums.core.BadBuffer.get_strides" title="Link to this definition">#</a></dt>
 <dd><p>Get the strides of the buffer in bytes.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -557,6 +616,9 @@ the buffer in an invalid state.</p>
 <span class="sig-name descname"><span class="pre">set_strides</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.BadBuffer.set_strides" title="Link to this definition">#</a></dt>
 <dd><p>Set the strides of the buffer in bytes. This does not update any of the other data, leaving
 the buffer in an invalid state.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -575,6 +637,9 @@ the buffer in an invalid state.</p>
 <dd class="field-even"><p><strong>IndexError</strong> – When <code class="code docutils literal notranslate"><span class="pre">axis</span></code> is outside of the size of the stride array.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -587,6 +652,9 @@ This will leave the buffer in an invalid state. This also doesn’t change any o
 <dd class="field-odd"><p><strong>new_size</strong> – The new size for the dimension array.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -599,6 +667,9 @@ This will leave the buffer in an invalid state. This also doesn’t change any o
 <dd class="field-odd"><p><strong>new_size</strong> – The new size for the stride array.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -616,6 +687,9 @@ This will leave the buffer in an invalid state. This also doesn’t change any o
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -631,6 +705,9 @@ This will leave the buffer in an invalid state. This also doesn’t change any o
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -646,6 +723,9 @@ This will leave the buffer in an invalid state. This also doesn’t change any o
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 </section>

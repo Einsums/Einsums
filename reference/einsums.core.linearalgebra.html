@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -151,6 +151,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -239,6 +246,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -320,22 +334,34 @@
 <dt class="sig sig-object py" id="einsums.core.Norm">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">Norm</span></span><a class="headerlink" href="#einsums.core.Norm" title="Link to this definition">#</a></dt>
 <dd><p>Enumeration of different types of matrix norms.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="einsums.core.Norm.MAXABS">
 <span class="sig-name descname"><span class="pre">MAXABS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'M'</span></em><a class="headerlink" href="#einsums.core.Norm.MAXABS" title="Link to this definition">#</a></dt>
 <dd><p>Finds the largest absolute value of the elements in a matrix.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="einsums.core.Norm.ONE">
 <span class="sig-name descname"><span class="pre">ONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1'</span></em><a class="headerlink" href="#einsums.core.Norm.ONE" title="Link to this definition">#</a></dt>
 <dd><p>Finds the one-norm of a matrix. This is equivalent to finding the maximum column sum of the matrix.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="einsums.core.Norm.INFINITY">
 <span class="sig-name descname"><span class="pre">INFINITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'I'</span></em><a class="headerlink" href="#einsums.core.Norm.INFINITY" title="Link to this definition">#</a></dt>
 <dd><p>Finds the infinity-norm of a matrix. This is equivalent to finding the maximum row sum of the matrix.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -343,6 +369,9 @@
 <span class="sig-name descname"><span class="pre">FROBENIUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F'</span></em><a class="headerlink" href="#einsums.core.Norm.FROBENIUS" title="Link to this definition">#</a></dt>
 <dd><p>Finds the Frobenius norm of a matrix. This is the square root of the sum of the squares of the elements.
 Similar to the vector norm, but applied to matrices.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -351,10 +380,16 @@ Similar to the vector norm, but applied to matrices.</p>
 <dt class="sig sig-object py" id="einsums.core.Vectors">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">Vectors</span></span><a class="headerlink" href="#einsums.core.Vectors" title="Link to this definition">#</a></dt>
 <dd><p>Enumerations of different operations for <a class="reference internal" href="#einsums.core.svd_dd" title="einsums.core.svd_dd"><code class="xref py py-func docutils literal notranslate"><span class="pre">einsums.core.svd_dd</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="einsums.core.Vectors.ALL">
 <span class="sig-name descname"><span class="pre">ALL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'A'</span></em><a class="headerlink" href="#einsums.core.Vectors.ALL" title="Link to this definition">#</a></dt>
 <dd><p>Gets all of the vectors from the singular value decomposition.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -362,6 +397,9 @@ Similar to the vector norm, but applied to matrices.</p>
 <span class="sig-name descname"><span class="pre">SOME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'S'</span></em><a class="headerlink" href="#einsums.core.Vectors.SOME" title="Link to this definition">#</a></dt>
 <dd><p>Only some of the vectors are returned. The number of vectors is the minimum of the dimensions of the
 input matrix.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -369,12 +407,18 @@ input matrix.</p>
 <span class="sig-name descname"><span class="pre">OVERWRITE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'O'</span></em><a class="headerlink" href="#einsums.core.Vectors.OVERWRITE" title="Link to this definition">#</a></dt>
 <dd><p>Overwrite some of the singular vectors into the input matrix. See the LAPACK documentation for <code class="docutils literal notranslate"><span class="pre">gesdd</span></code>
 for more details.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="einsums.core.Vectors.NONE">
 <span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'N'</span></em><a class="headerlink" href="#einsums.core.Vectors.NONE" title="Link to this definition">#</a></dt>
 <dd><p>Do not compute the vectors for the singular value decomposition.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -403,6 +447,9 @@ function, use the following.</p>
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -428,6 +475,9 @@ function, use the following.</p>
 :raises einsums.core.rank_error: if any of the tensors is not rank-2.
 :raises einsums.core.tensor_compat_error: if the rows and columns of the matrices are incompatible.
 :raises ValueError: if the storage types of the matrices are not compatible.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -456,6 +506,9 @@ function, use the following.</p>
 :raises einsums.core.tensor_compat_error: if the rows and columns of the matrix are incompatible with
 the vectors.
 :raises ValueError: if the storage types of the matrices are not compatible.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -483,6 +536,9 @@ the vectors.
 passed to the underlying library call had an illegal value. This second case should hopefully never happen.
 :raisees RuntimeError: if the algorithm does not converge, or the memory for internal buffers could not
 be allocated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -515,6 +571,9 @@ or the <code class="docutils literal notranslate"><span class="pre">W</span></co
 the proper dimensions.
 :raises TypeError: if a set of eigenvectors is requested, but the output tensor is <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 :raises ValueError: if the storage types of any of the tensors is incompatible.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -539,6 +598,9 @@ rows in <code class="docutils literal notranslate"><span class="pre">A</span></c
 :raises ValueError: if the storage types of <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code> are invalid or an invalid value was passed
 to the underlying library function. This second case should not happen.
 :raises RuntimeError: if the input matrix is singular, meaning no solutions could be found.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -556,6 +618,9 @@ to the underlying library function. This second case should not happen.
 <dd class="field-even"><p><strong>ValueError</strong> – if <code class="docutils literal notranslate"><span class="pre">A</span></code> does not store real or complex floating point data.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -573,6 +638,9 @@ to the underlying library function. This second case should not happen.
 :raises einsums.core.rank_error: if <code class="docutils literal notranslate"><span class="pre">A</span></code> is not a matrix.
 :raises IndexError: if the requested row is outside of the range of the matrix.
 :raises ValueError: if the matrix does not store real or complex floating point data.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -590,6 +658,9 @@ to the underlying library function. This second case should not happen.
 :raises einsums.core.rank_error: if <code class="docutils literal notranslate"><span class="pre">A</span></code> is not a matrix.
 :raises IndexError: if the requested column is outside of the range of the matrix.
 :raises ValueError: if the matrix does not store real or complex floating point data.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -627,6 +698,9 @@ conjugate symmetry or positive-definiteness.</p>
 </dd>
 </dl>
 <p>not real or complex floating point.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -651,6 +725,9 @@ complex behavior. This is a true inner product for complex arguments.</p>
 :raises einsums.core.dimension_error: if the input tensors do not have the same dimensions.
 :raises ValueError: if the tensors do not store the same data type or the stored data type is
 not real or complex floating point.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -677,6 +754,9 @@ argument is set to 1. In mathematical notation, this performs the following.</p>
 </dl>
 <p>do not store real or complex floating point data.
 :raises einsums.core.tensor_compat_error: if the tensors do not have the same dimensions.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -704,6 +784,9 @@ is also scaled before being accumulated. In mathematical notation, this performs
 </dl>
 <p>do not store real or complex floating point data.
 :raises einsums.core.tensor_compat_error: if the tensors do not have the same dimensions.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -733,6 +816,9 @@ is also scaled before being accumulated. In mathematical notation, this performs
 </dd>
 </dl>
 <p>is not real or complex floating point data.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -767,6 +853,9 @@ this, use <a class="reference internal" href="#einsums.core.extract_plu" title="
 </dd>
 </dl>
 <p>argument is passed to the internal <code class="docutils literal notranslate"><span class="pre">getrf</span></code> call. This last case should not happen.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -788,6 +877,9 @@ this, use <a class="reference internal" href="#einsums.core.extract_plu" title="
 :raises einsums.core.rank_error: if the input tensor is not a matrix.
 :raises RuntimeError: if the pivot list is not formatted correctly.
 :raises ValueError: if the matrix does not store real or complex floating point data.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -809,6 +901,9 @@ calling this function.</p>
 does not store real or complex floating point data, or an illegal argument is passed to
 the underlying <code class="docutils literal notranslate"><span class="pre">getri</span></code> call. This last one should not happen.
 :raises RuntimeError: if the matrix is singular.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -831,6 +926,9 @@ so that you don’t have to worry about them.</p>
 <p>does not store real or complex floating point data, or an illegal argument is passed to
 one of the underlying LAPACK calls. This last one should not happen.
 :raises RuntimeError: if the matrix is singular.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -854,6 +952,9 @@ one of the underlying LAPACK calls. This last one should not happen.
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -874,6 +975,9 @@ one of the underlying LAPACK calls. This last one should not happen.
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -896,6 +1000,9 @@ one of the underlying LAPACK calls. This last one should not happen.
 </dl>
 <p>illegal argument is passed to the underlying LAPACK call. This last one should never happen.
 :raises RuntimeError: if the SVD iterations did not converge.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -918,6 +1025,9 @@ one of the underlying LAPACK calls. This last one should not happen.
 </dl>
 <p>invalid argument was passed to the underlying LAPACK call. This last one should not happen.
 :raises RuntimeError: if the SVD iterations did not converge.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -943,6 +1053,9 @@ one of the underlying LAPACK calls. This last one should not happen.
 </dl>
 <p>illegal argument is passed to the underlying LAPACK call. This last one should never happen.
 :raises RuntimeError: if the SVD iterations did not converge.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -963,6 +1076,9 @@ one of the underlying LAPACK calls. This last one should not happen.
 <p>vectors.
 :raises einsums.core.rank_error: if the input is not a matrix.
 :raises ValueError: if the matrix does not store real or complex floating point data.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -987,6 +1103,9 @@ one of the underlying LAPACK calls. This last one should not happen.
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1010,6 +1129,9 @@ one of the underlying LAPACK calls. This last one should not happen.
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1040,6 +1162,9 @@ one of the underlying LAPACK calls. This last one should not happen.
 real or complex floating point data, or an invalid argument is passed to one of the underlying
 LAPACK functions. This last case should hopefully not happen.
 :raises RuntimeError: if the Schur decomposition step fails to converge.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1061,6 +1186,12 @@ LAPACK functions. This last case should hopefully not happen.
 </dd>
 </dl>
 <p>or an invalid value was passed to the underlying LAPACK call. The second case should not happen.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This function now returns the Q and R matrices instead of matrices that need to be passed to other functions.</p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1086,6 +1217,12 @@ LAPACK functions. This last case should hopefully not happen.
 </dl>
 <p>do not store real or complex floating point data,
 or an invalid value was passed to the underlying LAPACK call. The second case should not happen.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+<div class="versionremoved">
+<p><span class="versionmodified removed">Removed in version 2.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1104,6 +1241,12 @@ or an invalid value was passed to the underlying LAPACK call. The second case sh
 :return: The R matrix from the decomposition.
 :raises einsums.core.rank_error: if the input is not a matrix.
 :raises ValueError: if the matrix inputs do not store real or complex floating point data.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+<div class="versionremoved">
+<p><span class="versionmodified removed">Removed in version 2.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1131,6 +1274,9 @@ or an invalid value was passed to the underlying LAPACK call. The second case sh
 </dd>
 </dl>
 <p>store real or complex floating point data.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1153,6 +1299,9 @@ or an invalid value was passed to the underlying LAPACK call. The second case sh
 </dd>
 </dl>
 <p>argument passed to the underlying LAPACK call was invalid. The second case should not happen.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 </section>

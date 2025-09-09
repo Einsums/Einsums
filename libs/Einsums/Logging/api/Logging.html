@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -332,62 +346,224 @@
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_DETAIL_DECLARE_SPDLOG">
 <span class="target" id="_logging_8hpp_1a2c254b2e204c61b5b0ce6969b87f6899"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_DETAIL_DECLARE_SPDLOG</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_DETAIL_DECLARE_SPDLOG" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Create the prototype of a logger. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of the logger to create.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_DETAIL_DEFINE_SPDLOG">
 <span class="target" id="_logging_8hpp_1a8c0e2e5bd9f95a5aa167c6d053b65b6f"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_DETAIL_DEFINE_SPDLOG</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">name</span></span>, <span class="n"><span class="pre">loglevel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_DETAIL_DEFINE_SPDLOG" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Create the definition of a logger. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of the logger to create. </p></li>
+<li><p><strong>loglevel</strong> – The log level for the sink.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_DETAIL_SPDLOG">
 <span class="target" id="_logging_8hpp_1a4551d918b8f3e788551aac3a3944a504"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_DETAIL_SPDLOG</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">name</span></span>, <span class="n"><span class="pre">loglevel</span></span>, <span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_DETAIL_SPDLOG" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Implementation detail for the log macros. </p>
+<p>This macro can also take a format string and the arguments to support it.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of the logger. </p></li>
+<li><p><strong>loglevel</strong> – The level of the message. </p></li>
+<li><p><strong>...</strong> – The format string and arguments to support it.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_DETAIL_SPDLOG_ENABLED">
 <span class="target" id="_logging_8hpp_1a5a1b6fb2170d9e450e720fda6f74e629"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_DETAIL_SPDLOG_ENABLED</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">name</span></span>, <span class="n"><span class="pre">loglevel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_DETAIL_SPDLOG_ENABLED" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Checks to see if the logger can handle the given log level.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of the logger. </p></li>
+<li><p><strong>loglevel</strong> – The leve to check.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_LOG">
 <span class="target" id="_logging_8hpp_1a3ce967cf3e6ed7d1c7d83bbe65cf583f"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_LOG</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">loglevel</span></span>, <span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_LOG" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Log a message at the given level.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loglevel</strong> – The level to log at. </p></li>
+<li><p><strong>...</strong> – The format string and arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_LOG_ENABLED">
 <span class="target" id="_logging_8hpp_1a96f247c7d4e6cae0c7690f0cae3e29e5"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_LOG_ENABLED</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">loglevel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_LOG_ENABLED" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Determine if Einsums has the given log level enabled.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loglevel</strong> – The level to test.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_LOG_TRACE">
 <span class="target" id="_logging_8hpp_1af1b3842ff1fd416f291e40ffb2803704"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_LOG_TRACE</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_LOG_TRACE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Log a tracing message. These can be disabled at compile time by compiling in the Release configuration. Trace messages are the lowest priority and are used for intensive debugging. It can take a format string and the arguments for that format string.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>...</strong> – The format string and arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_LOG_DEBUG">
 <span class="target" id="_logging_8hpp_1a8e4d18e704eed28d5b6e7f83a444777e"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_LOG_DEBUG</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_LOG_DEBUG" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Log a debugging message. These are messages that may help a maintainer figure out what is happening in the code. They can be disabled at compile time by compiling in the Release configuration. It can take a format string and the arguments for that format string.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>...</strong> – The format string and arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_LOG_INFO">
 <span class="target" id="_logging_8hpp_1a87c785d94cbf5a47f97408874a18eb50"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_LOG_INFO</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_LOG_INFO" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Log an informational message. These indicate things that are not errors or bad behavior, but rather things that tell you about the program you are running, such as configuration values. It can take a format string and the arguments for that format string.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>...</strong> – The format string and arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_LOG_WARN">
 <span class="target" id="_logging_8hpp_1ad5b5c97c33980869f3f7f2a67a71929a"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_LOG_WARN</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_LOG_WARN" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Log a warning message. These are messages logged when a recoverable issue occurs in the code. It can take a format string and the arguments for that format string.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>...</strong> – The format string and arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_LOG_ERROR">
 <span class="target" id="_logging_8hpp_1a63223147efdb129c99305f54d358def3"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_LOG_ERROR</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_LOG_ERROR" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Log an error message. These are messages logged when an error occurs in the code. These are often accompanied by an exception. It can take a format string and the arguments for that format string.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>...</strong> – The format string and arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_LOG_CRITICAL">
 <span class="target" id="_logging_8hpp_1a104165b78a18ea8015ac467789aff430"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_LOG_CRITICAL</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_LOG_CRITICAL" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Log a critical error message. These are messages logged when an unrecoverable error occurs in the code. It can take a format string and the arguments for that format string.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>...</strong> – The format string and arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <dl class="cpp type">
@@ -395,7 +571,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>

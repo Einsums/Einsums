@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -419,12 +433,18 @@
 <dt class="sig sig-object py" id="einsums.utils.TensorIndices">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.utils.</span></span><span class="sig-name descname"><span class="pre">TensorIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/einsums/utils.html#TensorIndices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#einsums.utils.TensorIndices" title="Link to this definition">#</a></dt>
 <dd><p>Iterator for moving through the indices of a tensor.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="einsums.utils.add_complex">
 <span class="sig-prename descclassname"><span class="pre">einsums.utils.</span></span><span class="sig-name descname"><span class="pre">add_complex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/einsums/utils.html#add_complex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#einsums.utils.add_complex" title="Link to this definition">#</a></dt>
 <dd><p>Takes a datatype and gives the complex equivalent.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -446,6 +466,9 @@ Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenva
 :param dtype: The data type to store.
 :return: A positive definite matrix.
 :raises ValueError: if the data type is not a real or complex floating point type.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -464,6 +487,9 @@ Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenva
 :param dtype: The data type to store.
 :return: A positive definite matrix.
 :raises ValueError: if the data type is not a real or complex floating point type.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -481,6 +507,9 @@ Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenva
 <dd class="field-even"><p><strong>ValueError</strong> – if the data type is not a real or complex floating point type.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -505,6 +534,9 @@ Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenva
 :param dtype: The data type to store.
 :return: A positive definite matrix.
 :raises ValueError: if the data type is not a real or complex floating point type.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -526,6 +558,9 @@ Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenva
 :param dtype: The data type to store.
 :return: A positive definite matrix.
 :raises ValueError: if the data type is not a real or complex floating point type.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -544,6 +579,9 @@ Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenva
 <dd class="field-even"><p><strong>ValueError</strong> – if the data type is not a real or complex floating point type.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -559,6 +597,9 @@ The data type can also be specified.</p>
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -578,12 +619,18 @@ If the iterables are of different lengths, then once one ends, it will emit
 </dd>
 </dl>
 <p>iterator ends early, then its entry will be filled with <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="einsums.utils.is_complex">
 <span class="sig-prename descclassname"><span class="pre">einsums.utils.</span></span><span class="sig-name descname"><span class="pre">is_complex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/einsums/utils.html#is_complex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#einsums.utils.is_complex" title="Link to this definition">#</a></dt>
 <dd><p>Checks to see if the datatype is a complex datatype.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -595,6 +642,9 @@ If the iterables are of different lengths, then once one ends, it will emit
 <dd class="field-odd"><p><strong>arg</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – This decorator may take a string. This will be placed after the function name in the timer report.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -617,6 +667,9 @@ Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenva
 :param method: Which kind of tensor to create. Can be “einsums” or “numpy”.
 :return: A positive definite matrix.
 :raises ValueError: if the method is not valid.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -642,6 +695,9 @@ Boltzmann-Maxwell distribution to ensure that there will never be a zero eigenva
 :param method: Which kind of tensor to create. Can be “einsums” or “numpy”.
 :return: A positive definite matrix.
 :raises ValueError: if the method is not valid.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -662,12 +718,18 @@ This function is mostly used in tests to ensure cross functionality.</p>
 <dd class="field-even"><p><strong>ValueError</strong> – if the method is not valid.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="einsums.utils.remove_complex">
 <span class="sig-prename descclassname"><span class="pre">einsums.utils.</span></span><span class="sig-name descname"><span class="pre">remove_complex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/einsums/utils.html#remove_complex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#einsums.utils.remove_complex" title="Link to this definition">#</a></dt>
 <dd><p>Takes a datatype and gives the real equivalent.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -688,6 +750,9 @@ to ensure cross functionality.</p>
 <dd class="field-even"><p><strong>ValueError</strong> – if the method is not valid.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
 </dd></dl>
 
 </section>

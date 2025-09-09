@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -424,6 +438,9 @@
 <dd><p>This is thrown when a tensor is passed to an operation, but the operation can not operate
 on tensors of its rank. For instance, <a class="reference internal" href="einsums.core.linearalgebra.html#einsums.core.gemm" title="einsums.core.gemm"><code class="xref py py-func docutils literal notranslate"><span class="pre">einsums.core.gemm</span></code></a> can only operate on
 rank-2 tensors. If a rank-1 tensor were to be passed in, then this error will be thrown.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -431,6 +448,9 @@ rank-2 tensors. If a rank-1 tensor were to be passed in, then this error will be
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">dimension_error</span></span><a class="headerlink" href="#einsums.core.dimension_error" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when tensors have incompatible dimensions. For instance, <a class="reference internal" href="einsums.core.linearalgebra.html#einsums.core.geev" title="einsums.core.geev"><code class="xref py py-func docutils literal notranslate"><span class="pre">einsums.core.geev</span></code></a>
 can only operate on square matrices. If a non-square matrix were to be passed, this error will be thrown.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -438,6 +458,9 @@ can only operate on square matrices. If a non-square matrix were to be passed, t
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">tensor_compat_error</span></span><a class="headerlink" href="#einsums.core.tensor_compat_error" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when tensor arguments have incompatible dimensions with each other. For instance,
 passing two <em>m</em> by <em>n</em> tensors with no transpositions to <a class="reference internal" href="einsums.core.linearalgebra.html#einsums.core.gemm" title="einsums.core.gemm"><code class="xref py py-func docutils literal notranslate"><span class="pre">einsums.core.gemm</span></code></a> will throw this error.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -445,6 +468,9 @@ passing two <em>m</em> by <em>n</em> tensors with no transpositions to <a class=
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">num_argument_error</span></span><a class="headerlink" href="#einsums.core.num_argument_error" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when the wrong number of arguments are passed to a function that can take several
 arguments. It has specializations <a class="reference internal" href="#einsums.core.too_many_args" title="einsums.core.too_many_args"><code class="xref py py-exc docutils literal notranslate"><span class="pre">too_many_args</span></code></a> and <a class="reference internal" href="#einsums.core.not_enough_args" title="einsums.core.not_enough_args"><code class="xref py py-exc docutils literal notranslate"><span class="pre">not_enough_args</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -452,54 +478,81 @@ arguments. It has specializations <a class="reference internal" href="#einsums.c
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">not_enough_args</span></span><a class="headerlink" href="#einsums.core.not_enough_args" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when a function that can take a variable number of arguments doesn’t receive enough
 arguments.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.core.too_many_args">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">too_many_args</span></span><a class="headerlink" href="#einsums.core.too_many_args" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when a function that can take a variable number of arguments receives more than expected.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.core.access_denied">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">access_denied</span></span><a class="headerlink" href="#einsums.core.access_denied" title="Link to this definition">#</a></dt>
 <dd><p>Indicates that an operation was halted due to access restrictions, such as trying to write to read-only data.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.core.todo_error">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">todo_error</span></span><a class="headerlink" href="#einsums.core.todo_error" title="Link to this definition">#</a></dt>
 <dd><p>This indicates that a piece of code has not been implemented but will be in the future.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.core.not_implemented">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">not_implemented</span></span><a class="headerlink" href="#einsums.core.not_implemented" title="Link to this definition">#</a></dt>
 <dd><p>This indicates that a code path has not been implemented and will likely not be implemented in the future.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.core.bad_logic">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">bad_logic</span></span><a class="headerlink" href="#einsums.core.bad_logic" title="Link to this definition">#</a></dt>
 <dd><p>General runtime error indicating that some program logic failed.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.core.uninitialized_error">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">uninitialized_error</span></span><a class="headerlink" href="#einsums.core.uninitialized_error" title="Link to this definition">#</a></dt>
 <dd><p>Indicates that the code was trying to use uninitialized data.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.core.system_error">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">system_error</span></span><a class="headerlink" href="#einsums.core.system_error" title="Link to this definition">#</a></dt>
 <dd><p>Indicates that an error happened when making a system call.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.core.enum_error">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">enum_error</span></span><a class="headerlink" href="#einsums.core.enum_error" title="Link to this definition">#</a></dt>
 <dd><p>Indicates that an invalid enumeration value was used.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -508,6 +561,9 @@ arguments.</p>
 <dd><p>Thrown when trying to convert a complex number to a real number. Instead, the input
 data should be transformed into a real value in a way that makes sense for the operation
 being performed. This is often either the magnitude or the real part.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
 </dd></dl>
 
 </section>

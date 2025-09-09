@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -451,7 +465,17 @@ details.</p>
 <li><p><strong>result[out]</strong> – The output tensor.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/api/Error.html#_CPPv4N7einsums15dimension_errorE" title="einsums::dimension_error"><span class="n">dimension_error</span></a></span></span> – When the size of the input and output are invalid. The output needs to have more than half the size of the input.</p>
+</dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0: </span>The complex-to-complex overloads do not throw an exception when they have invalid sizes. They are instead prone to buffer
+overruns.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>The complex-to-complex overloads now throw an exception when the inputs have invalid sizes.</p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -480,7 +504,17 @@ details.</p>
 <li><p><strong>result[out]</strong> – The output tensor.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../Errors/api/Error.html#_CPPv4N7einsums15dimension_errorE" title="einsums::dimension_error"><span class="n">dimension_error</span></a></span></span> – When the size of the input and output are invalid. The output needs to have more than half the size of the input.</p>
+</dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0: </span>The complex-to-complex overloads do not throw an exception when they have invalid sizes. They are instead prone to buffer
+overruns.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>The complex-to-complex overloads now throw an exception when the inputs have invalid sizes.</p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
@@ -498,6 +532,9 @@ details.</p>
 <dd class="field-even"><p>A tensor that contains the frequency at each position in a frequency tensor of the same size.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 </section>

@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -343,7 +357,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -353,15 +367,20 @@
 <dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums8diagonalE6TensorI1TXL2EEERK6TensorI1TXL1EEE">
 <span id="_CPPv3I0EN7einsums8diagonalERK6TensorI1TXL1EEE"></span><span id="_CPPv2I0EN7einsums8diagonalERK6TensorI1TX1EE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a3747aec9b97db246711700da450cbaac"></span><a class="reference internal" href="../../Tensor/api/Tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums8diagonalE6TensorI1TXL2EEERK6TensorI1TXL1EEE" title="einsums::diagonal::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">diagonal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../Tensor/api/Tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums8diagonalE6TensorI1TXL2EEERK6TensorI1TXL1EEE" title="einsums::diagonal::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">v</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums8diagonalE6TensorI1TXL2EEERK6TensorI1TXL1EEE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Creates a diagonal matrix from a vector. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>T</strong> – The datatype of the underlying data. </p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>v</strong> – The input vector. </p>
+<dd class="field-even"><p><strong>v</strong> – <strong>[in]</strong> The input vector. </p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new rank-2 tensor with the diagonal elements set to <code class="docutils literal notranslate"><span class="pre">v</span></code> . </p>
+<dd class="field-odd"><p>A new rank-2 tensor with the diagonal elements set to <code class="docutils literal notranslate"><span class="pre">v</span></code> .</p>
 </dd>
 </dl>
 </dd></dl>
@@ -370,18 +389,23 @@
 <dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums13diagonal_likeE6TensorI1TXL2EEERK6TensorI1TXL1EEERK6TensorI1TXL2EEE">
 <span id="_CPPv3I0EN7einsums13diagonal_likeERK6TensorI1TXL1EEERK6TensorI1TXL2EEE"></span><span id="_CPPv2I0EN7einsums13diagonal_likeERK6TensorI1TX1EERK6TensorI1TX2EE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1aa166028d581582fd1e0e519dda3aa401"></span><a class="reference internal" href="../../Tensor/api/Tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums13diagonal_likeE6TensorI1TXL2EEERK6TensorI1TXL1EEERK6TensorI1TXL2EEE" title="einsums::diagonal_like::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">diagonal_like</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../Tensor/api/Tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums13diagonal_likeE6TensorI1TXL2EEERK6TensorI1TXL1EEERK6TensorI1TXL2EEE" title="einsums::diagonal_like::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">v</span></span>, <a class="reference internal" href="../../Tensor/api/Tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums13diagonal_likeE6TensorI1TXL2EEERK6TensorI1TXL1EEERK6TensorI1TXL2EEE" title="einsums::diagonal_like::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">like</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums13diagonal_likeE6TensorI1TXL2EEERK6TensorI1TXL1EEERK6TensorI1TXL2EEE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Creates a diagonal matrix from a vector using a template. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>T</strong> – The datatype of the underlying data. </p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>v</strong> – The input vector. </p></li>
-<li><p><strong>like</strong> – The template to use. Its dimensions and name will be used for the new tensor. </p></li>
+<li><p><strong>v</strong> – <strong>[in]</strong> The input vector. </p></li>
+<li><p><strong>like</strong> – <strong>[in]</strong> The template to use. Its dimensions and name will be used for the new tensor. </p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new rank-2 tensor with the diagonal elements set to <code class="docutils literal notranslate"><span class="pre">v</span></code> . </p>
+<dd class="field-odd"><p>A new rank-2 tensor with the diagonal elements set to <code class="docutils literal notranslate"><span class="pre">v</span></code> .</p>
 </dd>
 </dl>
 </dd></dl>

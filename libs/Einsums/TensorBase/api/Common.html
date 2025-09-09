@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -336,6 +350,10 @@
 <dt class="sig sig-object cpp" id="c.DEFINE_STRUCT">
 <span class="target" id="_common_8hpp_1a4c18c2311abfaec37aa839eaa569c48a"></span><span class="sig-name descname"><span class="n"><span class="pre">DEFINE_STRUCT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Name</span></span>, <span class="n"><span class="pre">UnderlyingType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DEFINE_STRUCT" title="Link to this definition">#</a><br /></dt>
 <dd><p>Convenience macro for creating a type derived from a std::array. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -344,7 +362,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -353,13 +371,25 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums3AllE">
 <span id="_CPPv3N7einsums3AllE"></span><span id="_CPPv2N7einsums3AllE"></span><span id="einsums::All__AllT"></span><span class="target" id="namespaceeinsums_1a595ffa036774625ab9599ce803bf9486"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums4AllTE" title="einsums::AllT"><span class="n"><span class="pre">AllT</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">All</span></span></span><a class="headerlink" href="#_CPPv4N7einsums3AllE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Implementation of <a class="reference internal" href="#structeinsums_1_1_all_t"><span class="std std-ref">AllT</span></a> .</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 </div>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums4AllTE">
 <span id="_CPPv3N7einsums4AllTE"></span><span id="_CPPv2N7einsums4AllTE"></span><span id="einsums::AllT"></span><span class="target" id="structeinsums_1_1_all_t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AllT</span></span></span><a class="headerlink" href="#_CPPv4N7einsums4AllTE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><div class="docutils container">
+<em>#include &lt;Common.hpp&gt;</em></div>
+<p>Type that indicates that all elements along a dimension should be included in a view.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4I_NSt6size_tEEN7einsums5ChunkE">
@@ -367,12 +397,20 @@
 <dd><div class="docutils container">
 <em>#include &lt;Common.hpp&gt;</em></div>
 <p>Holds a list of chunks in an array. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums5Chunk5ChunkEDp4Args">
 <span id="_CPPv3IDpEN7einsums5Chunk5ChunkEDp4Args"></span><span id="_CPPv2IDpEN7einsums5Chunk5ChunkEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_chunk_1a41e056f6e2d97a6d8b72efffb3d37537"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Chunk</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums5Chunk5ChunkEDp4Args" title="einsums::Chunk::Chunk::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums5Chunk5ChunkEDp4Args" title="Link to this definition">#</a><br /></dt>
 <dd><p>Aggregate constructor. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -384,12 +422,20 @@
 <dd><div class="docutils container">
 <em>#include &lt;Common.hpp&gt;</em></div>
 <p>Holds a list of counts in an array. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums5Count5CountEDp4Args">
 <span id="_CPPv3IDpEN7einsums5Count5CountEDp4Args"></span><span id="_CPPv2IDpEN7einsums5Count5CountEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_count_1ac04a0258f7a5dd2ef866047be8f92d4d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Count</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums5Count5CountEDp4Args" title="einsums::Count::Count::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums5Count5CountEDp4Args" title="Link to this definition">#</a><br /></dt>
 <dd><p>Aggregate constructor. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -401,18 +447,40 @@
 <dd><div class="docutils container">
 <em>#include &lt;Common.hpp&gt;</em></div>
 <p>Holds a list of dimensions in an array. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums3Dim3DimEDp4Args">
 <span id="_CPPv3IDpEN7einsums3Dim3DimEDp4Args"></span><span id="_CPPv2IDpEN7einsums3Dim3DimEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_dim_1a8b760ae05e61b3a5dfa538e0e2475077"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dim</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums3Dim3DimEDp4Args" title="einsums::Dim::Dim::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums3Dim3DimEDp4Args" title="Link to this definition">#</a><br /></dt>
 <dd><p>Aggregate constructor. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums3Dim3DimE8Iterator8Iterator">
-<span id="_CPPv3I0EN7einsums3Dim3DimE8Iterator8Iterator"></span><span id="_CPPv2I0EN7einsums3Dim3DimE8Iterator8Iterator"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Iterator</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_dim_1a59bfbc3d5a436023fee8a5956e9bb93a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dim</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums3Dim3DimE8Iterator8Iterator" title="einsums::Dim::Dim::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums3Dim3DimE8Iterator8Iterator" title="einsums::Dim::Dim::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums3Dim3DimE8Iterator8Iterator" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt14input_iteratorEEN7einsums3Dim3DimE8Iterator8Iterator">
+<span id="_CPPv3I_NSt14input_iteratorEEN7einsums3Dim3DimE8Iterator8Iterator"></span><span id="_CPPv2I_NSt14input_iteratorEEN7einsums3Dim3DimE8Iterator8Iterator"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">input_iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Iterator</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_dim_1a81e93b0cfd8bd262cde9b42c1c54b4e0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dim</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt14input_iteratorEEN7einsums3Dim3DimE8Iterator8Iterator" title="einsums::Dim::Dim::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <a class="reference internal" href="#_CPPv4I_NSt14input_iteratorEEN7einsums3Dim3DimE8Iterator8Iterator" title="einsums::Dim::Dim::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_NSt14input_iteratorEEN7einsums3Dim3DimE8Iterator8Iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct a dimension array and fill it with values.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – <strong>[in]</strong> An iterator to the start of the data. </p></li>
+<li><p><strong>end</strong> – <strong>[in]</strong> An iterator to the end of the data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </dd></dl>
@@ -423,18 +491,40 @@
 <dd><div class="docutils container">
 <em>#include &lt;Common.hpp&gt;</em></div>
 <p>Holds a list of offsets in an array. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums6Offset6OffsetEDp4Args">
 <span id="_CPPv3IDpEN7einsums6Offset6OffsetEDp4Args"></span><span id="_CPPv2IDpEN7einsums6Offset6OffsetEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_offset_1a39b88b2ebd61b169c0cd9dddce083dae"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Offset</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums6Offset6OffsetEDp4Args" title="einsums::Offset::Offset::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums6Offset6OffsetEDp4Args" title="Link to this definition">#</a><br /></dt>
 <dd><p>Aggregate constructor. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums6Offset6OffsetE8Iterator8Iterator">
-<span id="_CPPv3I0EN7einsums6Offset6OffsetE8Iterator8Iterator"></span><span id="_CPPv2I0EN7einsums6Offset6OffsetE8Iterator8Iterator"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Iterator</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_offset_1af44c94aca21d3dde8ce84f526a814bc4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Offset</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums6Offset6OffsetE8Iterator8Iterator" title="einsums::Offset::Offset::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums6Offset6OffsetE8Iterator8Iterator" title="einsums::Offset::Offset::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums6Offset6OffsetE8Iterator8Iterator" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt14input_iteratorEEN7einsums6Offset6OffsetE8Iterator8Iterator">
+<span id="_CPPv3I_NSt14input_iteratorEEN7einsums6Offset6OffsetE8Iterator8Iterator"></span><span id="_CPPv2I_NSt14input_iteratorEEN7einsums6Offset6OffsetE8Iterator8Iterator"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">input_iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Iterator</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_offset_1aa9614476c60a122a5b3c71a81944f1af"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Offset</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt14input_iteratorEEN7einsums6Offset6OffsetE8Iterator8Iterator" title="einsums::Offset::Offset::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <a class="reference internal" href="#_CPPv4I_NSt14input_iteratorEEN7einsums6Offset6OffsetE8Iterator8Iterator" title="einsums::Offset::Offset::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_NSt14input_iteratorEEN7einsums6Offset6OffsetE8Iterator8Iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct an offset array from an iterator. If more elements are provided than the rank, then the extra elements are ignored. If fewer elements are provided than the rank, then the array will be backfilled with zeros.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – <strong>[in]</strong> The starting iterator. </p></li>
+<li><p><strong>end</strong> – <strong>[in]</strong> The ending iterator.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </dd></dl>
@@ -445,7 +535,10 @@
 <dd><div class="docutils container">
 <em>#include &lt;Common.hpp&gt;</em></div>
 <p>Holds two values: a starting value and an ending value.</p>
-<p>Holds two values: a starting value and an ending value. It will be treated as a single value if the start and end are the same. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 <p>Subclassed by <a class="reference internal" href="#structeinsums_1_1_removable_range"><span class="std std-ref">einsums::RemovableRange</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -457,13 +550,22 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_NSt8integralE_NSt8integralEEN7einsums5Range5RangeE5First6Second">
 <span id="_CPPv3I_NSt8integralE_NSt8integralEEN7einsums5Range5RangeE5First6Second"></span><span id="_CPPv2I_NSt8integralE_NSt8integralEEN7einsums5Range5RangeE5First6Second"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">integral</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">First</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">integral</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Second</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_range_1a0c69c0300ceed0d309e6c4402559ea28"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Range</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt8integralE_NSt8integralEEN7einsums5Range5RangeE5First6Second" title="einsums::Range::Range::First"><span class="n"><span class="pre">First</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">first</span></span>, <a class="reference internal" href="#_CPPv4I_NSt8integralE_NSt8integralEEN7einsums5Range5RangeE5First6Second" title="einsums::Range::Range::Second"><span class="n"><span class="pre">Second</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">second</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_NSt8integralE_NSt8integralEEN7einsums5Range5RangeE5First6Second" title="Link to this definition">#</a><br /></dt>
-<dd><p>Initialize a range. </p>
+<dd><p>Initialize a range.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums5Range12is_removableEv">
 <span id="_CPPv3NK7einsums5Range12is_removableEv"></span><span id="_CPPv2NK7einsums5Range12is_removableEv"></span><span id="einsums::Range::is_removableC"></span><span class="target" id="structeinsums_1_1_range_1a75ba988263120354c799671c7de0cb3d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_removable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK7einsums5Range12is_removableEv" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Check if the range can be treated as a single value if its entries are the same. If it is removable and the entries are the same, then the rank of the tensor view created with this range will have a lower rank than the parent tensor. If it is not removable, or the entries are different, then the rank of the view will be the same as the rank of the parent.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -471,7 +573,12 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums5Range13_is_removableE">
 <span id="_CPPv3N7einsums5Range13_is_removableE"></span><span id="_CPPv2N7einsums5Range13_is_removableE"></span><span id="einsums::Range::_is_removable__b"></span><span class="target" id="structeinsums_1_1_range_1a4ae24373da7a4563720eff2c8243f4aa"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_is_removable</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums5Range13_is_removableE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Holds whether the range is removable.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 </div>
 </dd></dl>
@@ -479,12 +586,41 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums14RemovableRangeE">
 <span id="_CPPv3N7einsums14RemovableRangeE"></span><span id="_CPPv2N7einsums14RemovableRangeE"></span><span id="einsums::RemovableRange"></span><span class="target" id="structeinsums_1_1_removable_range"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemovableRange</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N7einsums5RangeE" title="einsums::Range"><span class="n"><span class="pre">Range</span></span></a><a class="headerlink" href="#_CPPv4N7einsums14RemovableRangeE" title="Link to this definition">#</a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><div class="docutils container">
+<em>#include &lt;Common.hpp&gt;</em></div>
+<p>Holds two values: a starting value and an ending value. It will be treated as a single value if the start and end are the same. The usefulness may not be immediately apparent. This class is mostly used in the Python compatibility layer, but as an example, look at this code segment.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">{</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">};</span><span class="w"> </span><span class="c1">// A is a rank-3 tensor.</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">A_view_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">});</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A_view_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A_view_3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="n">RemovableRange</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">});</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Range</span><span class="o">&gt;</span><span class="w"> </span><span class="n">indices</span><span class="p">{</span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="n">RemovableRange</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">}};</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">A_view_4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">indices</span><span class="p">);</span>
+
+<span class="n">EINSUMS_ASSERT</span><span class="p">(</span><span class="n">A_view_1</span><span class="p">.</span><span class="n">rank</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="n">EINSUMS_ASSERT</span><span class="p">(</span><span class="n">A_view_2</span><span class="p">.</span><span class="n">rank</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="n">EINSUMS_ASSERT</span><span class="p">(</span><span class="n">A_view_3</span><span class="p">.</span><span class="n">rank</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="n">EINSUMS_ASSERT</span><span class="p">(</span><span class="n">A_view_4</span><span class="p">.</span><span class="n">rank</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>In the first three examples, the <a class="reference internal" href="#structeinsums_1_1_removable_range"><span class="std std-ref">RemovableRange</span></a> is not really needed. It can be replaced with a single value index. However, in the fourth example, we can’t use a single value because the vector can only hold ranges. Since <a class="reference internal" href="#structeinsums_1_1_removable_range"><span class="std std-ref">RemovableRange</span></a> extends <a class="reference internal" href="#structeinsums_1_1_range"><span class="std std-ref">Range</span></a>, we can use it in this vector where it will be treated as if it were a single index. If the elements in the range are not the same, such as <code class="docutils literal notranslate"><a class="reference internal" href="#structeinsums_1_1_removable_range"><span class="std std-ref"><span class="pre">RemovableRange</span></span></a><span class="pre">{0,</span> <span class="pre">1}</span></code>, then it behaves exactly the same as a regular <a class="reference internal" href="#structeinsums_1_1_range"><span class="std std-ref">Range</span></a>. The removable part is a hint to the functions that look for them that they can be removed if needed. <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="err">\</span><span class="n">verbatim</span><span class="w"> </span><span class="n">embed</span><span class="o">:</span><span class="n">rst</span><span class="w"> </span>
+<span class="w"> </span><span class="p">..</span><span class="w"> </span><span class="n">versionadded</span><span class="o">::</span><span class="w"> </span><span class="mf">2.0.0</span><span class="w"> </span>
+<span class="w"> </span><span class="err">\</span><span class="n">endverbatim</span>
+</pre></div>
+</div>
+</p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_NSt8integralE_NSt8integralEEN7einsums14RemovableRange14RemovableRangeE5First6Second">
 <span id="_CPPv3I_NSt8integralE_NSt8integralEEN7einsums14RemovableRange14RemovableRangeE5First6Second"></span><span id="_CPPv2I_NSt8integralE_NSt8integralEEN7einsums14RemovableRange14RemovableRangeE5First6Second"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">integral</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">First</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">integral</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Second</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_removable_range_1a9bbc9e4a18c3191ac039479519fadc0a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemovableRange</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt8integralE_NSt8integralEEN7einsums14RemovableRange14RemovableRangeE5First6Second" title="einsums::RemovableRange::RemovableRange::First"><span class="n"><span class="pre">First</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">first</span></span>, <a class="reference internal" href="#_CPPv4I_NSt8integralE_NSt8integralEEN7einsums14RemovableRange14RemovableRangeE5First6Second" title="einsums::RemovableRange::RemovableRange::Second"><span class="n"><span class="pre">Second</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">second</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_NSt8integralE_NSt8integralEEN7einsums14RemovableRange14RemovableRangeE5First6Second" title="Link to this definition">#</a><br /></dt>
-<dd><p>Initialize a range. </p>
+<dd><p>Initialize a range.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -496,18 +632,40 @@
 <dd><div class="docutils container">
 <em>#include &lt;Common.hpp&gt;</em></div>
 <p>Holds a list of strides in an array. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums6Stride6StrideEDp4Args">
 <span id="_CPPv3IDpEN7einsums6Stride6StrideEDp4Args"></span><span id="_CPPv2IDpEN7einsums6Stride6StrideEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_stride_1ae6057cf3d9daf1bce4f7a1ca0bfe3e35"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stride</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7einsums6Stride6StrideEDp4Args" title="einsums::Stride::Stride::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums6Stride6StrideEDp4Args" title="Link to this definition">#</a><br /></dt>
 <dd><p>Aggregate constructor. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums6Stride6StrideE8Iterator8Iterator">
-<span id="_CPPv3I0EN7einsums6Stride6StrideE8Iterator8Iterator"></span><span id="_CPPv2I0EN7einsums6Stride6StrideE8Iterator8Iterator"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Iterator</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_stride_1aca85638d088edd7dc52756f61e68c475"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stride</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums6Stride6StrideE8Iterator8Iterator" title="einsums::Stride::Stride::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums6Stride6StrideE8Iterator8Iterator" title="einsums::Stride::Stride::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums6Stride6StrideE8Iterator8Iterator" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt14input_iteratorEEN7einsums6Stride6StrideE8Iterator8Iterator">
+<span id="_CPPv3I_NSt14input_iteratorEEN7einsums6Stride6StrideE8Iterator8Iterator"></span><span id="_CPPv2I_NSt14input_iteratorEEN7einsums6Stride6StrideE8Iterator8Iterator"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">input_iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Iterator</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1_stride_1a830408a8b8c29ff325cc63432db5a243"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stride</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt14input_iteratorEEN7einsums6Stride6StrideE8Iterator8Iterator" title="einsums::Stride::Stride::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <a class="reference internal" href="#_CPPv4I_NSt14input_iteratorEEN7einsums6Stride6StrideE8Iterator8Iterator" title="einsums::Stride::Stride::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_NSt14input_iteratorEEN7einsums6Stride6StrideE8Iterator8Iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct a stride array from an iterator. If more elements are provided than the rank, then the extra elements are ignored. If fewer elements are provided than the rank, then the array will be backfilled with zeros.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – <strong>[in]</strong> The starting iterator. </p></li>
+<li><p><strong>end</strong> – <strong>[in]</strong> The ending iterator.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </dd></dl>
@@ -559,12 +717,12 @@
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_NSt6size_tEEN7einsums3DimE"><code class="docutils literal notranslate"><span class="pre">einsums::Dim</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7einsums3Dim3DimEDp4Args"><code class="docutils literal notranslate"><span class="pre">Dim()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums3Dim3DimE8Iterator8Iterator"><code class="docutils literal notranslate"><span class="pre">Dim()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_NSt14input_iteratorEEN7einsums3Dim3DimE8Iterator8Iterator"><code class="docutils literal notranslate"><span class="pre">Dim()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_NSt6size_tEEN7einsums6OffsetE"><code class="docutils literal notranslate"><span class="pre">einsums::Offset</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7einsums6Offset6OffsetEDp4Args"><code class="docutils literal notranslate"><span class="pre">Offset()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums6Offset6OffsetE8Iterator8Iterator"><code class="docutils literal notranslate"><span class="pre">Offset()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_NSt14input_iteratorEEN7einsums6Offset6OffsetE8Iterator8Iterator"><code class="docutils literal notranslate"><span class="pre">Offset()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums5RangeE"><code class="docutils literal notranslate"><span class="pre">einsums::Range</span></code></a><ul class="nav section-nav flex-column">
@@ -580,7 +738,7 @@
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_NSt6size_tEEN7einsums6StrideE"><code class="docutils literal notranslate"><span class="pre">einsums::Stride</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7einsums6Stride6StrideEDp4Args"><code class="docutils literal notranslate"><span class="pre">Stride()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums6Stride6StrideE8Iterator8Iterator"><code class="docutils literal notranslate"><span class="pre">Stride()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_NSt14input_iteratorEEN7einsums6Stride6StrideE8Iterator8Iterator"><code class="docutils literal notranslate"><span class="pre">Stride()</span></code></a></li>
 </ul>
 </li>
 </ul>

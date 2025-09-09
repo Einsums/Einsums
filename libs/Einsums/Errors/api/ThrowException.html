@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -333,27 +347,52 @@
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_THROW_STD_EXCEPTION">
 <span class="target" id="_throw_exception_8hpp_1ae8466343d457a6468369915c03ccec84"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_THROW_STD_EXCEPTION</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">except</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_THROW_STD_EXCEPTION" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Throws an exception without a message string. Only reports its location.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_THROW_EXCEPTION">
 <span class="target" id="_throw_exception_8hpp_1abedef09b585b9a0fb50575ed4e0811da"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_THROW_EXCEPTION</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">except</span></span>, <span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_THROW_EXCEPTION" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Throws an exception with a formatted error message. It will also report its location.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_THROW_CODED_EXCEPTION">
 <span class="target" id="_throw_exception_8hpp_1a108dc8124ba00731f4fad0795d78e228"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_THROW_CODED_EXCEPTION</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">except</span></span>, <span class="n"><span class="pre">code</span></span>, <span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_THROW_CODED_EXCEPTION" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Throws an exception with a code to distinguish between exceptions of the same type within the same function. It can also have a custom error message, and it will report the location in the code.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_THROW_NOT_IMPLEMENTED">
 <span class="target" id="_throw_exception_8hpp_1ac46876a02837e4d10786c68f04ec3a37"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_THROW_NOT_IMPLEMENTED</span></span></span><a class="headerlink" href="#c.EINSUMS_THROW_NOT_IMPLEMENTED" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>This will throw a not_implemented exception.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_THROW_NESTED">
 <span class="target" id="_throw_exception_8hpp_1a817316811aa9a3257c78699c74532347"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_THROW_NESTED</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">except</span></span>, <span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_THROW_NESTED" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>This will throw a nested exception.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 </div>
 </section>

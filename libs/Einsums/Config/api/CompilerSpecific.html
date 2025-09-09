@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -236,6 +243,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -266,7 +280,6 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="Config.html">Einsums/Config.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Types.html">Einsums/Config/Types.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Namespace.html">Einsums/Config/Namespace.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ExportDefinitions.html">Einsums/Config/ExportDefinitions.hpp</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Config/CompilerSpecific.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Alias.html">Einsums/Config/Alias.hpp</a></li>
@@ -338,124 +351,327 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
 <dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_TRANSACTION_SAFE_DYN">
+<span class="target" id="_compiler_specific_8hpp_1a37e40e57324e162942cba60b80eb7ad5"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_TRANSACTION_SAFE_DYN</span></span></span><a class="headerlink" href="#c.EINSUMS_TRANSACTION_SAFE_DYN" title="Link to this definition">#</a><br /></dt>
+<dd><p>If transactional memory is supported by your compiler, expands to the <code class="docutils literal notranslate"><span class="pre">transaction_safe_dynamic</span></code> keyword.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_TRANSACTION_SAFE">
+<span class="target" id="_compiler_specific_8hpp_1a5c9f266b8b926d07fd5320267ae69818"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_TRANSACTION_SAFE</span></span></span><a class="headerlink" href="#c.EINSUMS_TRANSACTION_SAFE" title="Link to this definition">#</a><br /></dt>
+<dd><p>If transactional memory is supported by your compiler, expands to the <code class="docutils literal notranslate"><span class="pre">transaction_safe</span></code> keyword.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_ATOMIC_CANCEL">
+<span class="target" id="_compiler_specific_8hpp_1a2297393ec32d65fd8701cc733307b3d1"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_ATOMIC_CANCEL</span></span></span><a class="headerlink" href="#c.EINSUMS_ATOMIC_CANCEL" title="Link to this definition">#</a><br /></dt>
+<dd><p>If transactional memory is supported by your compiler, expands to the <code class="docutils literal notranslate"><span class="pre">atomic_cancel</span></code> keyword.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_ATOMIC_COMMIT">
+<span class="target" id="_compiler_specific_8hpp_1a2bd428c55a8aeeb6516a414c62763b20"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_ATOMIC_COMMIT</span></span></span><a class="headerlink" href="#c.EINSUMS_ATOMIC_COMMIT" title="Link to this definition">#</a><br /></dt>
+<dd><p>If transactional memory is supported by your compiler, expands to the <code class="docutils literal notranslate"><span class="pre">atomic_commit</span></code> keyword.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_ATOMIC_NOEXCEPT">
+<span class="target" id="_compiler_specific_8hpp_1ae0e0624ba41605353e4e2eee2694b381"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_ATOMIC_NOEXCEPT</span></span></span><a class="headerlink" href="#c.EINSUMS_ATOMIC_NOEXCEPT" title="Link to this definition">#</a><br /></dt>
+<dd><p>If transactional memory is supported by your compiler, expands to the <code class="docutils literal notranslate"><span class="pre">atomic_noexcept</span></code> keyword.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_SYNCHRONIZED">
+<span class="target" id="_compiler_specific_8hpp_1a0925b9882798e6944b902d79891d20cb"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_SYNCHRONIZED</span></span></span><a class="headerlink" href="#c.EINSUMS_SYNCHRONIZED" title="Link to this definition">#</a><br /></dt>
+<dd><p>If transactional memory is supported by your compiler, expands to the <code class="docutils literal notranslate"><span class="pre">synchronized</span></code> keyword.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_PRAGMA">
 <span class="target" id="_compiler_specific_8hpp_1a9027aeea06bffadae90e9d15a85a0986"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_PRAGMA</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">stuff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_PRAGMA" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Creates a pragma line. Mostly used within other macros.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stuff</strong> – The pragma line without quotes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_PRAGMA">
 <span class="target" id="_compiler_specific_8hpp_1a79a083db8b5c3fe353508adc01c65c18"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_PRAGMA</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">stuff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_OMP_PRAGMA" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Creates a pragma line for an OpenMP call. The text inside does not need the “omp”.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stuff</strong> – The OpenMP directives to use.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_SIMD_PRAGMA">
 <span class="target" id="_compiler_specific_8hpp_1abb6fc14dc83198140e038fde5530b11b"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_SIMD_PRAGMA</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">stuff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_OMP_SIMD_PRAGMA" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Creates a pragma line for an OpenMP call that can be vectorized, if supported by the compiler. The text inside does not need the “omp”.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stuff</strong> – The OpenMP directives to use.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_SIMD">
 <span class="target" id="_compiler_specific_8hpp_1ae4f0162b19a7aa3a28eb79cebf1580af"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_SIMD</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_SIMD" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Indicates that the following block can be vectorized.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_PARALLEL_FOR_SIMD">
 <span class="target" id="_compiler_specific_8hpp_1abf128a4496bde0a06dc92e92ed129caa"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_PARALLEL_FOR_SIMD</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_PARALLEL_FOR_SIMD" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Tell the compiler that the following for-loop can be parallelized and vectorized using SIMD.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_PARALLEL_FOR">
 <span class="target" id="_compiler_specific_8hpp_1a03631ed0b4d36783d2b87b7beed96fda"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_PARALLEL_FOR</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_PARALLEL_FOR" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Tell the compiler that the following for-loop can be parallelized.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_PARALLEL">
 <span class="target" id="_compiler_specific_8hpp_1ad4adb9b58ced747d3b8a1f2d21460fa7"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_PARALLEL</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_PARALLEL" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Tell the compiler that the following block should be done in parallel.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_TASK_FOR">
 <span class="target" id="_compiler_specific_8hpp_1a83b5c440419d07f1332a7bb6d4d315c6"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_TASK_FOR</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_TASK_FOR" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Tell the compiler that the following for-loop can be parallelized and should use tasks.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_TASK_FOR_SIMD">
 <span class="target" id="_compiler_specific_8hpp_1a5d5b23d06f45d30ad6a3889f905f9314"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_TASK_FOR_SIMD</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_TASK_FOR_SIMD" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Tell the compiler that the following for-loop can be parallelized and vectorized using SIMD and should use tasks.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_TASK">
 <span class="target" id="_compiler_specific_8hpp_1a33069148ab590ecc0e925b48ff8f7c59"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_TASK</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_TASK" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Start a new task within a parallel region.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_FOR_NOWAIT">
 <span class="target" id="_compiler_specific_8hpp_1a4945c24f439b754f685670090ded66f5"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_FOR_NOWAIT</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_FOR_NOWAIT" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Tell the compiler that the following for-loop can be parallelized and it should not wait for threads to finish.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_OMP_CRITICAL">
 <span class="target" id="_compiler_specific_8hpp_1a70e1b6f3261911b5ef1fda94daa95b96"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_OMP_CRITICAL</span></span></span><a class="headerlink" href="#c.EINSUMS_OMP_CRITICAL" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Indicates that the following block should only be executed by one thread at a time.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_ALWAYS_INLINE">
 <span class="target" id="_compiler_specific_8hpp_1a0865b90841c3847ffb7a7e64bb9966bb"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_ALWAYS_INLINE</span></span></span><a class="headerlink" href="#c.EINSUMS_ALWAYS_INLINE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Tell the compiler to inline a function.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_DISABLE_WARNING_PUSH">
 <span class="target" id="_compiler_specific_8hpp_1aff4e682b2b795894f387fe067f4ca97d"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_DISABLE_WARNING_PUSH</span></span></span><a class="headerlink" href="#c.EINSUMS_DISABLE_WARNING_PUSH" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Pushes the current warning ignore state so that ignore rules can be changed and then reverted.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_DISABLE_WARNING_POP">
 <span class="target" id="_compiler_specific_8hpp_1aa1d45e151d0f1b7296bdb3ca2fe91efb"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_DISABLE_WARNING_POP</span></span></span><a class="headerlink" href="#c.EINSUMS_DISABLE_WARNING_POP" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Ppp the current warning ignore state to revert the changes to the warning ignore rules.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EINSUMS_DISABLE_WARNING">
+<span class="target" id="_compiler_specific_8hpp_1ae2cb057c0bcf4c9a3d7127b4cad3cdc6"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_DISABLE_WARNING</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">warning</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_DISABLE_WARNING" title="Link to this definition">#</a><br /></dt>
+<dd><p>Disables a specific warning. The behavior may differ between compilers.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE">
 <span class="target" id="_compiler_specific_8hpp_1acb9717ccefe6c7dbc196827f7da561c2"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE</span></span></span><a class="headerlink" href="#c.EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Disable warnings that a function that normally returns C’s <code class="docutils literal notranslate"><span class="pre">_Complex</span> <span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">_Complex</span> <span class="pre">double</span></code> is externed as a function that returns C++’s <code class="docutils literal notranslate"><span class="pre">std::complex&lt;float&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">std::complex&lt;double&gt;</span></code>.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS">
 <span class="target" id="_compiler_specific_8hpp_1a4531e89d078cb12a46c369e22d7f9ead"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS</span></span></span><a class="headerlink" href="#c.EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Disable warnings of deprecated functions, classes, variables, etc.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_GCC_VERSION">
 <span class="target" id="_compiler_specific_8hpp_1a59e42c5940bb54a9c27a334847a60192"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_GCC_VERSION</span></span></span><a class="headerlink" href="#c.EINSUMS_GCC_VERSION" title="Link to this definition">#</a><br /></dt>
-<dd><p>Returns the GCC version einsums is compiled with. Only set if compiled with GCC. </p>
+<dd><p>Returns the GCC version einsums is compiled with. Only set if compiled with GCC. <p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</p>
 </dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_CLANG_VERSION">
 <span class="target" id="_compiler_specific_8hpp_1aa3b558a1065994a5df8d162d579bc4ba"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_CLANG_VERSION</span></span></span><a class="headerlink" href="#c.EINSUMS_CLANG_VERSION" title="Link to this definition">#</a><br /></dt>
-<dd><p>Returns the Clang version einsums is compiled with. Only set if compiled with Clang. </p>
+<dd><p>Returns the Clang version einsums is compiled with. Only set if compiled with Clang. <p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</p>
 </dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_INTEL_VERSION">
 <span class="target" id="_compiler_specific_8hpp_1a096fdc061eb3955858fdf3363be2eab5"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_INTEL_VERSION</span></span></span><a class="headerlink" href="#c.EINSUMS_INTEL_VERSION" title="Link to this definition">#</a><br /></dt>
-<dd><p>Returns the Intel Compiler version einsums is compiled with. Only set if compiled with the Intel Compiler. </p>
+<dd><p>Returns the Intel Compiler version einsums is compiled with. Only set if compiled with the Intel Compiler. <p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</p>
 </dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_MSVC">
 <span class="target" id="_compiler_specific_8hpp_1a59645b123306b4f25b62e0384cb325ab"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_MSVC</span></span></span><a class="headerlink" href="#c.EINSUMS_MSVC" title="Link to this definition">#</a><br /></dt>
-<dd><p>This macro is set if the compilation is with MSVC. </p>
+<dd><p>This macro is set if the compilation is with MSVC. <p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</p>
 </dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_MINGW">
 <span class="target" id="_compiler_specific_8hpp_1a9ae5bc1f1a498c414fa8b85c7baaccc1"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_MINGW</span></span></span><a class="headerlink" href="#c.EINSUMS_MINGW" title="Link to this definition">#</a><br /></dt>
-<dd><p>This macro is set if the compilation is with Mingw. </p>
+<dd><p>This macro is set if the compilation is with Mingw. <p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</p>
 </dd></dl>
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_WINDOWS">
 <span class="target" id="_compiler_specific_8hpp_1af3734cbf1ef0d50aeb6fc988d9ef7cf5"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_WINDOWS</span></span></span><a class="headerlink" href="#c.EINSUMS_WINDOWS" title="Link to this definition">#</a><br /></dt>
-<dd><p>This macro is set if the compilation is for Windows. </p>
+<dd><p>This macro is set if the compilation is for Windows. <p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+</p>
 </dd></dl>
 
 <dl class="cpp macro">
@@ -495,6 +711,12 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_TRANSACTION_SAFE_DYN"><code class="docutils literal notranslate"><span class="pre">EINSUMS_TRANSACTION_SAFE_DYN</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_TRANSACTION_SAFE"><code class="docutils literal notranslate"><span class="pre">EINSUMS_TRANSACTION_SAFE</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_ATOMIC_CANCEL"><code class="docutils literal notranslate"><span class="pre">EINSUMS_ATOMIC_CANCEL</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_ATOMIC_COMMIT"><code class="docutils literal notranslate"><span class="pre">EINSUMS_ATOMIC_COMMIT</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_ATOMIC_NOEXCEPT"><code class="docutils literal notranslate"><span class="pre">EINSUMS_ATOMIC_NOEXCEPT</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_SYNCHRONIZED"><code class="docutils literal notranslate"><span class="pre">EINSUMS_SYNCHRONIZED</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_PRAGMA"><code class="docutils literal notranslate"><span class="pre">EINSUMS_PRAGMA</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_PRAGMA"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_PRAGMA</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_OMP_SIMD_PRAGMA"><code class="docutils literal notranslate"><span class="pre">EINSUMS_OMP_SIMD_PRAGMA</span></code></a></li>
@@ -510,6 +732,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_ALWAYS_INLINE"><code class="docutils literal notranslate"><span class="pre">EINSUMS_ALWAYS_INLINE</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_DISABLE_WARNING_PUSH"><code class="docutils literal notranslate"><span class="pre">EINSUMS_DISABLE_WARNING_PUSH</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_DISABLE_WARNING_POP"><code class="docutils literal notranslate"><span class="pre">EINSUMS_DISABLE_WARNING_POP</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_DISABLE_WARNING"><code class="docutils literal notranslate"><span class="pre">EINSUMS_DISABLE_WARNING</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE"><code class="docutils literal notranslate"><span class="pre">EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS"><code class="docutils literal notranslate"><span class="pre">EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.EINSUMS_GCC_VERSION"><code class="docutils literal notranslate"><span class="pre">EINSUMS_GCC_VERSION</span></code></a></li>

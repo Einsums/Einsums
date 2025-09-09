@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -425,16 +439,25 @@ the ones defined by Einsums. In fact, much of the testing for these is done on N
 <dt class="sig sig-object py" id="einsums.core.GPUViewMode">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">GPUViewMode</span></span><a class="headerlink" href="#einsums.core.GPUViewMode" title="Link to this definition">#</a></dt>
 <dd><p>Base class for the enumerated values for the GPU views. It is created by Pybind11.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="einsums.core.GPUViewMode.name">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#einsums.core.GPUViewMode.name" title="Link to this definition">#</a></dt>
 <dd><p>Gets the name of the enumerated value.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="einsums.core.GPUViewMode.value">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#einsums.core.GPUViewMode.value" title="Link to this definition">#</a></dt>
 <dd><p>Gets the underlying value of the enumerated symbol.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -444,6 +467,9 @@ the ones defined by Einsums. In fact, much of the testing for these is done on N
 <span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">COPY</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#einsums.core.GPUViewMode" title="einsums.core.GPUViewMode"><span class="pre">GPUViewMode</span></a></em><a class="headerlink" href="#einsums.core.COPY" title="Link to this definition">#</a></dt>
 <dd><p>When creating a view, this indicates that the view should allocate memory on the device and
 copy the data back and forth.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py data">
@@ -452,6 +478,9 @@ copy the data back and forth.</p>
 <dd><p>When creating a view, this indicates that the view should map the host memory into the virtual
 address space on the device. Data will be synchronized automatically, but data validity should
 not be assumed until all kernels affecting the data have finished.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py data">
@@ -459,6 +488,9 @@ not be assumed until all kernels affecting the data have finished.</p>
 <span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">DEVICE_TENSOR</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#einsums.core.GPUViewMode" title="einsums.core.GPUViewMode"><span class="pre">GPUViewMode</span></a></em><a class="headerlink" href="#einsums.core.DEVICE_TENSOR" title="Link to this definition">#</a></dt>
 <dd><p>This mode is used by C++ extensions to create a Python-compatible wrapper around Einsums device
 tensors. Views can not be created with this mode from Python.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py class">
@@ -489,6 +521,9 @@ of the use of these views, see below.</p>
 <span class="go"> [102. 126. 150.]]</span>
 </pre></div>
 </div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.GPUView.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#einsums.core.GPUViewMode" title="einsums.core.GPUViewMode"><span class="pre">GPUViewMode</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.GPUView.__init__" title="Link to this definition">#</a></dt>
@@ -501,18 +536,27 @@ of the use of these views, see below.</p>
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.GPUView.dims">
 <span class="sig-name descname"><span class="pre">dims</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#einsums.core.GPUView.dims" title="Link to this definition">#</a></dt>
 <dd><p>Get the dimensions of the view.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.GPUView.strides">
 <span class="sig-name descname"><span class="pre">strides</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#einsums.core.GPUView.strides" title="Link to this definition">#</a></dt>
 <dd><p>Get the strides of the view in bytes.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -530,6 +574,9 @@ of the use of these views, see below.</p>
 <dd class="field-odd"><p><strong>IndexError</strong> – If the axis is outside of the range of dimensions.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -547,24 +594,36 @@ of the use of these views, see below.</p>
 <dd class="field-odd"><p><strong>IndexError</strong> – If the axis is outside of the range of dimensions.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.GPUView.fmt_spec">
 <span class="sig-name descname"><span class="pre">fmt_spec</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#einsums.core.GPUView.fmt_spec" title="Link to this definition">#</a></dt>
 <dd><p>Get the format specifier for the view.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.GPUView.update_H2D">
 <span class="sig-name descname"><span class="pre">update_H2D</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.GPUView.update_H2D" title="Link to this definition">#</a></dt>
 <dd><p>Synchronize the view’s data by moving the host data to the device.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.GPUView.update_D2H">
 <span class="sig-name descname"><span class="pre">update_D2H</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.core.GPUView.update_D2H" title="Link to this definition">#</a></dt>
 <dd><p>Synchronize the view’s data by moving the device data to the host.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -576,18 +635,27 @@ of the use of these views, see below.</p>
 <dt class="sig sig-object py" id="einsums.core.GPUView.__len__">
 <span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#einsums.core.GPUView.__len__" title="Link to this definition">#</a></dt>
 <dd><p>Get the number of elements in the view. These two are synonyms.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.GPUView.rank">
 <span class="sig-name descname"><span class="pre">rank</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#einsums.core.GPUView.rank" title="Link to this definition">#</a></dt>
 <dd><p>Get the rank of the view, or the number of dimensions.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.GPUView.itemsize">
 <span class="sig-name descname"><span class="pre">itemsize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#einsums.core.GPUView.itemsize" title="Link to this definition">#</a></dt>
 <dd><p>Get the number of bytes in each element.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 </dd></dl>

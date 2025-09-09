@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -153,6 +153,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -236,6 +243,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -438,8 +452,8 @@ this is still a work in progress.</p>
 integer error code. This way, a function can throw multiple errors of the same class, but they can be separated if
 needed by specifying the error code. These errors can then be caught either as an error of type <code class="code docutils literal notranslate"><span class="pre">ErrorClass</span></code>,
 or you can specify which error you want to handle as <code class="code docutils literal notranslate"><span class="pre">CodedError&lt;ErrorClass,</span> <span class="pre">ErrorCode&gt;</span></code>.</p>
-<p>As an example, in some specializations of the <code class="code docutils literal notranslate"><span class="pre">gemm</span></code> call, multiple <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">tensor_compat_error`s</span> <span class="pre">can</span> <span class="pre">be</span>
-<span class="pre">thrown.</span> <span class="pre">For</span> <span class="pre">the</span> <span class="pre">:cpp:class:`TiledTensor</span></code> version, for instance, a <a class="reference internal" href="#_CPPv419tensor_compat_error" title="tensor_compat_error"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">tensor_compat_error</span></code></a> can be thrown if
+<p>As an example, in some specializations of the <code class="code docutils literal notranslate"><span class="pre">gemm</span></code> call, multiple <a class="reference internal" href="#_CPPv419tensor_compat_error" title="tensor_compat_error"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">tensor_compat_error</span></code></a> s can be
+thrown. For the <a class="reference internal" href="../../Tensor/docs/index.html#_CPPv4I0_6size_tE11TiledTensor" title="TiledTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TiledTensor</span></code></a> version, for instance, a <a class="reference internal" href="#_CPPv419tensor_compat_error" title="tensor_compat_error"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">tensor_compat_error</span></code></a> can be thrown if
 either the output tensor’s grid doesn’t match what the input tensors require, or if the inner input tensor dimension’s
 grid doesn’t match what is required. If you wanted to catch both of these at once, you can use something like the following.</p>
 <div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="n">TiledTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">;</span>
@@ -527,7 +541,7 @@ permissions.</p>
 <span id="_CPPv310todo_error"></span><span id="_CPPv210todo_error"></span><span id="todo_error"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">todo_error</span></span></span><a class="headerlink" href="#_CPPv410todo_error" title="Link to this definition">#</a><br /></dt>
 <dd><p>This exception, along with the <a class="reference internal" href="#_CPPv415not_implemented" title="not_implemented"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">not_implemented</span></code></a> exception, indicates that the action you requested
 is not yet implemented. If you get this error, come tell us
-<a href="#id1"><span class="problematic" id="id2">`on our discussion page&lt;https://github.com/Einsums/Einsums/discussions&gt;`_</span></a>, and we will try to focus some energy
+<a class="reference external" href="https://github.com/Einsums/Einsums/discussions">on our discussion page</a> or <a class="reference external" href="https://discord.gg/8GvtkyWZUv">our Discord server</a>, and we will try to focus some energy
 to filling it out. If you are an experienced C++ programmer, we would appreciate your assistance if you think you
 have a solution.</p>
 </dd></dl>
@@ -538,7 +552,7 @@ have a solution.</p>
 <dd><p>This exception indicates that an action you requested is not implemented. This may be because the feature
 is not yet ready, or it may be that the specific combination of parameters is not acceptable. The message
 provided should give more information. If you absolutely need that set of features, come tell us
-<a href="#id3"><span class="problematic" id="id4">`on our discussion page&lt;https://github.com/Einsums/Einsums/discussions&gt;`_</span></a>, and we will try to work it out.
+<a class="reference external" href="https://github.com/Einsums/Einsums/discussions">on our discussion page</a> or <a class="reference external" href="https://discord.gg/8GvtkyWZUv">our Discord server</a>, and we will try to work it out.
 If you are an experienced C++ programmer, we would appreciate your assistance if you think you have a solution.</p>
 </dd></dl>
 

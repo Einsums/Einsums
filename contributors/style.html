@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -353,47 +367,48 @@ which contains the following.</p>
 This means that every word begins with a capital letter, and words are concatenated
 without any extra symbols. Some examples.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">Tensor</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GPUView</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DeviceTensorView</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Tensor::ValueType</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">Tensor</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">GPUView</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">DeviceTensorView</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">Tensor::ValueType</span></code></p></li>
 </ul>
 </li>
 <li><p>Concepts, requirements, and compile-time boolean statements underlying those concepts and requirements
 should also be in <code class="docutils literal notranslate"><span class="pre">PascalCase</span></code>. Also, requirements and boolean statements should begin
 with <code class="docutils literal notranslate"><span class="pre">Is</span></code> and end in <code class="docutils literal notranslate"><span class="pre">V</span></code>, standing for “value”. Some examples.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">TensorConcept</span></code> is a concept.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">IsTensorV</span></code> is a requirement or compile-time boolean statement.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">TensorConcept</span></code> is a concept.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">IsTensorV</span></code> is a requirement or compile-time boolean statement.</p></li>
 </ul>
 </li>
 <li><p>Namespaces should be in <code class="docutils literal notranslate"><span class="pre">snake_case</span></code>, where every word is lower case, and each word is
 separated by underscores. Some examples.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">einsums::tensor_algebra</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">einsums::tensor_props</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">einsums::tensor_algebra</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">einsums::tensor_props</span></code></p></li>
 </ul>
 </li>
 <li><p>Functions and methods should be in <code class="docutils literal notranslate"><span class="pre">snake_case</span></code> as well. Some examples.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">einsum(...)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">A.full_view_of_underlying()</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">einsum(...)</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">A.full_view_of_underlying()</span></code></p></li>
 </ul>
 </li>
 <li><p>Private and protected properties in a class should begin in a single underscore. However,
-some older code will have them end in a single underscore instead. Some examples.</p>
+some older code may have them end in a single underscore instead. As we work on the code,
+we will bring these outliers into agreement with this style. Some examples.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">this-&gt;dims_</span></code>: Discouraged for consistency.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">this-&gt;_dims</span></code>: Preferred.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">this-&gt;dims_</span></code>: Discouraged for consistency.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">this-&gt;_dims</span></code>: Preferred.</p></li>
 </ul>
 </li>
 <li><p>Variables and parameters should usually be in <code class="docutils literal notranslate"><span class="pre">snake_case</span></code>. However, to be consistent with
 mathematical notation, tensor variables and parameters are usually capitalized. This includes
 when the name of a tensor is referenced in a variable name. Some examples.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">std::string</span> <span class="pre">const</span> <span class="pre">&amp;name</span></code>: <code class="docutils literal notranslate"><span class="pre">name</span></code> does not refer to a tensor, so it is in snake case.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">TensorType</span> <span class="pre">const</span> <span class="pre">&amp;A</span></code>: <code class="docutils literal notranslate"><span class="pre">A</span></code> is a tensor, so it is capitalized.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">std::tuple&lt;AIndices...&gt;</span> <span class="pre">const</span> <span class="pre">&amp;A_indices</span></code>: <code class="docutils literal notranslate"><span class="pre">A</span></code> is a tensor, but the variable is not.
+<li><p><code class="code docutils literal notranslate"><span class="pre">std::string</span> <span class="pre">const</span> <span class="pre">&amp;name</span></code>: <code class="docutils literal notranslate"><span class="pre">name</span></code> does not refer to a tensor, so it is in snake case.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">TensorType</span> <span class="pre">const</span> <span class="pre">&amp;A</span></code>: <code class="docutils literal notranslate"><span class="pre">A</span></code> is a tensor, so it is capitalized.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">std::tuple&lt;AIndices...&gt;</span> <span class="pre">const</span> <span class="pre">&amp;A_indices</span></code>: <code class="docutils literal notranslate"><span class="pre">A</span></code> is a tensor, but the variable is not.
 This means that the “A” is capitalized, but the rest of the variable is in snake case.</p></li>
 </ul>
 </li>
@@ -406,8 +421,9 @@ This means that the “A” is capitalized, but the rest of the variable is in s
 <ul class="simple">
 <li><p><em>cv</em> keywords should never come before the pointer or reference type they modify. As an example,</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">std::string</span> <span class="pre">const</span> <span class="pre">&amp;name</span></code>, not <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">std::string</span> <span class="pre">&amp;name</span></code>.</p></li>
-<li><p>However, <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">size_t</span> <span class="pre">size</span></code> is allowed.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">std::string</span> <span class="pre">const</span> <span class="pre">&amp;name</span></code>, not <code class="code docutils literal notranslate"><span class="pre">const</span> <span class="pre">std::string</span> <span class="pre">&amp;name</span></code>.</p></li>
+<li><p>However, <code class="code docutils literal notranslate"><span class="pre">const</span> <span class="pre">size_t</span> <span class="pre">size</span></code> is allowed, but <code class="code docutils literal notranslate"><span class="pre">size_t</span> <span class="pre">const</span> <span class="pre">size</span></code> is preferred.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">constexpr</span></code> goes before the type, so <code class="code docutils literal notranslate"><span class="pre">constexpr</span> <span class="pre">size_t</span> <span class="pre">rank</span></code> is preferred.</p></li>
 </ul>
 </li>
 <li><p>When writing a class, the preferred order of blocks is public, then protected, then private.</p></li>
@@ -415,10 +431,10 @@ This means that the “A” is capitalized, but the rest of the variable is in s
 function names. Using the <code class="docutils literal notranslate"><span class="pre">auto</span></code> keyword can sometimes mess with Doxygen, so this is the
 compromise we have to make. Some examples.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">size_t</span> <span class="pre">size()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Tensor&lt;double,</span> <span class="pre">2&gt;</span> <span class="pre">&amp;create_tensor()</span></code> or <code class="docutils literal notranslate"><span class="pre">auto</span> <span class="pre">create_tensor()</span> <span class="pre">-&gt;</span> <span class="pre">Tensor&lt;double,</span> <span class="pre">2&gt;</span> <span class="pre">&amp;</span></code>
+<li><p><code class="code docutils literal notranslate"><span class="pre">size_t</span> <span class="pre">size()</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">Tensor&lt;double,</span> <span class="pre">2&gt;</span> <span class="pre">&amp;create_tensor()</span></code> or <code class="code docutils literal notranslate"><span class="pre">auto</span> <span class="pre">create_tensor()</span> <span class="pre">-&gt;</span> <span class="pre">Tensor&lt;double,</span> <span class="pre">2&gt;</span> <span class="pre">&amp;</span></code>
 are both alright. Use your best judgement here.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">auto</span> <span class="pre">common_initialization(TensorType&lt;T,</span> <span class="pre">OtherRank&gt;</span> <span class="pre">const</span> <span class="pre">&amp;other,</span> <span class="pre">Args</span> <span class="pre">&amp;&amp;...args)</span> <span class="pre">-&gt;</span> <span class="pre">std::enable_if_t&lt;std::is_base_of_v&lt;::einsums::tensor_base::Tensor&lt;T,</span> <span class="pre">OtherRank&gt;,</span> <span class="pre">TensorType&lt;T,</span> <span class="pre">OtherRank&gt;&gt;&gt;</span></code>
+<li><p><code class="code docutils literal notranslate"><span class="pre">auto</span> <span class="pre">common_initialization(TensorType&lt;T,</span> <span class="pre">OtherRank&gt;</span> <span class="pre">const</span> <span class="pre">&amp;other,</span> <span class="pre">Args</span> <span class="pre">&amp;&amp;...args)</span> <span class="pre">-&gt;</span> <span class="pre">std::enable_if_t&lt;std::is_base_of_v&lt;::einsums::tensor_base::Tensor&lt;T,</span> <span class="pre">OtherRank&gt;,</span> <span class="pre">TensorType&lt;T,</span> <span class="pre">OtherRank&gt;&gt;&gt;</span></code>
 This is a complicated return type. Use the <code class="docutils literal notranslate"><span class="pre">auto</span></code> keyword for readability.</p></li>
 </ul>
 </li>
@@ -448,8 +464,8 @@ you can ensure specificity in the kinds of tensors you are being passed.</p></li
 <p>Some constructions need to have serious thought before they are used. Before any code
 with these constructions is accepted, their use will need to be justified.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">goto</span></code> statements.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">do</span> <span class="pre">{</span> <span class="pre">}</span> <span class="pre">while(false);</span></code> blocks outside of macros. They are fine within macros,
+<li><p><code class="code docutils literal notranslate"><span class="pre">goto</span></code> statements.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">do</span> <span class="pre">{</span> <span class="pre">}</span> <span class="pre">while(false);</span></code> blocks outside of macros. They are fine within macros,
 since their use is considered idiomatic to C/C++ for making a macro require a
 semicolon after the closing parenthesis.</p></li>
 <li><p>Inline assembly will be outright banned. One of the goals of Einsums is portability. This goes against
@@ -472,9 +488,9 @@ is considered to be undefined behavior.</p></li>
 <ul class="simple">
 <li><p>Try to use type annotations when writing Python code. Some examples.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">set_name(name)</span></code>: Bad.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">set_name(name:</span> <span class="pre">str)</span></code>: Good.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">iterate_elements(param)</span></code>: Fine. <code class="docutils literal notranslate"><span class="pre">param</span></code> can be pretty much any type. <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">iterate_elements(param:</span> <span class="pre">Any)</span></code> would be preferred,
+<li><p><code class="code docutils literal notranslate"><span class="pre">def</span> <span class="pre">set_name(name)</span></code>: Bad.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">def</span> <span class="pre">set_name(name:</span> <span class="pre">str)</span></code>: Good.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">def</span> <span class="pre">iterate_elements(param)</span></code>: Fine. <code class="docutils literal notranslate"><span class="pre">param</span></code> can be pretty much any type. <code class="code docutils literal notranslate"><span class="pre">def</span> <span class="pre">iterate_elements(param:</span> <span class="pre">Any)</span></code> would be preferred,
 but brevity is sometimes better than verbosity.</p></li>
 </ul>
 </li>
@@ -483,8 +499,8 @@ but brevity is sometimes better than verbosity.</p></li>
 <li><p>However, the same considerations for tensor variables apply as in C++. Tensor varaibles are in <code class="docutils literal notranslate"><span class="pre">UPPER_CASE</span></code>,
 and any reference to a tensor variable in a non-tensor variable should match the case of the tensor.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor variable.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">A_indices</span></code>: References a tensor variable, but is not a tensor variable.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">A</span></code>: Tensor variable.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">A_indices</span></code>: References a tensor variable, but is not a tensor variable.</p></li>
 </ul>
 </li>
 </ul>
@@ -492,7 +508,7 @@ and any reference to a tensor variable in a non-tensor variable should match the
 <section id="cmake-style">
 <h2>CMake Style<a class="headerlink" href="#cmake-style" title="Link to this heading">#</a></h2>
 <p>A <code class="docutils literal notranslate"><span class="pre">.cmake-format.py</span></code> file is provided to ensure consist formatting of CMake files. You may need to
-install the package cmake-format to use it.</p>
+install the package <code class="docutils literal notranslate"><span class="pre">cmake-format</span></code> to use it.</p>
 </section>
 </section>
 <section id="using-pre-commit-with-einsums">

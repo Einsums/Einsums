@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -195,6 +202,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -231,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -408,19 +426,64 @@
   <section id="einsums-python-module">
 <span id="python-module"></span><h1>Einsums Python Module<a class="headerlink" href="#einsums-python-module" title="Link to this heading">#</a></h1>
 <p>This is the reference documentation for the Einsums Python module. It contains many sub-modules as well.</p>
-<p id="module-einsums">This module contains various facilities for interfacing with the Einsums library.</p>
-<p id="module-einsums.core">This module contains the C++ wrappings. It is documented in <a class="reference internal" href="einsums.core.html#einsums-core"><span class="std std-ref">Einsums Core Module</span></a>.</p>
-<p id="module-einsums.utils">This module contains several helpful classes and functions. It is documented in <a class="reference internal" href="einsums.utils.html#einsums-utils"><span class="std std-ref">Einsums Utilities Module</span></a>.</p>
-<p id="module-einsums.gpu_except">This module contains all of the possible exceptions that can be thrown by HIP, hipBlas, and hipSolver.
+<section id="id1">
+<h2>einsums<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>This module contains various facilities for interfacing with the Einsums library.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.initialize">
+<span class="sig-prename descclassname"><span class="pre">einsums.</span></span><span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.initialize" title="Link to this definition">#</a></dt>
+<dd><p>Initializes the Einsums library. This is an internal function that is called automatically.
+It does not need to be called directly, and instead it is called when you import <code class="code docutils literal notranslate"><span class="pre">einsums</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionremoved">
+<p><span class="versionmodified removed">Removed in version 2.0.0: </span>Some users were using this in their code. Its name was changed to make it clear that it is called internally.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.__initialize">
+<span class="sig-prename descclassname"><span class="pre">einsums.</span></span><span class="sig-name descname"><span class="pre">__initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/einsums.html#__initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#einsums.__initialize" title="Link to this definition">#</a></dt>
+<dd><p>Initializes the Einsums library. This is an internal function that is called automatically.
+It does not need to be called directly, and instead it is called when you import <code class="code docutils literal notranslate"><span class="pre">einsums</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+</section>
+<section id="einsums-core">
+<h2>einsums.core<a class="headerlink" href="#einsums-core" title="Link to this heading">#</a></h2>
+<p>This module contains the C++ wrappings. It is documented in <a class="reference internal" href="einsums.core.html#einsums-core"><span class="std std-ref">Einsums Core Module</span></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</section>
+<section id="einsums-utils">
+<h2>einsums.utils<a class="headerlink" href="#einsums-utils" title="Link to this heading">#</a></h2>
+<p>This module contains several helpful classes and functions. It is documented in <a class="reference internal" href="einsums.utils.html#einsums-utils"><span class="std std-ref">Einsums Utilities Module</span></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</section>
+<section id="einsums-gpu-except">
+<h2>einsums.gpu_except<a class="headerlink" href="#einsums-gpu-except" title="Link to this heading">#</a></h2>
+<p>This module contains all of the possible exceptions that can be thrown by HIP, hipBlas, and hipSolver.
 There are hundreds of these, so it is pretty big. It is its own module so as to avoid cluttering the
 namespaces of the other modules.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="einsums.core.html">Einsums Core Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.gpu_enabled"><code class="docutils literal notranslate"><span class="pre">gpu_enabled</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.__initialize"><code class="docutils literal notranslate"><span class="pre">__initialize</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.initialize"><code class="docutils literal notranslate"><span class="pre">initialize</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.finalize"><code class="docutils literal notranslate"><span class="pre">finalize</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="einsums.core.html#einsums.core.get_buffer_format"><code class="docutils literal notranslate"><span class="pre">get_buffer_format</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.core.tensor_algebra.html">Einsums Python Tensor Algebra</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.tensor_algebra.html#einsums.core.compile_plan"><code class="docutils literal notranslate"><span class="pre">compile_plan</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.tensor_algebra.html#einsums.core.EinsumsGenericPlan"><code class="docutils literal notranslate"><span class="pre">EinsumsGenericPlan</span></code></a></li>
@@ -573,7 +636,7 @@ namespaces of the other modules.</p>
 <li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorSetOnActiveProcess"><code class="docutils literal notranslate"><span class="pre">ErrorSetOnActiveProcess</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorContextIsDestroyed"><code class="docutils literal notranslate"><span class="pre">ErrorContextIsDestroyed</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorAssert"><code class="docutils literal notranslate"><span class="pre">ErrorAssert</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorHostMemoyrAlreadyRegistered"><code class="docutils literal notranslate"><span class="pre">ErrorHostMemoyrAlreadyRegistered</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorHostMemoryAlreadyRegistered"><code class="docutils literal notranslate"><span class="pre">ErrorHostMemoryAlreadyRegistered</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorHostMemoryNotRegistered"><code class="docutils literal notranslate"><span class="pre">ErrorHostMemoryNotRegistered</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorLaunchFailure"><code class="docutils literal notranslate"><span class="pre">ErrorLaunchFailure</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorCooperativeLaunchTooLarge"><code class="docutils literal notranslate"><span class="pre">ErrorCooperativeLaunchTooLarge</span></code></a></li>
@@ -621,6 +684,7 @@ namespaces of the other modules.</p>
 </ul>
 </div>
 </section>
+</section>
 
 
                 </article>
@@ -656,6 +720,31 @@ namespaces of the other modules.</p>
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">einsums</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.initialize"><code class="docutils literal notranslate"><span class="pre">initialize</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.__initialize"><code class="docutils literal notranslate"><span class="pre">__initialize</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums-core">einsums.core</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums-utils">einsums.utils</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums-gpu-except">einsums.gpu_except</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

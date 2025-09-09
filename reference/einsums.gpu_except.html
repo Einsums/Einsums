@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -152,6 +152,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../libs/overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -421,12 +435,18 @@ along with a brief description of each.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">Success</span></span><a class="headerlink" href="#einsums.gpu_except.Success" title="Link to this definition">#</a></dt>
 <dd><p>This can be thrown when a HIP function exits successfully. It is normally suppressed, but can
 be thrown if requested.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorInvalidValue">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidValue</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidValue" title="Link to this definition">#</a></dt>
 <dd><p>Indicates that at least one of the arguments passed to a function is <code class="code docutils literal notranslate"><span class="pre">NULL</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -434,24 +454,36 @@ be thrown if requested.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorOutOfMemory</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorOutOfMemory" title="Link to this definition">#</a></dt>
 <dd><p>Indicates that the requested allocation could not be completed due to not having enough
 free memory to accomodate.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorMemoryAllocation">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorMemoryAllocation</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorMemoryAllocation" title="Link to this definition">#</a></dt>
 <dd><p>Indicates a memory allocation error. It is superceded by <a class="reference internal" href="#einsums.gpu_except.ErrorOutOfMemory" title="einsums.gpu_except.ErrorOutOfMemory"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ErrorOutOfMemory</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorNotInitialized">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorNotInitialized</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorNotInitialized" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when the GPU device has not been initialized, such as by a call to <code class="code docutils literal notranslate"><span class="pre">hipFree(nullptr);</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorInitializationError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInitializationError</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInitializationError" title="Link to this definition">#</a></dt>
 <dd><p>Superceded by <a class="reference internal" href="#einsums.gpu_except.ErrorNotInitialized" title="einsums.gpu_except.ErrorNotInitialized"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ErrorNotInitialized</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -459,42 +491,63 @@ free memory to accomodate.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorDeinitialized</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorDeinitialized" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown if an operation is attempted after a device has been de-initialized, such as by a call to
 <code class="code docutils literal notranslate"><span class="pre">hipDeviceReset</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorProfilerDisabled">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorProfilerDisabled</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorProfilerDisabled" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown if an attempt is made to profile an application, but the profiler has been disabled.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorProfilerNotInitialized">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorProfilerNotInitialized</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorProfilerNotInitialized" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown if an attempt is made to profile an application, but the profiler has not yet been initialized.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorProfilerAlreadyStarted">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorProfilerAlreadyStarted</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorProfilerAlreadyStarted" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown if the code tries to start the profiler, but the profiler is already running.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorProfilerAlreadyStopped">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorProfilerAlreadyStopped</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorProfilerAlreadyStopped" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown if the code tries to stop the profiler, but it has already been stopped.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorInvalidConfiguration">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidConfiguration</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidConfiguration" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when the device is not configured for a certain operation, such as interprocess communication.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorInvalidPitchValue">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidPitchValue</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidPitchValue" title="Link to this definition">#</a></dt>
 <dd><p>Indicates that the pitch of an array is invalid for some reason.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -502,6 +555,9 @@ free memory to accomodate.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidSymbol</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidSymbol" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an operation tries to access a symbol that is not valid for some reason, such as being null,
 or not being allocated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -509,6 +565,9 @@ or not being allocated.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidDevicePointer</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidDevicePointer" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when a function expects a device pointer, but the pointer provided is invalid. A common issue that
 can cause this is passing a host pointer instead of a device pointer.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -516,24 +575,36 @@ can cause this is passing a host pointer instead of a device pointer.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidMemcpyDirection</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidMemcpyDirection" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when a <code class="code docutils literal notranslate"><span class="pre">hipMemcpy</span></code> is initiated, but the pointers are not of the right occupancy for the
 direction specified.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorInsufficientDriver">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInsufficientDriver</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInsufficientDriver" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when an operation is attempted that is not supported by the current device driver.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorMissingConfiguration">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorMissingConfiguration</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorMissingConfiguration" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorPriorLaunchFailure">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorPriorLaunchFailure</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorPriorLaunchFailure" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -541,18 +612,27 @@ direction specified.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidDeviceFunction</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidDeviceFunction" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an attempt is made to access or modify a device function, but the requested function is invalid
 for some reason.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorNoDevice">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorNoDevice</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorNoDevice" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when no device can be found to run code.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorInvalidDevice">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidDevice</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidDevice" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when trying to access a device with an ID outside of the range of enumerated devices.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -560,6 +640,9 @@ for some reason.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidImage</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidImage" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when a cooperative group is launched with an invalid image. This is likely due to the code being
 compiled for the wrong architecture.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -567,24 +650,36 @@ compiled for the wrong architecture.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidContext</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidContext" title="Link to this definition">#</a></dt>
 <dd><p>“Produced when input context is invalid” (from <code class="code docutils literal notranslate"><span class="pre">hip_runtime_api.h</span></code>). This is often due to using a
 handle to something that is not defined in the current context.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorContextAlreadyCurrent">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorContextAlreadyCurrent</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorContextAlreadyCurrent" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorMapFailed">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorMapFailed</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorMapFailed" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an attempt to map some portion of memory into some virtual address space fails.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorMapBufferObjectFailed">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorMapBufferObjectFailed</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorMapBufferObjectFailed" title="Link to this definition">#</a></dt>
 <dd><p>Superceded by <a class="reference internal" href="#einsums.gpu_except.ErrorMapFailed" title="einsums.gpu_except.ErrorMapFailed"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ErrorMapFailed</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -592,48 +687,72 @@ handle to something that is not defined in the current context.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorUnmapFailed</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorUnmapFailed" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an attempt to unmap some portion of virtual memory fails. For instance, if it has already been unmapped,
 this may be thrown.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorArrayIsMapped">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorArrayIsMapped</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorArrayIsMapped" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorAlreadyMapped">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorAlreadyMapped</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorAlreadyMapped" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorNoBinaryForGpu">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorNoBinaryForGpu</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorNoBinaryForGpu" title="Link to this definition">#</a></dt>
 <dd><p>Raised when there are multiple devices on the system, but a binary can not be found for some of them.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorAlreadyAcquired">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorAlreadyAcquired</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorAlreadyAcquired" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorNotMapped">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorNotMapped</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorNotMapped" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorNotMappedAsArray">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorNotMappedAsArray</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorNotMappedAsArray" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorNotMappedAsPointer">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorNotMappedAsPointer</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorNotMappedAsPointer" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -641,24 +760,36 @@ this may be thrown.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorECCNotCorrectable</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorECCNotCorrectable" title="Link to this definition">#</a></dt>
 <dd><p>Unused as of now. Likely thrown when a response on the PCI bus fails the error correction check in a way
 that is detectable but not correctable.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorUnsupportedLimit">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorUnsupportedLimit</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorUnsupportedLimit" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to get or set a limit that is not supported by the device.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorContextAlreadyInUse">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorContextAlreadyInUse</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorContextAlreadyInUse" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to modify a context currently in use. Deprecated on AMD only.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorPeerAccessUnsupported">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorPeerAccessUnsupported</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorPeerAccessUnsupported" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to access a device on a multi-device system, but the operation is unsupported by either devices or the driver.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -666,66 +797,99 @@ that is detectable but not correctable.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidKernelFile</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidKernelFile" title="Link to this definition">#</a></dt>
 <dd><p>Unkown as of now. This seems to be unused but not deprecated. There is also a note in
 <code class="code docutils literal notranslate"><span class="pre">hip_runtime_api.h</span> <span class="pre">-</span> <span class="pre">In</span> <span class="pre">CUDA</span> <span class="pre">DRV,</span> <span class="pre">it</span> <span class="pre">is</span> <span class="pre">CUDA_ERROR_PTX</span></code></p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorInvalidGraphicsContext">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidGraphicsContext</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidGraphicsContext" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorInvalidSource">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidSource</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidSource" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorFileNotFound">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorFileNotFound</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorFileNotFound" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to load data from a module, but the file can not be found.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorSharedObjectSymbolNotFound">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorSharedObjectSymbolNotFound</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorSharedObjectSymbolNotFound" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to load data from a module, but the requested symbol is not found in the module.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorSharedObjectInitFailed">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorSharedObjectInitFailed</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorSharedObjectInitFailed" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to initialize a shared object library, but an error occurs.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorOperatingSystem">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorOperatingSystem</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorOperatingSystem" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when a binary is built for one operating system but being run on a different system.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorInvalidHandle">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidHandle</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidHandle" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when using a handle for an event or stream that is invalid for some reason.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorInvalidResourceHandle">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorInvalidResourceHandle</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorInvalidResourceHandle" title="Link to this definition">#</a></dt>
-<dd><p>Superceded by ErrorInvalidHandle</p>
+<dd><p>Superceded by <a class="reference internal" href="#einsums.gpu_except.ErrorInvalidHandle" title="einsums.gpu_except.ErrorInvalidHandle"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ErrorInvalidHandle</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorIllegalState">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorIllegalState</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorIllegalState" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when a resource is in a state that does not support the requested operation.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorNotFound">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorNotFound</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorNotFound" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to find a variable in a module, but the variable can not be found.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -734,12 +898,18 @@ that is detectable but not correctable.</p>
 <dd><p>Thrown when trying to query an event’s properties when those properties haven’t been computed yet.
 For instance, trying to find the elapsed time, but the event is still running. This is not actually
 an error, according to the HIP documentation.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorIllegalAddress">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorIllegalAddress</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorIllegalAddress" title="Link to this definition">#</a></dt>
 <dd><p>Unknown as of now. This seems to be unused but not deprecated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -747,24 +917,36 @@ an error, according to the HIP documentation.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorLaunchOutOfResources</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorLaunchOutOfResources" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when trying to launch a cooperative kernel, but there are not enough resources available for
 the kernel to run.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorLaunchTimeOut">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorLaunchTimeOut</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorLaunchTimeOut" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when trying to launch a cooperative kernel, but one of the devices times out.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorPeerAccessAlreadyEnabled">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorPeerAccessAlreadyEnabled</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorPeerAccessAlreadyEnabled" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to enable peer access on the current device, but it has already been enabled.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorPeerAccessNotEnabled">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorPeerAccessNotEnabled</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorPeerAccessNotEnabled" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to access a peer device, but peer access has not been enabled.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -772,132 +954,198 @@ the kernel to run.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorSetOnActiveProcess</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorSetOnActiveProcess" title="Link to this definition">#</a></dt>
 <dd><p>Not well documented. Thrown when trying to set flags for how the device should behave while the device is
 running a process that would be affected by those changes.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorContextIsDestroyed">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorContextIsDestroyed</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorContextIsDestroyed" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to destroy a context, but the context has already been destroyed.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorAssert">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorAssert</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorAssert" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an internal assertion fails.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
-<dt class="sig sig-object py" id="einsums.gpu_except.ErrorHostMemoyrAlreadyRegistered">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorHostMemoyrAlreadyRegistered</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorHostMemoyrAlreadyRegistered" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="einsums.gpu_except.ErrorHostMemoryAlreadyRegistered">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorHostMemoryAlreadyRegistered</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorHostMemoryAlreadyRegistered" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to register host memory, but that memory has already been registered.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorHostMemoryNotRegistered">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorHostMemoryNotRegistered</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorHostMemoryNotRegistered" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to unregister host memory, but that memory has not been registered or is already unregistered.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorLaunchFailure">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorLaunchFailure</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorLaunchFailure" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when something goes wrong when launching a kernel.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorCooperativeLaunchTooLarge">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorCooperativeLaunchTooLarge</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorCooperativeLaunchTooLarge" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to launch a cooperative kernel with too many blocks.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorNotSupported">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorNotSupported</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorNotSupported" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when the HIP API is not supported.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorStreamCaptureUnsupported">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorStreamCaptureUnsupported</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorStreamCaptureUnsupported" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to perform an operation that is not allowed when a stream is capturing.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorStreamCaptureInvalidated">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorStreamCaptureInvalidated</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorStreamCaptureInvalidated" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when a previous error has invalidated a stream capture.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorStreamCaptureMerge">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorStreamCaptureMerge</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorStreamCaptureMerge" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an operation would have merged two independent stream captures.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorStreamCaptureUnmatched">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorStreamCaptureUnmatched</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorStreamCaptureUnmatched" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when a stream tries to use a capture that was created for another stream.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorStreamCaptureUnjoined">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorStreamCaptureUnjoined</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorStreamCaptureUnjoined" title="Link to this definition">#</a></dt>
 <dd><p>Indicates that a stream capture was forked and never rejoined.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorStreamCaptureIsolation">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorStreamCaptureIsolation</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorStreamCaptureIsolation" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when a cross-stream dependency would have been created.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorStreamCaptureImplicit">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorStreamCaptureImplicit</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorStreamCaptureImplicit" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an operation would have caused a disallowed implicit dependency in a capture.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorCapturedEvent">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorCapturedEvent</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorCapturedEvent" title="Link to this definition">#</a></dt>
 <dd><p>Indicates that an operation was not permitted on an event in a stream that is actively capturing.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorStreamCaptureWrongThread">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorStreamCaptureWrongThread</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorStreamCaptureWrongThread" title="Link to this definition">#</a></dt>
 <dd><p>A capture operation was initiated on a thread that does not have access to the stream.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorGraphExecUpdateFailure">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorGraphExecUpdateFailure</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorGraphExecUpdateFailure" title="Link to this definition">#</a></dt>
 <dd><p>This is thrown when a graph update would have violated certain constraints.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorUnknown">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorUnknown</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorUnknown" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an unknown error has occurred.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorRuntimeMemory">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorRuntimeMemory</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorRuntimeMemory" title="Link to this definition">#</a></dt>
 <dd><p>An internal memory call produced an error. Not seen on production systems.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorRuntimeOther">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorRuntimeOther</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorRuntimeOther" title="Link to this definition">#</a></dt>
 <dd><p>An internal call that is not a memory call produced an error. Not seen on production systems.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.ErrorTbd">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">ErrorTbd</span></span><a class="headerlink" href="#einsums.gpu_except.ErrorTbd" title="Link to this definition">#</a></dt>
 <dd><p>Placeholder error for future expansion.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -905,12 +1153,18 @@ running a process that would be affected by those changes.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">blasSuccess</span></span><a class="headerlink" href="#einsums.gpu_except.blasSuccess" title="Link to this definition">#</a></dt>
 <dd><p>This can be thrown when a hipBLAS function exits successfully. It is normally suppressed, but can
 be thrown if requested.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.blasNotInitialized">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">blasNotInitialized</span></span><a class="headerlink" href="#einsums.gpu_except.blasNotInitialized" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to perform a BLAS operation when the environment has not been initialized.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -918,6 +1172,9 @@ be thrown if requested.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">blasAllocFailed</span></span><a class="headerlink" href="#einsums.gpu_except.blasAllocFailed" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an operation tries to allocate memory, such as a work array, but the allocation returned an
 invalid value.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -925,42 +1182,63 @@ invalid value.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">blasInvalidValue</span></span><a class="headerlink" href="#einsums.gpu_except.blasInvalidValue" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when invalid values are passed to a BLAS call. For instance, many operations have constraints on
 strides or increment values. This would be thrown if those constraints are violated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.blasMappingError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">blasMappingError</span></span><a class="headerlink" href="#einsums.gpu_except.blasMappingError" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an attempt to map memory into some virtual address space fails.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.blasExecutionFailed">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">blasExecutionFailed</span></span><a class="headerlink" href="#einsums.gpu_except.blasExecutionFailed" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when a BLAS operation fails for some reason.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.blasInternalError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">blasInternalError</span></span><a class="headerlink" href="#einsums.gpu_except.blasInternalError" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an internal operation fails.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.blasNotSupported">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">blasNotSupported</span></span><a class="headerlink" href="#einsums.gpu_except.blasNotSupported" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an operation is not supported. For instance, not all systems support half-precision BLAS calls.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.blasArchMismatch">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">blasArchMismatch</span></span><a class="headerlink" href="#einsums.gpu_except.blasArchMismatch" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when hipBLAS was compiled for one architecture but is being used for another.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.blasHandleIsNullptr">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">blasHandleIsNullptr</span></span><a class="headerlink" href="#einsums.gpu_except.blasHandleIsNullptr" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when <code class="code docutils literal notranslate"><span class="pre">nullptr</span></code> is passed as the handle for a BLAS operation.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -969,12 +1247,18 @@ strides or increment values. This would be thrown if those constraints are viola
 <dd><p>Thrown when an invalid value is passed to an enum argument. For instance, when calling <code class="code docutils literal notranslate"><span class="pre">gemm</span></code>,
 BLAS expects to be told either to not transpose a matrix, transpose a matrix, or conjugate and transpose
 a matrix. Any other value would cause this error to be thrown.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.blasUnknown">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">blasUnknown</span></span><a class="headerlink" href="#einsums.gpu_except.blasUnknown" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an unknown error occurs.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -982,12 +1266,18 @@ a matrix. Any other value would cause this error to be thrown.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">solverSuccess</span></span><a class="headerlink" href="#einsums.gpu_except.solverSuccess" title="Link to this definition">#</a></dt>
 <dd><p>This can be thrown when a hipSolver function exits successfully. It is normally suppressed, but can
 be thrown if requested.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.solverNotInitialized">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">solverNotInitialized</span></span><a class="headerlink" href="#einsums.gpu_except.solverNotInitialized" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when trying to perform a LAPACK operation when the environment has not been initialized.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -995,6 +1285,9 @@ be thrown if requested.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">solverAllocFailed</span></span><a class="headerlink" href="#einsums.gpu_except.solverAllocFailed" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an operation tries to allocate memory, such as a work array, but the allocation returned an
 invalid value.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -1002,42 +1295,63 @@ invalid value.</p>
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">solverInvalidValue</span></span><a class="headerlink" href="#einsums.gpu_except.solverInvalidValue" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when invalid values are passed to a LAPACK call. For instance, many operations have constraints on
 strides or increment values. This would be thrown if those constraints are violated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.solverMappingError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">solverMappingError</span></span><a class="headerlink" href="#einsums.gpu_except.solverMappingError" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an attempt to map memory into some virtual address space fails.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.solverExecutionFailed">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">solverExecutionFailed</span></span><a class="headerlink" href="#einsums.gpu_except.solverExecutionFailed" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when a LAPACK operation fails for some reason.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.solverInternalError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">solverInternalError</span></span><a class="headerlink" href="#einsums.gpu_except.solverInternalError" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an internal operation fails.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.solverFuncNotSupported">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">solverFuncNotSupported</span></span><a class="headerlink" href="#einsums.gpu_except.solverFuncNotSupported" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an operation is not supported. For instance, not all systems support half-precision LAPACK calls.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.solverArchMismatch">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">solverArchMismatch</span></span><a class="headerlink" href="#einsums.gpu_except.solverArchMismatch" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when hipSolver was compiled for one architecture but is being used for another.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.solverHandleIsNullptr">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">solverHandleIsNullptr</span></span><a class="headerlink" href="#einsums.gpu_except.solverHandleIsNullptr" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when <code class="code docutils literal notranslate"><span class="pre">nullptr</span></code> is passed as the handle for a LAPACK operation.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
@@ -1046,12 +1360,18 @@ strides or increment values. This would be thrown if those constraints are viola
 <dd><p>Thrown when an invalid value is passed to an enum argument. For instance, when calling <code class="code docutils literal notranslate"><span class="pre">geev</span></code>,
 LAPACK expects to be told whether or not to compute the left or right eigenvectors.
 Any other value would cause this error to be thrown.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="einsums.gpu_except.solverUnknown">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.gpu_except.</span></span><span class="sig-name descname"><span class="pre">solverUnknown</span></span><a class="headerlink" href="#einsums.gpu_except.solverUnknown" title="Link to this definition">#</a></dt>
 <dd><p>Thrown when an unknown error occurs.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
 </dd></dl>
 
 </section>
@@ -1162,7 +1482,7 @@ Any other value would cause this error to be thrown.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.gpu_except.ErrorSetOnActiveProcess"><code class="docutils literal notranslate"><span class="pre">ErrorSetOnActiveProcess</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.gpu_except.ErrorContextIsDestroyed"><code class="docutils literal notranslate"><span class="pre">ErrorContextIsDestroyed</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.gpu_except.ErrorAssert"><code class="docutils literal notranslate"><span class="pre">ErrorAssert</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.gpu_except.ErrorHostMemoyrAlreadyRegistered"><code class="docutils literal notranslate"><span class="pre">ErrorHostMemoyrAlreadyRegistered</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.gpu_except.ErrorHostMemoryAlreadyRegistered"><code class="docutils literal notranslate"><span class="pre">ErrorHostMemoryAlreadyRegistered</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.gpu_except.ErrorHostMemoryNotRegistered"><code class="docutils literal notranslate"><span class="pre">ErrorHostMemoryNotRegistered</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.gpu_except.ErrorLaunchFailure"><code class="docutils literal notranslate"><span class="pre">ErrorLaunchFailure</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.gpu_except.ErrorCooperativeLaunchTooLarge"><code class="docutils literal notranslate"><span class="pre">ErrorCooperativeLaunchTooLarge</span></code></a></li>

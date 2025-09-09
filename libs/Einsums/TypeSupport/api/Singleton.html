@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -343,11 +357,16 @@
 <dt class="sig sig-object cpp" id="c.EINSUMS_SINGLETON_DEF">
 <span class="target" id="_singleton_8hpp_1a44743b68a60837242e5f469c2bef7a44"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_SINGLETON_DEF</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_SINGLETON_DEF" title="Link to this definition">#</a><br /></dt>
 <dd><p>Turns a C++ class into a singleton. Place this at the beginning of the class. You will then need to define a private constructor with no arguments to actually construct the singleton stuff. This macro is only for the definition of the class and does not contain any code. Make sure to use a matching <code class="docutils literal notranslate"><span class="pre">EINSUMS_SINGLETON_IMPL</span></code> somewhere else to get the code to compile.</p>
-<p>This will provide the two methods <code class="docutils literal notranslate"><span class="pre">Type</span> <span class="pre">&amp;get_singleton()</span></code> and <code class="docutils literal notranslate"><span class="pre">finalize_singleton()</span></code>.</p>
+<p>This will provide the <code class="docutils literal notranslate"><span class="pre">Type</span> <span class="pre">&amp;get_singleton()</span></code> static method.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>Type</strong> – The type of singleton to construct. </p></li>
+<li><p><strong>Type</strong> – The type of singleton to construct.</p></li>
 </ul>
 </dd>
 </dl>
@@ -356,7 +375,11 @@
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.EINSUMS_SINGLETON_IMPL">
 <span class="target" id="_singleton_8hpp_1a282ac9af24a51ebdc22be1ef49db13b6"></span><span class="sig-name descname"><span class="n"><span class="pre">EINSUMS_SINGLETON_IMPL</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EINSUMS_SINGLETON_IMPL" title="Link to this definition">#</a><br /></dt>
-<dd><p>Creates the code for managing a singleton. </p>
+<dd><p>Creates the code for managing a singleton.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>

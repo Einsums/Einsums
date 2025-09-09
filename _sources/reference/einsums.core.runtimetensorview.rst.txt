@@ -29,6 +29,8 @@ is reflected in the other.
 
     Very basic class. Should not be instantiated. It is the superclass for all :py:class:`RuntimeTensorViewX` types.
 
+    .. versionadded:: 1.0.0
+
 .. py:class:: RuntimeTensorViewX
 
     These are the tensor view classes that allow the Einsums Python code to interface with the C++ library.
@@ -36,9 +38,13 @@ is reflected in the other.
     wraps the :cpp:class:`einsums::RuntimeTensorView` class with a trampoline class provided by :cpp:class:`einsums::python::PyTensorView`.
     The data contained in these views is shared with a tensor so that changes in either are reflected in both.
 
+    .. versionadded:: 1.0.0
+
     .. py:method:: __init__()
 
         Construct a new empty tensor view.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: __init__(tensor [, dims])
         :noindex:
@@ -50,9 +56,13 @@ is reflected in the other.
         :param tensor: The tensor to view.
         :param dims: The dimensions of the view.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: zero() -> None
 
         Zero out the data in the tensor. Wraps :cpp:func:`einsums::RuntimeTensorView::zero()`.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: set_all(value) -> None
 
@@ -60,12 +70,16 @@ is reflected in the other.
 
         :param value: The value to fill the tensor with.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: __getitem__(index)
 
         Get the value at an index using Python's bracket syntax.
 
         :param index: The index to pass. Can be a single value, a tuple, a slice, or pretty much anything that normally works.
         :return: Return value depends on the index passed. It may be a single value or it may be a :code:`einsums.core.RuntimeTensorView` object.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: __setitem__(key, value)
 
@@ -78,6 +92,8 @@ is reflected in the other.
         :param key: Which item or items to set.
         :param value: The value or buffer of values to set that key to.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: __imul__(other)
     .. py:method:: __itruediv__(other)
     .. py:method:: __iadd__(other)
@@ -89,6 +105,12 @@ is reflected in the other.
         will then perform the element-wise operation between the elements of the tensor and the buffer.
 
         :param other: The object to operate with.
+
+        .. versionadded:: 1.0.0
+        .. versionchanged:: 1.1.0
+
+            Operations between a real tensor on the left and a complex tensor on the right are no longer
+            permitted.
 
     .. py:method:: __mul__(other)
     .. py:method:: __truediv__(other)
@@ -107,11 +129,18 @@ is reflected in the other.
 
         :param other: The object to operate with.
 
+        .. versionadded:: 1.1.0
+
     .. py:method:: assign(buffer)
 
         Copy the buffer into this tensor. The tensor will resize and reshape to fit the buffer.
 
         :param buffer: The buffer object to assign from.
+
+        .. versionadded:: 1.0.0
+        .. versionchanged:: 1.1.0
+
+            A complex buffer can not be assigned to a real buffer.
 
     .. py:method:: dim(axis: int) -> int
 
@@ -119,9 +148,13 @@ is reflected in the other.
 
         :param axis: The axis whose dimension should be found.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: dims() -> list[int]
 
         Get the dimensions of the tensor.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: stride(axis: int) -> int
 
@@ -129,13 +162,19 @@ is reflected in the other.
 
         :param axis: The axis whos stride should be found.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: strides() -> list[int]
 
         Get the strides of the tensor, in elements.
+
+        .. versionadded:: 1.0.0
     
     .. py:method:: get_name() -> str
 
         Get the name of the tensor.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: set_name(name: str)
 
@@ -143,9 +182,13 @@ is reflected in the other.
 
         :param name: The new name of the tensor.
 
+        .. versionadded:: 1.0.0
+
     .. py:property:: name
 
         Python property wrapping :py:meth:`get_name` and :py:meth:`set_name`.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: size() -> int
     .. py:method:: __len__() -> int
@@ -154,11 +197,15 @@ is reflected in the other.
 
         :return: The number of elements in the tensor.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: __iter__() -> einsums.core.PyTensorIteratorX
 
         Get an iterator that iterates over the elements in the tensor.
 
         :return: An iterator that will iterate over the elements.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: __reversed__() -> einsums.core.PyTensorIteratorX
 
@@ -166,11 +213,15 @@ is reflected in the other.
 
         :return: An iterator that will iterate over the elements in reverse.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: rank() -> int
 
         Get the rank of the tensor, or the number of dimensions.
 
         :return: The rank of the tensor.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: __copy__()
     .. py:method:: __deepcopy__()
@@ -181,7 +232,11 @@ is reflected in the other.
 
         :return: A copy of the tensor.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: __str__() -> str
 
         Return a string representation of the tensor.
+
+        .. versionadded:: 1.0.0
 

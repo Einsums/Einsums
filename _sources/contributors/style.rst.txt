@@ -49,42 +49,43 @@ Names should follow these conventions.
   This means that every word begins with a capital letter, and words are concatenated
   without any extra symbols. Some examples.
 
-  * ``Tensor``
-  * ``GPUView``
-  * ``DeviceTensorView``
-  * ``Tensor::ValueType``
+  * :code:`Tensor`
+  * :code:`GPUView`
+  * :code:`DeviceTensorView`
+  * :code:`Tensor::ValueType`
 
 * Concepts, requirements, and compile-time boolean statements underlying those concepts and requirements
   should also be in ``PascalCase``. Also, requirements and boolean statements should begin
   with ``Is`` and end in ``V``, standing for "value". Some examples.
 
-  * ``TensorConcept`` is a concept.
-  * ``IsTensorV`` is a requirement or compile-time boolean statement.
+  * :code:`TensorConcept` is a concept.
+  * :code:`IsTensorV` is a requirement or compile-time boolean statement.
 
 * Namespaces should be in ``snake_case``, where every word is lower case, and each word is
   separated by underscores. Some examples.
 
-  * ``einsums::tensor_algebra``
-  * ``einsums::tensor_props``
+  * :code:`einsums::tensor_algebra`
+  * :code:`einsums::tensor_props`
 
 * Functions and methods should be in ``snake_case`` as well. Some examples.
 
-  * ``einsum(...)``
-  * ``A.full_view_of_underlying()``
+  * :code:`einsum(...)`
+  * :code:`A.full_view_of_underlying()`
 
 * Private and protected properties in a class should begin in a single underscore. However,
-  some older code will have them end in a single underscore instead. Some examples.
+  some older code may have them end in a single underscore instead. As we work on the code,
+  we will bring these outliers into agreement with this style. Some examples.
 
-  * ``this->dims_``: Discouraged for consistency.
-  * ``this->_dims``: Preferred.
+  * :code:`this->dims_`: Discouraged for consistency.
+  * :code:`this->_dims`: Preferred.
 
 * Variables and parameters should usually be in ``snake_case``. However, to be consistent with
   mathematical notation, tensor variables and parameters are usually capitalized. This includes
   when the name of a tensor is referenced in a variable name. Some examples.
 
-  * ``std::string const &name``: ``name`` does not refer to a tensor, so it is in snake case.
-  * ``TensorType const &A``: ``A`` is a tensor, so it is capitalized.
-  * ``std::tuple<AIndices...> const &A_indices``: ``A`` is a tensor, but the variable is not.
+  * :code:`std::string const &name`: ``name`` does not refer to a tensor, so it is in snake case.
+  * :code:`TensorType const &A`: ``A`` is a tensor, so it is capitalized.
+  * :code:`std::tuple<AIndices...> const &A_indices`: ``A`` is a tensor, but the variable is not.
     This means that the "A" is capitalized, but the rest of the variable is in snake case.
 
 * Macros and enum members should be in ``ALL_CAPS``.
@@ -94,18 +95,19 @@ Order of Things
 
 * *cv* keywords should never come before the pointer or reference type they modify. As an example,
   
-  * ``std::string const &name``, not ``const std::string &name``.
-  * However, ``const size_t size`` is allowed.
+  * :code:`std::string const &name`, not :code:`const std::string &name`.
+  * However, :code:`const size_t size` is allowed, but :code:`size_t const size` is preferred.
+  * :code:`constexpr` goes before the type, so :code:`constexpr size_t rank` is preferred.
 
 * When writing a class, the preferred order of blocks is public, then protected, then private.
 * Place simple return types in front of function names. Place complicated return types after
   function names. Using the ``auto`` keyword can sometimes mess with Doxygen, so this is the
   compromise we have to make. Some examples.
 
-  * ``size_t size()``
-  * ``Tensor<double, 2> &create_tensor()`` or ``auto create_tensor() -> Tensor<double, 2> &``
+  * :code:`size_t size()`
+  * :code:`Tensor<double, 2> &create_tensor()` or :code:`auto create_tensor() -> Tensor<double, 2> &`
     are both alright. Use your best judgement here.
-  * ``auto common_initialization(TensorType<T, OtherRank> const &other, Args &&...args) -> std::enable_if_t<std::is_base_of_v<::einsums::tensor_base::Tensor<T, OtherRank>, TensorType<T, OtherRank>>>``
+  * :code:`auto common_initialization(TensorType<T, OtherRank> const &other, Args &&...args) -> std::enable_if_t<std::is_base_of_v<::einsums::tensor_base::Tensor<T, OtherRank>, TensorType<T, OtherRank>>>`
     This is a complicated return type. Use the ``auto`` keyword for readability.
 
 Miscellaneous
@@ -130,8 +132,8 @@ Miscellaneous
 Some constructions need to have serious thought before they are used. Before any code
 with these constructions is accepted, their use will need to be justified.
 
-* ``goto`` statements.
-* ``do { } while(false);`` blocks outside of macros. They are fine within macros,
+* :code:`goto` statements.
+* :code:`do { } while(false);` blocks outside of macros. They are fine within macros,
   since their use is considered idiomatic to C/C++ for making a macro require a
   semicolon after the closing parenthesis. 
 * Inline assembly will be outright banned. One of the goals of Einsums is portability. This goes against
@@ -151,9 +153,9 @@ The approach to Python style is to generally follow the standard Python style gu
 
 * Try to use type annotations when writing Python code. Some examples.
   
-  * ``def set_name(name)``: Bad.
-  * ``def set_name(name: str)``: Good.
-  * ``def iterate_elements(param)``: Fine. ``param`` can be pretty much any type. ``def iterate_elements(param: Any)`` would be preferred,
+  * :code:`def set_name(name)`: Bad.
+  * :code:`def set_name(name: str)`: Good.
+  * :code:`def iterate_elements(param)`: Fine. ``param`` can be pretty much any type. :code:`def iterate_elements(param: Any)` would be preferred,
     but brevity is sometimes better than verbosity.
 
 * Prefer ``PascalCase`` for type names.
@@ -161,14 +163,14 @@ The approach to Python style is to generally follow the standard Python style gu
 * However, the same considerations for tensor variables apply as in C++. Tensor varaibles are in ``UPPER_CASE``,
   and any reference to a tensor variable in a non-tensor variable should match the case of the tensor.
 
-  * ``A``: Tensor variable. 
-  * ``A_indices``: References a tensor variable, but is not a tensor variable.
+  * :code:`A`: Tensor variable. 
+  * :code:`A_indices`: References a tensor variable, but is not a tensor variable.
 
 CMake Style
 -----------
 
 A ``.cmake-format.py`` file is provided to ensure consist formatting of CMake files. You may need to
-install the package cmake-format to use it.
+install the package ``cmake-format`` to use it.
 
 Using pre-commit with Einsums
 =============================

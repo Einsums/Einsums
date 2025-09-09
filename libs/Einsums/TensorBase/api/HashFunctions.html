@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -335,7 +349,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -350,9 +364,14 @@
 <p>Hashses an arbitrary container object. Containers need to be iterable.</p>
 <p>Examples of allowed containers include std::array, std::vector, std::queue, etc.</p>
 <p>The default implementation is a PJW hash, based on the Wikipedia page.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ContainerType</strong> – The type of container. </p>
+<dd class="field-odd"><p><strong>ContainerType</strong> – The type of container.</p>
 </dd>
 </dl>
 <div class="breathe-sectiondef docutils container">
@@ -371,12 +390,17 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums6hashes14container_hashclERK13ContainerType">
 <span id="_CPPv3NK7einsums6hashes14container_hashclERK13ContainerType"></span><span id="_CPPv2NK7einsums6hashes14container_hashclERK13ContainerType"></span><span id="einsums::hashes::container_hash::call-operator__ContainerTypeCRC"></span><span class="target" id="structeinsums_1_1hashes_1_1container__hash_1a61be343f7e359c4a3c7b76219e075a2e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums6hashes14container_hashE" title="einsums::hashes::container_hash::ContainerType"><span class="n"><span class="pre">ContainerType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cont</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums6hashes14container_hashclERK13ContainerType" title="Link to this definition">#</a><br /></dt>
 <dd><p>Hashes the contents of a container.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cont</strong> – The container to hash. </p>
+<dd class="field-odd"><p><strong>cont</strong> – <strong>[in]</strong> The container to hash. </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The container’s hash. </p>
+<dd class="field-even"><p>The container’s hash.</p>
 </dd>
 </dl>
 </dd></dl>

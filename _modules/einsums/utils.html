@@ -52,7 +52,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -149,6 +149,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../libs/overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -293,6 +307,9 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
     
+    
+    <li class="breadcrumb-item"><a href="../einsums.html" class="nav-link">einsums</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">einsums.utils</span></li>
   </ul>
 </nav>
@@ -338,6 +355,8 @@
 
 <span class="sd">    :param arg: This decorator may take a string. This will be placed after the function name in the timer report.</span>
 <span class="sd">    :type arg: Optional[str]</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
 
@@ -380,6 +399,8 @@
 <span class="sd">    :param args: The iterators to iterate over.</span>
 <span class="sd">    :return: Iterator of tuples. The last entry in the tuple is the index number. If an</span>
 <span class="sd">    iterator ends early, then its entry will be filled with ``None``.</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">stop_cond</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
@@ -424,6 +445,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">TensorIndices</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterator for moving through the indices of a tensor.</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -449,6 +472,8 @@
 <span class="sd">        Return the iterator for this iterator (itself).</span>
 
 <span class="sd">        :return: The object itself.</span>
+
+<span class="sd">        .. versionadded:: 1.0.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span>
 
@@ -457,6 +482,8 @@
 <span class="sd">        Return the iterator that goes in reverse.</span>
 
 <span class="sd">        :return: The iterator that goes from the current index back to the beginning.</span>
+
+<span class="sd">        .. versionadded:: 1.0.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">TensorIndices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">out</span><span class="o">.</span><span class="n">__reverse</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reverse</span>
@@ -468,6 +495,8 @@
 
 <span class="sd">        :return: The next index.</span>
 <span class="sd">        :raises StopIteration: Raises this if there are no more indices.</span>
+<span class="sd">        </span>
+<span class="sd">        .. versionadded:: 1.0.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__curr_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__curr_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">StopIteration</span>
@@ -503,6 +532,8 @@
 
 <span class="sd">    :param args: The arguments to pass to the constructor.</span>
 <span class="sd">    :param dtype: The data type to be stored. Can only be single or double precision real or complex floating points.</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">__singles</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">RuntimeTensorF</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
@@ -528,6 +559,8 @@
 <span class="sd">    :param dtype: The data type for the tensor.</span>
 <span class="sd">    :param method: The kind of tensor to create. It should be either &quot;einsums&quot;  or &quot;numpy&#39;.</span>
 <span class="sd">    :raises ValueError: if the method is not valid.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;einsums&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">create_tensor</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
@@ -545,6 +578,8 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">remove_complex</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Takes a datatype and gives the real equivalent.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">__complex_singles</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">__singles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -559,6 +594,8 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">is_complex</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks to see if the datatype is a complex datatype.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">dtype</span> <span class="ow">in</span> <span class="n">__complex_singles</span>
@@ -574,6 +611,8 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">add_complex</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Takes a datatype and gives the complex equivalent.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">__singles</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">__complex_singles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -592,6 +631,8 @@
 <span class="sd">    :param dims: The dimensions of the array.</span>
 <span class="sd">    :param dtype: The data type to store.</span>
 <span class="sd">    :raises ValueError: if the data type is not a real or complex floating point type.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
 
@@ -622,6 +663,8 @@
 <span class="sd">    :param dims: The dimensions of the array.</span>
 <span class="sd">    :param dtype: The data type to store.</span>
 <span class="sd">    :raises ValueError: if the data type is not a real or complex floating point type.</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">__singles</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">create_random_tensorF</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dims</span><span class="p">)</span>
@@ -650,6 +693,8 @@
 <span class="sd">    :param dtype: The data type for the tensor.</span>
 <span class="sd">    :param method: The kind of tensor to create. It should be either &quot;einsums&quot;  or &quot;numpy&#39;.</span>
 <span class="sd">    :raises ValueError: if the method is not valid.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;einsums&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">create_random_tensor</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
@@ -677,6 +722,8 @@
 <span class="sd">    :param dtype: The data type to store.</span>
 <span class="sd">    :return: A positive definite matrix.</span>
 <span class="sd">    :raises ValueError: if the data type is not a real or complex floating point type.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">__singles</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">create_random_definiteF</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">mean</span><span class="p">)</span>
@@ -705,6 +752,8 @@
 <span class="sd">    :param dtype: The data type to store.</span>
 <span class="sd">    :return: A positive definite matrix.</span>
 <span class="sd">    :raises ValueError: if the data type is not a real or complex floating point type.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">create_random_definite</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">dtype</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
 
@@ -728,6 +777,8 @@
 <span class="sd">    :param method: Which kind of tensor to create. Can be &quot;einsums&quot; or &quot;numpy&quot;.</span>
 <span class="sd">    :return: A positive definite matrix.</span>
 <span class="sd">    :raises ValueError: if the method is not valid.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;einsums&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">create_random_definite</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
@@ -760,6 +811,8 @@
 <span class="sd">    :param dtype: The data type to store.</span>
 <span class="sd">    :return: A positive definite matrix.</span>
 <span class="sd">    :raises ValueError: if the data type is not a real or complex floating point type.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">__singles</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">create_random_semidefiniteF</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">force_zeros</span><span class="p">)</span>
@@ -793,6 +846,8 @@
 <span class="sd">    :param dtype: The data type to store.</span>
 <span class="sd">    :return: A positive definite matrix.</span>
 <span class="sd">    :raises ValueError: if the data type is not a real or complex floating point type.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
         <span class="n">create_random_semidefinite</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">force_zeros</span><span class="p">,</span> <span class="n">dtype</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
@@ -826,6 +881,8 @@
 <span class="sd">    :param method: Which kind of tensor to create. Can be &quot;einsums&quot; or &quot;numpy&quot;.</span>
 <span class="sd">    :return: A positive definite matrix.</span>
 <span class="sd">    :raises ValueError: if the method is not valid.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;einsums&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">create_random_semidefinite</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">force_zeros</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>

@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
   </head>
   
   
@@ -150,6 +150,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -233,6 +240,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../../building/index.html">
     Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
   </a>
 </li>
 
@@ -342,7 +356,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000008"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -386,15 +400,29 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ <p><div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.0.1: </span>The observable can now be locked and unlocked. When unlocked, it can be told to update its observers or not.</p>
+</div>
+</p>
+</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable10ObservableE1T">
-<span id="_CPPv3N7einsums11design_pats10Observable10ObservableE1T"></span><span id="_CPPv2N7einsums11design_pats10Observable10ObservableE1T"></span><span id="einsums::design_pats::Observable::Observable__T"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1aee161b8d74fa6435be8bff2a5a11e72c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Observable</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">initial_value</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable10ObservableE1T" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N7einsums11design_pats10Observable10ObservableE1T"></span><span id="_CPPv2N7einsums11design_pats10Observable10ObservableE1T"></span><span id="einsums::design_pats::Observable::Observable__T"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a09ea1f5521d2502a21af7834786fbcb1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Observable</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">initial_value</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable10ObservableE1T" title="Link to this definition">#</a><br /></dt>
 <dd><p>Constructor. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>initial_value</strong> – The initial value of the observable. </p>
+<dd class="field-odd"><p><strong>initial_value</strong> – The initial value of the observable.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -403,9 +431,14 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10ObservableaSERK1T">
 <span id="_CPPv3N7einsums11design_pats10ObservableaSERK1T"></span><span id="_CPPv2N7einsums11design_pats10ObservableaSERK1T"></span><span id="einsums::design_pats::Observable::assign-operator__TCR"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1acec0c3918a8cef0af6e8a1535e8d6ff6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable"><span class="n"><span class="pre">Observable</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10ObservableaSERK1T" title="Link to this definition">#</a><br /></dt>
 <dd><p>Assignment operator for setting the value. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> – The value to assign to the observable. </p>
+<dd class="field-odd"><p><strong>value</strong> – The value to assign to the observable.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -414,60 +447,107 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums11design_pats10Observablecv1TEv">
 <span id="_CPPv3NK7einsums11design_pats10Observablecv1TEv"></span><span id="_CPPv2NK7einsums11design_pats10Observablecv1TEv"></span><span id="einsums::design_pats::Observable::castto-T-operatorC"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a074d4e39b3d8c4ba6c80335d8c4b5e7c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11design_pats10Observablecv1TEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Casting operator for retrievign the value. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums11design_pats10Observable9get_valueEv">
 <span id="_CPPv3NK7einsums11design_pats10Observable9get_valueEv"></span><span id="_CPPv2NK7einsums11design_pats10Observable9get_valueEv"></span><span id="einsums::design_pats::Observable::get_valueC"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a1cafbe772b3abd313a57730ad25204d5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_value</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11design_pats10Observable9get_valueEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Explicit getter. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable9get_valueEv">
 <span id="_CPPv3N7einsums11design_pats10Observable9get_valueEv"></span><span id="_CPPv2N7einsums11design_pats10Observable9get_valueEv"></span><span id="einsums::design_pats::Observable::get_value"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a5465bce9982934a3be11b8bee5b5f831"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_value</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable9get_valueEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Get a lock that updates internal values as well as the state. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable4lockEv">
 <span id="_CPPv3N7einsums11design_pats10Observable4lockEv"></span><span id="_CPPv2N7einsums11design_pats10Observable4lockEv"></span><span id="einsums::design_pats::Observable::lock"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a949d8d46cb21f40ff4fec0f770504c50"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable4lockEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Lock the state. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.1.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable6unlockEb">
 <span id="_CPPv3N7einsums11design_pats10Observable6unlockEb"></span><span id="_CPPv2N7einsums11design_pats10Observable6unlockEb"></span><span id="einsums::design_pats::Observable::unlock__b"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1ac7efc9b0251fda9f27509a0f1e56bf60"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">unlock</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">notify</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable6unlockEb" title="Link to this definition">#</a><br /></dt>
 <dd><p>Unlock the state. </p>
-<p>This will automatically notify observers when done if no arguments are passed. If false is passed, then it will not notify the observers. </p>
+<p>This will automatically notify observers when done if no arguments are passed. If false is passed, then it will not notify the observers.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.1.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable8try_lockEv">
 <span id="_CPPv3N7einsums11design_pats10Observable8try_lockEv"></span><span id="_CPPv2N7einsums11design_pats10Observable8try_lockEv"></span><span id="einsums::design_pats::Observable::try_lock"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a15c0099af3628f061de0a0cddb7a0f3b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">try_lock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable8try_lockEv" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Attempt to lock the object.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.1.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the lock could be acquired. False if otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable15wait_for_changeEv">
 <span id="_CPPv3N7einsums11design_pats10Observable15wait_for_changeEv"></span><span id="_CPPv2N7einsums11design_pats10Observable15wait_for_changeEv"></span><span id="einsums::design_pats::Observable::wait_for_change"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a74425834dc6925face3ac50b89a8d312"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wait_for_change</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable15wait_for_changeEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Wait for the value to change. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable6attachENSt8functionIFvRK1TEEE">
 <span id="_CPPv3N7einsums11design_pats10Observable6attachENSt8functionIFvRK1TEEE"></span><span id="_CPPv2N7einsums11design_pats10Observable6attachENSt8functionIFvRK1TEEE"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1aff6cb52a291d278d9050c4e185131cf9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">attach</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">observer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable6attachENSt8functionIFvRK1TEEE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Register an observer callback. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable6detachERKNSt8functionIFvRK1TEEE">
 <span id="_CPPv3N7einsums11design_pats10Observable6detachERKNSt8functionIFvRK1TEEE"></span><span id="_CPPv2N7einsums11design_pats10Observable6detachERKNSt8functionIFvRK1TEEE"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1ae5764ce3397ea1ed6852f29be5aab998"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">detach</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">observer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable6detachERKNSt8functionIFvRK1TEEE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Remove an observer callback. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums11design_pats10Observable7changedEv">
 <span id="_CPPv3NK7einsums11design_pats10Observable7changedEv"></span><span id="_CPPv2NK7einsums11design_pats10Observable7changedEv"></span><span id="einsums::design_pats::Observable::changedC"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a0d52708f1e08432cae169ea3ca585a94"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">changed</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11design_pats10Observable7changedEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Check to see if the observable has recently changed. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -477,6 +557,10 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable16notify_observersEv">
 <span id="_CPPv3N7einsums11design_pats10Observable16notify_observersEv"></span><span id="_CPPv2N7einsums11design_pats10Observable16notify_observersEv"></span><span id="einsums::design_pats::Observable::notify_observers"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1aa8f89dfd858fc7ea79e6e7afe88560c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">notify_observers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable16notify_observersEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Notify all of the observers that observe this observable. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 </div>
@@ -486,35 +570,40 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable6_stateE">
 <span id="_CPPv3N7einsums11design_pats10Observable6_stateE"></span><span id="_CPPv2N7einsums11design_pats10Observable6_stateE"></span><span id="einsums::design_pats::Observable::_state__T"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a14dd93e52710d08a2a1f409f3c754a3f"></span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_state</span></span></span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable6_stateE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The internal state of the observable. </p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable6_mutexE">
 <span id="_CPPv3N7einsums11design_pats10Observable6_mutexE"></span><span id="_CPPv2N7einsums11design_pats10Observable6_mutexE"></span><span id="einsums::design_pats::Observable::_mutex__std::mutex"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1abb59324888b14c9c95a978c6bfb5dd03"></span><span class="k"><span class="pre">mutable</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_mutex</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable6_mutexE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
+<dd><p>For thread-safe value access. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable3_cvE">
 <span id="_CPPv3N7einsums11design_pats10Observable3_cvE"></span><span id="_CPPv2N7einsums11design_pats10Observable3_cvE"></span><span id="einsums::design_pats::Observable::_cv__std::condition_variable"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a059004fde015329e6d7a0c8b20cb2a40"></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">condition_variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_cv</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable3_cvE" title="Link to this definition">#</a><br /></dt>
-<dd><p>For thread-safe value access. </p>
+<dd><p>For thread synchronization. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable14_value_changedE">
 <span id="_CPPv3N7einsums11design_pats10Observable14_value_changedE"></span><span id="_CPPv2N7einsums11design_pats10Observable14_value_changedE"></span><span id="einsums::design_pats::Observable::_value_changed__s"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a0b4f18a829f23b4e75b0d77966c57664"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_value_changed</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable14_value_changedE" title="Link to this definition">#</a><br /></dt>
-<dd><p>For thread synchronization. </p>
+<dd><p>Counter indicating how many times the value has changed. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable10_observersE">
 <span id="_CPPv3N7einsums11design_pats10Observable10_observersE"></span><span id="_CPPv2N7einsums11design_pats10Observable10_observersE"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a1913cdb333fb46ee98ad9090184e03f5"></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums11design_pats10ObservableE" title="einsums::design_pats::Observable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_observers</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable10_observersE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Counter indicating how many times the value has changed. </p>
+<dd><p>List of observers. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11design_pats10Observable15_observer_mutexE">
 <span id="_CPPv3N7einsums11design_pats10Observable15_observer_mutexE"></span><span id="_CPPv2N7einsums11design_pats10Observable15_observer_mutexE"></span><span id="einsums::design_pats::Observable::_observer_mutex__std::mutex"></span><span class="target" id="structeinsums_1_1design__pats_1_1_observable_1a6e2c008271cea5f73b7a080a0f491190"></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_observer_mutex</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums11design_pats10Observable15_observer_mutexE" title="Link to this definition">#</a><br /></dt>
-<dd><p>List of observers. </p>
+<dd><p>Protects the observer list. </p>
 </dd></dl>
 
 </div>
