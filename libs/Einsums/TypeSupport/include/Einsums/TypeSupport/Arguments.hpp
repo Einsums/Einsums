@@ -101,7 +101,7 @@ constexpr auto for_each(Tuple &&t, F &&f) -> F {
 template <typename ReturnType, typename Tuple>
 auto get_from_tuple(Tuple &&tuple, std::size_t index) noexcept -> ReturnType {
     std::size_t currentIndex = 0;
-    ReturnType  returnValue{-1ul};
+    ReturnType  returnValue;
 
     for_each(tuple, [index, &currentIndex, &returnValue](auto &&value) {
         if (currentIndex == index) {

@@ -9,7 +9,7 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Tensor/H5.hpp>
+#include <Einsums/Tensor/ModuleVars.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
@@ -18,9 +18,20 @@
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
 
+#include <H5Dpublic.h>
+#include <H5Ppublic.h>
+#include <H5Spublic.h>
+#include <H5Tpublic.h>
+#include <source_location>
 #include <string>
 
 namespace einsums {
+
+namespace detail {
+
+EINSUMS_EXPORT bool verify_exists(hid_t loc_id, std::string const &path, hid_t lapl_id);
+
+}
 
 /**
  * @struct DiskTensor
@@ -50,7 +61,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     /**
      * Default constructor.
      */
-    DiskTensor() = default;
+    DiskTensor() = delete;
 
     /**
      * Default copy constructor.
@@ -65,126 +76,139 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     /**
      * Default destructor.
      */
-    ~DiskTensor() = default;
+    ~DiskTensor() {
+        if (_dataset != H5I_INVALID_HID) {
+            H5Dclose(_dataset);
+        }
+
+        if (_dataspace != H5I_INVALID_HID) {
+            H5Sclose(_dataspace);
+        }
+
+        if (_creation_props != H5I_INVALID_HID) {
+            H5Pclose(_creation_props);
+        }
+    }
 
     /**
      * Create a new disk tensor bound to a file.
      *
-     * @param file The file to use for the storage.
+     * @param file The file to use for the storage. Can also be a parent object.
+     * @param name The name for the tensor.
+     * @param dims The dimensions of the tensor.
+     */
+    explicit DiskTensor(hid_t file, std::string name, Dim<Rank> dims, int deflate_level = -1)
+        : _file{file}, _name{std::move(name)}, _dims{dims} {
+
+        size_t size = dims_to_strides(_dims, _strides);
+
+        _dataspace = H5Screate_simple(Rank, reinterpret_cast<hsize_t *>(_dims.data()), NULL);
+
+        if (_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Dataspace creation failed!");
+        }
+
+        if constexpr (std::is_same_v<T, float>) {
+            _data_type = H5T_NATIVE_FLOAT;
+        } else if constexpr (std::is_same_v<T, double>) {
+            _data_type = H5T_NATIVE_DOUBLE;
+        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
+        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
+        }
+
+        // Check to see if the data set exists
+        if (detail::verify_exists(file, _name, H5P_DEFAULT)) {
+            _existed = true;
+            _dataset = H5Dopen(file, _name.c_str(), H5P_DEFAULT);
+        } else {
+            _existed        = false;
+            _creation_props = H5Pcreate(H5P_DATASET_CREATE);
+
+            if (_creation_props == H5I_INVALID_HID) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create creation property list!");
+            }
+
+            auto err = H5Pset_layout(_creation_props, H5D_CHUNKED);
+
+            if (err < 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set layout to chunked!");
+            }
+
+            std::array<size_t, rank> chunk_dims;
+
+            chunk_dims.fill(1);
+
+            size_t prod = 1;
+
+            // Maximum chunk size is 2^32 - 1, but chunks can not be bigger than the data set in any dimension.
+            for (int i = rank - 1; i >= 0; i--) {
+                if (prod * _dims[i] >= 0xffffffffUL) {
+                    chunk_dims[i] = 0xffffffffUL / prod;
+                    break;
+                } else {
+                    prod *= _dims[i];
+                    chunk_dims[i] = _dims[i];
+                }
+            }
+
+            err = H5Pset_chunk(_creation_props, rank, reinterpret_cast<hsize_t const *>(chunk_dims.data()));
+
+            if (err < 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set up the chunk properties!");
+            }
+
+            err = H5Pset_chunk_opts(_creation_props, H5D_CHUNK_DONT_FILTER_PARTIAL_CHUNKS);
+
+            if (err < 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set up the chunk options!");
+            }
+
+            if (deflate_level < 0 && size > 0xffffffff) {
+                deflate_level = 1;
+            }
+
+            if (deflate_level > 0) {
+                err = H5Pset_deflate(_creation_props, deflate_level);
+
+                if (err < 0) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set up compression options!");
+                }
+            }
+
+            _dataset = H5Dcreate(_file, _name.c_str(), _data_type, _dataspace,
+                                 detail::Einsums_Tensor_vars::get_singleton().link_property_list, _creation_props, H5P_DEFAULT);
+        }
+
+        if (_dataset == H5I_INVALID_HID) {
+            H5Sclose(_dataspace);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not open data set!");
+        }
+    }
+
+    /**
+     * Create a new disk tensor bound to a file.
+     *
+     * @param file The file to use for the storage. Can also be a parent object.
+     * @param name The name for the tensor.
+     * @param chunk @todo No clue.
+     * @param dims The dimensions of the tensor.
+     */
+    template <std::integral... Dims>
+    explicit DiskTensor(hid_t file, std::string const &name, Dims... dims) : DiskTensor(file, name, Dim{dims...}) {}
+
+    /**
+     * Create a new disk tensor bound to a file.
+     *
+     * @param file The file to use for the storage. Can also be a parent object.
      * @param name The name for the tensor.
      * @param chunk @todo No clue.
      * @param dims The dimensions of the tensor.
      */
     template <typename... Dims>
-    explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims)
-        : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
-
-        dims_to_strides(_dims, _strides);
-
-        // Check to see if the data set exists
-        if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
-            _existed = true;
-            try {
-                _disk = h5::open(_file, _name);
-            } catch (...) {
-                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to open disk tensor '{}'.", _name);
-            }
-        } else {
-            _existed = false;
-            // Use h5cpp create data structure on disk.  Refrain from allocating any memory
-            try {
-                _disk = h5::create<T>(_file, _name, h5::current_dims{static_cast<size_t>(dims)...},
-                                      h5::chunk{chunk} /* | h5::gzip{9} | h5::fill_value<T>(0.0) */);
-            } catch (...) {
-                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to create disk tensor '{}'", _name);
-            }
-        }
-    }
-
-    /**
-     * Create a new disk tensor bound to a file.
-     *
-     * @param file The file to use for the storage.
-     * @param name The name for the tensor.
-     * @param dims The dimensions of the tensor.
-     */
-    template <typename... Dims, typename = std::enable_if_t<are_all_convertible<size_t, Dims...>::value>>
-    explicit DiskTensor(h5::fd_t &file, std::string name, Dims... dims)
-        : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
-        static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
-
-        dims_to_strides(_dims, _strides);
-
-        std::array<size_t, Rank> chunk_temp{};
-        chunk_temp[0] = 1;
-        for (int i = 1; i < Rank; i++) {
-            constexpr size_t chunk_min{64};
-            if (_dims[i] < chunk_min)
-                chunk_temp[i] = _dims[i];
-            else
-                chunk_temp[i] = chunk_min;
-        }
-
-        // Check to see if the data set exists
-        if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
-            _existed = true;
-            try {
-                _disk = h5::open(_file, _name);
-            } catch (...) {
-                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to open disk tensor '{}'", _name);
-            }
-        } else {
-            _existed = false;
-            // Use h5cpp create data structure on disk.  Refrain from allocating any memory
-            try {
-                _disk = h5::create<T>(_file, _name, h5::current_dims{static_cast<size_t>(dims)...},
-                                      h5::chunk{chunk_temp} /* | h5::gzip{9} | h5::fill_value<T>(0.0) */);
-            } catch (...) {
-                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to create disk tensor '{}'", _name);
-            }
-        }
-    }
-
-    /// Constructs a DiskTensor shaped like the provided Tensor. Data from the provided tensor
-    /// is NOT saved.
-    explicit DiskTensor(h5::fd_t &file, Tensor<T, Rank> const &tensor) : _file{file}, _name{tensor.name()} {
-        // Save dimension information from the provided tensor.
-        h5::current_dims cdims;
-        for (int i = 0; i < Rank; i++) {
-            _dims[i] = tensor.dim(i);
-            cdims[i] = _dims[i];
-        }
-
-        dims_to_strides(_dims, _strides);
-
-        std::array<size_t, Rank> chunk_temp{};
-        chunk_temp[0] = 1;
-        for (int i = 1; i < Rank; i++) {
-            constexpr size_t chunk_min{64};
-            if (_dims[i] < chunk_min)
-                chunk_temp[i] = _dims[i];
-            else
-                chunk_temp[i] = chunk_min;
-        }
-
-        // Check to see if the data set exists
-        if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
-            _existed = true;
-            try {
-                _disk = h5::open(_file, _name);
-            } catch (...) {
-                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to open disk tensor '%s'", _name.c_str());
-            }
-        } else {
-            _existed = false;
-            // Use h5cpp create data structure on disk.  Refrain from allocating any memory
-            try {
-                _disk = h5::create<T>(_file, _name, cdims, h5::chunk{chunk_temp} /*| h5::gzip{9} | h5::fill_value<T>(0.0)*/);
-            } catch (...) {
-                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to create disk tensor '%s'", _name.c_str());
-            }
-        }
-    }
+    explicit DiskTensor(std::string const &name, Dims &&...dims)
+        : DiskTensor(detail::Einsums_Tensor_vars::get_singleton().hdf5_file, name, std::forward<Dims>(dims)...) {}
 
     // Provides ability to store another tensor to a part of a disk tensor.
 
@@ -206,9 +230,19 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     [[nodiscard]] auto existed() const -> bool { return _existed; }
 
     /**
-     * Get the disk object.
+     * Get the parent object/file.
      */
-    [[nodiscard]] auto disk() -> h5::ds_t & { return _disk; }
+    [[nodiscard]] hid_t file() const { return _file; }
+
+    /**
+     * Get the dataspace.
+     */
+    [[nodiscard]] hid_t dataspace() const { return _dataspace; }
+
+    /**
+     * Get the dataset.
+     */
+    [[nodiscard]] hid_t dataset() const { return _dataset; }
 
     // void _write(Tensor<T, Rank> &data) { h5::write(disk(), data); }
 
@@ -243,8 +277,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     /// Range is not inclusive. Range{10, 11} === size of 1
     template <typename... MultiIndex>
         requires(count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0)
-    auto operator()(MultiIndex... index)
-        -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank> {
+    auto operator()(MultiIndex... index) -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
         // Get positions of All
         auto all_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
             arguments::positions_of_type<AllT, MultiIndex...>());
@@ -257,10 +290,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         // Need the offset and stride into the large tensor
         Offset<Rank> offsets{};
-        Stride<Rank> strides{};
         Count<Rank>  counts{};
+        Dim<Rank>    block{};
 
-        std::fill(counts.begin(), counts.end(), 1.0);
+        std::fill(counts.begin(), counts.end(), 1);
 
         // Need the dim of the smaller tensor
         Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> dims_all{};
@@ -268,28 +301,41 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         for (auto [i, value] : enumerate(index_positions)) {
             // printf("i, value: %d %d\n", i, value);
             offsets[value] = arguments::get_from_tuple<size_t>(indices, value);
+            block[value]   = 1;
         }
         for (auto [i, value] : enumerate(all_positions)) {
             // println("here");
-            strides[value] = _strides[value];
-            counts[value]  = _dims[value];
-            // dims_all[i] = _dims[value];
+            block[value] = _dims[value];
         }
         for (auto [i, value] : enumerate(range_positions)) {
             offsets[value] = arguments::get_from_tuple<Range>(indices, value)[0];
-            counts[value]  = arguments::get_from_tuple<Range>(indices, value)[1] - arguments::get_from_tuple<Range>(indices, value)[0];
+            block[value]   = arguments::get_from_tuple<Range>(indices, value)[1] - arguments::get_from_tuple<Range>(indices, value)[0];
         }
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
         int dims_index = 0;
-        for (auto cnt : counts) {
+        for (auto cnt : block) {
             if (cnt > 1) {
                 dims_all[dims_index++] = cnt;
             }
         }
 
-        return DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>(*this, dims_all, counts,
-                                                                                                               offsets, strides);
+        hid_t dataspace = H5Dget_space(_dataset);
+
+        if (dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create a copy of the data space for view creation!");
+        }
+
+        auto err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, reinterpret_cast<hsize_t const *>(offsets.data()), NULL,
+                                       reinterpret_cast<hsize_t const *>(counts.data()), reinterpret_cast<hsize_t const *>(block.data()));
+
+        if (err < 0) {
+            H5Sclose(dataspace);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Disk view creation failed!");
+        }
+
+        return DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>(*this, dims_all, _dataset,
+                                                                                                         dataspace);
     }
 
     /// This creates a Disk object with its Rank being equal to the number of All{} parameters
@@ -297,8 +343,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     template <typename... MultiIndex>
         requires(count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0)
     auto operator()(MultiIndex... index) const
-        -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank> const {
-        // Get positions of All
+        -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> const {
         auto all_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
             arguments::positions_of_type<AllT, MultiIndex...>());
         auto index_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(
@@ -310,10 +355,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         // Need the offset and stride into the large tensor
         Offset<Rank> offsets{};
-        Stride<Rank> strides{};
         Count<Rank>  counts{};
+        Dim<Rank>    block{};
 
-        std::fill(counts.begin(), counts.end(), 1.0);
+        std::fill(counts.begin(), counts.end(), 1);
 
         // Need the dim of the smaller tensor
         Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> dims_all{};
@@ -321,38 +366,68 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         for (auto [i, value] : enumerate(index_positions)) {
             // printf("i, value: %d %d\n", i, value);
             offsets[value] = arguments::get_from_tuple<size_t>(indices, value);
+            block[value]   = 1;
         }
         for (auto [i, value] : enumerate(all_positions)) {
             // println("here");
-            strides[value] = _strides[value];
-            counts[value]  = _dims[value];
-            // dims_all[i] = _dims[value];
+            block[value] = _dims[value];
         }
         for (auto [i, value] : enumerate(range_positions)) {
             offsets[value] = arguments::get_from_tuple<Range>(indices, value)[0];
-            counts[value]  = arguments::get_from_tuple<Range>(indices, value)[1] - arguments::get_from_tuple<Range>(indices, value)[0];
+            block[value]   = arguments::get_from_tuple<Range>(indices, value)[1] - arguments::get_from_tuple<Range>(indices, value)[0];
         }
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
         int dims_index = 0;
-        for (auto cnt : counts) {
+        for (auto cnt : block) {
             if (cnt > 1) {
                 dims_all[dims_index++] = cnt;
             }
         }
 
-        return DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>(*this, dims_all, counts,
-                                                                                                               offsets, strides);
+        hid_t dataspace = H5Dget_space(_dataset);
+
+        if (dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create a copy of the data space for view creation!");
+        }
+
+        auto err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, reinterpret_cast<hsize_t const *>(offsets.data()), NULL,
+                                       reinterpret_cast<hsize_t const *>(counts.data()), reinterpret_cast<hsize_t const *>(block.data()));
+
+        if (err < 0) {
+            H5Sclose(dataspace);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Disk view creation failed!");
+        }
+
+        return DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>(*this, dims_all, _dataset,
+                                                                                                         dataspace);
+    }
+
+    template <CoreBasicTensorConcept TensorType>
+        requires(RankTensorConcept<TensorType, rank>)
+    void write(TensorType &tensor) {
+        std::array<size_t, rank> dims, counts, block;
+
+        counts.fill(1);
+
+        hid_t mem_dataspace = H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(tensor.dims().data()),
+                                               reinterpret_cast<hsize_t const *>(tensor.dims().data()));
+
+        if (mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+        }
+
+        auto err = H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, tensor.data());
+
+        H5Sclose(mem_dataspace);
+
+        if (err < 0) {
+            H5Sclose(mem_dataspace);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not write data to HDF5 file!");
+        }
     }
 
   private:
-    /**
-     * @var _file
-     *
-     * Holds a reference to the file containing the tensor data.
-     */
-    h5::fd_t &_file;
-
     /**
      * @var _name
      *
@@ -374,12 +449,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      */
     Stride<Rank> _strides;
 
-    /**
-     * @var _disk
-     *
-     * Holds a reference to the disk manager.
-     */
-    h5::ds_t _disk;
+    hid_t _file{H5I_INVALID_HID}, _dataspace{H5I_INVALID_HID}, _dataset{H5I_INVALID_HID}, _data_type{H5I_INVALID_HID},
+        _creation_props{H5I_INVALID_HID};
 
     /** @var _existed
      *
@@ -397,7 +468,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
  * @tparam ViewRank The rank of the view.
  * @tparam Rank The rank of the DiskTensor being viewed.
  */
-template <typename T, size_t ViewRank, size_t rank>
+template <typename T, size_t rank>
 struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recursive_mutex> {
     /**
      * @typedef ValueType
@@ -411,7 +482,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      *
      * @brief The rank of the view.
      */
-    constexpr static size_t Rank = ViewRank;
+    constexpr static size_t Rank = rank;
 
     /**
      * @typedef underlying_type
@@ -421,25 +492,168 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     using underlying_type = einsums::DiskTensor<T, rank>;
 
     /**
-     * Construct a view of a tensor with the given dimensions, counts, strides, and offsets.
+     * Construct a view of a tensor with the given dimensions and with the given dataset and dataspace.
      */
-    DiskView(einsums::DiskTensor<T, rank> &parent, Dim<ViewRank> const &dims, Count<rank> const &counts, Offset<rank> const &offsets,
-             Stride<rank> const &strides)
-        : _parent(parent), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides), _tensor{_dims} {
-        h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
-    };
+    template <size_t BaseRank>
+    DiskView(einsums::DiskTensor<T, BaseRank> &parent, Dim<rank> const &dims, hid_t dataset, hid_t dataspace)
+        : _dims(dims), _dataset(dataset), _dataspace(dataspace) {
+
+        _data_type = H5I_INVALID_HID;
+
+        if constexpr (std::is_same_v<T, float>) {
+            _data_type = H5T_NATIVE_FLOAT;
+        } else if constexpr (std::is_same_v<T, double>) {
+            _data_type = H5T_NATIVE_DOUBLE;
+        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
+        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
+        }
+
+        size_t prod = 1;
+        for (int i = 0; i < rank; i++) {
+            prod *= _dims[i];
+        }
+
+        size_t prod2 = 1;
+        for (int i = 0; i < rank; i++) {
+            prod2 *= parent.dim(i);
+        }
+
+        _full_view = (prod == prod2);
+
+        _mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims.data()), reinterpret_cast<hsize_t const *>(dims.data()));
+
+        if (_data_type == H5I_INVALID_HID || dataspace == H5I_INVALID_HID || dataset == H5I_INVALID_HID ||
+            _mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not initialize disk view!");
+        }
+    }
 
     /**
-     * Construct a view of a tensor with the given dimensions, counts, strides, and offsets.
+     * Construct a view of a tensor with the given dimensions and with the given dataset and dataspace.
      */
-    DiskView(einsums::DiskTensor<T, rank> const &parent, Dim<ViewRank> const &dims, Count<rank> const &counts, Offset<rank> const &offsets,
-             Stride<rank> const &strides)
-        : _parent(const_cast<einsums::DiskTensor<T, rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides),
-          _tensor{_dims} {
-        // Section const section("DiskView constructor");
-        h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
+    template <size_t BaseRank>
+    DiskView(einsums::DiskTensor<T, BaseRank> const &parent, Dim<rank> const &dims, hid_t dataset, hid_t dataspace)
+        : _dims(dims), _dataset(dataset), _dataspace(dataspace) {
+
+        _data_type = H5I_INVALID_HID;
+
+        if constexpr (std::is_same_v<T, float>) {
+            _data_type = H5T_NATIVE_FLOAT;
+        } else if constexpr (std::is_same_v<T, double>) {
+            _data_type = H5T_NATIVE_DOUBLE;
+        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
+        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
+        }
+
+        size_t prod = 1;
+        for (int i = 0; i < rank; i++) {
+            prod *= _dims[i];
+        }
+
+        size_t prod2 = 1;
+        for (int i = 0; i < rank; i++) {
+            prod2 *= parent.dim(i);
+        }
+
+        _full_view = (prod == prod2);
+
+        _mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims.data()), reinterpret_cast<hsize_t const *>(dims.data()));
+
+        if (_data_type == H5I_INVALID_HID || dataspace == H5I_INVALID_HID || dataset == H5I_INVALID_HID ||
+            _mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not initialize disk view!");
+        }
+
         set_read_only(true);
-    };
+    }
+
+    /**
+     * Construct a view of a tensor with the given dimensions and with the given dataset and dataspace.
+     */
+    template <size_t BaseRank>
+    DiskView(einsums::DiskView<T, BaseRank> &parent, Dim<rank> const &dims, hid_t dataset, hid_t dataspace)
+        : _dims(dims), _dataset(dataset), _dataspace(dataspace) {
+
+        _data_type = H5I_INVALID_HID;
+
+        if constexpr (std::is_same_v<T, float>) {
+            _data_type = H5T_NATIVE_FLOAT;
+        } else if constexpr (std::is_same_v<T, double>) {
+            _data_type = H5T_NATIVE_DOUBLE;
+        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
+        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
+        }
+
+        size_t prod = 1;
+        for (int i = 0; i < rank; i++) {
+            prod *= _dims[i];
+        }
+
+        size_t prod2 = 1;
+        for (int i = 0; i < rank; i++) {
+            prod2 *= parent.dim(i);
+        }
+
+        _full_view = (prod == prod2) && parent.full_view_of_underlying();
+
+        _mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims.data()), reinterpret_cast<hsize_t const *>(dims.data()));
+
+        if (_data_type == H5I_INVALID_HID || dataspace == H5I_INVALID_HID || dataset == H5I_INVALID_HID ||
+            _mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not initialize disk view!");
+        }
+    }
+
+    /**
+     * Construct a view of a tensor with the given dimensions and with the given dataset and dataspace.
+     */
+    template <size_t BaseRank>
+    DiskView(einsums::DiskView<T, BaseRank> const &parent, Dim<rank> const &dims, hid_t dataset, hid_t dataspace)
+        : _dims(dims), _dataset(dataset), _dataspace(dataspace) {
+
+        _data_type = H5I_INVALID_HID;
+
+        if constexpr (std::is_same_v<T, float>) {
+            _data_type = H5T_NATIVE_FLOAT;
+        } else if constexpr (std::is_same_v<T, double>) {
+            _data_type = H5T_NATIVE_DOUBLE;
+        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
+        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
+        }
+
+        size_t prod = 1;
+        for (int i = 0; i < rank; i++) {
+            prod *= _dims[i];
+        }
+
+        size_t prod2 = 1;
+        for (int i = 0; i < rank; i++) {
+            prod2 *= parent.dim(i);
+        }
+
+        _full_view = (prod == prod2) && parent.full_view_of_underlying();
+
+        _mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims.data()), reinterpret_cast<hsize_t const *>(dims.data()));
+
+        if (_data_type == H5I_INVALID_HID || dataspace == H5I_INVALID_HID || dataset == H5I_INVALID_HID ||
+            _mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not initialize disk view!");
+        }
+
+        set_read_only(true);
+    }
 
     /**
      * Default copy constructor
@@ -454,7 +668,19 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Destructor.
      */
-    ~DiskView() { put(); }
+    ~DiskView() {
+        put();
+
+        if (_dataspace != H5I_INVALID_HID) {
+            H5Sclose(_dataspace);
+            _dataspace = H5I_INVALID_HID;
+        }
+
+        if (_mem_dataspace != H5I_INVALID_HID && _mem_dataspace != H5S_ALL) {
+            H5Sclose(_mem_dataspace);
+            _mem_dataspace = H5S_ALL;
+        }
+    }
 
     /**
      * Make the tensor view read only.
@@ -467,28 +693,28 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      * @attention This is an expert method only. If you are using this, then you must know what you are doing!
      */
     auto operator=(T const *other) -> DiskView & {
-        // Can't perform checks on data. Assume the user knows what they're doing.
-        // This function is used when interfacing with libint2.
+        if (_readOnly) {
+            EINSUMS_THROW_EXCEPTION(access_denied, "Attempting to write data to a read only disk view.");
+        }
 
-        // Save the data to disk.
-        h5::write<T>(_parent.disk(), other, h5::count{_counts}, h5::offset{_offsets});
+        get();
+
+        std::memcpy(_tensor.data(), other, _tensor.size() * sizeof(T));
 
         return *this;
     }
 
     /**
      * Copy a tensor into disk.
-     *
-     * @todo I'm not entirely sure if a TensorView can be sent to the disk.
      */
     template <template <typename, size_t> typename TType>
-    auto operator=(TType<T, ViewRank> const &other) -> DiskView & {
+    auto operator=(TType<T, rank> const &other) -> DiskView & {
         if (_readOnly) {
             EINSUMS_THROW_EXCEPTION(access_denied, "Attempting to write data to a read only disk view.");
         }
 
         // Check dims
-        for (int i = 0; i < ViewRank; i++) {
+        for (int i = 0; i < rank; i++) {
             if (_dims[i] != other.dim(i)) {
                 EINSUMS_THROW_EXCEPTION(dimension_error, "dims do not match (i {} dim {} other {})", i, _dims[i], other.dim(i));
             }
@@ -498,50 +724,266 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
         // the data to disk.
         // Sync the data to disk and into our internal tensor.
         // h5::write<T>(_parent.disk(), other.data(), h5::count{_counts}, h5::offset{_offsets});
-        _tensor = other;
+        get() = other;
 
         return *this;
     }
 
-    // Does not perform a disk read. That was handled by the constructor.
     /**
-     * Gets the underlying tensor holding the data. Does not read the tensor.
+     * Gets the underlying tensor holding the data.
      */
-    auto get() -> Tensor<T, ViewRank> & { return _tensor; }
+    auto get() -> Tensor<T, rank> & {
+        auto lock = std::lock_guard(*this);
+        if (!_constructed) {
+            _tensor      = Tensor<T, Rank>{true, _dims};
+            _constructed = true;
+
+            auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+            if (err < 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+            }
+        }
+        return _tensor;
+    }
+
+    /**
+     * Gets the underlying tensor holding the data.
+     */
+    auto get() const -> Tensor<T, rank> const & {
+        auto lock = std::lock_guard(*this);
+        if (!_constructed) {
+            _tensor      = Tensor<T, Rank>{true, _dims};
+            _constructed = true;
+
+            auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+            if (err < 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+            }
+        }
+        return _tensor;
+    }
 
     /**
      * Push any changes to the view to the disk.
      */
     void put() {
-        if (!_readOnly)
-            h5::write<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
+        if (!_readOnly && _constructed)
+            H5Dwrite(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
     }
 
     /**
      * Subscript into the tensor.
      */
     template <typename... MultiIndex>
-    auto operator()(MultiIndex... index) const -> T const & {
-        return _tensor(std::forward<MultiIndex>(index)...);
+        requires(NoneOfType<AllT, MultiIndex...> && NoneOfType<Range, MultiIndex...>)
+    auto operator()(MultiIndex &&...index) const -> T const & {
+        return get()(std::forward<MultiIndex>(index)...);
     }
 
     /**
      * Subscript into the tensor.
      */
     template <typename... MultiIndex>
-    auto operator()(MultiIndex... index) -> T & {
-        return _tensor(std::forward<MultiIndex>(index)...);
+        requires(NoneOfType<AllT, MultiIndex...> && NoneOfType<Range, MultiIndex...>)
+    auto operator()(MultiIndex &&...index) -> T & {
+        return get()(std::forward<MultiIndex>(index)...);
+    }
+
+    template <typename... MultiIndex>
+        requires(count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0)
+    auto operator()(MultiIndex... index) -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
+        // Get positions of All
+        auto all_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
+            arguments::positions_of_type<AllT, MultiIndex...>());
+        auto index_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(
+            arguments::positions_of_type<size_t, MultiIndex...>());
+        auto range_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<Range, MultiIndex...>()>>(
+            arguments::positions_of_type<Range, MultiIndex...>());
+
+        auto const &indices = std::forward_as_tuple(index...);
+
+        // Need the offset and stride into the large tensor
+        Offset<Rank> offsets{};
+        Count<Rank>  counts{};
+        Dim<Rank>    block{};
+
+        std::fill(counts.begin(), counts.end(), 1);
+
+        // Need the dim of the smaller tensor
+        Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> dims_all{};
+
+        for (auto [i, value] : enumerate(index_positions)) {
+            // printf("i, value: %d %d\n", i, value);
+            offsets[value] = arguments::get_from_tuple<size_t>(indices, value);
+            block[value]   = 1;
+        }
+        for (auto [i, value] : enumerate(all_positions)) {
+            // println("here");
+            block[value] = _dims[value];
+        }
+        for (auto [i, value] : enumerate(range_positions)) {
+            offsets[value] = arguments::get_from_tuple<Range>(indices, value)[0];
+            block[value]   = arguments::get_from_tuple<Range>(indices, value)[1] - arguments::get_from_tuple<Range>(indices, value)[0];
+        }
+
+        // Go through counts and anything that isn't equal to 1 is copied to the dims_all
+        int dims_index = 0;
+        for (auto cnt : block) {
+            if (cnt > 1) {
+                dims_all[dims_index++] = cnt;
+            }
+        }
+
+        hid_t dataspace = H5Scopy(_dataspace);
+
+        if (dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create a copy of the data space for view creation!");
+        }
+
+        int parent_rank = H5Sget_simple_extent_ndims(_dataspace);
+
+        if (parent_rank < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not query properties of the dataspace!");
+        }
+
+        std::vector<hsize_t> start_vec(parent_rank), count_vec(parent_rank), block_vec(parent_rank);
+
+        auto err = H5Sget_regular_hyperslab(dataspace, start_vec.data(), NULL, count_vec.data(), block_vec.data());
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not query properties of the dataspace!");
+        }
+
+        for (int i = 0, j = 0; i < parent_rank && j < rank; i++) {
+            if (block_vec[i] != 1) {
+                start_vec[i] += offsets[j];
+                j++;
+            }
+
+            while (j < rank && block[j] == 1) {
+                j++;
+            }
+        }
+
+        err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, reinterpret_cast<hsize_t const *>(offsets.data()), NULL,
+                                  reinterpret_cast<hsize_t const *>(counts.data()), reinterpret_cast<hsize_t const *>(block.data()));
+
+        if (err < 0) {
+            H5Sclose(dataspace);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Disk view creation failed!");
+        }
+
+        return DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>(*this, dims_all, _dataset,
+                                                                                                         dataspace);
+    }
+
+    /// This creates a Disk object with its Rank being equal to the number of All{} parameters
+    /// Range is not inclusive. Range{10, 11} === size of 1
+    template <typename... MultiIndex>
+        requires(count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0)
+    auto operator()(MultiIndex... index) const
+        -> DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> const {
+        // Get positions of All
+        auto all_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(
+            arguments::positions_of_type<AllT, MultiIndex...>());
+        auto index_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(
+            arguments::positions_of_type<size_t, MultiIndex...>());
+        auto range_positions = arguments::get_array_from_tuple<std::array<int, count_of_type<Range, MultiIndex...>()>>(
+            arguments::positions_of_type<Range, MultiIndex...>());
+
+        auto const &indices = std::forward_as_tuple(index...);
+
+        // Need the offset and stride into the large tensor
+        Offset<Rank> offsets{};
+        Count<Rank>  counts{};
+        Dim<Rank>    block{};
+
+        std::fill(counts.begin(), counts.end(), 1);
+
+        // Need the dim of the smaller tensor
+        Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> dims_all{};
+
+        for (auto [i, value] : enumerate(index_positions)) {
+            // printf("i, value: %d %d\n", i, value);
+            offsets[value] = arguments::get_from_tuple<size_t>(indices, value);
+            block[value]   = 1;
+        }
+        for (auto [i, value] : enumerate(all_positions)) {
+            // println("here");
+            block[value] = _dims[value];
+        }
+        for (auto [i, value] : enumerate(range_positions)) {
+            offsets[value] = arguments::get_from_tuple<Range>(indices, value)[0];
+            block[value]   = arguments::get_from_tuple<Range>(indices, value)[1] - arguments::get_from_tuple<Range>(indices, value)[0];
+        }
+
+        // Go through counts and anything that isn't equal to 1 is copied to the dims_all
+        int dims_index = 0;
+        for (auto cnt : block) {
+            if (cnt > 1) {
+                dims_all[dims_index++] = cnt;
+            }
+        }
+
+        hid_t dataspace = H5Scopy(_dataspace);
+
+        if (dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create a copy of the data space for view creation!");
+        }
+
+        int parent_rank = H5Sget_simple_extent_ndims(_dataspace);
+
+        if (parent_rank < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not query properties of the dataspace!");
+        }
+
+        std::vector<hsize_t> start_vec(parent_rank), count_vec(parent_rank), block_vec(parent_rank);
+
+        auto err = H5Sget_regular_hyperslab(dataspace, start_vec.data(), NULL, count_vec.data(), block_vec.data());
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not query properties of the dataspace!");
+        }
+
+        for (int i = 0, j = 0; i < parent_rank && j < rank; i++) {
+            if (block_vec[i] != 1) {
+                start_vec[i] += offsets[j];
+                j++;
+            }
+
+            while (block[j] == 1 && j < rank) {
+                j++;
+            }
+        }
+
+        err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, reinterpret_cast<hsize_t const *>(offsets.data()), NULL,
+                                  reinterpret_cast<hsize_t const *>(counts.data()), reinterpret_cast<hsize_t const *>(block.data()));
+
+        if (err < 0) {
+            H5Sclose(dataspace);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Disk view creation failed!");
+        }
+
+        return DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>(*this, dims_all, _dataset,
+                                                                                                         dataspace);
     }
 
     /**
      * Get the dimension along a given axis.
      */
-    size_t dim(int d) const { return _tensor.dim(d); }
+    size_t dim(int d) const {
+        if (d < 0) {
+            d += rank;
+        }
+        return _dims.at(d);
+    }
 
     /**
      * Get all the dimensions of the view.
      */
-    Dim<ViewRank> dims() const { return _tensor.dims(); }
+    Dim<rank> dims() const { return _dims; }
 
     /**
      * Get the name of the tensor.
@@ -556,12 +998,12 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Cast the tensor to Tensor<T,ViewRank>.
      */
-    operator Tensor<T, ViewRank> &() { return _tensor; } // NOLINT
+    operator Tensor<T, rank> &() { return get(); } // NOLINT
 
     /**
      * Cast the tensor to Tensor<T,ViewRank>.
      */
-    operator Tensor<T, ViewRank> const &() const { return _tensor; } // NOLINT
+    operator Tensor<T, rank> const &() const { return get(); } // NOLINT
 
     /**
      * Set all of the values of the tensor to zero.
@@ -576,62 +1018,50 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Gets whether the view is showing the whole tensor.
      */
-    bool full_view_of_underlying() const {
-        size_t prod = 1;
-        for (int i = 0; i < ViewRank; i++) {
-            prod *= _dims[i];
-        }
-
-        size_t prod2 = 1;
-        for (int i = 0; i < rank; i++) {
-            prod2 *= _parent.dim(i);
-        }
-
-        return prod == prod2;
-    }
+    bool full_view_of_underlying() const { return _full_view; }
 
   private:
     /**
-     * @var _parent
+     * @var _dataspace
      *
-     * This is the tensor that the view is viewing.
+     * The dataspace that contains the parameters for the view.
      */
-    einsums::DiskTensor<T, rank> &_parent;
+    hid_t _dataspace{H5I_INVALID_HID};
+
+    /**
+     * @var _mem_dataspace
+     *
+     * The dataspace that specifies the parameters for the core tensor.
+     */
+    hid_t _mem_dataspace{H5S_ALL};
+
+    /**
+     * @var _dataset
+     *
+     * The data set that this tensor is viewing.
+     */
+    hid_t _dataset{H5I_INVALID_HID};
+
+    /**
+     * @var _data_type
+     *
+     * The data type identifier.
+     */
+    hid_t _data_type{H5I_INVALID_HID};
 
     /**
      * @var _dims
      *
      * Holds the dimensions of the tensor.
      */
-    Dim<ViewRank> _dims;
-
-    /**
-     * @var _counts
-     *
-     * @todo No clue
-     */
-    Count<rank> _counts;
-
-    /**
-     * @var _offsets
-     *
-     * Holds where in the parent this view starts.
-     */
-    Offset<rank> _offsets;
-
-    /**
-     * @var _strides
-     *
-     * Holds the strides of the parent.
-     */
-    Stride<rank> _strides;
+    Dim<rank> _dims;
 
     /**
      * @var _tensor
      *
      * This is the in-core representation of the view.
      */
-    Tensor<T, ViewRank> _tensor;
+    mutable Tensor<T, rank> _tensor;
 
     /**
      * @var _name
@@ -647,15 +1077,24 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      */
     bool _readOnly{false};
 
+    /**
+     * @var _full_view
+     *
+     * Indicates whether this view sees the entire data space that it was built on.
+     */
+    bool _full_view{false};
+
+    mutable bool _constructed{false};
+
     // std::unique_ptr<Tensor<ViewRank, T>> _tensor;
 };
 
 #ifdef __cpp_deduction_guides
 template <typename... Dims>
-DiskTensor(h5::fd_t &file, std::string name, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
+DiskTensor(hid_t file, std::string name, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
 
 template <typename... Dims>
-DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
+DiskTensor(std::string name, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
 #endif
 
 /**
@@ -677,8 +1116,13 @@ DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims.
  * @return A new disk tensor.
  */
 template <typename Type = double, typename... Args>
-auto create_disk_tensor(h5::fd_t &file, std::string const &name, Args... args) -> DiskTensor<Type, sizeof...(Args)> {
-    return DiskTensor<Type, sizeof...(Args)>{file, name, args...};
+auto create_disk_tensor(hid_t file, std::string const &name, Args &&...args) -> DiskTensor<Type, sizeof...(Args)> {
+    return DiskTensor<Type, sizeof...(Args)>{file, name, std::forward<Args>(args)...};
+}
+
+template <typename Type = double, typename... Args>
+auto create_disk_tensor(std::string const &name, Args &&...args) -> DiskTensor<Type, sizeof...(Args)> {
+    return DiskTensor<Type, sizeof...(Args)>{detail::Einsums_Tensor_vars::get_singleton().hdf5_file, name, std::forward<Args>(args)...};
 }
 
 /**
@@ -700,15 +1144,20 @@ auto create_disk_tensor(h5::fd_t &file, std::string const &name, Args... args) -
  * @return A new disk tensor.
  */
 template <typename T, size_t Rank>
-auto create_disk_tensor_like(h5::fd_t &file, Tensor<T, Rank> const &tensor) -> DiskTensor<T, Rank> {
-    return DiskTensor(file, tensor);
+auto create_disk_tensor_like(hid_t file, Tensor<T, Rank> const &tensor) -> DiskTensor<T, Rank> {
+    return DiskTensor(file, tensor.name(), tensor.dims());
+}
+
+template <typename T, size_t Rank>
+auto create_disk_tensor_like(Tensor<T, Rank> const &tensor) -> DiskTensor<T, Rank> {
+    return DiskTensor(detail::Einsums_Tensor_vars::get_singleton().hdf5_file, tensor.name(), tensor.dims());
 }
 
 #ifndef DOXYGEN
 
 TENSOR_EXPORT(DiskTensor)
 
-TENSOR_EXPORT_DISK_VIEW(DiskView)
+TENSOR_EXPORT(DiskView)
 
 #endif
 
