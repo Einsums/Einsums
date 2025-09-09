@@ -1305,6 +1305,68 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas5gelqfE5int_t5int_t5int_tP1T5int_tP1T">
+<span id="_CPPv3I0EN7einsums4blas5gelqfE5int_t5int_tP1T5int_tP1T"></span><span id="_CPPv2I0EN7einsums4blas5gelqfE5int_t5int_tP1T5int_tP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_b_l_a_s_8hpp_1a2d7c881534ad2d66f4c60b46bfb856de"></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gelqf</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas5gelqfE5int_t5int_t5int_tP1T5int_tP1T" title="einsums::blas::gelqf::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas5gelqfE5int_t5int_t5int_tP1T5int_tP1T" title="einsums::blas::gelqf::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tau</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas5gelqfE5int_t5int_t5int_tP1T5int_tP1T" title="Link to this definition">#</a><br /></dt>
+<dd><p>Set up for computing the LQ decomposition of a matrix.</p>
+<p><div class="math notranslate nohighlight">
+\[\mathbf{A} = \mathbf{LQ}
+\]</div>
+</p>
+<p>Here, <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> is an orthogonal matrix and <span class="math notranslate nohighlight">\(\mathbf{L}\)</span> is a lower triangular matrix.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> The number of rows in the input matrix. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of columns in the input matrix. </p></li>
+<li><p><strong>a</strong> – <strong>[inout]</strong> The input matrix. On exit, contains the data needed to compute the Q and L matrices. The entries on and below the diagonal are the entries of the L matrix. The rest is needed to find the Q matrix. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of the input matrix. </p></li>
+<li><p><strong>tau</strong> – <strong>[out]</strong> On exit, holds the Householder reflector parameters for computing the Q matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success. If negative, one of the inputs had a bad value, and the absolute value of the return tells you which one it was.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas5orglqE5int_t5int_t5int_t5int_tP1T5int_tPK1T">
+<span id="_CPPv3I0EN7einsums4blas5orglqE5int_t5int_t5int_tP1T5int_tPK1T"></span><span id="_CPPv2I0EN7einsums4blas5orglqE5int_t5int_t5int_tP1T5int_tPK1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_b_l_a_s_8hpp_1a7d49b8ef8a134e7a2b76a45091097f85"></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">orglq</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas5orglqE5int_t5int_t5int_t5int_tP1T5int_tPK1T" title="einsums::blas::orglq::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas5orglqE5int_t5int_t5int_t5int_tP1T5int_tPK1T" title="einsums::blas::orglq::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tau</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas5orglqE5int_t5int_t5int_t5int_tP1T5int_tPK1T" title="Link to this definition">#</a><br /></dt>
+<dd><p>Extract the Q matrix after a call to gelqf.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> The number of rows of the input matrix. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of columns in the input matrix. </p></li>
+<li><p><strong>k</strong> – <strong>[in]</strong> The number of elementary reflectors used in the calculation. </p></li>
+<li><p><strong>a</strong> – <strong>[inout]</strong> The input matrix after being processed by gelqf. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of the input matrix. </p></li>
+<li><p><strong>tau</strong> – <strong>[in]</strong> The scales for the elementary reflectors from gelqf.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success. If negative, then one of the inputs had an invalid value, and the absolute value indicates which parameter it is.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas4copyEv5int_tPK1T5int_tP1T5int_t">
 <span id="_CPPv3I0EN7einsums4blas4copyE5int_tPK1T5int_tP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas4copyE5int_tPK1T5int_tP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="_b_l_a_s_8hpp_1a2849241fc27c606ba86ba16baa3a6e40"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas4copyEv5int_tPK1T5int_tP1T5int_t" title="einsums::blas::copy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_x</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas4copyEv5int_tPK1T5int_tP1T5int_t" title="einsums::blas::copy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas4copyEv5int_tPK1T5int_tP1T5int_t" title="Link to this definition">#</a><br /></dt>
 <dd><p>Copy data from one vector to another.</p>
@@ -1586,6 +1648,8 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas5trsylE5int_tcc5int_t5int_t5int_tPK1T5int_tPK1T5int_tP1T5int_tP14RemoveComplexTI1TE"><code class="docutils literal notranslate"><span class="pre">trsyl()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas5geqrfE5int_t5int_t5int_tP1T5int_tP1T"><code class="docutils literal notranslate"><span class="pre">geqrf()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas5orgqrE5int_t5int_t5int_t5int_tP1T5int_tPK1T"><code class="docutils literal notranslate"><span class="pre">orgqr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas5gelqfE5int_t5int_t5int_tP1T5int_tP1T"><code class="docutils literal notranslate"><span class="pre">gelqf()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas5orglqE5int_t5int_t5int_t5int_tP1T5int_tPK1T"><code class="docutils literal notranslate"><span class="pre">orglq()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas4copyEv5int_tPK1T5int_tP1T5int_t"><code class="docutils literal notranslate"><span class="pre">copy()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas5lasclE5int_tc5int_t5int_t1T1T5int_t5int_tP1T5int_t"><code class="docutils literal notranslate"><span class="pre">lascl()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas7dirprodEv5int_t1TPK1T5int_tPK1T5int_tP1T5int_t"><code class="docutils literal notranslate"><span class="pre">dirprod()</span></code></a></li>

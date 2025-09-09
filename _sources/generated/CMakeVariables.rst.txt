@@ -36,11 +36,16 @@ Generic options
 ---------------
 
 * :option:`EINSUMS_FFT_LIBRARY:STRING`
+* :option:`EINSUMS_ROW_MAJOR_DEFAULT:BOOL`
 * :option:`EINSUMS_WITH_CXX_STANDARD:STRING`
 
 .. option:: EINSUMS_FFT_LIBRARY:STRING
 
    FFT library
+
+.. option:: EINSUMS_ROW_MAJOR_DEFAULT:BOOL
+
+   If true, tensors will be created in row-major by default. If false, they will be column-major.
 
 .. option:: EINSUMS_WITH_CXX_STANDARD:STRING
 
