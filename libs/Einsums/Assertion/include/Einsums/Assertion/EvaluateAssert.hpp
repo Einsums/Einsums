@@ -15,10 +15,15 @@ namespace einsums::detail {
 /**
  * @brief Handles assertion behavior, selecting between a user-defined handler or the default handler.
  *
- * @param loc The source location for constructing a message.
- * @param expr A string representing the condition being evaluated.
- * @param msg An extra message to print out.
+ * @param[in] loc The source location for constructing a message.
+ * @param[in] expr A string representing the condition being evaluated.
+ * @param[in] msg An extra message to print out.
+ *
+ * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *      No longer noexcept to allow users to raise an exception rather than immediately calling exit.
+ * @endversion
  */
-EINSUMS_EXPORT void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) noexcept;
+EINSUMS_EXPORT void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg);
 
 } // namespace einsums::detail

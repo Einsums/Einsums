@@ -13,6 +13,16 @@ namespace einsums {
 
 /**
  * @brief Subscripts into a tensor, selecting between the subscript method or the function call syntax.
+ *
+ * @tparam TensorType The type of tensor that will be subscripted.
+ * @tparam MultiArgs The data types for the indices.
+ *
+ * @param[in] tensor The tensor to subscript.
+ * @param[in] args The indices.
+ *
+ * @return The value at the location specified by the subscript, or a reference to that value.
+ *
+ * @versionadded{1.0.0}
  */
 template <RankTensorConcept TensorType, typename... MultiArgs>
     requires requires {
@@ -23,7 +33,20 @@ template <RankTensorConcept TensorType, typename... MultiArgs>
 inline auto subscript_tensor(TensorType &&tensor, MultiArgs &&...args) -> decltype(tensor.subscript(std::forward<MultiArgs>(args)...)) {
     return tensor.subscript(std::forward<MultiArgs>(args)...);
 }
-#ifndef DOXYGEN
+
+/**
+ * @brief Subscripts into a tensor, selecting between the subscript method or the function call syntax.
+ *
+ * @tparam TensorType The type of tensor that will be subscripted.
+ * @tparam MultiArgs The data types for the indices.
+ *
+ * @param[in] tensor The tensor to subscript.
+ * @param[in] args The indices.
+ *
+ * @return The value at the location specified by the subscript, or a reference to that value.
+ *
+ * @versionadded{1.0.0}
+ */
 template <RankTensorConcept TensorType, typename... MultiArgs>
     requires requires {
         requires std::remove_cvref_t<TensorType>::Rank == sizeof...(MultiArgs);
@@ -35,6 +58,19 @@ inline auto subscript_tensor(TensorType &&tensor, MultiArgs &&...args) -> declty
     return tensor(std::forward<MultiArgs>(args)...);
 }
 
+/**
+ * @brief Subscripts into a tensor, selecting between the subscript method or the function call syntax.
+ *
+ * @tparam TensorType The type of tensor that will be subscripted.
+ * @tparam ContainerType The data type for the index container.
+ *
+ * @param[in] tensor The tensor to subscript.
+ * @param[in] args The indices.
+ *
+ * @return The value at the location specified by the subscript, or a reference to that value.
+ *
+ * @versionadded{1.0.0}
+ */
 template <RankTensorConcept TensorType, typename ContainerType>
     requires requires {
         requires !std::is_integral_v<ContainerType>;
@@ -44,6 +80,19 @@ inline auto subscript_tensor(TensorType &&tensor, ContainerType const &args) -> 
     return tensor.subscript(args);
 }
 
+/**
+ * @brief Subscripts into a tensor, selecting between the subscript method or the function call syntax.
+ *
+ * @tparam TensorType The type of tensor that will be subscripted.
+ * @tparam ContainerType The data type for the index container.
+ *
+ * @param[in] tensor The tensor to subscript.
+ * @param[in] args The indices.
+ *
+ * @return The value at the location specified by the subscript, or a reference to that value.
+ *
+ * @versionadded{1.0.0}
+ */
 template <RankTensorConcept TensorType, typename ContainerType>
     requires requires {
         requires !std::is_integral_v<ContainerType>;
@@ -53,6 +102,5 @@ template <RankTensorConcept TensorType, typename ContainerType>
 inline auto subscript_tensor(TensorType &&tensor, ContainerType const &args) -> decltype(tensor(args)) {
     return tensor(args);
 }
-#endif
 
 } // namespace einsums

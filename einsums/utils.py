@@ -23,6 +23,8 @@ def labeled_section(arg: typing.Union[str, typing.Callable]):
 
     :param arg: This decorator may take a string. This will be placed after the function name in the timer report.
     :type arg: Optional[str]
+
+    .. versionadded:: 1.1.0
     """
     if isinstance(arg, str):
 
@@ -62,6 +64,8 @@ def enumerate_many(*args, start=0):
     :param args: The iterators to iterate over.
     :return: Iterator of tuples. The last entry in the tuple is the index number. If an
     iterator ends early, then its entry will be filled with ``None``.
+
+    .. versionadded:: 1.0.0
     """
     index = 0
     stop_cond = [False for arg in args]
@@ -103,6 +107,8 @@ def enumerate_many(*args, start=0):
 class TensorIndices:
     """
     Iterator for moving through the indices of a tensor.
+
+    .. versionadded:: 1.0.0
     """
 
     def __init__(self, other, **kwargs):
@@ -128,6 +134,8 @@ class TensorIndices:
         Return the iterator for this iterator (itself).
 
         :return: The object itself.
+
+        .. versionadded:: 1.0.0
         """
         return self
 
@@ -136,6 +144,8 @@ class TensorIndices:
         Return the iterator that goes in reverse.
 
         :return: The iterator that goes from the current index back to the beginning.
+
+        .. versionadded:: 1.0.0
         """
         out = TensorIndices(self)
         out.__reverse = not self.__reverse
@@ -147,6 +157,8 @@ class TensorIndices:
 
         :return: The next index.
         :raises StopIteration: Raises this if there are no more indices.
+        
+        .. versionadded:: 1.0.0
         """
         if self.__curr_index < 0 or self.__curr_index >= self.__size:
             raise StopIteration
@@ -179,6 +191,8 @@ def create_tensor(*args, dtype=float):
 
     :param args: The arguments to pass to the constructor.
     :param dtype: The data type to be stored. Can only be single or double precision real or complex floating points.
+
+    .. versionadded:: 1.0.0
     """
     if dtype in __singles:
         return core.RuntimeTensorF(*args)
@@ -201,6 +215,8 @@ def tensor_factory(name: str, dims: list[int], dtype=float, method="einsums"):
     :param dtype: The data type for the tensor.
     :param method: The kind of tensor to create. It should be either "einsums"  or "numpy'.
     :raises ValueError: if the method is not valid.
+
+    .. versionadded:: 1.1.0
     """
     if method.lower() == "einsums":
         return create_tensor(name, dims, dtype=dtype)
@@ -215,6 +231,8 @@ def tensor_factory(name: str, dims: list[int], dtype=float, method="einsums"):
 def remove_complex(dtype):
     """
     Takes a datatype and gives the real equivalent.
+
+    .. versionadded:: 1.1.0
     """
     if dtype in __complex_singles:
         return __singles[0]
@@ -226,6 +244,8 @@ def remove_complex(dtype):
 def is_complex(dtype):
     """
     Checks to see if the datatype is a complex datatype.
+
+    .. versionadded:: 1.1.0
     """
     return (
         dtype in __complex_singles
@@ -238,6 +258,8 @@ def is_complex(dtype):
 def add_complex(dtype):
     """
     Takes a datatype and gives the complex equivalent.
+
+    .. versionadded:: 1.1.0
     """
     if dtype in __singles:
         return __complex_singles[0]
@@ -253,6 +275,8 @@ def create_random_numpy_array(dims: list[int], dtype=float):
     :param dims: The dimensions of the array.
     :param dtype: The data type to store.
     :raises ValueError: if the data type is not a real or complex floating point type.
+
+    .. versionadded:: 1.1.0
     """
     rng = np.random.default_rng()
 
@@ -280,6 +304,8 @@ def create_random_tensor(name: str, dims: list[int], dtype=float):
     :param dims: The dimensions of the array.
     :param dtype: The data type to store.
     :raises ValueError: if the data type is not a real or complex floating point type.
+
+    .. versionadded:: 1.0.0
     """
     if dtype in __singles:
         return core.create_random_tensorF(name, dims)
@@ -305,6 +331,8 @@ def random_tensor_factory(
     :param dtype: The data type for the tensor.
     :param method: The kind of tensor to create. It should be either "einsums"  or "numpy'.
     :raises ValueError: if the method is not valid.
+
+    .. versionadded:: 1.1.0
     """
     if method == "einsums":
         return create_random_tensor(name, dims, dtype)
@@ -329,6 +357,8 @@ def create_random_definite(name: str, rows: int, mean=1.0, dtype=float):
     :param dtype: The data type to store.
     :return: A positive definite matrix.
     :raises ValueError: if the data type is not a real or complex floating point type.
+
+    .. versionadded:: 1.1.0
     """
     if dtype in __singles:
         return core.create_random_definiteF(name, rows, mean)
@@ -354,6 +384,8 @@ def create_random_definite_numpy_array(rows: int, mean=1.0, dtype=float):
     :param dtype: The data type to store.
     :return: A positive definite matrix.
     :raises ValueError: if the data type is not a real or complex floating point type.
+
+    .. versionadded:: 1.1.0
     """
     return np.array(create_random_definite("", rows, mean, dtype), dtype=dtype)
 
@@ -374,6 +406,8 @@ def random_definite_tensor_factory(
     :param method: Which kind of tensor to create. Can be "einsums" or "numpy".
     :return: A positive definite matrix.
     :raises ValueError: if the method is not valid.
+
+    .. versionadded:: 1.1.0
     """
     if method == "einsums":
         return create_random_definite(name, rows, mean, dtype)
@@ -403,6 +437,8 @@ def create_random_semidefinite(
     :param dtype: The data type to store.
     :return: A positive definite matrix.
     :raises ValueError: if the data type is not a real or complex floating point type.
+
+    .. versionadded:: 1.1.0
     """
     if dtype in __singles:
         return core.create_random_semidefiniteF(name, rows, mean, force_zeros)
@@ -433,6 +469,8 @@ def create_random_semidefinite_numpy_array(
     :param dtype: The data type to store.
     :return: A positive definite matrix.
     :raises ValueError: if the data type is not a real or complex floating point type.
+
+    .. versionadded:: 1.1.0
     """
     return np.array(
         create_random_semidefinite("", rows, mean, force_zeros, dtype), dtype=dtype
@@ -463,6 +501,8 @@ def random_semidefinite_tensor_factory(
     :param method: Which kind of tensor to create. Can be "einsums" or "numpy".
     :return: A positive definite matrix.
     :raises ValueError: if the method is not valid.
+
+    .. versionadded:: 1.1.0
     """
     if method == "einsums":
         return create_random_semidefinite(name, rows, mean, force_zeros, dtype)

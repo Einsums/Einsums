@@ -24,6 +24,8 @@ Here is a list of public utilities defined in this module.
 
     :param expr: The expression to test.
 
+    .. versionadded:: 1.0.0
+
 .. c:macro:: EINSUMS_ASSERT_MSG(expr, msg)
 
     Asserts that the expression is true. If it is false, then this prints a custom message and aborts the execution.
@@ -31,6 +33,8 @@ Here is a list of public utilities defined in this module.
 
     :param expr: The expression to check.
     :param msg: The message to print on failure.
+
+    .. versionadded:: 1.0.0
 
 -------------
 Example Usage
@@ -48,7 +52,7 @@ make sure that it is correct.
     // If it is, we are in an invalid state, so we should probably exit.
     EINSUMS_ASSERT_MSG(out >= 0, "The dot product can not be negative! What happened!?");
 
-The :cpp:macro:`EINSUMS_ASSERT` macro is similar, but it doesn't take any debug info. 
+The :c:macro:`EINSUMS_ASSERT` macro is similar, but it doesn't take any debug info. 
 
 .. code:: C++
 

@@ -18,6 +18,10 @@ void Einsums_BufferAllocator_vars::update_max_size(config_mapping_type<std::stri
     auto const &value     = options.at("buffer-size");
 
     singleton._max_size = string_util::memory_string(value);
+
+    if (singleton._max_size == 0) {
+        singleton._max_size = std::allocator_traits<std::allocator<uint8_t>>::max_size(std::allocator<uint8_t>());
+    }
 }
 
 size_t Einsums_BufferAllocator_vars::get_max_size() const {

@@ -39,11 +39,15 @@ This page will discuss functions and classes relating to tensor algebra calls in
     :param B_indices: The indices on the right input tensor.
     :return: A plan which can execute the given tensor operation.
 
+    .. versionadded:: 1.0.0
+
 .. py:class:: EinsumsGenericPlan
 
     This is the base for all plans. It is also the fall-back when a plan that normally could be optimized
     is passed values that it can't handle, such as tensors with different types or tensor views whose smallest
     stride is more than one element (usually).
+
+    .. versionadded:: 1.0.0
 
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
@@ -51,6 +55,8 @@ This page will discuss functions and classes relating to tensor algebra calls in
         as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
+
+        .. versionadded:: 1.0.0
 
 .. py:class:: EinsumsDotPlan
 
@@ -58,57 +64,77 @@ This page will discuss functions and classes relating to tensor algebra calls in
     This may change in the future. This does not conjugate :code:`A` or :code:`B`, meaning this is not a true dot product.
     The form of the dot product is this: :math:`C = \alpha C + \beta A_{i} B_{i}`.
 
+    .. versionadded:: 1.0.0
+
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
         Execute the plan. This can work when :code:`C_prefactor` and :code:`AB_prefactor` can be cast to numbers, as well
         as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
+
+        .. versionadded:: 1.0.0
 
 .. py:class:: EinsumsDirectProductPlan
 
     This plan optimizes calls that are equivalent to direct products. The ideal form of the direct product is this:
     :math:`C_{i} = \alpha C_{i} + \beta A_{i} B_{i}`.
 
+    .. versionadded:: 1.0.0
+
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
         Execute the plan. This can work when :code:`C_prefactor` and :code:`AB_prefactor` can be cast to numbers, as well
         as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
+
+        .. versionadded:: 1.0.0
 
 .. py:class:: EinsumsGerPlan
 
     This plan optimizes calls that are equivalent to outer products, calling BLAS's :code:`ger` at its core. 
     The ideal form of the direct product is this: :math:`C_{ij} = \alpha C_{ij} + \beta A_{i} B_{j}`.
 
+    .. versionadded:: 1.0.0
+
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
         Execute the plan. This can work when :code:`C_prefactor` and :code:`AB_prefactor` can be cast to numbers, as well
         as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
+
+        .. versionadded:: 1.0.0
 
 .. py:class:: EinsumsGemvPlan
 
     This plan optimizes calls that are equivalent to matrix-vector products, calling BLAS's :code:`gemv` at its core. 
     The ideal form of the direct product is this: :math:`C_{i} = \alpha C_{i} + \beta A_{ij} B_{j}`.
 
+    .. versionadded:: 1.0.0
+
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
         Execute the plan. This can work when :code:`C_prefactor` and :code:`AB_prefactor` can be cast to numbers, as well
         as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
+
+        .. versionadded:: 1.0.0
 
 .. py:class:: EinsumsGemmPlan
 
     This plan optimizes calls that are equivalent to matrix products, calling BLAS's :code:`gemm` at its core. 
     The ideal form of the direct product is this: :math:`C_{ij} = \alpha C_{ij} + \beta A_{ik} B_{kj}`.
 
+    .. versionadded:: 1.0.0
+
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
         Execute the plan. This can work when :code:`C_prefactor` and :code:`AB_prefactor` can be cast to numbers, as well
         as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
+
+        .. versionadded:: 1.0.0

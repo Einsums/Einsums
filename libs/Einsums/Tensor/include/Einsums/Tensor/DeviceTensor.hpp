@@ -50,7 +50,9 @@ struct BlockDeviceTensor;
  * This class provides some functionality of a reference, but the data may actually be stored on the device.
  * Data is copied back and forth with each call.
  *
- * @note It is best to avoid using this class, as a whole bunch of small memory transfers is very slow.
+ * @note It is best to avoid using this class in inner loops, as a whole bunch of small memory transfers is very slow.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 class HostDevReference {
@@ -59,6 +61,8 @@ class HostDevReference {
      * @property _ptr
      *
      * @brief The pointer held by this object.
+     *
+     * @versionadded{1.0.0}
      */
     T *_ptr;
 
@@ -66,27 +70,37 @@ class HostDevReference {
      * @property is_on_host
      *
      * @brief True if the pointer is a host pointer. False if it is a device pointer.
+     *
+     * @versionadded{1.0.0}
      */
     bool is_on_host;
 
   public:
     /**
      * Construct an empty reference.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference() : _ptr{nullptr}, is_on_host{true} {}
 
     /**
      * Construct a reference wrapping the specified pointer.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference(T *ptr, bool is_host) : _ptr{ptr}, is_on_host{is_host} {}
 
     /**
      * Delete the reference. Because the data is managed by something else, don't acutally free the pointer.
+     *
+     * @versionadded{1.0.0}
      */
     ~HostDevReference() { _ptr = nullptr; }
 
     /**
      * Get the value of the reference.
+     *
+     * @versionadded{1.0.0}
      */
     T get() const {
         if (_ptr == nullptr) {
@@ -105,6 +119,8 @@ class HostDevReference {
 
     /**
      * Copy some data to the reference.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator=(T const &other) {
         if (_ptr == nullptr) {
@@ -122,6 +138,8 @@ class HostDevReference {
 
     /**
      * Copy some data to the reference.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator=(HostDevReference<T> const &other) {
         if (is_on_host) {
@@ -140,6 +158,8 @@ class HostDevReference {
 
     /**
      * Add assignment.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator+=(T const &other) {
         assert(_ptr != nullptr);
@@ -155,6 +175,8 @@ class HostDevReference {
 
     /**
      * Add assignment.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator+=(HostDevReference<T> const &other) {
         if (is_on_host) {
@@ -169,6 +191,8 @@ class HostDevReference {
 
     /**
      * Sub assignment.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator-=(T const &other) {
         assert(_ptr != nullptr);
@@ -184,6 +208,8 @@ class HostDevReference {
 
     /**
      * Sub assignment.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator-=(HostDevReference<T> const &other) {
         if (is_on_host) {
@@ -198,6 +224,8 @@ class HostDevReference {
 
     /**
      * Mult assignment.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator*=(T const &other) {
         assert(_ptr != nullptr);
@@ -213,6 +241,8 @@ class HostDevReference {
 
     /**
      * Mult assignment.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator*=(HostDevReference<T> const &other) {
         if (is_on_host) {
@@ -227,6 +257,8 @@ class HostDevReference {
 
     /**
      * div assignment.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator/=(T const &other) {
         assert(_ptr != nullptr);
@@ -242,6 +274,8 @@ class HostDevReference {
 
     /**
      * Div assignment.
+     *
+     * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator/=(HostDevReference<T> const &other) {
         if (is_on_host) {
@@ -256,11 +290,15 @@ class HostDevReference {
 
     /**
      * Get the address handled by the reference.
+     *
+     * @versionadded{1.0.0}
      */
     T *operator&() { return _ptr; }
 
     /**
      * Convert to the underlying type.
+     *
+     * @versionadded{1.0.0}
      */
     operator T() { return this->get(); }
 };
@@ -272,6 +310,8 @@ class HostDevReference {
  *
  * @tparam T The type of the data managed by the tensor.
  * @tparam Rank The rank of the tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T, size_t rank>
 struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
@@ -285,6 +325,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * For real data types, this is the same as on the host. For complex data types, the appropriate
      * HIP data type needs to be used.
+     *
+     * @versionadded{1.0.0}
      */
     using dev_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
 
@@ -294,6 +336,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @brief The type of data used by the CPU.
      *
      * This is the same as the ValueType.
+     *
+     * @versionadded{1.0.0}
      */
     using host_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
 
@@ -301,6 +345,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @typedef ValueType
      *
      * @brief The type of data stored by the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     using ValueType = T;
 
@@ -308,21 +354,29 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @property Rank
      *
      * @brief The rank of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr static size_t Rank = rank;
 
     /**
      * @brief Construct a new tensor on the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensor() = default;
 
     /**
      * @brief Copy construct a new GPU tensor.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensor(DeviceTensor<T, rank> const &other, detail::HostToDeviceMode mode = detail::UNKNOWN);
 
     /**
      * @brief Destructor.
+     *
+     * @versionadded{1.0.0}
      */
     ~DeviceTensor();
 
@@ -342,6 +396,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @param name Name of the new tensor.
      * @param mode The storage mode of the tensor.
      * @param dims The dimensions of each rank of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... Dims>
         requires requires {
@@ -365,6 +421,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
      * @param name Name of the new tensor.
      * @param dims The dimensions of each rank of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... Dims>
         requires requires {
@@ -398,6 +456,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @param existingTensor The existing tensor that holds the tensor data.
      * @param name The name of the new tensor
      * @param dims The dimensionality of each rank of the new tensor.
+     *
+     * @versionadded{1.0.0}
      */
     template <size_t OtherRank, typename... Dims>
     explicit DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor, std::string name, Dims... dims);
@@ -407,6 +467,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @param dims The dimensions of the new tensor in Dim form.
      * @param mode The storage mode of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     explicit DeviceTensor(Dim<rank> dims, detail::HostToDeviceMode mode = detail::DEV_ONLY);
 
@@ -416,6 +478,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * Data is explicitly copied from the view to the new tensor.
      *
      * @param other The tensor view to copy.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensor(DeviceTensorView<T, rank> const &other);
 
@@ -423,6 +487,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @brief Resize a tensor.
      *
      * @param dims The new dimensions of a tensor.
+     *
+     * @versionadded{1.0.0}
      */
     void resize(Dim<rank> dims);
 
@@ -430,6 +496,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @brief Resize a tensor.
      *
      * @param dims The new dimensions of a tensor.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... Dims>
     auto resize(Dims... dims) -> std::enable_if_t<(std::is_integral_v<Dims> && ... && (sizeof...(Dims) == rank)), void> {
@@ -438,6 +506,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Zeroes out the tensor data.
+     *
+     * @versionadded{1.0.0}
      */
     void zero();
 
@@ -445,6 +515,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @brief Set the all entries to the given value.
      *
      * @param value Value to set the elements to.
+     *
+     * @versionadded{1.0.0}
      */
     void set_all(T value);
 
@@ -454,7 +526,9 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * Try very hard to not use this function. Current data may or may not exist
      * on the host device at the time of the call if using GPU backend.
      *
-     * @return T* A pointer to the data.
+     * @return A pointer to the data.
+     *
+     * @versionadded{1.0.0}
      */
     auto gpu_data() -> dev_datatype * { return _data; }
 
@@ -464,7 +538,9 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * Try very hard to not use this function. Current data may or may not exist
      * on the host device at the time of the call if using GPU backend.
      *
-     * @return const T* An immutable pointer to the data.
+     * @return An immutable pointer to the data.
+     *
+     * @versionadded{1.0.0}
      */
     auto gpu_data() const -> dev_datatype const * { return _data; }
 
@@ -481,6 +557,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @tparam MultiIndex The datatypes of the passed parameters. Must be castable to
      * @param index The explicit desired index into the tensor. Must be castable to std::int64_t.
      * @return A pointer into the tensor at the requested location.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
         requires requires {
@@ -502,6 +580,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @tparam MultiIndex The datatypes of the passed parameters. Must be castable to
      * @param index The explicit desired index into the tensor. Must be castable to std::int64_t.
      * @return A pointer into the tensor at the requested location.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
         requires requires {
@@ -518,6 +598,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * may be outdated.
      *
      * @return T* A pointer to the data.
+     *
+     * @versionadded{1.0.0}
      */
     host_datatype *data() { return _host_data; }
 
@@ -529,6 +611,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * may be outdated.
      *
      * @return const T* An immutable pointer to the data.
+     *
+     * @versionadded{1.0.0}
      */
     host_datatype const *data() const { return _host_data; }
 
@@ -545,6 +629,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @tparam MultiIndex The datatypes of the passed parameters. Must be castable to
      * @param index The explicit desired index into the tensor. Must be castable to std::int64_t.
      * @return A pointer into the tensor at the requested location.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
         requires requires {
@@ -566,6 +652,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @tparam MultiIndex The datatypes of the passed parameters. Must be castable to
      * @param index The explicit desired index into the tensor. Must be castable to std::int64_t.
      * @return A pointer into the tensor at the requested location.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
         requires requires {
@@ -578,6 +666,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * Sends data from the host to the device.
      *
      * @param data The vector data.
+     *
+     * @versionadded{1.0.0}
      */
     void read(std::vector<T> const &data);
 
@@ -585,6 +675,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * Sends data from the device to the host.
      *
      * @param data The vector that will be filled.
+     *
+     * @versionadded{1.0.0}
      */
     void write(std::vector<T> &data);
 
@@ -592,6 +684,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * Sends data from the host to the device.
      *
      * @param data The vector data.
+     *
+     * @versionadded{1.0.0}
      */
     void read(T const *data);
 
@@ -599,6 +693,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * Sends data from the device to the host.
      *
      * @param data The vector that will be filled.
+     *
+     * @versionadded{1.0.0}
      */
     void write(T *data);
 
@@ -608,6 +704,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @param other The tensor with the data to copy.
      *
      * @return A reference to the calling tensor.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensor<T, rank> &assign(DeviceTensor<T, rank> const &other);
 
@@ -623,6 +721,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @param mode The storage mode of the tensor.
      *
      * @return A reference to the calling tensor.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensor<T, rank> &init(DeviceTensor<T, rank> const &other, einsums::detail::HostToDeviceMode mode = einsums::detail::UNKNOWN);
 
@@ -648,6 +748,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
      * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
      * @return The value at that index.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
@@ -662,6 +764,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
      * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
      * @return A wrapper around the value at that index that manages data transfer to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
@@ -676,6 +780,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @tparam int_type Datatype of the indices. Must be castable to std::int64_t.
      * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
      * @return The value at that index.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
@@ -692,6 +798,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
      * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
      * @return A wrapper around the value at that index that manages data transfer to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
@@ -702,6 +810,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
     // WARNING: Chances are this function will not work if you mix All{}, Range{} and explicit indexes.
     /**
      * @brief Subscripts into the tensor and creates a view.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
         requires AtLeastOneOfType<AllT, MultiIndex...>
@@ -710,6 +820,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Subscripts into the tensor and creates a view.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
         requires NumOfType<einsums::Range, rank, MultiIndex...>
@@ -717,11 +829,15 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Copy data from one tensor to another.
+     *
+     * @versionadded{1.0.0}
      */
     auto operator=(DeviceTensor<T, rank> const &other) -> DeviceTensor<T, rank> &;
 
     /**
      * @brief Copy data from one tensor to another, and convert types.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
@@ -729,22 +845,30 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Copy data from a tensor view into a tensor.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename TOther>
     auto operator=(DeviceTensorView<TOther, rank> const &other) -> DeviceTensor<T, rank> &;
 
     /**
      * @brief Copy data from one tensor to another.
+     *
+     * @versionadded{1.0.0}
      */
     auto operator=(Tensor<T, rank> const &other) -> DeviceTensor<T, rank> &;
 
     /**
      * Fill a tensor with a value.
+     *
+     * @versionadded{1.0.0}
      */
     auto operator=(T const &fill_value) -> DeviceTensor<T, rank> &;
 
     /**
      * @brief Operate and assign every element with a scalar.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensor<T, rank> &add_assign(T const &other);
 
@@ -785,6 +909,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Operate and assign two tensors element-wise.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensor<T, rank> &add_assign(DeviceTensor<T, rank> const &other);
 
@@ -823,12 +949,24 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      */
     DeviceTensor<T, rank> &operator/=(DeviceTensor<T, rank> const &other) { return this->div_assign(other); }
 
+    /**
+     * Create a view of the current tensor.
+     *
+     * @versionadded{1.0.0}
+     */
     operator DeviceTensorView<T, rank>();
 
+    /**
+     * Create a view of the current tensor.
+     *
+     * @versionadded{1.0.0}
+     */
     operator DeviceTensorView<T, rank> const() const;
 
     /**
      * @brief Get the dimension for the given rank.
+     *
+     * @versionadded{1.0.0}
      */
     size_t dim(int d) const {
         // Add support for negative indices.
@@ -839,31 +977,43 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Get all the dimensions.
+     *
+     * @versionadded{1.0.0}
      */
     Dim<rank> dims() const { return _dims; }
 
     /**
-     * @brief Get the dimensions available to the GPU.
+     * @brief Get the dimension list that is visible to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t *gpu_dims() { return _gpu_dims; }
 
     /**
-     * @brief Get the dimensions available to the GPU.
+     * @brief Get the dimension list that is visible to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t const *gpu_dims() const { return _gpu_dims; }
 
     /**
      * @brief Get the name of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     std::string const &name() const { return _name; }
 
     /**
      * @brief Set the name of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     void set_name(std::string const &name) { _name = name; }
 
     /**
      * @brief Get the stride of the given rank.
+     *
+     * @versionadded{1.0.0}
      */
     size_t stride(int d) const noexcept {
         if (d < 0)
@@ -873,21 +1023,29 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Get all the strides.
+     *
+     * @versionadded{1.0.0}
      */
     Stride<rank> strides() const noexcept { return _strides; }
 
     /**
-     * @brief Get the strides available to the GPU.
+     * @brief Get the stride list that is visible to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t *gpu_strides() { return _gpu_strides; }
 
     /**
-     * @brief Get the strides available to the GPU.
+     * @brief Get the stride list that is visible to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t const *gpu_strides() const { return _gpu_strides; }
 
     /**
      * Convert to a rank 1 tensor view.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensorView<T, 1> to_rank_1_view() const {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
@@ -896,16 +1054,24 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
         return DeviceTensorView<T, 1>{*this, dim};
     }
 
-    /// @brief Returns the linear size of the tensor
+    /**
+     * @brief Returns the linear size of the tensor.
+     *
+     * @versionadded{1.0.0}
+     */
     size_t size() const { return _dims[0] * _strides[0]; }
 
     /**
      * @brief Whether this object is the full view.
+     *
+     * @versionadded{1.0.0}
      */
     bool full_view_of_underlying() const noexcept { return true; }
 
     /**
      * Return the mode of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     detail::HostToDeviceMode mode() const { return _mode; }
 
@@ -915,11 +1081,15 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Copy a host tensor to the device.
+     *
+     * @versionadded{1.0.0}
      */
     explicit DeviceTensor(Tensor<T, rank> const &, detail::HostToDeviceMode mode = detail::MAPPED);
 
     /**
      * @brief Copy a device tensor to the host.
+     *
+     * @versionadded{1.0.0}
      */
     operator einsums::Tensor<T, rank>() const;
 
@@ -928,6 +1098,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @property _name
      *
      * @brief The name of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     std::string _name{"(Unnamed)"};
 
@@ -935,6 +1107,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @property _dims
      *
      * @brief The dimensions of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     einsums::Dim<rank> _dims;
 
@@ -942,6 +1116,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @property _gpu_dims
      *
      * @brief The dimensions of the tensor made available to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t *_gpu_dims{nullptr};
 
@@ -949,6 +1125,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @property _strides
      *
      * @brief The strides of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     einsums::Stride<rank> _strides;
 
@@ -956,6 +1134,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @property _gpu_strides
      *
      * @brief The strides of the tensor made available to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t *_gpu_strides{nullptr};
 
@@ -963,6 +1143,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @property _data
      *
      * @brief A device pointer to the data on the device.
+     *
+     * @versionadded{1.0.0}
      */
     dev_datatype *_data{nullptr};
 
@@ -970,6 +1152,8 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @property _host_data
      *
      * @brief If the tensor is mapped or pinned, this is the data on the host.
+     *
+     * @versionadded{1.0.0}
      */
     host_datatype *_host_data{nullptr};
 
@@ -977,9 +1161,12 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      * @property _mode
      *
      * @brief The storage mode of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     detail::HostToDeviceMode _mode{detail::UNKNOWN};
 
+#ifndef DOXYGEN
     friend struct DeviceTensorView<T, rank>;
 
     template <typename TOther, size_t RankOther>
@@ -987,12 +1174,15 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
 
     template <typename TOther, size_t RankOther>
     friend struct einsums::DeviceTensor;
+#endif
 };
 
 /**
  * @struct DeviceTensor<T, 0>
  *
  * Implementation for a zero-rank tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 struct DeviceTensor<T, 0>
@@ -1005,6 +1195,8 @@ struct DeviceTensor<T, 0>
      *
      * For real data types, this is the same as on the host. For complex data types, the appropriate
      * HIP data type needs to be used.
+     *
+     * @versionadded{1.0.0}
      */
     using dev_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
 
@@ -1014,6 +1206,8 @@ struct DeviceTensor<T, 0>
      * @brief The type of data used by the CPU.
      *
      * This is the same as the ValueType.
+     *
+     * @versionadded{1.0.0}
      */
     using host_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
 
@@ -1021,6 +1215,8 @@ struct DeviceTensor<T, 0>
      * @typedef ValueType
      *
      * @brief The type of data stored by the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     using ValueType = T;
 
@@ -1028,16 +1224,22 @@ struct DeviceTensor<T, 0>
      * @property Rank
      *
      * @brief The rank of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr static size_t Rank = 0;
 
     /**
      * @brief Construct a new tensor on the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensor() : _mode(detail::DEV_ONLY) { hip_catch(hipMalloc((void **)&_data, sizeof(T))); }
 
     /**
      * @brief Copy construct a new GPU tensor.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensor(DeviceTensor<T, 0> const &other, detail::HostToDeviceMode mode = detail::UNKNOWN) : _mode{mode} {
         if (mode == detail::DEV_ONLY) {
@@ -1064,6 +1266,8 @@ struct DeviceTensor<T, 0>
 
     /**
      * @brief Destructor.
+     *
+     * @versionadded{1.0.0}
      */
     ~DeviceTensor() {
         if (this->_mode == detail::MAPPED) {
@@ -1081,6 +1285,8 @@ struct DeviceTensor<T, 0>
 
     /**
      * @brief Construct a new tensor by dims.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensor(Dim<0> dims, detail::HostToDeviceMode mode = detail::DEV_ONLY) : _mode{mode} {
         if (mode == detail::DEV_ONLY) {
@@ -1099,6 +1305,8 @@ struct DeviceTensor<T, 0>
 
     /**
      * @brief Construct a new named zero-rank tensor on the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     explicit DeviceTensor(std::string name, detail::HostToDeviceMode mode = detail::DEV_ONLY) : _name{std::move(name)}, _mode{mode} {
         switch (mode) {
@@ -1124,6 +1332,8 @@ struct DeviceTensor<T, 0>
      * @brief Get the pointer to the data stored on the GPU.
      *
      * @return The pointer to the data on the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     auto gpu_data() -> dev_datatype * { return _data; }
 
@@ -1136,6 +1346,8 @@ struct DeviceTensor<T, 0>
      * @brief Get the pointer to the data available to the CPU.
      *
      * @return The pointer to the data on the CPU.
+     *
+     * @versionadded{1.0.0}
      */
     auto data() -> host_datatype * { return _host_data; }
 
@@ -1150,6 +1362,8 @@ struct DeviceTensor<T, 0>
      * @param other The value to copy.
      *
      * @return A reference to the current tensor.
+     *
+     * @versionadded{1.0.0}
      */
     auto operator=(DeviceTensor<T, 0> const &other) -> DeviceTensor<T, 0> & {
         hip_catch(hipMemcpyAsync((void *)_data, (void const *)other.gpu_data(), sizeof(T), hipMemcpyDeviceToDevice, gpu::get_stream()));
@@ -1163,6 +1377,8 @@ struct DeviceTensor<T, 0>
      * @param other The value to copy.
      *
      * @return A reference to the current tensor.
+     *
+     * @versionadded{1.0.0}
      */
     auto operator=(T const &other) -> DeviceTensor<T, 0> & {
         if (_mode == detail::MAPPED || _mode == detail::PINNED) {
@@ -1182,6 +1398,8 @@ struct DeviceTensor<T, 0>
      * @param other The value to operate with.
      *
      * @return A reference to the current tensor.
+     *
+     * @versionadded{1.0.0}
      */
     auto operator+=(T const &other) -> DeviceTensor<T, 0> & {
         if (_mode == detail::MAPPED || _mode == detail::PINNED) {
@@ -1260,6 +1478,8 @@ struct DeviceTensor<T, 0>
      * @brief Get the scalar value of the tensor.
      *
      * @return The scalar value stored in the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     operator T() const {
         T out;
@@ -1278,6 +1498,8 @@ struct DeviceTensor<T, 0>
      * @brief Get the name of the tensor.
      *
      * @return The name of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     [[nodiscard]] auto name() const -> std::string const & { return _name; }
 
@@ -1285,6 +1507,8 @@ struct DeviceTensor<T, 0>
      * @brief Set the name of the tensor.
      *
      * @param name The new name of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     void set_name(std::string const &name) { _name = name; }
 
@@ -1294,11 +1518,15 @@ struct DeviceTensor<T, 0>
      * @param axis Ignored. The dimension is always 1.
      *
      * @return The value 1.
+     *
+     * @versionadded{1.0.0}
      */
     [[nodiscard]] auto dim(int axis) const -> size_t { return 1; }
 
     /**
      * @brief Get the dimensions of the tensor. This is always an empty array.
+     *
+     * @versionadded{1.0.0}
      */
     [[nodiscard]] auto dims() const -> Dim<0> { return Dim<0>{}; }
 
@@ -1306,16 +1534,22 @@ struct DeviceTensor<T, 0>
      * @brief Check if the tensor contains contiguous data.
      *
      * @return True, since this tensor stores contiguous data.
+     *
+     * @versionadded{1.0.0}
      */
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return true; }
 
     /**
      * @brief Get the stride of the given rank.
+     *
+     * @versionadded{1.0.0}
      */
     [[nodiscard]] auto stride(int d) const noexcept -> size_t { return 0; }
 
     /**
      * @brief Get all the strides.
+     *
+     * @versionadded{1.0.0}
      */
     auto strides() const noexcept -> Stride<0> { return Stride<0>{}; }
 
@@ -1325,6 +1559,8 @@ struct DeviceTensor<T, 0>
 
     /**
      * @brief Copy a host tensor to the device.
+     *
+     * @versionadded{1.0.0}
      */
     explicit DeviceTensor(Tensor<T, 0> const &other, detail::HostToDeviceMode mode = detail::MAPPED) : _mode{mode} {
         switch (mode) {
@@ -1352,6 +1588,8 @@ struct DeviceTensor<T, 0>
 
     /**
      * @brief Copy a device tensor to the host.
+     *
+     * @versionadded{1.0.0}
      */
     explicit operator einsums::Tensor<T, 0>() {
         einsums::Tensor<T, 0> out(std::move(_name));
@@ -1365,6 +1603,8 @@ struct DeviceTensor<T, 0>
      * @property _name
      *
      * @brief The name of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     std::string _name{"(Unnamed)"};
 
@@ -1372,6 +1612,8 @@ struct DeviceTensor<T, 0>
      * @property _data
      *
      * @brief A device pointer to the data on the device.
+     *
+     * @versionadded{1.0.0}
      */
     dev_datatype *_data{nullptr};
 
@@ -1379,6 +1621,8 @@ struct DeviceTensor<T, 0>
      * @property _host_data
      *
      * @brief If the tensor is mapped or pinned, this is the data on the host.
+     *
+     * @versionadded{1.0.0}
      */
     host_datatype *_host_data{nullptr};
 
@@ -1386,6 +1630,8 @@ struct DeviceTensor<T, 0>
      * @property _mode
      *
      * @brief The storage mode of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     detail::HostToDeviceMode _mode;
 
@@ -1403,6 +1649,8 @@ struct DeviceTensor<T, 0>
  *
  * This class allows for a view based at an offset and with different dimensions to be mapped
  * back onto a DeviceTensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T, size_t rank>
 struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
@@ -1416,6 +1664,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      *
      * For real data types, this is the same as on the host. For complex data types, the appropriate
      * HIP data type needs to be used.
+     *
+     * @versionadded{1.0.0}
      */
     using dev_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::dev_datatype;
 
@@ -1425,6 +1675,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @brief The type of data used by the CPU.
      *
      * This is the same as the ValueType.
+     *
+     * @versionadded{1.0.0}
      */
     using host_datatype = typename einsums::tensor_base::DeviceTypedTensor<T>::host_datatype;
 
@@ -1432,6 +1684,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @typedef ValueType
      *
      * @brief The type of data stored by the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     using ValueType = T;
 
@@ -1439,6 +1693,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @property Rank
      *
      * @brief The rank of the tensor.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr static size_t Rank = rank;
 
@@ -1446,21 +1702,29 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @typedef underlying_type
      *
      * @brief The type of tensor that this view views.
+     *
+     * @versionadded{1.0.0}
      */
     using underlying_type = einsums::DeviceTensor<T, rank>;
 
     /**
      * Deleted default constructor.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensorView() = delete;
 
     /**
      * @brief Copy constructor.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensorView(DeviceTensorView const &);
 
     /**
      * @brief Destructor.
+     *
+     * @versionadded{1.0.0}
      */
     ~DeviceTensorView();
 
@@ -1469,6 +1733,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
     // call to common_initialization is able to perform an enable_if check.
     /**
      * @brief Create a tensor view around the given tensor.
+     *
+     * @versionadded{1.0.0}
      */
     template <size_t OtherRank, typename... Args>
     DeviceTensorView(einsums::DeviceTensor<T, OtherRank> const &other, Dim<rank> const &dim, Args &&...args)
@@ -1478,6 +1744,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Create a tensor view around the given tensor.
+     *
+     * @versionadded{1.0.0}
      */
     template <size_t OtherRank, typename... Args>
     explicit DeviceTensorView(DeviceTensorView<T, OtherRank> &other, Dim<rank> const &dim, Args &&...args)
@@ -1487,6 +1755,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Create a tensor view around the given tensor.
+     *
+     * @versionadded{1.0.0}
      */
     template <size_t OtherRank, typename... Args>
     explicit DeviceTensorView(DeviceTensorView<T, OtherRank> const &other, Dim<rank> const &dim, Args &&...args)
@@ -1496,6 +1766,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * Create a device tensor view that maps an in-core tensor to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     template <CoreBasicTensorConcept TensorType>
         requires(TensorType::Rank == rank)
@@ -1532,6 +1804,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @param other A pointer to the data to copy. The data needs to have the same size as the view.
      *
      * @return A reference to this tensor.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensorView<T, rank> &assign(T const *other);
 
@@ -1541,6 +1815,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @param other The tensor to copy.
      *
      * @return A reference to this tensor.
+     *
+     * @versionadded{1.0.0}
      */
     template <template <typename, size_t> typename AType>
         requires DeviceRankTensor<AType<T, rank>, rank, T>
@@ -1550,11 +1826,15 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @brief Set every value in the tensor to the one passed to this method.
      *
      * @param value The value to fill the tensor with.
+     *
+     * @versionadded{1.0.0}
      */
     void set_all(T const &value);
 
     /**
      * @brief Set every value in the tensor to zero.
+     *
+     * @versionadded{1.0.0}
      */
     void zero() { set_all(T{0.0}); }
 
@@ -1564,6 +1844,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @param other A pointer to the data to copy.
      *
      * @return A reference to the current tensor.
+     *
+     * @versionadded{1.0.0}
      */
     auto operator=(T const *other) -> DeviceTensorView &;
 
@@ -1573,6 +1855,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @param other The tensor to copy.
      *
      * @return A reference to the current tensor.
+     *
+     * @versionadded{1.0.0}
      */
     template <template <typename, size_t> typename AType>
         requires DeviceRankTensor<AType<T, rank>, rank, T>
@@ -1584,6 +1868,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @param other The other tensor to copy.
      *
      * @return A reference to the current tensor.
+     *
+     * @versionadded{1.0.0}
      */
     auto operator=(DeviceTensorView<T, rank> const &other) -> DeviceTensorView &;
 
@@ -1593,6 +1879,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @param fill_value The value to fill the view with.
      *
      * @return A reference to the current tensor.
+     *
+     * @versionadded{1.0.0}
      */
     auto operator=(T const &fill_value) -> DeviceTensorView & {
         this->set_all(fill_value);
@@ -1601,6 +1889,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Operate each element in the view with a scalar.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensorView<T, rank> &mult_assign(T const &value);
 
@@ -1621,21 +1911,29 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Operate each element in the view with a scalar.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensorView &operator*=(T const &value) { return this->mult_assign(value); }
 
     /**
      * @brief Operate each element in the view with a scalar.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensorView &operator/=(T const &value) { return this->div_assign(value); }
 
     /**
      * @brief Operate each element in the view with a scalar.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensorView &operator+=(T const &value) { return this->add_assign(value); }
 
     /**
      * @brief Operate each element in the view with a scalar.
+     *
+     * @versionadded{1.0.0}
      */
     DeviceTensorView &operator-=(T const &value) { return this->sub_assign(value); }
 
@@ -1647,6 +1945,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * may be outdated.
      *
      * @return T* A pointer to the data.
+     *
+     * @versionadded{1.0.0}
      */
     host_datatype *data() { return _host_data; }
 
@@ -1658,38 +1958,52 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * may be outdated.
      *
      * @return const T* An immutable pointer to the data.
+     *
+     * @versionadded{1.0.0}
      */
     host_datatype const *data() const { return _host_data; }
 
     /**
      * @brief Get a pointer to the GPU data.
+     *
+     * @versionadded{1.0.0}
      */
     dev_datatype *gpu_data() { return _data; }
 
     /**
      * @brief Get a pointer to the GPU data.
+     *
+     * @versionadded{1.0.0}
      */
     dev_datatype const *gpu_data() const { return const_cast<dev_datatype const *>(_data); }
 
     /**
      * @brief Get a pointer to an element in the view.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
     dev_datatype *gpu_data(MultiIndex... index);
 
     /**
      * @brief Get a const pointer to an element in the view.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
     dev_datatype const *gpu_data(MultiIndex... index) const;
 
     /**
      * @brief Get a pointer to an element in the view.
+     *
+     * @versionadded{1.0.0}
      */
     dev_datatype *gpu_data_array(std::array<size_t, rank> const &index_list);
 
     /**
      * @brief Get a const pointer to an element in the view.
+     *
+     * @versionadded{1.0.0}
      */
     dev_datatype const *gpu_data_array(std::array<size_t, rank> const &index_list) const;
 
@@ -1699,6 +2013,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @param index The index to pull from.
      *
      * @return The value at the requested index.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
     auto operator()(MultiIndex &&...index) const -> T;
@@ -1709,6 +2025,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @param index The index to pull from.
      *
      * @return The value at the requested index.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
@@ -1718,6 +2036,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Get the dimension of the given rank.
+     *
+     * @versionadded{1.0.0}
      */
     size_t dim(int d) const {
         if (d < 0)
@@ -1727,31 +2047,43 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Get the dimensions of the view.
+     *
+     * @versionadded{1.0.0}
      */
     Dim<rank> dims() const { return _dims; }
 
     /**
      * @brief Get the dimensions of the view made available to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t *gpu_dims() { return _gpu_dims; }
 
     /**
      * @brief Get the dimensions of the view made available to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t const *gpu_dims() const { return _gpu_dims; }
 
     /**
      * @brief Get the name of the view.
+     *
+     * @versionadded{1.0.0}
      */
     std::string const &name() const { return _name; }
 
     /**
      * @brief Set the name of the view.
+     *
+     * @versionadded{1.0.0}
      */
     void set_name(std::string const &name) { _name = name; }
 
     /**
      * @brief Get the stride of the given rank.
+     *
+     * @versionadded{1.0.0}
      */
     size_t stride(int d) const noexcept {
         if (d < 0)
@@ -1761,36 +2093,50 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     /**
      * @brief Get the strides of the view.
+     *
+     * @versionadded{1.0.0}
      */
     Stride<rank> strides() const noexcept { return _strides; }
 
     /**
      * @brief Get the strides of the view made available to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t *gpu_strides() { return _gpu_strides; }
 
     /**
      * @brief Get the strides of the view made available to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t const *gpu_strides() const { return _gpu_strides; }
 
     /**
      * @brief Convert the view to a one-dimensional array.
+     *
+     * @versionadded{1.0.0}
      */
     auto to_rank_1_view() const -> DeviceTensorView<T, 1>;
 
     /**
      * @brief Whether the view wraps all the data.
+     *
+     * @versionadded{1.0.0}
      */
     bool full_view_of_underlying() const noexcept { return _full_view_of_underlying; }
 
     /**
      * @brief Get the size of the view.
+     *
+     * @versionadded{1.0.0}
      */
     size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + rank, 1, std::multiplies<>{}); }
 
     /**
      * @brief Copy the data into an in-core tensor.
+     *
+     * @versionadded{1.0.0}
      */
     operator einsums::Tensor<T, rank>() const {
         einsums::DeviceTensor<T, rank> temp(*this);
@@ -1803,6 +2149,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @property _name
      *
      * @brief The name of the view.
+     *
+     * @versionadded{1.0.0}
      */
     std::string _name{"(Unnamed View)"};
 
@@ -1810,6 +2158,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @property _dims
      *
      * @brief The dimensions of the view.
+     *
+     * @versionadded{1.0.0}
      */
     einsums::Dim<rank> _dims;
 
@@ -1817,6 +2167,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @property _gpu_dims
      *
      * @brief The dimensions of the view made available to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t *_gpu_dims{nullptr};
 
@@ -1824,6 +2176,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @property _strides
      *
      * @brief The strides of the view.
+     *
+     * @versionadded{1.0.0}
      */
     einsums::Stride<rank> _strides, _index_strides;
 
@@ -1831,6 +2185,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @property _gpu_strides
      *
      * @brief The strides of the view made available to the GPU.
+     *
+     * @versionadded{1.0.0}
      */
     size_t *_gpu_strides{nullptr}, *_gpu_index_strides;
     // Offsets<rank> _offsets;
@@ -1839,6 +2195,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @property _full_view_of_underlying
      *
      * @brief Whether the view captures all of the data.
+     *
+     * @versionadded{1.0.0}
      */
     bool _full_view_of_underlying{false};
 
@@ -1849,6 +2207,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      *
      * This is normally false, but when a device view is made of a core tensor, then this
      * will be true, so that the buffers for the core tensor are freed.
+     *
+     * @versionadded{1.0.0}
      */
     bool _free_dev_data{false};
 
@@ -1856,6 +2216,8 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @property _data
      *
      * @brief A pointer to the GPU data.
+     *
+     * @versionadded{1.0.0}
      */
     dev_datatype *_data{nullptr};
 
@@ -1863,11 +2225,16 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @property _host_data
      *
      * @brief A pointer to the host data.
+     *
+     * @versionadded{1.0.0}
      */
     host_datatype *_host_data{nullptr};
     /**
      * @brief Method for initializing the view.
+     *
+     * @versionadded{1.0.0}
      */
+#ifndef DOXYGEN
     template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
         requires(TRTensorConcept<TensorType<T, OtherRank>, OtherRank, T>)
     void common_initialization(TensorType<T, OtherRank> const &other, Args &&...args);
@@ -1877,6 +2244,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     template <typename OtherT, size_t OtherRank>
     friend struct ::einsums::DeviceTensor;
+#endif
 };
 
 #if !defined(DOXYGEN) && defined(__cpp_deduction_guides)

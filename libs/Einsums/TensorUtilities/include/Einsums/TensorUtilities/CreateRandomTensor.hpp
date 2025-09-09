@@ -39,10 +39,15 @@ namespace einsums {
  * @tparam T The datatype of the underlying tensor. Defaults to double.
  * @tparam Normalize Should the resulting random data be normalized. Defaults to false.
  * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
- * @param name The name of the new tensor.
- * @param distribution The random distribution to use for generating the random numbers.
- * @param index The arguments needed to construct the tensor.
+ * @param[in] row_major Whether the tensor should be row-major or column-major.
+ * @param[in] name The name of the new tensor.
+ * @param[in] distribution The random distribution to use for generating the random numbers.
+ * @param[in] index The arguments needed to construct the tensor.
  * @return A new tensor filled with random data
+ *
+ * @versionaddeddesc{2.0.0}
+ *      Added the row_major parameter.
+ * @endversion
  */
 template <typename T = double, bool Normalize = false, typename Distribution, std::integral... MultiIndex>
     requires requires(Distribution dist) {
@@ -92,9 +97,14 @@ auto create_random_tensor(bool row_major, std::string const &name, Distribution 
  * @tparam T The datatype of the underlying tensor. Defaults to double.
  * @tparam Normalize Should the resulting random data be normalized. Defaults to false.
  * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
- * @param name The name of the new tensor.
- * @param index The arguments needed to construct the tensor.
+ * @param[in] name The name of the new tensor.
+ * @param[in] index The arguments needed to construct the tensor.
  * @return A new tensor filled with random data
+ *
+ * @versionadded{1.0.0}
+ * @versionchangeddesc{1.1.0}
+ *      Complex values are now clamped within the unit circle, rather than the unit square.
+ * @endversion
  */
 template <typename T = double, bool Normalize = false, std::integral... MultiIndex>
 auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
@@ -105,6 +115,32 @@ auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tenso
     }
 }
 
+/**
+ * @brief Create a new tensor with \p name and \p index filled with random data.
+ *
+ * Just a simple factory function for creating new tensor with initial data. Defaults to using double for the underlying data and
+ * automatically determines the rank of the tensor from \p index .
+ *
+ * A \p name is required for the tensor. \p name is used when printing and performing disk operations. The data generated will
+ * be between -1 and 1 for reals.
+ *
+ * @code
+ * auto a = create_incremented_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+ * auto b = create_incremented_tensor<float>("b" 4, 5, 6); // auto -> Tensor<float, 3>
+ * @endcode
+ *
+ * @tparam T The datatype of the underlying tensor. Defaults to double.
+ * @tparam Normalize Should the resulting random data be normalized. Defaults to false.
+ * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
+ * @param[in] row_major Whether the tensor should be row-major or column major.
+ * @param[in] name The name of the new tensor.
+ * @param[in] index The arguments needed to construct the tensor.
+ * @return A new tensor filled with random data
+ *
+ * @versionaddeddesc{2.0.0}
+ *      Added row major parameter.
+ * @endversion
+ */
 template <typename T = double, bool Normalize = false, std::integral... MultiIndex>
 auto create_random_tensor(bool row_major, std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     if constexpr (IsComplexV<T>) {
@@ -130,16 +166,21 @@ auto create_random_tensor(bool row_major, std::string const &name, MultiIndex...
  * @tparam T The datatype of the underlying tensor. Defaults to double.
  * @tparam Normalize Should the resulting random data be normalized. Defaults to false.
  * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
- * @param name The name of the new tensor.
- * @param distribution The random distribution to use for generating the random numbers.
- * @param index The arguments needed to construct the tensor.
+ * @param[in] row_major Whether the tensor should be row-major or column-major.
+ * @param[in] name The name of the new tensor.
+ * @param[in] dist The random distribution to use for generating the random numbers.
+ * @param[in] dims The dimensions of the new tensor.
  * @return A new tensor filled with random data
+ *
+ * @versionaddeddesc{2.0.0}
+ *      Added row major parameter.
+ * @endversion
  */
-template <typename T = double, bool Normalize = false, typename Distribution, Container Indices>
-auto create_random_tensor(bool row_major, std::string const &name, Distribution &&dist, Indices const &indices) -> RuntimeTensor<T> {
-    EINSUMS_LOG_TRACE("creating random runtime tensor {}, {}", name, indices);
+template <typename T = double, bool Normalize = false, typename Distribution, Container Dims>
+auto create_random_tensor(bool row_major, std::string const &name, Distribution &&dist, Dims const &dims) -> RuntimeTensor<T> {
+    EINSUMS_LOG_TRACE("creating random runtime tensor {}, {}", name, dims);
 
-    RuntimeTensor<T> A(name, indices, row_major);
+    RuntimeTensor<T> A(name, dims, row_major);
 
     EINSUMS_OMP_PARALLEL_FOR
     for (size_t i = 0; i < A.size(); i++) {
@@ -147,7 +188,7 @@ auto create_random_tensor(bool row_major, std::string const &name, Distribution 
     }
 
     if constexpr (Normalize) {
-        if (indices.size() == 2) {
+        if (dims.size() == 2) {
             for (int col = 0; col < A.dim(-1); col++) {
                 RemoveComplexT<T> scale{1};
                 RemoveComplexT<T> sumsq{0};
@@ -182,9 +223,14 @@ auto create_random_tensor(bool row_major, std::string const &name, Distribution 
  * @tparam T The datatype of the underlying tensor. Defaults to double.
  * @tparam Normalize Should the resulting random data be normalized. Defaults to false.
  * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
- * @param name The name of the new tensor.
- * @param index The arguments needed to construct the tensor.
+ * @param[in] name The name of the new tensor.
+ * @param[in] index The arguments needed to construct the tensor.
  * @return A new tensor filled with random data
+ *
+ * @versionadded{1.0.0}
+ * @versionchangeddesc{1.1.0}
+ *      Complex values are now clamped within the unit circle, rather than the unit square.
+ * @endversion
  */
 template <typename T = double, bool Normalize = false, Container Indices>
 auto create_random_tensor(std::string const &name, Indices const &index) -> RuntimeTensor<T> {
@@ -195,6 +241,32 @@ auto create_random_tensor(std::string const &name, Indices const &index) -> Runt
     }
 }
 
+/**
+ * @brief Create a new tensor with \p name and \p index filled with random data.
+ *
+ * Just a simple factory function for creating new tensor with initial data. Defaults to using double for the underlying data and
+ * automatically determines the rank of the tensor from \p index .
+ *
+ * A \p name is required for the tensor. \p name is used when printing and performing disk operations. The data generated will
+ * be between -1 and 1 for reals.
+ *
+ * @code
+ * auto a = create_incremented_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+ * auto b = create_incremented_tensor<float>("b" 4, 5, 6); // auto -> Tensor<float, 3>
+ * @endcode
+ *
+ * @tparam T The datatype of the underlying tensor. Defaults to double.
+ * @tparam Normalize Should the resulting random data be normalized. Defaults to false.
+ * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
+ * @param[in] row_major Whether the tensor should be row-major or column-major.
+ * @param[in] name The name of the new tensor.
+ * @param[in] index The arguments needed to construct the tensor.
+ * @return A new tensor filled with random data
+ *
+ * @versionaddeddesc{2.0.0}
+ *      Added row major parameter.
+ * @endversion
+ */
 template <typename T = double, bool Normalize = false, Container Indices>
 auto create_random_tensor(bool row_major, std::string const &name, Indices const &index) -> RuntimeTensor<T> {
     if constexpr (IsComplexV<T>) {

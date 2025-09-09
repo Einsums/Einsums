@@ -16,22 +16,32 @@
 
 namespace einsums {
 
+/**
+ * @brief Registers the initialization and finalization functions with the runtime manager.
+ *
+ * @versionadded{1.1.0}
+ */
 EINSUMS_EXPORT int setup_Einsums_BLAS();
 
 /**
  * @brief Initialize the BLAS runtime.
+ *
+ * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT void initialize_Einsums_BLAS();
 
 /**
  * @brief Finalize the BLAS runtime.
+ *
+ * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT void finalize_Einsums_BLAS();
 
 namespace detail {
-
+#ifndef DOXYGEN
 static int initialize_module_Einsums_BLAS = setup_Einsums_BLAS();
+#endif
 
-}
+} // namespace detail
 
 } // namespace einsums

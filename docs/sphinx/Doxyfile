@@ -330,3 +330,12 @@ MAX_DOT_GRAPH_DEPTH    = 0
 DOT_MULTI_TARGETS      = NO
 GENERATE_LEGEND        = YES
 DOT_CLEANUP            = YES
+
+ALIASES += "versionadded{1}=\verbatim embed:rst ^^ .. versionadded:: \1 ^^ \endverbatim"
+ALIASES += "versionremoved{1}=\verbatim embed:rst ^^ .. versionremoved:: \1 ^^ \endverbatim"
+ALIASES += "versionchanged{1}=\verbatim embed:rst ^^ .. versionchanged:: \1 ^^ \endverbatim"
+
+ALIASES += "versionaddeddesc{1}=\verbatim embed:rst ^^ .. versionadded:: \1"
+ALIASES += "versionremoveddesc{1}=\verbatim embed:rst ^^ .. versionremoved:: \1"
+ALIASES += "versionchangeddesc{1}=\verbatim embed:rst ^^ .. versionchanged:: \1"
+ALIASES += "endversion=\endverbatim"

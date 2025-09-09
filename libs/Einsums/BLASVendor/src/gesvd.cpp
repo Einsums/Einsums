@@ -46,22 +46,19 @@ extern void FC_GLOBAL(cgesvd, CGESVD)(char *jobu, char *jobvt, int_t *m, int_t *
         /* Check leading dimensions */                                                                                                     \
         if (lda < m) {                                                                                                                     \
             EINSUMS_LOG_WARN("gesvd warning: lda < n, lda = {}, n = {}", lda, n);                                                          \
-            return -6;                                                                                                                     \
         }                                                                                                                                  \
         if (ldu < ncols_u) {                                                                                                               \
             EINSUMS_LOG_WARN("gesvd warning: ldu < ncols_u, ldu = {}, ncols_u = {}", ldu, ncols_u);                                        \
-            return -9;                                                                                                                     \
         }                                                                                                                                  \
         if (ldvt < ncols_vt) {                                                                                                             \
             EINSUMS_LOG_WARN("gesvd warning: ldvt < ncols_vt, ldvt = {}, ncols_vt = {}", ldvt, ncols_vt);                                  \
-            return -11;                                                                                                                    \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Query optimal working array(s) size */                                                                                          \
         FC_GLOBAL(lcletter##gesvd, UCLETTER##GESVD)                                                                                        \
         (&jobu, &jobvt, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, &work_query, &lwork, &info);                                               \
         if (info != 0)                                                                                                                     \
-            EINSUMS_LOG_WARN("gesvd work array size query failed. info {}", info);                                                         \
+            return info;                                                                                                                   \
                                                                                                                                            \
         lwork = (int_t)work_query;                                                                                                         \
                                                                                                                                            \
@@ -72,8 +69,7 @@ extern void FC_GLOBAL(cgesvd, CGESVD)(char *jobu, char *jobvt, int_t *m, int_t *
         FC_GLOBAL(lcletter##gesvd, UCLETTER##GESVD)                                                                                        \
         (&jobu, &jobvt, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work.data(), &lwork, &info);                                               \
                                                                                                                                            \
-        if (info < 0) {                                                                                                                    \
-            EINSUMS_LOG_WARN("gesvd lapack routine failed. info {}", info);                                                                \
+        if (info != 0) {                                                                                                                   \
             return info;                                                                                                                   \
         }                                                                                                                                  \
                                                                                                                                            \
@@ -106,23 +102,22 @@ GESVD(float, s, S);
         /* Check leading dimensions */                                                                                                     \
         if (lda < m) {                                                                                                                     \
             EINSUMS_LOG_WARN("gesvd warning: lda < m, lda = {}, m = {}", lda, n);                                                          \
-            return -6;                                                                                                                     \
         }                                                                                                                                  \
         if (ldu < ncols_u) {                                                                                                               \
             EINSUMS_LOG_WARN("gesvd warning: ldu < ncols_u, ldu = {}, ncols_u = {}", ldu, ncols_u);                                        \
-            return -9;                                                                                                                     \
         }                                                                                                                                  \
         if (ldvt < ncols_vt) {                                                                                                             \
             EINSUMS_LOG_WARN("gesvd warning: ldvt < ncols_vt, ldvt = {}, ncols_vt = {}", ldvt, ncols_vt);                                  \
-            return -11;                                                                                                                    \
         }                                                                                                                                  \
                                                                                                                                            \
         BufferVector<Type> rwork(5 * std::min(m, n));                                                                                      \
         /* Query optimal working array(s) size */                                                                                          \
         FC_GLOBAL(lcletter##gesvd, UCLETTER##GESVD)                                                                                        \
         (&jobu, &jobvt, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, &work_query, &lwork, rwork.data(), &info);                                 \
-        if (info != 0)                                                                                                                     \
-            EINSUMS_LOG_WARN("gesvd work array size query failed. info {}", info);                                                         \
+                                                                                                                                           \
+        if (info != 0) {                                                                                                                   \
+            return info;                                                                                                                   \
+        }                                                                                                                                  \
                                                                                                                                            \
         lwork = (int_t)work_query.real();                                                                                                  \
                                                                                                                                            \
@@ -133,7 +128,6 @@ GESVD(float, s, S);
         (&jobu, &jobvt, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work.data(), &lwork, rwork.data(), &info);                                 \
                                                                                                                                            \
         if (info < 0) {                                                                                                                    \
-            EINSUMS_LOG_WARN("gesvd lapack routine failed. info {}", info);                                                                \
             return info;                                                                                                                   \
         }                                                                                                                                  \
                                                                                                                                            \
