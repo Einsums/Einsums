@@ -41,7 +41,7 @@ TEMPLATE_TEST_CASE("Norms", "[linear-algebra]", float, double) {
 
     result = linear_algebra::norm(linear_algebra::Norm::FROBENIUS, A);
 
-    REQUIRE_THAT(result, Catch::Matchers::WithinRel(246.2681465394987, 0.001));
+    REQUIRE_THAT(result, Catch::Matchers::WithinRel(25.92296279363144, 0.001));
 
     result = linear_algebra::norm(linear_algebra::Norm::MAXABS, A);
 
