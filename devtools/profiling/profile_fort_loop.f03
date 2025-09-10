@@ -83,15 +83,16 @@ CONTAINS
    SUBROUTINE parse_args(norbs, trials)
       INTEGER, INTENT(OUT) :: norbs, trials
 
-      INTEGER :: i, state
+      INTEGER :: i, state, status
       CHARACTER(len=64) :: arg
 
       state = 0
+      status = 0
       norbs = 20
       trials = 20
 
-      DO i = 1, iargc()
-         CALL GETARG(i, arg)
+      DO i = 1, COMMAND_ARGUMENT_COUNT()
+         CALL GET_COMMAND_ARGUMENT(i, arg)
          SELECT CASE(state)
           CASE (0)
             IF(arg == "-n") THEN

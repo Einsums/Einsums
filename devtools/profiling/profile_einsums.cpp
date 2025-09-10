@@ -3,13 +3,17 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/CommandLine/CommandLine.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Tensor.hpp>
 #include <Einsums/TensorAlgebra.hpp>
 #include <Einsums/TensorUtilities.hpp>
 
+#include <filesystem>
 #include <vector>
+
+#include "Einsums/HPTT/HPTTTypes.hpp"
 
 using namespace einsums;
 using namespace einsums::tensor_algebra;
@@ -61,32 +65,33 @@ double stdev(std::vector<double> const &values, double mean) {
     return sqrt(variance(values, mean));
 }
 
-void register_args(argparse::ArgumentParser &parser) {
+void register_args() {
     auto &global_config = einsums::GlobalConfigMap::get_singleton();
     auto &global_ints   = global_config.get_int_map()->get_value();
     auto &global_bools  = global_config.get_bool_map()->get_value();
 
-    parser.add_argument("-n")
-        .default_value<int64_t>(20)
-        .help("The starting number of orbitals for the calculation.")
-        .store_into(global_ints["n"]);
+    static einsums::cl::OptionCategory profiling("Profiling");
 
-    parser.add_argument("-s").default_value<int64_t>(10).help("The step value for the range of orbitals.").store_into(global_ints["s"]);
+    static einsums::cl::Opt<int64_t> orbitals("start", {'n'}, "The starting number of orbitals for the calculation.", profiling,
+                                              einsums::cl::Default<int64_t>(20), einsums::cl::Location(global_ints["n"]));
 
-    parser.add_argument("-e")
-        .default_value<int64_t>(-1)
-        .help("The ending number of orbitals for the calculation.")
-        .store_into(global_ints["e"]);
+    static einsums::cl::Opt<int64_t> step("step", {'s'}, "The step value for the range of orbitals.", profiling,
+                                          einsums::cl::Default<int64_t>(10), einsums::cl::Location(global_ints["s"]));
 
-    parser.add_argument("-t")
-        .default_value<int64_t>(20)
-        .help("The number of trials for each step in the calculation.")
-        .store_into(global_ints["t"]);
+    static einsums::cl::Opt<int64_t> end("end", {'e'}, "The ending number of orbitals for the calculation.", profiling,
+                                         einsums::cl::Default<int64_t>(-1), einsums::cl::Location(global_ints["e"]));
 
-    parser.add_argument("-c").flag().store_into(global_bools["c"]);
+    static einsums::cl::Opt<int64_t> trials("trials", {'t'}, "The number of trials for each step in the calculation.", profiling,
+                                            einsums::cl::Default<int64_t>(20), einsums::cl::Location(global_ints["t"]));
+
+    static einsums::cl::Flag col_major("col-major", {}, "Whether the tensors should be column major or not.",
+                                       einsums::cl::Location(global_bools["col-major"]));
+
+    static einsums::cl::Flag csv("csv", {'c'}, "When present, output in comma-separated values.", profiling,
+                                 einsums::cl::Location(global_bools["c"]));
 }
 
-int         main(int argc, char **argv) {
+int main(int argc, char **argv) {
 #pragma omp parallel
     {
 #pragma omp single
@@ -97,16 +102,17 @@ int         main(int argc, char **argv) {
             einsums::initialize(argc, argv);
 
             int  start, end, step, trials;
-            bool csv;
+            bool csv, row_major;
 
             {
                 auto &global_config = einsums::GlobalConfigMap::get_singleton();
 
-                start  = global_config.get_int("n");
-                end    = global_config.get_int("e");
-                step   = global_config.get_int("s");
-                trials = global_config.get_int("t");
-                csv    = global_config.get_bool("c");
+                start     = global_config.get_int("n");
+                end       = global_config.get_int("e");
+                step      = global_config.get_int("s");
+                trials    = global_config.get_int("t");
+                csv       = global_config.get_bool("c");
+                row_major = !global_config.get_bool("col-major");
             }
 
             if (end < start) {
@@ -121,10 +127,10 @@ int         main(int argc, char **argv) {
 
                 std::vector<double> times_J(trials), times_K(trials), times_G(trials), times_tot(trials), times_sort(trials);
 
-                auto D   = create_random_tensor("D", norbs, norbs);
-                auto TEI = create_random_tensor("TEI", norbs, norbs, norbs, norbs);
+                auto D   = create_random_tensor(row_major, "D", norbs, norbs);
+                auto TEI = create_random_tensor(row_major, "TEI", norbs, norbs, norbs, norbs);
 
-                Tensor<double, 2> J{"J", norbs, norbs}, K{"K", norbs, norbs}, G{"G", norbs, norbs};
+                Tensor<double, 2> J{row_major, "J", norbs, norbs}, K{row_major, "K", norbs, norbs}, G{row_major, "G", norbs, norbs};
 
                 // Calculate the times.
                 for (int i = 0; i < trials; i++) {
@@ -164,7 +170,30 @@ int         main(int argc, char **argv) {
                         stdev(times_tot, tot_mean));
                 }
 
-                Tensor<double, 4> sorted_TEI{"sorted TEI", norbs, norbs, norbs, norbs};
+                Tensor<double, 4> sorted_TEI{row_major, "sorted TEI", norbs, norbs, norbs, norbs};
+
+                std::shared_ptr<hptt::Transpose<double>> plan;
+
+                auto permute_path = std::filesystem::current_path();
+
+                if(row_major) {
+                    permute_path.append(fmt::format("permute_{}.hptt", norbs));
+                } else {
+                    permute_path.append(fmt::format("permute_{}_column.hptt", norbs));
+                }
+
+                if (std::filesystem::exists(permute_path)) {
+                    auto fp = std::fopen(permute_path.c_str(), "r");
+                    plan    = std::make_shared<hptt::Transpose<double>>(fp, 1.0, TEI.data(), 0.0, sorted_TEI.data());
+                    std::fclose(fp);
+                } else {
+                    plan = einsums::tensor_algebra::compile_permute(Indices{index::mu, index::nu, index::lambda, index::sigma}, &sorted_TEI,
+                                                                    Indices{index::mu, index::lambda, index::nu, index::sigma}, TEI,
+                                                                    hptt::PATIENT);
+                    auto fp = std::fopen(permute_path.c_str(), "w+");
+                    plan->writeToFile(fp);
+                    std::fclose(fp);
+                }
 
                 // Calculate the linear algebra times.
                 for (int i = 0; i < trials; i++) {
@@ -174,8 +203,7 @@ int         main(int argc, char **argv) {
 
                     clock_t J_time = clock();
 
-                    tensor_algebra::permute(Indices{index::mu, index::nu, index::lambda, index::sigma}, &sorted_TEI,
-                                            Indices{index::mu, index::lambda, index::nu, index::sigma}, TEI);
+                    tensor_algebra::permute(&sorted_TEI, TEI, plan);
 
                     clock_t K_sort_time = clock();
 

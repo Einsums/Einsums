@@ -6,6 +6,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLAS.hpp>
+#include <Einsums/CommandLine/CommandLine.hpp>
 #include <Einsums/Runtime.hpp>
 
 #include <cstdio>
@@ -78,29 +79,27 @@ double stdev(std::vector<double> const &values, double mean) {
     return sqrt(variance(values, mean));
 }
 
-void register_args(argparse::ArgumentParser &parser) {
+void register_args() {
     auto &global_config = einsums::GlobalConfigMap::get_singleton();
     auto &global_ints   = global_config.get_int_map()->get_value();
     auto &global_bools  = global_config.get_bool_map()->get_value();
 
-    parser.add_argument("-n")
-        .default_value<int64_t>(20)
-        .help("The starting number of orbitals for the calculation.")
-        .store_into(global_ints["n"]);
+    static einsums::cl::OptionCategory profiling("Profiling");
 
-    parser.add_argument("-s").default_value<int64_t>(10).help("The step value for the range of orbitals.").store_into(global_ints["s"]);
+    static einsums::cl::Opt<int64_t> orbitals("start", {'n'}, "The starting number of orbitals for the calculation.", profiling,
+                                              einsums::cl::Default<int64_t>(20), einsums::cl::Location(global_ints["n"]));
 
-    parser.add_argument("-e")
-        .default_value<int64_t>(-1)
-        .help("The ending number of orbitals for the calculation.")
-        .store_into(global_ints["e"]);
+    static einsums::cl::Opt<int64_t> step("step", {'s'}, "The step value for the range of orbitals.", profiling,
+                                          einsums::cl::Default<int64_t>(10), einsums::cl::Location(global_ints["s"]));
 
-    parser.add_argument("-t")
-        .default_value<int64_t>(20)
-        .help("The number of trials for each step in the calculation.")
-        .store_into(global_ints["t"]);
+    static einsums::cl::Opt<int64_t> end("end", {'e'}, "The ending number of orbitals for the calculation.", profiling,
+                                         einsums::cl::Default<int64_t>(-1), einsums::cl::Location(global_ints["e"]));
 
-    parser.add_argument("-c").flag().store_into(global_bools["c"]);
+    static einsums::cl::Opt<int64_t> trials("trials", {'t'}, "The number of trials for each step in the calculation.", profiling,
+                                            einsums::cl::Default<int64_t>(20), einsums::cl::Location(global_ints["t"]));
+
+    static einsums::cl::Flag csv("csv", {'c'}, "When present, output in comma-separated values.", profiling,
+                                 einsums::cl::Location(global_bools["c"]));
 }
 
 template <class Generator>
@@ -112,7 +111,7 @@ void fill_random(std::vector<double> &buffer, Generator &generator) {
     }
 }
 
-int         main(int argc, char **argv) {
+int main(int argc, char **argv) {
 #pragma omp parallel
     {
 #pragma omp single

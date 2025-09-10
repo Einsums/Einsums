@@ -7,16 +7,18 @@
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
 
+#include "Einsums/HPTT/Files.hpp"
+
 #include <Einsums/Testing.hpp>
 
-TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, std::complex<double>) {
+TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
     SECTION("Rank 2 - axpy") {
-        Tensor A{"A", 3, 3};
-        Tensor C{"C", 3, 3};
+        Tensor<TestType, 2> A{"A", 3, 3};
+        Tensor<TestType, 2> C{"C", 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -32,8 +34,8 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
             }
         }
 
-        TensorView A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
-        TensorView C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
+        TensorView<TestType, 2> A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
+        TensorView<TestType, 2> C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
         permute(Indices{j, i}, &C_view, Indices{i, j}, A_view);
 
@@ -48,9 +50,9 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
     }
 
     SECTION("Rank 2 - axpy (2)") {
-        Tensor A = create_incremented_tensor("A", 3, 3);
-        Tensor C0{"C", 3, 3};
-        Tensor C1{"C", 3, 3};
+        Tensor<TestType, 2> A = create_incremented_tensor<TestType>("A", 3, 3);
+        Tensor<TestType, 2> C0{"C", 3, 3};
+        Tensor<TestType, 2> C1{"C", 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -63,7 +65,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), 0.00001));
+                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), (TestType)0.00001));
             }
         }
 
@@ -78,14 +80,14 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), 0.00001));
+                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), (TestType)0.00001));
             }
         }
     }
 
     SECTION("Rank 2") {
-        Tensor A{"A", 3, 3};
-        Tensor C{"C", 3, 3};
+        Tensor<TestType, 2> A{"A", 3, 3};
+        Tensor<TestType, 2> C{"C", 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -97,14 +99,14 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE_THAT(C(j, i), Catch::Matchers::WithinRel(A(i, j), 0.00001));
+                REQUIRE_THAT(C(j, i), Catch::Matchers::WithinRel(A(i, j), (TestType)0.00001));
             }
         }
     }
 
     SECTION("Rank 3") {
-        Tensor A{"A", 3, 3, 3};
-        Tensor B{"B", 3, 3, 3};
+        Tensor<TestType, 3> A{"A", 3, 3, 3};
+        Tensor<TestType, 3> B{"B", 3, 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -118,7 +120,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(B(k, j, i), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
+                    REQUIRE_THAT(B(k, j, i), Catch::Matchers::WithinRel(A(i, j, k), (TestType)0.00001));
                 }
             }
         }
@@ -127,7 +129,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(B(i, k, j), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
+                    REQUIRE_THAT(B(i, k, j), Catch::Matchers::WithinRel(A(i, j, k), (TestType)0.00001));
                 }
             }
         }
@@ -136,7 +138,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(B(j, k, i), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
+                    REQUIRE_THAT(B(j, k, i), Catch::Matchers::WithinRel(A(i, j, k), (TestType)0.00001));
                 }
             }
         }
@@ -145,15 +147,15 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(B(i, j, k), Catch::Matchers::WithinRel(A(k, j, i), 0.00001));
+                    REQUIRE_THAT(B(i, j, k), Catch::Matchers::WithinRel(A(k, j, i), (TestType)0.00001));
                 }
             }
         }
     }
 
     SECTION("Rank 4") {
-        Tensor A{"A", 3, 3, 3, 3};
-        Tensor B{"B", 3, 3, 3, 3};
+        Tensor<TestType, 4> A{"A", 3, 3, 3, 3};
+        Tensor<TestType, 4> B{"B", 3, 3, 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -208,8 +210,8 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
     // }
 
     SECTION("Rank 2 - Different Sizes") {
-        Tensor A{"A", 3, 9};
-        Tensor B{"B", 9, 3};
+        Tensor<TestType, 2> A{"A", 3, 9};
+        Tensor<TestType, 2> B{"B", 9, 3};
 
         for (int i = 0, ij = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++, ij++) {
@@ -220,14 +222,14 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
         permute(Indices{j, i}, &B, Indices{i, j}, A);
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                REQUIRE_THAT(B(j, i), Catch::Matchers::WithinRel(A(i, j), 0.00001));
+                REQUIRE_THAT(B(j, i), Catch::Matchers::WithinRel(A(i, j), (TestType)0.00001));
             }
         }
     }
 
     SECTION("Rank 3 - Different Sizes") {
-        Tensor A{"A", 2, 3, 4};
-        Tensor B{"B", 3, 4, 2};
+        Tensor<TestType, 3> A{"A", 2, 3, 4};
+        Tensor<TestType, 3> B{"B", 3, 4, 2};
 
         for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
@@ -241,8 +243,72 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double, std::complex<float>, s
         for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
                 for (int k = 0; k < A.dim(2); k++, ij++) {
-                    REQUIRE_THAT(B(j, k, i), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
+                    REQUIRE_THAT(B(j, k, i), Catch::Matchers::WithinRel(A(i, j, k), (TestType)0.00001));
                 }
+            }
+        }
+    }
+
+    SECTION("Rank 3 - Saved permute") {
+        Tensor<TestType, 3> A{"A", 2, 3, 4};
+        Tensor<TestType, 3> B{"B", 3, 4, 2};
+
+        for (int i = 0, ij = 1; i < A.dim(0); i++) {
+            for (int j = 0; j < A.dim(1); j++) {
+                for (int k = 0; k < A.dim(2); k++, ij++) {
+                    A(i, j, k) = ij;
+                }
+            }
+        }
+
+        auto plan = compile_permute(Indices{j, k, i}, &B, Indices{i, j, k}, A);
+
+        permute(&B, A, plan);
+        for (int i = 0, ij = 1; i < A.dim(0); i++) {
+            for (int j = 0; j < A.dim(1); j++) {
+                for (int k = 0; k < A.dim(2); k++, ij++) {
+                    REQUIRE_THAT(B(j, k, i), Catch::Matchers::WithinRel(A(i, j, k), (TestType)0.00001));
+                }
+            }
+        }
+    }
+}
+
+TEST_CASE("Saving and loading permutes") {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::index;
+
+    Tensor A{"A", 2, 3, 4};
+    Tensor B{"B", 3, 4, 2};
+
+    for (int i = 0, ij = 1; i < A.dim(0); i++) {
+        for (int j = 0; j < A.dim(1); j++) {
+            for (int k = 0; k < A.dim(2); k++, ij++) {
+                A(i, j, k) = ij;
+            }
+        }
+    }
+
+    auto plan = einsums::tensor_algebra::compile_permute(0.0, Indices{j, k, i}, &B, 1.0, Indices{i, j, k}, A);
+
+    auto fp = std::fopen("saved_plan.hptt", "w+");
+
+    hptt::setupFile(fp);
+
+    plan->writeToFile(fp);
+
+    std::fclose(fp);
+
+    fp = std::fopen("saved_plan.hptt", "r");
+
+    auto plan2 = std::make_shared<hptt::Transpose<double>>(fp, 1.0, A.data(), 0.0, B.data());
+
+    permute(&B, A, plan2);
+    for (int i = 0, ij = 1; i < A.dim(0); i++) {
+        for (int j = 0; j < A.dim(1); j++) {
+            for (int k = 0; k < A.dim(2); k++, ij++) {
+                REQUIRE_THAT(B(j, k, i), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
             }
         }
     }
