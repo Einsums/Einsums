@@ -26,6 +26,7 @@ What's New
       that take plans as inputs.
     * The files are raw binary files to hopefully reduce the file size.
 * Einsums has its own argument parser.
+* `norm` can now handle vectors and can compute the spectral norm.
 
 What's Removed
 --------------

@@ -34,6 +34,7 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .value("ONE", einsums::linear_algebra::Norm::ONE)
         .value("INFINITY", einsums::linear_algebra::Norm::INFTY)
         .value("FROBENIUS", einsums::linear_algebra::Norm::FROBENIUS)
+        .value("TWO", einsums::linear_algebra::Norm::TWO)
         .export_values();
 
     py::enum_<einsums::linear_algebra::Vectors>(mod, "Vectors")

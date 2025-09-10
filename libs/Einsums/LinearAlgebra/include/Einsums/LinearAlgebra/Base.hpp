@@ -1344,7 +1344,12 @@ auto norm(char norm_type, einsums::detail::TensorImpl<T> const &a) -> RemoveComp
                 return impl_frobenius_norm(a);
             }
         case '2':
-            EINSUMS_THROW_EXCEPTION(not_implemented, "Haven't got around to implementing yet. It should be a simple svd.");
+            if (a.rank() == 1) {
+                return blas::nrm2(a.dim(0), a.data(), a.get_incx());
+            } else {
+                auto result = svd(a, 'n', 'n');
+                return std::get<1>(result)(0);
+            }
         default:
             EINSUMS_THROW_EXCEPTION(enum_error, "The norm type passed to norm is not valid!");
         }
@@ -1366,7 +1371,12 @@ auto norm(char norm_type, einsums::detail::TensorImpl<T> const &a) -> RemoveComp
         case 'F':
             return impl_frobenius_norm(a);
         case '2':
-            EINSUMS_THROW_EXCEPTION(not_implemented, "Haven't got around to implementing yet. It should be a simple svd.");
+            if (a.rank() == 1) {
+                return impl_frobenius_norm(a);
+            } else {
+                EINSUMS_THROW_EXCEPTION(not_implemented, "We haven't implemented the spectral norm for matrices that don't have a LAPACK-"
+                                                         "compatible type. If you need this, reach out to us so we can implement it.");
+            }
         default:
             EINSUMS_THROW_EXCEPTION(enum_error, "The norm type passed to norm is not valid!");
         }
