@@ -21,8 +21,6 @@ TEMPLATE_TEST_CASE("Norms", "[linear-algebra]", float, double) {
 
     A.vector_data() = temp;
 
-    println(A);
-
     T result = linear_algebra::norm(linear_algebra::Norm::ONE, A);
 
     if (A.impl().is_row_major()) {
