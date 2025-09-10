@@ -34,10 +34,13 @@
 #include <assert.h>
 #include <chrono>
 #include <cmath>
+#include <cstring>
 #include <float.h>
 #include <iostream>
 #include <list>
+#include <memory>
 #include <numeric>
+#include <stdexcept>
 #include <stdio.h>
 #include <string>
 #include <tuple>
@@ -48,6 +51,7 @@
 #endif
 
 #include <Einsums/HPTT/ComputeNode.hpp>
+#include <Einsums/HPTT/Files.hpp>
 #include <Einsums/HPTT/HPTTTypes.hpp>
 #include <Einsums/HPTT/Macros.hpp>
 #include <Einsums/HPTT/Plan.hpp>
@@ -1144,6 +1148,7 @@ Transpose<floatType>::Transpose(size_t const *sizeA, int const *perm, size_t con
     offsetB_.resize(dim);
     lda_.resize(dim);
     ldb_.resize(dim);
+    threadIds_.reserve(dim);
     if (threadIds) {
         // compact threadIds. E.g., 1, 7, 5 -> local_id(1) = 0, local_id(7) = 2,
         // local_id(5) = 1
@@ -2452,6 +2457,291 @@ std::shared_ptr<Plan> Transpose<floatType>::selectPlan(std::vector<std::shared_p
             printf("We evaluated %d/%lu candidates and selected candidate %d.\n", plansEvaluated, plans.size(), bestPlan_id);
     }
     return plans[bestPlan_id];
+}
+
+template <typename FloatType>
+void Transpose<FloatType>::writeToFile(std::FILE *fp) const {
+    setupFile(fp);
+
+    // Get the file header.
+    FileHeader header;
+    uint32_t   check;
+    size_t     error2;
+
+    TransposeConstants constants;
+
+    int error1 = fseek(fp, 0, SEEK_SET);
+
+    if (error1 != 0) {
+        goto write_to_file_error;
+    }
+
+    error2 = fread(&header, sizeof(FileHeader), 1, fp);
+
+    if (error2 < 1) {
+        goto write_to_file_error;
+    }
+
+    if (strncmp(header.magic, "HPTT", 4) != 0) {
+        throw std::runtime_error("Trying to write to a file that is not a HPTT transpose file!");
+    }
+
+    error1 = fseek(fp, sizeof(FileHeader), SEEK_SET);
+
+    if (error1 != 0) {
+        goto write_to_file_error;
+    }
+
+    constants = {.dim                      = dim_,
+                 .numThreads               = numThreads_,
+                 .innerStrideA             = innerStrideA_,
+                 .innerStrideB             = innerStrideB_,
+                 .selectedParallelStrategy = selectedParallelStrategyId_,
+                 .selectedLoopOrderId      = selectedLoopOrderId_,
+                 .conjA                    = conjA_,
+                 .pad                      = 0};
+
+    error2 = fwrite(&constants, sizeof(TransposeConstants), 1, fp);
+
+    if (error2 < 1) {
+        goto write_to_file_error;
+    }
+
+    std::fflush(fp);
+
+    error2 = fwrite(sizeA_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto write_to_file_error;
+    }
+
+    std::fflush(fp);
+
+    error2 = fwrite(outerSizeA_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto write_to_file_error;
+    }
+
+    std::fflush(fp);
+
+    error2 = fwrite(outerSizeB_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto write_to_file_error;
+    }
+
+    std::fflush(fp);
+
+    error2 = fwrite(offsetA_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto write_to_file_error;
+    }
+
+    std::fflush(fp);
+
+    error2 = fwrite(offsetB_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto write_to_file_error;
+    }
+
+    std::fflush(fp);
+
+    error2 = fwrite(lda_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto write_to_file_error;
+    }
+
+    std::fflush(fp);
+
+    error2 = fwrite(ldb_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto write_to_file_error;
+    }
+
+    std::fflush(fp);
+
+    error2 = fwrite(perm_.data(), sizeof(int), dim_, fp);
+
+    if (error2 < dim_) {
+        goto write_to_file_error;
+    }
+
+    std::fflush(fp);
+
+    masterPlan_->writeToFile(fp);
+
+    check = computeChecksum(fp);
+
+    error1 = fseek(fp, offsetof(FileHeader, checksum), SEEK_SET);
+
+    if (error1 != 0) {
+        goto write_to_file_error;
+    }
+
+    error2 = fwrite(&check, sizeof(uint32_t), 1, fp);
+
+    std::fflush(fp);
+
+    if (error2 < 1) {
+        goto write_to_file_error;
+    }
+
+    return;
+
+write_to_file_error:
+    perror("Error writing to file!");
+    throw std::runtime_error("IO error");
+}
+
+template <typename FloatType>
+Transpose<FloatType>::Transpose(std::FILE *fp, FloatType alpha, FloatType const *A, FloatType beta, FloatType *B) {
+#ifdef _OPENMP
+    omp_init_lock(&writelock);
+#endif
+    // Get the file header.
+    FileHeader         header;
+    size_t             error2;
+    TransposeConstants constants;
+    uint32_t           check;
+
+    int error1 = fseek(fp, 0, SEEK_SET);
+
+    if (error1 != 0) {
+        goto read_from_file_error;
+    }
+
+    error2 = fread(&header, sizeof(FileHeader), 1, fp);
+
+    if (error2 < 1) {
+        goto read_from_file_error;
+    }
+
+    if (strncmp(header.magic, "HPTT", 4) != 0) {
+        throw std::runtime_error("Trying to read from a file that is not a HPTT transpose file!");
+    }
+
+    error1 = fseek(fp, sizeof(FileHeader), SEEK_SET);
+
+    if (error1 != 0) {
+        goto read_from_file_error;
+    }
+
+    error2 = fread(&constants, sizeof(TransposeConstants), 1, fp);
+
+    if (error2 < 1) {
+        goto read_from_file_error;
+    }
+
+    A_     = A;
+    B_     = B;
+    alpha_ = alpha;
+    beta_  = beta;
+    dim_   = constants.dim;
+
+    if (endian_char() != header.version[3]) {
+        dim_ = byteswap(dim_);
+    }
+
+    sizeA_.resize(dim_);
+    perm_.resize(dim_);
+    outerSizeA_.resize(dim_);
+    outerSizeB_.resize(dim_);
+    offsetA_.resize(dim_);
+    offsetB_.resize(dim_);
+    innerStrideA_ = constants.innerStrideA;
+    innerStrideB_ = constants.innerStrideB;
+    lda_.resize(dim_);
+    ldb_.resize(dim_);
+    threadIds_.reserve(dim_);
+    numThreads_                 = constants.numThreads;
+    selectedParallelStrategyId_ = constants.selectedParallelStrategy;
+    selectedLoopOrderId_        = constants.selectedLoopOrderId;
+    conjA_                      = constants.conjA;
+
+    if (endian_char() != header.version[3]) {
+        innerStrideA_               = byteswap(constants.innerStrideA);
+        innerStrideB_               = byteswap(constants.innerStrideB);
+        numThreads_                 = byteswap(constants.numThreads);
+        selectedParallelStrategyId_ = byteswap(constants.selectedParallelStrategy);
+        selectedLoopOrderId_        = byteswap(constants.selectedLoopOrderId);
+    }
+
+    for (int i = 0; i < numThreads_; ++i)
+        threadIds_.push_back(i);
+
+    error2 = fread(sizeA_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto read_from_file_error;
+    }
+
+    error2 = fread(outerSizeA_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto read_from_file_error;
+    }
+
+    error2 = fread(outerSizeB_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto read_from_file_error;
+    }
+
+    error2 = fread(offsetA_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto read_from_file_error;
+    }
+
+    error2 = fread(offsetB_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto read_from_file_error;
+    }
+
+    error2 = fread(lda_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto read_from_file_error;
+    }
+
+    error2 = fread(ldb_.data(), sizeof(size_t), dim_, fp);
+
+    if (error2 < dim_) {
+        goto read_from_file_error;
+    }
+
+    error2 = fread(perm_.data(), sizeof(int), dim_, fp);
+
+    if (error2 < dim_) {
+        goto read_from_file_error;
+    }
+
+    if (endian_char() != header.version[3]) {
+        for (int i = 0; i < dim_; i++) {
+            sizeA_[i]      = byteswap(sizeA_[i]);
+            perm_[i]       = byteswap(perm_[i]);
+            outerSizeA_[i] = byteswap(outerSizeA_[i]);
+            outerSizeB_[i] = byteswap(outerSizeB_[i]);
+            offsetA_[i]    = byteswap(offsetA_[i]);
+            offsetB_[i]    = byteswap(offsetB_[i]);
+            lda_[i]        = byteswap(lda_[i]);
+            ldb_[i]        = byteswap(ldb_[i]);
+        }
+    }
+
+    masterPlan_ = std::make_shared<Plan>(fp, endian_char() != header.version[3]);
+
+    return;
+
+read_from_file_error:
+    perror("Error reading from file!");
+    throw std::runtime_error("IO error");
 }
 
 template class Transpose<float>;

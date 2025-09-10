@@ -17,7 +17,7 @@ for these arguments.
 Basic Arguments
 ===============
 
-.. option:: --einsums:log-level <level>
+.. option:: --einsums:log:level <level>
 
     Set the level to see in the logger. Lower values provide more information. By default, it is set to 
     3 for the release build and 2 for the debug build.
@@ -32,24 +32,33 @@ Basic Arguments
     .. versionadded:: 1.0.0
     .. versionchanged:: 1.1.0
         This option now also sets the HIP log level if Einsums was built with GPU support.
+    .. versionchanged:: 2.0.0
+        This option no longer sets the HIP log level. Use the :code:`AMD_LOG_LEVEL` environment variable.
+        This option's name has also been changed.
 
-.. option:: --einsums:log-destination [cerr | cout]
+.. option:: --einsums:log:destination [cerr | cout]
 
     Set whether the logger will log to standard output or standard error.
 
     .. versionadded:: 1.0.0
+    .. versionchanged:: 2.0.0
+        This option's name has been changed.
 
-.. option:: --einsums:no-profiler-report
+.. option:: --einsums:profile:no-report
 
     Tells Einsums not to output the profiling information.
 
     .. versionadded:: 1.0.0
+    .. versionchanged:: 2.0.0
+        This option's name has been changed.
 
-.. option:: --einsums:profiler-filename
+.. option:: --einsums:profile:filename
 
     The name of the file for the profiler output.
 
     .. versionadded:: 1.0.0
+    .. versionchanged:: 2.0.0
+        This option's name has been changed.
 
 .. option:: --einsums:buffer-size
 
@@ -70,33 +79,43 @@ Basic Arguments
 Advanced Arguments
 ==================
 
-.. option:: --einsums:no-install-signal-handlers
+.. option:: --einsums:debug:no-install-signal-handlers
 
     Tells Einsums not to install its custom signal handlers.
 
     .. versionadded:: 1.0.0
+    .. versionchanged:: 2.0.0
+        This option's name has been changed.
 
-.. option:: --einsums:no-attach-debugger
+.. option:: --einsums:debug:no-attach-debugger
 
     Tells Einsums not to allow users the ability to attach a debugger when an error is detected.
 
     .. versionadded:: 1.0.0
+    .. versionchanged:: 2.0.0
+        This option's name has been changed.
 
-.. option:: --einsums:no-diagnostics-on-terminate
+.. option:: --einsums:debug:no-diagnostics-on-terminate
 
     When present, Einsums won't print extra diagnostics on termination.
 
     .. versionadded:: 1.0.0
+    .. versionchanged:: 2.0.0
+        This option's name has been changed.
 
-.. option:: --einsums:log-format
+.. option:: --einsums:log:format
 
     A format string used for the logger output.
 
     .. versionadded:: 1.0.0
+    .. versionchanged:: 2.0.0
+        This option's name has been changed.
 
-.. option:: --einsums:profiler-append
+.. option:: --einsums:profiler:no-append
 
     If present, the profiling information will be appended to the profiling file. Otherwise, the profiling
     file will be overwritten.
 
     .. versionadded:: 1.0.0
+    .. versionchanged:: 2.0.0
+        This option's name has been changed.

@@ -13,6 +13,10 @@
 
 #include <tuple>
 
+#ifdef I
+#undef I
+#endif
+
 namespace einsums::tensor_algebra {
 
 namespace detail {
