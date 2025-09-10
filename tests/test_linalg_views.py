@@ -193,12 +193,14 @@ def test_geev(width, dtype, array):
             ):
                 min_pos = j
         if min_pos != i:
-            expected_vals[i], expected_vals[min_pos] = expected_vals[min_pos], expected_vals[i]
+            expected_vals[i], expected_vals[min_pos] = (
+                expected_vals[min_pos],
+                expected_vals[i],
+            )
             for j in range(width):
                 temp = expected_vecs[j, i]
                 expected_vecs[j, i] = expected_vecs[j, min_pos]
                 expected_vecs[j, min_pos] = temp
-
 
     for i in range(width):
         assert got_vals[i] == pytest.approx(expected_vals[i])
@@ -398,6 +400,19 @@ def test_norm(a, b, dtype, array):
         np.linalg.norm(A_view, np.inf)
     )
 
+    assert ein.core.norm(ein.core.INFINITY, A_view) == pytest.approx(
+        np.linalg.norm(A_view, np.inf)
+    )
+    maxabs = 0
+    for i in range(a):
+        for j in range(b):
+            if abs(A_view[i, j]) > maxabs:
+                maxabs = abs(A_view[i, j])
+    assert ein.core.norm(ein.core.MAXABS, A_view) == pytest.approx(maxabs)
+    assert ein.core.norm(ein.core.TWO, A_view) == pytest.approx(
+        np.linalg.norm(A_view, 2)
+    )
+
 
 @pytest.mark.parametrize("a", [10, 100])
 def test_vec_norm(a, dtype, array):
@@ -519,8 +534,8 @@ def test_nullspace(a, b, dtype, array):
 
     for j in range(Null_expected.shape[1]):
         scale = 1.0
-        for i in range(b) :
-            if Null[i, j] != 0.0 :
+        for i in range(b):
+            if Null[i, j] != 0.0:
                 scale = Null_expected[i, j] / Null[i, j]
                 break
         for i in range(b):
@@ -563,8 +578,8 @@ def test_qr(a, b, dtype, array):
 
     A_test = np.array(Q) @ np.array(R)
 
-    for i in range(a) :
-        for j in range(b) :
+    for i in range(a):
+        for j in range(b):
             assert A_test[i, j] == pytest.approx(A_copy[i, j])
 
 
