@@ -1,0 +1,687 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/HPTT/Files.hpp &#8212; Einsums 2.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=047b7709" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../_static/documentation_options.js?v=ecbcfc14"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/HPTT/api/Files';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Sep 10, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Devolpers' Guide
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Transpose.html">Einsums/HPTT/Transpose.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Macros.html">Einsums/HPTT/Macros.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Utils.html">Einsums/HPTT/Utils.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HPTT.html">Einsums/HPTT/HPTT.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/HPTT/Files.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HPTTTypes.html">Einsums/HPTT/HPTTTypes.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plan.html">Einsums/HPTT/Plan.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ComputeNode.html">Einsums/HPTT/ComputeNode.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/HPTT/Files.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-hptt-files-hpp">
+<span id="modules-einsums-einsums-hptt-files-hpp-api"></span><h1>Einsums/HPTT/Files.hpp<a class="headerlink" href="#einsums-hptt-files-hpp" title="Link to this heading">#</a></h1>
+<p>Defined in header Einsums/HPTT/Files.hpp.</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv44hptt">
+<span id="_CPPv34hptt"></span><span id="_CPPv24hptt"></span><span id="hptt"></span><span class="target" id="namespacehptt"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hptt</span></span></span><br /></dt>
+<dd><p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>: Paul Springer (<a class="reference external" href="mailto:springer&#37;&#52;&#48;aices&#46;rwth-aachen&#46;de">springer<span>&#64;</span>aices<span>&#46;</span>rwth-aachen<span>&#46;</span>de</a>) </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-typedefs">Typedefs</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt13NodeConstantsE">
+<span id="_CPPv3N4hptt13NodeConstantsE"></span><span id="_CPPv2N4hptt13NodeConstantsE"></span><span id="hptt::NodeConstants"></span><span class="target" id="namespacehptt_1a2cd91d115a8c5f76a2775157db199808"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N4hptt13NodeConstantsE" title="hptt::NodeConstants"><span class="n"><span class="pre">NodeConstants</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NodeConstants</span></span></span><a class="headerlink" href="#_CPPv4N4hptt13NodeConstantsE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt18TransposeConstantsE">
+<span id="_CPPv3N4hptt18TransposeConstantsE"></span><span id="_CPPv2N4hptt18TransposeConstantsE"></span><span id="hptt::TransposeConstants"></span><span class="target" id="namespacehptt_1ab427b468c2e5f3c43dd8cbbe7f9339c9"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N4hptt18TransposeConstantsE" title="hptt::TransposeConstants"><span class="n"><span class="pre">TransposeConstants</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransposeConstants</span></span></span><a class="headerlink" href="#_CPPv4N4hptt18TransposeConstantsE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt10FileHeaderE">
+<span id="_CPPv3N4hptt10FileHeaderE"></span><span id="_CPPv2N4hptt10FileHeaderE"></span><span id="hptt::FileHeader"></span><span class="target" id="namespacehptt_1a85e5393e217b2e410eb66060116f1a93"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="ComputeNode.html#_CPPv44hptt" title="hptt"><span class="n"><span class="pre">hptt</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N4hptt10FileHeaderE" title="hptt::FileHeader"><span class="n"><span class="pre">FileHeader</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FileHeader</span></span></span><a class="headerlink" href="#_CPPv4N4hptt10FileHeaderE" title="Link to this definition">#</a><br /></dt>
+<dd><p>File header specification for transpose files. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt11endian_charEv">
+<span id="_CPPv3N4hptt11endian_charEv"></span><span id="_CPPv2N4hptt11endian_charEv"></span><span id="hptt::endian_char"></span><span class="target" id="namespacehptt_1a9d3b6f9888191395e27d871743f0f5e7"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">endian_char</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt11endian_charEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt8integralEEN4hptt8byteswapE1T1T">
+<span id="_CPPv3I_NSt8integralEEN4hptt8byteswapE1T"></span><span id="_CPPv2I_NSt8integralEEN4hptt8byteswapE1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">integral</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacehptt_1a5e742ab4148717b0230ad1fd924dedef"></span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN4hptt8byteswapE1T1T" title="hptt::byteswap::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">byteswap</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_NSt8integralEEN4hptt8byteswapE1T1T" title="hptt::byteswap::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I_NSt8integralEEN4hptt8byteswapE1T1T" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IEN4hptt8byteswapI7uint8_tEE7uint8_t7uint8_t">
+<span id="_CPPv3IEN4hptt8byteswapI7uint8_tEE7uint8_t"></span><span id="_CPPv2IEN4hptt8byteswapI7uint8_tEE7uint8_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacehptt_1a70dfc6144552fd1cea7dd478b09e01a1"></span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">byteswap</span></span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4IEN4hptt8byteswapI7uint8_tEE7uint8_t7uint8_t" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IEN4hptt8byteswapI8uint16_tEE8uint16_t8uint16_t">
+<span id="_CPPv3IEN4hptt8byteswapI8uint16_tEE8uint16_t"></span><span id="_CPPv2IEN4hptt8byteswapI8uint16_tEE8uint16_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacehptt_1a2d587c5b789bd67ab57bd5465fe84020"></span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">byteswap</span></span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint16_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4IEN4hptt8byteswapI8uint16_tEE8uint16_t8uint16_t" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IEN4hptt8byteswapI8uint32_tEE8uint32_t8uint32_t">
+<span id="_CPPv3IEN4hptt8byteswapI8uint32_tEE8uint32_t"></span><span id="_CPPv2IEN4hptt8byteswapI8uint32_tEE8uint32_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacehptt_1abdfd957042208c68a7d4d49ef4eff101"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">byteswap</span></span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4IEN4hptt8byteswapI8uint32_tEE8uint32_t8uint32_t" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IEN4hptt8byteswapI7int32_tEE7int32_t7int32_t">
+<span id="_CPPv3IEN4hptt8byteswapI7int32_tEE7int32_t"></span><span id="_CPPv2IEN4hptt8byteswapI7int32_tEE7int32_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacehptt_1a61763b56338b782e02c66344dec9c50f"></span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">byteswap</span></span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4IEN4hptt8byteswapI7int32_tEE7int32_t7int32_t" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9setupFileEPNSt4FILEE">
+<span id="_CPPv3N4hptt9setupFileEPNSt4FILEE"></span><span id="_CPPv2N4hptt9setupFileEPNSt4FILEE"></span><span id="hptt::setupFile__std::FILEP"></span><span class="target" id="namespacehptt_1a142359ecf6fc5638d71fa2cd93255e1a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setupFile</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9setupFileEPNSt4FILEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt15computeChecksumEPNSt4FILEE">
+<span id="_CPPv3N4hptt15computeChecksumEPNSt4FILEE"></span><span id="_CPPv2N4hptt15computeChecksumEPNSt4FILEE"></span><span id="hptt::computeChecksum__std::FILEP"></span><span class="target" id="namespacehptt_1a970ae99474a78493d10bd73bfd3abcea"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">computeChecksum</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt15computeChecksumEPNSt4FILEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt10verifyFileEPNSt4FILEE">
+<span id="_CPPv3N4hptt10verifyFileEPNSt4FILEE"></span><span id="_CPPv2N4hptt10verifyFileEPNSt4FILEE"></span><span id="hptt::verifyFile__std::FILEP"></span><span class="target" id="namespacehptt_1a40e06a6e06dbf78053a1432f370ee2cb"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">verifyFile</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt10verifyFileEPNSt4FILEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp">
+<span class="target" id="structhptt_1_1_file_header"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FileHeader</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Files.hpp&gt;</em></div>
+<p>File header specification for transpose files. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt10FileHeader5magicE">
+<span id="_CPPv3N4hptt10FileHeader5magicE"></span><span id="_CPPv2N4hptt10FileHeader5magicE"></span><span id="hptt::FileHeader::magic__cA"></span><span class="target" id="structhptt_1_1_file_header_1a80cb1513bea60a10df3e64a5c7930bb2"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">magic</span></span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv4N4hptt10FileHeader5magicE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt10FileHeader7versionE">
+<span id="_CPPv3N4hptt10FileHeader7versionE"></span><span id="_CPPv2N4hptt10FileHeader7versionE"></span><span id="hptt::FileHeader::version__cA"></span><span class="target" id="structhptt_1_1_file_header_1a6d5131cc2c3ce834d9c87189006fc9f8"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">version</span></span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv4N4hptt10FileHeader7versionE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt10FileHeader8checksumE">
+<span id="_CPPv3N4hptt10FileHeader8checksumE"></span><span id="_CPPv2N4hptt10FileHeader8checksumE"></span><span id="hptt::FileHeader::checksum__uint32_t"></span><span class="target" id="structhptt_1_1_file_header_1a391753134a82fcd271adc4041974187e"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">checksum</span></span></span><a class="headerlink" href="#_CPPv4N4hptt10FileHeader8checksumE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp">
+<span class="target" id="structhptt_1_1_node_constants"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NodeConstants</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt13NodeConstants5startE">
+<span id="_CPPv3N4hptt13NodeConstants5startE"></span><span id="_CPPv2N4hptt13NodeConstants5startE"></span><span id="hptt::NodeConstants::start__ptrdiff_t"></span><span class="target" id="structhptt_1_1_node_constants_1ae3a62624fc7605e6c5df79b58d28c406"></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">start</span></span></span><a class="headerlink" href="#_CPPv4N4hptt13NodeConstants5startE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt13NodeConstants3endE">
+<span id="_CPPv3N4hptt13NodeConstants3endE"></span><span id="_CPPv2N4hptt13NodeConstants3endE"></span><span id="hptt::NodeConstants::end__ptrdiff_t"></span><span class="target" id="structhptt_1_1_node_constants_1ad2f65721ffad7f8c687d06ddebcf57b4"></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><a class="headerlink" href="#_CPPv4N4hptt13NodeConstants3endE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt13NodeConstants3incE">
+<span id="_CPPv3N4hptt13NodeConstants3incE"></span><span id="_CPPv2N4hptt13NodeConstants3incE"></span><span id="hptt::NodeConstants::inc__ptrdiff_t"></span><span class="target" id="structhptt_1_1_node_constants_1a4e3741d44b8dd9ba15d4b0c6f233811c"></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inc</span></span></span><a class="headerlink" href="#_CPPv4N4hptt13NodeConstants3incE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt13NodeConstants9offDiffABE">
+<span id="_CPPv3N4hptt13NodeConstants9offDiffABE"></span><span id="_CPPv2N4hptt13NodeConstants9offDiffABE"></span><span id="hptt::NodeConstants::offDiffAB__ptrdiff_t"></span><span class="target" id="structhptt_1_1_node_constants_1a20a14fcd3e41a569632e499f424af8ff"></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">offDiffAB</span></span></span><a class="headerlink" href="#_CPPv4N4hptt13NodeConstants9offDiffABE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt13NodeConstants3ldaE">
+<span id="_CPPv3N4hptt13NodeConstants3ldaE"></span><span id="_CPPv2N4hptt13NodeConstants3ldaE"></span><span id="hptt::NodeConstants::lda__s"></span><span class="target" id="structhptt_1_1_node_constants_1a921060c20290c3efde50cc8d3615a85f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lda</span></span></span><a class="headerlink" href="#_CPPv4N4hptt13NodeConstants3ldaE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt13NodeConstants3ldbE">
+<span id="_CPPv3N4hptt13NodeConstants3ldbE"></span><span id="_CPPv2N4hptt13NodeConstants3ldbE"></span><span id="hptt::NodeConstants::ldb__s"></span><span class="target" id="structhptt_1_1_node_constants_1a3a8e2688a6f95e81a667a52eab5deb5d"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ldb</span></span></span><a class="headerlink" href="#_CPPv4N4hptt13NodeConstants3ldbE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt13NodeConstants6indexAE">
+<span id="_CPPv3N4hptt13NodeConstants6indexAE"></span><span id="_CPPv2N4hptt13NodeConstants6indexAE"></span><span id="hptt::NodeConstants::indexA__uint16_t"></span><span class="target" id="structhptt_1_1_node_constants_1a1ad62b097012dda79b3387371517822e"></span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indexA</span></span></span><a class="headerlink" href="#_CPPv4N4hptt13NodeConstants6indexAE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt13NodeConstants6indexBE">
+<span id="_CPPv3N4hptt13NodeConstants6indexBE"></span><span id="_CPPv2N4hptt13NodeConstants6indexBE"></span><span id="hptt::NodeConstants::indexB__uint16_t"></span><span class="target" id="structhptt_1_1_node_constants_1a96d50d5d76f4104380c6a62bb292c61a"></span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indexB</span></span></span><a class="headerlink" href="#_CPPv4N4hptt13NodeConstants6indexBE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt13NodeConstants8has_nextE">
+<span id="_CPPv3N4hptt13NodeConstants8has_nextE"></span><span id="_CPPv2N4hptt13NodeConstants8has_nextE"></span><span id="hptt::NodeConstants::has_next__uint16_t"></span><span class="target" id="structhptt_1_1_node_constants_1a99a3f13ba50d2c9f82b41c636d32821a"></span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_next</span></span></span><a class="headerlink" href="#_CPPv4N4hptt13NodeConstants8has_nextE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt13NodeConstants3padE">
+<span id="_CPPv3N4hptt13NodeConstants3padE"></span><span id="_CPPv2N4hptt13NodeConstants3padE"></span><span id="hptt::NodeConstants::pad__uint16_t"></span><span class="target" id="structhptt_1_1_node_constants_1aebaa2b80563a3696111feeb5ab34bbf1"></span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pad</span></span></span><a class="headerlink" href="#_CPPv4N4hptt13NodeConstants3padE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp">
+<span class="target" id="structhptt_1_1_transpose_constants"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransposeConstants</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt18TransposeConstants3dimE">
+<span id="_CPPv3N4hptt18TransposeConstants3dimE"></span><span id="_CPPv2N4hptt18TransposeConstants3dimE"></span><span id="hptt::TransposeConstants::dim__int32_t"></span><span class="target" id="structhptt_1_1_transpose_constants_1a86ea717f5b03d905207b0da783b92cf5"></span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dim</span></span></span><a class="headerlink" href="#_CPPv4N4hptt18TransposeConstants3dimE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt18TransposeConstants10numThreadsE">
+<span id="_CPPv3N4hptt18TransposeConstants10numThreadsE"></span><span id="_CPPv2N4hptt18TransposeConstants10numThreadsE"></span><span id="hptt::TransposeConstants::numThreads__int32_t"></span><span class="target" id="structhptt_1_1_transpose_constants_1ae83ee8e3acd850949d90331dad6c1b73"></span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">numThreads</span></span></span><a class="headerlink" href="#_CPPv4N4hptt18TransposeConstants10numThreadsE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt18TransposeConstants12innerStrideAE">
+<span id="_CPPv3N4hptt18TransposeConstants12innerStrideAE"></span><span id="_CPPv2N4hptt18TransposeConstants12innerStrideAE"></span><span id="hptt::TransposeConstants::innerStrideA__s"></span><span class="target" id="structhptt_1_1_transpose_constants_1a573da38f422ee84ca29ea4de909ed169"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">innerStrideA</span></span></span><a class="headerlink" href="#_CPPv4N4hptt18TransposeConstants12innerStrideAE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt18TransposeConstants12innerStrideBE">
+<span id="_CPPv3N4hptt18TransposeConstants12innerStrideBE"></span><span id="_CPPv2N4hptt18TransposeConstants12innerStrideBE"></span><span id="hptt::TransposeConstants::innerStrideB__s"></span><span class="target" id="structhptt_1_1_transpose_constants_1acd418a568a58dd8fc877c63f45b9f68f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">innerStrideB</span></span></span><a class="headerlink" href="#_CPPv4N4hptt18TransposeConstants12innerStrideBE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt18TransposeConstants24selectedParallelStrategyE">
+<span id="_CPPv3N4hptt18TransposeConstants24selectedParallelStrategyE"></span><span id="_CPPv2N4hptt18TransposeConstants24selectedParallelStrategyE"></span><span id="hptt::TransposeConstants::selectedParallelStrategy__int32_t"></span><span class="target" id="structhptt_1_1_transpose_constants_1aa0963e599a5183b290b77f61c6cd6414"></span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">selectedParallelStrategy</span></span></span><a class="headerlink" href="#_CPPv4N4hptt18TransposeConstants24selectedParallelStrategyE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt18TransposeConstants19selectedLoopOrderIdE">
+<span id="_CPPv3N4hptt18TransposeConstants19selectedLoopOrderIdE"></span><span id="_CPPv2N4hptt18TransposeConstants19selectedLoopOrderIdE"></span><span id="hptt::TransposeConstants::selectedLoopOrderId__int32_t"></span><span class="target" id="structhptt_1_1_transpose_constants_1aefbd500e6543840bd1aa431d8cf0b197"></span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">selectedLoopOrderId</span></span></span><a class="headerlink" href="#_CPPv4N4hptt18TransposeConstants19selectedLoopOrderIdE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt18TransposeConstants5conjAE">
+<span id="_CPPv3N4hptt18TransposeConstants5conjAE"></span><span id="_CPPv2N4hptt18TransposeConstants5conjAE"></span><span id="hptt::TransposeConstants::conjA__int32_t"></span><span class="target" id="structhptt_1_1_transpose_constants_1a4ed21df8ff0a4eb9c876824f6608d345"></span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">conjA</span></span></span><a class="headerlink" href="#_CPPv4N4hptt18TransposeConstants5conjAE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt18TransposeConstants3padE">
+<span id="_CPPv3N4hptt18TransposeConstants3padE"></span><span id="_CPPv2N4hptt18TransposeConstants3padE"></span><span id="hptt::TransposeConstants::pad__int32_t"></span><span class="target" id="structhptt_1_1_transpose_constants_1ac2ef7b108d8183dece1d7953fefc7bd1"></span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pad</span></span></span><a class="headerlink" href="#_CPPv4N4hptt18TransposeConstants3padE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv44hptt"><code class="docutils literal notranslate"><span class="pre">hptt</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt13NodeConstantsE"><code class="docutils literal notranslate"><span class="pre">NodeConstants</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt18TransposeConstantsE"><code class="docutils literal notranslate"><span class="pre">TransposeConstants</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt10FileHeaderE"><code class="docutils literal notranslate"><span class="pre">FileHeader</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt11endian_charEv"><code class="docutils literal notranslate"><span class="pre">endian_char()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_NSt8integralEEN4hptt8byteswapE1T1T"><code class="docutils literal notranslate"><span class="pre">byteswap()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IEN4hptt8byteswapI7uint8_tEE7uint8_t7uint8_t"><code class="docutils literal notranslate"><span class="pre">byteswap&lt;</span> <span class="pre">uint8_t</span> <span class="pre">&gt;()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IEN4hptt8byteswapI8uint16_tEE8uint16_t8uint16_t"><code class="docutils literal notranslate"><span class="pre">byteswap&lt;</span> <span class="pre">uint16_t</span> <span class="pre">&gt;()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IEN4hptt8byteswapI8uint32_tEE8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">byteswap&lt;</span> <span class="pre">uint32_t</span> <span class="pre">&gt;()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IEN4hptt8byteswapI7int32_tEE7int32_t7int32_t"><code class="docutils literal notranslate"><span class="pre">byteswap&lt;</span> <span class="pre">int32_t</span> <span class="pre">&gt;()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt9setupFileEPNSt4FILEE"><code class="docutils literal notranslate"><span class="pre">setupFile()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt15computeChecksumEPNSt4FILEE"><code class="docutils literal notranslate"><span class="pre">computeChecksum()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt10verifyFileEPNSt4FILEE"><code class="docutils literal notranslate"><span class="pre">verifyFile()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt10FileHeader5magicE"><code class="docutils literal notranslate"><span class="pre">magic</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt10FileHeader7versionE"><code class="docutils literal notranslate"><span class="pre">version</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt10FileHeader8checksumE"><code class="docutils literal notranslate"><span class="pre">checksum</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt13NodeConstants5startE"><code class="docutils literal notranslate"><span class="pre">start</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt13NodeConstants3endE"><code class="docutils literal notranslate"><span class="pre">end</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt13NodeConstants3incE"><code class="docutils literal notranslate"><span class="pre">inc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt13NodeConstants9offDiffABE"><code class="docutils literal notranslate"><span class="pre">offDiffAB</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt13NodeConstants3ldaE"><code class="docutils literal notranslate"><span class="pre">lda</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt13NodeConstants3ldbE"><code class="docutils literal notranslate"><span class="pre">ldb</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt13NodeConstants6indexAE"><code class="docutils literal notranslate"><span class="pre">indexA</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt13NodeConstants6indexBE"><code class="docutils literal notranslate"><span class="pre">indexB</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt13NodeConstants8has_nextE"><code class="docutils literal notranslate"><span class="pre">has_next</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt13NodeConstants3padE"><code class="docutils literal notranslate"><span class="pre">pad</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt18TransposeConstants3dimE"><code class="docutils literal notranslate"><span class="pre">dim</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt18TransposeConstants10numThreadsE"><code class="docutils literal notranslate"><span class="pre">numThreads</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt18TransposeConstants12innerStrideAE"><code class="docutils literal notranslate"><span class="pre">innerStrideA</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt18TransposeConstants12innerStrideBE"><code class="docutils literal notranslate"><span class="pre">innerStrideB</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt18TransposeConstants24selectedParallelStrategyE"><code class="docutils literal notranslate"><span class="pre">selectedParallelStrategy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt18TransposeConstants19selectedLoopOrderIdE"><code class="docutils literal notranslate"><span class="pre">selectedLoopOrderId</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt18TransposeConstants5conjAE"><code class="docutils literal notranslate"><span class="pre">conjA</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt18TransposeConstants3padE"><code class="docutils literal notranslate"><span class="pre">pad</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2025, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

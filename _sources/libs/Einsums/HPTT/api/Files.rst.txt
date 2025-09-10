@@ -5,24 +5,16 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _modules_Einsums_HPTT_api:
+.. _modules_Einsums_Einsums/HPTT/Files.hpp_api:
 
 -------------------------------------------------------------------------------
-Einsums
+Einsums/HPTT/Files.hpp
 -------------------------------------------------------------------------------
+
+Defined in header Einsums/HPTT/Files.hpp.
 
 See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
-
-.. toctree::
-   :maxdepth: 1
-
-   /libs/Einsums/HPTT/api/Transpose.rst
-   /libs/Einsums/HPTT/api/Macros.rst
-   /libs/Einsums/HPTT/api/Utils.rst
-   /libs/Einsums/HPTT/api/HPTT.rst
-   /libs/Einsums/HPTT/api/Files.rst
-   /libs/Einsums/HPTT/api/HPTTTypes.rst
-   /libs/Einsums/HPTT/api/Plan.rst
-   /libs/Einsums/HPTT/api/ComputeNode.rst
+.. autodoxygenfile:: Einsums/HPTT/Files.hpp
+   :project: Einsums

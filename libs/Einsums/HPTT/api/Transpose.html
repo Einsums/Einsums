@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 10, 2025"/>
   </head>
   
   
@@ -283,6 +283,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Macros.html">Einsums/HPTT/Macros.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Utils.html">Einsums/HPTT/Utils.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HPTT.html">Einsums/HPTT/HPTT.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Files.html">Einsums/HPTT/Files.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HPTTTypes.html">Einsums/HPTT/HPTTTypes.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Plan.html">Einsums/HPTT/Plan.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ComputeNode.html">Einsums/HPTT/ComputeNode.hpp</a></li>
@@ -582,6 +583,16 @@
 <span id="_CPPv3N4hptt9Transpose5printEv"></span><span id="_CPPv2N4hptt9Transpose5printEv"></span><span id="hptt::Transpose::print"></span><span class="target" id="classhptt_1_1_transpose_1a702a4caa2b1382902c6bbd00d72a02a3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">print</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N4hptt9Transpose5printEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Print information about this transpose operation. </p>
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt9Transpose11writeToFileEPNSt4FILEE">
+<span id="_CPPv3NK4hptt9Transpose11writeToFileEPNSt4FILEE"></span><span id="_CPPv2NK4hptt9Transpose11writeToFileEPNSt4FILEE"></span><span id="hptt::Transpose::writeToFile__std::FILEPC"></span><span class="target" id="classhptt_1_1_transpose_1ad55d406897996a77dea1fbd3f9790030"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeToFile</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt9Transpose11writeToFileEPNSt4FILEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt9Transpose9TransposeEPNSt4FILEE9floatTypePK9floatType9floatTypeP9floatType">
+<span id="_CPPv3N4hptt9Transpose9TransposeEPNSt4FILEE9floatTypePK9floatType9floatTypeP9floatType"></span><span id="_CPPv2N4hptt9Transpose9TransposeEPNSt4FILEE9floatTypePK9floatType9floatTypeP9floatType"></span><span id="hptt::Transpose::Transpose__std::FILEP.floatType.floatTypeCP.floatType.floatTypeP"></span><span class="target" id="classhptt_1_1_transpose_1a53ea9e2b7de2e3991c752534730012d5"></span><span class="sig-name descname"><span class="n"><span class="pre">Transpose</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I0EN4hptt9TransposeE" title="hptt::Transpose::floatType"><span class="n"><span class="pre">floatType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt9Transpose9TransposeEPNSt4FILEE9floatTypePK9floatType9floatTypeP9floatType" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -920,6 +931,8 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_b_b_bEN4hptt9Transpose14execute_expertEvv"><code class="docutils literal notranslate"><span class="pre">execute_expert()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt9Transpose7executeEv"><code class="docutils literal notranslate"><span class="pre">execute()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt9Transpose5printEv"><code class="docutils literal notranslate"><span class="pre">print()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4hptt9Transpose11writeToFileEPNSt4FILEE"><code class="docutils literal notranslate"><span class="pre">writeToFile()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt9Transpose9TransposeEPNSt4FILEE9floatTypePK9floatType9floatTypeP9floatType"><code class="docutils literal notranslate"><span class="pre">Transpose()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4hptt9Transpose11createPlansERNSt6vectorINSt10shared_ptrI4PlanEEEE"><code class="docutils literal notranslate"><span class="pre">createPlans()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt9Transpose10selectPlanERKNSt6vectorINSt10shared_ptrI4PlanEEEE"><code class="docutils literal notranslate"><span class="pre">selectPlan()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt9Transpose11fuseIndicesEv"><code class="docutils literal notranslate"><span class="pre">fuseIndices()</span></code></a></li>

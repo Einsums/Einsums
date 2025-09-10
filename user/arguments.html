@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 10, 2025"/>
   </head>
   
   
@@ -431,7 +431,7 @@ for these arguments.</p>
 <h2>Basic Arguments<a class="headerlink" href="#basic-arguments" title="Link to this heading">#</a></h2>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-einsums-log-level">
-<span class="sig-name descname"><span class="pre">--einsums:log-level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;level&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-log-level" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--einsums:log:level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;level&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-log-level" title="Link to this definition">#</a></dt>
 <dd><p>Set the level to see in the logger. Lower values provide more information. By default, it is set to
 3 for the release build and 2 for the debug build.</p>
 <ul class="simple">
@@ -448,32 +448,45 @@ for these arguments.</p>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.1.0: </span>This option now also sets the HIP log level if Einsums was built with GPU support.</p>
 </div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option no longer sets the HIP log level. Use the <code class="code docutils literal notranslate"><span class="pre">AMD_LOG_LEVEL</span></code> environment variable.
+This option’s name has also been changed.</p>
+</div>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-einsums-log-destination">
-<span class="sig-name descname"><span class="pre">--einsums:log-destination</span></span><span class="sig-prename descclassname"> <span class="pre">[cerr</span> <span class="pre">|</span> <span class="pre">cout]</span></span><a class="headerlink" href="#cmdoption-einsums-log-destination" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--einsums:log:destination</span></span><span class="sig-prename descclassname"> <span class="pre">[cerr</span> <span class="pre">|</span> <span class="pre">cout]</span></span><a class="headerlink" href="#cmdoption-einsums-log-destination" title="Link to this definition">#</a></dt>
 <dd><p>Set whether the logger will log to standard output or standard error.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
 </div>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-einsums-no-profiler-report">
-<span class="sig-name descname"><span class="pre">--einsums:no-profiler-report</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-no-profiler-report" title="Link to this definition">#</a></dt>
-<dd><p>Tells Einsums not to output the profiling information.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed.</p>
 </div>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-einsums-profiler-filename">
-<span class="sig-name descname"><span class="pre">--einsums:profiler-filename</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profiler-filename" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-no-report">
+<span class="sig-name descname"><span class="pre">--einsums:profile:no-report</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profile-no-report" title="Link to this definition">#</a></dt>
+<dd><p>Tells Einsums not to output the profiling information.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-filename">
+<span class="sig-name descname"><span class="pre">--einsums:profile:filename</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profile-filename" title="Link to this definition">#</a></dt>
 <dd><p>The name of the file for the profiler output.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed.</p>
 </div>
 </dd></dl>
 
@@ -501,48 +514,63 @@ The units are either bytes or words. See <code class="xref cpp cpp-func docutils
 <section id="advanced-arguments">
 <h2>Advanced Arguments<a class="headerlink" href="#advanced-arguments" title="Link to this heading">#</a></h2>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-einsums-no-install-signal-handlers">
-<span class="sig-name descname"><span class="pre">--einsums:no-install-signal-handlers</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-no-install-signal-handlers" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-einsums-debug-no-install-signal-handlers">
+<span class="sig-name descname"><span class="pre">--einsums:debug:no-install-signal-handlers</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-debug-no-install-signal-handlers" title="Link to this definition">#</a></dt>
 <dd><p>Tells Einsums not to install its custom signal handlers.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
 </div>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-einsums-no-attach-debugger">
-<span class="sig-name descname"><span class="pre">--einsums:no-attach-debugger</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-no-attach-debugger" title="Link to this definition">#</a></dt>
-<dd><p>Tells Einsums not to allow users the ability to attach a debugger when an error is detected.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed.</p>
 </div>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-einsums-no-diagnostics-on-terminate">
-<span class="sig-name descname"><span class="pre">--einsums:no-diagnostics-on-terminate</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-no-diagnostics-on-terminate" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-einsums-debug-no-attach-debugger">
+<span class="sig-name descname"><span class="pre">--einsums:debug:no-attach-debugger</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-debug-no-attach-debugger" title="Link to this definition">#</a></dt>
+<dd><p>Tells Einsums not to allow users the ability to attach a debugger when an error is detected.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-debug-no-diagnostics-on-terminate">
+<span class="sig-name descname"><span class="pre">--einsums:debug:no-diagnostics-on-terminate</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-debug-no-diagnostics-on-terminate" title="Link to this definition">#</a></dt>
 <dd><p>When present, Einsums won’t print extra diagnostics on termination.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed.</p>
 </div>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-einsums-log-format">
-<span class="sig-name descname"><span class="pre">--einsums:log-format</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-log-format" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">--einsums:log:format</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-log-format" title="Link to this definition">#</a></dt>
 <dd><p>A format string used for the logger output.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
 </div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed.</p>
+</div>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-einsums-profiler-append">
-<span class="sig-name descname"><span class="pre">--einsums:profiler-append</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profiler-append" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-einsums-profiler-no-append">
+<span class="sig-name descname"><span class="pre">--einsums:profiler:no-append</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profiler-no-append" title="Link to this definition">#</a></dt>
 <dd><p>If present, the profiling information will be appended to the profiling file. Otherwise, the profiling
 file will be overwritten.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed.</p>
 </div>
 </dd></dl>
 

@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 10, 2025"/>
   </head>
   
   
@@ -283,6 +283,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Macros.html">Einsums/HPTT/Macros.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Utils.html">Einsums/HPTT/Utils.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HPTT.html">Einsums/HPTT/HPTT.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Files.html">Einsums/HPTT/Files.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HPTTTypes.html">Einsums/HPTT/HPTTTypes.hpp</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/HPTT/Plan.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ComputeNode.html">Einsums/HPTT/ComputeNode.hpp</a></li>
@@ -385,6 +386,11 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4hptt4Plan4PlanEPNSt4FILEEb">
+<span id="_CPPv3N4hptt4Plan4PlanEPNSt4FILEEb"></span><span id="_CPPv2N4hptt4Plan4PlanEPNSt4FILEEb"></span><span id="hptt::Plan::Plan__std::FILEP.b"></span><span class="target" id="classhptt_1_1_plan_1a9c15cfecf3f0dd55ccee464b1584209e"></span><span class="sig-name descname"><span class="n"><span class="pre">Plan</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">swap_endian</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4hptt4Plan4PlanEPNSt4FILEEb" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N4hptt4PlanD0Ev">
 <span id="_CPPv3N4hptt4PlanD0Ev"></span><span id="_CPPv2N4hptt4PlanD0Ev"></span><span id="hptt::Plan::~Plan"></span><span class="target" id="classhptt_1_1_plan_1a46e3aac42e4e7debc0b4f6b0419ba6c0"></span><span class="sig-name descname"><span class="n"><span class="pre">~Plan</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N4hptt4PlanD0Ev" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
@@ -412,6 +418,11 @@
 <span id="_CPPv3NK4hptt4Plan5printEv"></span><span id="_CPPv2NK4hptt4Plan5printEv"></span><span id="hptt::Plan::printC"></span><span class="target" id="classhptt_1_1_plan_1a4f9abd13186ebf896048ce0b3106f302"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">print</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt4Plan5printEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Print the loop order and number of threads for each level of loop. </p>
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4hptt4Plan11writeToFileEPNSt4FILEE">
+<span id="_CPPv3NK4hptt4Plan11writeToFileEPNSt4FILEE"></span><span id="_CPPv2NK4hptt4Plan11writeToFileEPNSt4FILEE"></span><span id="hptt::Plan::writeToFile__std::FILEPC"></span><span class="target" id="classhptt_1_1_plan_1a1d10758796c12c0f2e53dd8182ab0c56"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeToFile</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fp</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4hptt4Plan11writeToFileEPNSt4FILEE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -481,11 +492,13 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt4PlanE"><code class="docutils literal notranslate"><span class="pre">hptt::Plan</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt4Plan4PlanEv"><code class="docutils literal notranslate"><span class="pre">Plan()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt4Plan4PlanENSt6vectorIiEENSt6vectorIiEE"><code class="docutils literal notranslate"><span class="pre">Plan()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt4Plan4PlanEPNSt4FILEEb"><code class="docutils literal notranslate"><span class="pre">Plan()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt4PlanD0Ev"><code class="docutils literal notranslate"><span class="pre">~Plan()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4hptt4Plan11getRootNodeEi"><code class="docutils literal notranslate"><span class="pre">getRootNode()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt4Plan11getRootNodeEi"><code class="docutils literal notranslate"><span class="pre">getRootNode()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4hptt4Plan11getNumTasksEv"><code class="docutils literal notranslate"><span class="pre">getNumTasks()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4hptt4Plan5printEv"><code class="docutils literal notranslate"><span class="pre">print()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4hptt4Plan11writeToFileEPNSt4FILEE"><code class="docutils literal notranslate"><span class="pre">writeToFile()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt4Plan9numTasks_E"><code class="docutils literal notranslate"><span class="pre">numTasks_</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt4Plan10loopOrder_E"><code class="docutils literal notranslate"><span class="pre">loopOrder_</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4hptt4Plan17numThreadsAtLoop_E"><code class="docutils literal notranslate"><span class="pre">numThreadsAtLoop_</span></code></a></li>

@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 09, 2025"/>
+    <meta name="docbuild:last-update" content="Sep 10, 2025"/>
   </head>
   
   
@@ -330,16 +330,31 @@
 <h1>v2.0.0 Release<a class="headerlink" href="#v2-0-0-release" title="Link to this heading">#</a></h1>
 <section id="what-s-new">
 <h2>What’s New<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><dl class="simple">
-<dt>Tensors are now stored in column-major ordering by default.</dt><dd><ul>
-<li><p>The ordering of the tensors can be selected by the users.</p></li>
+<ul>
+<li><p>Tensor storage order can now be selected by users. The default is still row-major, but this can be changed when you
+configure Einsums.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>As of 2.0.0, we recommend sticking to row major, as the generic tensor contraction routine has not been optimized
+for column major.</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 <li><p>Tensors are now based on a common implementation class to reduce the amount of code that needs to be maintained.</p></li>
 <li><p>The QR decomposition routine now outputs the Q and R matrices, rather than the intermediates needed to compute these.</p></li>
+<li><p>General eigendecomposition can now accept nullpointers for the eigenvectors you don’t want to calculate.</p></li>
+<li><p>General eigendecomposition also only accepts complex tensors as outputs now.</p></li>
+<li><p>HPTT plans can be saved and loaded in files. You no longer have to worry about wasting a bunch of time waiting for
+the better search methods. You can compile the transpose once and then load it in for subsequent program executions.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>To support this, a new <cite>compile_permute</cite> function has been created, as well as overloads for the <cite>permute</cite> function
+that take plans as inputs.</p></li>
+<li><p>The files are raw binary files to hopefully reduce the file size.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Einsums has its own argument parser.</p></li>
 </ul>
 </section>
 <section id="what-s-removed">
@@ -347,6 +362,8 @@
 <ul class="simple">
 <li><p>The <cite>q</cite> function from the C++ and Python interfaces, and the <cite>r</cite> function from the Python interface.</p></li>
 <li><p>CP and Tucker decomposition broke and were not able to be fixed. They have been moved to experimental.</p></li>
+<li><p>h5cpp has been removed in favor of bare HDF5.</p></li>
+<li><p>Einsums has its own argument parser now and no longer relies on cpp-argparse.</p></li>
 </ul>
 </section>
 <section id="bug-fixes">
