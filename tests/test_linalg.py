@@ -335,6 +335,13 @@ def test_norm(a, b, dtype, array):
     )
     assert ein.core.norm(ein.core.ONE, A) == pytest.approx(np.linalg.norm(A, 1))
     assert ein.core.norm(ein.core.INFINITY, A) == pytest.approx(np.linalg.norm(A, np.inf))
+    maxabs = 0
+    for i in range(a) :
+        for j in range(b) :
+            if abs(A[i, j]) > maxabs :
+                maxabs = abs(A[i, j])
+    assert ein.core.norm(ein.core.MAXABS, A) == pytest.approx(maxabs)
+    assert ein.core.norm(ein.core.TWO, A) == pytest.approx(np.linalg.norm(A, 2))
 
 
 @pytest.mark.parametrize("a", [10, 100])
