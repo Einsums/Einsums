@@ -1060,7 +1060,7 @@ enum class Norm : char {
     ONE       = '1', /**< \f$val = norm1(A)\f$, 1-norm of the matrix A (maximum column sum) */
     INFTY     = 'I', /**< \f$val = normI(A)\f$, infinity norm of the matrix A (maximum row sum) */
     FROBENIUS = 'F', /**< \f$val = normF(A)\f$, Frobenius norm of the matrix A (square root of sum of squares). */
-    TWO       = '2'  /**< @f$val = \sqrt{max(\lambda(A^H A))}@f$, norm induced by the 2-norm of a vector. */
+    TWO       = '2'  /**< @f$val = \sqrt{max(\lambda(A^H A))}@f$, norm induced by the 2-norm of a vector. Also called the spectral norm. */
 };
 
 /**
