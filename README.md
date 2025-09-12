@@ -21,7 +21,6 @@ The following libraries are also required, but will be fetched if they can not b
 
 * fmtlib >= 11
 * Catch2 >= 3
-* p-ranav/argparse
 * gabime/spdlog >= 1
 
 On my personal development machine, I use MKL for the above requirements. On GitHub Actions, stock BLAS, LAPACK, and FFTW3 are used.
