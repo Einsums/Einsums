@@ -82,7 +82,7 @@ template <typename T, typename Pivots>
         a[ind];
     }
 int impl_solve(einsums::detail::TensorImpl<T> &A, einsums::detail::TensorImpl<T> &X, Pivots &pivot) {
-    size_t const m = A.dim(0), n = A.dim(1), min_dim = std::min(m, n), nrhs = X.dim(1);
+    size_t const m = A.dim(0), n = A.dim(1), min_dim = std::min(m, n), nrhs = (X.rank() == 1)? 1: X.dim(1);
 
     // LU decomposition.
     int info = impl_lu_decomp(A, pivot);
