@@ -413,7 +413,6 @@ TEST_CASE("RHF No symmetry", "[qchem]") {
     REQUIRE_THAT(e_tot, Catch::Matchers::WithinAbs(-74.991229564312, 1e-6));
 }
 
-#if 0
 TEST_CASE("RHF symmetry") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
@@ -816,4 +815,3 @@ TEST_CASE("RHF symmetry") {
     REQUIRE_THAT(eMP2, Catch::Matchers::WithinAbs(-0.049149636120, 1e-6));
     REQUIRE_THAT(e_tot, Catch::Matchers::WithinAbs(-74.991229564312, 1e-6));
 }
-#endif
