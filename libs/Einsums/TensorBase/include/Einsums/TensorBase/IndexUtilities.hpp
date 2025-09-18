@@ -635,14 +635,10 @@ inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_un
  */
 template <size_t num_unique_inds, typename... MultiIndex>
     requires(std::is_integral_v<std::decay_t<MultiIndex>> && ...)
-inline size_t indices_to_sentinel_negative_check(size_t size, std::array<std::int64_t, num_unique_inds> const &unique_strides,
+inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_unique_inds> const &unique_strides,
                                                  std::array<std::int64_t, num_unique_inds> const &dims, MultiIndex &&...indices) {
     static_assert(sizeof...(MultiIndex) == num_unique_inds);
     auto offset = detail::indices_to_sentinel_negative_check<0>(unique_strides, dims, std::forward<MultiIndex>(indices)...);
-
-    if(offset > size) {
-        EINSUMS_THROW_EXCEPTION(std::length_error, "Index is within the dimensions but outside the linear size of the tensor!");
-    }
 
     return offset;
 }
@@ -660,7 +656,7 @@ template <typename StorageType1, typename StorageType2, typename StorageType3>
         requires !std::is_arithmetic_v<StorageType2>;
         requires !std::is_arithmetic_v<StorageType3>;
     }
-inline size_t indices_to_sentinel_negative_check(size_t size, StorageType1 const &unique_strides, StorageType2 const &unique_dims,
+inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_strides, StorageType2 const &unique_dims,
                                                  StorageType3 const &inds) {
     size_t out = 0;
 
@@ -686,10 +682,6 @@ inline size_t indices_to_sentinel_negative_check(size_t size, StorageType1 const
         }
 
         out += ind * *stride_iter;
-    }
-
-    if(out > size) {
-        EINSUMS_THROW_EXCEPTION(std::length_error, "Index is within the dimensions but outside the linear size of the tensor!");
     }
 
     return out;
@@ -734,7 +726,8 @@ size_t dims_to_strides(std::vector<size_t, Alloc1> const &dims, std::vector<size
  */
 template <typename arr_type1, typename arr_type2, size_t Dims>
     requires(std::is_integral_v<arr_type1> && std::is_integral_v<arr_type2>)
-constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out, bool row_major = row_major_default) {
+constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out,
+                                 bool row_major = row_major_default) {
     size_t stride = 1;
 
     if (row_major) {
@@ -795,7 +788,8 @@ template <typename arr_type2, size_t Dims, typename... TupleDims>
         requires sizeof...(TupleDims) == Dims;
         requires std::is_integral_v<arr_type2>;
     }
-constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out, bool row_major = row_major_default) {
+constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out,
+                                 bool row_major = row_major_default) {
 
     if (row_major) {
         return detail::dims_to_strides<0, true>(dims, out);
