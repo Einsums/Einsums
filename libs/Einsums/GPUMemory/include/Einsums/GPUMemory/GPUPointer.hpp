@@ -145,7 +145,7 @@ struct GPUPointer final {
      * @versionadded{1.1.0}
      */
     template <typename U>
-        requires(!std::is_const_v<U>)
+        requires(std::is_const_v<T> || !std::is_const_v<U>)
     constexpr GPUPointer(GPUPointer<U> const &other) noexcept : gpu_ptr_{other.gpu_ptr_} {}
 
     /**
@@ -156,6 +156,17 @@ struct GPUPointer final {
      * @versionadded{1.1.0}
      */
     constexpr GPUPointer(dev_datatype *other) noexcept : gpu_ptr_{other} {}
+
+    /**
+     * @brief Wrap a device pointer in a smart pointer.
+     *
+     * @param[in] other The pointer to wrap.
+     *
+     * @versionadded{1.1.0}
+     */
+    constexpr GPUPointer(dev_datatype const *other) noexcept
+        requires(std::is_const_v<T>)
+        : gpu_ptr_{other} {}
 
     /**
      * @brief Wrap a null pointer in a smart pointer.
@@ -215,6 +226,7 @@ struct GPUPointer final {
      * @versionadded{1.1.0}
      */
     template <typename U>
+        requires(std::is_const_v<T> || !std::is_const_v<U>)
     constexpr GPUPointer<T> &operator=(GPUPointer<U> const &other) noexcept {
         gpu_ptr_ = other.gpu_ptr_;
 
@@ -233,17 +245,12 @@ struct GPUPointer final {
      * @versionadded{1.1.0}
      */
     template <typename U>
+        requires(std::is_const_v<T> || !std::is_const_v<U>)
     constexpr GPUPointer<T> &operator=(GPUPointer<U> &&other) noexcept {
         gpu_ptr_ = other.gpu_ptr_;
 
         return *this;
     }
-
-    template <typename U>
-    constexpr GPUPointer<T> &operator=(GPUPointer<U const> const &other) = delete;
-
-    template <typename U>
-    constexpr GPUPointer<T> &operator=(GPUPointer<U const> &&other) = delete;
 
     /**
      * @brief Check to see if the pointers in two objects are the same.
@@ -304,6 +311,8 @@ struct GPUPointer final {
      */
     reference operator*() noexcept { return *this->gpu_ptr_; }
 
+    std::add_const_t<reference> operator*() const noexcept { return *this->gpu_ptr_; }
+
     /**
      * @brief Evaluate a method from the stored pointer.
      *
@@ -315,6 +324,8 @@ struct GPUPointer final {
      * @versionadded{1.1.0}
      */
     T *operator->() noexcept { return gpu_ptr_; }
+
+    std::add_const_t<T *> operator->() const noexcept { return gpu_ptr_; }
 
     /**
      * @brief Increment the pointer to the next element.
@@ -445,7 +456,10 @@ struct GPUPointer final {
      *
      * @versionadded{1.1.0}
      */
-    constexpr bool operator<(GPUPointer<T> const &other) const noexcept { return gpu_ptr_ < other.gpu_ptr_; }
+    template <typename U>
+    constexpr bool operator<(GPUPointer<U> const &other) const noexcept {
+        return gpu_ptr_ < other.gpu_ptr_;
+    }
 
     /**
      * @brief Compare two pointers.
@@ -456,7 +470,10 @@ struct GPUPointer final {
      *
      * @versionadded{1.1.0}
      */
-    constexpr bool operator>(GPUPointer<T> const &other) const noexcept { return gpu_ptr_ > other.gpu_ptr_; }
+    template <typename U>
+    constexpr bool operator>(GPUPointer<U> const &other) const noexcept {
+        return gpu_ptr_ > other.gpu_ptr_;
+    }
 
     /**
      * @brief Compare two pointers.
@@ -467,7 +484,10 @@ struct GPUPointer final {
      *
      * @versionadded{1.1.0}
      */
-    constexpr bool operator<=(GPUPointer<T> const &other) const noexcept { return gpu_ptr_ <= other.gpu_ptr_; }
+    template <typename U>
+    constexpr bool operator<=(GPUPointer<U> const &other) const noexcept {
+        return gpu_ptr_ <= other.gpu_ptr_;
+    }
 
     /**
      * @brief Compare two pointers.
@@ -478,7 +498,10 @@ struct GPUPointer final {
      *
      * @versionadded{1.1.0}
      */
-    constexpr bool operator>=(GPUPointer<T> const &other) const noexcept { return gpu_ptr_ >= other.gpu_ptr_; }
+    template <typename U>
+    constexpr bool operator>=(GPUPointer<U> const &other) const noexcept {
+        return gpu_ptr_ >= other.gpu_ptr_;
+    }
 
     /**
      * @brief Get the underlying pointer.
@@ -490,15 +513,6 @@ struct GPUPointer final {
     constexpr operator T *() noexcept { return static_cast<T *>(gpu_ptr_); }
 
     /**
-     * @brief Get the underlying pointer.
-     *
-     * @return The pointer contained by this object.
-     *
-     * @versionadded{1.1.0}
-     */
-    constexpr operator T const *() const noexcept { return static_cast<T const *>(gpu_ptr_); }
-
-    /**
      * @brief Get the underlying pointer, but cast to a different type.
      *
      * @return The pointer contained by this object.
@@ -506,6 +520,7 @@ struct GPUPointer final {
      * @versionadded{1.1.0}
      */
     template <typename U>
+        requires(!std::is_const_v<T> || std::is_const_v<U>)
     constexpr operator U *() noexcept {
         return static_cast<U *>(gpu_ptr_);
     }
@@ -521,6 +536,12 @@ struct GPUPointer final {
      */
     static pointer pointer_to(element_type &other) noexcept { return pointer(&other); }
 
+    static pointer pointer_to(element_type const &other) noexcept
+        requires(std::is_const_v<T>)
+    {
+        return pointer(&other);
+    }
+
   private:
     /**
      * @brief The pointer held by this object.
@@ -532,147 +553,6 @@ struct GPUPointer final {
     template <typename U>
     friend void std::swap(GPUPointer<U> &, GPUPointer<U> &) noexcept;
 };
-
-#ifndef DOXYGEN
-/*
- * Const specialization of the pointers.
- */
-template <typename T>
-struct GPUPointer<T const> final {
-  public:
-    /**
-     * @typedef dev_datatype
-     *
-     * @brief The type of data used by the GPU.
-     *
-     * For real data types, this is the same as on the host. For complex data types, the appropriate
-     * HIP data type needs to be used.
-     */
-    using dev_datatype =
-        std::conditional_t<std::is_void_v<T>,
-                           std::conditional_t<std::is_same_v<std::remove_cvref_t<T>, std::complex<float>>, hipFloatComplex,
-                                              std::conditional_t<std::is_same_v<std::remove_cvref_t<T>, std::complex<double>>,
-                                                                 hipDoubleComplex, std::remove_cvref_t<T>>>,
-                           T>;
-
-    using difference_type   = ptrdiff_t;
-    using element_type      = dev_datatype;
-    using value_type        = T;
-    using pointer           = GPUPointer<T const>;
-    using reference         = T const &;
-    using iterator_category = std::contiguous_iterator_tag;
-
-    template <class U>
-    using rebind = GPUPointer<U const>;
-
-    constexpr GPUPointer() noexcept = default;
-
-    constexpr GPUPointer(GPUPointer<T const> const &) noexcept = default;
-
-    constexpr GPUPointer(GPUPointer<T const> &&) noexcept = default;
-
-    template <typename U>
-    constexpr GPUPointer(GPUPointer<U> const &other) noexcept : gpu_ptr_{other.gpu_ptr_} {}
-
-    constexpr GPUPointer(dev_datatype const *other) noexcept : gpu_ptr_{other} {}
-
-    constexpr GPUPointer(std::nullptr_t) noexcept : gpu_ptr_{nullptr} {}
-
-    constexpr GPUPointer<T const> &operator=(std::nullptr_t) noexcept {
-        gpu_ptr_ = nullptr;
-        return *this;
-    }
-
-    constexpr GPUPointer<T const> &operator=(GPUPointer<T const> const &other) noexcept = default;
-
-    template <typename U>
-    constexpr GPUPointer<T const> &operator=(GPUPointer<U const> const &other) noexcept {
-        gpu_ptr_ = other.gpu_ptr_;
-
-        return *this;
-    }
-
-    template <typename U>
-    constexpr GPUPointer<T const> &operator=(U const *other) noexcept {
-        gpu_ptr_ = other;
-
-        return *this;
-    }
-
-    constexpr bool operator==(GPUPointer<T const> const &other) const noexcept { return gpu_ptr_ == other.gpu_ptr_; }
-
-    template <typename U>
-    constexpr bool operator==(GPUPointer<U> const &other) const noexcept {
-        return gpu_ptr_ == other.gpu_ptr_;
-    }
-
-    constexpr bool operator==(std::nullptr_t) const noexcept { return gpu_ptr_ == nullptr; }
-
-    reference operator*() const noexcept { return *gpu_ptr_; }
-
-    // Only provided for comaptibility. Do not use unless you can get objects onto the gpu.
-    T const *operator->() const noexcept { return gpu_ptr_; }
-
-    constexpr pointer operator++() noexcept {
-        gpu_ptr_++;
-        return gpu_ptr_;
-    }
-
-    constexpr pointer operator++(int) noexcept {
-        gpu_ptr_++;
-        return gpu_ptr_;
-    }
-
-    constexpr pointer operator--() noexcept {
-        gpu_ptr_--;
-        return gpu_ptr_;
-    }
-
-    constexpr pointer operator--(int) noexcept {
-        gpu_ptr_--;
-        return gpu_ptr_;
-    }
-
-    constexpr pointer operator+=(difference_type &&n) noexcept {
-        gpu_ptr_ += n;
-        return gpu_ptr_;
-    }
-
-    constexpr pointer operator-=(difference_type &&n) noexcept {
-        gpu_ptr_ += n;
-        return gpu_ptr_;
-    }
-
-    constexpr pointer operator+(difference_type &&n) const noexcept { return gpu_ptr_ + n; }
-
-    constexpr pointer operator-(difference_type &&n) const noexcept { return gpu_ptr_ - n; }
-
-    constexpr pointer operator-(GPUPointer<T> const &other) const noexcept { return gpu_ptr_ - other.gpu_ptr_; }
-
-    constexpr reference operator[](difference_type &&n) noexcept { return gpu_ptr_ + n; }
-
-    constexpr bool operator<(GPUPointer<T> const &other) const noexcept { return gpu_ptr_ < other.gpu_ptr_; }
-
-    constexpr bool operator>(GPUPointer<T> const &other) const noexcept { return gpu_ptr_ > other.gpu_ptr_; }
-
-    constexpr bool operator<=(GPUPointer<T> const &other) const noexcept { return gpu_ptr_ <= other.gpu_ptr_; }
-
-    constexpr bool operator>=(GPUPointer<T> const &other) const noexcept { return gpu_ptr_ >= other.gpu_ptr_; }
-
-    constexpr operator T const *() const noexcept { return gpu_ptr_; }
-
-    template <typename U>
-    constexpr operator U const *() const noexcept {
-        return gpu_ptr_;
-    }
-
-  private:
-    dev_datatype const *gpu_ptr_{nullptr};
-
-    template <typename U>
-    friend void std::swap(GPUPointer<U const> &, GPUPointer<U const> &) noexcept;
-};
-#endif
 
 } // namespace gpu
 

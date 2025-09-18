@@ -299,6 +299,146 @@ struct TensorImpl final {
         }
     }
 
+    /**
+     * @brief Create a tensor with the given pointer and dimensions.
+     *
+     * This will calculate the strides using the given memory order.
+     *
+     * @param ptr The pointer to wrap.
+     * @param dims The dimensions of the tensor.
+     * @param row_major Whether to compute the strides in row-major or column-major ordering.
+     */
+    template <Container Dims>
+    constexpr TensorImpl(pointer ptr, Dims const &dims, size_t size, bool row_major = row_major_default)
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _row_major{row_major}, _size{size} {
+        _strides.resize(_rank);
+
+        size_t temp_size = 1;
+
+        if (row_major) {
+            for (int i = _rank - 1; i >= 0; i--) {
+                _strides[i] = temp_size;
+                temp_size *= _dims[i];
+            }
+        } else {
+            for (int i = 0; i < _rank; i++) {
+                _strides[i] = temp_size;
+                temp_size *= _dims[i];
+            }
+        }
+    }
+
+    /**
+     * @brief Create a tensor with the given pointer, dimensions, and strides.
+     *
+     * @param ptr The pointer to wrap.
+     * @param dims The dimensions for the tensor.
+     * @param strides The strides for the tensor.
+     */
+    template <Container Dims, Container Strides>
+    constexpr TensorImpl(pointer ptr, Dims const &dims, Strides const &strides, size_t size)
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()), _size{size} {
+        if (_rank < 2) {
+            _row_major = true;
+        } else if (stride(0) > stride(-1)) {
+            _row_major = true;
+        } else if (stride(0) == stride(-1)) {
+            _row_major = (dim(0) > dim(-1));
+        } else {
+            _row_major = false;
+        }
+    }
+
+    /**
+     * @brief Create a tensor with the given pointer and dimensions.
+     *
+     * This will calculate the strides using the given memory order.
+     *
+     * @param ptr The pointer to wrap.
+     * @param dims The dimensions of the tensor.
+     * @param row_major Whether to compute the strides in row-major or column-major ordering.
+     */
+    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, size_t size, bool row_major = row_major_default)
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _row_major{row_major}, _size{size} {
+        _strides.resize(_rank);
+
+        size_t temp_size = 1;
+
+        if (row_major) {
+            for (int i = _rank - 1; i >= 0; i--) {
+                _strides[i] = temp_size;
+                temp_size *= _dims[i];
+            }
+        } else {
+            for (int i = 0; i < _rank; i++) {
+                _strides[i] = temp_size;
+                temp_size *= _dims[i];
+            }
+        }
+    }
+
+    /**
+     * @brief Create a tensor with the given pointer, dimensions, and strides.
+     *
+     * @param ptr The pointer to wrap.
+     * @param dims The dimensions for the tensor.
+     * @param strides The strides for the tensor.
+     */
+    template <Container Strides>
+    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, Strides const &strides, size_t size)
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()), _size{size} {
+        if (_rank < 2) {
+            _row_major = true;
+        } else if (stride(0) > stride(-1)) {
+            _row_major = true;
+        } else if (stride(0) == stride(-1)) {
+            _row_major = (dim(0) > dim(-1));
+        } else {
+            _row_major = false;
+        }
+    }
+
+    /**
+     * @brief Create a tensor with the given pointer, dimensions, and strides.
+     *
+     * @param ptr The pointer to wrap.
+     * @param dims The dimensions for the tensor.
+     * @param strides The strides for the tensor.
+     */
+    template <Container Dims>
+    constexpr TensorImpl(pointer ptr, Dims const &dims, std::initializer_list<size_t> const &strides, size_t size)
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()), _size{size} {
+        if (_rank < 2) {
+            _row_major = true;
+        } else if (stride(0) > stride(-1)) {
+            _row_major = true;
+        } else if (stride(0) == stride(-1)) {
+            _row_major = (dim(0) > dim(-1));
+        } else {
+            _row_major = false;
+        }
+    }
+
+    /**
+     * @brief Create a tensor with the given pointer, dimensions, and strides.
+     *
+     * @param ptr The pointer to wrap.
+     * @param dims The dimensions for the tensor.
+     * @param strides The strides for the tensor.
+     */
+    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, std::initializer_list<size_t> const &strides, size_t size)
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _strides(strides.begin(), strides.end()), _size{size} {
+        if (_rank < 2) {
+            _row_major = true;
+        } else if (stride(0) > stride(-1)) {
+            _row_major = true;
+        } else if (stride(0) == stride(-1)) {
+            _row_major = (dim(0) > dim(-1));
+        } else {
+            _row_major = false;
+        }
+    }
+
     // Getters and setters.
 
     /**
@@ -358,7 +498,7 @@ struct TensorImpl final {
             return nullptr;
         }
 
-        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, BufferVector<size_t>{static_cast<size_t>(index)...});
+        return _ptr + indices_to_sentinel_negative_check(_size, _strides, _dims, BufferVector<size_t>{static_cast<size_t>(index)...});
     }
 
     /**
@@ -381,7 +521,7 @@ struct TensorImpl final {
             return nullptr;
         }
 
-        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, BufferVector<size_t>{static_cast<size_t>(index)...});
+        return _ptr + indices_to_sentinel_negative_check(_size, _strides, _dims, BufferVector<size_t>{static_cast<size_t>(index)...});
     }
 
     /**
@@ -452,7 +592,7 @@ struct TensorImpl final {
             return nullptr;
         }
 
-        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, index);
+        return _ptr + indices_to_sentinel_negative_check(_size, _strides, _dims, index);
     }
 
     /**
@@ -475,7 +615,7 @@ struct TensorImpl final {
             return nullptr;
         }
 
-        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, index);
+        return _ptr + indices_to_sentinel_negative_check(_size, _strides, _dims, index);
     }
 
     /**
@@ -545,7 +685,7 @@ struct TensorImpl final {
             return nullptr;
         }
 
-        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, index);
+        return _ptr + indices_to_sentinel_negative_check(_size, _strides, _dims, index);
     }
 
     /**
@@ -567,7 +707,7 @@ struct TensorImpl final {
             return nullptr;
         }
 
-        return _ptr + indices_to_sentinel_negative_check(_strides, _dims, index);
+        return _ptr + indices_to_sentinel_negative_check(_size, _strides, _dims, index);
     }
 
     /**

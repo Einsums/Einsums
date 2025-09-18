@@ -10,9 +10,12 @@
 #include <Einsums/GPUMemory/GPUPointer.hpp>
 #include <Einsums/GPUMemory/InitModule.hpp>
 #include <Einsums/GPUMemory/ModuleVars.hpp>
+#include <Einsums/GPUStreams/GPUStreams.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/StringUtil/MemoryString.hpp>
 
 #include <complex>
+#include <exception>
 #include <hip/hip_common.h>
 #include <hip/hip_complex.h>
 #include <hip/hip_runtime.h>
@@ -138,6 +141,16 @@ struct GPUAllocator {
     using difference_type = ptrdiff_t;
 
     /**
+     * @property type_size
+     *
+     * The size of the types handled by this allocator. This is needed to handle void pointers, which traditionally
+     * don't have a size, but should be treated as one byte.
+     *
+     * @versionadded{2.0.0}
+     */
+    constexpr static size_t type_size = sizeof(std::conditional_t<std::is_void_v<std::remove_cv_t<T>>, char, T>);
+
+    /**
      * @brief Allocate a number of elements.
      *
      * @param[in] n The number of elements to allocate.
@@ -153,12 +166,12 @@ struct GPUAllocator {
 
         auto &vars = detail::Einsums_GPUMemory_vars::get_singleton();
 
-        if (!vars.try_allocate(n * sizeof(T))) {
+        if (!vars.try_allocate(n * type_size)) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not allocate enough memory on the GPU device. Requested {} bytes.",
-                                    n * sizeof(T));
+                                    n * type_size);
         }
 
-        hip_catch(hipMalloc((void **)&out, n * sizeof(T)));
+        hip_catch(hipMalloc((void **)&out, n * type_size));
 
         return pointer(out);
     }
@@ -174,9 +187,17 @@ struct GPUAllocator {
     void deallocate(pointer p, size_t n) {
         auto &vars = detail::Einsums_GPUMemory_vars::get_singleton();
 
-        vars.deallocate(n * sizeof(T));
+        vars.deallocate(n * type_size);
 
-        hip_catch(hipFree((void *)p));
+        try {
+            hip_catch(hipFree((void *)p));
+        } catch (ErrorInvalidValue &e) {
+            if (device_is_reset) {
+                EINSUMS_LOG_DEBUG("Device has already been reset, and the pointer being deallocated was unrecognized.");
+            } else {
+                std::rethrow_exception(std::current_exception());
+            }
+        }
     }
 
     /**
@@ -191,9 +212,7 @@ struct GPUAllocator {
      *
      * @versionadded{1.1.0}
      */
-    void construct(pointer xp, T const &value) {
-        hip_catch(hipMemcpy((void *)xp, (void const *)&value, sizeof(value), hipMemcpyHostToDevice));
-    }
+    void construct(pointer xp, T const &value) { hip_catch(hipMemcpy((void *)xp, (void const *)&value, type_size, hipMemcpyHostToDevice)); }
 
     /**
      * @brief Does nothing, but is required by the allocator protocol.
@@ -215,46 +234,27 @@ struct GPUAllocator {
      *
      * @versionadded{1.1.0}
      */
-    size_type max_size() const { return detail::Einsums_GPUMemory_vars::get_singleton().get_max_size() / sizeof(T); }
+    size_type max_size() const { return detail::Einsums_GPUMemory_vars::get_singleton().get_max_size() / type_size; }
+
+    /**
+     * @brief Query the number of elements the allocator has free.
+     *
+     * This will return the number of elements that have not yet been allocated.
+     *
+     * @return The number of elements available to allocate.
+     *
+     * @versionadded{1.1.0}
+     */
+    [[nodiscard]] size_type available_size() const {
+
+        try {
+            return detail::Einsums_GPUMemory_vars::get_singleton().get_available() / type_size;
+
+        } catch (std::runtime_error &) {
+            return 0;
+        }
+    }
 };
-
-// template <typename T>
-// struct MappedAllocator {
-//   public:
-//     /*
-//      * @typedef dev_datatype
-//      *
-//      * @brief The data type stored on the device. This is only different if T is complex.
-//      */
-//     using dev_datatype = std::conditional_t<
-//         std::is_same_v<std::remove_cv_t<T>, std::complex<float>>, hipFloatComplex,
-//         std::conditional_t<std::is_same_v<std::remove_cv_t<T>, std::complex<double>>, hipDoubleComplex, std::remove_cv_t<T>>>;
-//     using pointer            = T *;
-//     using const_pointer      = T const *;
-//     using void_pointer       = void *;
-//     using const_void_pointer = void const *;
-//     using value_type         = T;
-//     using size_type          = size_t;
-//     using difference_type    = ptrdiff_t;
-
-//     pointer allocate(size_t n) {
-//         pointer host_ptr = new T[n];
-
-//         hip_catch(hipHostRegister(host_ptr, n * sizeof(T), hipHostRegisterDefault));
-
-//         return host_ptr;
-//     }
-
-//     void deallocate(pointer p, size_t n) {
-//         hip_catch(hipHostUnregister(static_cast<void *>(p)));
-//         delete[] p;
-//     }
-
-//     template <typename... Args>
-//     void construct(pointer xp, Args &&...args) {
-//         *xp = T(std::forward<Args>(args)...);
-//     }
-// };
 
 } // namespace gpu
 

@@ -19,6 +19,8 @@
 namespace einsums {
 namespace gpu {
 
+extern EINSUMS_EXPORT bool device_is_reset;
+
 /**
  * @def get_worker_info
  * @brief Get the worker thread launch parameters on the GPU.
