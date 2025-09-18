@@ -8,6 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Print.hpp>
+#include <Einsums/TypeSupport/InsertionOrderedMap.hpp>
 
 #include <algorithm>
 #include <chrono>
@@ -67,7 +68,7 @@ namespace einsums::profile {
 
 using Clock     = std::chrono::steady_clock;
 using TimePoint = Clock::time_point;
-using ns        = std::chrono::nanoseconds;
+using ns        = std::chrono::nanoseconds; // NOLINT
 
 // ---------------------- Agg node ----------------------
 struct AggNode {
@@ -80,6 +81,10 @@ struct AggNode {
     uint64_t call_count = 0;
     ns       total_exclusive{0};
 
+    // These are needed to compute a running standard deviation. values are in nanoseconds.
+    int64_t total_exclusive_mean{0};
+    int64_t total_exclusive_M2{0};
+
     // min/max for exclusive time
     ns exclusive_min{std::numeric_limits<int64_t>::max()};
     ns exclusive_max{0};
@@ -89,7 +94,7 @@ struct AggNode {
     std::map<std::string, uint64_t> counters_min;
     std::map<std::string, uint64_t> counters_max;
 
-    std::map<std::string, std::unique_ptr<AggNode>> children;
+    InsertionOrderedMap<std::string, std::unique_ptr<AggNode>> children;
 
     AggNode() = default;
     explicit AggNode(std::string n) : name(std::move(n)) {}
@@ -174,6 +179,12 @@ struct EINSUMS_EXPORT Profiler {
 
             cur->call_count += 1;
             cur->total_exclusive += exclusive;
+
+            int64_t const delta = exclusive.count() - cur->total_exclusive_mean;
+            println("function {} delta {} exclusive {} total mean {}", cur->function, delta, exclusive, cur->total_exclusive_mean);
+            cur->total_exclusive_mean += delta / int64_t(cur->call_count);
+            int64_t const delta2 = exclusive.count() - cur->total_exclusive_mean;
+            cur->total_exclusive_M2 += delta * delta2;
 
             if (exclusive < cur->exclusive_min)
                 cur->exclusive_min = exclusive;

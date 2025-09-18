@@ -172,15 +172,16 @@ void Profiler::print(bool detailed, std::ostream &os) {
         fmt::print(os, "\n");
         safe_print(os, fmt::emphasis::bold | fg(fmt::color::white), "Thread: {}  (total exclusive: {:-7.3f} ms)\n", thread,
                    thread_total_ms);
-        fmt::print(os, "{:-^142}\n", "");
+        fmt::print(os, "{:-^157}\n", "");
 
         // column header: % | time(ms) | name | file:line | func
         if (!detailed) {
-            fmt::print(os, " {:>10}  {:<10}  {:<60}  {:<30}  {:<}\n", "time(ms)", "count", "name", "file:line", "function");
-            fmt::print(os, "{:-^142}\n", "");
+            fmt::print(os, " {:>10}  {:^10}  {:^13}  {:<60}  {:<30}  {:<}\n", "total(ms)", "count", "mean(ms)", "name", "file:line",
+                       "function");
+            fmt::print(os, "{:-^157}\n", "");
         } else {
             // show extra cols for min/max/avg and counters
-            fmt::print(os, " {:>10}  {:<60}  {:<30}  {:<20}  {:>8} {:>8} {:>8}\n", "time(ms)", "name", "file:line", "function", "min",
+            fmt::print(os, " {:>10}  {:<60}  {:<30}  {:<20}  {:>8} {:>8} {:>8}\n", "total(ms)", "name", "file:line", "function", "min",
                        "max", "avg");
             fmt::print(os, "{:-^120}\n", "");
         }
@@ -274,6 +275,16 @@ void Profiler::print_node_recursive(std::ostream &os, AggNode const *n, double t
     fmt::print(os, " ");
     fmt::print(os, "{:10.3f}  ", excl_ms);
     fmt::print(os, "{:10}  ", n->call_count);
+
+    auto variance = [](uint64_t n, int64_t M2) -> double { return (n > 1) ? double(M2) / (n - 1) : 0.0; };
+    auto stddev   = [variance](uint64_t n, int64_t M2) -> double { return sqrt(variance(n, M2)); };
+
+    // average and standard deviation
+    std::ostringstream oss;
+    fmt::print(oss, fmt::runtime("{:7.3f}±{:3.3f}"), double(n->total_exclusive_mean) / 1'000'000.0,
+               stddev(n->call_count, n->total_exclusive_M2) / 1'000'000.0);
+    fmt::print(os, "{:13}  ", oss.str());
+
     fmt::print(os, "{:<60}  ", name);
     // clickable file:line (if present)
     // inside print_node_recursive when printing one node:

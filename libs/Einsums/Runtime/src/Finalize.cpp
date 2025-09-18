@@ -41,7 +41,7 @@ int finalize() {
     if (global_config.get_bool("profiler-report")) {
         std::ofstream out(global_config.get_string("profiler-filename"),
                           global_config.get_bool("profiler-append") ? std::ios::ate : std::ios::trunc);
-        profile::Profiler::instance().print(false, out);
+        profile::Profiler::instance().print(global_config.get_bool("profiler-detailed"), out);
     }
 #endif
 
