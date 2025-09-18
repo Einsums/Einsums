@@ -74,6 +74,15 @@ class EINSUMS_EXPORT Einsums_GPUMemory_vars final : public design_pats::Lockable
      */
     size_t get_max_size() const;
 
+    /**
+     * @brief Gets the number of bytes available.
+     *
+     * @return The number of bytes available.
+     *
+     * @versionadded{2.0.0}
+     */
+    size_t get_available() const;
+
   private:
     explicit Einsums_GPUMemory_vars() = default;
 
