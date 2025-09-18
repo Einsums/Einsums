@@ -824,6 +824,14 @@ if(EINSUMS_WITH_DOCUMENTATION)
 endif()
 
 # ##################################################################################################
+# Simple timing tools
+# ##################################################################################################
+einsums_option(EINSUMS_WITH_PROFILING_DEVTOOLS BOOL "Enable profile programs in devtools/profiling" OFF CATEGORY "Advanced" ADVANCED)
+if (EINSUMS_WITH_PROFILING_DEVTOOLS)
+  add_subdirectory(devtools/profiling)
+endif ()
+
+# ##################################################################################################
 # installation instructions
 # ##################################################################################################
 # Install all einsums header that have been configured using various CMake options

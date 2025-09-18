@@ -5,6 +5,7 @@ Checks: >
   -misc-non-private-member-variables-in-classes,
   -misc-include-cleaner,
   modernize-*,
+  -modernize-use-trailing-return-type,
   bugprone-*,
   -bugprone-reserved-identifier,
   -bugprone-easily-swappable-parameters,
