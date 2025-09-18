@@ -5,17 +5,26 @@
 
 #include <Einsums/BlockManager/BlockManager.hpp>
 
-namespace einsums {
-
-EINSUMS_SINGLETON_IMPL(BlockManager);
+#include <memory>
 
 #ifdef EINSUMS_COMPUTE_CODE
-BlockManager::BlockManager() : _block_list(), _alloc(), _gpu_block_list(), _gpu_alloc() {
+#    include <Einsums/GPUMemory/GPUAllocator.hpp>
+#    include <Einsums/GPUMemory/GPUPointer.hpp>
+#endif
+
+namespace einsums {
+
+#ifdef EINSUMS_COMPUTE_CODE
+GPUBlock::GPUBlock(gpu::GPUAllocator<uint8_t> &alloc, size_t bytes) : size{bytes}, gpu_pointer{alloc.allocate(bytes)} {
 }
-#else
-BlockManager::BlockManager() : _block_list(), _alloc() {
+
+GPUBlock::~GPUBlock() {
+    gpu::GPUAllocator<uint8_t> gpu_alloc;
+    gpu_alloc.deallocate(gpu_pointer, size);
 }
 #endif
+
+EINSUMS_SINGLETON_IMPL(BlockManager);
 
 std::weak_ptr<uint8_t[]> BlockManager::request_block(size_t bytes) {
     // Try to clean up stale blocks.
@@ -54,7 +63,7 @@ std::weak_ptr<uint8_t[]> BlockManager::request_block(size_t bytes) {
 }
 
 #ifdef EINSUMS_COMPUTE_CODE
-std::weak_ptr<uint8_t[]> BlockManager::request_gpu_block(size_t bytes) { // Try to clean up stale blocks.
+std::weak_ptr<GPUBlock> BlockManager::request_gpu_block(size_t bytes) { // Try to clean up stale blocks.
     for (int i = 0; i < 10 && _gpu_alloc.available_size() < bytes; i++) {
         bool erased = false;
         {
@@ -85,9 +94,9 @@ std::weak_ptr<uint8_t[]> BlockManager::request_gpu_block(size_t bytes) { // Try 
 
     auto lock = std::lock_guard(*this);
 
-    _gpu_block_list.push_back(std::allocate_shared<uint8_t[]>(_gpu_alloc, bytes));
+    _gpu_block_list.push_back(std::make_shared<GPUBlock>(_gpu_alloc, bytes));
 
-    return std::weak_ptr<uint8_t[]>(_gpu_block_list.back());
+    return std::weak_ptr<GPUBlock>(_gpu_block_list.back());
 }
 #endif
 
