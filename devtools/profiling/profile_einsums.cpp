@@ -20,21 +20,25 @@ using namespace einsums::tensor_algebra;
 using namespace std;
 
 void create_J(Tensor<double, 2> &J, Tensor<double, 2> const &D, Tensor<double, 4> const &TEI) {
-    tensor_algebra::einsum(0.0, Indices{index::mu, index::nu}, &J, 2.0, Indices{index::mu, index::nu, index::lambda, index::sigma}, TEI,
-                           Indices{index::lambda, index::sigma}, D);
+    LabeledSection0();
+    einsum(0.0, Indices{index::mu, index::nu}, &J, 2.0, Indices{index::mu, index::nu, index::lambda, index::sigma}, TEI,
+           Indices{index::lambda, index::sigma}, D);
 }
 
 void create_K(Tensor<double, 2> &K, Tensor<double, 2> const &D, Tensor<double, 4> const &TEI) {
-    tensor_algebra::einsum(0.0, Indices{index::mu, index::nu}, &K, -1.0, Indices{index::mu, index::lambda, index::nu, index::sigma}, TEI,
-                           Indices{index::lambda, index::sigma}, D);
+    LabeledSection0();
+    einsum(0.0, Indices{index::mu, index::nu}, &K, -1.0, Indices{index::mu, index::lambda, index::nu, index::sigma}, TEI,
+           Indices{index::lambda, index::sigma}, D);
 }
 
 void create_K_sorted(Tensor<double, 2> &K, Tensor<double, 2> const &D, Tensor<double, 4> const &TEI, Tensor<double, 4> &sorted_TEI) {
-    tensor_algebra::einsum(0.0, Indices{index::mu, index::nu}, &K, -1.0, Indices{index::mu, index::nu, index::lambda, index::sigma},
-                           sorted_TEI, Indices{index::lambda, index::sigma}, D);
+    LabeledSection0();
+    einsum(0.0, Indices{index::mu, index::nu}, &K, -1.0, Indices{index::mu, index::nu, index::lambda, index::sigma}, sorted_TEI,
+           Indices{index::lambda, index::sigma}, D);
 }
 
 void create_G(Tensor<double, 2> &G, Tensor<double, 2> const &J, Tensor<double, 2> const &K) {
+    LabeledSection0();
     G = J;
     G += K;
 }
@@ -120,7 +124,6 @@ int main(int argc, char **argv) {
             }
 
             for (int norbs = start; norbs <= end; norbs += step) {
-
                 if (!csv) {
                     printf("Running %d trials with %d orbitals.\n", trials, norbs);
                 }
@@ -132,42 +135,50 @@ int main(int argc, char **argv) {
 
                 Tensor<double, 2> J{row_major, "J", norbs, norbs}, K{row_major, "K", norbs, norbs}, G{row_major, "G", norbs, norbs};
 
+                double J_mean;
+                double K_mean;
+                double G_mean;
+                double tot_mean;
+
                 // Calculate the times.
-                for (int i = 0; i < trials; i++) {
-                    clock_t start = clock();
+                {
+                    LabeledSection("Unsorted");
+                    for (int i = 0; i < trials; i++) {
+                        clock_t const start = clock();
 
-                    create_J(J, D, TEI);
+                        create_J(J, D, TEI);
 
-                    clock_t J_time = clock();
+                        clock_t const J_time = clock();
 
-                    create_K(K, D, TEI);
+                        create_K(K, D, TEI);
 
-                    clock_t K_time = clock();
+                        clock_t const K_time = clock();
 
-                    create_G(G, J, K);
+                        create_G(G, J, K);
 
-                    clock_t G_time = clock();
+                        clock_t const G_time = clock();
 
-                    times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
-                    times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
-                    times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
-                    times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
-                }
+                        times_J[i]   = (J_time - start) / (double)CLOCKS_PER_SEC;
+                        times_K[i]   = (K_time - J_time) / (double)CLOCKS_PER_SEC;
+                        times_tot[i] = (G_time - start) / (double)CLOCKS_PER_SEC;
+                        times_G[i]   = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+                    }
 
-                // Print the timing info.
-                double J_mean   = mean(times_J);
-                double K_mean   = mean(times_K);
-                double G_mean   = mean(times_G);
-                double tot_mean = mean(times_tot);
+                    // Print the timing info.
+                    J_mean   = mean(times_J);
+                    K_mean   = mean(times_K);
+                    G_mean   = mean(times_G);
+                    tot_mean = mean(times_tot);
 
-                if (csv) {
-                    printf("%d,%lf,%lf,", norbs, tot_mean, stdev(times_tot, tot_mean));
-                } else {
-                    printf(
-                        "einsums times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: %lg s, "
-                        "stdev %lg s\n",
-                        J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
-                        stdev(times_tot, tot_mean));
+                    if (csv) {
+                        printf("%d,%lf,%lf,", norbs, tot_mean, stdev(times_tot, tot_mean));
+                    } else {
+                        printf("einsums times:\nform J: %lg s, stdev %lg s\nform K: %lg s, stdev %lg s\nform G: %lg s, stdev %lg s\ntotal: "
+                               "%lg s, "
+                               "stdev %lg s\n",
+                               J_mean, stdev(times_J, J_mean), K_mean, stdev(times_K, K_mean), G_mean, stdev(times_G, G_mean), tot_mean,
+                               stdev(times_tot, tot_mean));
+                    }
                 }
 
                 Tensor<double, 4> sorted_TEI{row_major, "sorted TEI", norbs, norbs, norbs, norbs};
@@ -196,30 +207,33 @@ int main(int argc, char **argv) {
                 }
 
                 // Calculate the linear algebra times.
-                for (int i = 0; i < trials; i++) {
-                    clock_t start = clock();
+                {
+                    LabeledSection("Sorted");
+                    for (int i = 0; i < trials; i++) {
+                        clock_t start = clock();
 
-                    create_J(J, D, TEI);
+                        create_J(J, D, TEI);
 
-                    clock_t J_time = clock();
+                        clock_t J_time = clock();
 
-                    tensor_algebra::permute(&sorted_TEI, TEI, plan);
+                        tensor_algebra::permute(&sorted_TEI, TEI, plan);
 
-                    clock_t K_sort_time = clock();
+                        clock_t K_sort_time = clock();
 
-                    create_K_sorted(K, D, TEI, sorted_TEI);
+                        create_K_sorted(K, D, TEI, sorted_TEI);
 
-                    clock_t K_time = clock();
+                        clock_t K_time = clock();
 
-                    create_G(G, J, K);
+                        create_G(G, J, K);
 
-                    clock_t G_time = clock();
+                        clock_t G_time = clock();
 
-                    times_J[i]    = (J_time - start) / (double)CLOCKS_PER_SEC;
-                    times_K[i]    = (K_time - J_time) / (double)CLOCKS_PER_SEC;
-                    times_tot[i]  = (G_time - start) / (double)CLOCKS_PER_SEC;
-                    times_G[i]    = (G_time - K_time) / (double)CLOCKS_PER_SEC;
-                    times_sort[i] = (K_sort_time - J_time) / (double)CLOCKS_PER_SEC;
+                        times_J[i]    = (J_time - start) / (double)CLOCKS_PER_SEC;
+                        times_K[i]    = (K_time - J_time) / (double)CLOCKS_PER_SEC;
+                        times_tot[i]  = (G_time - start) / (double)CLOCKS_PER_SEC;
+                        times_G[i]    = (G_time - K_time) / (double)CLOCKS_PER_SEC;
+                        times_sort[i] = (K_sort_time - J_time) / (double)CLOCKS_PER_SEC;
+                    }
                 }
 
                 // Print the timing info.
