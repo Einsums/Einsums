@@ -23,6 +23,14 @@
 
 namespace einsums::linear_algebra::detail {
 
+template <TiledTensorConcept AType, typename T = RemoveComplexT<typename AType::ValueType>>
+void sum_square(AType const &A, T *scale, T *sumsq) {
+
+    for (auto const &[key, tile] : A.tiles()) {
+        sum_square(tile, scale, sumsq);
+    }
+}
+
 template <TiledTensorConcept AType, TiledTensorConcept BType>
     requires(SameRank<AType, BType>)
 auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
@@ -138,7 +146,7 @@ void gemm(char transA, char transB, U const alpha, AType const &A, BType const &
     int x_size = C->grid_size(0), y_size = C->grid_size(1), z_size = A.grid_size(tA ? 0 : 1);
 
 // For every block in C, do matrix multiplication.
-#pragma omp parallel for collapse(2)
+//#pragma omp parallel for collapse(2)
     for (int i = 0; i < x_size; i++) {
         for (int j = 0; j < y_size; j++) {
             if (C->has_zero_size(i, j)) {

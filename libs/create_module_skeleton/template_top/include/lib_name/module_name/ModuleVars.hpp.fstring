@@ -9,8 +9,7 @@
 
 #include <Einsums/TypeSupport/Singleton.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
-
-#include "InitModule.hpp"
+#include <{lib_name}/{module_name}/InitModule.hpp>
 
 namespace einsums {{
 namespace detail {{

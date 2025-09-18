@@ -86,26 +86,6 @@ void init_logging(RuntimeConfiguration &config) {
     get_einsums_logger().set_level(static_cast<spdlog::level::level_enum>(global_config.get_int("log-level")));
     // global_config.attach(handle_loglevel_changes);
 
-#ifdef EINSUMS_COMPUTE_CODE
-    // Check to see if setenv is available for your system.
-    constexpr bool check_for_posix = requires(char const *envname, char const *envval, int overwrite) {
-        { setenv(envname, envval, overwrite) } -> std::same_as<int>;
-    };
-
-    if constexpr (check_for_posix) {
-        // Get the AMD log level.
-        char const *amd_log_level = getenv("AMD_LOG_LEVEL");
-
-        if (amd_log_level == nullptr) {
-            // Set the AMD log level to the Einsums log level, if it was not set before a call to Einsums.
-            int log_level = global_config.get_int("log-level");
-            if (5 - log_level >= 0 && 5 - log_level <= 5) {
-                int retval = setenv("AMD_LOG_LEVEL", amd_log_level_strs[5 - log_level], 1);
-            }
-        }
-    }
-#endif
-
     EINSUMS_LOG_INFO("logging submodule has been initialized");
     EINSUMS_LOG_INFO("log level: {} (0=TRACE,1=DEBUG,2=INFO,3=WARN,4=ERROR,5=CRITICAL)", global_config.get_int("log-level"));
     // EINSUMS_LOG_DEBUG("test debug");

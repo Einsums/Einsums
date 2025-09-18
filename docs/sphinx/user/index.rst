@@ -127,33 +127,33 @@ different methods.
 The code for the benchmarks can be found in `devtools/profiling` along with a spreadsheet containing the raw timings to update these images as we improve our algorithms.
 The benchmark was performed on a system with the following specifications.
 
-+-------------------------+------------------+------------------------+
-| CPU                     | Model            | Intel Core i7-13700 K  |
-|                         +------------------+------------------------+
-|                         | Clock            | 3.4 GHz                |
-|                         +------------------+------------------------+
-|                         | Cache            | 30 MB                  |
-|                         +------------------+------------------------+
-|                         | Cores/Threads    | 16/24                  |
-+-------------------------+------------------+------------------------+
-| GPU                     | Model            | AMD Radeon RX 7900 XTX |
-|                         +------------------+------------------------+
-|                         | Memory           | 24 GB                  |
-+-------------------------+------------------+------------------------+
-| System                  | Memory           | 32 GB + 62 GB swap     |
-|                         +------------------+------------------------+
-|                         | Storage          | 2 TB NVME SSD storage  |
-|                         +------------------+------------------------+
-|                         | Operating System | Debian Bookworm        |
-|                         +------------------+------------------------+
-|                         | Einsums Version  | 1.1-pre                |
-|                         +------------------+------------------------+
-|                         | C++ Compiler     | Clang 19.7.1           |
-|                         +------------------+------------------------+
-|                         | Fortran Compiler | GCC Fortran 12.2.0     |
-|                         +------------------+------------------------+
-|                         | BLAS Vendor      | Netlib 3.9.0           |
-+-------------------------+------------------+------------------------+
++-------------------------+------------------+-----------------------------+
+| CPU                     | Model            | Intel Core i7-13700 K       |
+|                         +------------------+-----------------------------+
+|                         | Clock            | 3.4 GHz                     |
+|                         +------------------+-----------------------------+
+|                         | Cache            | 30 MB                       |
+|                         +------------------+-----------------------------+
+|                         | Cores/Threads    | 16/24                       |
++-------------------------+------------------+-----------------------------+
+| GPU                     | Model            | AMD Radeon RX 7900 XTX      |
+|                         +------------------+-----------------------------+
+|                         | Memory           | 24 GB                       |
++-------------------------+------------------+-----------------------------+
+| System                  | Memory           | 32 GB + 62 GB swap          |
+|                         +------------------+-----------------------------+
+|                         | Storage          | 2 TB NVME SSD storage       |
+|                         +------------------+-----------------------------+
+|                         | Operating System | Debian Bookworm             |
+|                         +------------------+-----------------------------+
+|                         | Einsums Version  | 2.0.0-beta                  |
+|                         +------------------+-----------------------------+
+|                         | C++ Compiler     | GCC 15.1.0                  |
+|                         +------------------+-----------------------------+
+|                         | Fortran Compiler | GCC Fortran 12.2.0          |
+|                         +------------------+-----------------------------+
+|                         | BLAS Vendor      | OpenBLAS 0.3.29 with OpenMP |
++-------------------------+------------------+-----------------------------+
 
 The tensor contraction was performed in several different ways: for loops in C; for loops in C with OpenMP SIMD vectorization and parallelization;
 CONCURRENT DO loops in FORTRAN; BLAS gemv call for the J matrix and an explicit loop in C++ for the K matrix; BLAS gemv call for the J matrix, then

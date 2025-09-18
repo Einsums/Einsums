@@ -12,6 +12,8 @@
 #include <complex>
 #include <string>
 
+#include "Einsums/Config/CompilerSpecific.hpp"
+
 namespace einsums {
 
 /**
@@ -30,16 +32,18 @@ namespace einsums {
  *
  * @tparam T The datatype of the underlying tensor. Defaults to double.
  * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
- * @param name The name of the new tensor.
- * @param index The arguments needed to construct the tensor.
+ * @param[in] name The name of the new tensor.
+ * @param[in] index The arguments needed to construct the tensor.
  * @return A new tensor filled with incremented data
+ *
+ * @versionadded{1.0.0}
  */
-template <typename T = double, bool RowMajor = false, typename... MultiIndex>
+template <typename T = double, bool RowMajor = einsums::row_major_default, typename... MultiIndex>
 auto create_incremented_tensor(std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
     Stride<sizeof...(MultiIndex)> index_strides;
-    size_t                        elements = dims_to_strides(A.dims(), index_strides);
+    size_t                        elements = dims_to_strides(A.dims(), index_strides, true);
 
     for (size_t item = 0; item < elements; item++) {
         size_t sentinel;

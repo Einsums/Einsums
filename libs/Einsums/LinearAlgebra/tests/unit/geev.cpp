@@ -32,13 +32,13 @@ TEMPLATE_TEST_CASE("geev", "[linear-algebra]", float, double) {
 
     auto a  = create_tensor<T, true>("a", 5, 5);
     auto w  = create_tensor<AddComplexT<T>>("w", 5);
-    auto vl = create_tensor<T, true>("vl", 5, 5);
-    auto vr = create_tensor<T, true>("vr", 5, 5);
+    auto vl = create_tensor<AddComplexT<T>, true>("vl", 5, 5);
+    auto vr = create_tensor<AddComplexT<T>, true>("vr", 5, 5);
 
     auto a2  = create_tensor<T>("a2", 5, 5);
     auto w2  = create_tensor<AddComplexT<T>>("w2", 5);
-    auto vl2 = create_tensor<T>("vl2", 5, 5);
-    auto vr2 = create_tensor<T>("vr2", 5, 5);
+    auto vl2 = create_tensor<AddComplexT<T>>("vl2", 5, 5);
+    auto vr2 = create_tensor<AddComplexT<T>>("vr2", 5, 5);
 
     auto temp = VectorData<T>{-1.01f, 0.86f,  -4.60f, 3.31f, -4.81f, 3.98f,  0.53f, -7.04f, 5.29f,  3.55f,  3.30f, 8.26f, -3.89f,
                               8.20f,  -1.51f, 4.43f,  4.96f, -7.66f, -7.33f, 6.18f, 7.31f,  -6.43f, -6.16f, 2.47f, 5.58f};

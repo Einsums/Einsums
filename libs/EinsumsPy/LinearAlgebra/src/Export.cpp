@@ -30,21 +30,20 @@ using namespace einsums::python::detail;
 
 EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
     py::enum_<einsums::linear_algebra::Norm>(mod, "Norm")
-        .value("MAXABS", einsums::linear_algebra::Norm::MaxAbs)
-        .value("ONE", einsums::linear_algebra::Norm::One)
-        .value("INFINITY", einsums::linear_algebra::Norm::Infinity)
-        .value("FROBENIUS", einsums::linear_algebra::Norm::Frobenius)
+        .value("MAXABS", einsums::linear_algebra::Norm::MAXABS)
+        .value("ONE", einsums::linear_algebra::Norm::ONE)
+        .value("INFINITY", einsums::linear_algebra::Norm::INFTY)
+        .value("FROBENIUS", einsums::linear_algebra::Norm::FROBENIUS)
+        .value("TWO", einsums::linear_algebra::Norm::TWO)
         .export_values();
 
     py::enum_<einsums::linear_algebra::Vectors>(mod, "Vectors")
-        .value("ALL", einsums::linear_algebra::Vectors::All)
-        .value("SOME", einsums::linear_algebra::Vectors::Some)
-        .value("OVERWRITE", einsums::linear_algebra::Vectors::Overwrite)
-        .value("NONE", einsums::linear_algebra::Vectors::None)
+        .value("ALL", einsums::linear_algebra::Vectors::ALL)
+        .value("SOME", einsums::linear_algebra::Vectors::SOME)
+        .value("NONE", einsums::linear_algebra::Vectors::NONE)
         .export_values();
 
-    mod.def("sum_square", &sum_square,
-            "Calculate the sum of the squares of the elements of a vector.")
+    mod.def("sum_square", &sum_square, "Calculate the sum of the squares of the elements of a vector.")
         .def("gemm", &gemm,
              "Matrix multiplication. The first two arguments indicate whether to transpose the input matrices. The third is a scale factor "
              "for the input matrices. The next two arguments are the matrices to multiply. The fifth argument is a scale factor for the "
@@ -74,9 +73,10 @@ EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
         .def("invert", &invert, "Compute the matrix inverse. Internally, this calls getrf then getri.")
         .def("norm", &norm, "Compute the matrix norm.")
         .def("vec_norm", &vec_norm, "Compute the vector norm.")
-        .def("svd", &svd, "Perform singular value decomposition.")
+        .def("svd", &svd, py::arg("A"), py::arg("jobu") = einsums::linear_algebra::Vectors::ALL,
+             py::arg("jobvt") = einsums::linear_algebra::Vectors::ALL, "Perform singular value decomposition.")
         .def("svd_nullspace", &svd_nullspace, "Find the nullspace using singular value decomposition.")
-        .def("svd_dd", &svd_dd, py::arg("A"), py::arg("job") = einsums::linear_algebra::Vectors::All,
+        .def("svd_dd", &svd_dd, py::arg("A"), py::arg("job") = einsums::linear_algebra::Vectors::ALL,
              "Perform singular value decomposition using the divide and conquer algorithm.")
         .def("truncated_svd", &truncated_svd, "Perform singular value decomposition but ignore some number of small singular values.")
         .def("truncated_syev", &truncated_syev,

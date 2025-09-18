@@ -22,7 +22,7 @@ void impl_gemm_noncontiguous(char transA, char transB, CType alpha, einsums::det
     size_t const a_target_stride = (tA == 'n') ? A.stride(0) : A.stride(1), a_link_stride = (tA == 'n') ? A.stride(1) : A.stride(0);
     size_t const b_target_stride = (tB == 'n') ? B.stride(1) : B.stride(0), b_link_stride = (tB == 'n') ? B.stride(0) : B.stride(1);
     size_t const ca_stride = C->stride(0), cb_stride = C->stride(1);
-    size_t const m = C->dim(0), n = C->dim(1), k = (tA == 'n') ? A.dim(0) : A.dim(1);
+    size_t const m = C->dim(0), n = C->dim(1), k = (tA == 'n') ? A.dim(1) : A.dim(0);
 
     AType const *A_data = A.data();
     BType const *B_data = B.data();
@@ -108,12 +108,13 @@ void impl_gemm_contiguous(char transA, char transB, T alpha, einsums::detail::Te
                           einsums::detail::TensorImpl<T> const &B, T beta, einsums::detail::TensorImpl<T> *C) {
     char tA = std::tolower(transA), tB = std::tolower(transB);
     bool colA = A.is_column_major(), colB = B.is_column_major(), colC = C->is_column_major();
+    bool rowA = A.is_row_major(), rowB = B.is_row_major(), rowC = C->is_row_major();
 
     // So many cases...
     if (colA && colB && colC) {
         auto m = C->dim(0), n = C->dim(1), k = (tA == 'n') ? A.dim(1) : A.dim(0);
         blas::gemm(transA, transB, m, n, k, alpha, A.data(), A.get_lda(), B.data(), B.get_lda(), beta, C->data(), C->get_lda());
-    } else if (!colA && colB && colC) {
+    } else if (rowA && colB && colC) {
         if (tA == 'c') {
             if constexpr (IsComplexV<T>) {
                 impl_gemm_noncontiguous(transA, transB, alpha, A, B, beta, C);
@@ -128,7 +129,7 @@ void impl_gemm_contiguous(char transA, char transB, T alpha, einsums::detail::Te
             auto m = C->dim(0), n = C->dim(1), k = A.dim(1);
             blas::gemm('t', transB, m, n, k, alpha, A.data(), A.get_lda(), B.data(), B.get_lda(), beta, C->data(), C->get_lda());
         }
-    } else if (colA && !colB && colC) {
+    } else if (colA && rowB && colC) {
         if (tB == 'c') {
             if constexpr (IsComplexV<T>) {
                 impl_gemm_noncontiguous(transA, transB, alpha, A, B, beta, C);
@@ -143,7 +144,7 @@ void impl_gemm_contiguous(char transA, char transB, T alpha, einsums::detail::Te
             auto m = C->dim(0), n = C->dim(1), k = (tA == 'n') ? A.dim(1) : A.dim(0);
             blas::gemm(transA, 't', m, n, k, alpha, A.data(), A.get_lda(), B.data(), B.get_lda(), beta, C->data(), C->get_lda());
         }
-    } else if (!colA && !colB && colC) {
+    } else if (rowA && rowB && colC) {
         auto m = C->dim(0), n = C->dim(1), k = (tA == 'n') ? A.dim(1) : A.dim(0);
         if (tA == 'c') {
             if constexpr (IsComplexV<T>) {
@@ -172,7 +173,7 @@ void impl_gemm_contiguous(char transA, char transB, T alpha, einsums::detail::Te
         }
 
         blas::gemm(tA, tB, m, n, k, alpha, A.data(), A.get_lda(), B.data(), B.get_lda(), beta, C->data(), C->get_lda());
-    } else if (colA && colB && !colC) {
+    } else if (colA && colB && rowC) {
         auto m = C->dim(0), n = C->dim(1), k = (tA == 'n') ? A.dim(1) : A.dim(0);
         if (tA == 'c') {
             if constexpr (IsComplexV<T>) {
@@ -201,7 +202,7 @@ void impl_gemm_contiguous(char transA, char transB, T alpha, einsums::detail::Te
         }
 
         blas::gemm(tB, tA, n, m, k, alpha, B.data(), B.get_lda(), A.data(), A.get_lda(), beta, C->data(), C->get_lda());
-    } else if (!colA && colB && !colC) {
+    } else if (rowA && colB && rowC) {
         if (tB == 'c') {
             if constexpr (IsComplexV<T>) {
                 impl_gemm_noncontiguous(transA, transB, alpha, A, B, beta, C);
@@ -216,7 +217,7 @@ void impl_gemm_contiguous(char transA, char transB, T alpha, einsums::detail::Te
             auto m = C->dim(0), n = C->dim(1), k = (tA == 'n') ? A.dim(1) : A.dim(0);
             blas::gemm('t', transA, n, m, k, alpha, B.data(), B.get_lda(), A.data(), A.get_lda(), beta, C->data(), C->get_lda());
         }
-    } else if (colA && !colB && !colC) {
+    } else if (colA && rowB && rowC) {
         if (tA == 'c') {
             if constexpr (IsComplexV<T>) {
                 impl_gemm_noncontiguous(transA, transB, alpha, A, B, beta, C);
@@ -254,6 +255,8 @@ void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::Tenso
     }
 }
 
+#ifndef DOXYGEN
+
 extern template EINSUMS_EXPORT void impl_gemm<float, float, float, float, float>(char transA, char transB, float alpha,
                                                                                  einsums::detail::TensorImpl<float> const &A,
                                                                                  einsums::detail::TensorImpl<float> const &B, float beta,
@@ -272,6 +275,7 @@ impl_gemm<std::complex<double>, std::complex<double>, std::complex<double>, std:
     char transA, char transB, std::complex<double> alpha, einsums::detail::TensorImpl<std::complex<double>> const &A,
     einsums::detail::TensorImpl<std::complex<double>> const &B, std::complex<double> beta,
     einsums::detail::TensorImpl<std::complex<double>> *C);
+#endif
 } // namespace detail
 } // namespace linear_algebra
 } // namespace einsums

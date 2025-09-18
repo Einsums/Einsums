@@ -23,9 +23,25 @@ namespace einsums {
  *
  * @tparam To The type to cast to.
  * @tparam From The type to cast from.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename To, typename From>
-struct HipCast {};
+struct HipCast {
+    /**
+     * Perform the cast.
+     *
+     * @param[in] from The value to cast.
+     *
+     * @return The cast value.
+     *
+     * @versionadded{1.0.0}
+     * @versionchangeddesc{2.0.0}
+     *      Added the cast function to the base cast struct for documentation purposes.
+     * @endversion
+     */
+    __host__ __device__ static inline To cast(From from) { return To(from); }
+};
 
 #ifndef DOXYGEN
 template <>

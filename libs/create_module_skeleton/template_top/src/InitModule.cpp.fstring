@@ -37,7 +37,7 @@ int setup_{lib_name}_{module_name}() {{
     return 0;
 }}
 
-EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments(argparse::ArgumentParser &parser) {{
+EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments() {{
     /** @todo Fill in.
      *
      * If you are not using one of the following maps, you may remove references to it.
@@ -49,6 +49,17 @@ EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments(argparse::ArgumentPar
     auto &global_double = global_config.get_double_map()->get_value();
     auto &global_int = global_config.get_int_map()->get_value();
     auto &global_bool = global_config.get_bool_map()->get_value();
+
+    // Here's an example of how to add arguments.
+    // First, we create a category for our options:
+    // static cl::OptionCategory {module_name}Category("Enter category name here");
+
+    // Then we add the option ;
+    // static cl::Opt<std::string> example_option("einsums:dummy-string", {'d'}, "Dummy string option with short version of -d.",
+    //      {module_name}Category, cl::Location(global_string["dummy-string"]), cl::Default("Default value"));
+    
+    // Make sure the options are static so that they don't get destroyed when the function exits.
+    // This template can also be used for double, int64_t, and bool values.
 }}
 
 void initialize_{lib_name}_{module_name}() {{

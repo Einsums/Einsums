@@ -181,6 +181,8 @@ def test_gesv(a, b, dtype, array):
     A = ein.utils.random_definite_tensor_factory("A", a, dtype=dtype, method=array)
     B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
 
+    print(A.strides)
+
     A_copy = A.copy()
     B_copy = B.copy()
 
@@ -333,6 +335,13 @@ def test_norm(a, b, dtype, array):
     )
     assert ein.core.norm(ein.core.ONE, A) == pytest.approx(np.linalg.norm(A, 1))
     assert ein.core.norm(ein.core.INFINITY, A) == pytest.approx(np.linalg.norm(A, np.inf))
+    maxabs = 0
+    for i in range(a) :
+        for j in range(b) :
+            if abs(A[i, j]) > maxabs :
+                maxabs = abs(A[i, j])
+    assert ein.core.norm(ein.core.MAXABS, A) == pytest.approx(maxabs)
+    assert ein.core.norm(ein.core.TWO, A) == pytest.approx(np.linalg.norm(A, 2))
 
 
 @pytest.mark.parametrize("a", [10, 100])
@@ -414,7 +423,12 @@ def test_nullspace(a, b, dtype, array):
     assert Null.shape[1] == Null_expected.shape[1]
 
     for j in range(Null_expected.shape[1]):
-        scale = Null_expected[0, j] / Null[0, j]
+        scale = 1.0
+        for i in range(b) :
+            if Null[i, j] != 0.0 :
+                scale = Null_expected[i, j] / Null[i, j]
+                break
+
         for i in range(b):
             assert Null[i, j] * scale == pytest.approx(Null_expected[i, j])
 

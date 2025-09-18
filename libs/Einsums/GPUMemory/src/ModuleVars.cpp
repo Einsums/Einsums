@@ -3,7 +3,9 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/GPUMemory/ModuleVars.hpp>
+#include <Einsums/Errors/Error.hpp>
 
 namespace einsums::gpu::detail {
 
@@ -15,6 +17,10 @@ void Einsums_GPUMemory_vars::update_max_size(config_mapping_type<std::string> co
     auto const &value     = options.at("gpu-buffer-size");
 
     singleton.max_size_ = string_util::memory_string(value);
+
+    if(singleton.max_size_ == 0) {
+        hip_catch(hipDeviceGetLimit(&singleton.max_size_, hipLimitMallocHeapSize));
+    }
 }
 
 void Einsums_GPUMemory_vars::reset_curr_size() {

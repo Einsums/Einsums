@@ -35,17 +35,17 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(int_t *, int_t *, std::complex<double> *, 
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##geqrf, UC##GEQRF)(&m, &n, a, &lda, tau, &work_query, &lwork, &info);                                                 \
                                                                                                                                            \
+        if (info != 0) {                                                                                                                   \
+            return info;                                                                                                                   \
+        }                                                                                                                                  \
+                                                                                                                                           \
         lwork = (int_t)work_query;                                                                                                         \
         BufferVector<Type> work(lwork);                                                                                                    \
                                                                                                                                            \
         /* Call LAPACK function and adjust info */                                                                                         \
         FC_GLOBAL(lc##geqrf, UC##GEQRF)(&m, &n, a, &lda, tau, work.data(), &lwork, &info);                                                 \
                                                                                                                                            \
-        if (info < 0) {                                                                                                                    \
-            return info;                                                                                                                   \
-        }                                                                                                                                  \
-                                                                                                                                           \
-        return 0;                                                                                                                          \
+        return info;                                                                                                                       \
     } /**/
 
 #define GEQRF_complex(Type, lc, uc)                                                                                                        \
@@ -59,17 +59,17 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(int_t *, int_t *, std::complex<double> *, 
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##geqrf, UC##GEQRF)(&m, &n, a, &lda, tau, &work_query, &lwork, &info);                                                 \
                                                                                                                                            \
+        if (info != 0) {                                                                                                                   \
+            return info;                                                                                                                   \
+        }                                                                                                                                  \
+                                                                                                                                           \
         lwork = (int_t)(work_query.real());                                                                                                \
         BufferVector<Type> work(lwork);                                                                                                    \
                                                                                                                                            \
         /* Call LAPACK function and adjust info */                                                                                         \
         FC_GLOBAL(lc##geqrf, UC##GEQRF)(&m, &n, a, &lda, tau, work.data(), &lwork, &info);                                                 \
                                                                                                                                            \
-        if (info < 0) {                                                                                                                    \
-            return info;                                                                                                                   \
-        }                                                                                                                                  \
-                                                                                                                                           \
-        return 0;                                                                                                                          \
+        return info;                                                                                                                       \
     } /**/
 
 GEQRF(double, d, D);

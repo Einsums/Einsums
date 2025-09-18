@@ -10,7 +10,6 @@
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
-#include <Einsums/Profile.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/LinearAlgebra/Bases/direct_product.hpp>
 #include <Einsums/LinearAlgebra/Bases/dot.hpp>
@@ -20,19 +19,23 @@
 #include <Einsums/LinearAlgebra/Bases/sum_square.hpp>
 #include <Einsums/LinearAlgebra/Bases/syev.hpp>
 #include <Einsums/LinearAlgebra/Bases/triangular.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
 
+#include <optional>
 #include <stdexcept>
 
+#include "Einsums/Config/CompilerSpecific.hpp"
 #include "Einsums/LinearAlgebra/Bases/norm.hpp"
+#include "Einsums/TensorImpl/TensorImplOperations.hpp"
 
 namespace einsums::linear_algebra::detail {
 
 template <typename T>
-void sum_square(einsums::detail::TensorImpl<T> const &a, RemoveComplexT<T> *scale, RemoveComplexT<T> *sumsq) {
+void sum_square(einsums::detail::TensorImpl<T> const &a, RemoveComplexT<T> *scale, RemoveComplexT<T> *sumsq) noexcept {
     impl_sum_square(a, scale, sumsq);
 }
 
@@ -49,6 +52,12 @@ void gemm(char transA, char transB, AlphaType const alpha, einsums::detail::Tens
     if (A.rank() != 2 || B.rank() != 2 || C->rank() != 2) {
         EINSUMS_THROW_EXCEPTION(rank_error, "The inputs to gemm need to be matrices! Got ranks {}, {}, and {}.", A.rank(), B.rank(),
                                 C->rank());
+    }
+
+    if (!std::strchr("cnt", tA) || !std::strchr("cnt", tB)) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                "One of the transpose inputs was invalid. Expected 'c', 'n', or 't', case insensitive. Got {:?} and {:?}.",
+                                transA, transB);
     }
     if (tA == 'n' && tB == 'n') {
         if (A.dim(1) != B.dim(0)) {
@@ -140,6 +149,10 @@ void gemv(char transA, AlphaType alpha, einsums::detail::TensorImpl<AType> const
         EINSUMS_THROW_EXCEPTION(
             rank_error, "The ranks of the tensors passed to gemv are incompatible! Requires a matrix and to vectors. Got {}, {}, and {}.",
             A.rank(), X.rank(), Y->rank());
+    }
+    if (!std::strchr("cntCNT", transA)) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The transpose character is invalid! Expected either 'c', 'n', or 't'. Got {:?}.",
+                                transA);
     }
     if (std::tolower(transA) == 'n') {
         if (A.dim(0) != Y->dim(0)) {
@@ -235,19 +248,27 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
             // Transpose A if necessary.
             if constexpr (ComputeEigenvectors) {
                 if (A->is_row_major()) {
-                    for (size_t i = 0; i < n; i++) {
-                        for (size_t j = i + 1; j < n; j++) {
-                            std::swap(A->subscript(i, j), A->subscript(j, i));
-                        }
-                    }
+                    einsums::detail::impl_conj(*A);
                 }
             }
 
             // Query buffer params.
             AType lwork_complex = AType{(RemoveComplexT<AType>)(2 * n - 1)};
 
-            blas::heev(jobz, 'u', n, A->data(), lda, (RemoveComplexT<AType> *)nullptr, &lwork_complex, -1,
-                       (RemoveComplexT<AType> *)nullptr);
+            blas::int_t info;
+
+            info = blas::heev(jobz, 'u', n, A->data(), lda, (RemoveComplexT<AType> *)nullptr, &lwork_complex, -1,
+                              (RemoveComplexT<AType> *)nullptr);
+
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(
+                    std::invalid_argument,
+                    "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, 5 (lda): {}, 8 (lwork): "
+                    "-1. This is  the query call, so lwork should be -1.",
+                    jobz, n, lda);
+            } else if (info > 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "The query call to syev/heev returned an unknown error!");
+            }
 
             lwork = (blas::int_t)std::real(lwork_complex);
 
@@ -261,18 +282,38 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
 
                 // Make a temporary buffer for the eigenvalues, then copy after.
                 BufferVector<RemoveComplexT<AType>> temp_vals(A->dim(0));
-                blas::heev(jobz, 'u', n, A->data(), lda, temp_vals.data(), work.data(), lwork, rwork.data());
+                info = blas::heev(jobz, 'u', n, A->data(), lda, temp_vals.data(), work.data(), lwork, rwork.data());
+
+                if (info < 0) {
+                    EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                            "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, "
+                                            "5 (lda): {}, 8 (lwork): "
+                                            "{}.",
+                                            jobz, n, lda, lwork);
+                } else if (info > 0) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
+                }
 
                 for (int i = 0; i < W->dim(0); i++) {
                     W->subscript(i) = temp_vals[i];
                 }
             } else {
                 // No temporary buffer needed.
-                blas::heev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
+                info = blas::heev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
+
+                if (info < 0) {
+                    EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                            "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, "
+                                            "5 (lda): {}, 8 (lwork): "
+                                            "{}.",
+                                            jobz, n, lda, lwork);
+                } else if (info > 0) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
+                }
             }
 
             // We might need to transpose the eigenvectors.
-            if (A->is_row_major()) {
+            if (A->is_row_major() && ComputeEigenvectors) {
                 for (size_t i = 0; i < A->dim(0); i++) {
                     for (size_t j = i + 1; j < A->dim(1); j++) {
                         AType temp                  = A->subscript_no_check(i, j);
@@ -302,9 +343,20 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
         // Check if we can use LAPACK.
         if (A->is_gemmable(&lda)) {
             // Query buffer params.
-            AType lwork_real = (AType)(3 * n - 2);
+            AType       lwork_real = (AType)(3 * n - 2);
+            blas::int_t info       = 0;
 
-            blas::syev(jobz, 'u', n, A->data(), lda, (AType *)nullptr, &lwork_real, -1);
+            info = blas::syev(jobz, 'u', n, A->data(), lda, (AType *)nullptr, &lwork_real, -1);
+
+            if (info < 0) {
+                EINSUMS_THROW_EXCEPTION(
+                    std::invalid_argument,
+                    "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, 5 (lda): {}, 8 (lwork): "
+                    "-1. This is  the query call, so lwork should be -1.",
+                    jobz, n, lda);
+            } else if (info > 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "The query call to syev/heev returned an unknown error!");
+            }
 
             lwork = (blas::int_t)lwork_real;
 
@@ -313,13 +365,33 @@ void syev(einsums::detail::TensorImpl<AType> *A, einsums::detail::TensorImpl<Rem
             // Check
             if (W->get_incx() != 1) {
                 BufferVector<RemoveComplexT<AType>> temp(A->dim(0));
-                blas::syev(jobz, 'u', n, A->data(), lda, temp.data(), work.data(), lwork);
+                info = blas::syev(jobz, 'u', n, A->data(), lda, temp.data(), work.data(), lwork);
+
+                if (info < 0) {
+                    EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                            "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, "
+                                            "5 (lda): {}, 8 (lwork): "
+                                            "{}.",
+                                            jobz, n, lda, lwork);
+                } else if (info > 0) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
+                }
 
                 for (int i = 0; i < W->dim(0); i++) {
                     W->subscript(i) = temp[i];
                 }
             } else {
-                blas::syev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+                info = blas::syev(jobz, 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+
+                if (info < 0) {
+                    EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                            "One of the arguments passed to syev/heev was invalid! 1 (jobz): {}, 2 (uplo): 'u', 3 (n): {}, "
+                                            "5 (lda): {}, 8 (lwork): "
+                                            "{}.",
+                                            jobz, n, lda, lwork);
+                } else if (info > 0) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
+                }
             }
 
             // We might need to transpose the eigenvectors.
@@ -364,268 +436,209 @@ void syev(AType *A, WType *W) {
 }
 
 template <typename T>
-void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComplexT<T>> *W, einsums::detail::TensorImpl<T> *lvecs,
-          einsums::detail::TensorImpl<T> *rvecs) {
-    bool A_rank_fail    = A->rank() != 2;
-    bool W_rank_fail    = W->rank() != 1;
-    bool do_jobvl       = (lvecs != nullptr);
-    bool do_jobvr       = (rvecs != nullptr);
-    bool lvec_rank_fail = do_jobvl && lvecs->rank() != 2;
-    bool rvec_rank_fail = do_jobvr && rvecs->rank() != 2;
-    char jobvl = (do_jobvl) ? 'v' : 'n', jobvr = (do_jobvr) ? 'v' : 'n';
-    if (A_rank_fail || W_rank_fail || lvec_rank_fail || rvec_rank_fail) {
-        EINSUMS_THROW_EXCEPTION(rank_error, "The inputs to geev do not have the correct ranks!");
+void geev(einsums::detail::TensorImpl<T> *A, einsums::detail::TensorImpl<AddComplexT<T>> *W,
+          einsums::detail::TensorImpl<AddComplexT<T>> *lvecs, einsums::detail::TensorImpl<AddComplexT<T>> *rvecs) {
+
+    char jobvl = 'n', jobvr = 'n';
+
+#ifdef EINSUMS_DEBUG
+    jobvl = (lvecs == nullptr) ? 'n' : 'v';
+    jobvr = (rvecs == nullptr) ? 'n' : 'v';
+
+    EINSUMS_LOG_TRACE("Performing geev with jobvl = {} and jobvr = {}.", jobvl, jobvr);
+
+    jobvl = 'n';
+    jobvr = 'n';
+#endif
+
+    if (A->rank() != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "The input tensor needs to be a matrix!");
     }
 
-    if (A->dim(0) != A->dim(1) || (do_jobvl && lvecs->dim(0) != lvecs->dim(1)) || (do_jobvr && rvecs->dim(0) != rvecs->dim(1))) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "The input tensor and eigenvector outputs need to be square!");
+    if (W->rank() != 1) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "The eigenvalue output needs to be a vector!");
     }
 
-    if (A->dim(0) != W->dim(0) || (do_jobvl && lvecs->dim(0) != A->dim(0)) || (do_jobvr && rvecs->dim(0) != A->dim(0))) {
-        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The tensors passed to geev need to have compatible dimensions!");
+    if (A->dim(0) != A->dim(1)) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "The input matrix needs to be square!");
     }
 
-    if (A->dim(0) == 0) {
-        return;
+    if (A->dim(0) > W->dim(0)) {
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The eigenvalue does not have enough space to hold the eigenvalues!");
     }
 
-    T              *lvec_data = nullptr, *rvec_data = nullptr, *A_data = A->data();
-    AddComplexT<T> *W_data = W->data();
-    size_t          lda = A->get_lda(), ldvl = 1, ldvr = 1;
+    if (lvecs != nullptr) {
+        jobvl = 'v';
 
-    Tensor<T, 2>              A_temp, lvecs_temp, rvecs_temp;
-    Tensor<AddComplexT<T>, 1> W_temp;
+        if (lvecs->rank() != 2) {
+            EINSUMS_THROW_EXCEPTION(rank_error, "The left eigenvector output needs to be a matrix or nullpointer!");
+        }
 
-    bool A_column_major = A->is_column_major();
+        if (lvecs->dim(0) != lvecs->dim(1)) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "The left eigenvector output needs to be a square matrix!");
+        }
 
-    if (!A->is_gemmable()) {
-        A_temp         = Tensor<T, 2>{"A temp tensor", A->dim(0), A->dim(1)};
-        A_data         = A_temp.data();
-        lda            = A_temp.impl().get_lda();
-        A_column_major = A_temp.impl().is_column_major();
+        if (lvecs->dim(0) != A->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "The left eigenvectors needs to have the same shape as the input matrix.");
+        }
     }
 
-    if (W->get_incx() != 1) {
-        W_temp = Tensor<AddComplexT<T>, 1>{"W temp tensor", W->dim(0)};
-        W_data = W_temp.data();
+    if (rvecs != nullptr) {
+        jobvr = 'v';
+
+        if (rvecs->rank() != 2) {
+            EINSUMS_THROW_EXCEPTION(rank_error, "The right eigenvector output needs to be a matrix or nullpointer!");
+        }
+
+        if (rvecs->dim(0) != rvecs->dim(1)) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "The right eigenvector output needs to be a square matrix!");
+        }
+
+        if (rvecs->dim(0) != A->dim(0)) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "The right eigenvectors needs to have the same shape as the input matrix.");
+        }
     }
 
-    if (do_jobvl) {
-        lvec_data = lvecs->data();
-        ldvl      = lvecs->get_lda();
-        if (!lvecs->is_gemmable()) {
-            lvecs_temp = Tensor<T, 2>{"lvecs temp tensor", lvecs->dim(0), lvecs->dim(1)};
-            lvec_data  = lvecs_temp.data();
+    Tensor<T, 2> A_temp{false, "Temporary", A->dim(0), A->dim(1)};
+    einsums::detail::copy_to(*A, A_temp.impl());
+
+    if constexpr (!IsComplexV<T>) {
+        Tensor<T, 2> lvecs_temp, rvecs_temp;
+        blas::int_t  ldvl = 1, ldvr = 1;
+
+        if (jobvl == 'v') {
+            lvecs_temp = Tensor<T, 2>{false, "Temporary lvecs", A->dim(0), A->dim(1)};
             ldvl       = lvecs_temp.impl().get_lda();
         }
-    }
 
-    if (do_jobvr) {
-        rvec_data = rvecs->data();
-        ldvr      = rvecs->get_lda();
-
-        if (!rvecs->is_gemmable()) {
-            rvecs_temp = Tensor<T, 2>{"rvecs temp tensor", rvecs->dim(0), rvecs->dim(1)};
-            rvec_data  = rvecs_temp.data();
+        if (jobvr == 'v') {
+            rvecs_temp = Tensor<T, 2>{false, "Temporary rvecs", A->dim(0), A->dim(1)};
             ldvr       = rvecs_temp.impl().get_lda();
         }
-    }
-    if (A_column_major) {
 
-        auto info = blas::geev(jobvl, jobvr, A->dim(0), A_data, lda, W_data, lvec_data, ldvl, rvec_data, ldvr);
+        auto status = blas::geev(jobvl, jobvr, A_temp.dim(0), A_temp.data(), A_temp.impl().get_lda(), W->data(), lvecs_temp.data(), ldvl,
+                                 rvecs_temp.data(), ldvr);
 
-        if (info < 0) {
+        if (status < 0) {
             EINSUMS_THROW_EXCEPTION(
                 std::invalid_argument,
-                "The {} argument to geev was invalid! 1 (jobvl): {}, 2 (jobvr): {}, 3 (n): {}, 5 (lda): {}, 8 (ldvl): {}, 10 (ldvr): {}",
-                print::ordinal(-info), jobvl, jobvr, A->dim(0), lda, ldvl, ldvr);
-        } else if (info > 0) {
+                "The {} argument to geev was invalid! 1 (jobvl): {}, 2 (jobvr): {}, 3 (n): {}, 5 (lda): {}, 8 (ldvl): {}, 10 (ldvr): {}.",
+                print::ordinal(-status), jobvl, jobvr, A_temp.dim(0), A_temp.impl().get_lda(), ldvl, ldvr);
+        } else if (status > 0) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
         }
 
-        if (do_jobvl) {
-            if (!lvecs->is_column_major() && lvec_data == lvecs->data()) {
-                for (int i = 0; i < lvecs->dim(0); i++) {
-                    for (int j = i + 1; j < lvecs->dim(1); j++) {
-                        std::swap(lvecs->subscript_no_check(i, j), lvecs->subscript_no_check(j, i));
+        // Process the eigenvectors.
+        if (jobvl == 'v') {
+            for (int i = 0; i < A->dim(0); i++) {
+                if (std::imag(W->subscript_no_check(i)) != T{0.0}) {
+                    for (int j = 0; j < A->dim(0); j++) {
+                        lvecs->subscript_no_check(j, i)     = AddComplexT<T>(lvecs_temp(j, i), lvecs_temp(j, i + 1));
+                        lvecs->subscript_no_check(j, i + 1) = AddComplexT<T>(lvecs_temp(j, i), -lvecs_temp(j, i + 1));
                     }
-                }
-            } else if (lvec_data != lvecs->data()) {
-                for (int i = 0; i < lvecs->dim(0); i++) {
-                    for (int j = i + 1; j < lvecs->dim(1); j++) {
-                        lvecs->subscript_no_check(i, j) = lvecs_temp(j, i);
+                    i++;
+                } else {
+                    for (int j = 0; j < A->dim(0); j++) {
+                        lvecs->subscript_no_check(j, i) = AddComplexT<T>(lvecs_temp(j, i));
                     }
                 }
             }
         }
 
-        if (do_jobvr) {
-            if (!rvecs->is_column_major() && rvec_data == rvecs->data()) {
-                for (int i = 0; i < rvecs->dim(0); i++) {
-                    for (int j = i + 1; j < rvecs->dim(1); j++) {
-                        std::swap(rvecs->subscript_no_check(i, j), rvecs->subscript_no_check(j, i));
+        if (jobvr == 'v') {
+            for (int i = 0; i < A->dim(0); i++) {
+                if (std::imag(W->subscript_no_check(i)) != T{0.0}) {
+                    for (int j = 0; j < A->dim(0); j++) {
+                        rvecs->subscript(j, i)     = AddComplexT<T>(rvecs_temp(j, i), rvecs_temp(j, i + 1));
+                        rvecs->subscript(j, i + 1) = AddComplexT<T>(rvecs_temp(j, i), -rvecs_temp(j, i + 1));
                     }
-                }
-            } else if (rvec_data != rvecs->data()) {
-                for (int i = 0; i < rvecs->dim(0); i++) {
-                    for (int j = i + 1; j < rvecs->dim(1); j++) {
-                        rvecs->subscript_no_check(i, j) = rvecs_temp(j, i);
+                    i++;
+                } else {
+                    for (int j = 0; j < A->dim(0); j++) {
+                        rvecs->subscript(j, i) = AddComplexT<T>(rvecs_temp(j, i));
                     }
                 }
             }
         }
     } else {
-        auto info = blas::geev(jobvr, jobvl, A->dim(0), A_data, lda, W_data, rvec_data, ldvr, lvec_data, ldvl);
+        Tensor<T, 2> *lvecs_temp = nullptr, *rvecs_temp = nullptr;
+        blas::int_t   ldvl = 1, ldvr = 1;
 
-        if(!IsComplexV<T>) {
-            for(size_t i = 0; i < A->dim(0); i++) {
-                W_data[i] = std::conj(W_data[i]);
+        T *lvecs_data = nullptr, *rvecs_data = nullptr;
+
+        if (jobvl == 'v') {
+            if (lvecs->is_gemmable()) {
+                lvecs_data = lvecs->data();
+                ldvl       = lvecs->get_lda();
+            } else {
+                lvecs_temp = new Tensor<T, 2>{false, "Temporary lvecs", A->dim(0), A->dim(1)};
+                ldvl       = lvecs_temp->impl().get_lda();
+                lvecs_data = lvecs_temp->data();
             }
         }
 
-        if (info < 0) {
+        if (jobvr == 'v') {
+            if (rvecs->is_gemmable()) {
+                rvecs_data = rvecs->data();
+                ldvr       = rvecs->get_lda();
+            } else {
+                rvecs_temp = new Tensor<T, 2>{false, "Temporary rvecs", A->dim(0), A->dim(1)};
+                ldvr       = rvecs_temp->impl().get_lda();
+                rvecs_data = rvecs_temp->data();
+            }
+        }
+
+        auto status =
+            blas::geev(jobvl, jobvr, A->dim(0), A_temp.data(), A_temp.impl().get_lda(), W->data(), lvecs_data, ldvl, rvecs_data, ldvr);
+
+        if (status < 0) {
             EINSUMS_THROW_EXCEPTION(
                 std::invalid_argument,
-                "The {} argument to geev was invalid! 1 (jobvr): {}, 2 (jobvl): {}, 3 (n): {}, 5 (lda): {}, 8 (ldvr): {}, 10 (ldvl): {}",
-                print::ordinal(-info), jobvr, jobvl, A->dim(0), lda, ldvr, ldvl);
-        } else if (info > 0) {
+                "The {} argument to geev was invalid! 1 (jobvl): {}, 2 (jobvr): {}, 3 (n): {}, 5 (lda): {}, 8 (ldvl): {}, 10 (ldvr): {}.",
+                print::ordinal(-status), jobvl, jobvr, A_temp.dim(0), A_temp.impl().get_lda(), ldvl, ldvr);
+        } else if (status > 0) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "The eigenvalue algorithm did not converge!");
         }
 
-        if (do_jobvl) {
-            if (!lvecs->is_column_major() && lvec_data == lvecs->data()) {
-                for (int i = 0; i < lvecs->dim(0); i++) {
-                    for (int j = i; j < lvecs->dim(1); j++) {
-                        if constexpr (!IsComplexV<T>) {
-                            std::swap(lvecs->subscript_no_check(i, j), lvecs->subscript_no_check(j, i));
-                        } else {
-                            T temp                          = std::conj(lvecs->subscript_no_check(i, j));
-                            lvecs->subscript_no_check(i, j) = std::conj(lvecs->subscript_no_check(j, i));
-                            lvecs->subscript_no_check(j, i) = temp;
-                        }
-                    }
+        if (lvecs_temp != nullptr) {
+            einsums::detail::copy_to(lvecs_temp->impl(), *lvecs);
+            delete lvecs_temp;
+        } else if (jobvl == 'v' && lvecs->is_row_major()) {
+            for (size_t i = 0; i < A->dim(0); i++) {
+                for (size_t j = 0; j < i; j++) {
+                    std::swap(lvecs->subscript_no_check(i, j), lvecs->subscript_no_check(j, i));
                 }
-
-                if constexpr (!IsComplexV<T>) {
-                    // Go through and conjugate as well.
-                    for (int i = 0; i < lvecs->dim(0); i++) {
-                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
-                            for (int j = 0; j < lvecs->dim(1); j++) {
-                                lvecs->subscript_no_check(j, i + 1) = -lvecs->subscript_no_check(j, i + 1);
-                            }
-                            i++;
-                        }
-                    }
-                }
-            } else if (lvec_data != lvecs->data()) {
-                if constexpr (IsComplexV<T>) {
-                    einsums::detail::impl_conj(lvecs_temp.impl());
-                } else {
-                    for (int i = 0; i < lvecs->dim(0); i++) {
-                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
-                            for (int j = 0; j < lvecs->dim(1); j++) {
-                                lvecs_temp(j, i + 1) = -lvecs_temp(j, i + 1);
-                            }
-                            i++;
-                        }
-                    }
-                }
-                einsums::detail::copy_to(lvecs_temp.impl(), *lvecs);
             }
         }
 
-        if (do_jobvr) {
-            if (!rvecs->is_column_major() && rvec_data == rvecs->data()) {
-                for (int i = 0; i < rvecs->dim(0); i++) {
-                    for (int j = i; j < rvecs->dim(1); j++) {
-                        if constexpr (!IsComplexV<T>) {
-                            std::swap(rvecs->subscript_no_check(i, j), rvecs->subscript_no_check(j, i));
-                        } else {
-                            T temp                          = std::conj(rvecs->subscript_no_check(i, j));
-                            rvecs->subscript_no_check(i, j) = std::conj(rvecs->subscript_no_check(j, i));
-                            rvecs->subscript_no_check(j, i) = temp;
-                        }
-                    }
+        if (rvecs_temp != nullptr) {
+            einsums::detail::copy_to(rvecs_temp->impl(), *rvecs);
+            delete rvecs_temp;
+        } else if (jobvr == 'v' && rvecs->is_row_major()) {
+            for (size_t i = 0; i < A->dim(0); i++) {
+                for (size_t j = 0; j < i; j++) {
+                    std::swap(rvecs->subscript_no_check(i, j), rvecs->subscript_no_check(j, i));
                 }
-
-                if constexpr (!IsComplexV<T>) {
-                    // Go through and conjugate as well.
-                    for (int i = 0; i < rvecs->dim(0); i++) {
-                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
-                            for (int j = 0; j < rvecs->dim(1); j++) {
-                                rvecs->subscript_no_check(j, i + 1) = -rvecs->subscript_no_check(j, i + 1);
-                            }
-                            i++;
-                        }
-                    }
-                }
-            } else if (rvec_data != rvecs->data()) {
-                if constexpr (IsComplexV<T>) {
-                    einsums::detail::impl_conj(rvecs_temp.impl());
-                } else {
-                    for (int i = 0; i < rvecs->dim(0); i++) {
-                        if (std::imag(W->subscript_no_check(i)) != RemoveComplexT<T>{0.0}) {
-                            for (int j = 0; j < rvecs->dim(1); j++) {
-                                rvecs_temp(j, i + 1) = -rvecs_temp(j, i + 1);
-                            }
-                            i++;
-                        }
-                    }
-                }
-                einsums::detail::copy_to(rvecs_temp.impl(), *rvecs);
             }
         }
     }
-
-    // if (do_jobvl) {
-    //     if (lvecs->is_row_major() && lvec_data == lvecs->data()) {
-    //         for (int i = 0; i < lvecs->dim(0); i++) {
-    //             for (int j = i + 1; j < lvecs->dim(1); j++) {
-    //                 std::swap(lvecs->subscript_no_check(i, j), lvecs->subscript_no_check(j, i));
-    //             }
-    //         }
-    //     } else if (lvec_data != lvecs->data()) {
-    //         if (A_column_major) {
-    //             for (int i = 0; i < lvecs->dim(0); i++) {
-    //                 for (int j = i + 1; j < lvecs->dim(1); j++) {
-    //                     lvecs->subscript_no_check(i, j) = lvecs_temp(j, i);
-    //                 }
-    //             }
-    //         } else {
-    //             einsums::detail::copy_to(lvecs_temp.impl(), *lvecs);
-    //         }
-    //     }
-    // }
-    // if (do_jobvr) {
-    //     // == is xor
-    //     if ((rvecs->is_column_major() != A_column_major) && rvec_data == rvecs->data()) {
-    //         for (int i = 0; i < rvecs->dim(0); i++) {
-    //             for (int j = i + 1; j < rvecs->dim(1); j++) {
-    //                 std::swap(rvecs->subscript_no_check(i, j), rvecs->subscript_no_check(j, i));
-    //             }
-    //         }
-    //     } else if (rvec_data != rvecs->data()) {
-    //         if (A_column_major) {
-    //             for (int i = 0; i < rvecs->dim(0); i++) {
-    //                 for (int j = i + 1; j < rvecs->dim(1); j++) {
-    //                     rvecs->subscript_no_check(i, j) = rvecs_temp(j, i);
-    //                 }
-    //             }
-    //         } else {
-    //             einsums::detail::copy_to(rvecs_temp.impl(), *rvecs);
-    //         }
-    //     }
-    // }
 }
 
-template <CoreBasicTensorConcept AType, CoreBasicTensorConcept WType>
+template <CoreBasicTensorConcept AType, VectorConcept WType, typename LVecPtr, typename RVecPtr>
     requires requires {
-        requires std::is_same_v<AddComplexT<typename AType::ValueType>, typename WType::ValueType>;
+        requires InSamePlace<AType, WType>;
         requires RankTensorConcept<AType, 2>;
         requires RankTensorConcept<WType, 1>;
+        requires std::is_same_v<typename WType::ValueType, AddComplexT<typename AType::ValueType>>;
+        requires std::is_null_pointer_v<LVecPtr> ||
+                     (MatrixConcept<std::remove_pointer_t<LVecPtr>> && CoreBasicTensorConcept<std::remove_pointer_t<LVecPtr>> &&
+                      std::is_same_v<typename std::remove_pointer_t<LVecPtr>::ValueType, AddComplexT<typename AType::ValueType>>);
+        requires std::is_null_pointer_v<RVecPtr> ||
+                     (MatrixConcept<std::remove_pointer_t<RVecPtr>> && CoreBasicTensorConcept<std::remove_pointer_t<RVecPtr>> &&
+                      std::is_same_v<typename std::remove_pointer_t<RVecPtr>::ValueType, AddComplexT<typename AType::ValueType>>);
     }
-void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
-    einsums::detail::TensorImpl<typename AType::ValueType> *lvec_ptr = nullptr, *rvec_ptr = nullptr;
+void geev(AType *A, WType *W, LVecPtr lvecs, RVecPtr rvecs) {
+    einsums::detail::TensorImpl<AddComplexT<typename AType::ValueType>> *lvec_ptr = nullptr, *rvec_ptr = nullptr;
 
     if (lvecs != nullptr) {
         lvec_ptr = &lvecs->impl();
@@ -636,107 +649,6 @@ void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
     }
 
     geev(&A->impl(), &W->impl(), lvec_ptr, rvec_ptr);
-}
-
-/**
- * @brief Convert the eigenvectors as created by geev into their actual complex forms.
- *
- * geev outputs eigenvectors in a packed real form. If the corresponding eigenvalue is completely real,
- * then the eigenvector is unchanged. However, if the eigenvalue is part of a complex conjugate pair,
- * then the eigenvector will be split across two columns. The first column is the real part of the eigenvector,
- * and the second is the imaginary part. The true eigenvectors for the two columns will then be the plus or minus
- * combinations of the two columns, giving a pair of conjugate vectors. This function converts these vectors from
- * geev and creates the actual complex eigenvectors. It is only needed for real matrices, since complex matrices
- * don't need to pack the eigenvectors in this way.
- */
-template <NotComplex T>
-void process_geev_vectors(einsums::detail::TensorImpl<AddComplexT<T>> const &evals, einsums::detail::TensorImpl<T> const *lvecs_in,
-                          einsums::detail::TensorImpl<T> const *rvecs_in, einsums::detail::TensorImpl<AddComplexT<T>> *lvecs_out,
-                          einsums::detail::TensorImpl<AddComplexT<T>> *rvecs_out) {
-
-    if (lvecs_in != nullptr && lvecs_out == nullptr) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The left output tensor should not be NULL if the left input is not NULL.");
-    }
-
-    if (rvecs_in != nullptr && rvecs_out == nullptr) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The right output tensor should not be NULL if the right input is not NULL.");
-    }
-    if (lvecs_in == nullptr && rvecs_in == nullptr) {
-        return;
-    }
-
-    if (evals.rank() != 1 || (lvecs_in != nullptr && lvecs_in->rank() != 2) || (rvecs_in != nullptr && rvecs_in->rank() != 2) ||
-        (lvecs_out != nullptr && lvecs_out->rank() != 2) || (rvecs_out != nullptr && rvecs_out->rank() != 2)) {
-        EINSUMS_THROW_EXCEPTION(rank_error, "The ranks of the tensors passed to process_geev_vectors are incorrect! the eigenvalues need "
-                                            "to have rank 1, and the rest need rank 2.");
-    }
-    if (lvecs_in != nullptr && (evals.dim(0) != lvecs_in->dim(0) || evals.dim(0) != lvecs_in->dim(1))) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of left eigenvector input do not match the eigenvalues!");
-    }
-    if (rvecs_in != nullptr && (evals.dim(0) != rvecs_in->dim(0) || evals.dim(0) != rvecs_in->dim(1))) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of right eigenvector input do not match the eigenvalues!");
-    }
-    if (lvecs_out != nullptr && (evals.dim(0) != lvecs_out->dim(0) || evals.dim(0) != lvecs_out->dim(1))) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of left eigenvector output do not match the eigenvalues!");
-    }
-    if (rvecs_out != nullptr && (evals.dim(0) != rvecs_out->dim(0) || evals.dim(0) != rvecs_out->dim(1))) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of right eigenvector output do not match the eigenvalues!");
-    }
-
-    int i = 0;
-    while (i < evals.dim(0)) {
-        if (std::imag(evals.subscript_no_check(i)) != T{0.0}) {
-            if (lvecs_out != nullptr) {
-                for (int j = 0; j < evals.dim(0); j++) {
-                    lvecs_out->subscript_no_check(j, i) =
-                        AddComplexT<T>{lvecs_in->subscript_no_check(j, i), lvecs_in->subscript_no_check(j, i + 1)};
-                    lvecs_out->subscript_no_check(j, i + 1) =
-                        AddComplexT<T>{lvecs_in->subscript_no_check(j, i), -lvecs_in->subscript_no_check(j, i + 1)};
-                }
-            }
-            if (rvecs_out != nullptr) {
-                for (int j = 0; j < evals.dim(0); j++) {
-                    rvecs_out->subscript_no_check(j, i) =
-                        AddComplexT<T>{rvecs_in->subscript_no_check(j, i), rvecs_in->subscript_no_check(j, i + 1)};
-                    rvecs_out->subscript_no_check(j, i + 1) =
-                        AddComplexT<T>{rvecs_in->subscript_no_check(j, i), -rvecs_in->subscript_no_check(j, i + 1)};
-                }
-            }
-            i += 2;
-        } else {
-            if (lvecs_out != nullptr) {
-                for (int j = 0; j < evals.dim(0); j++) {
-                    lvecs_out->subscript_no_check(j, i) = AddComplexT<T>{lvecs_in->subscript_no_check(j, i)};
-                }
-            }
-            if (rvecs_out != nullptr) {
-                for (int j = 0; j < evals.dim(0); j++) {
-                    rvecs_out->subscript_no_check(j, i) = AddComplexT<T>{rvecs_in->subscript_no_check(j, i)};
-                }
-            }
-            i++;
-        }
-    }
-}
-
-template <Complex T>
-void process_geev_vectors(einsums::detail::TensorImpl<AddComplexT<T>> const &evals, einsums::detail::TensorImpl<T> const &lvecs_in,
-                          einsums::detail::TensorImpl<T> const &rvecs_in, einsums::detail::TensorImpl<AddComplexT<T>> *lvecs_out,
-                          einsums::detail::TensorImpl<AddComplexT<T>> *rvecs_out) {
-    static_assert(false, "process_geev_vectors: Complex inputs to geev don't need to be processed. They already output their full "
-                         "eigenvectors. Only real inputs need to be processed.");
-}
-
-template <CoreBasicTensorConcept AType, CoreBasicTensorConcept WType, CoreBasicTensorConcept OutType>
-    requires requires {
-        requires std::is_same_v<AddComplexT<typename AType::ValueType>, typename WType::ValueType>;
-        requires std::is_same_v<AddComplexT<typename AType::ValueType>, typename OutType::ValueType>;
-        requires RankTensorConcept<AType, 2>;
-        requires RankTensorConcept<OutType, 2>;
-        requires RankTensorConcept<WType, 1>;
-    }
-void process_geev_vectors(WType const &evals, AType const *lvecs_in, AType const *rvecs_in, OutType *lvecs_out, OutType *rvecs_out) {
-    process_geev_vectors(evals.impl(), &lvecs_in->impl(), &rvecs_in->impl(), &lvecs_out->impl(), &rvecs_out->impl());
 }
 
 template <bool ComputeEigenvectors = true, CoreBasicTensorConcept AType, CoreBasicTensorConcept WType>
@@ -967,15 +879,20 @@ template <bool TransA, bool TransB, CoreBasicTensorConcept AType, CoreBasicTenso
         requires MatrixConcept<AType>;
     }
 void symm_gemm(AType const &A, BType const &B, CType *C) {
-    int temp_rows, temp_cols;
+    int  temp_rows, temp_cols;
+    bool shape_test = true;
     if constexpr (TransA && TransB) {
-        EINSUMS_ASSERT(B.dim(0) == A.dim(0) && A.dim(1) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
+        shape_test = B.dim(0) == A.dim(0) && A.dim(1) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1);
     } else if constexpr (TransA && !TransB) {
-        EINSUMS_ASSERT(B.dim(1) == A.dim(0) && A.dim(1) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
+        shape_test = B.dim(1) == A.dim(0) && A.dim(1) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0);
     } else if constexpr (!TransA && TransB) {
-        EINSUMS_ASSERT(B.dim(0) == A.dim(1) && A.dim(0) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
+        shape_test = B.dim(0) == A.dim(1) && A.dim(0) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1);
     } else {
-        EINSUMS_ASSERT(B.dim(1) == A.dim(1) && A.dim(0) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
+        shape_test = B.dim(1) == A.dim(1) && A.dim(0) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0);
+    }
+
+    if (!shape_test) {
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The shapes of the input and output tensors are incompatible!");
     }
 
     if constexpr (TransA) {
@@ -1074,8 +991,17 @@ auto pow(AType const &a, typename AType::ValueType alpha,
     return result;
 }
 
-template <typename T, ContiguousContainerOf<blas::int_t> Pivots>
-auto getrf(einsums::detail::TensorImpl<T> *A, Pivots *pivot) -> int {
+template <typename T, typename Pivots, bool is_resizable = requires(Pivots c, typename Pivots::size_type size) { c.resize(size); }>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+    }
+[[nodiscard]] auto getrf(einsums::detail::TensorImpl<T> *A, Pivots *pivot) -> int {
     LabeledSection0();
 
     if (A->rank() != 2) {
@@ -1086,9 +1012,15 @@ auto getrf(einsums::detail::TensorImpl<T> *A, Pivots *pivot) -> int {
         return 0;
     }
 
-    if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
-        // println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
-        pivot->resize(std::min(A->dim(0), A->dim(1)));
+    if constexpr (is_resizable) {
+        if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
+            // println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
+            pivot->resize(std::min(A->dim(0), A->dim(1)));
+        }
+    } else {
+        if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
+            EINSUMS_THROW_EXCEPTION(std::length_error, "The length of the pivot array is too small and can not be resized!");
+        }
     }
 
     int result;
@@ -1100,7 +1032,11 @@ auto getrf(einsums::detail::TensorImpl<T> *A, Pivots *pivot) -> int {
     }
 
     if (result < 0) {
-        EINSUMS_LOG_WARN("getrf: argument {} has an invalid value", -result);
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "getrf: {} argument has an invalid value!, m: {}, n: {}, lda: {}.",
+                                print::ordinal(-result), A->dim(0), A->dim(1), A->get_lda());
+    } else if (result > 0) {
+        EINSUMS_LOG_INFO("The matrix passed into the LU decomposition routine was singular. The decomposition was completed, but the "
+                         "result should not be used to solve equations or to find the inverse of the matrix.");
     }
 
     return result;
@@ -1121,9 +1057,18 @@ auto getrf(einsums::detail::TensorImpl<T> *A, Pivots *pivot) -> int {
  * @param pivot
  * @return
  */
-template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
-    requires(CoreTensorConcept<TensorType>)
-auto getrf(TensorType *A, Pivots *pivot) -> int {
+template <MatrixConcept TensorType, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+        requires(CoreTensorConcept<TensorType>);
+    }
+[[nodiscard]] auto getrf(TensorType *A, Pivots *pivot) -> int {
     return getrf(&A->impl(), pivot);
 }
 
@@ -1138,8 +1083,17 @@ auto getrf(TensorType *A, Pivots *pivot) -> int {
  * @param pivot The pivot vector from getrf
  * @return int If 0, the execution is successful.
  */
-template <typename T, ContiguousContainerOf<blas::int_t> Pivots>
-auto getri(einsums::detail::TensorImpl<T> *A, Pivots const &pivot) -> int {
+template <typename T, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+    }
+void getri(einsums::detail::TensorImpl<T> *A, Pivots const &pivot) {
     LabeledSection0();
 
     if (A->rank() != 2) {
@@ -1160,10 +1114,12 @@ auto getri(einsums::detail::TensorImpl<T> *A, Pivots const &pivot) -> int {
     }
 
     if (result < 0) {
-        EINSUMS_LOG_WARN("getri: argument {} has an invalid value", -result);
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "getri: {} argument has an invalid value! n: {}, lda: {}.", print::ordinal(-result),
+                                A->dim(0), A->get_lda());
+    } else if (result > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "The matrix passed into the inversion function is singular! An inverse could not be "
+                                                    "computed. This means that the return value from getrf was ignored.");
     }
-
-    return result;
 }
 
 /**
@@ -1177,10 +1133,19 @@ auto getri(einsums::detail::TensorImpl<T> *A, Pivots const &pivot) -> int {
  * @param pivot The pivot vector from getrf
  * @return int If 0, the execution is successful.
  */
-template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
-    requires(CoreTensorConcept<TensorType>)
-auto getri(TensorType *A, Pivots const &pivot) -> int {
-    return getri(&A->impl(), pivot);
+template <MatrixConcept TensorType, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+        requires(CoreTensorConcept<TensorType>);
+    }
+void getri(TensorType *A, Pivots const &pivot) {
+    getri(&A->impl(), pivot);
 }
 
 template <typename T>
@@ -1247,53 +1212,86 @@ void invert(TensorType *A) {
 }
 
 template <typename T>
-auto svd(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
+auto svd(einsums::detail::TensorImpl<T> const &_A, char jobu, char jobvt)
+    -> std::tuple<std::optional<Tensor<T, 2>>, Tensor<RemoveComplexT<T>, 1>, std::optional<Tensor<T, 2>>> {
     LabeledSection0();
+
+    using option = std::optional<Tensor<T, 2>>;
 
     if (_A.rank() != 2) {
         EINSUMS_THROW_EXCEPTION(rank_error, "Can only decompose matrices!");
     }
 
     // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> A = _A;
+    Tensor<T, 2> A{false, "A temp", _A.dim(0), _A.dim(1)};
+    einsums::detail::copy_to(_A, A.impl());
 
     size_t m   = A.dim(0);
     size_t n   = A.dim(1);
     size_t lda = A.impl().get_lda();
 
+    Tensor<T, 2> U, Vt;
+    T           *U_data = nullptr, *Vt_data = nullptr;
+    size_t       ldu = 1, ldvt = 1;
+
     // Test if it is absolutely necessary to zero out these tensors first.
-    auto U = create_tensor<T>("U (stored columnwise)", m, m);
-    U.zero();
+    if (std::tolower(jobu) != 'n') {
+        U = create_tensor<T, false>("U (stored columnwise)", m, m);
+        U.zero();
+        U_data = U.data();
+        ldu    = U.impl().get_lda();
+    }
     auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     S.zero();
-    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
-    Vt.zero();
-    auto superb = create_tensor<T>("superb", std::min(m, n));
+    if (std::tolower(jobvt) != 'n') {
+        Vt = create_tensor<T, false>("Vt (stored rowwise)", n, n);
+        Vt.zero();
+        Vt_data = Vt.data();
+        ldvt    = Vt.impl().get_lda();
+    }
+    auto superb = create_tensor<T, false>("superb", std::min(m, n));
     superb.zero();
 
     //    int info{0};
-    int info =
-        blas::gesvd('A', 'A', m, n, A.data(), lda, S.data(), U.data(), U.impl().get_lda(), Vt.data(), Vt.impl().get_lda(), superb.data());
+    int info = blas::gesvd(jobu, jobvt, m, n, A.data(), lda, S.data(), U_data, ldu, Vt_data, ldvt, superb.data());
 
-    if (info != 0) {
-        if (info < 0) {
-            EINSUMS_THROW_EXCEPTION(
-                std::invalid_argument,
-                "svd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info, m,
-                n, lda, U.impl().get_lda(), Vt.impl().get_lda());
-        } else {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: error value {}", info);
+    if (info < 0) {
+        EINSUMS_THROW_EXCEPTION(
+            std::invalid_argument,
+            "svd: Argument {} has an invalid value.\n#3 (m) = {}, #4 (n) = {}, #6 (lda) = {}, #9 (ldu) = {}, #11 (ldvt) = {}", -info, m, n,
+            lda, ldu, ldvt);
+    } else if (info > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: Algorithm did not converge!", info);
+    }
+
+    if (std::tolower(jobu) != 'n' && row_major_default) {
+        U.impl() = U.impl().transpose_view();
+        for (size_t i = 0; i < m; i++) {
+            for (size_t j = 0; j < i; j++) {
+                std::swap(U(i, j), U(j, i));
+            }
         }
     }
 
-    return std::make_tuple(U, S, Vt);
+    if (std::tolower(jobvt) != 'n' && row_major_default) {
+        Vt.impl() = Vt.impl().transpose_view();
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = 0; j < i; j++) {
+                std::swap(Vt(i, j), Vt(j, i));
+            }
+        }
+    }
+
+    return std::make_tuple((std::tolower(jobu) != 'n') ? option(std::move(U)) : option(), S,
+                           (std::tolower(jobvt) != 'n') ? option(std::move(Vt)) : option());
 }
 
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto svd(AType const &A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
-                                       Tensor<typename AType::ValueType, 2>> {
-    return svd(A.impl());
+auto svd(AType const &A, char jobu, char jobvt)
+    -> std::tuple<std::optional<Tensor<typename AType::ValueType, 2>>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
+                  std::optional<Tensor<typename AType::ValueType, 2>>> {
+    return svd(A.impl(), jobu, jobvt);
 }
 
 template <typename T>
@@ -1345,8 +1343,15 @@ auto norm(char norm_type, einsums::detail::TensorImpl<T> const &a) -> RemoveComp
             } else {
                 return impl_frobenius_norm(a);
             }
+        case '2':
+            if (a.rank() == 1) {
+                return blas::nrm2(a.dim(0), a.data(), a.get_incx());
+            } else {
+                auto result = svd(a, 'n', 'n');
+                return std::get<1>(result)(0);
+            }
         default:
-            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The norm type passed to norm is not valid!");
+            EINSUMS_THROW_EXCEPTION(enum_error, "The norm type passed to norm is not valid!");
         }
     } else {
         switch (norm_type) {
@@ -1365,8 +1370,15 @@ auto norm(char norm_type, einsums::detail::TensorImpl<T> const &a) -> RemoveComp
         case 'E':
         case 'F':
             return impl_frobenius_norm(a);
+        case '2':
+            if (a.rank() == 1) {
+                return impl_frobenius_norm(a);
+            } else {
+                EINSUMS_THROW_EXCEPTION(not_implemented, "We haven't implemented the spectral norm for matrices that don't have a LAPACK-"
+                                                         "compatible type. If you need this, reach out to us so we can implement it.");
+            }
         default:
-            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The norm type passed to norm is not valid!");
+            EINSUMS_THROW_EXCEPTION(enum_error, "The norm type passed to norm is not valid!");
         }
     }
 }
@@ -1392,47 +1404,83 @@ auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::ValueType> {
 }
 
 template <typename T>
-auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
+auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job)
+    -> std::tuple<std::optional<Tensor<T, 2>>, Tensor<RemoveComplexT<T>, 1>, std::optional<Tensor<T, 2>>> {
     LabeledSection0();
+
+    using option = std::optional<Tensor<T, 2>>;
 
     //    DisableOMPThreads const nothreads;
 
+    if (_A.rank() != 2) {
+        EINSUMS_THROW_EXCEPTION(rank_error, "The input tensor to svd_dd needs to be rank-2!");
+    }
+
     // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> A = _A;
+    Tensor<T, 2> A{false, "A temp", _A.dim(0), _A.dim(1)};
+    einsums::detail::copy_to(_A, A.impl());
 
     size_t m = A.dim(0);
     size_t n = A.dim(1);
 
+    Tensor<T, 2> U, Vt;
+    T           *U_data = nullptr, *Vt_data = nullptr;
+    size_t       ldu = 1, ldvt = 1;
+
     // Test if it absolutely necessary to zero out these tensors first.
-    auto U = create_tensor<T>("U (stored columnwise)", m, m);
-    zero(U);
+    if (std::tolower(job) != 'n') {
+        U = create_tensor<T, false>("U (stored columnwise)", m, m);
+        zero(U);
+        Vt = create_tensor<T, false>("Vt (stored rowwise)", n, n);
+        zero(Vt);
+        U_data  = U.data();
+        Vt_data = Vt.data();
+        ldu     = U.impl().get_lda();
+        ldvt    = Vt.impl().get_lda();
+    }
+
     auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     zero(S);
-    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
-    zero(Vt);
 
-    int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), A.impl().get_lda(), S.data(),
-                           U.data(), U.impl().get_lda(), Vt.data(), Vt.impl().get_lda());
+    int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), A.impl().get_lda(), S.data(), U_data,
+                           ldu, Vt_data, ldvt);
 
     if (info != 0) {
         if (info < 0) {
             EINSUMS_THROW_EXCEPTION(
                 std::invalid_argument,
                 "svd_dd: Argument {} has an invalid value.\n#2 (m) = {}, #3 (n) = {}, #5 (lda) = {}, #8 (ldu) = {}, #10 (ldvt) = {}", -info,
-                m, n, A.impl().get_lda(), U.impl().get_lda(), Vt.impl().get_lda());
+                m, n, A.impl().get_lda(), ldu, ldvt);
         } else {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd_dd: error value {}", info);
         }
     }
 
-    return std::make_tuple(U, S, Vt);
+    if (std::tolower(job) != 'n' && row_major_default) {
+        U.impl() = U.impl().transpose_view();
+        for (size_t i = 0; i < m; i++) {
+            for (size_t j = 0; j < i; j++) {
+                std::swap(U(i, j), U(j, i));
+            }
+        }
+
+        Vt.impl() = Vt.impl().transpose_view();
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = 0; j < i; j++) {
+                std::swap(Vt(i, j), Vt(j, i));
+            }
+        }
+    }
+
+    return std::make_tuple((std::tolower(job) != 'n') ? option(std::move(U)) : option(), S,
+                           (std::tolower(job) != 'n') ? option(std::move(Vt)) : option());
 }
 
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto svd_dd(AType const &A, char job)
-    -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
-                  Tensor<typename AType::ValueType, 2>> {
+    -> std::tuple<std::optional<Tensor<typename AType::ValueType, 2>>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
+                  std::optional<Tensor<typename AType::ValueType, 2>>> {
     return svd_dd(A.impl(), job);
 }
 
@@ -1445,13 +1493,24 @@ auto qr(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, Te
     blas::int_t const m = A.dim(0);
     blas::int_t const n = A.dim(1);
 
+    blas::int_t info;
+
     Tensor<T, 1> tau("tau", std::min(m, n));
     // Compute QR factorization of Y
-    blas::int_t info = blas::geqrf(m, n, A.data(), A.impl().get_lda(), tau.data());
-
-    if (info != 0) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "{} parameter to geqrf has an illegal value. #1: (m) {}, #2: (n) {}, #4: (lda) {}.",
-                                print::ordinal(-info), m, n, A.impl().get_lda());
+    if constexpr (row_major_default) {
+        info = blas::gelqf(n, m, A.data(), A.impl().get_lda(), tau.data());
+        if (info != 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "{} parameter to gelqf has an illegal value. #1: (m) {}, #2: (n) {}, #4: (lda) {}.",
+                                    print::ordinal(-info), n, m, A.impl().get_lda());
+        }
+    } else {
+        info = blas::geqrf(m, n, A.data(), A.impl().get_lda(), tau.data());
+        if (info != 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "{} parameter to geqrf has an illegal value. #1: (m) {}, #2: (n) {}, #4: (lda) {}.",
+                                    print::ordinal(-info), m, n, A.impl().get_lda());
+        }
     }
 
     Tensor<T, 2> Q{"Q", m, m};
@@ -1467,16 +1526,30 @@ auto qr(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, Te
     }
 
     // Extract Matrix Q out of QR factorization
-    if constexpr (IsComplexV<T>) {
-        info = blas::ungqr(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
-    } else {
-        info = blas::orgqr(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
-    }
+    if constexpr (row_major_default) {
+        if constexpr (IsComplexV<T>) {
+            info = blas::unglq(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
+        } else {
+            info = blas::orglq(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
+        }
 
-    if (info != 0) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument,
-                                "{} parameter to {{or,un}}gqr was invalid! #1: (m) {}, #2: (n) {}, #3: (k) {}, #5: (lda) {}.",
-                                print::ordinal(-info), m, m, tau.dim(0), Q.impl().get_lda());
+        if (info != 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "{} parameter to {{or,un}}gqr was invalid! #1: (m) {}, #2: (n) {}, #3: (k) {}, #5: (lda) {}.",
+                                    print::ordinal(-info), m, m, tau.dim(0), Q.impl().get_lda());
+        }
+    } else {
+        if constexpr (IsComplexV<T>) {
+            info = blas::ungqr(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
+        } else {
+            info = blas::orgqr(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
+        }
+
+        if (info != 0) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument,
+                                    "{} parameter to {{or,un}}gqr was invalid! #1: (m) {}, #2: (n) {}, #3: (k) {}, #5: (lda) {}.",
+                                    print::ordinal(-info), m, m, tau.dim(0), Q.impl().get_lda());
+        }
     }
 
     return {Q, A};

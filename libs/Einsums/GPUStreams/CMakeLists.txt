@@ -24,7 +24,7 @@ if(EINSUMS_WITH_GPU_SUPPORT)
     SOURCES ${GPUStreamsSources}
     HEADERS ${GPUStreamsHeaders}
     DEPENDENCIES hip::host hip::device roc::hipblas roc::hipsolver
-    MODULE_DEPENDENCIES Einsums_Config Einsums_Errors Einsums_Runtime
+    MODULE_DEPENDENCIES Einsums_Config Einsums_Errors Einsums_Runtime Einsums_BufferAllocator
     CMAKE_SUBDIRS examples tests
   )
 endif()

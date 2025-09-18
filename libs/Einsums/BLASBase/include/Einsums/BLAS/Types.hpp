@@ -9,6 +9,28 @@
 
 namespace einsums::blas {
 
+/**
+ * @typedef int_t
+ *
+ * Represents the standard BLAS integer type. Its size depends on the BLAS interface used.
+ *
+ * @versionadded{1.0.0}
+ */
+/**
+ * @typedef euint_t
+ *
+ * Represents the standard unsigned BLAS integer type. Its size depends on the BLAS interface used.
+ *
+ * @versionadded{1.0.0}
+ */
+/**
+ * @typedef elong
+ *
+ * Represents a potentially longer integer type for the BLAS interface. Its size depends on the BLAS interface used.
+ *
+ * @versionadded{1.0.0}
+ */
+
 #if defined(EINSUMS_BLAS_INTERFACE_ILP64)
 using int_t   = long long int;
 using euint_t = unsigned long long int;

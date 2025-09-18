@@ -13,6 +13,10 @@
 
 #include <tuple>
 
+#ifdef I
+#undef I
+#endif
+
 namespace einsums::tensor_algebra {
 
 namespace detail {
@@ -381,7 +385,7 @@ constexpr auto is_same_dims(std::tuple<PositionsInX...> const &indices, XType co
     return true;
 }
 
-template <TensorConcept XType, typename... PositionsInX>
+template <CoreTensorConcept XType, typename... PositionsInX>
 constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, XType const &X) -> size_t {
     if (X.impl().is_row_major()) {
         return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
@@ -390,7 +394,14 @@ constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, XType con
     }
 }
 
-template <TensorConcept XType, typename... PositionsInX>
+#ifdef EINSUMS_COMPUTE_CODE
+template <DeviceTensorConcept XType, typename... PositionsInX>
+constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, XType const &X) -> size_t {
+        return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
+}
+#endif
+
+template <typename XType, typename... PositionsInX>
 constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, einsums::detail::TensorImpl<XType> const &X) -> size_t {
     if (X.is_row_major()) {
         return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
@@ -750,13 +761,20 @@ using CUniqueT = typename CUnique<T>::type;
  */
 template <typename First, typename... Args>
 struct Reverse {
+    /**
+     * @typedef type
+     *
+     * The tuple type with the elements in reverse.
+     */
     using type = decltype(std::tuple_cat(std::declval<typename Reverse<Args...>::type>(), std::declval<std::tuple<First>>()));
 };
 
+#ifndef DOXYGEN
 template <typename First>
 struct Reverse<First> {
     using type = std::tuple<First>;
 };
+#endif
 
 /**
  * @typedef ReverseT

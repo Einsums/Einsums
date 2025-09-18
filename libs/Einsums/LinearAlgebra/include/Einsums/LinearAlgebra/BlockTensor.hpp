@@ -9,11 +9,15 @@
 
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/LinearAlgebra/Unoptimized.hpp>
 #include <Einsums/Print.hpp>
+
+#include <span>
+#include <stdexcept>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/LinearAlgebra/GPULinearAlgebra.hpp>
@@ -24,6 +28,18 @@
 #endif
 
 namespace einsums::linear_algebra::detail {
+
+template <BlockTensorConcept AType, typename T = RemoveComplexT<typename AType::ValueType>>
+void sum_square(AType const &A, T *scale, T *sumsq) {
+
+    for (size_t i = 0; i < A.num_blocks(); i++) {
+        if (A.block_dim(i) == 0) {
+            continue;
+        }
+
+        sum_square(A.block(i), scale, sumsq);
+    }
+}
 
 template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename U>
     requires requires {
@@ -155,12 +171,18 @@ void syev(AType *A, WType *W) {
     }
 }
 
-template <BlockTensorConcept AType, VectorConcept WType>
+template <BlockTensorConcept AType, VectorConcept WType, typename LVecPtr, typename RVecPtr>
     requires requires {
         requires std::is_same_v<AddComplexT<typename AType::ValueType>, typename WType::ValueType>;
         requires MatrixConcept<AType>;
+        requires std::is_null_pointer_v<LVecPtr> ||
+                     (MatrixConcept<std::remove_pointer_t<LVecPtr>> && BlockTensorConcept<std::remove_pointer_t<LVecPtr>> &&
+                      std::is_same_v<typename std::remove_pointer_t<LVecPtr>::ValueType, AddComplexT<typename AType::ValueType>>);
+        requires std::is_null_pointer_v<RVecPtr> ||
+                     (MatrixConcept<std::remove_pointer_t<RVecPtr>> && BlockTensorConcept<std::remove_pointer_t<RVecPtr>> &&
+                      std::is_same_v<typename std::remove_pointer_t<RVecPtr>::ValueType, AddComplexT<typename AType::ValueType>>);
     }
-void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
+void geev(AType *A, WType *W, LVecPtr lvecs, RVecPtr rvecs) {
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
         decltype(lvecs->block(0)) *lvec_block = nullptr;
@@ -177,88 +199,6 @@ void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
         }
         auto out_block = (*W)(A->block_range(i));
         geev(&(A->block(i)), &out_block, lvec_block, rvec_block);
-    }
-}
-
-template <BlockTensorConcept InType, BlockTensorConcept OutType, VectorConcept WType>
-    requires requires {
-        requires InSamePlace<InType, OutType, WType>;
-        requires std::is_same_v<AddComplexT<typename InType::ValueType>, typename OutType::ValueType>;
-        requires std::is_same_v<typename OutType::ValueType, typename WType::ValueType>;
-        requires MatrixConcept<InType>;
-        requires MatrixConcept<OutType>;
-    }
-void process_geev_vectors(WType const &evals, InType const *lvecs_in, InType const *rvecs_in, OutType *lvecs_out, OutType *rvecs_out) {
-    int num_blocks = 0;
-    if (lvecs_in != nullptr && lvecs_out == nullptr) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The left output tensor should not be NULL if the left input is not NULL.");
-    }
-
-    if (rvecs_in != nullptr && rvecs_out == nullptr) {
-        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "The right output tensor should not be NULL if the right input is not NULL.");
-    }
-
-    if (lvecs_in == nullptr && rvecs_in == nullptr) {
-        return;
-    }
-
-    if (lvecs_in != nullptr && (evals.dim(0) != lvecs_in->dim(0) || evals.dim(0) != lvecs_in->dim(1))) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of left eigenvector input do not match the eigenvalues!");
-    }
-    if (rvecs_in != nullptr && (evals.dim(0) != rvecs_in->dim(0) || evals.dim(0) != rvecs_in->dim(1))) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of right eigenvector input do not match the eigenvalues!");
-    }
-    if (lvecs_out != nullptr && (evals.dim(0) != lvecs_out->dim(0) || evals.dim(0) != lvecs_out->dim(1))) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of left eigenvector output do not match the eigenvalues!");
-    }
-    if (rvecs_out != nullptr && (evals.dim(0) != rvecs_out->dim(0) || evals.dim(0) != rvecs_out->dim(1))) {
-        EINSUMS_THROW_EXCEPTION(dimension_error, "The dimensions of right eigenvector output do not match the eigenvalues!");
-    }
-
-    if (lvecs_in != nullptr && lvecs_in->num_blocks() != lvecs_out->num_blocks()) {
-        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The numbers of blocks of the left input and output tensors need to be the same!");
-    }
-    if (rvecs_in != nullptr && rvecs_in->num_blocks() != rvecs_out->num_blocks()) {
-        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The numbers of blocks of the left input and output tensors need to be the same!");
-    }
-    if (lvecs_in != nullptr && rvecs_in != nullptr && lvecs_in->num_blocks() != rvecs_in->num_blocks()) {
-        EINSUMS_THROW_EXCEPTION(tensor_compat_error,
-                                "The numbers of blocks of the input tensors need to be the same if they are both present!");
-    }
-
-    if (lvecs_in != nullptr) {
-        num_blocks = lvecs_in->num_blocks();
-    }
-
-    if (rvecs_in != nullptr) {
-        num_blocks = rvecs_in->num_blocks();
-    }
-
-    EINSUMS_OMP_PARALLEL_FOR
-    for (int i = 0; i < num_blocks; i++) {
-        if (lvecs_in != nullptr && lvecs_in->block_dim(i) == 0) {
-            continue;
-        }
-        if (rvecs_in != nullptr && rvecs_in->block_dim(i) == 0) {
-            continue;
-        }
-        Range                         evals_range;
-        typename InType::StoredType  *lin_block = nullptr, *lout_block = nullptr;
-        typename OutType::StoredType *rin_block = nullptr, *rout_block = nullptr;
-
-        if (lvecs_in != nullptr) {
-            evals_range = lvecs_in->block_range(i);
-            lin_block   = &lvecs_in->block(i);
-            lout_block  = &lvecs_out->block(i);
-        }
-
-        if (rvecs_in != nullptr) {
-            evals_range = rvecs_in->block_range(i);
-            rin_block   = &rvecs_in->block(i);
-            rout_block  = &rvecs_in->block(i);
-        }
-
-        process_geev_vectors(evals(evals_range), lin_block, rin_block, lout_block, rout_block);
     }
 }
 
@@ -548,43 +488,55 @@ auto pow(AType const &a, typename AType::ValueType alpha,
     return out;
 }
 
-template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
-    requires(BlockTensorConcept<TensorType>)
-auto getrf(TensorType *A, Pivots *pivot) -> int {
+template <MatrixConcept TensorType, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+        requires(BlockTensorConcept<TensorType>);
+    }
+[[nodiscard]] auto getrf(TensorType *A, Pivots *pivot) -> int {
+    blas::int_t out_value = 0;
+
     for (size_t i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
             continue;
         }
-        BufferVector<blas::int_t> hold_pivot(A->block().dim(0));
-        int                       ret = getrf(A->block(i), &hold_pivot);
 
-        for (int j = 0; j < A->block().dim(0); j++) {
-            pivot->at(j + A->block_range(i)[0]) = hold_pivot[j];
-        }
+        std::span<blas::int_t> pivot_view(std::next(pivot->begin(), A->block_range(i)[0]), A->block_dim(i));
+        int                    ret = getrf(A->block(i), &pivot_view);
 
-        if (ret != 0) {
-            return ret + A->block_range(i)[0];
+        if (ret > 0 && out_value == 0) {
+            out_value = ret + A->block_range(i)[0];
         }
     }
+
+    return out_value;
 }
 
-template <MatrixConcept TensorType, ContiguousContainerOf<blas::int_t> Pivots>
-    requires(BlockTensorConcept<TensorType>)
-auto getri(TensorType *A, Pivots const &pivot) -> int {
+template <MatrixConcept TensorType, typename Pivots>
+    requires requires(Pivots a, size_t ind) {
+        typename Pivots::value_type;
+        typename Pivots::size_type;
+
+        { a.size() } -> std::same_as<typename Pivots::size_type>;
+        { a.data() } -> std::same_as<typename Pivots::value_type *>;
+        a[ind];
+        requires std::same_as<blas::int_t, typename Pivots::value_type>;
+        requires(BlockTensorConcept<TensorType>);
+    }
+void getri(TensorType *A, Pivots const &pivot) {
     for (size_t i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
             continue;
         }
-        BufferVector<blas::int_t> hold_pivot(A->block().dim(0));
+        std::span<blas::int_t> pivot_view(std::next(pivot->begin(), A->block_range(i)[0]), A->block_dim(i));
 
-        for (int j = 0; j < A->block().dim(0); j++) {
-            hold_pivot[j] = pivot->at(j + A->block_range(i)[0]);
-        }
-
-        int ret = getri(A->block(i), hold_pivot);
-        if (ret != 0) {
-            return ret + A->block_range(i)[0];
-        }
+        getri(A->block(i), pivot_view);
     }
 }
 

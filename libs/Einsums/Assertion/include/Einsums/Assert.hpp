@@ -19,10 +19,48 @@
 
 namespace einsums::detail {
 
+/**
+ * Thrown when an assertion fails.
+ *
+ * @versionadded{2.0.0}
+ */
+struct assertion_error : std::logic_error {
+  public:
+    using std::logic_error::logic_error;
+};
+
+/**
+ * @typedef assertion_handler_type
+ *
+ * @brief The type for assertion handlers.
+ *
+ * @versionadded{1.0.0}
+ */
 using assertion_handler_type = void (*)(std::source_location const &loc, char const *expr, std::string const &msg);
 
-EINSUMS_EXPORT void default_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg);
+/**
+ * @brief The default assertion handler. It prints line information whenever an assertion fails.
+ *
+ * @param[in] loc Where the assertion failed.
+ * @param[in] expr The expression that failed.
+ * @param[in] msg An extra diagnostic message.
+ *
+ * @throws assertion_error Always throws.
+ *
+ * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *      Throws an exception that can be handled rather than calling exit.
+ * @endversion
+ */
+[[noreturn]] EINSUMS_EXPORT void default_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg);
 
+/**
+ * @brief Sets the assertion hanlder to a user-defined handler.
+ *
+ * @param[in] handler The new handler to use.
+ *
+ * @versionadded{1.0.0}
+ */
 EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 
 } // namespace einsums::detail
@@ -32,27 +70,44 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 /**
  * @def EINSUMS_ASSERT(expr)
  *
- * @brief This macro asserts that @a expr evaluates to true, but does not have a custom message.
+ * @brief This macro asserts that @p expr evaluates to true, but does not have a custom message.
+ *
+ * @param[in] expr The expression to test.
  *
  * @sa EINSUMS_ASSERT_MSG
+ *
+ * @throws assertion_error If the expression is false.
+ *
+ * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *      Throws an exception instead of calling exit when the expression is false.
+ * @endversion
  */
 #    define EINSUMS_ASSERT(expr)
 
-/// \def EINSUMS_ASSERT_MSG(expr, msg)
-/// \brief This macro asserts that \a expr evaluates to true.
-///
-/// \param expr The expression to assert on. This can either be an expression
-///             that's convertible to bool or a callable which returns bool
-/// \param msg The optional message that is used to give further information if
-///             the assert fails. This should be convertible to a std::string
-///
-/// If \p expr evaluates to false, The source location and \p msg is
-/// printed along with the expression and additional. Afterwards the program is
-/// aborted. The assertion handler can be customized by calling
-/// einsums::assertion::set_assertion_handler().
-///
-/// Asserts are enabled if \a EINSUMS_DEBUG is set. This is the default for
-/// `CMAKE_BUILD_TYPE=Debug`
+/** \def EINSUMS_ASSERT_MSG(expr, msg)
+ * \brief This macro asserts that \p expr evaluates to true.
+ *
+ * \param[in] expr The expression to assert on. This can either be an expression
+ *             that's convertible to bool or a callable which returns bool
+ * \param[in] msg The optional message that is used to give further information if
+ *             the assert fails. This should be convertible to a std::string
+ *
+ * If \p expr evaluates to false, The source location and \p msg is
+ * printed along with the expression and additional. Afterwards the program is
+ * aborted. The assertion handler can be customized by calling
+ * einsums::assertion::set_assertion_handler().
+ *
+ * Asserts are enabled if \a EINSUMS_DEBUG is set. This is the default for
+ * `CMAKE_BUILD_TYPE=Debug`
+ *
+ * @throws assertion_error If the expression is false.
+ *
+ * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *      Throws an exception instead of calling exit when the expression is false.
+ * @endversion
+ */
 #    define EINSUMS_ASSERT_MSG(expr, msg)
 #else
 /// \cond NOINTERNAL

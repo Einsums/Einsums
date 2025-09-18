@@ -16,6 +16,8 @@
 
 namespace einsums {
 
+#ifndef DOXYGEN
+
 EINSUMS_EXPORT int setup_Einsums_GPUStreams();
 
 /**
@@ -33,5 +35,7 @@ namespace detail {
 static int initialize_module_Einsums_GPUStreams = setup_Einsums_GPUStreams();
 
 }
+
+#endif
 
 } // namespace einsums

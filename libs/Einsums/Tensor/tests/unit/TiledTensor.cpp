@@ -89,6 +89,9 @@ TEST_CASE("TiledTensor GEMMs", "[tensor]") {
     }
 
     einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+    println(A);
+    println(B);
+    println(C);
     auto res = einsums::VectorData<double>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0};
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {

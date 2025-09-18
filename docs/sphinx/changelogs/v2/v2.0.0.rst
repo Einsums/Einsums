@@ -12,15 +12,28 @@ v2.0.0 Release
 
 What's New
 ----------
-* Tensors are now stored in column-major ordering by default.
-    * The ordering of the tensors can be selected by the users.
+* Tensor storage order can now be selected by users. The default is still row-major, but this can be changed when you
+  configure Einsums.
+    * As of 2.0.0, we recommend sticking to row major, as the generic tensor contraction routine has not been optimized
+      for column major.
 * Tensors are now based on a common implementation class to reduce the amount of code that needs to be maintained.
 * The QR decomposition routine now outputs the Q and R matrices, rather than the intermediates needed to compute these.
+* General eigendecomposition can now accept nullpointers for the eigenvectors you don't want to calculate.
+* General eigendecomposition also only accepts complex tensors as outputs now.
+* HPTT plans can be saved and loaded in files. You no longer have to worry about wasting a bunch of time waiting for
+  the better search methods. You can compile the transpose once and then load it in for subsequent program executions.
+    * To support this, a new `compile_permute` function has been created, as well as overloads for the `permute` function
+      that take plans as inputs.
+    * The files are raw binary files to hopefully reduce the file size.
+* Einsums has its own argument parser.
+* `norm` can now handle vectors and can compute the spectral norm.
 
 What's Removed
 --------------
 * The `q` function from the C++ and Python interfaces, and the `r` function from the Python interface.
 * CP and Tucker decomposition broke and were not able to be fixed. They have been moved to experimental.
+* h5cpp has been removed in favor of bare HDF5.
+* Einsums has its own argument parser now and no longer relies on cpp-argparse.
 
 Bug Fixes
 ---------

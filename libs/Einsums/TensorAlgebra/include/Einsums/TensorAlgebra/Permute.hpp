@@ -7,19 +7,23 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/SmartPointer.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/HPTT/HPTT.hpp>
+#include <Einsums/HPTT/HPTTTypes.hpp>
 #include <Einsums/HPTT/Transpose.hpp>
 #include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Profile.hpp>
 #include <Einsums/StringUtil/StringOps.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
+#include <Einsums/TensorAlgebra/Detail/Index.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 
-#include "Einsums/TensorAlgebra/Detail/Index.hpp"
+#include <memory>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/TensorAlgebra/Backends/DevicePermute.hpp>
@@ -30,58 +34,11 @@ namespace einsums::tensor_algebra {
 #if !defined(EINSUMS_WINDOWS)
 namespace detail {
 
-std::shared_ptr<hptt::Transpose<float>> EINSUMS_EXPORT  permute(int const *perm, int const dim, float const alpha, float const *A,
-                                                                size_t const *sizeA, float const beta, float *B, bool conjA, bool row_major);
-std::shared_ptr<hptt::Transpose<double>> EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A,
-                                                                size_t const *sizeA, double const beta, double *B, bool conjA,
-                                                                bool row_major);
-std::shared_ptr<hptt::Transpose<std::complex<float>>> EINSUMS_EXPORT permute(int const *perm, int const dim,
-                                                                             std::complex<float> const alpha, std::complex<float> const *A,
-                                                                             size_t const *sizeA, std::complex<float> const beta,
-                                                                             std::complex<float> *B, bool conjA, bool row_major);
-std::shared_ptr<hptt::Transpose<std::complex<double>>>
-    EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
-                           size_t const *sizeA, std::complex<double> const beta, std::complex<double> *B, bool conjA, bool row_major);
-std::shared_ptr<hptt::Transpose<float>> EINSUMS_EXPORT  permute(int const *perm, int const dim, float const alpha, float const *A,
-                                                                size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA,
-                                                                float const beta, float *B, size_t const *offsetB, size_t const *outerSizeB,
-                                                                bool conjA, bool row_major);
-std::shared_ptr<hptt::Transpose<double>> EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A,
-                                                                size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA,
-                                                                double const beta, double *B, size_t const *offsetB,
-                                                                size_t const *outerSizeB, bool conjA, bool row_major);
-std::shared_ptr<hptt::Transpose<std::complex<float>>>
-    EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A,
-                           size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, std::complex<float> const beta,
-                           std::complex<float> *B, size_t const *offsetB, size_t const *outerSizeB, bool conjA, bool row_major);
-std::shared_ptr<hptt::Transpose<std::complex<double>>>
-    EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
-                           size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, std::complex<double> const beta,
-                           std::complex<double> *B, size_t const *offsetB, size_t const *outerSizeB, bool conjA, bool row_major);
-std::shared_ptr<hptt::Transpose<float>> EINSUMS_EXPORT  permute(int const *perm, int const dim, float const alpha, float const *A,
-                                                                size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA,
-                                                                size_t const innerStrideA, float const beta, float *B, size_t const *offsetB,
-                                                                size_t const *outerSizeB, size_t const innerStrideB, bool conjA,
-                                                                bool row_major);
-std::shared_ptr<hptt::Transpose<double>> EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A,
-                                                                size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA,
-                                                                size_t const innerStrideA, double const beta, double *B,
-                                                                size_t const *offsetB, size_t const *outerSizeB, size_t const innerStrideB,
-                                                                bool conjA, bool row_major);
-std::shared_ptr<hptt::Transpose<std::complex<float>>>
-    EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A,
-                           size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, size_t const innerStrideA,
-                           std::complex<float> const beta, std::complex<float> *B, size_t const *offsetB, size_t const *outerSizeB,
-                           size_t const innerStrideB, bool conjA, bool row_major);
-std::shared_ptr<hptt::Transpose<std::complex<double>>>
-    EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A,
-                           size_t const *sizeA, size_t const *offsetA, size_t const *outerSizeA, size_t const innerStrideA,
-                           std::complex<double> const beta, std::complex<double> *B, size_t const *offsetB, size_t const *outerSizeB,
-                           size_t const innerStrideB, bool conjA, bool row_major);
-
 template <bool ConjA = false, typename T, typename... CIndices, typename... AIndices>
-void permute(T beta, std::tuple<CIndices...> const &C_indices, einsums::detail::TensorImpl<T> *C, T alpha,
-             std::tuple<AIndices...> const &A_indices, einsums::detail::TensorImpl<T> const &A) {
+std::shared_ptr<hptt::Transpose<T>> compile_permute(T beta, std::tuple<CIndices...> const &C_indices, einsums::detail::TensorImpl<T> *C,
+                                                    T alpha, std::tuple<AIndices...> const &A_indices,
+                                                    einsums::detail::TensorImpl<T> const &A,
+                                                    hptt::SelectionMethod                 method = hptt::ESTIMATE) {
     constexpr size_t ARank = sizeof...(AIndices);
     constexpr size_t CRank = sizeof...(CIndices);
 
@@ -101,7 +58,6 @@ void permute(T beta, std::tuple<CIndices...> const &C_indices, einsums::detail::
             return;
         }
     });
-
     // Calculate reversed indices.
     using ReverseC                   = ReverseT<CIndices...>;
     constexpr auto reverse_C_indices = ReverseC();
@@ -131,8 +87,12 @@ void permute(T beta, std::tuple<CIndices...> const &C_indices, einsums::detail::
             outerSizeC[i0] = C->stride(i0 - 1) / (C->stride(i0) * innerStrideC);
             offsetC[i0]    = 0;
         }
-        auto result = detail::permute(perms.data(), ARank, alpha, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                                      beta, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, true);
+        auto plan =
+            hptt::create_plan(perms.data(), ARank, alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
+                              C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, true);
+        plan->setConjA(ConjA);
+
+        return plan;
     } else if (A.is_row_major() && C->is_column_major()) {
         auto   new_target_position_in_A = detail::find_type_with_position(reverse_C_indices, A_indices);
         auto   C_swap                   = C->to_row_major();
@@ -152,8 +112,12 @@ void permute(T beta, std::tuple<CIndices...> const &C_indices, einsums::detail::
             outerSizeC[i0] = C_swap.stride(i0 - 1) / (C_swap.stride(i0) * innerStrideC);
             offsetC[i0]    = 0;
         }
-        auto result = detail::permute(perms.data(), ARank, alpha, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                                      beta, C_swap.data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, true);
+        auto plan =
+            hptt::create_plan(perms.data(), ARank, alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
+                              C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, true);
+        plan->setConjA(ConjA);
+
+        return plan;
     } else if (A.is_column_major() && C->is_column_major()) {
         auto   new_target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
         size_t innerStrideA             = A.stride(0);
@@ -172,8 +136,12 @@ void permute(T beta, std::tuple<CIndices...> const &C_indices, einsums::detail::
             outerSizeC[i0] = C->stride(i0 + 1) / (C->stride(i0) * innerStrideC);
             offsetC[i0]    = 0;
         }
-        auto result = detail::permute(perms.data(), ARank, alpha, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                                      beta, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, false);
+        auto plan =
+            hptt::create_plan(perms.data(), ARank, alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
+                              C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, false);
+        plan->setConjA(ConjA);
+
+        return plan;
     } else {
         auto   new_target_position_in_A = detail::find_type_with_position(reverse_C_indices, A_indices);
         auto   C_swap                   = C->to_column_major();
@@ -193,18 +161,23 @@ void permute(T beta, std::tuple<CIndices...> const &C_indices, einsums::detail::
             outerSizeC[i0] = C_swap.stride(i0 + 1) / (C_swap.stride(i0) * innerStrideC);
             offsetC[i0]    = 0;
         }
-        auto result = detail::permute(perms.data(), ARank, alpha, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                                      beta, C_swap.data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, false);
+        auto plan =
+            hptt::create_plan(perms.data(), ARank, alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
+                              C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, false);
+        plan->setConjA(ConjA);
+
+        return plan;
     }
 }
 
 template <bool ConjA = false, typename T>
-void permute(T beta, std::string const &C_indices, einsums::detail::TensorImpl<T> *C, T alpha, std::string const &A_indices,
-             einsums::detail::TensorImpl<T> const &A) {
-    LabeledSection1((std::abs(beta) > EINSUMS_ZERO)
-                        ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices, beta,
-                                      C->name(), C_indices)
-                        : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices));
+std::shared_ptr<hptt::Transpose<T>> compile_permute(T beta, std::string const &C_indices, einsums::detail::TensorImpl<T> *C, T alpha,
+                                                    std::string const &A_indices, einsums::detail::TensorImpl<T> const &A,
+                                                    hptt::SelectionMethod method = hptt::ESTIMATE) {
+    LabeledSection((std::abs(beta) > EINSUMS_ZERO)
+                       ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices, beta,
+                                     C->name(), C_indices)
+                       : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices));
 
     // Error check:  If there are any remaining indices then we cannot perform a permute
     auto check = difference(A_indices, C_indices);
@@ -237,8 +210,12 @@ void permute(T beta, std::string const &C_indices, einsums::detail::TensorImpl<T
         }
 
         find_char_with_position(A_indices, C_indices, &perms);
-        auto result = detail::permute(perms.data(), A.rank(), alpha, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                                      beta, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, true);
+        auto plan =
+            hptt::create_plan(perms.data(), A.rank(), alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
+                              C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, true);
+        plan->setConjA(ConjA);
+
+        return plan;
     } else if (A.is_row_major() && C->is_column_major()) {
         auto   C_swap       = C->to_row_major();
         size_t innerStrideA = A.stride(-1);
@@ -256,8 +233,12 @@ void permute(T beta, std::string const &C_indices, einsums::detail::TensorImpl<T
             offsetC[i0]    = 0;
         }
         find_char_with_position(A_indices, reverse(C_indices), &perms);
-        auto result = detail::permute(perms.data(), A.rank(), alpha, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                                      beta, C_swap.data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, true);
+        auto plan =
+            hptt::create_plan(perms.data(), A.rank(), alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
+                              C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, true);
+        plan->setConjA(ConjA);
+
+        return plan;
     } else if (A.is_column_major() && C->is_column_major()) {
         size_t innerStrideA      = A.stride(0);
         size_t innerStrideC      = C->stride(0);
@@ -275,9 +256,12 @@ void permute(T beta, std::string const &C_indices, einsums::detail::TensorImpl<T
         }
 
         find_char_with_position(A_indices, C_indices, &perms);
+        auto plan =
+            hptt::create_plan(perms.data(), A.rank(), alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
+                              C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, false);
+        plan->setConjA(ConjA);
 
-        auto result = detail::permute(perms.data(), A.rank(), alpha, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                                      beta, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, false);
+        return plan;
     } else {
         auto   C_swap            = C->to_column_major();
         size_t innerStrideA      = A.stride(0);
@@ -295,9 +279,35 @@ void permute(T beta, std::string const &C_indices, einsums::detail::TensorImpl<T
             offsetC[i0]    = 0;
         }
         find_char_with_position(A_indices, C_indices, &perms);
-        auto result = detail::permute(perms.data(), A.rank(), alpha, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                                      beta, C_swap.data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, false);
+        auto plan =
+            hptt::create_plan(perms.data(), A.rank(), alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
+                              C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, false);
+        plan->setConjA(ConjA);
+
+        return plan;
     }
+}
+
+template <typename T>
+void permute(einsums::detail::TensorImpl<T> *C, einsums::detail::TensorImpl<T> const &A, std::shared_ptr<hptt::Transpose<T>> plan) {
+    plan->setInputPtr(A.data());
+    plan->setOutputPtr(C->data());
+
+    plan->execute();
+}
+
+template <bool ConjA = false, typename T, typename... CIndices, typename... AIndices>
+void permute(T beta, std::tuple<CIndices...> const &C_indices, einsums::detail::TensorImpl<T> *C, T alpha,
+             std::tuple<AIndices...> const &A_indices, einsums::detail::TensorImpl<T> const &A) {
+    auto plan = compile_permute<ConjA>(beta, C_indices, C, alpha, A_indices, A);
+    plan->execute();
+}
+
+template <bool ConjA = false, typename T>
+void permute(T beta, std::string const &C_indices, einsums::detail::TensorImpl<T> *C, T alpha, std::string const &A_indices,
+             einsums::detail::TensorImpl<T> const &A) {
+    auto plan = compile_permute<ConjA>(beta, C_indices, C, alpha, A_indices, A);
+    plan->execute();
 }
 
 } // namespace detail
@@ -358,84 +368,8 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     });
 
 #if !defined(EINSUMS_WINDOWS)
-    if (A.impl().is_row_major() != C->impl().is_row_major()) {
+    if (CoreBasicTensorConcept<AType> && CoreBasicTensorConcept<CType>) {
         detail::permute<ConjA>(C_prefactor, C_indices, &C->impl(), A_prefactor, A_indices, A.impl());
-        return;
-    }
-    if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
-        std::array<int, ARank>    perms{};
-        std::array<size_t, ARank> size{};
-
-        for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0] = arguments::get_from_tuple<size_t>(target_position_in_A, (2 * i0) + 1);
-            size[i0]  = A.dim(i0);
-        }
-
-        detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data(), ConjA, A.impl().is_row_major());
-    } else if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
-        std::array<int, ARank>    perms{};
-        std::array<size_t, ARank> size{};
-        std::array<size_t, ARank> outerSizeA{};
-        std::array<size_t, ARank> offsetA{};
-        std::array<size_t, ARank> outerSizeC{};
-        std::array<size_t, ARank> offsetC{};
-        size_t                    innerStrideA = A.impl().get_incx();
-        size_t                    innerStrideC = 1;
-
-        for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0]      = arguments::get_from_tuple<size_t>(target_position_in_A, (2 * i0) + 1);
-            size[i0]       = A.dim(i0);
-            outerSizeA[i0] = A.source_dim(i0);
-            offsetA[i0]    = A.offset(i0);
-            outerSizeC[i0] = 0;
-            offsetC[i0]    = 0;
-        }
-
-        for (int i0 = 0; i0 < ARank; i0++) {
-            outerSizeC[i0] = A.dim(perms[i0]);
-        }
-        detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                        C_prefactor, C->data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, A.impl().is_row_major());
-    } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
-        std::array<int, ARank>    perms{};
-        std::array<size_t, ARank> size{};
-        std::array<size_t, ARank> outerSizeA{};
-        std::array<size_t, ARank> offsetA{};
-        std::array<size_t, ARank> outerSizeC{};
-        std::array<size_t, ARank> offsetC{};
-        size_t                    innerStrideA = 1;
-        size_t                    innerStrideC = C->impl().get_incx();
-
-        for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0]      = arguments::get_from_tuple<size_t>(target_position_in_A, (2 * i0) + 1);
-            size[i0]       = A.dim(i0);
-            outerSizeA[i0] = A.dim(i0);
-            offsetA[i0]    = 0;
-            outerSizeC[i0] = C->source_dim(i0);
-            offsetC[i0]    = C->offset(i0);
-        }
-        detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                        C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, A.impl().is_row_major());
-    } else if constexpr (std::is_same_v<CType, TensorView<T, CRank>> && std::is_same_v<AType, TensorView<T, ARank>>) {
-        std::array<int, ARank>    perms{};
-        std::array<size_t, ARank> size{};
-        std::array<size_t, ARank> outerSizeA{};
-        std::array<size_t, ARank> offsetA{};
-        std::array<size_t, ARank> outerSizeC{};
-        std::array<size_t, ARank> offsetC{};
-        size_t                    innerStrideA = A.impl().get_incx();
-        size_t                    innerStrideC = C->impl().get_incx();
-
-        for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0]      = arguments::get_from_tuple<size_t>(target_position_in_A, (2 * i0) + 1);
-            size[i0]       = A.dim(i0);
-            outerSizeA[i0] = A.source_dim(i0);
-            offsetA[i0]    = A.offset(i0);
-            outerSizeC[i0] = C->source_dim(i0);
-            offsetC[i0]    = C->offset(i0);
-        }
-        detail::permute(perms.data(), ARank, A_prefactor, A.full_data(), size.data(), offsetA.data(), outerSizeA.data(), innerStrideA,
-                        C_prefactor, C->full_data(), offsetC.data(), outerSizeC.data(), innerStrideC, ConjA, A.impl().is_row_major());
     } else
 #endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)> && !(ConjA && IsComplexV<T>)) {
@@ -470,6 +404,52 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             }
         }
     }
+}
+
+/**
+ * Compiles a permutation so that it can be used multiple times.
+ *
+ * @param UC_prefactor The prefactor for the output.
+ * @param C_indices The indices for the output.
+ * @param C The output tensor.
+ * @param UA_prefactor The prefactor for the input.
+ * @param A_indices The indices for the input.
+ * @param A The input tensor.
+ * @param method Indicates which method HPTT should use to optimize the permutation. By default, it is hptt::ESTIMATE , which is the
+ * simplest of the options.
+ *
+ * @return The compiled plan.
+ *
+ * @versionadded{2.0.0}
+ */
+template <bool ConjA = false, CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
+    requires requires {
+        requires sizeof...(CIndices) == sizeof...(AIndices);
+        requires sizeof...(CIndices) == CType::Rank;
+        requires sizeof...(AIndices) == AType::Rank;
+        requires SameUnderlyingAndRank<AType, CType>;
+        requires std::is_arithmetic_v<U> || IsComplexV<U>;
+    }
+std::shared_ptr<hptt::Transpose<typename AType::ValueType>>
+compile_permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
+                std::tuple<AIndices...> const &A_indices, AType const &A, hptt::SelectionMethod method = hptt::ESTIMATE) {
+    using T = typename AType::ValueType;
+    return detail::compile_permute<ConjA>((T)UC_prefactor, C_indices, &C->impl(), (T)UA_prefactor, A_indices, A.impl(), method);
+}
+
+/**
+ * Perform a permuation using the provided plan.
+ *
+ * @param C The output tensor.
+ * @param A The input tensor.
+ * @param plan The pre-compiled plan.
+ *
+ * @versionadded{2.0.0}
+ */
+template <CoreTensorConcept AType, CoreTensorConcept CType>
+    requires SameUnderlyingAndRank<AType, CType>
+void permute(CType *C, AType const &A, std::shared_ptr<hptt::Transpose<typename AType::ValueType>> plan) {
+    detail::permute(&C->impl(), A.impl(), plan);
 }
 
 // Sort with default values, no smart pointers
@@ -527,6 +507,19 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         auto const &A_block = A[i];
         permute<ConjA>(UC_prefactor, C_indices, &C_block, UA_prefactor, A_indices, A_block);
     }
+}
+
+template <bool ConjA = false, CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices, typename... AIndices>
+    requires requires {
+        requires sizeof...(CIndices) == sizeof...(AIndices);
+        requires sizeof...(CIndices) == CType::Rank;
+        requires sizeof...(AIndices) == AType::Rank;
+        requires SameUnderlyingAndRank<AType, CType>;
+    }
+std::shared_ptr<hptt::Transpose<typename AType::ValueType>> compile_permute(std::tuple<CIndices...> const &C_indices, CType *C,
+                                                                            std::tuple<AIndices...> const &A_indices, AType const &A,
+                                                                            hptt::SelectionMethod method = hptt::ESTIMATE) {
+    return compile_permute(0.0, C_indices, C, 1.0, A_indices, A, method);
 }
 #endif
 

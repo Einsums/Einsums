@@ -367,6 +367,11 @@ struct FunctionTensor : public CoreTensor {
         return out;
     }
 
+    /**
+     * Returns whether the tensor contains all elements or only some subset of a whole.
+     *
+     * @return False if the tensor is a view of a larger tensor. True if this is the entire tensor.
+     */
     virtual bool full_view_of_underlying() const { return true; }
 };
 

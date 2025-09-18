@@ -29,7 +29,7 @@ this is still a work in progress.
     needed by specifying the error code. These errors can then be caught either as an error of type :code:`ErrorClass`,
     or you can specify which error you want to handle as :code:`CodedError<ErrorClass, ErrorCode>`.
 
-    As an example, in some specializations of the :code:`gemm` call, multiple :cpp:class:`tensor_compat_error`s can be
+    As an example, in some specializations of the :code:`gemm` call, multiple :cpp:class:`tensor_compat_error` s can be
     thrown. For the :cpp:class:`TiledTensor` version, for instance, a :cpp:class:`tensor_compat_error` can be thrown if 
     either the output tensor's grid doesn't match what the input tensors require, or if the inner input tensor dimension's
     grid doesn't match what is required. If you wanted to catch both of these at once, you can use something like the following.
@@ -102,7 +102,7 @@ this is still a work in progress.
 
     This exception, along with the :cpp:class:`not_implemented` exception, indicates that the action you requested
     is not yet implemented. If you get this error, come tell us 
-    `on our discussion page<https://github.com/Einsums/Einsums/discussions>`_, and we will try to focus some energy
+    `on our discussion page <https://github.com/Einsums/Einsums/discussions>`_ or `our Discord server <https://discord.gg/8GvtkyWZUv>`_, and we will try to focus some energy
     to filling it out. If you are an experienced C++ programmer, we would appreciate your assistance if you think you
     have a solution.
 
@@ -111,7 +111,7 @@ this is still a work in progress.
     This exception indicates that an action you requested is not implemented. This may be because the feature
     is not yet ready, or it may be that the specific combination of parameters is not acceptable. The message
     provided should give more information. If you absolutely need that set of features, come tell us
-    `on our discussion page<https://github.com/Einsums/Einsums/discussions>`_, and we will try to work it out.
+    `on our discussion page <https://github.com/Einsums/Einsums/discussions>`_ or `our Discord server <https://discord.gg/8GvtkyWZUv>`_, and we will try to work it out.
     If you are an experienced C++ programmer, we would appreciate your assistance if you think you have a solution.
 
 .. cpp:class:: bad_logic

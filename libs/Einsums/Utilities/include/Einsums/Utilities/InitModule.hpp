@@ -20,6 +20,8 @@ EINSUMS_EXPORT int init_Einsums_Utilities();
 
 /**
  * @brief Initializes the random number generator.
+ *
+ * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT void initialize_Einsums_Utilities();
 

@@ -26,6 +26,15 @@ Public API
     :param a[in]: The input tensor.
     :param result[out]: The output tensor.
 
+    :throws dimension_error: When the size of the input and output are invalid. The output needs to have more than half the size of the input.
+
+    .. versionadded:: 1.0.0
+        The complex-to-complex overloads do not throw an exception when they have invalid sizes. They are instead prone to buffer
+        overruns.
+    .. versionchanged:: 2.0.0
+        The complex-to-complex overloads now throw an exception when the inputs have invalid sizes.
+
+
 .. cpp:function:: void einsums::fft::ifft(Tensor<std::complex<float>, 1> const &a, Tensor<float, 2> *result)
 .. cpp:function:: void einsums::fft::ifft(Tensor<std::complex<double>, 1> const &a, Tensor<double, 2> *result)
 .. cpp:function:: void einsums::fft::ifft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 2> *result)
@@ -36,6 +45,14 @@ Public API
     :param a[in]: The input tensor.
     :param result[out]: The output tensor.
 
+    :throws dimension_error: When the size of the input and output are invalid. The output needs to have more than half the size of the input.
+
+    .. versionadded:: 1.0.0
+        The complex-to-complex overloads do not throw an exception when they have invalid sizes. They are instead prone to buffer
+        overruns.
+    .. versionchanged:: 2.0.0
+        The complex-to-complex overloads now throw an exception when the inputs have invalid sizes.
+
 .. cpp:function:: Tensor<double, 1> fftfreq(int n, double d)
 
     Gets the frequency corresponding to each position in the frequency tensor.
@@ -43,3 +60,5 @@ Public API
     :param n: The number of positions in the tensor.
     :param d: The scale factor for the frequency.
     :return: A tensor that contains the frequency at each position in a frequency tensor of the same size.
+
+    .. versionadded:: 1.0.0

@@ -24,31 +24,51 @@
 namespace einsums {
 namespace print {
 
-/// Add spaces to the global indentation counter.
+/**
+ * Add spaces to the global indentation counter.
+ *
+ * @versionadded{1.0.0}
+ */
 void EINSUMS_EXPORT indent();
 
-/// Removes spaces from the global indentation counter.
+/**
+ * Removes spaces from the global indentation counter.
+ *
+ * @versionadded{1.0.0}
+ */
 void EINSUMS_EXPORT deindent();
 
-/// Returns the current indentation level.
+/**
+ * Gets the current indentation level.
+ *
+ * @return The current indentation level.
+ *
+ * @versionadded{1.0.0}
+ */
 auto EINSUMS_EXPORT current_indent_level() -> int;
 
 /**
  * @brief Controls whether a line header is printed for the main thread or not.
  *
- * @param onoff If true, print thread id for main and child threads, otherwise just print for child threads.
+ * @param[in] onoff If true, print thread id for main and child threads, otherwise just print for child threads.
+ *
+ * @versionadded{1.0.0}
  */
 void EINSUMS_EXPORT always_print_thread_id(bool onoff);
 
 /**
  * @brief Silences all output.
  *
- * @param onoff If true, output is suppressed, otherwise printing is allowed.
+ * @param[in] onoff If true, output is suppressed, otherwise printing is allowed.
+ *
+ * @versionadded{1.0.0}
  */
 void EINSUMS_EXPORT suppress_output(bool onoff);
 
 /**
  * @brief Controls indentation.
+ *
+ * @versionadded{1.0.0}
  */
 struct Indent {
     Indent() { indent(); }
@@ -60,6 +80,10 @@ struct Indent {
  *
  * Wraps an integer. When the ordinal is printed, it will add the appropriate ordinal
  * suffix to that integer.
+ *
+ * @tparam IntType The integer type the ordinal will wrap.
+ *
+ * @versionadded{1.0.0}
  */
 template <std::integral IntType>
 struct ordinal {
@@ -67,26 +91,44 @@ struct ordinal {
 
     /**
      * Copy constructor.
+     *
+     * @param[in] other The ordinal to copy.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr ordinal(ordinal<IntType> const &other) : val_{other.val_} {}
 
     /**
      * Move constructor.
+     *
+     * @param[inout] other The ordinal to move. On exit, this may be invalidated.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr ordinal(ordinal<IntType> &&other) : val_{std::move(other.val_)} {}
 
     /**
      * Cast constructor.
+     *
+     * @param[in] value The integer to wrap.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr ordinal(IntType const &value) : val_{value} {}
 
     /**
-     * Deleter.
+     * Destructor.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr ~ordinal() = default;
 
     /**
      * Copy assignment.
+     *
+     * @param[in] other The ordinal to copy.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr ordinal<IntType> &operator=(ordinal<IntType> const &other) {
         val_ = other.val_;
@@ -95,6 +137,10 @@ struct ordinal {
 
     /**
      * Move assignment.
+     *
+     * @param[inout] other The ordinal to move. On exit, this may be invalidated.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr ordinal<IntType> &operator=(ordinal<IntType> &&other) {
         val_ = std::move(other.val_);
@@ -108,11 +154,17 @@ struct ordinal {
 
     /**
      * Cast to reference of the underlying integer type.
+     *
+     * @return A reference to the storage member.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr operator IntType &() { return val_; }
 
     /**
      * Cast to arbitrary type.
+     *
+     * @versionadded{1.0.0}
      */
     template <typename T>
     constexpr operator T() const {
@@ -170,9 +222,22 @@ struct ordinal {
      * @var val_
      *
      * The value wrapped by the ordinal.
+     *
+     * @versionadded{1.0.0}
      */
     IntType val_{0};
 };
+
+/**
+ * Creates a literal ordinal.
+ *
+ * @param value The value to wrap.
+ *
+ * @versionadded{2.0.0}
+ */
+constexpr ordinal<unsigned long long int> operator""_th(unsigned long long int value) {
+    return ordinal(value);
+}
 
 } // namespace print
 
@@ -195,6 +260,10 @@ using fmt::fg;
 #ifdef DOXYGEN
 /**
  * Prints something to standard output. A new line is emmitted after the print is done.
+ *
+ * @param[in] args The arguments passed to the printer.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename... Ts>
 void println(Ts... args) {
@@ -203,6 +272,11 @@ void println(Ts... args) {
 
 /**
  * Prints something to a file pointer or output stream. A new line is emmitted after the print is done.
+ *
+ * @param[inout] out The output stream or file.
+ * @param[in] args The arguments passed to the printer.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename OutType, typename... Ts>
 void fprintln(OutType out, Ts... args) {
@@ -295,6 +369,8 @@ inline void fprintln(std::ostream &fp) {
 
 /**
  * Calls println to generate an error message, then aborts.
+ *
+ * @versionadded{1.0.0}
  */
 
 template <typename... Ts>
@@ -311,6 +387,8 @@ void println_abort(std::string_view const &format, Ts const... ts) {
 
 /**
  * Calls println to generate a warning message.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename... Ts>
 void println_warn(std::string_view const &format, Ts const... ts) {
@@ -324,6 +402,8 @@ void println_warn(std::string_view const &format, Ts const... ts) {
 
 /**
  * Calls fprintln to generate an error message, then aborts.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename... Ts>
 void fprintln_abort(std::FILE *fp, std::string_view const &format, Ts const... ts) {
@@ -335,6 +415,8 @@ void fprintln_abort(std::FILE *fp, std::string_view const &format, Ts const... t
 
 /**
  * Calls fprintln to generate a warning message.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename... Ts>
 void fprintln_warn(std::FILE *fp, std::string_view const &format, Ts const... ts) {

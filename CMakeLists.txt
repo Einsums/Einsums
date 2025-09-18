@@ -444,6 +444,16 @@ einsums_option(
   CATEGORY "Debugging" ADVANCED
 )
 
+# Tuning and other things.
+einsums_option(
+  EINSUMS_ROW_MAJOR_DEFAULT BOOL "If true, tensors will be created in row-major by default. If false, they will be column-major." ON
+  CATEGORY "Generic" ADVANCED
+)
+
+if(EINSUMS_ROW_MAJOR_DEFAULT)
+  einsums_add_config_define(EINSUMS_ROW_MAJOR_DEFAULT)
+endif()
+
 # ##################################################################################################
 # Special diagnostic flags, do not enable by default, only if needed
 einsums_option(
@@ -812,7 +822,9 @@ set(EINSUMS_DEBUG_POSTFIX "d")
 # Add libraries
 # ##################################################################################################
 add_subdirectory(libs)
-add_subdirectory(einsums)
+if(EINSUMS_BUILD_PYTHON)
+  add_subdirectory(einsums)
+endif()
 
 # ##################################################################################################
 # Documentation toolchain (Sphinx, Doxygen, Breathe)

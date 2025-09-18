@@ -36,6 +36,7 @@ using StartupFunctionType = std::function<void()>;
 ///       system during its initialization (if necessary).
 ///
 /// \see    \a einsums::register_startup_function()
+/// @versionadded{1.0.0}
 EINSUMS_EXPORT void register_pre_startup_function(StartupFunctionType f);
 
 /// \brief Add a function to be executed before einsums_main
@@ -60,6 +61,7 @@ EINSUMS_EXPORT void register_pre_startup_function(StartupFunctionType f);
 ///       system during its initialization (if necessary).
 ///
 /// \see    \a einsums::register_pre_startup_function()
+/// @versionadded{1.0.0}
 EINSUMS_EXPORT void register_startup_function(StartupFunctionType f);
 
 } // namespace einsums

@@ -13,9 +13,11 @@
  * class and does not contain any code. Make sure to use a matching \c EINSUMS_SINGLETON_IMPL somewhere else to
  * get the code to compile.
  *
- * This will provide the two methods <tt>Type &get_singleton()</tt> and <tt>finalize_singleton()</tt>.
+ * This will provide the <tt>Type &get_singleton()</tt> static method.
  *
  * @param Type The type of singleton to construct.
+ *
+ * @versionadded{1.0.0}
  */
 #define EINSUMS_SINGLETON_DEF(Type)                                                                                                        \
   private:                                                                                                                                 \
@@ -32,9 +34,14 @@
  * @def EINSUMS_SINGLETON_IMPL
  *
  * Creates the code for managing a singleton.
+ *
+ * @versionadded{1.0.0}
  */
 #define EINSUMS_SINGLETON_IMPL(Type)                                                                                                       \
     auto Type::get_singleton() -> Type & {                                                                                                 \
         static std::unique_ptr<Type> singleton_instance = std::make_unique<Type>(PrivateConstructorStuff());                               \
+        if (!singleton_instance) {                                                                                                         \
+            singleton_instance = std::make_unique<Type>(PrivateConstructorStuff());                                                        \
+        }                                                                                                                                  \
         return *singleton_instance;                                                                                                        \
     }
