@@ -13,6 +13,7 @@
 #include <cstdarg>
 #include <cstddef>
 #include <source_location>
+#include <stdexcept>
 #include <tuple>
 #include <type_traits>
 #include <vector>
@@ -634,10 +635,16 @@ inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_un
  */
 template <size_t num_unique_inds, typename... MultiIndex>
     requires(std::is_integral_v<std::decay_t<MultiIndex>> && ...)
-inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_unique_inds> const &unique_strides,
+inline size_t indices_to_sentinel_negative_check(size_t size, std::array<std::int64_t, num_unique_inds> const &unique_strides,
                                                  std::array<std::int64_t, num_unique_inds> const &dims, MultiIndex &&...indices) {
     static_assert(sizeof...(MultiIndex) == num_unique_inds);
-    return detail::indices_to_sentinel_negative_check<0>(unique_strides, dims, std::forward<MultiIndex>(indices)...);
+    auto offset = detail::indices_to_sentinel_negative_check<0>(unique_strides, dims, std::forward<MultiIndex>(indices)...);
+
+    if(offset > size) {
+        EINSUMS_THROW_EXCEPTION(std::length_error, "Index is within the dimensions but outside the linear size of the tensor!");
+    }
+
+    return offset;
 }
 
 /**
@@ -653,7 +660,7 @@ template <typename StorageType1, typename StorageType2, typename StorageType3>
         requires !std::is_arithmetic_v<StorageType2>;
         requires !std::is_arithmetic_v<StorageType3>;
     }
-inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_strides, StorageType2 const &unique_dims,
+inline size_t indices_to_sentinel_negative_check(size_t size, StorageType1 const &unique_strides, StorageType2 const &unique_dims,
                                                  StorageType3 const &inds) {
     size_t out = 0;
 
@@ -679,6 +686,10 @@ inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_stri
         }
 
         out += ind * *stride_iter;
+    }
+
+    if(out > size) {
+        EINSUMS_THROW_EXCEPTION(std::length_error, "Index is within the dimensions but outside the linear size of the tensor!");
     }
 
     return out;
