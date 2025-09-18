@@ -5,7 +5,10 @@
 
 #pragma once
 
+#include <algorithm>
+#include <optional>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace einsums {
