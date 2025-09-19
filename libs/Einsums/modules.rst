@@ -43,3 +43,4 @@ Einsums Modules
     /libs/Einsums/TypeSupport/docs/index.rst
     /libs/Einsums/Utilities/docs/index.rst
     /libs/Einsums/Version/docs/index.rst
+    /libs/Einsums/hipBLASVendor/docs/index.rst

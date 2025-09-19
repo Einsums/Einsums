@@ -41,6 +41,7 @@ set(_Einsums_modules
   TypeSupport
   Utilities
   Version
+  hipBLASVendor
   )
 # cmake-format: on
 

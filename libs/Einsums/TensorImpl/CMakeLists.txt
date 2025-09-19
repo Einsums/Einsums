@@ -24,6 +24,7 @@ einsums_add_module(
     Einsums_BufferAllocator
     Einsums_TensorBase
     Einsums_Errors
+    Einsums_BlockManager
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME Einsums
 )

@@ -5,20 +5,19 @@
 
 #pragma once
 
+#include <Einsums/BlockManager/BlockManager.hpp>
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
+#include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/File.hpp>
 #include <Einsums/Concepts/NamedRequirements.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Logging.hpp>
+#include <Einsums/Print.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
 #include <type_traits>
-
-#include "Einsums/Concepts/Complex.hpp"
-#include "Einsums/Config/CompilerSpecific.hpp"
-#include "Einsums/Config/Types.hpp"
-#include "Einsums/Print.hpp"
 
 namespace einsums {
 
@@ -1637,6 +1636,141 @@ struct TensorImpl final {
         }
     }
 
+#ifdef EINSUMS_COMPUTE_CODE
+    gpu::GPUPointer<T> gpu_cache_tensor() {
+        if (_gpu_memory.expired()) {
+            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+        }
+        _cached_gpu_memory = _gpu_memory.lock();
+
+        auto out = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
+
+        if (get_incx() == 1 && is_totally_vectorable()) {
+            std::memcpy(out, _ptr, _size * sizeof(T));
+        } else {
+            BufferVector<T> temp_buffer(_size);
+
+            // Force the use of column major since hipBLAS, hipSolver, and hipTensor all use column major.
+            TensorImpl<T> temp(temp_buffer.data(), _dims, false);
+
+            impl_copy(*this, temp);
+
+            std::memcpy(out, temp.data(), _size * sizeof(T));
+        }
+
+        return out;
+    }
+
+    gpu::GPUPointer<T> gpu_cache_tensor_nowrite() {
+        if (_gpu_memory.expired()) {
+            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+        }
+        _cached_gpu_memory = _gpu_memory.lock();
+
+        auto out = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
+
+        return out;
+    }
+
+    gpu::GPUPointer<T const> gpu_cache_tensor() const {
+        if (_gpu_memory.expired()) {
+            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+        }
+        _cached_gpu_memory = _gpu_memory.lock();
+
+        auto out = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
+
+        if (get_incx() == 1 && is_totally_vectorable()) {
+            std::memcpy(out, _ptr, _size * sizeof(T));
+        } else {
+            BufferVector<T> temp_buffer(_size);
+
+            // Force the use of column major since hipBLAS, hipSolver, and hipTensor all use column major.
+            TensorImpl<T> temp(temp_buffer.data(), _dims, false);
+
+            impl_copy(*this, temp);
+
+            std::memcpy(out, temp.data(), _size * sizeof(T));
+        }
+
+        return out;
+    }
+
+    gpu::GPUPointer<T const> gpu_cache_tensor_nowrite() const {
+        if (_gpu_memory.expired()) {
+            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+        }
+        _cached_gpu_memory = _gpu_memory.lock();
+
+        auto out = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
+
+        return out;
+    }
+
+    gpu::GPUPointer<T> get_gpu_pointer() {
+        if (!_cached_gpu_memory) {
+            if (_gpu_memory.expired()) {
+                return nullptr;
+            } else {
+                _cached_gpu_memory = _gpu_memory.lock();
+            }
+        }
+
+        return GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
+    }
+
+    gpu::GPUPointer<T const> get_gpu_pointer() const {
+        if (!_cached_gpu_memory) {
+            if (_gpu_memory.expired()) {
+                return nullptr;
+            } else {
+                _cached_gpu_memory = _gpu_memory.lock();
+            }
+        }
+
+        return GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
+    }
+
+    void gpu_uncache_tensor() const {
+        if (_cached_gpu_memory) {
+            auto gpu_ptr = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
+            _cached_gpu_memory.reset();
+        }
+    }
+
+    void gpu_uncache_tensor() {
+        if (_cached_gpu_memory) {
+            auto gpu_ptr = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
+
+            if (get_incx() == 1 && is_totally_vectorable()) {
+                std::memcpy(gpu_ptr, _ptr, _size * sizeof(T));
+            } else {
+                BufferVector<T> temp_buffer(_size);
+
+                // Force the use of column major since hipBLAS, hipSolver, and hipTensor all use column major.
+                TensorImpl<T> temp(temp_buffer.data(), _dims, false);
+
+                std::memcpy(temp.data(), gpu_ptr, _size * sizeof(T));
+
+                copy_to(temp, *this);
+
+                _cached_gpu_memory.reset();
+            }
+        }
+    }
+
+    void gpu_uncache_tensor_nowrite() const {
+        if (_cached_gpu_memory) {
+            auto gpu_ptr = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
+            _cached_gpu_memory.reset();
+        }
+    }
+
+    std::weak_ptr<GPUBlock> get_gpu_memory() const { return _gpu_memory; }
+
+    bool gpu_is_expired() const { return _gpu_memory.expired(); }
+#endif
+
   private:
     template <size_t I, typename... MultiIndex>
     constexpr void adjust_ranges(std::tuple<MultiIndex...> &indices) const {
@@ -1771,6 +1905,11 @@ struct TensorImpl final {
     size_t               _rank, _size;
     BufferVector<size_t> _dims, _strides;
     bool                 _row_major;
+
+#ifdef EINSUMS_COMPUTE_CODE
+    std::weak_ptr<GPUBlock> mutable _gpu_memory;
+    std::shared_ptr<GPUBlock> mutable _cached_gpu_memory;
+#endif
 };
 
 } // namespace detail
