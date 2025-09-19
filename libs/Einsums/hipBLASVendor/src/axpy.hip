@@ -16,7 +16,7 @@
 
 namespace einsums::blas::hip {
 
-void saxpy(int_t n, float alpha_x, float const *x, int_t inc_x, float *y, int_t inc_y) {
+void saxpy(int n, float alpha_x, float const *x, int inc_x, float *y, int inc_y) {
     LabeledSection0();
 
     float *alpha_x_gpu;
@@ -30,7 +30,7 @@ void saxpy(int_t n, float alpha_x, float const *x, int_t inc_x, float *y, int_t 
     hip_catch(hipHostUnregister(&alpha_x));
 }
 
-void daxpy(int_t n, double alpha_x, double const *x, int_t inc_x, double *y, int_t inc_y) {
+void daxpy(int n, double alpha_x, double const *x, int inc_x, double *y, int inc_y) {
     LabeledSection0();
 
     double *alpha_x_gpu;
@@ -44,7 +44,7 @@ void daxpy(int_t n, double alpha_x, double const *x, int_t inc_x, double *y, int
     hip_catch(hipHostUnregister(&alpha_x));
 }
 
-void caxpy(int_t n, std::complex<float> alpha_x, std::complex<float> const *x, int_t inc_x, std::complex<float> *y, int_t inc_y) {
+void caxpy(int n, std::complex<float> alpha_x, std::complex<float> const *x, int inc_x, std::complex<float> *y, int inc_y) {
     LabeledSection0();
 
     hipblasComplex *alpha_x_gpu;
@@ -58,7 +58,7 @@ void caxpy(int_t n, std::complex<float> alpha_x, std::complex<float> const *x, i
     hip_catch(hipHostUnregister(&alpha_x));
 }
 
-void zaxpy(int_t n, std::complex<double> alpha_x, std::complex<double> const *x, int_t inc_x, std::complex<double> *y, int_t inc_y) {
+void zaxpy(int n, std::complex<double> alpha_x, std::complex<double> const *x, int inc_x, std::complex<double> *y, int inc_y) {
     LabeledSection0();
 
     hipblasDoubleComplex *alpha_x_gpu;
@@ -73,7 +73,7 @@ void zaxpy(int_t n, std::complex<double> alpha_x, std::complex<double> const *x,
     hip_catch(hipHostUnregister(&alpha_x));
 }
 
-void saxpby(int_t const n, float const a, float const *x, int_t const incx, float const b, float *y, int_t const incy) {
+void saxpby(int const n, float const a, float const *x, int const incx, float const b, float *y, int const incy) {
     LabeledSection0();
     if (incy == 0) {
         *y *= b;
@@ -83,7 +83,7 @@ void saxpby(int_t const n, float const a, float const *x, int_t const incx, floa
     saxpy(n, a, x, incx, y, incy);
 }
 
-void daxpby(int_t const n, double const a, double const *x, int_t const incx, double const b, double *y, int_t const incy) {
+void daxpby(int const n, double const a, double const *x, int const incx, double const b, double *y, int const incy) {
     LabeledSection0();
     if (incy == 0) {
         *y *= b;
@@ -93,8 +93,8 @@ void daxpby(int_t const n, double const a, double const *x, int_t const incx, do
     daxpy(n, a, x, incx, y, incy);
 }
 
-void caxpby(int_t const n, std::complex<float> const a, std::complex<float> const *x, int_t const incx, std::complex<float> const b,
-            std::complex<float> *y, int_t const incy) {
+void caxpby(int const n, std::complex<float> const a, std::complex<float> const *x, int const incx, std::complex<float> const b,
+            std::complex<float> *y, int const incy) {
     LabeledSection0();
     if (incy == 0) {
         *y *= b;
@@ -104,8 +104,8 @@ void caxpby(int_t const n, std::complex<float> const a, std::complex<float> cons
     caxpy(n, a, x, incx, y, incy);
 }
 
-void zaxpby(int_t const n, std::complex<double> const a, std::complex<double> const *x, int_t const incx, std::complex<double> const b,
-            std::complex<double> *y, int_t const incy) {
+void zaxpby(int const n, std::complex<double> const a, std::complex<double> const *x, int const incx, std::complex<double> const b,
+            std::complex<double> *y, int const incy) {
     LabeledSection0();
     if (incy == 0) {
         *y *= b;

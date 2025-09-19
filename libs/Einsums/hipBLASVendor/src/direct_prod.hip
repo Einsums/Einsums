@@ -207,7 +207,7 @@ static __global__ void zdirprod_kernel(int n, hipDoubleComplex *alpha_ptr, hipDo
     }
 }
 
-void sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, int_t incy, float *z, int_t incz) {
+void sdirprod(int n, float alpha, float const *x, int incx, float const *y, int incy, float *z, int incz) {
     LabeledSection0();
 
     float *alpha_gpu;
@@ -232,7 +232,7 @@ void sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, 
     hip_catch(hipHostUnregister((void *)&alpha));
 }
 
-void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *y, int_t incy, double *z, int_t incz) {
+void ddirprod(int n, double alpha, double const *x, int incx, double const *y, int incy, double *z, int incz) {
     LabeledSection0();
 
     double *alpha_gpu;
@@ -257,8 +257,8 @@ void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *
     hip_catch(hipHostUnregister((void *)&alpha));
 }
 
-void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy,
-              std::complex<float> *z, int_t incz) {
+void cdirprod(int n, std::complex<float> alpha, std::complex<float> const *x, int incx, std::complex<float> const *y, int incy,
+              std::complex<float> *z, int incz) {
     LabeledSection0();
 
     hipComplex *alpha_gpu;
@@ -277,8 +277,8 @@ void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, 
     hip_catch(hipHostUnregister((void *)&alpha));
 }
 
-void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy,
-              std::complex<double> *z, int_t incz) {
+void zdirprod(int n, std::complex<double> alpha, std::complex<double> const *x, int incx, std::complex<double> const *y, int incy,
+              std::complex<double> *z, int incz) {
     LabeledSection0();
 
     hipDoubleComplex *alpha_gpu;

@@ -20,7 +20,7 @@
 #include "Common.hpp"
 
 namespace einsums::blas::hip {
-float sasum(int_t n, float const *x, int_t incx) {
+float sasum(int n, float const *x, int incx) {
     LabeledSection0();
 
     float out;
@@ -31,7 +31,7 @@ float sasum(int_t n, float const *x, int_t incx) {
     return out;
 }
 
-double dasum(int_t n, double const *x, int_t incx) {
+double dasum(int n, double const *x, int incx) {
     LabeledSection0();
 
     double out;
@@ -42,7 +42,7 @@ double dasum(int_t n, double const *x, int_t incx) {
     return out;
 }
 
-float scasum(int_t n, std::complex<float> const *x, int_t incx) {
+float scasum(int n, std::complex<float> const *x, int incx) {
     LabeledSection0();
 
     float out;
@@ -53,7 +53,7 @@ float scasum(int_t n, std::complex<float> const *x, int_t incx) {
     return out;
 }
 
-double dzasum(int_t n, std::complex<double> const *x, int_t incx) {
+double dzasum(int n, std::complex<double> const *x, int incx) {
     LabeledSection0();
 
     double out;
@@ -148,7 +148,7 @@ __global__ void dzsum1_kernel(int n, hipDoubleComplex const *x, int incx, double
     }
 }
 
-float scsum1(int_t n, std::complex<float> const *x, int_t incx) {
+float scsum1(int n, std::complex<float> const *x, int incx) {
     LabeledSection0();
 
     auto block_size = gpu::block_size(n);
@@ -170,7 +170,7 @@ float scsum1(int_t n, std::complex<float> const *x, int_t incx) {
     return out;
 }
 
-double dzsum1(int_t n, std::complex<double> const *x, int_t incx) {
+double dzsum1(int n, std::complex<double> const *x, int incx) {
     LabeledSection0();
 
     auto block_size = gpu::block_size(n);

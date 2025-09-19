@@ -9,26 +9,10 @@
 #include <Einsums/BLAS/Types.hpp>
 #include <Einsums/HPTT/HPTT.hpp>
 #include <Einsums/HPTT/HPTTTypes.hpp>
+#include <Einsums/Errors.hpp>
+#include <hipblas/hipblas.h>
 
 #include <omp.h>
-
-#if !defined(FC_SYMBOL)
-#    define FC_SYMBOL 2
-#endif
-
-#if FC_SYMBOL == 1
-/* Mangling for Fortran global symbols without underscores. */
-#    define FC_GLOBAL(name, NAME) name
-#elif FC_SYMBOL == 2
-/* Mangling for Fortran global symbols with underscores. */
-#    define FC_GLOBAL(name, NAME) name##_
-#elif FC_SYMBOL == 3
-/* Mangling for Fortran global symbols without underscores. */
-#    define FC_GLOBAL(name, NAME) NAME
-#elif FC_SYMBOL == 4
-/* Mangling for Fortran global symbols with underscores. */
-#    define FC_GLOBAL(name, NAME) NAME##_
-#endif
 
 namespace einsums::blas::vendor {
 
@@ -40,7 +24,7 @@ enum class OrderMajor { Column, Row, C = Row, Fortran = Column };
 
 // OrderMajor indicates the order of the input matrix. C is Row, Fortran is Column
 template <OrderMajor Order, typename T>
-void transpose(int_t m, int_t n, T const *in, int_t ldin, T *out, int_t ldout) {
+void transpose(int m, int n, T const *in, int ldin, T *out, int ldout) {
     if (in == nullptr || out == nullptr) {
         return;
     }
@@ -68,17 +52,33 @@ void transpose(int_t m, int_t n, T const *in, int_t ldin, T *out, int_t ldout) {
 }
 
 template <OrderMajor Order, typename T, typename Alloc1>
-void transpose(int_t m, int_t n, std::vector<T, Alloc1> const &in, int_t ldin, T *out, int_t ldout) {
+void transpose(int m, int n, std::vector<T, Alloc1> const &in, int ldin, T *out, int ldout) {
     transpose<Order>(m, n, in.data(), ldin, out, ldout);
 }
 
 template <OrderMajor Order, typename T, typename Alloc2>
-void transpose(int_t m, int_t n, T const *in, int_t ldin, std::vector<T, Alloc2> &out, int_t ldout) {
+void transpose(int m, int n, T const *in, int ldin, std::vector<T, Alloc2> &out, int ldout) {
     transpose<Order>(m, n, in, ldin, out.data(), ldout);
 }
 
 template <OrderMajor Order, typename T, typename Alloc1, typename Alloc2>
-void transpose(int_t m, int_t n, std::vector<T, Alloc1> const &in, int_t ldin, std::vector<T, Alloc2> &out, int_t ldout) {
+void transpose(int m, int n, std::vector<T, Alloc1> const &in, int ldin, std::vector<T, Alloc2> &out, int ldout) {
     transpose<Order>(m, n, in.data(), ldin, out.data(), ldout);
+}
+
+inline hipblasOperation_t char_to_op(char trans) {
+    switch (trans) {
+    case 'c':
+    case 'C':
+        return HIPBLAS_OP_C;
+    case 'n':
+    case 'N':
+        return HIPBLAS_OP_N;
+    case 't':
+    case 'T':
+        return HIPBLAS_OP_T;
+    default:
+        EINSUMS_THROW_EXCEPTION(enum_error, "Transpose value invalid! Expected c, n, or t case insensitive, got {}.", trans);
+    }
 }
 } // namespace einsums::blas::vendor

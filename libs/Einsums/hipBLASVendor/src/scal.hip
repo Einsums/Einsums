@@ -19,7 +19,7 @@
 
 namespace einsums::blas::hip {
 
-void sscal(int_t n, float alpha, float *vec, int_t inc) {
+void sscal(int n, float alpha, float *vec, int inc) {
     LabeledSection0();
 
     float *alpha_gpu = gpu::register_host_variable(alpha);
@@ -29,7 +29,7 @@ void sscal(int_t n, float alpha, float *vec, int_t inc) {
     gpu::unregister_host_variable(alpha);
 }
 
-void dscal(int_t n, double alpha, double *vec, int_t inc) {
+void dscal(int n, double alpha, double *vec, int inc) {
     LabeledSection0();
 
     double *alpha_gpu = gpu::register_host_variable(alpha);
@@ -39,7 +39,7 @@ void dscal(int_t n, double alpha, double *vec, int_t inc) {
     gpu::unregister_host_variable(alpha);
 }
 
-void cscal(int_t n, std::complex<float> alpha, std::complex<float> *vec, int_t inc) {
+void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc) {
     LabeledSection0();
 
     hipblasComplex *alpha_gpu = (hipblasComplex *)gpu::register_host_variable(alpha);
@@ -49,7 +49,7 @@ void cscal(int_t n, std::complex<float> alpha, std::complex<float> *vec, int_t i
     gpu::unregister_host_variable(alpha);
 }
 
-void zscal(int_t n, std::complex<double> alpha, std::complex<double> *vec, int_t inc) {
+void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc) {
     LabeledSection0();
 
     hipblasDoubleComplex *alpha_gpu = (hipblasDoubleComplex *)gpu::register_host_variable(alpha);
@@ -59,7 +59,7 @@ void zscal(int_t n, std::complex<double> alpha, std::complex<double> *vec, int_t
     gpu::unregister_host_variable(alpha);
 }
 
-void csscal(int_t n, float alpha, std::complex<float> *vec, int_t inc) {
+void csscal(int n, float alpha, std::complex<float> *vec, int inc) {
     LabeledSection0();
 
     float *alpha_gpu = gpu::register_host_variable(alpha);
@@ -69,7 +69,7 @@ void csscal(int_t n, float alpha, std::complex<float> *vec, int_t inc) {
     gpu::unregister_host_variable(alpha);
 }
 
-void zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
+void zdscal(int n, double alpha, std::complex<double> *vec, int inc) {
     LabeledSection0();
 
     double *alpha_gpu = gpu::register_host_variable(alpha);
@@ -79,7 +79,7 @@ void zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
     gpu::unregister_host_variable(alpha);
 }
 
-void srscl(int_t n, float alpha, float *vec, int_t inc) {
+void srscl(int n, float alpha, float *vec, int inc) {
     LabeledSection0();
 
     if (n <= 0) {
@@ -118,7 +118,7 @@ void srscl(int_t n, float alpha, float *vec, int_t inc) {
     } while (!finished);
 }
 
-void drscl(int_t n, double alpha, double *vec, int_t inc) {
+void drscl(int n, double alpha, double *vec, int inc) {
     LabeledSection0();
 
     if (n <= 0) {
@@ -157,7 +157,7 @@ void drscl(int_t n, double alpha, double *vec, int_t inc) {
     } while (!finished);
 }
 
-void csrscl(int_t n, float alpha, std::complex<float> *vec, int_t inc) {
+void csrscl(int n, float alpha, std::complex<float> *vec, int inc) {
     LabeledSection0();
 
     if (n <= 0) {
@@ -196,7 +196,7 @@ void csrscl(int_t n, float alpha, std::complex<float> *vec, int_t inc) {
     } while (!finished);
 }
 
-void zdrscl(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
+void zdrscl(int n, double alpha, std::complex<double> *vec, int inc) {
     LabeledSection0();
 
     if (n <= 0) {
@@ -235,7 +235,7 @@ void zdrscl(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
     } while (!finished);
 }
 
-__global__ void slascl_full_matrix(float mult, int_t m, int_t n, float *matrix, int_t lda) {
+__global__ void slascl_full_matrix(float mult, int m, int n, float *matrix, int lda) {
     int thread_id, num_threads;
 
     get_worker_info(thread_id, num_threads);
@@ -325,7 +325,7 @@ __global__ void slascl_full_matrix(float mult, int_t m, int_t n, float *matrix, 
     }
 }
 
-__global__ void dlascl_full_matrix(double mult, int_t m, int_t n, double *matrix, int_t lda) {
+__global__ void dlascl_full_matrix(double mult, int m, int n, double *matrix, int lda) {
     int thread_id, num_threads;
 
     get_worker_info(thread_id, num_threads);
@@ -415,10 +415,10 @@ __global__ void dlascl_full_matrix(double mult, int_t m, int_t n, double *matrix
     }
 }
 
-int_t slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int_t n, float *vec, int_t lda) {
+int slascl(char type, int kl, int ku, float cfrom, float cto, int m, int n, float *vec, int lda) {
     LabeledSection0();
 
-    int_t info = 0;
+    int info = 0;
 
     int compute_type = -1;
 
@@ -640,12 +640,12 @@ int_t slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int
     return 0;
 }
 
-int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, int_t n, double *vec, int_t lda) {
+int dlascl(char type, int kl, int ku, double cfrom, double cto, int m, int n, double *vec, int lda) {
     LabeledSection0();
 
     LabeledSection0();
 
-    int_t info = 0;
+    int info = 0;
 
     int compute_type = -1;
 

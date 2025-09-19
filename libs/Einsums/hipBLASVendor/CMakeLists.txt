@@ -13,27 +13,27 @@ set(hipBLASVendorSources
     asum.hip
     axpy.hip
     copy.hip
-    # dot.hip
+    dot.hip
     # gees.hip
     # geev.hip
     # gelqf.hip
-    # gemm.hip
-    # gemv.hip
-    # geqrf.hip
-    # ger.hip
-    # gesv.hip
+    gemm.hip
+    gemv.hip
+    geqrf.hip
+    ger.hip
+    gesv.hip
     # gesdd.hip
-    # gesvd.hip
-    # getri.hip
-    # getrf.hip
-    # heev.hip
-    # lacgv.hip
+    gesvd.hip
+    getri.hip
+    getrf.hip
+    heev.hip
+    lacgv.hip
     # lange.hip
-    # lassq.hip
+    lassq.hip
     # orglq.hip
-    # orgqr.hip
+    orgqr.hip
     scal.hip
-    # syev.hip
+    syev.hip
     # trsyl.hip
     direct_prod.hip
 )

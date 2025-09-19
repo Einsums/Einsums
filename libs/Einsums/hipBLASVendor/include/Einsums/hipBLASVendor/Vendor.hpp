@@ -13,20 +13,6 @@
 namespace einsums::blas::hip {
 
 /**
- * @brief Initializes the BLAS library.
- *
- * @versionadded{1.0.0}
- */
-EINSUMS_EXPORT void initialize();
-
-/**
- * @brief Tears down the BLAS library.
- *
- * @versionadded{1.0.0}
- */
-EINSUMS_EXPORT void finalize();
-
-/**
  * Performs matrix multiplication for general square matrices.
  *
  * @param[in] transa Whether to transpose the left matrix. Case insensitive. Can be 'c', 't', or 'n'.
@@ -46,19 +32,19 @@ EINSUMS_EXPORT void finalize();
  * @throws std::invalid_argument If @p transa or @p transb are not one of the valid options.
  * @throws std::domain_error If any of the integer arguments have invalid values.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-void sgemm(char transa, char transb, int_t m, int_t n, int_t k, float alpha, float const *a, int_t lda, float const *b, int_t ldb,
-           float beta, float *c, int_t ldc);
+void sgemm(char transa, char transb, int m, int n, int k, float alpha, float const *a, int lda, float const *b, int ldb, float beta,
+           float *c, int ldc);
 /// @copydoc sgemm
-void dgemm(char transa, char transb, int_t m, int_t n, int_t k, double alpha, double const *a, int_t lda, double const *b, int_t ldb,
-           double beta, double *c, int_t ldc);
+void dgemm(char transa, char transb, int m, int n, int k, double alpha, double const *a, int lda, double const *b, int ldb, double beta,
+           double *c, int ldc);
 /// @copydoc sgemm
-void cgemm(char transa, char transb, int_t m, int_t n, int_t k, std::complex<float> alpha, std::complex<float> const *a, int_t lda,
-           std::complex<float> const *b, int_t ldb, std::complex<float> beta, std::complex<float> *c, int_t ldc);
+void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> alpha, std::complex<float> const *a, int lda,
+           std::complex<float> const *b, int ldb, std::complex<float> beta, std::complex<float> *c, int ldc);
 /// @copydoc sgemm
-void zgemm(char transa, char transb, int_t m, int_t n, int_t k, std::complex<double> alpha, std::complex<double> const *a, int_t lda,
-           std::complex<double> const *b, int_t ldb, std::complex<double> beta, std::complex<double> *c, int_t ldc);
+void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> alpha, std::complex<double> const *a, int lda,
+           std::complex<double> const *b, int ldb, std::complex<double> beta, std::complex<double> *c, int ldc);
 
 /**
  * Performs matrix vector multiplication.
@@ -78,19 +64,17 @@ void zgemm(char transa, char transb, int_t m, int_t n, int_t k, std::complex<dou
  * @throws std::invalid_argument If @p transa or @p transb are not one of the valid options.
  * @throws std::domain_error If any of the integer arguments have invalid values.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-void sgemv(char transa, int_t m, int_t n, float alpha, float const *a, int_t lda, float const *x, int_t incx, float beta, float *y,
-           int_t incy);
+void sgemv(char transa, int m, int n, float alpha, float const *a, int lda, float const *x, int incx, float beta, float *y, int incy);
 /// @copydoc sgemv
-void dgemv(char transa, int_t m, int_t n, double alpha, double const *a, int_t lda, double const *x, int_t incx, double beta, double *y,
-           int_t incy);
+void dgemv(char transa, int m, int n, double alpha, double const *a, int lda, double const *x, int incx, double beta, double *y, int incy);
 /// @copydoc sgemv
-void cgemv(char transa, int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *a, int_t lda, std::complex<float> const *x,
-           int_t incx, std::complex<float> beta, std::complex<float> *y, int_t incy);
+void cgemv(char transa, int m, int n, std::complex<float> alpha, std::complex<float> const *a, int lda, std::complex<float> const *x,
+           int incx, std::complex<float> beta, std::complex<float> *y, int incy);
 /// @copydoc sgemv
-void zgemv(char transa, int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *a, int_t lda,
-           std::complex<double> const *x, int_t incx, std::complex<double> beta, std::complex<double> *y, int_t incy);
+void zgemv(char transa, int m, int n, std::complex<double> alpha, std::complex<double> const *a, int lda, std::complex<double> const *x,
+           int incx, std::complex<double> beta, std::complex<double> *y, int incy);
 
 /**
  * Scales and adds two vectors.
@@ -104,17 +88,17 @@ void zgemv(char transa, int_t m, int_t n, std::complex<double> alpha, std::compl
  * @param[inout] y The output vector.
  * @param[in] incy The skip value for the output vector. If it is negative, then the vector is traversed backwards.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-void saxpby(int_t const n, float const a, float const *x, int_t const incx, float const b, float *y, int_t const incy);
+void saxpby(int const n, float const a, float const *x, int const incx, float const b, float *y, int const incy);
 /// @copydoc saxpby
-void daxpby(int_t const n, double const a, double const *x, int_t const incx, double const b, double *y, int_t const incy);
+void daxpby(int const n, double const a, double const *x, int const incx, double const b, double *y, int const incy);
 /// @copydoc saxpby
-void caxpby(int_t const n, std::complex<float> const a, std::complex<float> const *x, int_t const incx, std::complex<float> const b,
-            std::complex<float> *y, int_t const incy);
+void caxpby(int const n, std::complex<float> const a, std::complex<float> const *x, int const incx, std::complex<float> const b,
+            std::complex<float> *y, int const incy);
 /// @copydoc saxpby
-void zaxpby(int_t const n, std::complex<double> const a, std::complex<double> const *x, int_t const incx, std::complex<double> const b,
-            std::complex<double> *y, int_t const incy);
+void zaxpby(int const n, std::complex<double> const a, std::complex<double> const *x, int const incx, std::complex<double> const b,
+            std::complex<double> *y, int const incy);
 
 /**
  * Performs symmetric matrix diagonalization.
@@ -133,58 +117,11 @@ void zaxpby(int_t const n, std::complex<double> const a, std::complex<double> co
  * @return 0 on success. If positive, then the eigenvalue algorithm did not converge. If negative, then one of the parameters was given a
  * bad value. The absolute value indicates which parameter it was.
  *
- * @versionadded{1.0.0}
- */
-auto ssyev(char job, char uplo, int_t n, float *a, int_t lda, float *w, float *work, int_t lwork) -> int_t;
-/// @copydoc ssyev
-auto dsyev(char job, char uplo, int_t n, double *a, int_t lda, double *w, double *work, int_t lwork) -> int_t;
-
-/**
- * Performs symmetric tridiagonal matrix diagonalization.
- *
- * @param[in] n The number of elements on the diagonal.
- * @param[inout] d The diagonal. On exit, it contains the eigenvalues.
- * @param[inout] e The subdiagonal.
- *
- * @return 0 on successs. If positive, then the eigenvalue algorithm failed to converge. If negative, then
- * one of the inputs had a bad value. The absolute value indicates which parameter it was.
- *
  * @versionadded{2.0.0}
  */
-auto ssterf(int_t n, float *d, float *e) -> int_t;
-/// @copydoc ssterf
-auto dsterf(int_t n, double *d, double *e) -> int_t;
-
-/**
- * Compute the eigendecomposition of a general matrix.
- *
- * @param[in] jobvl Indicates whether to compute the left eigenvectors. Case insensitive. Can be 'n' or 'v'.
- * @param[in] jobvr Indicates whetherh to compute the right eigenvectors. Case insensitive. Can be 'n' or 'v'.
- * @param[in] n The number of rows and columns in the matrix.
- * @param[inout] a The matrix to diagonalize. On exit, it will be overwritten with data used in the computation.
- * @param[in] lda The leading dimenson of the matrix.
- * @param[out] w The output for the eigenvalues.
- * @param[out] vl The left eigenvectors. For real inputs, this will have a special storage format.
- * @param[in] ldvl The leading dimension of the left eigenvectors. Must be at least 1, even if not referenced.
- * @param[out] vr The right eigenvectors. For real inputs, this will have a special storage format.
- * @param[in] ldvr The leading dimension of the right eigenvectors. Must be at least 1, even if not referenced.
- *
- * @return 0 on success. If positive, then the eigenvalue algorithm failed to converge. If negative, then one of the inputs had an invalid
- * value. The absolute value of the return indicates which parameter was invalid.
- *
- * @versionadded{1.0.0}
- */
-auto sgeev(char jobvl, char jobvr, int_t n, float *a, int_t lda, std::complex<float> *w, float *vl, int_t ldvl, float *vr, int_t ldvr)
-    -> int_t;
-/// @copydoc sgeev
-auto dgeev(char jobvl, char jobvr, int_t n, double *a, int_t lda, std::complex<double> *w, double *vl, int_t ldvl, double *vr, int_t ldvr)
-    -> int_t;
-/// @copydoc sgeev
-auto cgeev(char jobvl, char jobvr, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *w, std::complex<float> *vl, int_t ldvl,
-           std::complex<float> *vr, int_t ldvr) -> int_t;
-/// @copydoc sgeev
-auto zgeev(char jobvl, char jobvr, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *w, std::complex<double> *vl,
-           int_t ldvl, std::complex<double> *vr, int_t ldvr) -> int_t;
+auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, int lwork) -> int;
+/// @copydoc ssyev
+auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int;
 
 /**
  * Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
@@ -201,17 +138,14 @@ auto zgeev(char jobvl, char jobvr, int_t n, std::complex<double> *a, int_t lda, 
  * array.
  * @param[in] lwork The size of the work array. If it is -1, then a workspace query is performed and nothing else. The optimal workspace
  * size will then be placed in the first element of the work array.
- * @param[inout] rwork A work array for real data. Must be at least @f$3n - 2@f$ elements.
  *
  * @return 0 on success. If positive, then the eigenvalue algorithm failed to converge. If negative, then one of the inputs had an invalid
  * value. The absolute value of the return indicates which parameter was invalid.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-auto cheev(char job, char uplo, int_t n, std::complex<float> *a, int_t lda, float *w, std::complex<float> *work, int_t lwork, float *rwork)
-    -> int_t;
-auto zheev(char job, char uplo, int_t n, std::complex<double> *a, int_t lda, double *w, std::complex<double> *work, int_t lwork,
-           double *rwork) -> int_t;
+auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork) -> int;
+auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> *work, int lwork) -> int;
 
 /**
  * Computes the solution to system of linear equations @f$\mathbf{Ax} = \mathbf{B}@f$ for general
@@ -227,15 +161,17 @@ auto zheev(char job, char uplo, int_t n, std::complex<double> *a, int_t lda, dou
  *
  * @return 0 on success. If positive, the coefficient matrix was singular. If negative, then there was an invalid parameter.
  * The absolute value indicates which parameter was invalid.
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-auto sgesv(int_t n, int_t nrhs, float *a, int_t lda, int_t *ipiv, float *b, int_t ldb) -> int_t;
+auto sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb, float *x, int ldx) -> int;
 /// @copydoc sgesv
-auto dgesv(int_t n, int_t nrhs, double *a, int_t lda, int_t *ipiv, double *b, int_t ldb) -> int_t;
+auto dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb, double *x, int ldx) -> int;
 /// @copydoc sgesv
-auto cgesv(int_t n, int_t nrhs, std::complex<float> *a, int_t lda, int_t *ipiv, std::complex<float> *b, int_t ldb) -> int_t;
+auto cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb, std::complex<float> *x, int ldx)
+    -> int;
 /// @copydoc sgesv
-auto zgesv(int_t n, int_t nrhs, std::complex<double> *a, int_t lda, int_t *ipiv, std::complex<double> *b, int_t ldb) -> int_t;
+auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb, std::complex<double> *x, int ldx)
+    -> int;
 
 /**
  * Scales a vector by a scalar. Supports real scalars by real vectors, complex scalars by complex vectors,
@@ -246,19 +182,19 @@ auto zgesv(int_t n, int_t nrhs, std::complex<double> *a, int_t lda, int_t *ipiv,
  * @param[inout] vec The vector to scale.
  * @param[in] inc The skip value for the vector.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-void sscal(int_t n, float alpha, float *vec, int_t inc);
+void sscal(int n, float alpha, float *vec, int inc);
 /// @copydoc sscal
-void dscal(int_t n, double alpha, double *vec, int_t inc);
+void dscal(int n, double alpha, double *vec, int inc);
 /// @copydoc sscal
-void cscal(int_t n, std::complex<float> alpha, std::complex<float> *vec, int_t inc);
+void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc);
 /// @copydoc sscal
-void zscal(int_t n, std::complex<double> alpha, std::complex<double> *vec, int_t inc);
+void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc);
 /// @copydoc sscal
-void csscal(int_t n, float alpha, std::complex<float> *vec, int_t inc);
+void csscal(int n, float alpha, std::complex<float> *vec, int inc);
 /// @copydoc sscal
-void zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc);
+void zdscal(int n, double alpha, std::complex<double> *vec, int inc);
 
 /**
  * Scales a vector by the reciprocal of a real value.
@@ -270,10 +206,10 @@ void zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc);
  *
  * @versionadded{2.0.0}
  */
-void srscl(int_t n, float alpha, float *vec, int_t inc);
-void drscl(int_t n, double alpha, double *vec, int_t inc);
-void csrscl(int_t n, float alpha, std::complex<float> *vec, int_t inc);
-void zdrscl(int_t n, double alpha, std::complex<double> *vec, int_t inc);
+void srscl(int n, float alpha, float *vec, int inc);
+void drscl(int n, double alpha, double *vec, int inc);
+void csrscl(int n, float alpha, std::complex<float> *vec, int inc);
+void zdrscl(int n, double alpha, std::complex<double> *vec, int inc);
 
 /**
  * Compute the dot product between two vectors.
@@ -286,11 +222,11 @@ void zdrscl(int_t n, double alpha, std::complex<double> *vec, int_t inc);
  *
  * @return The dot product between two vectors.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-auto sdot(int_t n, float const *x, int_t incx, float const *y, int_t incy) -> float;
+auto sdot(int n, float const *x, int incx, float const *y, int incy) -> float;
 /// @copydoc sdot
-auto ddot(int_t n, double const *x, int_t incx, double const *y, int_t incy) -> double;
+auto ddot(int n, double const *x, int incx, double const *y, int incy) -> double;
 /**
  * Compute the unconjugated dot product between two vectors. The dot product is normally defined to be @f$ \sum_{i} x_i^*y_i@f$,
  * where the left vector is conjugated. However, this function performs @f$\sum_{i} x_iy_i@f$, akin to how it is done for
@@ -307,11 +243,11 @@ auto ddot(int_t n, double const *x, int_t incx, double const *y, int_t incy) -> 
  *
  * @sa cdotc
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-auto cdot(int_t n, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy) -> std::complex<float>;
+auto cdot(int n, std::complex<float> const *x, int incx, std::complex<float> const *y, int incy) -> std::complex<float>;
 /// @copydoc cdot
-auto zdot(int_t n, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy) -> std::complex<double>;
+auto zdot(int n, std::complex<double> const *x, int incx, std::complex<double> const *y, int incy) -> std::complex<double>;
 /**
  * Compute the dot product between two vectors. The dot product is normally defined to be @f$ \sum_{i} x_i^*y_i@f$,
  * where the left vector is conjugated. This is how this function works. There is another way, where the first vector is not conjugated. For
@@ -326,11 +262,11 @@ auto zdot(int_t n, std::complex<double> const *x, int_t incx, std::complex<doubl
  *
  * @return The dot product between two vectors.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-auto cdotc(int_t n, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy) -> std::complex<float>;
+auto cdotc(int n, std::complex<float> const *x, int incx, std::complex<float> const *y, int incy) -> std::complex<float>;
 /// @copydoc cdotc
-auto zdotc(int_t n, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy) -> std::complex<double>;
+auto zdotc(int n, std::complex<double> const *x, int incx, std::complex<double> const *y, int incy) -> std::complex<double>;
 
 /**
  * Scale and add a vector to another. Performs @f$\mathbf{y} := \alpha\mathbf{x} + \mathbf{y}@f$.
@@ -342,15 +278,15 @@ auto zdotc(int_t n, std::complex<double> const *x, int_t incx, std::complex<doub
  * @param[inout] y The output vector.
  * @param[in] inc_y The skip value for the output vector. If it is negative, the vector is traversed backwards.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-void saxpy(int_t n, float alpha_x, float const *x, int_t inc_x, float *y, int_t inc_y);
+void saxpy(int n, float alpha_x, float const *x, int inc_x, float *y, int inc_y);
 /// @copydoc saxpy
-void daxpy(int_t n, double alpha_x, double const *x, int_t inc_x, double *y, int_t inc_y);
+void daxpy(int n, double alpha_x, double const *x, int inc_x, double *y, int inc_y);
 /// @copydoc saxpy
-void caxpy(int_t n, std::complex<float> alpha_x, std::complex<float> const *x, int_t inc_x, std::complex<float> *y, int_t inc_y);
+void caxpy(int n, std::complex<float> alpha_x, std::complex<float> const *x, int inc_x, std::complex<float> *y, int inc_y);
 /// @copydoc saxpy
-void zaxpy(int_t n, std::complex<double> alpha_x, std::complex<double> const *x, int_t inc_x, std::complex<double> *y, int_t inc_y);
+void zaxpy(int n, std::complex<double> alpha_x, std::complex<double> const *x, int inc_x, std::complex<double> *y, int inc_y);
 
 /*!
  * Performs a rank-1 update of a general matrix.
@@ -373,17 +309,17 @@ void zaxpy(int_t n, std::complex<double> alpha_x, std::complex<double> const *x,
  * @throws std::domain_error If the dimensions are zero, or the leading dimension of the array is less than the number of columns.
  * @throws std::invalid_argument If either of the increment values is zero.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-void sger(int_t m, int_t n, float alpha, float const *x, int_t inc_x, float const *y, int_t inc_y, float *a, int_t lda);
+void sger(int m, int n, float alpha, float const *x, int inc_x, float const *y, int inc_y, float *a, int lda);
 /// @copydoc sger
-void dger(int_t m, int_t n, double alpha, double const *x, int_t inc_x, double const *y, int_t inc_y, double *a, int_t lda);
+void dger(int m, int n, double alpha, double const *x, int inc_x, double const *y, int inc_y, double *a, int lda);
 /// @copydoc sger
-void cger(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x, std::complex<float> const *y, int_t inc_y,
-          std::complex<float> *a, int_t lda);
+void cger(int m, int n, std::complex<float> alpha, std::complex<float> const *x, int inc_x, std::complex<float> const *y, int inc_y,
+          std::complex<float> *a, int lda);
 /// @copydoc sger
-void zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
-          int_t inc_y, std::complex<double> *a, int_t lda);
+void zger(int m, int n, std::complex<double> alpha, std::complex<double> const *x, int inc_x, std::complex<double> const *y, int inc_y,
+          std::complex<double> *a, int lda);
 /*!
  * Performs a rank-1 update of a general matrix.
  *
@@ -407,15 +343,15 @@ void zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> con
  *
  * @versionadded{2.0.0}
  */
-void cgerc(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x, std::complex<float> const *y,
-           int_t inc_y, std::complex<float> *a, int_t lda);
+void cgerc(int m, int n, std::complex<float> alpha, std::complex<float> const *x, int inc_x, std::complex<float> const *y, int inc_y,
+           std::complex<float> *a, int lda);
 /// @copydoc cgerc
-void zgerc(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
-           int_t inc_y, std::complex<double> *a, int_t lda);
+void zgerc(int m, int n, std::complex<double> alpha, std::complex<double> const *x, int inc_x, std::complex<double> const *y, int inc_y,
+           std::complex<double> *a, int lda);
 
 /*!
  * Computes the LU factorization of a general M-by-N matrix A
- * using partial pivoting with row int_terchanges.
+ * using partial pivoting with row interchanges.
  *
  * The factorization has the form
  * @f[
@@ -436,60 +372,39 @@ void zgerc(int_t m, int_t n, std::complex<double> alpha, std::complex<double> co
  * system of equations. If negative, then one of the parameters had an invalid value. The absolute value indicates which parameter was
  * invalid.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-auto sgetrf(int_t m, int_t n, float *A, int_t lda, int_t *ipiv) -> int_t;
+auto sgetrf(int m, int n, float *A, int lda, int *ipiv) -> int;
 /// @copydoc sgetrf
-auto dgetrf(int_t m, int_t n, double *A, int_t lda, int_t *ipiv) -> int_t;
+auto dgetrf(int m, int n, double *A, int lda, int *ipiv) -> int;
 /// @copydoc sgetrf
-auto cgetrf(int_t m, int_t n, std::complex<float> *A, int_t lda, int_t *ipiv) -> int_t;
+auto cgetrf(int m, int n, std::complex<float> *A, int lda, int *ipiv) -> int;
 /// @copydoc sgetrf
-auto zgetrf(int_t m, int_t n, std::complex<double> *A, int_t lda, int_t *ipiv) -> int_t;
+auto zgetrf(int m, int n, std::complex<double> *A, int lda, int *ipiv) -> int;
 
 /*!
  * Computes the inverse of a matrix using the LU factorization computed
  * by getrf
  *
  * @param[in] n The number of rows and columns of the matrix.
- * @param[inout] A The matrix to invert after being processed by sgetrf.
+ * @param[in] A The matrix to invert after being processed by sgetrf.
  * @param[in] lda The leading dimension of the matrix.
  * @param[in] ipiv The pivots produced by sgetrf.
+ * @param[out] C The inverse of the input matrix.
+ * @param[in] ldc The leading dimension of the output matrix.
  *
  * @return 0 on success. If positive, then the matrix is singular and the inverse could not be computed.
  * If negative, then one of the parameters was invalid. The absolute value indicates which parameter was invalid.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-auto sgetri(int_t n, float *A, int_t lda, int_t const *ipiv) -> int_t;
+auto sgetri(int n, float const *A, int lda, int *ipiv, float *C, int ldc) -> int;
 /// @copydoc sgetri
-auto dgetri(int_t n, double *A, int_t lda, int_t const *ipiv) -> int_t;
+auto dgetri(int n, double const *A, int lda, int *ipiv, double *C, int ldc) -> int;
 /// @copydoc sgetri
-auto cgetri(int_t n, std::complex<float> *A, int_t lda, int_t const *ipiv) -> int_t;
+auto cgetri(int n, std::complex<float> const *A, int lda, int *ipiv, std::complex<float> *C, int ldc) -> int;
 /// @copydoc sgetri
-auto zgetri(int_t n, std::complex<double> *A, int_t lda, int_t const *ipiv) -> int_t;
-
-/**
- * Computes matrix norms.
- *
- * @param[in] norm_type The type of norm to compute. Case insensitive. Can be 'm', 'o', 'i', 'f', 'e', or '1'.
- * Note that that is the character '1', or @c 0x31 . It is not the value 1, which is the start-of-heading character.
- * @param[in] m The number of rows of the matrix.
- * @param[in] n The number of columns of the matrix.
- * @param[in] A The matrix in consideration.
- * @param[in] lda The leading dimension of the matrix.
- * @param[inout] work A work array used by certain norms.
- *
- * @return The requested norm of the array.
- *
- * @versionadded{1.0.0}
- */
-auto slange(char norm_type, int_t m, int_t n, float const *A, int_t lda, float *work) -> float;
-/// @copydoc slange
-auto dlange(char norm_type, int_t m, int_t n, double const *A, int_t lda, double *work) -> double;
-/// @copydoc slange
-auto clange(char norm_type, int_t m, int_t n, std::complex<float> const *A, int_t lda, float *work) -> float;
-/// @copydoc slange
-auto zlange(char norm_type, int_t m, int_t n, std::complex<double> const *A, int_t lda, double *work) -> double;
+auto zgetri(int n, std::complex<double> const *A, int lda, int *ipiv, std::complex<double> *C, int ldc) -> int;
 
 /**
  * Compute the sum of squares of a vector without overflow. The sum of squares will be <tt>scale * scale * sumsq</tt>.
@@ -501,15 +416,15 @@ auto zlange(char norm_type, int_t m, int_t n, std::complex<double> const *A, int
  * part of the sum as well.
  * @param[inout] sumsq The scaled sum of squares. If it is non-zero, then it will be considered as part of the sum as well.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-void slassq(int_t n, float const *x, int_t incx, float *scale, float *sumsq);
+void slassq(int n, float const *x, int incx, float *scale, float *sumsq);
 /// @copydoc slassq
-void dlassq(int_t n, double const *x, int_t incx, double *scale, double *sumsq);
+void dlassq(int n, double const *x, int incx, double *scale, double *sumsq);
 /// @copydoc slassq
-void classq(int_t n, std::complex<float> const *x, int_t incx, float *scale, float *sumsq);
+void classq(int n, std::complex<float> const *x, int incx, float *scale, float *sumsq);
 /// @copydoc slassq
-void zlassq(int_t n, std::complex<double> const *x, int_t incx, double *scale, double *sumsq);
+void zlassq(int n, std::complex<double> const *x, int incx, double *scale, double *sumsq);
 
 /**
  * Compute the Euclidean norm of a vector.
@@ -522,13 +437,13 @@ void zlassq(int_t n, std::complex<double> const *x, int_t incx, double *scale, d
  *
  * @versionadded{2.0.0}
  */
-float snrm2(int_t n, float const *x, int_t incx);
+float snrm2(int n, float const *x, int incx);
 /// @copydoc snrm2
-double dnrm2(int_t n, double const *x, int_t incx);
+double dnrm2(int n, double const *x, int incx);
 /// @copydoc snrm2
-float scnrm2(int_t n, std::complex<float> const *x, int_t incx);
+float scnrm2(int n, std::complex<float> const *x, int incx);
 /// @copydoc snrm2
-double dznrm2(int_t n, std::complex<double> const *x, int_t incx);
+double dznrm2(int n, std::complex<double> const *x, int incx);
 
 /**
  * Compute the singular value decomposition using the QR algorithm.
@@ -549,147 +464,18 @@ double dznrm2(int_t n, std::complex<double> const *x, int_t incx);
  * @return 0 on success. If positive, then the algorithm did not converge. If negative, then one of the parameters had an invalid value.
  * The absolute value gives the parameter.
  *
- * @versionadded{1.0.0}
- */
-auto sgesvd(char jobu, char jobvt, int_t m, int_t n, float *a, int_t lda, float *s, float *u, int_t ldu, float *vt, int_t ldvt,
-            float *superb) -> int_t;
-/// @copydoc sgesvd
-auto dgesvd(char jobu, char jobvt, int_t m, int_t n, double *a, int_t lda, double *s, double *u, int_t ldu, double *vt, int_t ldvt,
-            double *superb) -> int_t;
-/// @copydoc sgesvd
-auto cgesvd(char jobu, char jobvt, int_t m, int_t n, std::complex<float> *a, int_t lda, float *s, std::complex<float> *u, int_t ldu,
-            std::complex<float> *vt, int_t ldvt, std::complex<float> *superb) -> int_t;
-/// @copydoc sgesvd
-auto zgesvd(char jobu, char jobvt, int_t m, int_t n, std::complex<double> *a, int_t lda, double *s, std::complex<double> *u, int_t ldu,
-            std::complex<double> *vt, int_t ldvt, std::complex<double> *superb) -> int_t;
-
-/**
- * Compute the singular value decomposition using the divide-and-conquer algorithm.
- *
- * @param[in] jobz Whether to compute the U and V vectors. Case insensitive. Can be either 'a', 's', 'o', or 'n'.
- * @param[in] m The number of rows of the matrix.
- * @param[in] n The number of columns of the matrix.
- * @param[inout] a The matrix to decompose. Overwritten on exit.
- * @param[in] lda The leading dimension of the input matrix.
- * @param[out] s The singular values.
- * @param[out] u The U vectors.
- * @param[in] ldu The leading dimension of the U vectors. Must always be at least 1, even when not referenced.
- * @param[out] vt The transpose of the V vectors.
- * @param[in] ldvt The leading dimension of the transpose of the V vectors. Must always be at least 1, even when not referenced.
- *
- * @return 0 on success. If positive, then the algorithm did not converge. If negative, then one of the parameters had an invalid value.
- * The absolute value gives the parameter.
- *
- * @versionadded{1.0.0}
- */
-auto sgesdd(char jobz, int_t m, int_t n, float *a, int_t lda, float *s, float *u, int_t ldu, float *vt, int_t ldvt) -> int_t;
-/// @copydoc sgesdd
-auto dgesdd(char jobz, int_t m, int_t n, double *a, int_t lda, double *s, double *u, int_t ldu, double *vt, int_t ldvt) -> int_t;
-/// @copydoc sgesdd
-auto cgesdd(char jobz, int_t m, int_t n, std::complex<float> *a, int_t lda, float *s, std::complex<float> *u, int_t ldu,
-            std::complex<float> *vt, int_t ldvt) -> int_t;
-/// @copydoc sgesdd
-auto zgesdd(char jobz, int_t m, int_t n, std::complex<double> *a, int_t lda, double *s, std::complex<double> *u, int_t ldu,
-            std::complex<double> *vt, int_t ldvt) -> int_t;
-
-/**
- * Perform Schur decomposition on a matrix.
- *
- * @param[in] jobvs Whether to compute the Schur vectors. Case insensitive. Can be either 'n' or 'v'.
- * @param[in] n The number of rows and columns in the matrix.
- * @param[inout] a The matrix to decompose.
- * @param[in] lda The leading dimension of the matrix.
- * @param[out] sdim The dimensions of the Schur blocks.
- * @param[out] wr The real component of the eigenvalues.
- * @param[out] wi The imaginary component of the eigenvalues.
- * @param[out] vs The Schur vectors.
- * @param[in] ldvs The leading dimension of the Schur vectors. Even if not referenced, it needs to be at least 1.
- *
- * @return 0 on success. If positive and at most @p n , then the algorithm did not converge. If <tt>n + 1</tt> then the eigenvalues could
- * not be sorted due to the problem being ill-conditioned. If <tt>n + 2</tt> then roundoff changed some of the values after reordering. If
- * negative, then one of the parameters had an invalid value. The absolute value gives the parameter.
- *
- * @versionadded{1.0.0}
- */
-auto sgees(char jobvs, int_t n, float *a, int_t lda, int_t *sdim, float *wr, float *wi, float *vs, int_t ldvs) -> int_t;
-/// @copydoc sgees
-auto dgees(char jobvs, int_t n, double *a, int_t lda, int_t *sdim, double *wr, double *wi, double *vs, int_t ldvs) -> int_t;
-/**
- * Perform Schur decomposition on a matrix.
- *
- * @param[in] jobvs Whether to compute the Schur vectors. Case insensitive. Can be either 'n' or 'v'.
- * @param[in] n The number of rows and columns in the matrix.
- * @param[inout] a The matrix to decompose.
- * @param[in] lda The leading dimension of the matrix.
- * @param[out] sdim The dimensions of the Schur blocks.
- * @param[out] w The eigenvalues.
- * @param[out] vs The Schur vectors.
- * @param[in] ldvs The leading dimension of the Schur vectors. Even if not referenced, it needs to be at least 1.
- *
- * @return 0 on success. If positive and at most @p n , then the algorithm did not converge. If <tt>n + 1</tt> then the eigenvalues could
- * not be sorted due to the problem being ill-conditioned. If <tt>n + 2</tt> then roundoff changed some of the values after reordering. If
- * negative, then one of the parameters had an invalid value. The absolute value gives the parameter.
- *
- * @versionadded{1.1.0}
- */
-auto cgees(char jobvs, int_t n, std::complex<float> *a, int_t lda, int_t *sdim, std::complex<float> *w, std::complex<float> *vs, int_t ldvs)
-    -> int_t;
-/// @copydoc cgees
-auto zgees(char jobvs, int_t n, std::complex<double> *a, int_t lda, int_t *sdim, std::complex<double> *w, std::complex<double> *vs,
-           int_t ldvs) -> int_t;
-
-/**
- * Solve a Sylvester equation of the form @f$\mathbf{AX} \pm \mathbf{XB} = \alpha\mathbf{C}@f$.
- *
- * @param[in] trana Whether to transpose the first matrix. Case insensitive. Can be either 't', 'c', or 'n'.
- * @param[in] tranb Whether to transpose the second matrix. Case insensitive. Can be either 't', 'c', or 'n'.
- * @param[in] isgn Whether the operation between the terms is addition or subtraction. Can be either 1 or -1.
- * @param[in] m The number of rows in the output matrix.
- * @param[in] n The number of columns in the output matrix.
- * @param[in] a The first input matrix.
- * @param[in] lda The leading dimension of the first input matrix.
- * @param[in] b The second matrix.
- * @param[in] ldb The leading dimension of the second matrix.
- * @param[inout] c On entry, the right-hand side matrix. On exit, the @f$\mathbf{X}@f$ matrix, scaled to avoid overflow/underflow.
- * @param[in] ldc The leading dimension of the right-hand side matrix.
- * @param[out] scale The scale factor that avoid overflow/underflow in the solution matrix.
- *
- * @return 0 on success, 1 if the inputs have similar eigenvalues that needed to be perturbed. If negative, then there was a parameter with
- * an invalid value. The absolute value of the return gives the parameter.
- *
- * @versionadded{1.0.0}
- */
-auto strsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, float const *a, int_t lda, float const *b, int_t ldb, float *c, int_t ldc,
-            float *scale) -> int_t;
-/// @copydoc strsyl
-auto dtrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, double const *a, int_t lda, double const *b, int_t ldb, double *c,
-            int_t ldc, double *scale) -> int_t;
-/**
- * Solve a Sylvester equation of the form @f$\mathbf{AX} \pm \mathbf{XB} = \alpha\mathbf{C}@f$.
- *
- * @param[in] trana Whether to transpose the first matrix. Case insensitive. Can be either 't', 'c', or 'n'.
- * @param[in] tranb Whether to transpose the second matrix. Case insensitive. Can be either 't', 'c', or 'n'.
- * @param[in] isgn Whether the operation between the terms is addition or subtraction. Can be either 1 or -1.
- * @param[in] m The number of rows in the output matrix.
- * @param[in] n The number of columns in the output matrix.
- * @param[in] a The first input matrix.
- * @param[in] lda The leading dimension of the first input matrix.
- * @param[in] b The second matrix.
- * @param[in] ldb The leading dimension of the second matrix.
- * @param[inout] c On entry, the right-hand side matrix. On exit, the @f$\mathbf{X}@f$ matrix, scaled to avoid overflow/underflow.
- * @param[in] ldc The leading dimension of the right-hand side matrix.
- * @param[out] scale The scale factor that avoid overflow/underflow in the solution matrix.
- *
- * @return 0 on success, 1 if the inputs have similar eigenvalues that needed to be perturbed. If negative, then there was a parameter with
- * an invalid value. The absolute value of the return gives the parameter.
- *
  * @versionadded{2.0.0}
  */
-auto ctrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, std::complex<float> const *a, int_t lda, std::complex<float> const *b,
-            int_t ldb, std::complex<float> *c, int_t ldc, float *scale) -> int_t;
-/// @copydoc ctrsyl
-auto ztrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, std::complex<double> const *a, int_t lda, std::complex<double> const *b,
-            int_t ldb, std::complex<double> *c, int_t ldc, double *scale) -> int_t;
+auto sgesvd(char jobu, char jobvt, int m, int n, float *a, int lda, float *s, float *u, int ldu, float *vt, int ldvt, float *superb) -> int;
+/// @copydoc sgesvd
+auto dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *superb)
+    -> int;
+/// @copydoc sgesvd
+auto cgesvd(char jobu, char jobvt, int m, int n, std::complex<float> *a, int lda, float *s, std::complex<float> *u, int ldu,
+            std::complex<float> *vt, int ldvt, std::complex<float> *superb) -> int;
+/// @copydoc sgesvd
+auto zgesvd(char jobu, char jobvt, int m, int n, std::complex<double> *a, int lda, double *s, std::complex<double> *u, int ldu,
+            std::complex<double> *vt, int ldvt, std::complex<double> *superb) -> int;
 
 /**
  * Perform QR decomposition.
@@ -703,15 +489,15 @@ auto ztrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, std::complex<d
  * @return 0 on success. If negative, then one of the parameters had an invalid value. The absolute value indicates which parameter was
  * invalid.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-auto sgeqrf(int_t m, int_t n, float *a, int_t lda, float *tau) -> int_t;
+auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int;
 /// @copydoc sgeqrf
-auto dgeqrf(int_t m, int_t n, double *a, int_t lda, double *tau) -> int_t;
+auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int;
 /// @copydoc sgeqrf
-auto cgeqrf(int_t m, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *tau) -> int_t;
+auto cgeqrf(int m, int n, std::complex<float> *a, int lda, std::complex<float> *tau) -> int;
 /// @copydoc sgeqrf
-auto zgeqrf(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t;
+auto zgeqrf(int m, int n, std::complex<double> *a, int lda, std::complex<double> *tau) -> int;
 
 /**
  * Extract the Q matrix from a QR decomposition.
@@ -725,59 +511,15 @@ auto zgeqrf(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<d
  *
  * @return 0 on success. If negative, one of the parameters had an invalid value. The absolute value indicates which parameter was invalid.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
-auto sorgqr(int_t m, int_t n, int_t k, float *a, int_t lda, float const *tau) -> int_t;
+auto sorgqr(int m, int n, int k, float *a, int lda, float *tau) -> int;
 /// @copydoc sorgqr
-auto dorgqr(int_t m, int_t n, int_t k, double *a, int_t lda, double const *tau) -> int_t;
+auto dorgqr(int m, int n, int k, double *a, int lda, double *tau) -> int;
 /// @copydoc sorgqr
-auto cungqr(int_t m, int_t n, int_t k, std::complex<float> *a, int_t lda, std::complex<float> const *tau) -> int_t;
+auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, std::complex<float> *tau) -> int;
 /// @copydoc sorgqr
-auto zungqr(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::complex<double> const *tau) -> int_t;
-
-/**
- * Perform LQ decomposition.
- *
- * @param[in] m The number of rows in the input matrix.
- * @param[in] n The number of columns in the input matrix.
- * @param[inout] a The matrix to decompose. On exit, the R matrix is above the diagonal and the reflection vectors are below the diagonal.
- * @param[in] lda The leading dimension of the matrix.
- * @param[out] tau The scale factors for the Householder reflectors.
- *
- * @return 0 on success. If negative, then one of the parameters had an invalid value. The absolute value indicates which parameter was
- * invalid.
- *
- * @versionadded{1.0.0}
- */
-auto sgelqf(int_t m, int_t n, float *a, int_t lda, float *tau) -> int_t;
-/// @copydoc sgelqf
-auto dgelqf(int_t m, int_t n, double *a, int_t lda, double *tau) -> int_t;
-/// @copydoc sgelqf
-auto cgelqf(int_t m, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *tau) -> int_t;
-/// @copydoc sgelqf
-auto zgelqf(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t;
-
-/**
- * Extract the Q matrix from a LQ decomposition.
- *
- * @param[in] m The number of rows in the input matrix.
- * @param[in] n The number of columns in the input matrix.
- * @param[in] k The number of elementary reflectors used to decompose the matrix.
- * @param[inout] a The input matrix after being processed by sgelqf. On exit, it will contain the Q matrix.
- * @param[in] lda The leading dimension of the matrix.
- * @param[in] tau The scale factors for the elementary reflectors used in the decomposition.
- *
- * @return 0 on success. If negative, one of the parameters had an invalid value. The absolute value indicates which parameter was invalid.
- *
- * @versionadded{1.0.0}
- */
-auto sorglq(int_t m, int_t n, int_t k, float *a, int_t lda, float const *tau) -> int_t;
-/// @copydoc sorglq
-auto dorglq(int_t m, int_t n, int_t k, double *a, int_t lda, double const *tau) -> int_t;
-/// @copydoc sorglq
-auto cunglq(int_t m, int_t n, int_t k, std::complex<float> *a, int_t lda, std::complex<float> const *tau) -> int_t;
-/// @copydoc sorglq
-auto zunglq(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::complex<double> const *tau) -> int_t;
+auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, std::complex<double> *tau) -> int;
 
 /**
  * Copy one vector to another.
@@ -791,13 +533,13 @@ auto zunglq(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::
  *
  * @versionadded{2.0.0}
  */
-void scopy(int_t n, float const *x, int_t incx, float *y, int_t incy);
+void scopy(int n, float const *x, int incx, float *y, int incy);
 /// @copydoc scopy
-void dcopy(int_t n, double const *x, int_t incx, double *y, int_t incy);
+void dcopy(int n, double const *x, int incx, double *y, int incy);
 /// @copydoc scopy
-void ccopy(int_t n, std::complex<float> const *x, int_t incx, std::complex<float> *y, int_t incy);
+void ccopy(int n, std::complex<float> const *x, int incx, std::complex<float> *y, int incy);
 /// @copydoc scopy
-void zcopy(int_t n, std::complex<double> const *x, int_t incx, std::complex<double> *y, int_t incy);
+void zcopy(int n, std::complex<double> const *x, int incx, std::complex<double> *y, int incy);
 
 /**
  * Advanced matrix scaling operation that scales a matrix by <tt>cto/cfrom</tt> without overflow/underflow.
@@ -817,9 +559,9 @@ void zcopy(int_t n, std::complex<double> const *x, int_t incx, std::complex<doub
  *
  * @versionadded{2.0.0}
  */
-int_t slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int_t n, float *vec, int_t lda);
+int slascl(char type, int kl, int ku, float cfrom, float cto, int m, int n, float *vec, int lda);
 /// @copydoc slascl
-int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, int_t n, double *vec, int_t lda);
+int dlascl(char type, int kl, int ku, double cfrom, double cto, int m, int n, double *vec, int lda);
 
 /**
  * Perform the direct product between two vectors and add it to another.
@@ -835,15 +577,15 @@ int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, i
  *
  * @versionadded{2.0.0}
  */
-void sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, int_t incy, float *z, int_t incz);
+void sdirprod(int n, float alpha, float const *x, int incx, float const *y, int incy, float *z, int incz);
 /// @copydoc sdirprod
-void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *y, int_t incy, double *z, int_t incz);
+void ddirprod(int n, double alpha, double const *x, int incx, double const *y, int incy, double *z, int incz);
 /// @copydoc sdirprod
-void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy,
-              std::complex<float> *z, int_t incz);
+void cdirprod(int n, std::complex<float> alpha, std::complex<float> const *x, int incx, std::complex<float> const *y, int incy,
+              std::complex<float> *z, int incz);
 /// @copydoc sdirprod
-void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy,
-              std::complex<double> *z, int_t incz);
+void zdirprod(int n, std::complex<double> alpha, std::complex<double> const *x, int incx, std::complex<double> const *y, int incy,
+              std::complex<double> *z, int incz);
 
 /**
  * Computes the sum of the absolute values of the input vector. If the vector is complex,
@@ -857,13 +599,13 @@ void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x
  *
  * @versionadded{2.0.0}
  */
-float sasum(int_t n, float const *x, int_t incx);
+float sasum(int n, float const *x, int incx);
 /// @copydoc sasum
-double dasum(int_t n, double const *x, int_t incx);
+double dasum(int n, double const *x, int incx);
 /// @copydoc sasum
-float scasum(int_t n, std::complex<float> const *x, int_t incx);
+float scasum(int n, std::complex<float> const *x, int incx);
 /// @copydoc sasum
-double dzasum(int_t n, std::complex<double> const *x, int_t incx);
+double dzasum(int n, std::complex<double> const *x, int incx);
 
 /**
  * Computes the sum of the absolute values of the input vector.
@@ -876,9 +618,9 @@ double dzasum(int_t n, std::complex<double> const *x, int_t incx);
  *
  * @versionadded{2.0.0}
  */
-float scsum1(int_t n, std::complex<float> const *x, int_t incx);
+float scsum1(int n, std::complex<float> const *x, int incx);
 /// @copydoc scsum1
-double dzsum1(int_t n, std::complex<double> const *x, int_t incx);
+double dzsum1(int n, std::complex<double> const *x, int incx);
 
 /**
  * Conjugate a vector.
@@ -887,7 +629,7 @@ double dzsum1(int_t n, std::complex<double> const *x, int_t incx);
  * @param[inout] x The vector to conjugate.
  * @param[in] incx The skip value for the vector.
  */
-void clacgv(int_t n, std::complex<float> *x, int_t incx);
+void clacgv(int n, std::complex<float> *x, int incx);
 /// @copydoc clacgv
-void zlacgv(int_t n, std::complex<double> *x, int_t incx);
-} // namespace einsums::blas::vendor
+void zlacgv(int n, std::complex<double> *x, int incx);
+} // namespace einsums::blas::hip
