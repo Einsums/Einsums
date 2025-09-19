@@ -18,7 +18,7 @@ if(EINSUMS_WITH_GPU_SUPPORT)
     SOURCES ${GPUMemorySources}
     HEADERS ${GPUMemoryHeaders}
     DEPENDENCIES
-    MODULE_DEPENDENCIES Einsums_Runtime Einsums_Logging Einsums_TypeSupport Einsums_Config
+    MODULE_DEPENDENCIES Einsums_Runtime Einsums_Logging Einsums_TypeSupport Einsums_Config Einsums_GPUStreams
     CMAKE_SUBDIRS examples tests
     BASE_LIBNAME Einsums
   )

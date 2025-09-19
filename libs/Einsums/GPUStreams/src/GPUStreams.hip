@@ -24,6 +24,8 @@
 namespace einsums {
 namespace gpu {
 
+EINSUMS_EXPORT bool device_is_reset;
+
 namespace detail {
 BufferVector<hipblasHandle_t>   blas_handles;
 BufferVector<hipsolverHandle_t> solver_handles;
@@ -52,6 +54,7 @@ EINSUMS_HOST int einsums::setup_Einsums_GPUStreams() {
 EINSUMS_HOST void einsums::initialize_Einsums_GPUStreams() {
     using namespace einsums::gpu;
     hip_catch(hipFree(nullptr));
+    device_is_reset = false;
 
     hip_catch(hipSetDevice(0));
 
@@ -117,6 +120,7 @@ EINSUMS_HOST void einsums::finalize_Einsums_GPUStreams() {
     }
 
     hip_catch(hipDeviceReset());
+    device_is_reset = true;
 }
 
 namespace einsums {
