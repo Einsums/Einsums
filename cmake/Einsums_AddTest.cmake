@@ -7,6 +7,49 @@ if(EINSUMS_WITH_TESTS_VALGRIND)
   find_program(VALGRIND_EXECUTABLE valgrind REQUIRED)
 endif()
 
+#:
+#: .. cmake:command:: einsums_add_test
+#:
+#:    Register a runtime test with optional wrappers, Valgrind, and test properties.
+#:
+#:    Creates a CTest entry named ``<category>.<name>`` that invokes an executable (or target),
+#:    optionally through a custom wrapper and/or Valgrind. Supports serial execution, cost,
+#:    timeout, and expected‑failure semantics. If the resolved executable target ends with ``_test``,
+#:    it can be linked to Einsums testing utilities when ``TESTING`` is set.
+#:
+#:    **Signature**
+#:    ``einsums_add_test(<category> <name>
+#:        [EXECUTABLE <exe-or-target>]
+#:        [ARGS <...>]
+#:        [RANKS <int>] [THREADS <int>]
+#:        [COST <int>] [TIMEOUT <seconds>]
+#:        [WRAPPER <cmd>]
+#:        [RUN_SERIAL]
+#:        [FAILURE_EXPECTED]
+#:        [TESTING]
+#:        [PERFORMANCE_TESTING]
+#:        [MPIWRAPPER]
+#:    )``
+#:
+#:    **Behavior**
+#:    - Resolves ``EXECUTABLE`` in this order: ``<name>_test`` target → ``<name>`` target → raw path.
+#:    - Prepends internal runtime args ``--einsums:no-install-signal-handlers`` and
+#:      ``--einsums:no-profiler-report``.
+#:    - Optionally prefixes the command with ``WRAPPER`` and/or Valgrind when
+#:      :cmake:variable:`EINSUMS_WITH_TESTS_VALGRIND` is ON.
+#:    - Sets CTest properties: ``RUN_SERIAL``, ``COST``, ``TIMEOUT``, ``WILL_FAIL`` as requested.
+#:    - For real test targets ``<exe>_test`` with ``TESTING``: links ``Catch2::Catch2`` and
+#:      ``einsums_testing``.
+#:
+#:    **Notes**
+#:    - ``RANKS`` and ``THREADS`` are parsed for future use; ``THREADS`` is clamped by
+#:      :cmake:variable:`EINSUMS_WITH_TESTS_MAX_THREADS` when > 0.
+#:    - When Valgrind is enabled globally, it is discovered via ``find_program(valgrind)``.
+#:
+#:    **Example**
+#:    .. code-block:: cmake
+#:
+#:       einsums_add_test(Tests.Unit TensorOps EXECUTABLE tensor_ops_test RUN_SERIAL TIMEOUT 120)
 function(einsums_add_test category name)
   set(options FAILURE_EXPECTED RUN_SERIAL TESTING PERFORMANCE_TESTING MPIWRAPPER)
   set(one_value_args COST EXECUTABLE RANKS THREADS TIMEOUT WRAPPER)
@@ -92,6 +135,29 @@ function(einsums_add_test category name)
 
 endfunction(einsums_add_test)
 
+#:
+#: .. cmake:command:: einsums_add_test_target_dependencies
+#:
+#:    Create a pseudo‑target for a test and wire it into its category group.
+#:
+#:    Adds a buildable convenience target ``<category>.<name>`` and makes it depend on the
+#:    appropriate test executable target (by default ``<name>_test``). Also hooks it under the
+#:    category‑level pseudo‑target ``<category>``.
+#:
+#:    **Signature**
+#:    ``einsums_add_test_target_dependencies(<category> <name> [PSEUDO_DEPS_NAME <target-base>])``
+#:
+#:    **Behavior**
+#:    - If the category does **not** match ``Tests.Examples*``, the dependent test target name is
+#:      assumed to end with ``_test``; otherwise no suffix is used.
+#:    - Creates pseudo‑target ``<category>.<name>`` via :cmake:command:`einsums_add_pseudo_target`.
+#:    - Attaches it to the category root via :cmake:command:`einsums_add_pseudo_dependencies`.
+#:    - Makes the pseudo‑target depend on either ``<PSEUDO_DEPS_NAME><suffix>`` or ``<name><suffix>``.
+#:
+#:    **Example**
+#:    .. code-block:: cmake
+#:
+#:       einsums_add_test_target_dependencies(Tests.Unit TensorOps)
 function(einsums_add_test_target_dependencies category name)
   set(one_value_args PSEUDO_DEPS_NAME)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
@@ -112,7 +178,22 @@ function(einsums_add_test_target_dependencies category name)
   endif()
 endfunction(einsums_add_test_target_dependencies)
 
-# To add test to the category root as in tests/regressions/ with correct name
+#:
+#: .. cmake:command:: einsums_add_test_and_deps_test
+#:
+#:    Convenience wrapper to define a test and its pseudo‑target within the Tests hierarchy.
+#:
+#:    Constructs the full category path as ``Tests.<category>[.<subcategory>]`` and invokes
+#:    :cmake:command:`einsums_add_test` and
+#:    :cmake:command:`einsums_add_test_target_dependencies` with the same arguments.
+#:
+#:    **Signature**
+#:    ``einsums_add_test_and_deps_test(<category> <subcategory> <name> [ARGS ...])``
+#:
+#:    **Example**
+#:    .. code-block:: cmake
+#:
+#:       einsums_add_test_and_deps_test(Unit "" TensorOps EXECUTABLE tensor_ops_test RUN_SERIAL)
 function(einsums_add_test_and_deps_test category subcategory name)
   if("${subcategory}" STREQUAL "")
     einsums_add_test(Tests.${category} ${name} ${ARGN})
@@ -123,6 +204,28 @@ function(einsums_add_test_and_deps_test category subcategory name)
   endif()
 endfunction(einsums_add_test_and_deps_test)
 
+#:
+#: .. cmake:command:: einsums_set_test_properties
+#:
+#:    Apply standard Einsums labels and sanitizer/profiler environment to a test.
+#:
+#:    Sets CTest properties on a given test name, including labels and environment variables used
+#:    for profiling and sanitizer behavior.
+#:
+#:    **Signature**
+#:    ``einsums_set_test_properties(<name> <labels>)``
+#:
+#:    **Behavior**
+#:    - Sets ``LABELS`` to the provided list/string.
+#:    - Sets ``ENVIRONMENT`` with:
+#:      ``LLVM_PROFILE_FILE=<name>.profraw``,
+#:      ``TSAN_OPTIONS=ignore_noninstrumented_modules=1``,
+#:      ``LSAN_OPTIONS=suppression=${PROJECT_SOURCE_DIR}/devtools/lsan.supp``.
+#:
+#:    **Example**
+#:    .. code-block:: cmake
+#:
+#:       einsums_set_test_properties(Tests.Unit.TensorOps "UNIT_ONLY")
 function(einsums_set_test_properties name labels)
   set_tests_properties(
     ${name}
@@ -134,19 +237,62 @@ function(einsums_set_test_properties name labels)
   )
 endfunction()
 
-# Only unit and regression tests link to the testing library. Performance tests and examples don't
-# link to the testing library. Performance tests link to the performance_testing library.
+#:
+#: .. cmake:command:: einsums_add_unit_test
+#:
+#:    Define a unit test under ``Tests.Unit.<subcategory>`` and wire its pseudo‑target.
+#:
+#:    Forwards to :cmake:command:`einsums_add_test_and_deps_test` with ``TESTING`` enabled and then
+#:    :cmake:command:`einsums_set_test_properties` with the label ``UNIT_ONLY``.
+#:
+#:    **Signature**
+#:    ``einsums_add_unit_test(<subcategory> <name> [ARGS ...])``
+#:
+#:    **Example**
+#:    .. code-block:: cmake
+#:
+#:       einsums_add_unit_test(Math tensor_add EXECUTABLE tensor_add_test)
 function(einsums_add_unit_test subcategory name)
   einsums_add_test_and_deps_test("Unit" "${subcategory}" ${name} ${ARGN} TESTING)
   einsums_set_test_properties("Tests.Unit.${subcategory}.${name}" "UNIT_ONLY")
 endfunction(einsums_add_unit_test)
 
+#:
+#: .. cmake:command:: einsums_add_regression_test
+#:
+#:    Define a regression test under ``Tests.Regressions.<subcategory>`` and wire its pseudo‑target.
+#:
+#:    Forwards to :cmake:command:`einsums_add_test_and_deps_test` with ``TESTING`` enabled and then
+#:    :cmake:command:`einsums_set_test_properties` with the label ``REGRESSION_ONLY``.
+#:
+#:    **Signature**
+#:    ``einsums_add_regression_test(<subcategory> <name> [ARGS ...])``
+#:
+#:    **Example**
+#:    .. code-block:: cmake
+#:
+#:       einsums_add_regression_test(Parser bad_header EXECUTABLE parser_bad_header_test FAILURE_EXPECTED)
 function(einsums_add_regression_test subcategory name)
   # ARGN needed in case we add a test with the same executable
   einsums_add_test_and_deps_test("Regressions" "${subcategory}" ${name} ${ARGN} TESTING)
   einsums_set_test_properties("Tests.Regressions.${subcategory}.${name}" "REGRESSION_ONLY")
 endfunction(einsums_add_regression_test)
 
+#:
+#: .. cmake:command:: einsums_add_performance_test
+#:
+#:    Define a performance test under ``Tests.Performance.<subcategory>`` and wire its pseudo‑target.
+#:
+#:    Forwards to :cmake:command:`einsums_add_test_and_deps_test` with ``RUN_SERIAL`` and
+#:    ``PERFORMANCE_TESTING`` enabled, then sets label ``PERFORMANCE_ONLY``.
+#:
+#:    **Signature**
+#:    ``einsums_add_performance_test(<subcategory> <name> [ARGS ...])``
+#:
+#:    **Example**
+#:    .. code-block:: cmake
+#:
+#:       einsums_add_performance_test(Benchmarks gemm_perf EXECUTABLE gemm_bench TIMEOUT 600)
 function(einsums_add_performance_test subcategory name)
   einsums_add_test_and_deps_test(
     "Performance" "${subcategory}" ${name} ${ARGN} RUN_SERIAL PERFORMANCE_TESTING
@@ -154,13 +300,44 @@ function(einsums_add_performance_test subcategory name)
   einsums_set_test_properties("Tests.Performance.${subcategory}.${name}" "PERFORMANCE_ONLY")
 endfunction(einsums_add_performance_test)
 
+#:
+#: .. cmake:command:: einsums_add_example_test
+#:
+#:    Register an example as a test under ``Tests.Examples.<subcategory>`` and wire its pseudo‑target.
+#:
+#:    Forwards to :cmake:command:`einsums_add_test_and_deps_test` and labels the test ``EXAMPLES_ONLY``.
+#:
+#:    **Signature**
+#:    ``einsums_add_example_test(<subcategory> <name> [ARGS ...])``
+#:
+#:    **Example**
+#:    .. code-block:: cmake
+#:
+#:       einsums_add_example_test(IO read_write_example EXECUTABLE read_write_example)
 function(einsums_add_example_test subcategory name)
   einsums_add_test_and_deps_test("Examples" "${subcategory}" ${name} ${ARGN})
   einsums_set_test_properties("Tests.Examples.${subcategory}.${name}" "EXAMPLES_ONLY")
 endfunction(einsums_add_example_test)
 
-# To create target examples.<name> when calling make examples need 2 distinct rules for examples and
-# tests.examples
+#:
+#: .. cmake:command:: einsums_add_example_target_dependencies
+#:
+#:    Create an ``Examples.<subcategory>.<name>`` pseudo‑target and attach it to its category.
+#:
+#:    This enables category‑scoped builds like ``cmake --build . --target Examples.<subcategory>``.
+#:
+#:    **Signature**
+#:    ``einsums_add_example_target_dependencies(<subcategory> <name> [DEPS_ONLY])``
+#:
+#:    **Behavior**
+#:    - Unless ``DEPS_ONLY`` is set, defines the pseudo‑target ``Examples.<subcategory>.<name>``.
+#:    - Always wires it under the category target ``Examples.<subcategory>``.
+#:    - Adds a dependency from the pseudo‑target to the real executable target ``<name>``.
+#:
+#:    **Example**
+#:    .. code-block:: cmake
+#:
+#:       einsums_add_example_target_dependencies(IO convert_image)
 function(einsums_add_example_target_dependencies subcategory name)
   set(options DEPS_ONLY)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
