@@ -113,7 +113,7 @@ function(einsums_add_executable name)
   add_executable(${name} ${${name}_SOURCES} ${${name}_HEADERS} ${${name}_AUXILIARY})
 
   # Create a .dSYM file on macOS
-  if(APPLE AND dsymutil_EXECUTABLE)
+  if (APPLE AND dsymutil_EXECUTABLE AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug" OR ${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo"))
     add_custom_command(
       TARGET ${name}
       POST_BUILD
