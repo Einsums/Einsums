@@ -5,25 +5,21 @@
 
 #include <Einsums/Config.hpp>
 
-#include <Einsums/BLASVendor/Vendor.hpp>
-#include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
+#include <Einsums/Errors.hpp>
+#include <Einsums/GPUStreams/GPUStreams.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile.hpp>
+#include <Einsums/hipBLASVendor/Defines.hpp>
+#include <Einsums/hipBLASVendor/Vendor.hpp>
+
+#include <hip/hip_runtime.h>
+#include <hip/hip_vector_types.h>
+#include <hipblas/hipblas.h>
 
 #include "Common.hpp"
 
-namespace einsums::blas::vendor {
-
-extern "C" {
-extern void FC_GLOBAL(sgemv, SGEMV)(char *, int_t *, int_t *, float *, float const *, int_t *, float const *, int_t *, float *, float *,
-                                    int_t *);
-extern void FC_GLOBAL(dgemv, DGEMV)(char *, int_t *, int_t *, double *, double const *, int_t *, double const *, int_t *, double *,
-                                    double *, int_t *);
-extern void FC_GLOBAL(cgemv, CGEMV)(char *, int_t *, int_t *, std::complex<float> *, std::complex<float> const *, int_t *,
-                                    std::complex<float> const *, int_t *, std::complex<float> *, std::complex<float> *, int_t *);
-extern void FC_GLOBAL(zgemv, ZGEMV)(char *, int_t *, int_t *, std::complex<double> *, std::complex<double> const *, int_t *,
-                                    std::complex<double> const *, int_t *, std::complex<double> *, std::complex<double> *, int_t *);
-}
+namespace einsums::blas::hip {
 
 #define GEMV_CHECK(transa, m, n, lda, incx, incy)                                                                                          \
     char ta = std::tolower(transa);                                                                                                        \
@@ -44,7 +40,7 @@ extern void FC_GLOBAL(zgemv, ZGEMV)(char *, int_t *, int_t *, std::complex<doubl
             std::domain_error, "The third argument (n) to gemv call is invalid. Expected a number greater than or equal to zero, got {}.", \
             n);                                                                                                                            \
     }                                                                                                                                      \
-    if ((lda) < std::max((int_t)1, m)) {                                                                                                   \
+    if ((lda) < std::max((int)1, m)) {                                                                                                   \
         EINSUMS_THROW_EXCEPTION(std::domain_error,                                                                                         \
                                 "The sixth argument (lda) to gemv call is invalid. Expected a number at least 1 and at least {}, got {}.", \
                                 m, lda);                                                                                                   \
@@ -58,8 +54,8 @@ extern void FC_GLOBAL(zgemv, ZGEMV)(char *, int_t *, int_t *, std::complex<doubl
                                 "The eleventh argument (incy) to gemv call is invalid. Expected a non-zero value, got zero.");             \
     }
 
-void sgemv(char transa, int_t m, int_t n, float alpha, float const *a, int_t lda, float const *x, int_t incx, float beta, float *y,
-           int_t incy) {
+void sgemv(char transa, int m, int n, float alpha, float const *a, int lda, float const *x, int incx, float beta, float *y,
+           int incy) {
     LabeledSection0();
 
     if (m == 0 || n == 0)
@@ -67,11 +63,18 @@ void sgemv(char transa, int_t m, int_t n, float alpha, float const *a, int_t lda
 
     GEMV_CHECK(transa, m, n, lda, incx, incy)
 
-    FC_GLOBAL(sgemv, SGEMV)(&transa, &m, &n, &alpha, a, &lda, x, &incx, &beta, y, &incy);
+    float *alpha_gpu = gpu::register_host_variable(alpha), *beta_gpu = gpu::register_host_variable(beta);
+
+    hipblas_catch(hipblasSgemv(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, alpha_gpu, a, lda, x, incx, beta_gpu, y, incy));
+
+    gpu::stream_wait();
+
+    gpu::unregister_host_variable(alpha);
+    gpu::unregister_host_variable(beta);
 }
 
-void dgemv(char transa, int_t m, int_t n, double alpha, double const *a, int_t lda, double const *x, int_t incx, double beta, double *y,
-           int_t incy) {
+void dgemv(char transa, int m, int n, double alpha, double const *a, int lda, double const *x, int incx, double beta, double *y,
+           int incy) {
     LabeledSection0();
 
     if (m == 0 || n == 0)
@@ -79,11 +82,18 @@ void dgemv(char transa, int_t m, int_t n, double alpha, double const *a, int_t l
 
     GEMV_CHECK(transa, m, n, lda, incx, incy)
 
-    FC_GLOBAL(dgemv, DGEMV)(&transa, &m, &n, &alpha, a, &lda, x, &incx, &beta, y, &incy);
+    double *alpha_gpu = gpu::register_host_variable(alpha), *beta_gpu = gpu::register_host_variable(beta);
+
+    hipblas_catch(hipblasDgemv(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, alpha_gpu, a, lda, x, incx, beta_gpu, y, incy));
+
+    gpu::stream_wait();
+
+    gpu::unregister_host_variable(alpha);
+    gpu::unregister_host_variable(beta);
 }
 
-void cgemv(char transa, int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *a, int_t lda, std::complex<float> const *x,
-           int_t incx, std::complex<float> beta, std::complex<float> *y, int_t incy) {
+void cgemv(char transa, int m, int n, std::complex<float> alpha, std::complex<float> const *a, int lda, std::complex<float> const *x,
+           int incx, std::complex<float> beta, std::complex<float> *y, int incy) {
     LabeledSection0();
 
     if (m == 0 || n == 0)
@@ -91,11 +101,20 @@ void cgemv(char transa, int_t m, int_t n, std::complex<float> alpha, std::comple
 
     GEMV_CHECK(transa, m, n, lda, incx, incy)
 
-    FC_GLOBAL(cgemv, CGEMV)(&transa, &m, &n, &alpha, a, &lda, x, &incx, &beta, y, &incy);
+    hipblasComplex *alpha_gpu = (hipblasComplex *)gpu::register_host_variable(alpha),
+                   *beta_gpu  = (hipblasComplex *)gpu::register_host_variable(beta);
+
+    hipblas_catch(hipblasCgemv(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, alpha_gpu, (hipblasComplex *)a, lda,
+                               (hipblasComplex *)x, incx, beta_gpu, (hipblasComplex *)y, incy));
+
+    gpu::stream_wait();
+
+    gpu::unregister_host_variable(alpha);
+    gpu::unregister_host_variable(beta);
 }
 
-void zgemv(char transa, int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *a, int_t lda,
-           std::complex<double> const *x, int_t incx, std::complex<double> beta, std::complex<double> *y, int_t incy) {
+void zgemv(char transa, int m, int n, std::complex<double> alpha, std::complex<double> const *a, int lda,
+           std::complex<double> const *x, int incx, std::complex<double> beta, std::complex<double> *y, int incy) {
     LabeledSection0();
 
     if (m == 0 || n == 0)
@@ -103,7 +122,16 @@ void zgemv(char transa, int_t m, int_t n, std::complex<double> alpha, std::compl
 
     GEMV_CHECK(transa, m, n, lda, incx, incy)
 
-    FC_GLOBAL(zgemv, ZGEMV)(&transa, &m, &n, &alpha, a, &lda, x, &incx, &beta, y, &incy);
+    hipblasDoubleComplex *alpha_gpu = (hipblasDoubleComplex *)gpu::register_host_variable(alpha),
+                         *beta_gpu  = (hipblasDoubleComplex *)gpu::register_host_variable(beta);
+
+    hipblas_catch(hipblasZgemv(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, alpha_gpu, (hipblasDoubleComplex *)a, lda,
+                               (hipblasDoubleComplex *)x, incx, beta_gpu, (hipblasDoubleComplex *)y, incy));
+
+    gpu::stream_wait();
+
+    gpu::unregister_host_variable(alpha);
+    gpu::unregister_host_variable(beta);
 }
 
-} // namespace einsums::blas::vendor
+} // namespace einsums::blas::hip

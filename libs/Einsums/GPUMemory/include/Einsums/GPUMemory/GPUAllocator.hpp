@@ -212,7 +212,9 @@ struct GPUAllocator {
      *
      * @versionadded{1.1.0}
      */
-    void construct(pointer xp, T const &value) { hip_catch(hipMemcpy((void *)xp, (void const *)&value, type_size, hipMemcpyHostToDevice)); }
+    void construct(pointer xp, std::add_const_t<detail::reference_or_void_t<T>> value) {
+        hip_catch(hipMemcpy((void *)xp, (void const *)&value, type_size, hipMemcpyHostToDevice));
+    }
 
     /**
      * @brief Does nothing, but is required by the allocator protocol.

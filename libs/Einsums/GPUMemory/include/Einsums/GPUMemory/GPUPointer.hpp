@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Einsums/Errors/Error.hpp>
+// #include <Einsums/GPUMemory/GPUAllocator.hpp>
 #include <Einsums/GPUMemory/InitModule.hpp>
 
 #include <hip/hip_common.h>
@@ -13,11 +14,41 @@
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
 
-#include "Einsums/GPUMemory/GPUAllocator.hpp"
-
 namespace einsums {
 
 namespace gpu {
+
+namespace detail {
+
+template <typename T>
+struct reference_or_void {
+    using type = T &;
+};
+
+template <>
+struct reference_or_void<void> {
+    using type = uint8_t &;
+};
+
+template <>
+struct reference_or_void<void const> {
+    using type = uint8_t const &;
+};
+
+template <>
+struct reference_or_void<void volatile> {
+    using type = uint8_t volatile &;
+};
+
+template <>
+struct reference_or_void<void const volatile> {
+    using type = uint8_t const volatile &;
+};
+
+template <typename T>
+using reference_or_void_t = typename reference_or_void<T>::type;
+
+} // namespace detail
 
 /**
  * @struct GPUPointer
@@ -77,7 +108,7 @@ struct GPUPointer final {
      *
      * @versionadded{1.1.0}
      */
-    using element_type = dev_datatype;
+    using element_type = std::conditional_t<std::is_void_v<dev_datatype>, uint8_t, dev_datatype>;
 
     /**
      * @typedef pointer
@@ -95,7 +126,7 @@ struct GPUPointer final {
      *
      * @versionadded{1.1.0}
      */
-    using reference = T &;
+    using reference = detail::reference_or_void_t<T>;
 
     /**
      * @typedef iterator_category
@@ -512,7 +543,7 @@ struct GPUPointer final {
      *
      * @versionadded{1.1.0}
      */
-    constexpr operator T *() noexcept { return static_cast<T *>(gpu_ptr_); }
+    constexpr operator T *() noexcept { return reinterpret_cast<T *>(gpu_ptr_); }
 
     /**
      * @brief Get the underlying pointer, but cast to a different type.
@@ -524,7 +555,7 @@ struct GPUPointer final {
     template <typename U>
         requires(!std::is_const_v<T> || std::is_const_v<U>)
     constexpr operator U *() noexcept {
-        return static_cast<U *>(gpu_ptr_);
+        return reinterpret_cast<U *>(gpu_ptr_);
     }
 
     /**
