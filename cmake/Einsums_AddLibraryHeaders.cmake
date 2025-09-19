@@ -131,7 +131,8 @@ endfunction()
 #:       )
 #:
 #:    **See also**
-#:    - :cmake:command:`einsums_add_library_headers`function(einsums_add_library_headers_noglob name)
+#:    - :cmake:command:`einsums_add_library_headers`
+function(einsums_add_library_headers_noglob name)
   if(MSVC)
     set(options APPEND)
     set(one_value_args)
