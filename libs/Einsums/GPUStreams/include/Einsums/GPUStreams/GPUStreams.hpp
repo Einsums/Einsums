@@ -7,6 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/Error.hpp>
 
 #include <hip/hip_common.h>
@@ -360,6 +361,34 @@ EINSUMS_DEVICE inline void atomicAdd_wrap(hipFloatComplex *address, hipFloatComp
 EINSUMS_DEVICE inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleComplex value) noexcept {
     atomicAdd(&(address->x), value.x);
     atomicAdd(&(address->y), value.y);
+}
+
+template <typename T>
+EINSUMS_HOST inline T *register_host_variable(T &value) {
+    hip_catch(hipHostRegister((void *)&value, sizeof(std::remove_cv_t<T>), hipHostRegisterDefault));
+    T *out;
+    hip_catch(hipHostGetDevicePointer((void **)&out, (void *)&value, 0));
+
+    return out;
+}
+
+template <typename T>
+EINSUMS_HOST inline T *register_host_variable(T const &value) {
+    hip_catch(hipHostRegister(const_cast<void *>(&value), sizeof(std::remove_cv_t<T>), hipHostRegisterDefault));
+    T *out;
+    hip_catch(hipHostGetDevicePointer((void **)&out, const_cast<void *>(&value), 0));
+
+    return out;
+}
+
+template <typename T>
+EINSUMS_HOST inline void unregister_host_variable(T &value) {
+    hip_catch(hipHostUnregister((void *)&value));
+}
+
+template <typename T>
+EINSUMS_HOST inline void unregister_host_variable(T const &value) {
+    hip_catch(hipHostUnregister(const_cast<void *>(&value)));
 }
 
 } // namespace gpu
