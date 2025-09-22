@@ -6,7 +6,8 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLAS.hpp>
-#include <Einsums/CommandLine/CommandLine.hpp>
+#include <Einsums/CommandLine.hpp>
+#include <Einsums/Profile/Profile.hpp>
 #include <Einsums/Runtime.hpp>
 
 #include <cstdio>
@@ -15,6 +16,7 @@
 #include <vector>
 
 using namespace std;
+using namespace einsums;
 using namespace einsums::blas;
 
 void create_J(double *J, double const *D, double const *TEI, size_t norbs) {
@@ -104,6 +106,7 @@ void register_args() {
 
 template <class Generator>
 void fill_random(std::vector<double> &buffer, Generator &generator) {
+    LabeledSection0();
     std::uniform_real_distribution random_gen(-1.0, 1.0);
 #pragma omp parallel for
     for (size_t i = 0; i < buffer.size(); i++) {
