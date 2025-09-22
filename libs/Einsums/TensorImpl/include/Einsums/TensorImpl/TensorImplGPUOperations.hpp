@@ -13,23 +13,121 @@
 
 #include <type_traits>
 
+#include "Einsums/GPUStreams/GPUStreams.hpp"
+#include "Einsums/TypeSupport/GPUCast.hpp"
+
 namespace einsums {
 namespace detail {
+
+template <typename T1, typename T2>
+__global__ void impl_copy_kernel_all1(int n, T1 const *in, T2 *out) {
+    int thread_id, num_threads;
+
+    get_worker_info(thread_id, num_threads);
+
+    int work_size = n / num_threads;
+    int remaining = n % num_threads;
+
+    T1 const *in_pos  = in + (ptrdiff_t)work_size * thread_id;
+    T2       *out_pos = out + (ptrdiff_t)work_size * thread_id;
+
+    if (thread_id < remaining) {
+        work_size++;
+        in_pos += thread_id;
+        out_pos += thread_id;
+    } else {
+        in_pos += remaining;
+        out_pos += remaining;
+    }
+
+    for (int i = 0; i < work_size; i++) {
+        out_pos[i] = HipCast<T2, T1>::cast(in_pos[i]);
+    }
+}
+
+template <typename T>
+__global__ void impl_copy_kernel_all1(int n, T const *in, T *out) {
+    int thread_id, num_threads;
+
+    get_worker_info(thread_id, num_threads);
+
+    int work_size = n / (4 * num_threads);
+    int remaining = n % (4 * num_threads);
+
+    int work_unvec      = remaining / num_threads;
+    int remaining_unvec = remaining % num_threads;
+
+    // Deal with the vectorizable data.
+    if (work_size > 0) {
+        HIP_vector_type<T, 4> const *in_pos  = ((HIP_vector_type<T, 4> const *)in) + (ptrdiff_t)work_size * thread_id;
+        HIP_vector_type<T, 4>       *out_pos = ((HIP_vector_type<T, 4> *)out) + (ptrdiff_t)work_size * thread_id;
+
+        for (int i = 0; i < work_size; i++) {
+            out_pos[i] = in_pos[i];
+        }
+    }
+
+    // Then the unvectorizable data.
+    T const *in_pos  = in + (ptrdiff_t)(4 * work_size * num_threads + work_unvec * thread_id);
+    T       *out_pos = out + (ptrdiff_t)(4 * work_size * num_threads + work_unvec * thread_id);
+
+    if (thread_id < remaining_unvec) {
+        work_unvec++;
+        in_pos += thread_id;
+        out_pos += thread_id;
+    } else {
+        in_pos += remaining_unvec;
+        out_pos += remaining_unvec;
+    }
+
+    for (int i = 0; i < work_unvec; i++) {
+        out_pos[i] = in_pos[i];
+    }
+}
+
+template <typename T1, typename T2>
+__global__ void impl_copy_kernel(int n, T1 const *in, int incx, T2 *out, int incy) {
+    int thread_id, num_threads;
+
+    get_worker_info(thread_id, num_threads);
+
+    int work_size = n / num_threads;
+    int remaining = n % num_threads;
+
+    T1 const *in_pos  = in + (ptrdiff_t)work_size * thread_id * incx;
+    T2       *out_pos = out + (ptrdiff_t)work_size * thread_id * incy;
+
+    if (thread_id < remaining) {
+        work_size++;
+        in_pos += thread_id * incx;
+        out_pos += thread_id * incy;
+    } else {
+        in_pos += remaining * incx;
+        out_pos += remaining * incy;
+    }
+
+    for (int i = 0; i < work_size; i++) {
+        *out_pos = HipCast<T2, T1>::cast(*in_pos);
+        in_pos += incx;
+        out_pos += incy;
+    }
+}
 
 template <typename T>
 void impl_real_contiguous_gpu(TensorImpl<std::complex<T>> const &in, TensorImpl<T> &out) {
     if constexpr (blas::IsBlasableV<T>) {
-        
-
-        blas::copy(in.size(), static_cast<T const *>(in.data()), 2 * in.get_incx(), out.data(), out.get_incx());
+        blas::hip::copy(in.size(), static_cast<T const *>(in.get_gpu_pointer()), 2 * in.get_incx(), out.get_gpu_pointer(), out.get_incx());
     } else {
-        T const     *in_data  = static_cast<T const *>(in.data());
-        T           *out_data = out.data();
-        size_t const incx = 2 * in.get_incx(), incy = out.get_incx(), size = in.size();
-        EINSUMS_OMP_PARALLEL_FOR_SIMD
-        for (size_t i = 0; i < size; i++) {
-            out_data[i * incy] = in_data[i * incx];
-        }
+        T const *in_data  = static_cast<T const *>(in.data());
+        T       *out_data = out.data();
+
+        auto blocks     = gpu::blocks(in.size());
+        auto block_dims = gpu::block_size(in.size());
+
+        impl_copy_kernel<<<block_dims, blocks, 0, gpu::get_stream()>>>(in.size(), static_cast<T const *>(in.get_gpu_pointer()), 2,
+                                                                       out.get_gpu_pointer(), 1);
+
+        gpu::stream_wait();
     }
 }
 
@@ -45,9 +143,23 @@ void impl_real_noncontiguous_vectorable(int depth, int hard_rank, size_t easy_si
             T const *in_data = static_cast<T const *>(in);
             EINSUMS_OMP_PARALLEL_FOR_SIMD
             for (size_t i = 0; i < easy_size; i++) {
-                out[i * inc_out] = in_data[i * twice_inc_in];
+                out[i * inc_out] = std::real(in_data[i * twice_inc_in]);
             }
         }
+    if constexpr (blas::IsBlasableV<T>) {
+        blas::hip::copy(easy_size, static_cast<T const *>(in.get_gpu_pointer()), twice_inc_in, out.get_gpu_pointer(), twice_inc_out);
+    } else {
+        T const *in_data  = static_cast<T const *>(in.data());
+        T       *out_data = out.data();
+
+        auto blocks     = gpu::blocks(in.size());
+        auto block_dims = gpu::block_size(in.size());
+
+        impl_copy_kernel<<<block_dims, blocks, 0, gpu::get_stream()>>>(in.size(), static_cast<T const *>(in.get_gpu_pointer()), 2,
+                                                                       out.get_gpu_pointer(), 1);
+
+        gpu::stream_wait();
+    }
     } else {
         for (int i = 0; i < dims[depth]; i++) {
             impl_real_noncontiguous_vectorable(depth + 1, hard_rank, easy_size, dims, in + i * in_strides[depth], in_strides, twice_inc_in,
@@ -640,8 +752,8 @@ void impl_scal(U alpha, TensorImpl<T> &out) {
 
 template <typename T, typename TOther>
 void impl_div_scalar_contiguous(TOther alpha, TensorImpl<T> &out) {
-    if constexpr (std::is_same_v<RemoveComplexT<T>, RemoveComplexT<TOther>> &&
-                  !(IsComplexV<TOther> && !IsComplexV<T>)&&blas::IsBlasableV<T>) {
+    if constexpr (std::is_same_v<RemoveComplexT<T>, RemoveComplexT<TOther>> && !(IsComplexV<TOther> && !IsComplexV<T>) &&
+                  blas::IsBlasableV<T>) {
         blas::rscl(out.size(), alpha, out.data(), out.get_incx());
     } else if constexpr (IsComplexV<TOther> && !IsComplexV<T>) {
         EINSUMS_THROW_EXCEPTION(complex_conversion_error,
@@ -661,8 +773,8 @@ template <typename T, typename TOther, Container HardDims, Container OutStrides>
 void impl_div_scalar_noncontiguous_vectorable(int depth, int hard_rank, size_t easy_size, TOther alpha, HardDims const &dims, T *out,
                                               OutStrides const &out_strides, size_t inc_out) {
     if (depth == hard_rank) {
-        if constexpr (std::is_same_v<RemoveComplexT<T>, RemoveComplexT<TOther>> &&
-                      !(IsComplexV<TOther> && !IsComplexV<T>)&&blas::IsBlasableV<T>) {
+        if constexpr (std::is_same_v<RemoveComplexT<T>, RemoveComplexT<TOther>> && !(IsComplexV<TOther> && !IsComplexV<T>) &&
+                      blas::IsBlasableV<T>) {
             blas::rscl(easy_size, alpha, out, inc_out);
         } else if constexpr (IsComplexV<TOther> && !IsComplexV<T>) {
             EINSUMS_THROW_EXCEPTION(complex_conversion_error,
