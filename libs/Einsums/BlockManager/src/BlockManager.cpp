@@ -57,7 +57,7 @@ std::weak_ptr<uint8_t[]> BlockManager::request_block(size_t bytes) {
 
     auto lock = std::lock_guard(*this);
 
-    _block_list.push_back(std::allocate_shared<uint8_t[]>(_alloc, bytes));
+    _block_list.push_back(std::allocate_shared_for_overwrite<uint8_t[]>(_alloc, (size_t)bytes));
 
     return std::weak_ptr<uint8_t[]>(_block_list.back());
 }
