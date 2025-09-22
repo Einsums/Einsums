@@ -34,7 +34,7 @@ std::weak_ptr<uint8_t[]> BlockManager::request_block(size_t bytes) {
             auto lock = std::lock_guard(*this);
 
             for (auto it = _block_list.begin(); it != _block_list.end(); it++) {
-                if (it->unique()) {
+                if (it->use_count() == 1) {
                     _block_list.erase(it);
                     erased = true;
                     break;
@@ -70,7 +70,7 @@ std::weak_ptr<GPUBlock> BlockManager::request_gpu_block(size_t bytes) { // Try t
             auto lock = std::lock_guard(*this);
 
             for (auto it = _gpu_block_list.begin(); it != _gpu_block_list.end(); it++) {
-                if (it->unique()) {
+                if (it->use_count() == 1) {
                     _gpu_block_list.erase(it);
                     erased = true;
                     break;
