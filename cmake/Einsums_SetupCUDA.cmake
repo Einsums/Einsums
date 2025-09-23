@@ -76,6 +76,11 @@ if(EINSUMS_WITH_CUDA AND NOT TARGET cuda)
 
   set(HIP_PLATFORM "nvidia")
   set(USE_CUDA ON)
+  
+  include(Einsums_SetuphipTensor)
+
+  set(HIP_PLATFORM "nvidia")
+  set(USE_CUDA ON)
 
   include(Einsums_ExportTargets)
 

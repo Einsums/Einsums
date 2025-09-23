@@ -64,12 +64,16 @@ if(EINSUMS_WITH_HIP AND NOT TARGET roc::rocblas)
     cmake_path(APPEND __hip_cmake_dir "hipsolver" OUTPUT_VARIABLE hipsolver_DIR)
     set(ENV{hipsolver_DIR} ${hipsolver_DIR})
 
+    cmake_path(APPEND __hip_cmake_dir "hiptensor" OUTPUT_VARIABLE hiptensor_DIR)
+    set(ENV{hiptensor_DIR} ${hiptensor_DIR})
+
   endif()
 
   enable_language(HIP)
 
   include(Einsums_SetuphipBlas)
   include(Einsums_SetuphipSolver)
+  include(Einsums_SetuphipTensor)
 
   set(CURSES_NEED_NCURSES True)
   find_package(Curses)
