@@ -15,8 +15,7 @@ def extract_blocks(text):
         if lines[i].lstrip().startswith("#:"):
             block = []
             while i < len(lines) and lines[i].lstrip().startswith("#:"):
-                block.append(lines[i].split(":#", 1)[-1].lstrip() if lines[i].startswith("#:#") else lines[i].lstrip()[
-                    2:].lstrip())
+                block.append(lines[i].split(":#", 1)[-1] if lines[i].startswith("#:#") else lines[i][3:])
                 i += 1
             # lookahead for the next function/macro name
             name = None
