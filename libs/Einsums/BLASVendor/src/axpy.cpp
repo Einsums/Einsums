@@ -47,7 +47,7 @@ void zaxpy(int_t n, std::complex<double> alpha_x, std::complex<double> const *x,
 
 void saxpby(int_t const n, float const a, float const *x, int_t const incx, float const b, float *y, int_t const incy) {
     LabeledSection0();
-    if(incy == 0) {
+    if (incy == 0) {
         *y *= b;
     } else {
         sscal(n, b, y, incy);
@@ -57,7 +57,7 @@ void saxpby(int_t const n, float const a, float const *x, int_t const incx, floa
 
 void daxpby(int_t const n, double const a, double const *x, int_t const incx, double const b, double *y, int_t const incy) {
     LabeledSection0();
-    if(incy == 0) {
+    if (incy == 0) {
         *y *= b;
     } else {
         dscal(n, b, y, incy);
@@ -68,7 +68,7 @@ void daxpby(int_t const n, double const a, double const *x, int_t const incx, do
 void caxpby(int_t const n, std::complex<float> const a, std::complex<float> const *x, int_t const incx, std::complex<float> const b,
             std::complex<float> *y, int_t const incy) {
     LabeledSection0();
-    if(incy == 0) {
+    if (incy == 0) {
         *y *= b;
     } else {
         cscal(n, b, y, incy);
@@ -79,7 +79,7 @@ void caxpby(int_t const n, std::complex<float> const a, std::complex<float> cons
 void zaxpby(int_t const n, std::complex<double> const a, std::complex<double> const *x, int_t const incx, std::complex<double> const b,
             std::complex<double> *y, int_t const incy) {
     LabeledSection0();
-    if(incy == 0) {
+    if (incy == 0) {
         *y *= b;
     } else {
         zscal(n, b, y, incy);

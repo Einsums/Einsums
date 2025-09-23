@@ -3,11 +3,6 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All rights reserved.
-// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
-
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Config/Types.hpp>
@@ -52,13 +47,14 @@ void export_Core(py::module_ &mod) {
             "log_warn", [](std::string const &str) { EINSUMS_LOG_WARN(str); }, "Log a message at the warning level.")
         .def(
             "log_error", [](std::string const &str) { EINSUMS_LOG_ERROR(str); }, "Log a message at the error level.")
-        .def(
-            "log_critical", [](std::string const &str) { EINSUMS_LOG_CRITICAL(str); }, "Log a message at the critical level.");
+        .def("log_critical", [](std::string const &str) { EINSUMS_LOG_CRITICAL(str); }, "Log a message at the critical level.");
 
     auto config_map = py::class_<einsums::GlobalConfigMap, std::shared_ptr<einsums::GlobalConfigMap>>(
         mod, "GlobalConfigMap", "Contains all of the options handled by Einsums.");
 
-    config_map.def_static("get_singleton", einsums::GlobalConfigMap::get_singleton, "Get the single unique instance.", py::return_value_policy::reference)
+    config_map
+        .def_static("get_singleton", einsums::GlobalConfigMap::get_singleton, "Get the single unique instance.",
+                    py::return_value_policy::reference)
         .def(
             "empty", [](GlobalConfigMap &self) { return self.empty(); }, "Check to see if the map is empty.")
         .def(

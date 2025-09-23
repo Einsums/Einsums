@@ -7,6 +7,7 @@
 #include <Einsums/Tensor/BlockTensor.hpp>
 #include <Einsums/Tensor/TiledTensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
+
 #include <random>
 
 #include <Einsums/Testing.hpp>
@@ -63,16 +64,16 @@ TEMPLATE_TEST_CASE("Tiled Tensors", "[linear-algebra]", float, double, std::comp
 
     std::uniform_int_distribution random(0, 1);
 
-    for(int i = 0; i < 4; i++) {
-        for(int j = 0; j < 4; j++) {
-            if(i == 1 || j == 1) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (i == 1 || j == 1) {
                 continue;
             }
 
-            if(random(einsums::random_engine) == 1) {
+            if (random(einsums::random_engine) == 1) {
                 A.tile(i, j) = create_random_tensor<TestType>("A tile", A.tile_size(0)[i], A.tile_size(1)[j]);
             }
-        } 
+        }
     }
 
     RemoveComplexT<TestType> scale{0.0}, sumsq{0.0}, result{0.0};

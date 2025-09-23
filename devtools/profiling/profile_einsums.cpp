@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
 
                 auto permute_path = std::filesystem::current_path();
 
-                if(row_major) {
+                if (row_major) {
                     permute_path.append(fmt::format("permute_{}.hptt", norbs));
                 } else {
                     permute_path.append(fmt::format("permute_{}_column.hptt", norbs));

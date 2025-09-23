@@ -38,7 +38,7 @@ void gemm(std::string const &transA, std::string const &transB, py::object const
                                 A_info.format, B_info.format, C_info.format);
     }
 
-    if(transA.length() < 1 || transB.length() < 1) {
+    if (transA.length() < 1 || transB.length() < 1) {
         EINSUMS_THROW_EXCEPTION(py::value_error, "The strings passed for transA and transB need to have data.");
     }
 
