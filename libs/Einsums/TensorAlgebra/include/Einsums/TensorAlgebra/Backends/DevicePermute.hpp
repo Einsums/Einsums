@@ -22,8 +22,6 @@ namespace einsums::tensor_algebra {
 
 namespace detail {
 
-#if defined(EINSUMS_USE_LIBRETT)
-
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta,
                                 float *B);
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta,
@@ -32,7 +30,6 @@ void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipFloatComplex 
                                 hipFloatComplex const beta, hipFloatComplex *B);
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipDoubleComplex const alpha, hipDoubleComplex const *A, int const *sizeA,
                                 hipDoubleComplex const beta, hipDoubleComplex *B);
-#endif
 
 template <bool ConjA, typename T, size_t Rank>
 __global__ void permute_kernel(int const *perm, T const alpha, T const *A, size_t const *strideA, T const beta, T *B, size_t const *strideB,

@@ -17,6 +17,7 @@
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
+#include <hiptensor/hiptensor.hpp>
 #include <type_traits>
 
 namespace einsums {
@@ -1850,6 +1851,8 @@ struct TensorImpl final {
 #ifdef EINSUMS_COMPUTE_CODE
     std::weak_ptr<GPUBlock> mutable _gpu_memory;
     std::shared_ptr<GPUBlock> mutable _cached_gpu_memory;
+
+    hiptensorTensorDescriptor_t _descriptor;
 #endif
 };
 

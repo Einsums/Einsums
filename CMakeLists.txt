@@ -730,10 +730,6 @@ include(Einsums_SetupHDF5)
 include(Einsums_SetupSpdlog)
 include(Einsums_SetupAllocator)
 
-if(EINSUMS_USE_LIBRETT AND EINSUMS_WITH_GPU_SUPPORT)
-  include(Einsums_SetupLibreTT)
-endif()
-
 if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
   if(EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
     find_package(

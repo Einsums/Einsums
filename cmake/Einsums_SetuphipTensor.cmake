@@ -5,14 +5,12 @@
 
 include(FetchContent)
 
-fetchcontent_declare(
-  librett
-  GIT_REPOSITORY https://github.com/victor-anisimov/Librett.git
-  FIND_PACKAGE_ARGS
-)
+# fetchcontent_declare( hipblas_common GIT_REPOSITORY git@github.com:ROCm/hipBLAS-common.git
+# FIND_PACKAGE_ARGS )
 
-fetchcontent_makeavailable(librett)
+# fetchcontent_declare( hipblas GIT_REPOSITORY https://github.com/ROCm/hipBLAS.git FIND_PACKAGE_ARGS
+# )
 
-if(NOT TARGET librett::librett)
-  message(FATAL_ERROR "Did not find librett!")
-endif()
+# fetchcontent_makeavailable(hipblas_common hipblas)
+
+find_package(hiptensor REQUIRED)
