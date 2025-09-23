@@ -143,6 +143,9 @@ struct BufferAllocator {
      */
     constexpr static size_t type_size = sizeof(std::conditional_t<std::is_void_v<std::remove_cv_t<T>>, char, T>);
 
+    template <typename U>
+    BufferAllocator(BufferAllocator<U> const &) : BufferAllocator<T>() {}
+
     /**
      * @brief Allocate an array of values.
      *
