@@ -143,8 +143,14 @@ struct BufferAllocator {
      */
     constexpr static size_t type_size = sizeof(std::conditional_t<std::is_void_v<std::remove_cv_t<T>>, char, T>);
 
+    constexpr BufferAllocator() noexcept = default;
+
+    constexpr BufferAllocator(BufferAllocator const &) noexcept = default;
+
     template <typename U>
-    BufferAllocator(BufferAllocator<U> const &) : BufferAllocator<T>() {}
+    constexpr BufferAllocator(BufferAllocator<U> const &) noexcept {}
+
+    
 
     /**
      * @brief Allocate an array of values.
