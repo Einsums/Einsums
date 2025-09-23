@@ -17,7 +17,9 @@
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
+#ifdef EINSUMS_COMPUTE_CODE
 #include <hiptensor/hiptensor.hpp>
+#endif
 #include <type_traits>
 
 namespace einsums {
