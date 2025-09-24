@@ -150,7 +150,24 @@ struct BufferAllocator {
     template <typename U>
     constexpr BufferAllocator(BufferAllocator<U> const &) noexcept {}
 
-    
+    constexpr BufferAllocator(BufferAllocator &&) = default;
+
+    template<typename U>
+    constexpr BufferAllocator(BufferAllocator<U> &&) {}
+
+    constexpr BufferAllocator &operator=(BufferAllocator const &) noexcept = default;
+
+    template<typename U>
+    constexpr BufferAllocator &operator=(BufferAllocator<U> const &) noexcept {
+        return *this;
+    }
+
+    constexpr BufferAllocator &operator=(BufferAllocator &&) = default;
+
+    template<typename U>
+    constexpr BufferAllocator &operator=(BufferAllocator<U> &&) {
+        return *this;
+    }
 
     /**
      * @brief Allocate an array of values.
