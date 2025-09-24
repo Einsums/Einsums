@@ -12,7 +12,7 @@
 # set(Example1_cpp_FLAGS DEPENDENCIES SomeOtherGreatLibrary) set(Example2_hip_PARAMETERS THREADS 1)
 
 # Name of test file. Include .cpp, .hip, etc. extension.
-set(GraphTests)
+set(GraphTests GraphTest.cpp)
 
 foreach(test ${GraphTests})
   # Extract base name of test Example1.cpp -> Example1, Example.2.hip -> Example
@@ -36,9 +36,10 @@ foreach(test ${GraphTests})
 
   einsums_add_executable(
     ${TestName}_test INTERNAL_FLAGS SOURCES ${Sources} ${${TestName}_${TestExtension}_FLAGS}
+    DEPENDENCIES EinsumsExperimental_Graph
   )
 
   einsums_add_unit_test(
-    "Modules.EinsumsExperimental.Graph" ${test} ${${TestName}_${TestExtension}_PARAMETERS}
+    "Modules.EinsumsExperimental.Graph" ${TestName} ${${TestName}_${TestExtension}_PARAMETERS}
   )
 endforeach()
