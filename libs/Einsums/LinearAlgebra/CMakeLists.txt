@@ -18,7 +18,7 @@ set(LinearAlgebraSources LinearAlgebra.cpp ForwardDeclarations.cpp)
 if(EINSUMS_WITH_GPU_SUPPORT)
   list(APPEND LinearAlgebraHeaders Einsums/LinearAlgebra/GPULinearAlgebra.hpp)
   list(APPEND LinearAlgebraSources GPULinearAlgebra.hip)
-  set(LinAlgGPUModules Einsums_GPUStreams roc::hipblas roc::hipsolver hip::host hip::device)
+  set(LinAlgGPUModules Einsums_GPUStreams Einsums_hipBLAS roc::hipblas roc::hipsolver hip::host hip::device)
 
   if(EINSUMS_WITH_CUDA)
     foreach(f IN LISTS LinearAlgebraSources)
