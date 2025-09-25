@@ -63,39 +63,13 @@ void gemm(char transA, char transB, U const alpha, AType const &A, BType const &
             transA, transB);
     }
 
-#if defined(EINSUMS_COMPUTE_CODE)
-    if constexpr (IsDeviceTensorV<AType>) {
-        using dev_datatype = typename AType::dev_datatype;
-        dev_datatype *alpha_gpu, *beta_gpu;
-
-        hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
-        hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
-
-        hip_catch(hipMemcpy((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
-        hip_catch(hipMemcpy((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A.num_blocks(); i++) {
-            if (A.block_dim(i) == 0) {
-                continue;
-            }
-            gemm(transA, transB, (T *)alpha_gpu, A.block(i), B.block(i), (T *)beta_gpu, &(C->block(i)));
+    EINSUMS_OMP_PARALLEL_FOR
+    for (int i = 0; i < A.num_blocks(); i++) {
+        if (A.block_dim(i) == 0) {
+            continue;
         }
-
-        hip_catch(hipFree((void *)alpha_gpu));
-        hip_catch(hipFree((void *)beta_gpu));
-    } else {
-#endif
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A.num_blocks(); i++) {
-            if (A.block_dim(i) == 0) {
-                continue;
-            }
-            gemm(transA, transB, static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(beta), &(C->block(i)));
-        }
-#if defined(EINSUMS_COMPUTE_CODE)
+        gemm(transA, transB, static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(beta), &(C->block(i)));
     }
-#endif
 }
 
 template <bool TransA, bool TransB, BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename U>

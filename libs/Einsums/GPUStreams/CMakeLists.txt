@@ -18,12 +18,16 @@ if(EINSUMS_WITH_GPU_SUPPORT)
     endforeach()
   endif()
 
+  if(EINSUMS_USE_LIBRETT)
+    set(GPUStreamsExtraDeps librett)
+  endif()
+
   include(Einsums_AddModule)
   einsums_add_module(
     Einsums GPUStreams
     SOURCES ${GPUStreamsSources}
     HEADERS ${GPUStreamsHeaders}
-    DEPENDENCIES hip::host hip::device roc::hipblas roc::hipsolver
+    DEPENDENCIES hip::host hip::device roc::hipblas roc::hipsolver ${GPUStreamsExtraDeps}
     MODULE_DEPENDENCIES Einsums_Config Einsums_Errors Einsums_Runtime Einsums_BufferAllocator
     CMAKE_SUBDIRS examples tests
   )

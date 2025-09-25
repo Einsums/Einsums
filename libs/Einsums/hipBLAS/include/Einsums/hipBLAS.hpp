@@ -9,7 +9,7 @@
 
 #include <Einsums/BLAS/Types.hpp>
 #include <Einsums/Concepts/Complex.hpp>
-#include <Einsums/hipBlasVendor/Vendor.hpp>
+#include <Einsums/hipBLASVendor/Vendor.hpp>
 
 #include <type_traits>
 
@@ -58,7 +58,7 @@ namespace einsums::blas::gpu {
  * @throws std::domain_error If the values of @p m , @p n , or @p k are negative, or the values of @p lda , @p ldb , or @p ldc are
  * invalid.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 void gemm(char transa, char transb, int_t m, int_t n, int_t k, T alpha, T const *a, int_t lda, T const *b, int_t ldb, T beta, T *c,
@@ -127,7 +127,7 @@ inline void gemm<std::complex<double>>(char transa, char transb, int_t m, int_t 
  * @throws std::domain_error If the values of @p m or @p n are negative, the value of @p lda is invalid, or either @p incx or @p incy is
  * zero.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 void gemv(char transa, int_t m, int_t n, T alpha, T const *a, int_t lda, T const *x, int_t incx, T beta, T *y, int_t incy);
@@ -188,7 +188,7 @@ inline void gemv<std::complex<double>>(char transa, int_t m, int_t n, std::compl
  * that were able to be computed. If negative, this means that one of the parameters was invalid. The absolute value indicates which
  * parameter was bad.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto syev(char job, char uplo, int_t n, T *a, int_t lda, T *w, T *work, int_t lwork) -> int_t;
@@ -205,6 +205,8 @@ inline auto syev<double>(char job, char uplo, int_t n, double *a, int_t lda, dou
 }
 #endif
 
+// No sterf in hipSolver.
+#if 0
 /**
  * @brief Computes the eigenvalues of a symmetric tridiagonal matrix.
  * The sterf routine finds the matrices that satisfy the following equation.
@@ -229,7 +231,7 @@ inline auto syev<double>(char job, char uplo, int_t n, double *a, int_t lda, dou
 template <typename T>
 auto sterf(int_t n, T *d, T *e) -> int_t;
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
 template <>
 inline auto sterf<float>(int_t n, float *d, float *e) -> int_t {
     return blas::hip::ssterf(n, d, e);
@@ -239,8 +241,11 @@ template <>
 inline auto sterf<double>(int_t n, double *d, double *e) -> int_t {
     return blas::hip::dsterf(n, d, e);
 }
+#    endif
 #endif
 
+// No geev in hipSolver (no clue why).
+#if 0
 // Complex version
 /**
  * @brief Performs diagonalization of a matrix.
@@ -272,12 +277,12 @@ inline auto sterf<double>(int_t n, double *d, double *e) -> int_t {
  * that were able to be computed. If negative, this means that one of the parameters was invalid. The absolute value indicates which
  * parameter was bad.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto geev(char jobvl, char jobvr, int_t n, T *a, int_t lda, AddComplexT<T> *w, T *vl, int_t ldvl, T *vr, int_t ldvr) -> int_t;
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
 template <>
 inline auto geev<float>(char jobvl, char jobvr, int_t n, float *a, int_t lda, std::complex<float> *w, float *vl, int_t ldvl, float *vr,
                         int_t ldvr) -> int_t {
@@ -301,6 +306,7 @@ inline auto geev<std::complex<double>>(char jobvl, char jobvr, int_t n, std::com
                                        std::complex<double> *vl, int_t ldvl, std::complex<double> *vr, int_t ldvr) -> int_t {
     return blas::hip::zgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
 }
+#    endif
 #endif
 
 /**
@@ -326,28 +332,27 @@ inline auto geev<std::complex<double>>(char jobvl, char jobvr, int_t n, std::com
  * optimal work buffer size.
  * @param[in] lwork The size of the work array. If @p lwork is -1, then a workspace query is assumed. No operations will be performed
  * and the optimal workspace size will be put into the first element of @p work.
- * @param[inout] rwork A work array for real values.
  *
  * @return 0 on success. If positive, this means that the algorithm did not converge. The return value indicates the number of eigenvalues
  * that were able to be computed. If negative, this means that one of the parameters was invalid. The absolute value indicates which
  * parameter was bad.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
-auto heev(char job, char uplo, int_t n, std::complex<T> *a, int_t lda, T *w, std::complex<T> *work, int_t lwork, T *rwork) -> int_t;
+auto heev(char job, char uplo, int_t n, std::complex<T> *a, int_t lda, T *w, std::complex<T> *work, int_t lwork) -> int_t;
 
 #ifndef DOXYGEN
 template <>
-inline auto heev<float>(char job, char uplo, int_t n, std::complex<float> *a, int_t lda, float *w, std::complex<float> *work, int_t lwork,
-                        float *rwork) -> int_t {
-    return blas::hip::cheev(job, uplo, n, a, lda, w, work, lwork, rwork);
+inline auto heev<float>(char job, char uplo, int_t n, std::complex<float> *a, int_t lda, float *w, std::complex<float> *work, int_t lwork)
+    -> int_t {
+    return blas::hip::cheev(job, uplo, n, a, lda, w, work, lwork);
 }
 
 template <>
 inline auto heev<double>(char job, char uplo, int_t n, std::complex<double> *a, int_t lda, double *w, std::complex<double> *work,
-                         int_t lwork, double *rwork) -> int_t {
-    return blas::hip::zheev(job, uplo, n, a, lda, w, work, lwork, rwork);
+                         int_t lwork) -> int_t {
+    return blas::hip::zheev(job, uplo, n, a, lda, w, work, lwork);
 }
 #endif
 
@@ -366,38 +371,41 @@ inline auto heev<double>(char job, char uplo, int_t n, std::complex<double> *a, 
  * diagonal entries, which are not stored.
  * @param[in] lda The leading dimension of @p a.
  * @param[out] ipiv A list of pivots used in the decomposition.
- * @param[inout] b The results matrix. On exit, it contains the values of @f$\mathbf{x}@f$ that satisfy the system of equations.
+ * @param[in] b The results matrix. Unlike normal LAPACK, this is not overwritten by the function.
  * @param[in] ldb The leading dimension of @p b.
+ * @param[out] x The output matrix. On AMD cards, this is allowed --- even recommended --- to be the same as @c b . On NVidia cards, it is
+ * not.
+ * @param[in] ldx The leading dimension of the output matrix.
  *
  * @return 0 on success. If positive, then the matrix was singular. If negative, then a bad value was passed to the function.
  * The absolute value indicates which parameter was bad.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
-auto gesv(int_t n, int_t nrhs, T *a, int_t lda, int_t *ipiv, T *b, int_t ldb) -> int_t;
+auto gesv(int_t n, int_t nrhs, T *a, int_t lda, int_t *ipiv, T *b, int_t ldb, T *x, int_t ldx) -> int_t;
 
 #ifndef DOXYGEN
 template <>
-inline auto gesv<float>(int_t n, int_t nrhs, float *a, int_t lda, int_t *ipiv, float *b, int_t ldb) -> int_t {
-    return blas::hip::sgesv(n, nrhs, a, lda, ipiv, b, ldb);
+inline auto gesv<float>(int_t n, int_t nrhs, float *a, int_t lda, int_t *ipiv, float *b, int_t ldb, float *x, int_t ldx) -> int_t {
+    return blas::hip::sgesv(n, nrhs, a, lda, ipiv, b, ldb, x, ldx);
 }
 
 template <>
-inline auto gesv<double>(int_t n, int_t nrhs, double *a, int_t lda, int_t *ipiv, double *b, int_t ldb) -> int_t {
-    return blas::hip::dgesv(n, nrhs, a, lda, ipiv, b, ldb);
+inline auto gesv<double>(int_t n, int_t nrhs, double *a, int_t lda, int_t *ipiv, double *b, int_t ldb, double *x, int_t ldx) -> int_t {
+    return blas::hip::dgesv(n, nrhs, a, lda, ipiv, b, ldb, x, ldx);
 }
 
 template <>
 inline auto gesv<std::complex<float>>(int_t n, int_t nrhs, std::complex<float> *a, int_t lda, int_t *ipiv, std::complex<float> *b,
-                                      int_t ldb) -> int_t {
-    return blas::hip::cgesv(n, nrhs, a, lda, ipiv, b, ldb);
+                                      int_t ldb, std::complex<float> *x, int_t ldx) -> int_t {
+    return blas::hip::cgesv(n, nrhs, a, lda, ipiv, b, ldb, x, ldx);
 }
 
 template <>
 inline auto gesv<std::complex<double>>(int_t n, int_t nrhs, std::complex<double> *a, int_t lda, int_t *ipiv, std::complex<double> *b,
-                                       int_t ldb) -> int_t {
-    return blas::hip::zgesv(n, nrhs, a, lda, ipiv, b, ldb);
+                                       int_t ldb, std::complex<double> *x, int_t ldx) -> int_t {
+    return blas::hip::zgesv(n, nrhs, a, lda, ipiv, b, ldb, x, ldx);
 }
 #endif
 
@@ -410,7 +418,7 @@ inline auto gesv<std::complex<double>>(int_t n, int_t nrhs, std::complex<double>
  * @param[inout] vec The vector to scale.
  * @param[in] inc The spacing between elements of the vector.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 void scal(int_t n, T const alpha, T *vec, int_t inc);
@@ -423,7 +431,7 @@ void scal(int_t n, T const alpha, T *vec, int_t inc);
  * @param[inout] vec The vector to scale.
  * @param[in] inc The spacing between elements of the vector.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <Complex T>
 void scal(int_t n, RemoveComplexT<T> const alpha, T *vec, int_t inc);
@@ -520,7 +528,6 @@ inline void rscl<std::complex<double>>(int_t n, double const alpha, std::complex
 }
 #endif
 
-
 /**
  * Computes the dot product of two vectors. For complex vectors it is the non-conjugated dot product;
  * (c|z)dotu in BLAS nomenclature.
@@ -533,7 +540,7 @@ inline void rscl<std::complex<double>>(int_t n, double const alpha, std::complex
  * @param[in] incy how many elements to skip in yo
  * @return result of the dot product
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto dot(int_t n, T const *x, int_t incx, T const *y, int_t incy) -> T;
@@ -574,7 +581,7 @@ inline auto dot<std::complex<double>>(int_t n, std::complex<double> const *x, in
  * @param[in] incy how many elements to skip in yo
  * @return result of the dot product
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto dotc(int_t n, T const *x, int_t incx, T const *y, int_t incy) -> T;
@@ -593,7 +600,6 @@ inline auto dotc<std::complex<double>>(int_t n, std::complex<double> const *x, i
 }
 #endif
 
-
 /**
  * @brief Adds two vectors together with a scale factor.
  *
@@ -610,7 +616,7 @@ inline auto dotc<std::complex<double>>(int_t n, std::complex<double> const *x, i
  * @param[inout] y The output vector.
  * @param[in] inc_y The skip value for the output vector. It can be negative to go in reverse, or zero to sum over the elements of @p x .
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 void axpy(int_t n, T alpha_x, T const *x, int_t inc_x, T *y, int_t inc_y);
@@ -639,7 +645,6 @@ inline void axpy<std::complex<double>>(int_t n, std::complex<double> alpha_x, st
 }
 #endif
 
-
 /**
  * @brief Adds two vectors together with a scale factor.
  *
@@ -657,7 +662,7 @@ inline void axpy<std::complex<double>>(int_t n, std::complex<double> alpha_x, st
  * @param[inout] y The output vector.
  * @param[in] inc_y The skip value for the output vector. It can be negative to go in reverse, or zero to sum over the elements of @p x .
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 void axpby(int_t n, T alpha_x, T const *x, int_t inc_x, T b, T *y, int_t inc_y);
@@ -686,7 +691,6 @@ inline void axpby<std::complex<double>>(int_t n, std::complex<double> alpha_x, s
 }
 #endif
 
-
 /**
  * Performs a rank-1 update of a general matrix.
  *
@@ -710,7 +714,7 @@ inline void axpby<std::complex<double>>(int_t n, std::complex<double> alpha_x, s
  * number of columns.
  * @throws std::invalid_argument If either of the vector increments are zero.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 void ger(int_t m, int_t n, T alpha, T const *x, int_t inc_x, T const *y, int_t inc_y, T *a, int_t lda);
@@ -813,7 +817,7 @@ inline void gerc<std::complex<double>>(int_t m, int_t n, std::complex<double> al
  * The decomposition was performed, though. If negative, one of the inputs had an invalid value. The absolute value indicates
  * which input it is.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto getrf(int_t m, int_t n, T *a, int_t lda, int_t *ipiv) -> int_t;
@@ -840,48 +844,52 @@ inline auto getrf<std::complex<double>>(int_t m, int_t n, std::complex<double> *
 }
 #endif
 
-
 /*!
  * Computes the inverse of a matrix using the LU factorization computed
  * by getrf.
  *
  * @tparam T The type this function handles.
  * @param[in] n The number of rows and columns of the matrix.
- * @param[inout] a The input matrix after being processed by getrf.
+ * @param[in] a The input matrix after being processed by getrf.
  * @param[in] lda The leading dimension of the matrix.
  * @param[in] ipiv The pivots from getrf.
+ * @param[out] c The calculated inverse.
+ * @param[in] ldc The leading dimension of the output matrix.
  *
  * @return 0 on success. If positive, the matrix is singular and an inverse could not be computed. If negative,
  * one of the inputs is invalid, and the absolute value indicates which input is bad.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
-auto getri(int_t n, T *a, int_t lda, int_t const *ipiv) -> int_t;
+auto getri(int_t n, T *a, int_t lda, int_t *ipiv, T *c, int_t ldc) -> int_t;
 
 #ifndef DOXYGEN
 template <>
-inline auto getri<float>(int_t n, float *a, int_t lda, int_t const *ipiv) -> int_t {
-    return blas::hip::sgetri(n, a, lda, ipiv);
+inline auto getri<float>(int_t n, float *a, int_t lda, int_t *ipiv, float *c, int_t ldc) -> int_t {
+    return blas::hip::sgetri(n, a, lda, ipiv, c, ldc);
 }
 
 template <>
-inline auto getri<double>(int_t n, double *a, int_t lda, int_t const *ipiv) -> int_t {
-    return blas::hip::dgetri(n, a, lda, ipiv);
+inline auto getri<double>(int_t n, double *a, int_t lda, int_t *ipiv, double *c, int_t ldc) -> int_t {
+    return blas::hip::dgetri(n, a, lda, ipiv, c, ldc);
 }
 
 template <>
-inline auto getri<std::complex<float>>(int_t n, std::complex<float> *a, int_t lda, int_t const *ipiv) -> int_t {
-    return blas::hip::cgetri(n, a, lda, ipiv);
+inline auto getri<std::complex<float>>(int_t n, std::complex<float> *a, int_t lda, int_t *ipiv, std::complex<float> *c, int_t ldc)
+    -> int_t {
+    return blas::hip::cgetri(n, a, lda, ipiv, c, ldc);
 }
 
 template <>
-inline auto getri<std::complex<double>>(int_t n, std::complex<double> *a, int_t lda, int_t const *ipiv) -> int_t {
-    return blas::hip::zgetri(n, a, lda, ipiv);
+inline auto getri<std::complex<double>>(int_t n, std::complex<double> *a, int_t lda, int_t *ipiv, std::complex<double> *c, int_t ldc)
+    -> int_t {
+    return blas::hip::zgetri(n, a, lda, ipiv, c, ldc);
 }
 #endif
 
-
+// No lange in hipSolver.
+#if 0
 /**
  * Computes various matrix norms. The available norms are the 1-norm, Frobenius norm, Max-abs norm, and the infinity norm.
  *
@@ -894,12 +902,12 @@ inline auto getri<std::complex<double>>(int_t n, std::complex<double> *a, int_t 
  * @param[in] lda The leading dimension of the matrix.
  * @param[inout] work A work array. Only needed for the infinity norm.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto lange(char norm_type, int_t m, int_t n, T const *A, int_t lda, RemoveComplexT<T> *work) -> RemoveComplexT<T>;
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
 template <>
 inline auto lange<float>(char norm_type, int_t m, int_t n, float const *A, int_t lda, float *work) -> float {
     return blas::hip::slange(norm_type, m, n, A, lda, work);
@@ -920,9 +928,8 @@ inline auto lange<std::complex<double>>(char norm_type, int_t m, int_t n, std::c
     -> double {
     return blas::hip::zlange(norm_type, m, n, A, lda, work);
 }
+#    endif
 #endif
-
-
 
 /**
  * Compute the sum of the squares of the input vector without roundoff error.
@@ -938,7 +945,7 @@ inline auto lange<std::complex<double>>(char norm_type, int_t m, int_t n, std::c
  * @param[inout] sumsq The result of the operation, scaled to avoid overflow/underflow. It is also used as an input to continue a previous
  * calculation.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 void lassq(int_t n, T const *x, int_t incx, RemoveComplexT<T> *scale, RemoveComplexT<T> *sumsq);
@@ -1002,7 +1009,8 @@ inline double nrm2<std::complex<double>>(int_t n, std::complex<double> const *x,
 }
 #endif
 
-
+// No divide-and-conquer algorithm in hipSolver.
+#if 0
 /**
  * Performs singular value decomposition for a matrix using the divide and conquer algorithm.
  *
@@ -1025,12 +1033,12 @@ inline double nrm2<std::complex<double>>(int_t n, std::complex<double> const *x,
  * @return 0 on success. If positive, the algorithm did not converge. If -4, then the input matrix had a NaN entry. If negative otherwise,
  * then one of the parameters had a bad value. The absolute value of the return gives the parameter.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto gesdd(char jobz, int_t m, int_t n, T *a, int_t lda, RemoveComplexT<T> *s, T *u, int_t ldu, T *vt, int_t ldvt) -> int_t;
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
 template <>
 inline auto gesdd<float>(char jobz, int_t m, int_t n, float *a, int_t lda, float *s, float *u, int_t ldu, float *vt, int_t ldvt) -> int_t {
     return blas::hip::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
@@ -1053,8 +1061,8 @@ inline auto gesdd<std::complex<double>>(char jobz, int_t m, int_t n, std::comple
                                         int_t ldu, std::complex<double> *vt, int_t ldvt) -> int_t {
     return blas::hip::zgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
+#    endif
 #endif
-
 
 /**
  * Performs singular value decomposition for a matrix using the QR algorithm.
@@ -1080,7 +1088,7 @@ inline auto gesdd<std::complex<double>>(char jobz, int_t m, int_t n, std::comple
  * @return 0 on success. If positive, the algorithm did not converge. If negative,
  * then one of the parameters had a bad value. The absolute value of the return gives the parameter.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto gesvd(char jobu, char jobvt, int_t m, int_t n, T *a, int_t lda, RemoveComplexT<T> *s, T *u, int_t ldu, T *vt, int_t ldvt, T *superb);
@@ -1113,7 +1121,8 @@ inline auto gesvd<std::complex<double>>(char jobu, char jobvt, int_t m, int_t n,
 }
 #endif
 
-
+// No Schur decomposition in hipSolver.
+#if 0
 /**
  * Computes the Schur decomposition of a matrix.
  *
@@ -1133,12 +1142,12 @@ inline auto gesvd<std::complex<double>>(char jobu, char jobvt, int_t m, int_t n,
  * number of rows in the matrix, the eigenvalues could not be reordered for some reason, usually due to eigenvalues being too close.
  * If two more than the number of rows in the matrix, then roundoff changed some of the eigenvalues.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto gees(char jobvs, int_t n, T *a, int_t lda, int_t *sdim, T *wr, T *wi, T *vs, int_t ldvs) -> int_t;
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
 template <>
 inline auto gees<float>(char jobvs, int_t n, float *a, int_t lda, int_t *sdim, float *wr, float *wi, float *vs, int_t ldvs) -> int_t {
     return blas::hip::sgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
@@ -1148,7 +1157,7 @@ template <>
 inline auto gees<double>(char jobvs, int_t n, double *a, int_t lda, int_t *sdim, double *wr, double *wi, double *vs, int_t ldvs) -> int_t {
     return blas::hip::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
 }
-#endif
+#    endif
 
 /**
  * Computes the Schur decomposition of a matrix.
@@ -1168,12 +1177,12 @@ inline auto gees<double>(char jobvs, int_t n, double *a, int_t lda, int_t *sdim,
  * number of rows in the matrix, the eigenvalues could not be reordered for some reason, usually due to eigenvalues being too close.
  * If two more than the number of rows in the matrix, then roundoff changed some of the eigenvalues.
  *
- * @versionadded{1.1.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto gees(char jobvs, int_t n, T *a, int_t lda, int_t *sdim, T *w, T *vs, int_t ldvs) -> int_t;
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
 template <>
 inline auto gees<std::complex<float>>(char jobvs, int_t n, std::complex<float> *a, int_t lda, int_t *sdim, std::complex<float> *w,
                                       std::complex<float> *vs, int_t ldvs) -> int_t {
@@ -1185,9 +1194,11 @@ inline auto gees<std::complex<double>>(char jobvs, int_t n, std::complex<double>
                                        std::complex<double> *vs, int_t ldvs) -> int_t {
     return blas::hip::zgees(jobvs, n, a, lda, sdim, w, vs, ldvs);
 }
+#    endif
 #endif
 
-
+// No Sylvester solver in hipSolver.
+#if 0
 /**
  * Solves a Sylvester equation. These equations look like the following.
  * @f[
@@ -1211,13 +1222,13 @@ inline auto gees<std::complex<double>>(char jobvs, int_t n, std::complex<double>
  * @return 0 on success. If 1, then some eigenvalues were close and needed to be perturbed. If negative, then one of the inputs
  * had a bad value, and the absolute value of the return gives the parameter.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto trsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, T const *a, int_t lda, T const *b, int_t ldb, T *c, int_t ldc,
            RemoveComplexT<T> *scale) -> int_t;
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
 template <>
 inline auto trsyl<float>(char trana, char tranb, int_t isgn, int_t m, int_t n, float const *a, int_t lda, float const *b, int_t ldb,
                          float *c, int_t ldc, float *scale) -> int_t {
@@ -1242,8 +1253,8 @@ inline auto trsyl<std::complex<double>>(char trana, char tranb, int_t isgn, int_
     -> int_t {
     return blas::hip::ztrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 }
+#    endif
 #endif
-
 
 /**
  * Set up for computing the QR decomposition of a matrix.
@@ -1265,7 +1276,7 @@ inline auto trsyl<std::complex<double>>(char trana, char tranb, int_t isgn, int_
  * @return 0 on success. If negative, one of the inputs had a bad value, and the absolute value of the return
  * tells you which one it was.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto geqrf(int_t m, int_t n, T *a, int_t lda, T *tau) -> int_t;
@@ -1306,38 +1317,38 @@ inline auto geqrf<std::complex<double>>(int_t m, int_t n, std::complex<double> *
  * @return 0 on success. If negative, then one of the inputs had an invalid value, and the absolute value indicates
  * which parameter it is.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
-auto orgqr(int_t m, int_t n, int_t k, T *a, int_t lda, T const *tau) -> int_t;
+auto orgqr(int_t m, int_t n, int_t k, T *a, int_t lda, T *tau) -> int_t;
 
 #ifndef DOXYGEN
 template <>
-inline auto orgqr<float>(int_t m, int_t n, int_t k, float *a, int_t lda, float const *tau) -> int_t {
+inline auto orgqr<float>(int_t m, int_t n, int_t k, float *a, int_t lda, float *tau) -> int_t {
     return blas::hip::sorgqr(m, n, k, a, lda, tau);
 }
 
 template <>
-inline auto orgqr<double>(int_t m, int_t n, int_t k, double *a, int_t lda, double const *tau) -> int_t {
+inline auto orgqr<double>(int_t m, int_t n, int_t k, double *a, int_t lda, double *tau) -> int_t {
     return blas::hip::dorgqr(m, n, k, a, lda, tau);
 }
 
 template <typename T>
-auto ungqr(int_t m, int_t n, int_t k, T *a, int_t lda, T const *tau) -> int_t;
+auto ungqr(int_t m, int_t n, int_t k, T *a, int_t lda, T *tau) -> int_t;
 
 template <>
-inline auto ungqr<std::complex<float>>(int_t m, int_t n, int_t k, std::complex<float> *a, int_t lda, std::complex<float> const *tau)
-    -> int_t {
+inline auto ungqr<std::complex<float>>(int_t m, int_t n, int_t k, std::complex<float> *a, int_t lda, std::complex<float> *tau) -> int_t {
     return blas::hip::cungqr(m, n, k, a, lda, tau);
 }
 
 template <>
-inline auto ungqr<std::complex<double>>(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::complex<double> const *tau)
-    -> int_t {
+inline auto ungqr<std::complex<double>>(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t {
     return blas::hip::zungqr(m, n, k, a, lda, tau);
 }
 #endif
 
+// No LQ decomposition in hipSolver.
+#if 0
 /**
  * Set up for computing the LQ decomposition of a matrix.
  *
@@ -1358,7 +1369,7 @@ inline auto ungqr<std::complex<double>>(int_t m, int_t n, int_t k, std::complex<
  * @return 0 on success. If negative, one of the inputs had a bad value, and the absolute value of the return
  * tells you which one it was.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto gelqf(int_t m, int_t n, T *a, int_t lda, T *tau) -> int_t;
@@ -1399,7 +1410,7 @@ inline auto gelqf<std::complex<double>>(int_t m, int_t n, std::complex<double> *
  * @return 0 on success. If negative, then one of the inputs had an invalid value, and the absolute value indicates
  * which parameter it is.
  *
- * @versionadded{1.0.0}
+ * @versionadded{2.0.0}
  */
 template <typename T>
 auto orglq(int_t m, int_t n, int_t k, T *a, int_t lda, T const *tau) -> int_t;
@@ -1429,6 +1440,7 @@ inline auto unglq<std::complex<double>>(int_t m, int_t n, int_t k, std::complex<
     -> int_t {
     return blas::hip::zunglq(m, n, k, a, lda, tau);
 }
+#endif
 #endif
 
 /**
@@ -1552,7 +1564,6 @@ inline void dirprod<std::complex<double>>(int_t n, std::complex<double> alpha, s
 }
 #endif
 
-
 /**
  * Computes the sum of the absolute values of the input vector. If the vector is complex,
  * then it is the sum of the absolute values of the components, not the magnitudes.
@@ -1664,4 +1675,4 @@ inline void lacgv<std::complex<double>>(int_t n, std::complex<double> *x, int_t 
 }
 #endif
 
-} // namespace einsums::blas
+} // namespace einsums::blas::gpu

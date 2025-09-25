@@ -350,6 +350,12 @@ else()
   )
 endif()
 
+einsums_option(EINSUMS_USE_LIBRETT BOOL "Whether to build Einsums with LibreTT for GPU tensor contractions." OFF CATEGORY "Build Targets")
+
+if(EINSUMS_USE_LIBRETT)
+  einsums_add_config_define(EINSUMS_USE_LIBRETT)
+endif()
+
 # ##################################################################################################
 # Utility configuration
 # ##################################################################################################
@@ -729,6 +735,10 @@ include(Einsums_SetupCatch)
 include(Einsums_SetupHDF5)
 include(Einsums_SetupSpdlog)
 include(Einsums_SetupAllocator)
+
+if(EINSUMS_USE_LIBRETT AND EINSUMS_WITH_GPU_SUPPORT)
+  include(Einsums_SetupLibreTT)
+endif()
 
 if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
   if(EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")

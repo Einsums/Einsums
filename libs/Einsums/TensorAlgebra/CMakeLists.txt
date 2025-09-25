@@ -33,7 +33,10 @@ if(EINSUMS_WITH_GPU_SUPPORT)
   )
   set(TensorAlgebraGPUDeps hip::host hip::device roc::hipblas roc::hipsolver)
 
-  #list(APPEND TensorAlgebraSources DevicePermute.hip)
+  if(EINSUMS_USE_LIBRETT)
+    list(APPEND TensorAlgebraSources DevicePermute.hip)
+    list(APPEND TensorAlgebraGPUDeps librett)
+  endif()
 
 endif()
 
