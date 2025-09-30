@@ -20,6 +20,7 @@ namespace einsums::linear_algebra::detail {
 template <TensorConcept AType, TensorConcept BType, typename Result = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>>
     requires requires {
         requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<BType>;
+        requires !DiskTensorConcept<AType> || !DiskTensorConcept<BType>;
         requires SameRank<AType, BType>;
     }
 auto dot(AType const &A, BType const &B) -> Result {
@@ -58,6 +59,7 @@ auto dot(AType const &A, BType const &B) -> Result {
 template <TensorConcept AType, TensorConcept BType, typename Result = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>>
     requires requires {
         requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<BType>;
+        requires !DiskTensorConcept<AType> || !DiskTensorConcept<BType>;
         requires SameRank<AType, BType>;
     }
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {

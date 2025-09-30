@@ -10,6 +10,8 @@
 #include <Einsums/Runtime.hpp>
 #include <Einsums/StringUtil/MemoryString.hpp>
 
+#include "Einsums/CommandLine/CommandLine.hpp"
+
 namespace einsums {
 
 /*
@@ -41,6 +43,12 @@ EINSUMS_EXPORT void add_Einsums_BufferAllocator_arguments() {
     static cl::OptionCategory   bufferCategory("Buffer Allocator");
     static cl::Opt<std::string> bufferSize("einsums:buffer-size", {}, "Total size of buffers allocated for tensor contractions",
                                            bufferCategory, cl::Location(global_string["buffer-size"]), cl::Default(std::string("4MB")));
+    static cl::Opt<std::string> workBuffersize(
+        "einsums:work-buffer-size", {},
+        "The largest buffer size to use for buffered contractions. Should be much smaller than the max buffer size. The maximum should be "
+        "the value of --einsums:buffer-size divided by three times the number of threads. In reality, the program will need more space for "
+        "other buffers, so the size should be much smaller than that.",
+        bufferCategory, cl::Location(global_string["work-buffer-size"]), cl::Default(std::string("1kB")));
 
     global_config.attach(detail::Einsums_BufferAllocator_vars::update_max_size);
 

@@ -4,7 +4,10 @@
 //----------------------------------------------------------------------------------------------
 
 #include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/Tensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
+
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 #include <Einsums/Testing.hpp>
 
@@ -108,5 +111,28 @@ TEST_CASE("mixed dots", "[linear-algebra]") {
         auto dot_res = dot(A, B);
 
         REQUIRE_THAT(dot_res, einsums::WithinStrict(test, double{100000.0}));
+    }
+}
+
+TEMPLATE_TEST_CASE("Disk dot", "[linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    constexpr int size = 2000;
+
+    SECTION("Rank 1 Tensors") {
+        auto A = create_random_tensor<TestType>("A", size);
+        auto B = create_random_tensor<TestType>("A", size);
+
+        DiskTensor<TestType, 1> A_disk{fmt::format("/dot/rank1/{}/A", type_name<TestType>()), size},
+            B_disk{fmt::format("/dot/rank1/{}/B", type_name<TestType>()), size};
+
+        A_disk(All) = A;
+        B_disk(All) = B;
+
+        auto expected = einsums::linear_algebra::dot(A, B);
+        auto got      = einsums::linear_algebra::dot(A_disk, B_disk);
+
+        REQUIRE_THAT(got, einsums::CheckWithinRel(expected));
     }
 }

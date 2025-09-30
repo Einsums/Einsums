@@ -22,6 +22,14 @@ void Einsums_BufferAllocator_vars::update_max_size(config_mapping_type<std::stri
     if (singleton._max_size == 0) {
         singleton._max_size = std::allocator_traits<std::allocator<uint8_t>>::max_size(std::allocator<uint8_t>());
     }
+
+    auto const &work_buffer = options.at("work-buffer-size");
+
+    singleton._work_buffer = string_util::memory_string(work_buffer);
+
+    if (singleton._work_buffer == 0) {
+        singleton._work_buffer = 1024;
+    }
 }
 
 size_t Einsums_BufferAllocator_vars::get_max_size() const {
@@ -58,6 +66,10 @@ size_t Einsums_BufferAllocator_vars::get_available() const {
         return 0;
     }
     return _max_size - _curr_size;
+}
+
+size_t Einsums_BufferAllocator_vars::get_work_buffer_size() const {
+    return _work_buffer;
 }
 
 } // namespace einsums::detail

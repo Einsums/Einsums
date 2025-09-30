@@ -54,7 +54,7 @@ template class RuntimeTensorView<std::complex<double>>;
 
 namespace detail {
 bool verify_exists(hid_t loc_id, std::string const &path, hid_t lapl_id) {
-    if (path.length() <= 1) {
+    if (path.length() == 0 || path == "/") {
         return true;
     }
 

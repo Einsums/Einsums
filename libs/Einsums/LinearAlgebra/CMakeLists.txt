@@ -11,6 +11,7 @@ set(LinearAlgebraHeaders
     Einsums/LinearAlgebra/Bases/direct_product.hpp Einsums/LinearAlgebra/Bases/gemm.hpp Einsums/LinearAlgebra/Bases/gemv.hpp
     Einsums/LinearAlgebra/Bases/ger.hpp Einsums/LinearAlgebra/Bases/high_precision.hpp Einsums/LinearAlgebra/Bases/norm.hpp Einsums/LinearAlgebra/Bases/sum_square.hpp
     Einsums/LinearAlgebra/Bases/syev.hpp
+    Einsums/LinearAlgebra/DiskAlgebra.hpp
 )
 
 set(LinearAlgebraSources LinearAlgebra.cpp ForwardDeclarations.cpp)
