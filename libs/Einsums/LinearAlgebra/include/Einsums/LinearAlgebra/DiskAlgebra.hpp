@@ -61,7 +61,7 @@ auto dot_base(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
     // Set up the indices for the view.
     std::array<Range, Rank> view_indices;
 
-    for (int i = rank_step; i < Rank; i++) {
+    for (int i = rank_skip; i < Rank; i++) {
         view_indices[i] = Range{0, A.dim(i)};
     }
 

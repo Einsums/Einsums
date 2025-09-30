@@ -1770,7 +1770,7 @@ struct TensorImpl final {
 
     bool gpu_is_expired() const { return _gpu_memory.expired(); }
 
-    bool gpu_is_cached() const { return (bool)_gpu_memory; }
+    bool gpu_is_cached() const { return (bool)_cached_gpu_memory; }
 #endif
 
   private:

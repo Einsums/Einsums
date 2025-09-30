@@ -17,6 +17,7 @@
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
+#include <Einsums/Utilities.hpp>
 
 #include <H5Dpublic.h>
 #include <H5Ppublic.h>
@@ -320,9 +321,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
         int dims_index = 0;
-        for (auto cnt : block) {
-            if (cnt > 1) {
-                dims_all[dims_index++] = cnt;
+        for (int i = 0; i < Rank; i++) {
+            if (!is_in(i, index_positions)) {
+                dims_all[dims_index] = block[i];
+                dims_index++;
             }
         }
 
@@ -385,9 +387,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
         int dims_index = 0;
-        for (auto cnt : block) {
-            if (cnt > 1) {
-                dims_all[dims_index++] = cnt;
+        for (int i = 0; i < Rank; i++) {
+            if (!is_in(i, index_positions)) {
+                dims_all[dims_index] = block[i];
+                dims_index++;
             }
         }
 
@@ -849,9 +852,10 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
         int dims_index = 0;
-        for (auto cnt : block) {
-            if (cnt > 1) {
-                dims_all[dims_index++] = cnt;
+        for (int i = 0; i < Rank; i++) {
+            if (!is_in(i, index_positions)) {
+                dims_all[dims_index] = block[i];
+                dims_index++;
             }
         }
 
@@ -940,9 +944,10 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
         int dims_index = 0;
-        for (auto cnt : block) {
-            if (cnt > 1) {
-                dims_all[dims_index++] = cnt;
+        for (int i = 0; i < Rank; i++) {
+            if (!is_in(i, index_positions)) {
+                dims_all[dims_index] = block[i];
+                dims_index++;
             }
         }
 
