@@ -179,7 +179,21 @@ struct GPUPointer final {
      */
     template <typename U>
         requires(std::is_const_v<T> || !std::is_const_v<U>)
-    constexpr GPUPointer(GPUPointer<U> const &other) noexcept : gpu_ptr_{other.gpu_ptr_} {}
+    constexpr GPUPointer(GPUPointer<U> &other) noexcept : gpu_ptr_{(dev_datatype *)other.gpu_ptr_} {}
+
+    /**
+     * @brief Copy cast constructor.
+     *
+     * This makes a new pointer pointing to the same data as another, but with a different data type.
+     *
+     * @tparam U The type of the other pointer.
+     * @param[in] other The pointer to cast.
+     *
+     * @versionadded{1.1.0}
+     */
+    template <typename U>
+        requires(std::is_const_v<T> || !std::is_const_v<U>)
+    constexpr GPUPointer(GPUPointer<U> const &other) noexcept : gpu_ptr_{(dev_datatype *)other.gpu_ptr_} {}
 
     /**
      * @brief Wrap a device pointer in a smart pointer.
@@ -260,8 +274,26 @@ struct GPUPointer final {
      */
     template <typename U>
         requires(std::is_const_v<T> || !std::is_const_v<U>)
+    constexpr GPUPointer<T> &operator=(GPUPointer<U> &other) noexcept {
+        gpu_ptr_ = (dev_datatype *)other.gpu_ptr_;
+
+        return *this;
+    }
+
+    /**
+     * @brief Set the stored pointer to the pointer in another smart pointer, casting to a new type.
+     *
+     * @tparam U The type stored by the other pointer.
+     * @param[in] other The other pointer to copy.
+     *
+     * @return A reference to this.
+     *
+     * @versionadded{1.1.0}
+     */
+    template <typename U>
+        requires(std::is_const_v<T> || !std::is_const_v<U>)
     constexpr GPUPointer<T> &operator=(GPUPointer<U> const &other) noexcept {
-        gpu_ptr_ = other.gpu_ptr_;
+        gpu_ptr_ = (dev_datatype *)other.gpu_ptr_;
 
         return *this;
     }
@@ -558,6 +590,10 @@ struct GPUPointer final {
         return reinterpret_cast<U *>(gpu_ptr_);
     }
 
+    constexpr T *get() noexcept { return reinterpret_cast<T *>(gpu_ptr_); }
+
+    constexpr dev_datatype *get_dev() noexcept { return reinterpret_cast<dev_datatype *>(gpu_ptr_); }
+
     /**
      * @brief Create a pointer to a reference.
      *
@@ -585,6 +621,9 @@ struct GPUPointer final {
 
     template <typename U>
     friend void std::swap(GPUPointer<U> &, GPUPointer<U> &) noexcept;
+
+    template <typename U>
+    friend struct GPUPointer;
 };
 
 } // namespace gpu

@@ -1577,14 +1577,28 @@ struct TensorImpl final {
         }
     }
 
+    void lock() const { _mutex.lock(); }
+
+    void unlock() const { _mutex.unlock(); }
+
+    bool try_lock() const { return _mutex.try_lock(); }
+
 #ifdef EINSUMS_COMPUTE_CODE
-    gpu::GPUPointer<T> gpu_cache_tensor() {
-        if (_gpu_memory.expired()) {
-            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
-        }
-        _cached_gpu_memory = _gpu_memory.lock();
+    void lock() { _mutex.lock(); }
 
-        auto out = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
+    void unlock() {
+        _mutex.unlock();
+        _core_modify_count++;
+    }
+
+    bool try_lock() { return _mutex.try_lock(); }
+
+    void tensor_to_gpu() const {
+        if (_gpu_memory.expired()) {
+            return;
+        }
+
+        auto out = gpu::GPUPointer<T>(_gpu_memory.lock()->gpu_pointer);
 
         if (get_incx() == 1 && is_totally_vectorable()) {
             std::memcpy(out, _ptr, _size * sizeof(T));
@@ -1598,90 +1612,12 @@ struct TensorImpl final {
 
             std::memcpy(out, temp.data(), _size * sizeof(T));
         }
-
-        return out;
+        _gpu_modify_count = (size_t)_core_modify_count;
     }
 
-    gpu::GPUPointer<T> gpu_cache_tensor_nowrite() {
-        if (_gpu_memory.expired()) {
-            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
-        }
-        _cached_gpu_memory = _gpu_memory.lock();
-
-        auto out = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
-
-        return out;
-    }
-
-    gpu::GPUPointer<T const> gpu_cache_tensor() const {
-        if (_gpu_memory.expired()) {
-            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
-        }
-        _cached_gpu_memory = _gpu_memory.lock();
-
-        auto out = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
-
-        if (get_incx() == 1 && is_totally_vectorable()) {
-            std::memcpy(out, _ptr, _size * sizeof(T));
-        } else {
-            BufferVector<T> temp_buffer(_size);
-
-            // Force the use of column major since hipBLAS, hipSolver, and hipTensor all use column major.
-            TensorImpl<T> temp(temp_buffer.data(), _dims, false);
-
-            impl_copy(*this, temp);
-
-            std::memcpy(out, temp.data(), _size * sizeof(T));
-        }
-
-        return out;
-    }
-
-    gpu::GPUPointer<T const> gpu_cache_tensor_nowrite() const {
-        if (_gpu_memory.expired()) {
-            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
-        }
-        _cached_gpu_memory = _gpu_memory.lock();
-
-        auto out = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
-
-        return out;
-    }
-
-    gpu::GPUPointer<T> get_gpu_pointer() {
-        if (!_cached_gpu_memory) {
-            if (_gpu_memory.expired()) {
-                return nullptr;
-            } else {
-                _cached_gpu_memory = _gpu_memory.lock();
-            }
-        }
-
-        return GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
-    }
-
-    gpu::GPUPointer<T const> get_gpu_pointer() const {
-        if (!_cached_gpu_memory) {
-            if (_gpu_memory.expired()) {
-                return nullptr;
-            } else {
-                _cached_gpu_memory = _gpu_memory.lock();
-            }
-        }
-
-        return GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
-    }
-
-    void gpu_uncache_tensor() const {
-        if (_cached_gpu_memory) {
-            auto gpu_ptr = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
-            _cached_gpu_memory.reset();
-        }
-    }
-
-    void gpu_uncache_tensor() {
-        if (_cached_gpu_memory) {
-            auto gpu_ptr = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
+    void tensor_from_gpu() {
+        if (!_gpu_memory.expired()) {
+            auto gpu_ptr = gpu::GPUPointer<T>(_gpu_memory.lock()->gpu_pointer);
 
             if (get_incx() == 1 && is_totally_vectorable()) {
                 std::memcpy(gpu_ptr, _ptr, _size * sizeof(T));
@@ -1694,24 +1630,69 @@ struct TensorImpl final {
                 std::memcpy(temp.data(), gpu_ptr, _size * sizeof(T));
 
                 copy_to(temp, *this);
-
-                _cached_gpu_memory.reset();
             }
+            _core_modify_count = (size_t)_gpu_modify_count;
         }
     }
 
-    void gpu_uncache_tensor_nowrite() const {
-        if (_cached_gpu_memory) {
-            auto gpu_ptr = GPUPointer<T>(_cached_gpu_memory->gpu_pointer);
-            _cached_gpu_memory.reset();
+    [[nodiscard]] std::shared_ptr<GPUBlock> gpu_cache_tensor() {
+        if (_gpu_memory.expired()) {
+            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+        }
+        auto cached_gpu_memory = _gpu_memory.lock();
+
+        tensor_to_gpu();
+
+        return cached_gpu_memory;
+    }
+
+    [[nodiscard]] std::shared_ptr<GPUBlock> gpu_cache_tensor_nowrite() {
+        if (_gpu_memory.expired()) {
+            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+        }
+        auto cached_gpu_memory = _gpu_memory.lock();
+
+        return cached_gpu_memory;
+    }
+
+    [[nodiscard]] std::shared_ptr<GPUBlock> gpu_cache_tensor() const {
+        if (_gpu_memory.expired()) {
+            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+        }
+        auto cached_gpu_memory = _gpu_memory.lock();
+
+        tensor_to_gpu();
+
+        return cached_gpu_memory;
+    }
+
+    [[nodiscard]] std::shared_ptr<GPUBlock> gpu_cache_tensor_nowrite() const {
+        if (_gpu_memory.expired()) {
+            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+        }
+
+        return _gpu_memory.lock();
+    }
+
+    gpu::GPUPointer<T> get_gpu_pointer() {
+        if (_gpu_memory.expired()) {
+            return nullptr;
+        } else {
+            return _gpu_memory.lock()->gpu_pointer;
+        }
+    }
+
+    gpu::GPUPointer<T const> get_gpu_pointer() const {
+        if (_gpu_memory.expired()) {
+            return nullptr;
+        } else {
+            return _gpu_memory.lock()->gpu_pointer;
         }
     }
 
     std::weak_ptr<GPUBlock> get_gpu_memory() const { return _gpu_memory; }
 
     bool gpu_is_expired() const { return _gpu_memory.expired(); }
-
-    bool gpu_is_cached() const { return (bool)_cached_gpu_memory; }
 #endif
 
   private:
@@ -1848,10 +1829,11 @@ struct TensorImpl final {
     size_t               _rank, _size;
     BufferVector<size_t> _dims, _strides;
     bool                 _row_major;
+    std::mutex mutable _mutex;
 
 #ifdef EINSUMS_COMPUTE_CODE
     std::weak_ptr<GPUBlock> mutable _gpu_memory;
-    std::shared_ptr<GPUBlock> mutable _cached_gpu_memory;
+    std::atomic<size_t> mutable _core_modify_count{0}, _gpu_modify_count{0};
 #endif
 };
 
