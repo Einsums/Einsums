@@ -118,9 +118,9 @@ TEMPLATE_TEST_CASE("Disk dot", "[linear-algebra]", float, double, std::complex<f
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    constexpr int size = 2000;
-
     SECTION("Rank 1 Tensors") {
+        constexpr int size = 2000;
+
         auto A = create_random_tensor<TestType>("A", size);
         auto B = create_random_tensor<TestType>("A", size);
 
@@ -129,6 +129,23 @@ TEMPLATE_TEST_CASE("Disk dot", "[linear-algebra]", float, double, std::complex<f
 
         A_disk(All) = A;
         B_disk(All) = B;
+
+        auto expected = einsums::linear_algebra::dot(A, B);
+        auto got      = einsums::linear_algebra::dot(A_disk, B_disk);
+
+        REQUIRE_THAT(got, einsums::CheckWithinRel(expected));
+    }
+
+    SECTION("Rank 2 Tensors") {
+        constexpr size_t size1 = 100, size2 = 51;
+        auto A = create_random_tensor<TestType>("A", size1, size2);
+        auto B = create_random_tensor<TestType>("B", size1, size2);
+
+        DiskTensor<TestType, 2> A_disk{fmt::format("/dot/rank2/{}/A", type_name<TestType>()), size1, size2},
+            B_disk{fmt::format("/dot/rank2/{}/B", type_name<TestType>()), size1, size2};
+
+        A_disk(All, All) = A;
+        B_disk(All, All) = B;
 
         auto expected = einsums::linear_algebra::dot(A, B);
         auto got      = einsums::linear_algebra::dot(A_disk, B_disk);
