@@ -9,6 +9,8 @@
 
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
+#include "Einsums/Config/Types.hpp"
+
 #include <Einsums/Testing.hpp>
 
 using namespace einsums;
@@ -118,6 +120,8 @@ TEMPLATE_TEST_CASE("Disk dot", "[linear-algebra]", float, double, std::complex<f
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
+    GlobalConfigMap::get_singleton().set_string("einsums:work-buffer-size", "1024");
+
     SECTION("Rank 1 Tensors") {
         constexpr int size = 2000;
 
@@ -138,8 +142,8 @@ TEMPLATE_TEST_CASE("Disk dot", "[linear-algebra]", float, double, std::complex<f
 
     SECTION("Rank 2 Tensors") {
         constexpr size_t size1 = 100, size2 = 51;
-        auto A = create_random_tensor<TestType>("A", size1, size2);
-        auto B = create_random_tensor<TestType>("B", size1, size2);
+        auto             A = create_random_tensor<TestType>("A", size1, size2);
+        auto             B = create_random_tensor<TestType>("B", size1, size2);
 
         DiskTensor<TestType, 2> A_disk{fmt::format("/dot/rank2/{}/A", type_name<TestType>()), size1, size2},
             B_disk{fmt::format("/dot/rank2/{}/B", type_name<TestType>()), size1, size2};
