@@ -8,6 +8,8 @@
 #include <Einsums/Print.hpp>
 #include <Einsums/StringUtil/MemoryString.hpp>
 
+#include <omp.h>
+
 namespace einsums::detail {
 
 EINSUMS_SINGLETON_IMPL(Einsums_BufferAllocator_vars)
@@ -28,7 +30,7 @@ void Einsums_BufferAllocator_vars::update_max_size(config_mapping_type<std::stri
     singleton._work_buffer = string_util::memory_string(work_buffer);
 
     if (singleton._work_buffer == 0) {
-        singleton._work_buffer = 1024;
+        singleton._work_buffer = singleton._max_size / 8 / omp_get_num_threads();
     }
 }
 

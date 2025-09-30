@@ -9,6 +9,7 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/LinearAlgebra/Base.hpp>
+#include <Einsums/LinearAlgebra/Bases/high_precision.hpp>
 
 namespace einsums::linear_algebra::detail {
 
@@ -27,6 +28,17 @@ auto dot_base(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
     BufferAllocator<typename BType::ValueType> B_alloc;
 
     size_t buffer_size = std::min(A_alloc.work_buffer_size(), B_alloc.work_buffer_size());
+
+    if (A.size() <= buffer_size) {
+        auto A_view = std::apply(A, std::array<einsums::AllT, Rank>());
+        auto B_view = std::apply(B, std::array<einsums::AllT, Rank>());
+
+        if constexpr (Conjugate && IsComplexV<typename AType::ValueType>) {
+            return true_dot(A_view.get(), B_view.get());
+        } else {
+            return dot(A_view.get(), B_view.get());
+        }
+    }
 
     // Calculate the things needed to loop over the tensors.
     size_t    loop_step = 1, loop_skip = 0;
@@ -56,7 +68,9 @@ auto dot_base(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
     }
 
     // Loop over and add.
-    einsums::BiggestTypeT<typename AType::ValueType, typename BType::ValueType> out{0.0};
+    einsums::BiggestTypeT<typename AType::ValueType, typename BType::ValueType> big_sum{0.0}, medium_sum{0.0}, small_sum{0.0};
+
+    bool not_big_re = true, not_big_im = true;
 
     // Set up the indices for the view.
     std::array<Range, Rank> view_indices;
@@ -80,9 +94,9 @@ auto dot_base(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
             auto B_view = std::apply(B, view_indices);
 
             if constexpr (Conjugate && IsComplexV<typename AType::ValueType>) {
-                out += true_dot(A_view.get(), B_view.get());
+                add_scale(true_dot(A_view.get(), B_view.get()), big_sum, medium_sum, small_sum, not_big_re, not_big_im);
             } else {
-                out += dot(A_view.get(), B_view.get());
+                add_scale(dot(A_view.get(), B_view.get()), big_sum, medium_sum, small_sum, not_big_re, not_big_im);
             }
         }
 
@@ -93,13 +107,13 @@ auto dot_base(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
             auto B_view             = std::apply(B, view_indices);
 
             if constexpr (Conjugate && IsComplexV<typename AType::ValueType>) {
-                out += true_dot(A_view.get(), B_view.get());
+                add_scale(true_dot(A_view.get(), B_view.get()), big_sum, medium_sum, small_sum, not_big_re, not_big_im);
             } else {
-                out += dot(A_view.get(), B_view.get());
+                add_scale(dot(A_view.get(), B_view.get()), big_sum, medium_sum, small_sum, not_big_re, not_big_im);
             }
         }
     }
-    return out;
+    return combine_accum(big_sum, medium_sum, small_sum);
 }
 
 template <DiskTensorConcept AType, DiskTensorConcept BType>
