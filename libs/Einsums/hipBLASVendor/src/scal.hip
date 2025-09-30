@@ -22,61 +22,37 @@ namespace einsums::blas::hip {
 void sscal(int n, float alpha, float *vec, int inc) {
     LabeledSection0();
 
-    float *alpha_gpu = gpu::register_host_variable(alpha);
-
-    hipblas_catch(hipblasSscal(gpu::get_blas_handle(), n, alpha_gpu, vec, inc));
-
-    gpu::unregister_host_variable(alpha);
+    hipblas_catch(hipblasSscal(gpu::get_blas_handle(), n, &alpha, vec, inc));
 }
 
 void dscal(int n, double alpha, double *vec, int inc) {
     LabeledSection0();
 
-    double *alpha_gpu = gpu::register_host_variable(alpha);
-
-    hipblas_catch(hipblasDscal(gpu::get_blas_handle(), n, alpha_gpu, vec, inc));
-
-    gpu::unregister_host_variable(alpha);
+    hipblas_catch(hipblasDscal(gpu::get_blas_handle(), n, &alpha, vec, inc));
 }
 
 void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc) {
     LabeledSection0();
 
-    hipblasComplex *alpha_gpu = (hipblasComplex *)gpu::register_host_variable(alpha);
-
-    hipblas_catch(hipblasCscal(gpu::get_blas_handle(), n, alpha_gpu, (hipblasComplex *)vec, inc));
-
-    gpu::unregister_host_variable(alpha);
+    hipblas_catch(hipblasCscal(gpu::get_blas_handle(), n, (hipblasComplex *) &alpha, (hipblasComplex *)vec, inc));
 }
 
 void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc) {
     LabeledSection0();
 
-    hipblasDoubleComplex *alpha_gpu = (hipblasDoubleComplex *)gpu::register_host_variable(alpha);
-
-    hipblas_catch(hipblasZscal(gpu::get_blas_handle(), n, alpha_gpu, (hipblasDoubleComplex *)vec, inc));
-
-    gpu::unregister_host_variable(alpha);
+    hipblas_catch(hipblasZscal(gpu::get_blas_handle(), n, (hipblasDoubleComplex *) &alpha, (hipblasDoubleComplex *)vec, inc));
 }
 
 void csscal(int n, float alpha, std::complex<float> *vec, int inc) {
     LabeledSection0();
 
-    float *alpha_gpu = gpu::register_host_variable(alpha);
-
-    hipblas_catch(hipblasCsscal(gpu::get_blas_handle(), n, alpha_gpu, (hipblasComplex *)vec, inc));
-
-    gpu::unregister_host_variable(alpha);
+    hipblas_catch(hipblasCsscal(gpu::get_blas_handle(), n, &alpha, (hipblasComplex *)vec, inc));
 }
 
 void zdscal(int n, double alpha, std::complex<double> *vec, int inc) {
     LabeledSection0();
 
-    double *alpha_gpu = gpu::register_host_variable(alpha);
-
-    hipblas_catch(hipblasZdscal(gpu::get_blas_handle(), n, alpha_gpu, (hipblasDoubleComplex *)vec, inc));
-
-    gpu::unregister_host_variable(alpha);
+    hipblas_catch(hipblasZdscal(gpu::get_blas_handle(), n, &alpha, (hipblasDoubleComplex *)vec, inc));
 }
 
 void srscl(int n, float alpha, float *vec, int inc) {
@@ -509,6 +485,10 @@ int slascl(char type, int kl, int ku, float cfrom, float cto, int m, int n, floa
     float to_temp   = cto;
     bool  finished  = false;
 
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
     do {
         float cfrom1 = from_temp * smlnum;
         float mult;
@@ -560,7 +540,7 @@ int slascl(char type, int kl, int ku, float cfrom, float cto, int m, int n, floa
                 dim3 block_dims{col_block_dims.x, row_block_dims.x, 1};
                 dim3 blocks{col_blocks.x, row_blocks.x, 1};
 
-                slascl_full_matrix<<<block_dims, blocks, 0, gpu::get_stream()>>>(mult, m, n, vec, lda);
+                slascl_full_matrix<<<block_dims, blocks, 0, stream>>>(mult, m, n, vec, lda);
                 gpu::stream_wait();
             }
             break;
@@ -736,6 +716,10 @@ int dlascl(char type, int kl, int ku, double cfrom, double cto, int m, int n, do
     double to_temp   = cto;
     bool   finished  = false;
 
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
     do {
         double cfrom1 = from_temp * smlnum;
         double mult;
@@ -787,7 +771,7 @@ int dlascl(char type, int kl, int ku, double cfrom, double cto, int m, int n, do
                 dim3 block_dims{col_block_dims.x, row_block_dims.x, 1};
                 dim3 blocks{col_blocks.x, row_blocks.x, 1};
 
-                dlascl_full_matrix<<<block_dims, blocks, 0, gpu::get_stream()>>>(mult, m, n, vec, lda);
+                dlascl_full_matrix<<<block_dims, blocks, 0, stream>>>(mult, m, n, vec, lda);
                 gpu::stream_wait();
             }
             break;

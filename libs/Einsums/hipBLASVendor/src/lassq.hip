@@ -609,7 +609,11 @@ void slassq(int n, float const *x, int incx, float *scale, float *sumsq) {
 
     auto work = gpu_alloc.allocate(3);
 
-    slassq_kernel<<<block_size, blocks, 0, gpu::get_stream()>>>(n, x, incx, scale, sumsq, work, work + 1, work + 2);
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
+    slassq_kernel<<<block_size, blocks, 0, stream>>>(n, x, incx, scale, sumsq, work, work + 1, work + 2);
     gpu::stream_wait();
 
     gpu_alloc.deallocate(work, 3);
@@ -625,7 +629,11 @@ void dlassq(int n, double const *x, int incx, double *scale, double *sumsq) {
 
     auto work = gpu_alloc.allocate(3);
 
-    dlassq_kernel<<<block_size, blocks, 0, gpu::get_stream()>>>(n, x, incx, scale, sumsq, work, work + 1, work + 2);
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
+    dlassq_kernel<<<block_size, blocks, 0, stream>>>(n, x, incx, scale, sumsq, work, work + 1, work + 2);
     gpu::stream_wait();
 
     gpu_alloc.deallocate(work, 3);
@@ -641,7 +649,11 @@ void classq(int n, std::complex<float> const *x, int incx, float *scale, float *
 
     auto work = gpu_alloc.allocate(3);
 
-    classq_kernel<<<block_size, blocks, 0, gpu::get_stream()>>>(n, (hipComplex *)x, incx, scale, sumsq, work, work + 1, work + 2);
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
+    classq_kernel<<<block_size, blocks, 0, stream>>>(n, (hipComplex *)x, incx, scale, sumsq, work, work + 1, work + 2);
     gpu::stream_wait();
 
     gpu_alloc.deallocate(work, 3);
@@ -657,7 +669,11 @@ void zlassq(int n, std::complex<double> const *x, int incx, double *scale, doubl
 
     auto work = gpu_alloc.allocate(3);
 
-    zlassq_kernel<<<block_size, blocks, 0, gpu::get_stream()>>>(n, (hipDoubleComplex *)x, incx, scale, sumsq, work, work + 1, work + 2);
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
+    zlassq_kernel<<<block_size, blocks, 0, stream>>>(n, (hipDoubleComplex *)x, incx, scale, sumsq, work, work + 1, work + 2);
     gpu::stream_wait();
 
     gpu_alloc.deallocate(work, 3);

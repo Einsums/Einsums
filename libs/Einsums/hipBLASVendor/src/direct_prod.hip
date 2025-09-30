@@ -160,7 +160,7 @@ static __global__ void cdirprod_kernel(int n, hipFloatComplex *alpha_ptr, hipFlo
         hipFloatComplex       *curr_z = z + (ptrdiff_t)thread_id * block_size * incz;
 
         for (int i = 0; i < block_size; i++) {
-            curr_z[i * incz] += alpha * curr_x[i * incx] * curr_y[i * incy];
+            curr_z[i * incz] = hipCaddf(curr_z[i * incz], hipCmulf(alpha, hipCmulf(curr_x[i * incx], curr_y[i * incy])));
         }
     }
 
@@ -170,7 +170,7 @@ static __global__ void cdirprod_kernel(int n, hipFloatComplex *alpha_ptr, hipFlo
         hipFloatComplex       *curr_z = z + (ptrdiff_t)num_threads * block_size * incz;
 
         for (int i = 0; i < remaining; i++) {
-            curr_z[i * incz] += alpha * curr_x[i * incx] * curr_y[i * incy];
+            curr_z[i * incz] = hipCaddf(curr_z[i * incz], hipCmulf(alpha, hipCmulf(curr_x[i * incx], curr_y[i * incy])));
         }
     }
 }
@@ -192,7 +192,7 @@ static __global__ void zdirprod_kernel(int n, hipDoubleComplex *alpha_ptr, hipDo
         hipDoubleComplex       *curr_z = z + (ptrdiff_t)thread_id * block_size * incz;
 
         for (int i = 0; i < block_size; i++) {
-            curr_z[i * incz] += alpha * curr_x[i * incx] * curr_y[i * incy];
+            curr_z[i * incz] = hipCadd(curr_z[i * incz], hipCmul(alpha, hipCmul(curr_x[i * incx], curr_y[i * incy])));
         }
     }
 
@@ -202,7 +202,7 @@ static __global__ void zdirprod_kernel(int n, hipDoubleComplex *alpha_ptr, hipDo
         hipDoubleComplex       *curr_z = z + (ptrdiff_t)num_threads * block_size * incz;
 
         for (int i = 0; i < remaining; i++) {
-            curr_z[i * incz] += alpha * curr_x[i * incx] * curr_y[i * incy];
+            curr_z[i * incz] = hipCadd(curr_z[i * incz], hipCmul(alpha, hipCmul(curr_x[i * incx], curr_y[i * incy])));
         }
     }
 }
@@ -215,16 +215,20 @@ void sdirprod(int n, float alpha, float const *x, int incx, float const *y, int 
     hip_catch(hipHostRegister((void *)&alpha, sizeof(float), hipHostRegisterDefault));
     hip_catch(hipHostGetDevicePointer((void **)&alpha_gpu, (void *)&alpha, 0));
 
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
     if (incx == 1 && incy == 1 && incz == 1) {
         auto blocks     = gpu::blocks(n / 4);
         auto block_size = gpu::block_size(n / 4);
 
-        sdirprod_all1_kernel<<<blocks, block_size, 0, gpu::get_stream()>>>(n, alpha_gpu, x, y, z);
+        sdirprod_all1_kernel<<<blocks, block_size, 0, stream>>>(n, alpha_gpu, x, y, z);
     } else {
         auto blocks     = gpu::blocks(n);
         auto block_size = gpu::block_size(n);
 
-        sdirprod_kernel<<<blocks, block_size, 0, gpu::get_stream()>>>(n, alpha_gpu, x, incx, y, incy, z, incz);
+        sdirprod_kernel<<<blocks, block_size, 0, stream>>>(n, alpha_gpu, x, incx, y, incy, z, incz);
     }
 
     gpu::stream_wait();
@@ -240,16 +244,20 @@ void ddirprod(int n, double alpha, double const *x, int incx, double const *y, i
     hip_catch(hipHostRegister((void *)&alpha, sizeof(double), hipHostRegisterDefault));
     hip_catch(hipHostGetDevicePointer((void **)&alpha_gpu, (void *)&alpha, 0));
 
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
     if (incx == 1 && incy == 1 && incz == 1) {
         auto blocks     = gpu::blocks(n / 4);
         auto block_size = gpu::block_size(n / 4);
 
-        ddirprod_all1_kernel<<<blocks, block_size, 0, gpu::get_stream()>>>(n, alpha_gpu, x, y, z);
+        ddirprod_all1_kernel<<<blocks, block_size, 0, stream>>>(n, alpha_gpu, x, y, z);
     } else {
         auto blocks     = gpu::blocks(n);
         auto block_size = gpu::block_size(n);
 
-        ddirprod_kernel<<<blocks, block_size, 0, gpu::get_stream()>>>(n, alpha_gpu, x, incx, y, incy, z, incz);
+        ddirprod_kernel<<<blocks, block_size, 0, stream>>>(n, alpha_gpu, x, incx, y, incy, z, incz);
     }
 
     gpu::stream_wait();
@@ -266,11 +274,15 @@ void cdirprod(int n, std::complex<float> alpha, std::complex<float> const *x, in
     hip_catch(hipHostRegister((void *)&alpha, sizeof(hipComplex), hipHostRegisterDefault));
     hip_catch(hipHostGetDevicePointer((void **)&alpha_gpu, (void *)&alpha, 0));
 
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
     auto blocks     = gpu::blocks(n);
     auto block_size = gpu::block_size(n);
 
-    cdirprod_kernel<<<blocks, block_size, 0, gpu::get_stream()>>>(n, alpha_gpu, (hipComplex const *)x, incx, (hipComplex const *)y, incy,
-                                                                  (hipComplex *)z, incz);
+    cdirprod_kernel<<<blocks, block_size, 0, stream>>>(n, alpha_gpu, (hipComplex const *)x, incx, (hipComplex const *)y, incy,
+                                                       (hipComplex *)z, incz);
 
     gpu::stream_wait();
 
@@ -286,11 +298,15 @@ void zdirprod(int n, std::complex<double> alpha, std::complex<double> const *x, 
     hip_catch(hipHostRegister((void *)&alpha, sizeof(hipDoubleComplex), hipHostRegisterDefault));
     hip_catch(hipHostGetDevicePointer((void **)&alpha_gpu, (void *)&alpha, 0));
 
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
     auto blocks     = gpu::blocks(n);
     auto block_size = gpu::block_size(n);
 
-    zdirprod_kernel<<<blocks, block_size, 0, gpu::get_stream()>>>(n, alpha_gpu, (hipDoubleComplex const *)x, incx,
-                                                                  (hipDoubleComplex const *)y, incy, (hipDoubleComplex *)z, incz);
+    zdirprod_kernel<<<blocks, block_size, 0, stream>>>(n, alpha_gpu, (hipDoubleComplex const *)x, incx, (hipDoubleComplex const *)y, incy,
+                                                       (hipDoubleComplex *)z, incz);
 
     gpu::stream_wait();
 

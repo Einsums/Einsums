@@ -162,7 +162,11 @@ float scsum1(int n, std::complex<float> const *x, int incx) {
 
     hip_catch(hipHostGetDevicePointer((void **)&gpu_out, (void *)&out, 0));
 
-    scsum1_kernel<<<block_size, blocks, 0, gpu::get_stream()>>>(n, (hipComplex const *)x, incx, gpu_out);
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
+    scsum1_kernel<<<block_size, blocks, 0, stream>>>(n, (hipComplex const *)x, incx, gpu_out);
     gpu::stream_wait();
 
     hip_catch(hipHostUnregister(&out));
@@ -184,7 +188,11 @@ double dzsum1(int n, std::complex<double> const *x, int incx) {
 
     hip_catch(hipHostGetDevicePointer((void **)&gpu_out, (void *)&out, 0));
 
-    dzsum1_kernel<<<block_size, blocks>>>(n, (hipDoubleComplex const *)x, incx, gpu_out);
+    hipStream_t stream;
+
+    hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
+
+    dzsum1_kernel<<<block_size, blocks, 0, stream>>>(n, (hipDoubleComplex const *)x, incx, gpu_out);
     gpu::stream_wait();
 
     hip_catch(hipHostUnregister(&out));
