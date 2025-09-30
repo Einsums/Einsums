@@ -187,6 +187,7 @@ template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typenam
     requires requires {
         requires SameRank<AType, BType, CType>;
         requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<BType> || !AlgebraTensorConcept<CType>;
+        requires !DiskTensorConcept<AType> || !DiskTensorConcept<BType> || !DiskTensorConcept<CType>;
     }
 void direct_product(U alpha, AType const &A, BType const &B, U, CType *C) {
     using T               = typename AType::ValueType;
