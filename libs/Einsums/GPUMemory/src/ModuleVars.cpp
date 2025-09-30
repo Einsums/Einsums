@@ -52,4 +52,8 @@ size_t Einsums_GPUMemory_vars::get_max_size() const {
     return max_size_;
 }
 
+size_t Einsums_GPUMemory_vars::get_available() const {
+    return max_size_ - curr_size_;
+}
+
 } // namespace einsums::gpu::detail

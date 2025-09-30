@@ -15,6 +15,7 @@
 #include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/LinearAlgebra/BlockTensor.hpp>
 #include <Einsums/LinearAlgebra/TiledTensor.hpp>
+#include <Einsums/LinearAlgebra/DiskAlgebra.hpp>
 #include <Einsums/LinearAlgebra/Unoptimized.hpp>
 #include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/Tensor.hpp>

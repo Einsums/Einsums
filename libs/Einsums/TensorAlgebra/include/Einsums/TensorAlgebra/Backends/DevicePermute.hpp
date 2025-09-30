@@ -22,8 +22,6 @@ namespace einsums::tensor_algebra {
 
 namespace detail {
 
-#if defined(EINSUMS_USE_LIBRETT)
-
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta,
                                 float *B);
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta,
@@ -32,7 +30,6 @@ void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipFloatComplex 
                                 hipFloatComplex const beta, hipFloatComplex *B);
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipDoubleComplex const alpha, hipDoubleComplex const *A, int const *sizeA,
                                 hipDoubleComplex const beta, hipDoubleComplex *B);
-#endif
 
 template <bool ConjA, typename T, size_t Rank>
 __global__ void permute_kernel(int const *perm, T const alpha, T const *A, size_t const *strideA, T const beta, T *B, size_t const *strideB,
@@ -132,7 +129,7 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             std::array<int, ARank> size{};
 
             for (int i0 = 0; i0 < ARank; i0++) {
-                perms[i0] = get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+                perms[i0] = arguments::get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
                 size[i0]  = A.dim(ARank - i0 - 1);
             }
 

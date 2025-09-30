@@ -6,20 +6,18 @@
 #include <Einsums/GPUStreams/GPUStreams.hpp>
 #include <Einsums/TensorAlgebra/Backends/DevicePermute.hpp>
 
-#if defined(EINSUMS_USE_LIBRETT)
-#    include <librett.h>
+#include <librett.h>
 
 // HPTT includes <complex> which defined I as a shorthand for complex values.
 // This causes issues with einsums since we define I to be a useable index
 // for the user. Undefine the one defined in <complex> here.
-#    if defined(I)
-#        undef I
-#    endif
+#if defined(I)
+#    undef I
 #endif
 
 namespace einsums::tensor_algebra::detail {
 
-void gpu_permute(const int *perm, const int dim, const float alpha, const float *A, const int *sizeA, const float beta, float *B) {
+void gpu_permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta, float *B) {
     librettHandle       plan;
     librett_gpuStream_t stream = gpu::get_stream();
 
@@ -28,7 +26,7 @@ void gpu_permute(const int *perm, const int dim, const float alpha, const float 
     librettExecute(plan, (void *)A, B);
 }
 
-void gpu_permute(const int *perm, const int dim, const double alpha, const double *A, const int *sizeA, const double beta, double *B) {
+void gpu_permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta, double *B) {
     librettHandle plan;
 
     librett_gpuStream_t stream = gpu::get_stream();
@@ -38,8 +36,8 @@ void gpu_permute(const int *perm, const int dim, const double alpha, const doubl
     librettExecute(plan, (void *)A, B);
 }
 
-void gpu_permute(const int *perm, const int dim, const hipFloatComplex alpha, const hipFloatComplex *A, const int *sizeA, const hipFloatComplex beta,
-              hipFloatComplex *B) {
+void gpu_permute(int const *perm, int const dim, hipFloatComplex const alpha, hipFloatComplex const *A, int const *sizeA,
+                 hipFloatComplex const beta, hipFloatComplex *B) {
     librettHandle plan;
 
     librett_gpuStream_t stream = gpu::get_stream();
@@ -49,8 +47,8 @@ void gpu_permute(const int *perm, const int dim, const hipFloatComplex alpha, co
     librettExecute(plan, (void *)A, B);
 }
 
-void gpu_permute(const int *perm, const int dim, const hipDoubleComplex alpha, const hipDoubleComplex *A, const int *sizeA,
-              const hipDoubleComplex beta, hipDoubleComplex *B) {
+void gpu_permute(int const *perm, int const dim, hipDoubleComplex const alpha, hipDoubleComplex const *A, int const *sizeA,
+                 hipDoubleComplex const beta, hipDoubleComplex *B) {
     librettHandle plan;
 
     librett_gpuStream_t stream = gpu::get_stream();

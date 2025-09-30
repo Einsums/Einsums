@@ -21,8 +21,14 @@
 #include <omp.h>
 #include <vector>
 
+#ifdef EINSUMS_USE_LIBRETT
+#    include <librett.h>
+#endif
+
 namespace einsums {
 namespace gpu {
+
+EINSUMS_EXPORT bool device_is_reset;
 
 namespace detail {
 BufferVector<hipblasHandle_t>   blas_handles;
@@ -52,6 +58,7 @@ EINSUMS_HOST int einsums::setup_Einsums_GPUStreams() {
 EINSUMS_HOST void einsums::initialize_Einsums_GPUStreams() {
     using namespace einsums::gpu;
     hip_catch(hipFree(nullptr));
+    device_is_reset = false;
 
     hip_catch(hipSetDevice(0));
 
@@ -88,6 +95,10 @@ EINSUMS_HOST void einsums::initialize_Einsums_GPUStreams() {
             hipsolver_catch(hipsolverSetStream(gpu::detail::solver_handles.at(i), get_stream(i)));
         }
     }
+
+#ifdef EINSUMS_USE_LIBRETT
+    librettInitialize();
+#endif
 }
 
 EINSUMS_HOST void einsums::finalize_Einsums_GPUStreams() {
@@ -117,6 +128,11 @@ EINSUMS_HOST void einsums::finalize_Einsums_GPUStreams() {
     }
 
     hip_catch(hipDeviceReset());
+    device_is_reset = true;
+
+#ifdef EINSUMS_USE_LIBRETT
+    librettFinalize();
+#endif
 }
 
 namespace einsums {

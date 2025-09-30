@@ -15,6 +15,7 @@ Einsums Modules
     /libs/Einsums/BLAS/docs/index.rst
     /libs/Einsums/BLASBase/docs/index.rst
     /libs/Einsums/BLASVendor/docs/index.rst
+    /libs/Einsums/BlockManager/docs/index.rst
     /libs/Einsums/BufferAllocator/docs/index.rst
     /libs/Einsums/CommandLine/docs/index.rst
     /libs/Einsums/Concepts/docs/index.rst
@@ -42,3 +43,5 @@ Einsums Modules
     /libs/Einsums/TypeSupport/docs/index.rst
     /libs/Einsums/Utilities/docs/index.rst
     /libs/Einsums/Version/docs/index.rst
+    /libs/Einsums/hipBLAS/docs/index.rst
+    /libs/Einsums/hipBLASVendor/docs/index.rst

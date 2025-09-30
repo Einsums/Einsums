@@ -55,7 +55,7 @@ EINSUMS_EXPORT void add_{lib_name}_{module_name}_arguments() {{
     // static cl::OptionCategory {module_name}Category("Enter category name here");
 
     // Then we add the option ;
-    // static cl::Opt<std::string> example_option("einsums:dummy-string", {'d'}, "Dummy string option with short version of -d.",
+    // static cl::Opt<std::string> example_option("einsums:dummy-string", {{'d'}}, "Dummy string option with short version of -d.",
     //      {module_name}Category, cl::Location(global_string["dummy-string"]), cl::Default("Default value"));
     
     // Make sure the options are static so that they don't get destroyed when the function exits.

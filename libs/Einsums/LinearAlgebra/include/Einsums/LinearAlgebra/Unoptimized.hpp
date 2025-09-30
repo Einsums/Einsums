@@ -20,6 +20,7 @@ namespace einsums::linear_algebra::detail {
 template <TensorConcept AType, TensorConcept BType, typename Result = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>>
     requires requires {
         requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<BType>;
+        requires !DiskTensorConcept<AType> || !DiskTensorConcept<BType>;
         requires SameRank<AType, BType>;
     }
 auto dot(AType const &A, BType const &B) -> Result {
@@ -58,6 +59,7 @@ auto dot(AType const &A, BType const &B) -> Result {
 template <TensorConcept AType, TensorConcept BType, typename Result = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>>
     requires requires {
         requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<BType>;
+        requires !DiskTensorConcept<AType> || !DiskTensorConcept<BType>;
         requires SameRank<AType, BType>;
     }
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
@@ -185,6 +187,7 @@ template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typenam
     requires requires {
         requires SameRank<AType, BType, CType>;
         requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<BType> || !AlgebraTensorConcept<CType>;
+        requires !DiskTensorConcept<AType> || !DiskTensorConcept<BType> || !DiskTensorConcept<CType>;
     }
 void direct_product(U alpha, AType const &A, BType const &B, U, CType *C) {
     using T               = typename AType::ValueType;
