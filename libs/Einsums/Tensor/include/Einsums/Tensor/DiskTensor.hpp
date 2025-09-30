@@ -101,7 +101,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     explicit DiskTensor(hid_t file, std::string name, Dim<Rank> dims, int deflate_level = -1)
         : _file{file}, _name{std::move(name)}, _dims{dims} {
 
-        size_t size = dims_to_strides(_dims, _strides);
+        _size = dims_to_strides(_dims, _strides);
 
         _dataspace = H5Screate_simple(Rank, reinterpret_cast<hsize_t *>(_dims.data()), NULL);
 
@@ -166,7 +166,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
                 EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set up the chunk options!");
             }
 
-            if (deflate_level < 0 && size > 0xffffffff) {
+            if (deflate_level < 0 && _size > 0xffffffff) {
                 deflate_level = 1;
             }
 
@@ -266,6 +266,11 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      * @brief Get the array of strides for this tensor.
      */
     Stride<Rank> strides() const { return _strides; }
+
+    /**
+     * Get the size of the tensor.
+     */
+    size_t size() const { return _size; }
 
     /**
      * @brief Returns whether this tensor is viewing the entirety of the data.
@@ -458,6 +463,13 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      * Did the entry already exist on disk? Doesn't indicate validity of the data just the existence of the entry.
      */
     bool _existed{false};
+
+    /**
+     * @var _size
+     *
+     * Holds the size of the tensor.
+     */
+    size_t _size;
 };
 
 /**
@@ -530,6 +542,8 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
             _mem_dataspace == H5I_INVALID_HID) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not initialize disk view!");
         }
+
+        _size = prod;
     }
 
     /**
@@ -572,6 +586,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
         }
 
         set_read_only(true);
+        _size = prod;
     }
 
     /**
@@ -612,6 +627,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
             _mem_dataspace == H5I_INVALID_HID) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not initialize disk view!");
         }
+        _size = prod;
     }
 
     /**
@@ -654,6 +670,8 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
         }
 
         set_read_only(true);
+
+        _size = prod;
     }
 
     /**
@@ -987,6 +1005,11 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     Dim<rank> dims() const { return _dims; }
 
     /**
+     * Get the size of the view.
+     */
+    size_t size() const { return _size; }
+
+    /**
      * Get the name of the tensor.
      */
     std::string const &name() const { return _name; }
@@ -1056,6 +1079,13 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      * Holds the dimensions of the tensor.
      */
     Dim<rank> _dims;
+
+    /**
+     * @var _size
+     *
+     * The size of the tensor view.
+     */
+    size_t _size;
 
     /**
      * @var _tensor

@@ -17,7 +17,6 @@
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
-
 #include <type_traits>
 
 namespace einsums {
@@ -1711,6 +1710,8 @@ struct TensorImpl final {
     std::weak_ptr<GPUBlock> get_gpu_memory() const { return _gpu_memory; }
 
     bool gpu_is_expired() const { return _gpu_memory.expired(); }
+
+    bool gpu_is_cached() const { return (bool)_gpu_memory; }
 #endif
 
   private:

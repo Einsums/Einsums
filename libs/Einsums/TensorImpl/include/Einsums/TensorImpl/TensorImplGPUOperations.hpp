@@ -132,44 +132,35 @@ void impl_real_contiguous_gpu(TensorImpl<std::complex<T>> const &in, TensorImpl<
 }
 
 template <typename T, Container HardDims, Container InStrides, Container OutStrides>
-void impl_real_noncontiguous_vectorable(int depth, int hard_rank, size_t easy_size, HardDims const &dims, std::complex<T> const *in,
-                                        InStrides const &in_strides, size_t twice_inc_in, T *out, OutStrides const &out_strides,
-                                        size_t inc_out) {
+void impl_real_noncontiguous_vectorable_gpu(int depth, int hard_rank, size_t easy_size, HardDims const &dims, std::complex<T> const *in,
+                                            InStrides const &in_strides, size_t twice_inc_in, T *out, OutStrides const &out_strides,
+                                            size_t inc_out) {
     // inc_in needs to be multiplied by 2 before entry.
     if (depth == hard_rank) {
         if constexpr (blas::IsBlasableV<T>) {
-            blas::copy(easy_size, static_cast<T const *>(in), twice_inc_in, out, inc_out);
+            blas::hip::copy(easy_size, static_cast<T const *>(in), twice_inc_in, out, inc_out);
         } else {
-            T const *in_data = static_cast<T const *>(in);
-            EINSUMS_OMP_PARALLEL_FOR_SIMD
-            for (size_t i = 0; i < easy_size; i++) {
-                out[i * inc_out] = std::real(in_data[i * twice_inc_in]);
-            }
+            T const *in_data  = static_cast<T const *>(in.data());
+            T       *out_data = out.data();
+
+            auto blocks     = gpu::blocks(in.size());
+            auto block_dims = gpu::block_size(in.size());
+
+            impl_copy_kernel<<<block_dims, blocks, 0, gpu::get_stream()>>>(in.size(), static_cast<T const *>(in.get_gpu_pointer()), 2,
+                                                                           out.get_gpu_pointer(), 1);
+
+            gpu::stream_wait();
         }
-    if constexpr (blas::IsBlasableV<T>) {
-        blas::hip::copy(easy_size, static_cast<T const *>(in.get_gpu_pointer()), twice_inc_in, out.get_gpu_pointer(), twice_inc_out);
-    } else {
-        T const *in_data  = static_cast<T const *>(in.data());
-        T       *out_data = out.data();
-
-        auto blocks     = gpu::blocks(in.size());
-        auto block_dims = gpu::block_size(in.size());
-
-        impl_copy_kernel<<<block_dims, blocks, 0, gpu::get_stream()>>>(in.size(), static_cast<T const *>(in.get_gpu_pointer()), 2,
-                                                                       out.get_gpu_pointer(), 1);
-
-        gpu::stream_wait();
-    }
     } else {
         for (int i = 0; i < dims[depth]; i++) {
-            impl_real_noncontiguous_vectorable(depth + 1, hard_rank, easy_size, dims, in + i * in_strides[depth], in_strides, twice_inc_in,
+            impl_real_noncontiguous_vectorable_gpu(depth + 1, hard_rank, easy_size, dims, in + i * in_strides[depth], in_strides, twice_inc_in,
                                                out + i * out_strides[depth], out_strides, inc_out);
         }
     }
 }
 
 template <typename T, Container Dims, Container InStrides, Container OutStrides>
-void impl_real_noncontiguous(int depth, int rank, Dims const &dims, std::complex<T> const *in, InStrides const &in_strides, T *out,
+void impl_real_noncontiguous_gpu(int depth, int rank, Dims const &dims, std::complex<T> const *in, InStrides const &in_strides, T *out,
                              OutStrides const &out_strides) {
     if (depth == rank) {
         *out = std::real(*in);

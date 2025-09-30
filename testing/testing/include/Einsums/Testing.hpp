@@ -118,7 +118,7 @@ WithinRelMatcher(TestType, double) -> WithinRelMatcher<TestType>;
 #endif
 
 template <typename TestType>
-WithinRelMatcher<std::remove_cvref_t<TestType>> CheckWithinRel(TestType reference, double tolerance) {
+WithinRelMatcher<std::remove_cvref_t<TestType>> CheckWithinRel(TestType reference, double tolerance = 1e-6) {
     return WithinRelMatcher(reference, tolerance);
 }
 

@@ -152,19 +152,19 @@ struct BufferAllocator {
 
     constexpr BufferAllocator(BufferAllocator &&) = default;
 
-    template<typename U>
+    template <typename U>
     constexpr BufferAllocator(BufferAllocator<U> &&) {}
 
     constexpr BufferAllocator &operator=(BufferAllocator const &) noexcept = default;
 
-    template<typename U>
+    template <typename U>
     constexpr BufferAllocator &operator=(BufferAllocator<U> const &) noexcept {
         return *this;
     }
 
     constexpr BufferAllocator &operator=(BufferAllocator &&) = default;
 
-    template<typename U>
+    template <typename U>
     constexpr BufferAllocator &operator=(BufferAllocator<U> &&) {
         return *this;
     }
@@ -312,6 +312,21 @@ struct BufferAllocator {
         try {
             return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size;
 
+        } catch (std::runtime_error &) {
+            return 0;
+        }
+    }
+
+    /**
+     * @brief Query the recommended work buffer size.
+     *
+     * This will give the recommended size of a work buffer.
+     *
+     * @versionadded{2.0.0}
+     */
+    [[nodiscard]] size_type work_buffer_size() const {
+        try {
+            return detail::Einsums_BufferAllocator_vars::get_singleton().get_work_buffer_size() / type_size;
         } catch (std::runtime_error &) {
             return 0;
         }

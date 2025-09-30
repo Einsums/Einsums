@@ -137,4 +137,5 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                                                      (CDataType)AB_prefactor, A, B);
     }
 }
+
 } // namespace einsums::tensor_algebra::detail

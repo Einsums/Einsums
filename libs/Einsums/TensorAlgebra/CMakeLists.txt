@@ -32,6 +32,7 @@ if(EINSUMS_WITH_GPU_SUPPORT)
        Einsums/TensorAlgebra/Backends/DevicePermute.hpp
   )
   set(TensorAlgebraGPUDeps hip::host hip::device roc::hipblas roc::hipsolver)
+  list(APPEND EXTRA_TENSOR_ALGEBA_DEPENDENCIES Einsums_GPUMemory Einsums_GPUStreams)
 
   if(EINSUMS_USE_LIBRETT)
     list(APPEND TensorAlgebraSources DevicePermute.hip)
