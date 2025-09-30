@@ -11,6 +11,10 @@
 
 #include <fmt/format.h>
 
+#ifdef EINSUMS_COMPUTE_CODE
+#    include <Einsums/hipBLAS.hpp>
+#endif
+
 namespace einsums {
 namespace linear_algebra {
 namespace detail {
@@ -78,6 +82,41 @@ void impl_direct_product(CType alpha, einsums::detail::TensorImpl<AType> const &
     if (A.dims() != B.dims() || A.dims() != C->dims()) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "Can not combine tensors with different sizes!");
     }
+
+#ifdef EINSUMS_COMPUTE_CODE
+    if constexpr (std::is_same_v<AType, BType> && std::is_same_v<AType, CType> && blas::IsBlasableV<AType>) {
+        auto a_ptr = A.get_gpu_pointer();
+        auto b_ptr = B.get_gpu_pointer();
+        auto c_ptr = C->get_gpu_pointer();
+
+        auto a_lock = A.gpu_cache_tensor();
+        auto b_lock = B.gpu_cache_tensor();
+        auto c_lock = C->gpu_cache_tensor();
+
+        if (!a_ptr) {
+            a_ptr = a_lock->gpu_pointer;
+        }
+
+        if (!b_ptr) {
+            b_ptr = b_lock->gpu_pointer;
+        }
+
+        if (!c_ptr) {
+            c_ptr = c_lock->gpu_pointer;
+        }
+
+        if (a_ptr && b_ptr && c_ptr) {
+            blas::gpu::scal(C->size(), beta, c_ptr.get(), 1);
+            blas::gpu::dirprod(A.size(), alpha, a_ptr.get(), 1, b_ptr.get(), 1, c_ptr.get(), 1);
+
+            gpu::stream_wait();
+
+            C->tensor_from_gpu();
+
+            return;
+        }
+    }
+#endif
 
     if (A.is_column_major() != B.is_column_major() || A.is_column_major() != C->is_column_major()) {
         EINSUMS_LOG_DEBUG("Can't necessarily combine row major and column major tensors. Using the fallback algorithm.");

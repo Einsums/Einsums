@@ -1620,7 +1620,7 @@ struct TensorImpl final {
             auto gpu_ptr = gpu::GPUPointer<T>(_gpu_memory.lock()->gpu_pointer);
 
             if (get_incx() == 1 && is_totally_vectorable()) {
-                std::memcpy(gpu_ptr, _ptr, _size * sizeof(T));
+                std::memcpy(_ptr, gpu_ptr, _size * sizeof(T));
             } else {
                 BufferVector<T> temp_buffer(_size);
 
