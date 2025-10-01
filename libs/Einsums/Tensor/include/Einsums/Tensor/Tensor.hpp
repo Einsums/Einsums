@@ -745,7 +745,8 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     template <typename TOther>
     auto operator=(TensorView<TOther, Rank> const &other) -> Tensor & {
         LabeledSection("operator=");
-        detail:copy_to(other.impl(), _impl);
+    detail:
+        copy_to(other.impl(), _impl);
 
         return *this;
     }
@@ -970,13 +971,9 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
     detail::TensorImpl<T> const &impl() const { return _impl; }
 
-    bool is_row_major() const {
-        return _impl.is_row_major();
-    }
+    bool is_row_major() const { return _impl.is_row_major(); }
 
-    bool is_column_major() const {
-        return _impl.is_column_major();
-    }
+    bool is_column_major() const { return _impl.is_column_major(); }
 
   private:
     std::string _name{"(unnamed)"};
@@ -1786,13 +1783,9 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     detail::TensorImpl<T> const &impl() const noexcept { return _impl; }
 
-    bool is_row_major() const {
-        return _impl.is_row_major();
-    }
+    bool is_row_major() const { return _impl.is_row_major(); }
 
-    bool is_column_major() const {
-        return _impl.is_column_major();
-    }
+    bool is_column_major() const { return _impl.is_column_major(); }
 
   private:
     /**
