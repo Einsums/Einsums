@@ -1693,6 +1693,10 @@ struct TensorImpl final {
     std::weak_ptr<GPUBlock> get_gpu_memory() const { return _gpu_memory; }
 
     bool gpu_is_expired() const { return _gpu_memory.expired(); }
+
+    void set_gpu_memory(std::shared_ptr<GPUBlock> const &other) const {
+        _gpu_memory = other;
+    }
 #endif
 
   private:

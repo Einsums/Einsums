@@ -23,8 +23,10 @@
 #include <H5Ppublic.h>
 #include <H5Spublic.h>
 #include <H5Tpublic.h>
+#include <cstdio>
 #include <mutex>
 #include <source_location>
+#include <stdexcept>
 #include <string>
 
 namespace einsums {
@@ -68,17 +70,101 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     /**
      * Default copy constructor.
      */
-    DiskTensor(DiskTensor const &) = default;
+    DiskTensor(DiskTensor const &other) : _file{other._file}, _name{other.name()}, _dims{other.dims()}, _size{other.size()} {
+        _dataspace = H5Scopy(other._dataspace);
+
+        if constexpr (std::is_same_v<T, float>) {
+            _data_type = H5T_NATIVE_FLOAT;
+        } else if constexpr (std::is_same_v<T, double>) {
+            _data_type = H5T_NATIVE_DOUBLE;
+        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
+        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
+        }
+        _existed = false;
+
+        _creation_props = H5Pcopy(other._creation_props);
+
+        if (_name.size() == 0) {
+            // Create temporary names.
+            char temp_name1[L_tmpnam + 1], temp_name2[L_tmpnam + 1];
+
+            std::memset(temp_name1, 0, L_tmpnam + 1);
+            std::memset(temp_name2, 0, L_tmpnam + 1);
+
+            std::tmpnam(temp_name1);
+            std::tmpnam(temp_name2);
+
+            auto temp_name1_str = std::string(temp_name1);
+            auto temp_name2_str = std::string(temp_name2);
+
+            std::filesystem::path temp_path1(std::move(temp_name1_str)), temp_path2(std::move(temp_name2_str));
+
+            auto new_temp1 = fmt::format("/tmp/{}", temp_path1.filename()), new_temp2 = fmt::format("/tmp/{}", temp_path2.filename());
+
+            // Link the temporary dataset into a temporary location.
+            auto err = H5Olink(other._dataset, _file, new_temp1.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list,
+                               H5P_DEFAULT);
+
+            if (err < 0) {
+                H5Sclose(_dataspace);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not link anonymous tensor into file for copying!");
+            }
+
+            H5Dflush(other._dataset);
+
+            // Copy.
+            err = H5Ocopy(_file, new_temp1.c_str(), _file, new_temp2.c_str(), _creation_props,
+                          detail::Einsums_Tensor_vars::get_singleton().link_property_list);
+            if (err < 0) {
+                H5Ldelete(_file, new_temp1.c_str(), H5P_DEFAULT);
+                H5Ldelete(_file, new_temp2.c_str(), H5P_DEFAULT);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Something went wrong when copying anonymous disk tensors!");
+            }
+
+            // Unlink the datasets so they are deleted from the file when the tensors are freed.
+            H5Ldelete(_file, new_temp1.c_str(), H5P_DEFAULT);
+            H5Ldelete(_file, new_temp2.c_str(), H5P_DEFAULT);
+        } else {
+            // Create temporary name.
+            char temp_name[L_tmpnam + 1];
+
+            std::memset(temp_name, 0, L_tmpnam + 1);
+
+            std::tmpnam(temp_name);
+
+            auto temp_name_str = std::string(temp_name);
+
+            std::filesystem::path temp_path(std::move(temp_name_str));
+
+            auto new_temp = fmt::format("/tmp/{}", temp_path.filename());
+
+            H5Dflush(other._dataset);
+
+            // Copy.
+            auto err = H5Ocopy(_file, other.name().c_str(), _file, new_temp.c_str(), _creation_props,
+                               detail::Einsums_Tensor_vars::get_singleton().link_property_list);
+            if (err < 0) {
+                H5Ldelete(_file, new_temp.c_str(), H5P_DEFAULT);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Something went wrong when copying disk tensors!");
+            }
+
+            // Unlink the datasets so they are deleted from the file when the tensors are freed.
+            H5Ldelete(_file, new_temp.c_str(), H5P_DEFAULT);
+        }
+    }
 
     /**
      * Default move constructor.
      */
-    DiskTensor(DiskTensor &&) noexcept = default;
+    DiskTensor(DiskTensor &&) {}
 
     /**
      * Default destructor.
      */
     ~DiskTensor() {
+
         if (_dataset != H5I_INVALID_HID) {
             H5Dclose(_dataset);
         }
@@ -179,8 +265,12 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
                 }
             }
 
-            _dataset = H5Dcreate(_file, _name.c_str(), _data_type, _dataspace,
-                                 detail::Einsums_Tensor_vars::get_singleton().link_property_list, _creation_props, H5P_DEFAULT);
+            if (_name.size() > 0) {
+                _dataset = H5Dcreate(_file, _name.c_str(), _data_type, _dataspace,
+                                     detail::Einsums_Tensor_vars::get_singleton().link_property_list, _creation_props, H5P_DEFAULT);
+            } else {
+                _dataset = H5Dcreate_anon(_file, _data_type, _dataspace, _creation_props, H5P_DEFAULT);
+            }
         }
 
         if (_dataset == H5I_INVALID_HID) {
@@ -255,8 +345,25 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
     /**
      * Set the name of the tensor.
+     *
+     * @versionchangeddesc{2.0.0}
+     *      When changing the name of a tensor, links are now moved within the file.
+     * @endversion
      */
-    void set_name(std::string const &new_name) { _name = new_name; }
+    void set_name(std::string const &new_name) {
+        herr_t err;
+        if (_name.size() == 0) {
+            err = H5Olink(_dataset, _file, new_name.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list, H5P_DEFAULT);
+        } else {
+            err = H5Lmove(_file, _name.c_str(), _file, new_name.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list,
+                          H5P_DEFAULT);
+        }
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Error when changing the name of a disk tensor! Could not create new link!");
+        }
+        _name = new_name;
+    }
 
     /**
      * Get the stride along a given axis.
@@ -461,18 +568,18 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     hid_t _file{H5I_INVALID_HID}, _dataspace{H5I_INVALID_HID}, _dataset{H5I_INVALID_HID}, _data_type{H5I_INVALID_HID},
         _creation_props{H5I_INVALID_HID};
 
-    /** @var _existed
-     *
-     * Did the entry already exist on disk? Doesn't indicate validity of the data just the existence of the entry.
-     */
-    bool _existed{false};
-
     /**
      * @var _size
      *
      * Holds the size of the tensor.
      */
     size_t _size;
+
+    /** @var _existed
+     *
+     * Did the entry already exist on disk? Doesn't indicate validity of the data just the existence of the entry.
+     */
+    bool _existed{false};
 };
 
 /**
