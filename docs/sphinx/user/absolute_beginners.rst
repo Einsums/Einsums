@@ -55,7 +55,7 @@ Then in your main.cpp you can have something like
 
 .. code-block:: c++
 
-    #include <Einsums/Tensor/Tensor.hpp> // Provides Tensor
+    #include <Einsums/Tensor.hpp> // Provides Tensor
 
     int main() {
 
@@ -91,9 +91,29 @@ Setting up a program
 ====================
 
 To create a program using Einsums, you must initialize the library before you do anything with Einsums,
-and finalize it after you finish using Einsums. Make sure you wrap your code in OpenMP directives,
+and finalize it after you finish using Einsums.
+
+.. code:: C++
+    #include <Einsums/Runtime.hpp>
+
+    namespace einsums {
+    int main() {
+        // Your code here.
+
+        finalize();
+        return EXIT_SUCCESS;
+    }
+    } // end namespace einsums
+
+    int main(int argc, char **argv) {
+        // This call takes responsibility of initializing Einsums and then calling
+        // your passed main function.
+        return einsums::start(einsums::main, argc, argv);
+    }
+
+Alternatively, you can do things manually. Make sure you wrap your code in OpenMP directives,
 otherwise the threading environment won't be set up properly and you will notice a significant
-slow down as each call will need to set it up again.
+slow down as each call will need to set it up again.:
 
 .. code:: C++
 
@@ -112,6 +132,7 @@ slow down as each call will need to set it up again.
         return 0; // This needs to be outside. You can't return from within a parallel block.
     }
 
+
 How to create a Tensor
 ======================
 
@@ -123,33 +144,22 @@ dimensionality of each index.
 
 .. code:: C++
 
-    #include <Einsums/Tensor/Tensor.hpp>
-
-    int main(int, char**) {
-        auto A = einsums::Tensor{"A", 2, 2};  // --> einsums::Tensor<2, double>
-
-        return 0;
-    }
+    auto A = einsums::Tensor{"A", 2, 2};  // --> einsums::Tensor<2, double>
 
 In this example, we are using the C++ ``auto`` to simplify the type signature. We can
 write the data type explicitly if we want to.
 
 .. code:: C++
 
-    #include <Einsums/Tensor/Tensor.hpp>
+    // Full explicit data type
+    einsums::Tensor<2, double> A = einsums::Tensor{"A", 2, 2};
 
-    int main(int, char**) {
-        // Full explicit data type
-        einsums::Tensor<2, double> A = einsums::Tensor{"A", 2, 2};
+    // The default underlying type of a tensor is `double`
+    einsums::Tensor<2> B = einsums::Tensor{"B", 2, 2};
 
-        // The default underlying type of a tensor is `double`
-        einsums::Tensor<2> B = einsums::Tensor{"B", 2, 2};
+    // Allow the compiler to determine things.
+    auto C = einsums::Tensor{"C", 2, 2};
 
-        // Allow the compiler to determine things.
-        auto C = einsums::Tensor{"C", 2, 2};
-
-        return 0;
-    }
 
 Specifying your data type
 -------------------------
@@ -162,7 +172,6 @@ can explicitly specify which data type you want use.
     auto B = einsums::Tensor<float>{"B", 2, 2};
 
 Einsums also supports the use of complex numbers.
-
 
 .. code:: C++
 
@@ -353,8 +362,8 @@ and it permutes the input tensor, scales it, scales the output tensor, then adds
     // Copy B into C for testing.
     C = B;
 
-    tensor_algebra::permute(1, index::Indices{index::i, index::j, index::k}, &C,
-                          0.5, index::Indices{index::k, index::j, index::i}, A);
+    tensor_algebra::permute(1, Indices{index::i, index::j, index::k}, &C,
+                          0.5, Indices{index::k, index::j, index::i}, A);
 
     for(size_t i = 0; i <5; i++) {
         for(size_t j = 0; j < 4; j++) {
@@ -411,9 +420,9 @@ Here's an example for something like :math:`C_{ijk} = A_{ik}B_{kj}`.
     auto B = create_random_tensor("B", 10, 10);
     auto C = create_random_tensor("C", 10, 10, 10);
 
-    tensor_algebra::einsum(index::Indices{index::i, index::j, index::k}, &C, 
-                           index::Indices{index::i, index::k}, A,
-                           index::Indices{index::k, index::j}, B);
+    tensor_algebra::einsum(Indices{index::i, index::j, index::k}, &C, 
+                           Indices{index::i, index::k}, A,
+                           Indices{index::k, index::j}, B);
 
 If we do something that can become a BLAS call, then it will normally become a BLAS call. Currently, index permutations are not
 performed, so calls can only be optimized when the indices exactly match the pattern for a BLAS call. This will change in the future,
@@ -430,12 +439,12 @@ as permuting indices can seriously improve performance.
     // This will optimize to a dot product BLAS call. When the output should be
     // a zero-rank tensor, a scalar may be used in its place.
     // That way, you don't have to deal with a zero-rank tensor.
-    tensor_algebra::einsum(index::Indices{}, &val, 
-        index::Indices{index::i, index::j}, A,
-        index::Indices{index::i, index::j}, B);
+    tensor_algebra::einsum(Indices{}, &val, 
+        Indices{index::i, index::j}, A,
+        Indices{index::i, index::j}, B);
 
     // This will not optimize to a BLAS call,
     // since Einsums can't currently permute indices.
-    tensor_algebra::einsum(index::Indices{}, &val, 
-        index::Indices{index::i, index::j}, A,
-        index::Indices{index::j, index::i}, B);
+    tensor_algebra::einsum(Indices{}, &val, 
+        Indices{index::i, index::j}, A,
+        Indices{index::j, index::i}, B);

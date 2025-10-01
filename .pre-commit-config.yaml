@@ -6,7 +6,8 @@ repos:
         name: Ensure CMake files are formatted correctly
         files: (CMakeLists.txt|.*\.cmake)$
         exclude: (.*cmake-build-.*|.*build/.*)
-        additional_dependencies: [cmake-format==0.6.10]
+        additional_dependencies: [ cmake-format==0.6.10 ]
+        args: [ "-c", ".cmake-format.py" ]
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v16.0.6
@@ -15,7 +16,7 @@ repos:
         name: Ensure C++ files are formatted correctly
         files: \.(cpp|hpp)$
         exclude: (.*cmake-build-.*|.*build/.*)
-        args: [--style=file]
+        args: [ --style=file ]
 
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.5.4

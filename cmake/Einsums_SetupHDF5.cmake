@@ -1,3 +1,8 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
 # * v1.10.4-6-EAT6 on EAT branch is upstream v1.10.4-6 tag +2, so last upstream tag
 #   plus extended array dimensions to support higher rank tensors plus deleter stuff.
 #   * v1.10.4-6+3 Oct 2023 redirect aligned_alloc to omp_aligned_alloc

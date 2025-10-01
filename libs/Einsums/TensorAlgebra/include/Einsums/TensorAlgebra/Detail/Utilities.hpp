@@ -14,7 +14,7 @@
 #include <tuple>
 
 #ifdef I
-#undef I
+#    undef I
 #endif
 
 namespace einsums::tensor_algebra {
@@ -397,7 +397,7 @@ constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, XType con
 #ifdef EINSUMS_COMPUTE_CODE
 template <DeviceTensorConcept XType, typename... PositionsInX>
 constexpr auto last_stride(std::tuple<PositionsInX...> const &indices, XType const &X) -> size_t {
-        return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
+    return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
 }
 #endif
 

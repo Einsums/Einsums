@@ -69,11 +69,10 @@ void scale_column(int col, pybind11::object factor, pybind11::buffer &A) {
         EINSUMS_THROW_EXCEPTION(rank_error, "Can only scale columns of a matrix!");
     }
 
-    EINSUMS_PY_LINALG_CALL(A_info.item_type_is_equivalent_to<Float>(),
-                           [&]() {
-                               auto A_tens = buffer_to_tensor<Float>(A);
-                               einsums::linear_algebra::detail::scale_column(col, factor.cast<Float>(), &A_tens);
-                           }())
+    EINSUMS_PY_LINALG_CALL(A_info.item_type_is_equivalent_to<Float>(), [&]() {
+        auto A_tens = buffer_to_tensor<Float>(A);
+        einsums::linear_algebra::detail::scale_column(col, factor.cast<Float>(), &A_tens);
+    }())
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only scale matrices of real or complex floating point values!");
     }

@@ -16,7 +16,7 @@ Einsums's Documentation
 
    User Guide <user/index>
    Building from source <building/index>
-   Devolpers' Guide </libs/overview>
+   Developers' Guide </libs/overview>
    Changelog <changelogs/index>
 
 **Version**: |release|

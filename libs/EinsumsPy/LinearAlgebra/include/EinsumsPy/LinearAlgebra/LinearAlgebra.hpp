@@ -63,7 +63,8 @@ pybind11::object EINSUMS_EXPORT norm(einsums::linear_algebra::Norm type, pybind1
 
 pybind11::object EINSUMS_EXPORT vec_norm(pybind11::buffer const &A);
 
-pybind11::tuple EINSUMS_EXPORT svd(pybind11::buffer const &A, einsums::linear_algebra::Vectors jobu, einsums::linear_algebra::Vectors jobvt);
+pybind11::tuple EINSUMS_EXPORT svd(pybind11::buffer const &A, einsums::linear_algebra::Vectors jobu,
+                                   einsums::linear_algebra::Vectors jobvt);
 
 pybind11::object EINSUMS_EXPORT svd_nullspace(pybind11::buffer const &A);
 
