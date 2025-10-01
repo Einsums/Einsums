@@ -256,6 +256,15 @@ struct GPUAllocator {
             return 0;
         }
     }
+
+    [[nodiscard]] size_type work_size() const {
+        try {
+            return detail::Einsums_GPUMemory_vars::get_singleton().get_work_size() / type_size;
+
+        } catch (std::runtime_error &) {
+            return 2147483648;
+        }
+    }
 };
 
 } // namespace gpu

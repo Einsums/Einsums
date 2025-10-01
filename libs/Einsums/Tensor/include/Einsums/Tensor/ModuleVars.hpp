@@ -7,11 +7,13 @@
 
 #include <Einsums/Config.hpp>
 
+
 #include <Einsums/Tensor/InitModule.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/TypeSupport/Singleton.hpp>
 
 #include <H5Ipublic.h>
+#include <atomic>
 
 namespace einsums {
 namespace detail {
@@ -28,6 +30,9 @@ class EINSUMS_EXPORT Einsums_Tensor_vars final : public design_pats::Lockable<st
 
     hid_t double_complex_type;
     hid_t float_complex_type;
+
+    // Used for making temporary disk tensors.
+    std::atomic_int64_t volatile temp_counter;
 
   private:
     explicit Einsums_Tensor_vars() = default;
