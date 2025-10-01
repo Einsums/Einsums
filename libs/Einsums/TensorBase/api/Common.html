@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 18, 2025"/>
+    <meta name="docbuild:last-update" content="Oct 01, 2025"/>
   </head>
   
   
@@ -153,7 +153,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../overview.html">
-    Devolpers' Guide
+    Developers' Guide
   </a>
 </li>
 
@@ -246,7 +246,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../overview.html">
-    Devolpers' Guide
+    Developers' Guide
   </a>
 </li>
 
@@ -280,8 +280,8 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="HashFunctions.html">Einsums/TensorBase/HashFunctions.hpp</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TensorBase/Common.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="IndexUtilities.html">Einsums/TensorBase/IndexUtilities.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="TensorBase.html">Einsums/TensorBase/TensorBase.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IndexUtilities.html">Einsums/TensorBase/IndexUtilities.hpp</a></li>
 </ul>
 </div>
 </nav></div>
@@ -362,7 +362,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000006"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000004"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -605,10 +605,9 @@
 <span class="n">EINSUMS_ASSERT</span><span class="p">(</span><span class="n">A_view_4</span><span class="p">.</span><span class="n">rank</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>In the first three examples, the <a class="reference internal" href="#structeinsums_1_1_removable_range"><span class="std std-ref">RemovableRange</span></a> is not really needed. It can be replaced with a single value index. However, in the fourth example, we can’t use a single value because the vector can only hold ranges. Since <a class="reference internal" href="#structeinsums_1_1_removable_range"><span class="std std-ref">RemovableRange</span></a> extends <a class="reference internal" href="#structeinsums_1_1_range"><span class="std std-ref">Range</span></a>, we can use it in this vector where it will be treated as if it were a single index. If the elements in the range are not the same, such as <code class="docutils literal notranslate"><a class="reference internal" href="#structeinsums_1_1_removable_range"><span class="std std-ref"><span class="pre">RemovableRange</span></span></a><span class="pre">{0,</span> <span class="pre">1}</span></code>, then it behaves exactly the same as a regular <a class="reference internal" href="#structeinsums_1_1_range"><span class="std std-ref">Range</span></a>. The removable part is a hint to the functions that look for them that they can be removed if needed. <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="err">\</span><span class="n">verbatim</span><span class="w"> </span><span class="n">embed</span><span class="o">:</span><span class="n">rst</span><span class="w"> </span>
-<span class="w"> </span><span class="p">..</span><span class="w"> </span><span class="n">versionadded</span><span class="o">::</span><span class="w"> </span><span class="mf">2.0.0</span><span class="w"> </span>
-<span class="w"> </span><span class="err">\</span><span class="n">endverbatim</span>
-</pre></div>
+<p>In the first three examples, the <a class="reference internal" href="#structeinsums_1_1_removable_range"><span class="std std-ref">RemovableRange</span></a> is not really needed. It can be replaced with a single value index. However, in the fourth example, we can’t use a single value because the vector can only hold ranges. Since <a class="reference internal" href="#structeinsums_1_1_removable_range"><span class="std std-ref">RemovableRange</span></a> extends <a class="reference internal" href="#structeinsums_1_1_range"><span class="std std-ref">Range</span></a>, we can use it in this vector where it will be treated as if it were a single index. If the elements in the range are not the same, such as <code class="docutils literal notranslate"><a class="reference internal" href="#structeinsums_1_1_removable_range"><span class="std std-ref"><span class="pre">RemovableRange</span></span></a><span class="pre">{0,</span> <span class="pre">1}</span></code>, then it behaves exactly the same as a regular <a class="reference internal" href="#structeinsums_1_1_range"><span class="std std-ref">Range</span></a>. The removable part is a hint to the functions that look for them that they can be removed if needed.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
 </div>
 </p>
 <div class="breathe-sectiondef docutils container">

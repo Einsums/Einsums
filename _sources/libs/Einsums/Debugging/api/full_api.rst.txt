@@ -18,5 +18,5 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 .. toctree::
    :maxdepth: 1
 
-   /libs/Einsums/Debugging/api/AttachDebugger.rst
    /libs/Einsums/Debugging/api/Backtrace.rst
+   /libs/Einsums/Debugging/api/AttachDebugger.rst

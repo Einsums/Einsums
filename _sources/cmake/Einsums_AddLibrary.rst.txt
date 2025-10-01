@@ -1,0 +1,135 @@
+.. _cmake_Einsums_AddLibrary:
+
+Einsums_AddLibrary
+==================
+
+
+.. cmake:command:: einsums_add_library
+
+   Define an Einsums library target (SHARED/STATIC/OBJECT) with project‑standard setup.
+
+   A convenience wrapper around :cmake:command:`add_library` that normalizes sources/headers,
+   applies GPU language tweaks for HIP/NVHPC, configures output directories (optionally with a
+   suffix), and then delegates policy‑specific wiring to :cmake:command:`einsums_setup_target`.
+
+   **Signature**
+   ``einsums_add_library(<name>
+       [EXCLUDE_FROM_ALL]
+       [INTERNAL_FLAGS]
+       [NOLIBS]
+       [NOEXPORT]
+       [STATIC]
+       [OBJECT]
+       [NONAMEPREFIX]
+       [UNITY_BUILD]
+       [FOLDER <ide-folder>]
+       [SOURCE_ROOT <dir>] [HEADER_ROOT <dir>]
+       [SOURCE_GLOB <pattern>] [HEADER_GLOB <pattern>]
+       [OUTPUT_SUFFIX <subdir>]
+       [INSTALL_SUFFIX <dir>]
+       [SOURCES <...>] [HEADERS <...>] [AUXILIARY <...>]
+       [DEPENDENCIES <targets...>]
+       [COMPILER_FLAGS <...>] [LINK_FLAGS <...>]
+   )``
+
+   **Positional**
+   - ``name`` *(required)*: Target name.
+
+   **Boolean options**
+   - ``EXCLUDE_FROM_ALL``: Create the target but omit it from the default build.
+   - ``INTERNAL_FLAGS``: Forward a project‑internal flag to :cmake:command:`einsums_setup_target`.
+   - ``NOLIBS``: Forward to `einsums_setup_target` to avoid linking default Einsums libs.
+   - ``NOEXPORT``: Suppress export setup (if omitted, export is enabled).
+   - ``STATIC``: Build as a static library.
+   - ``OBJECT``: Build as an object library.
+   - ``NONAMEPREFIX``: (Reserved) Request no name prefix (toolchain‑specific).
+   - ``UNITY_BUILD``: Opt into unity builds via `einsums_setup_target`.
+
+   **One‑value keywords**
+   - ``FOLDER``: IDE grouping (e.g., “Libs/Core”).
+   - ``SOURCE_ROOT`` / ``HEADER_ROOT``: Roots for source grouping (default ``"."``).
+   - ``SOURCE_GLOB`` / ``HEADER_GLOB``: (Reserved) Glob patterns (expansion handled upstream).
+   - ``OUTPUT_SUFFIX``: Extra subdirectory under runtime/lib/archive output dirs.
+   - ``INSTALL_SUFFIX``: Override install destination directory (lib/bin); prepared internally.
+
+   **Multi‑value keywords**
+   - ``SOURCES``: Source files.
+   - ``HEADERS``: Header files (for IDE visibility).
+   - ``AUXILIARY``: Extra files to attach to the target.
+   - ``DEPENDENCIES``: Link/usage dependencies.
+   - ``COMPILER_FLAGS``: Extra compile options (forwarded).
+   - ``LINK_FLAGS``: Extra link options (forwarded).
+
+   **Behavior**
+   1. Validates that ``STATIC`` and ``OBJECT`` are **not** both set; errors if so.
+   2. Defaults ``SOURCE_ROOT``/``HEADER_ROOT`` to ``"."`` and logs inputs.
+   3. Normalizes source lists via :cmake:command:`einsums_add_library_sources_noglob` and groups
+      files with :cmake:command:`einsums_add_source_group`.
+   4. **GPU source handling**
+      - If :cmake:variable:`EINSUMS_WITH_HIP` is ON, ``.cu`` sources are marked ``LANGUAGE HIP``.
+      - With NVHPC, ``.cu`` sources receive compiler‑specific CUDA flags via
+        :cmake:command:`einsums_add_nvhpc_cuda_flags`.
+   5. Chooses link type: ``STATIC`` → static, ``OBJECT`` → object, otherwise **shared**.
+   6. Invokes :cmake:command:`add_library` with the chosen type, optional
+      ``EXCLUDE_FROM_ALL``, and the collected sources/headers/aux files.
+   7. **Output directories** — If ``OUTPUT_SUFFIX`` is set, adjusts
+      ``RUNTIME/LIBRARY/ARCHIVE_OUTPUT_DIRECTORY`` (per‑config on MSVC; single‑config otherwise)
+      under ``${EINSUMS_WITH_BINARY_DIR}``.
+   8. Accumulates target policy flags (``NOLIBS``, export on by default unless ``NOEXPORT``,
+      ``INTERNAL_FLAGS``, ``UNITY_BUILD``) and calls:
+      ::
+         einsums_setup_target(
+           <name>
+           TYPE LIBRARY
+           NAME <name>
+           FOLDER <...>
+           COMPILE_FLAGS <...>
+           LINK_FLAGS <...>
+           DEPENDENCIES <...>
+         )
+
+   **Notes**
+   - Installation destinations and certain flags (e.g., PDB install on MSVC, NONAMEPREFIX) are
+     prepared internally but must be honored by :cmake:command:`einsums_setup_target` (or other
+     project logic). If you expect install rules to be applied here, ensure
+     `einsums_setup_target` consumes these settings.
+   - When both ``STATIC`` and ``OBJECT`` are requested, the function aborts with a clear error.
+
+   **Examples**
+   Build a shared library with IDE grouping and deps:
+   .. code-block:: cmake
+
+      einsums_add_library(einsums_core
+        FOLDER "Libs/Core"
+        SOURCE_ROOT "${CMAKE_SOURCE_DIR}/src"
+        HEADER_ROOT "${CMAKE_SOURCE_DIR}/include"
+        SOURCES src/core/a.cpp src/core/b.cpp
+        HEADERS include/einsums/a.hpp include/einsums/b.hpp
+        DEPENDENCIES fmt::fmt
+      )
+
+   Static lib into a custom output tree, unity build:
+   .. code-block:: cmake
+
+      einsums_add_library(einsums_utils
+        STATIC
+        OUTPUT_SUFFIX "tools"
+        UNITY_BUILD
+        SOURCES src/utils/x.cpp src/utils/y.cpp
+      )
+
+   Object library with no default build and no export:
+   .. code-block:: cmake
+
+      einsums_add_library(einsums_objs
+        OBJECT
+        EXCLUDE_FROM_ALL
+        NOEXPORT
+        SOURCES src/lowlevel/part1.cpp src/lowlevel/part2.cpp
+      )
+
+   **See also**
+   - :cmake:command:`add_library`
+   - :cmake:command:`einsums_setup_target`
+   - :cmake:command:`einsums_add_library_sources_noglob`
+   - :cmake:command:`einsums_add_source_group`

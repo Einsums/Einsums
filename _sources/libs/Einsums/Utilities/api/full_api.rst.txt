@@ -19,6 +19,6 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
    :maxdepth: 1
 
    /libs/Einsums/Utilities/api/Tuple.rst
-   /libs/Einsums/Utilities/api/InitModule.rst
    /libs/Einsums/Utilities/api/Random.rst
+   /libs/Einsums/Utilities/api/InitModule.rst
    /libs/Einsums/Utilities/api/InCollection.rst

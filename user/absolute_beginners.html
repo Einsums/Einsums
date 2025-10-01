@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Sep 18, 2025"/>
+    <meta name="docbuild:last-update" content="Oct 01, 2025"/>
   </head>
   
   
@@ -156,7 +156,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../libs/overview.html">
-    Devolpers' Guide
+    Developers' Guide
   </a>
 </li>
 
@@ -249,7 +249,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../libs/overview.html">
-    Devolpers' Guide
+    Developers' Guide
   </a>
 </li>
 
@@ -457,7 +457,7 @@ If you are using CMake use can use the <code class="code docutils literal notran
 add_executable(sample main.cpp)
 target_link_libraries(samples Einsums::Einsums)</pre>
 <p>Then in your main.cpp you can have something like</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Tensor/Tensor.hpp&gt;</span><span class="c1"> // Provides Tensor</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Tensor.hpp&gt;</span><span class="c1"> // Provides Tensor</span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 
@@ -490,9 +490,10 @@ if types or pasted into your code.</p>
 <section id="setting-up-a-program">
 <h2>Setting up a program<a class="headerlink" href="#setting-up-a-program" title="Link to this heading">#</a></h2>
 <p>To create a program using Einsums, you must initialize the library before you do anything with Einsums,
-and finalize it after you finish using Einsums. Make sure you wrap your code in OpenMP directives,
+and finalize it after you finish using Einsums.</p>
+<p>Alternatively, you can do things manually. Make sure you wrap your code in OpenMP directives,
 otherwise the threading environment won’t be set up properly and you will notice a significant
-slow down as each call will need to set it up again.</p>
+slow down as each call will need to set it up again.:</p>
 <div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma omp parallel</span>
 <span class="p">{</span>
@@ -516,31 +517,19 @@ slow down as each call will need to set it up again.</p>
 <a class="reference internal" href="../libs/Einsums/Tensor/docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">Tensor</span></code></a>.</p>
 <p>All you need to do to create a basic tensor is pass a name for the tensor and the
 dimensionality of each index.</p>
-<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Tensor/Tensor.hpp&gt;</span>
-
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="p">{</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span><span class="w">  </span><span class="c1">// --&gt; einsums::Tensor&lt;2, double&gt;</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="p">{</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span><span class="w">  </span><span class="c1">// --&gt; einsums::Tensor&lt;2, double&gt;</span>
 </pre></div>
 </div>
 <p>In this example, we are using the C++ <code class="docutils literal notranslate"><span class="pre">auto</span></code> to simplify the type signature. We can
 write the data type explicitly if we want to.</p>
-<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Tensor/Tensor.hpp&gt;</span>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Full explicit data type</span>
+<span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="p">{</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="c1">// Full explicit data type</span>
-<span class="w">    </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="p">{</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
+<span class="c1">// The default underlying type of a tensor is `double`</span>
+<span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="p">{</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
 
-<span class="w">    </span><span class="c1">// The default underlying type of a tensor is `double`</span>
-<span class="w">    </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="p">{</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
-
-<span class="w">    </span><span class="c1">// Allow the compiler to determine things.</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="p">{</span><span class="s">&quot;C&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="c1">// Allow the compiler to determine things.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="p">{</span><span class="s">&quot;C&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
 </pre></div>
 </div>
 <section id="specifying-your-data-type">
@@ -718,8 +707,8 @@ and it permutes the input tensor, scales it, scales the output tensor, then adds
 <span class="c1">// Copy B into C for testing.</span>
 <span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">B</span><span class="p">;</span>
 
-<span class="n">tensor_algebra</span><span class="o">::</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">k</span><span class="p">},</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span>
-<span class="w">                      </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">},</span><span class="w"> </span><span class="n">A</span><span class="p">);</span>
+<span class="n">tensor_algebra</span><span class="o">::</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">k</span><span class="p">},</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span>
+<span class="w">                      </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">},</span><span class="w"> </span><span class="n">A</span><span class="p">);</span>
 
 <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -772,9 +761,9 @@ Here’s an example for something like <span class="math notranslate nohighlight
 <span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;C&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
 
-<span class="n">tensor_algebra</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">k</span><span class="p">},</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span>
-<span class="w">                       </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">k</span><span class="p">},</span><span class="w"> </span><span class="n">A</span><span class="p">,</span>
-<span class="w">                       </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">},</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+<span class="n">tensor_algebra</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">k</span><span class="p">},</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">k</span><span class="p">},</span><span class="w"> </span><span class="n">A</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">},</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>If we do something that can become a BLAS call, then it will normally become a BLAS call. Currently, index permutations are not
@@ -789,15 +778,15 @@ as permuting indices can seriously improve performance.</p>
 <span class="c1">// This will optimize to a dot product BLAS call. When the output should be</span>
 <span class="c1">// a zero-rank tensor, a scalar may be used in its place.</span>
 <span class="c1">// That way, you don&#39;t have to deal with a zero-rank tensor.</span>
-<span class="n">tensor_algebra</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{},</span><span class="w"> </span><span class="o">&amp;</span><span class="n">val</span><span class="p">,</span>
-<span class="w">    </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">},</span><span class="w"> </span><span class="n">A</span><span class="p">,</span>
-<span class="w">    </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">},</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+<span class="n">tensor_algebra</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="n">Indices</span><span class="p">{},</span><span class="w"> </span><span class="o">&amp;</span><span class="n">val</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">},</span><span class="w"> </span><span class="n">A</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">},</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
 
 <span class="c1">// This will not optimize to a BLAS call,</span>
 <span class="c1">// since Einsums can&#39;t currently permute indices.</span>
-<span class="n">tensor_algebra</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{},</span><span class="w"> </span><span class="o">&amp;</span><span class="n">val</span><span class="p">,</span>
-<span class="w">    </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">},</span><span class="w"> </span><span class="n">A</span><span class="p">,</span>
-<span class="w">    </span><span class="n">index</span><span class="o">::</span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">},</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+<span class="n">tensor_algebra</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="n">Indices</span><span class="p">{},</span><span class="w"> </span><span class="o">&amp;</span><span class="n">val</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">},</span><span class="w"> </span><span class="n">A</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Indices</span><span class="p">{</span><span class="n">index</span><span class="o">::</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">::</span><span class="n">i</span><span class="p">},</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
