@@ -41,8 +41,9 @@ void test_syev() {
 
     auto check = VectorData<double>{-0.73697623, 0.59100905, -0.32798528, -0.32798528, -0.73697623,
                                     -0.59100905, 0.59100905, 0.32798528,  -0.73697623};
-    
-    T sign1 = std::copysign(T{1.0}, A(0, 0) / check[0]), sign2 = std::copysign(T{1.0}, A(0, 1) / check[1]), sign3 = std::copysign(T{1.0}, A(0, 2) / check[2]);
+
+    T sign1 = std::copysign(T{1.0}, A(0, 0) / check[0]), sign2 = std::copysign(T{1.0}, A(0, 1) / check[1]),
+      sign3 = std::copysign(T{1.0}, A(0, 2) / check[2]);
 
     CHECK_THAT(A(0, 0) * sign1, Catch::Matchers::WithinRel(check[0], 0.00001));
     CHECK_THAT(A(0, 1) * sign2, Catch::Matchers::WithinRel(check[1], 0.00001));
@@ -82,8 +83,9 @@ void test_strided_syev() {
 
     auto check = VectorData<double>{-0.73697623, 0.59100905, -0.32798528, -0.32798528, -0.73697623,
                                     -0.59100905, 0.59100905, 0.32798528,  -0.73697623};
-    
-    T sign1 = std::copysign(T{1.0}, A(0, 0) / check[0]), sign2 = std::copysign(T{1.0}, A(0, 1) / check[1]), sign3 = std::copysign(T{1.0}, A(0, 2) / check[2]);
+
+    T sign1 = std::copysign(T{1.0}, A(0, 0) / check[0]), sign2 = std::copysign(T{1.0}, A(0, 1) / check[1]),
+      sign3 = std::copysign(T{1.0}, A(0, 2) / check[2]);
 
     CHECK_THAT(A(0, 0) * sign1, Catch::Matchers::WithinRel(check[0], 0.00001));
     CHECK_THAT(A(0, 1) * sign2, Catch::Matchers::WithinRel(check[1], 0.00001));

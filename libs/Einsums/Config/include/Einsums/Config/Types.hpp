@@ -575,16 +575,12 @@ class EINSUMS_EXPORT GlobalConfigMap {
 };
 
 struct GlobalConfigMapLockScope {
-    GlobalConfigMapLockScope() : _singleton(GlobalConfigMap::get_singleton()){
-        _singleton.lock();
-    }
+    GlobalConfigMapLockScope() : _singleton(GlobalConfigMap::get_singleton()) { _singleton.lock(); }
 
-    ~GlobalConfigMapLockScope() {
-        _singleton.unlock();
-    }
+    ~GlobalConfigMapLockScope() { _singleton.unlock(); }
 
-private:
-    GlobalConfigMap& _singleton;
+  private:
+    GlobalConfigMap &_singleton;
 };
 
 } // namespace einsums

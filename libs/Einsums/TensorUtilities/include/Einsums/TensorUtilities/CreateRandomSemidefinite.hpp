@@ -43,7 +43,7 @@ auto create_random_semidefinite(std::string const &name, int rows, int cols, Rem
     }
     Tensor<T, 2> Evecs("name", rows, cols);
 
-    Tensor<T, 2>             Temp = Evecs;
+    Tensor<T, 2>              Temp = Evecs;
     BufferVector<blas::int_t> pivs;
 
     // Make sure the eigenvectors are non-singular.

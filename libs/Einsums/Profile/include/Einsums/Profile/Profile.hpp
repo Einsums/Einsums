@@ -181,7 +181,6 @@ struct EINSUMS_EXPORT Profiler {
             cur->total_exclusive += exclusive;
 
             int64_t const delta = exclusive.count() - cur->total_exclusive_mean;
-            println("function {} delta {} exclusive {} total mean {}", cur->function, delta, exclusive, cur->total_exclusive_mean);
             cur->total_exclusive_mean += delta / int64_t(cur->call_count);
             int64_t const delta2 = exclusive.count() - cur->total_exclusive_mean;
             cur->total_exclusive_M2 += delta * delta2;

@@ -8,8 +8,8 @@
 #include <Einsums/Tensor/InitModule.hpp>
 #include <Einsums/Tensor/ModuleVars.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
-#include <H5Tpublic.h>
 
+#include <H5Tpublic.h>
 #include <algorithm>
 #include <filesystem>
 #include <stdexcept>

@@ -158,8 +158,9 @@ static void compute_diis_coefs(std::vector<einsums::BlockTensor<double, 2>> cons
 
     if (info < 0) {
         EINSUMS_THROW_EXCEPTION(std::runtime_error, "The {} parameter to gesv was invalid!", einsums::print::ordinal(-info));
-    } else if(info > 0) {
-        EINSUMS_THROW_EXCEPTION(std::runtime_error, "The {} diagonal element went to zero when solving the system!", einsums::print::ordinal(info));
+    } else if (info > 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "The {} diagonal element went to zero when solving the system!",
+                                einsums::print::ordinal(info));
     }
 
     out->resize(errors.size());

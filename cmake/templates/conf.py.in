@@ -55,6 +55,7 @@ extensions = [
     'sphinx_design',
     'sphinx-einsums',  # Custom Einsums roles
     'sphinx_copybutton',
+    'moderncmakedomain',
 ]
 
 # breathe_projects = {"Einsums": os.path.join('..', 'doxygen', 'xml')}
@@ -249,6 +250,9 @@ for lib in einsums_libs.keys():
 with open(os.path.abspath('.') + '/api/full_api.rst', 'w') as api_rst, open(f"{einsums_source_dir}/docs/sphinx/api/full_api.rst", "r") as lines :
     for line in lines:
         api_rst.write(line.format(api_refs))
+
+from gen_cmake_docs import generate
+generate(einsums_source_dir + "/cmake", os.path.abspath('.') + '/cmake')
 
 # breathe_default_project = "Einsums"
 

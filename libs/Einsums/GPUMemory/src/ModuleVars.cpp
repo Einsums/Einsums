@@ -4,8 +4,8 @@
 //----------------------------------------------------------------------------------------------
 
 #include <Einsums/Config/CompilerSpecific.hpp>
-#include <Einsums/GPUMemory/ModuleVars.hpp>
 #include <Einsums/Errors/Error.hpp>
+#include <Einsums/GPUMemory/ModuleVars.hpp>
 #include <Einsums/Logging.hpp>
 
 namespace einsums::gpu::detail {
@@ -19,7 +19,7 @@ void Einsums_GPUMemory_vars::update_max_size(config_mapping_type<std::string> co
 
     singleton.max_size_ = string_util::memory_string(value);
 
-    if(singleton.max_size_ == 0) {
+    if (singleton.max_size_ == 0) {
         hip_catch(hipDeviceGetLimit(&singleton.max_size_, hipLimitMallocHeapSize));
     }
 
