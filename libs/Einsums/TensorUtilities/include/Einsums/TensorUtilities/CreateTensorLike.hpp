@@ -28,10 +28,9 @@ namespace einsums {
  *
  * @versionadded{1.0.0}
  */
-template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
-    requires CoreRankBasicTensor<TensorType<DataType, Rank>, Rank, DataType>
-auto create_tensor_like(TensorType<DataType, Rank> const &t) -> Tensor<DataType, Rank> {
-    auto result = Tensor<DataType, Rank>{t.dims()};
+template <CoreBasicTensorConcept TensorType>
+auto create_tensor_like(TensorType const &t) -> Tensor<typename TensorType::ValueType, TensorType::Rank> {
+    auto result = Tensor<typename TensorType::ValueType, TensorType::Rank>{t.dims()};
     result.set_name(t.name());
     return result;
     // return Tensor<DataType, Rank>{t.name(), t.dims()};
@@ -123,10 +122,9 @@ auto create_tensor_like(TensorType<DataType, Rank> const &tensor, einsums::detai
  *
  * @versionadded{1.0.0}
  */
-template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
-    requires CoreRankBasicTensor<TensorType<DataType, Rank>, Rank, DataType>
-auto create_tensor_like(std::string const name, TensorType<DataType, Rank> const &t) -> Tensor<DataType, Rank> {
-    auto result = Tensor<DataType, Rank>{t.dims()};
+template <CoreBasicTensorConcept TensorType>
+auto create_tensor_like(std::string const name, TensorType const &t) -> Tensor<typename TensorType::ValueType, TensorType::Rank> {
+    auto result = Tensor<typename TensorType::ValueType, TensorType::Rank>{t.dims()};
     result.set_name(name);
     return result;
 }

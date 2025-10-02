@@ -7,6 +7,8 @@
 
 #include <hip/hip_common.h>
 #include <hip/hip_complex.h>
+#include <hip/hip_runtime.h>
+#include <hip/hip_runtime_api.h>
 
 #if __has_include(<stdfloat>)
 #    include <stfloat>

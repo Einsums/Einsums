@@ -14,8 +14,8 @@ namespace einsums {
 
 #ifndef DOXYGEN
 // Forward declarations
-template <typename T, size_t Rank>
-struct Tensor;
+template <typename T, size_t Rank, typename Alloc>
+struct GeneralTensor;
 
 namespace disk {
 template <typename T, size_t Rank>
@@ -301,6 +301,24 @@ template <typename D, typename StoredType = void>
 constexpr inline bool IsBlockTensorV = requires {
     requires std::is_base_of_v<einsums::tensor_base::BlockTensorNoExtra, std::remove_cvref_t<D>>;
     requires std::is_void_v<StoredType> || std::is_same_v<typename std::remove_cvref_t<D>::StoredType, StoredType>;
+};
+
+/**
+ * @property IsBufferableTensorV
+ *
+ * @brief Checks to see if the tensor can be buffered.
+ *
+ * This is used for when a tensor does not store its data in-core, but its data can brought in-core.
+ * For instance, DiskTensors can have their data read into internal buffers, while FunctionTensors
+ * can have their values calculated and put into a buffer on the fly.
+ *
+ * @versionadded{2.0.0}
+ */
+template <typename D>
+constexpr inline bool IsBufferableTensorV = requires(D &d, D const &cd) {
+    requires IsTensorV<D>;
+    { d.get() };
+    { cd.get() };
 };
 
 #ifndef DOXYGEN
@@ -992,6 +1010,20 @@ template <typename D, typename StoredType = void>
 concept BlockTensorConcept = IsBlockTensorV<D, StoredType>;
 
 /**
+ * @concept BufferableTensorConcept
+ *
+ * @brief Checks to see if a tensor's data can be buffered.
+ *
+ * This checks for tensors that don't store their data in-core, but can have their data be brought in-core.
+ * For instance, DiskTensors can have their data read into an internal buffer for use, while a FunctionTensor
+ * can be evaluated at several points and the results put into a buffer.
+ *
+ * @versionadded{2.0.0}
+ */
+template <typename D>
+concept BufferableTensorConcept = IsBufferableTensorV<D>;
+
+/**
  * \concept FunctionTensorConcept
  *
  * @brief Checks to see if the tensor is a function tensor.
@@ -1430,8 +1462,8 @@ TensorType<NewT, NewRank> create_tensor_of_same_type(TensorType<T, Rank> const &
  * @versionadded{1.0.0}
  */
 template <typename NewT, size_t NewRank, CoreTensorConcept TensorType>
-Tensor<NewT, NewRank> create_basic_tensor_like(TensorType const &tensor) {
-    return Tensor<NewT, NewRank>();
+GeneralTensor<NewT, NewRank, std::allocator<NewT>> create_basic_tensor_like(TensorType const &tensor) {
+    return GeneralTensor<NewT, NewRank, std::allocator<NewT>>();
 }
 
 #ifndef DOXYGEN
