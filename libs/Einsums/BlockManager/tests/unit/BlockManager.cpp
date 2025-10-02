@@ -7,6 +7,8 @@
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
 
+#include <mutex>
+
 #include "Einsums/Config/Types.hpp"
 
 #include <Einsums/Testing.hpp>
@@ -15,7 +17,12 @@ TEST_CASE("Block manager") {
     using namespace einsums;
 
     // Set the max buffer size to 4MB.
-    GlobalConfigMap::get_singleton().set_string("buffer_size", "4MB");
+    {
+        auto &singleton = GlobalConfigMap::get_singleton();
+        auto  lock      = std::lock_guard(singleton);
+        singleton.set_string("gpu_buffer_size", "4MB");
+        singleton.set_string("buffer_size", "4MB");
+    }
 
     // Get the manager.
     auto &manager = BlockManager::get_singleton();
@@ -45,7 +52,12 @@ TEST_CASE("GPU Block manager") {
     using namespace einsums;
 
     // Set the max buffer size to 4MB.
-    GlobalConfigMap::get_singleton().set_string("gpu_buffer_size", "4MB");
+    {
+        auto &singleton = GlobalConfigMap::get_singleton();
+        auto  lock      = std::lock_guard(singleton);
+        singleton.set_string("gpu_buffer_size", "4MB");
+        singleton.set_string("buffer_size", "4MB");
+    }
 
     // Get the manager.
     auto &manager = BlockManager::get_singleton();
@@ -74,19 +86,23 @@ TEST_CASE("Mixed Block manager") {
     using namespace einsums;
 
     // Set the max buffer size to 4MB.
-    GlobalConfigMap::get_singleton().set_string("gpu_buffer_size", "4MB");
-    GlobalConfigMap::get_singleton().set_string("buffer_size", "4MB");
+    {
+        auto &singleton = GlobalConfigMap::get_singleton();
+        auto  lock      = std::lock_guard(singleton);
+        singleton.set_string("gpu_buffer_size", "4MB");
+        singleton.set_string("buffer_size", "4MB");
+    }
 
     // Get the manager.
     auto &manager = BlockManager::get_singleton();
 
     // Now, allocate a block.
-    auto first_weak_block = manager.request_block(65536);
+    auto first_weak_block     = manager.request_block(65536);
     auto first_weak_gpu_block = manager.request_gpu_block(65536);
 
     {
         // Hold onto the first block.
-        auto first_block = first_weak_block.lock();
+        auto first_block     = first_weak_block.lock();
         auto first_gpu_block = first_weak_gpu_block.lock();
 
         // Now, go through and keep allocating a bunch of 64kB blocks. Stale blocks should be removed, so this should never throw.
