@@ -34,27 +34,27 @@ TEST_CASE("Tensor creation", "[tensor]") {
     B.zero();
     C.zero();
 
-    CHECK_THAT(A.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
-    CHECK_THAT(B.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
+    CHECK_THAT(A.vector_data(), Catch::Matchers::Equals(std::vector<double>{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
+    CHECK_THAT(B.vector_data(), Catch::Matchers::Equals(std::vector<double>{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<double>{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
 
     // Set A and B to identity
     A(0, 0) = 1.0;
     A(1, 1) = 1.0;
     A(2, 2) = 1.0;
 
-    CHECK_THAT(A.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
+    CHECK_THAT(A.vector_data(), Catch::Matchers::Equals(std::vector<double>{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
 
     B(0, 0) = 1.0;
     B(1, 1) = 1.0;
     B(2, 2) = 1.0;
 
-    CHECK_THAT(B.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
+    CHECK_THAT(B.vector_data(), Catch::Matchers::Equals(std::vector<double>{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
 
     // Perform basic matrix multiplication
     einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
 
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<double>{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
 }
 
 TEST_CASE("Tensor GEMMs", "[tensor]") {
@@ -72,35 +72,35 @@ TEST_CASE("Tensor GEMMs", "[tensor]") {
     if (einsums::GlobalConfigMap::get_singleton().get_bool("row-major")) {
         einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
         CHECK_THAT(C.vector_data(),
-                   Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
+                   Catch::Matchers::Equals(std::vector<double>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
 
         einsums::linear_algebra::gemm<true, false>(1.0, A, B, 0.0, &C);
         CHECK_THAT(C.vector_data(),
-                   Catch::Matchers::Equals(einsums::VectorData<double>{726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0}));
+                   Catch::Matchers::Equals(std::vector<double>{726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0}));
 
         einsums::linear_algebra::gemm<false, true>(1.0, A, B, 0.0, &C);
         CHECK_THAT(C.vector_data(),
-                   Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0}));
+                   Catch::Matchers::Equals(std::vector<double>{154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0}));
 
         einsums::linear_algebra::gemm<true, true>(1.0, A, B, 0.0, &C);
         CHECK_THAT(C.vector_data(),
-                   Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0}));
+                   Catch::Matchers::Equals(std::vector<double>{330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0}));
     } else {
         einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
         CHECK_THAT(C.vector_data(),
-                   Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
+                   Catch::Matchers::Equals(std::vector<double>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
 
         einsums::linear_algebra::gemm<true, false>(1.0, A, B, 0.0, &C);
         CHECK_THAT(C.vector_data(),
-                   Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0}));
+                   Catch::Matchers::Equals(std::vector<double>{154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0}));
 
         einsums::linear_algebra::gemm<false, true>(1.0, A, B, 0.0, &C);
         CHECK_THAT(C.vector_data(),
-                   Catch::Matchers::Equals(einsums::VectorData<double>{726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0}));
+                   Catch::Matchers::Equals(std::vector<double>{726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0}));
 
         einsums::linear_algebra::gemm<true, true>(1.0, A, B, 0.0, &C);
         CHECK_THAT(C.vector_data(),
-                   Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0}));
+                   Catch::Matchers::Equals(std::vector<double>{330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0}));
     }
 }
 
@@ -118,16 +118,16 @@ TEST_CASE("Tensor GEMVs", "[tensor]") {
 
     if (einsums::GlobalConfigMap::get_singleton().get_bool("row-major")) {
         einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
-        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0}));
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(std::vector<double>{330.0, 396.0, 462.0}));
 
         einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
-        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0}));
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(std::vector<double>{154.0, 352.0, 550.0}));
     } else {
         einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
-        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{154.0, 352.0, 550.0}));
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(std::vector<double>{154.0, 352.0, 550.0}));
 
         einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
-        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0}));
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(std::vector<double>{330.0, 396.0, 462.0}));
     }
 }
 
@@ -161,7 +161,7 @@ TEST_CASE("Tensor Invert") {
 
     einsums::linear_algebra::invert(&A);
 
-    CHECK_THAT(A.vector_data(), Catch::Matchers::Approx(einsums::VectorData<double>{-5.0 / 12, 0.25, 1.0 / 3.0, 7.0 / 12.0, 0.25,
+    CHECK_THAT(A.vector_data(), Catch::Matchers::Approx(std::vector<double>{-5.0 / 12, 0.25, 1.0 / 3.0, 7.0 / 12.0, 0.25,
                                                                                     -2.0 / 3.0, 1.0 / 12.0, -0.25, 1.0 / 3.0})
                                     .margin(0.00001));
 }
@@ -487,7 +487,7 @@ template <einsums::NotComplex T>
 void arange_test() {
     auto A = einsums::arange<T>(0, 10);
 
-    CHECK_THAT(A.vector_data(), Catch::Matchers::Equals(einsums::VectorData<T>{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}));
+    CHECK_THAT(A.vector_data(), Catch::Matchers::Equals(std::vector<T>{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}));
 }
 
 TEST_CASE("arange") {

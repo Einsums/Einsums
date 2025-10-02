@@ -836,8 +836,9 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Copy a tensor into disk.
      */
-    template <template <typename, size_t> typename TType>
-    auto operator=(TType<T, rank> const &other) -> DiskView & {
+    template <TensorConcept TType>
+        requires SameUnderlyingAndRank<TType, DiskView>
+    auto operator=(TType const &other) -> DiskView & {
         if (_readOnly) {
             EINSUMS_THROW_EXCEPTION(access_denied, "Attempting to write data to a read only disk view.");
         }

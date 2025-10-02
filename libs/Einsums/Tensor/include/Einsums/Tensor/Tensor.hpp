@@ -78,8 +78,8 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options = {});
  * @tparam T data type of the underlying tensor data
  * @tparam Rank the rank of the tensor
  */
-template <typename T, size_t rank>
-struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
+template <typename T, size_t rank, typename Alloc>
+struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
     /**
      * @typedef ValueType
      *
@@ -127,17 +127,31 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * This represents the internal storage method of the tensor.
      */
-    using Vector = BufferVector<T>;
+    using Vector = std::vector<T, Alloc>;
+
+    using Allocator = Alloc;
 
     /**
      * @brief Construct a new Tensor object. Default constructor.
      */
-    Tensor() = default;
+    GeneralTensor() = default;
 
     /**
      * @brief Construct a new Tensor object. Default copy constructor
      */
-    Tensor(Tensor const &other) : _name(other.name()), _data(other._data), _impl(other._impl) {
+    GeneralTensor(GeneralTensor const &other) : _name(other.name()), _data(other._data), _impl(other._impl) {
+        _impl.set_data(_data.data());
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+    }
+
+    /**
+     * @brief Construct a new Tensor object from one with a different allocator.
+     */
+    template <typename Alloc2>
+    GeneralTensor(GeneralTensor<T, Rank, Alloc2> const &other) : _name(other.name()), _data(other._data), _impl(other._impl) {
         _impl.set_data(_data.data());
         for (int i = 0; i < Rank; i++) {
             _dim_array[i]    = _impl.dim(i);
@@ -148,19 +162,19 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * @brief Destroy the Tensor object.
      */
-    ~Tensor() = default;
+    ~GeneralTensor() = default;
 
     /**
      * @brief Default move constructor.
      */
-    Tensor(Tensor &&other) noexcept
+    GeneralTensor(GeneralTensor &&other) noexcept
         : _name{std::move(other._name)}, _data{std::move(other._data)}, _dim_array{std::move(other._dim_array)},
           _stride_array{std::move(other._stride_array)}, _impl{std::move(other._impl)} {}
 
     /**
      * @brief Default move assignment.
      */
-    Tensor &operator=(Tensor &&other) noexcept {
+    GeneralTensor &operator=(GeneralTensor &&other) noexcept {
         _name         = std::move(other._name);
         _data         = std::move(other._data);
         _dim_array    = std::move(other._dim_array);
@@ -188,8 +202,8 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
     template <std::integral... Dims>
         requires(sizeof...(Dims) == Rank)
-    Tensor(std::string name, Dims... dims)
-        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}) {
+    GeneralTensor(std::string name, Dims... dims)
+        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, row_major_default) {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
         // Resize the data structure
@@ -221,7 +235,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
     template <std::integral... Dims>
         requires(sizeof...(Dims) == Rank)
-    Tensor(bool row_major, std::string name, Dims... dims)
+    GeneralTensor(bool row_major, std::string name, Dims... dims)
         : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, row_major) {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
@@ -262,7 +276,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * @param dims The dimensionality of each rank of the new tensor.
      */
     template <size_t OtherRank, typename... Dims>
-    explicit Tensor(Tensor<T, OtherRank> &&existingTensor, std::string name, Dims... dims)
+    explicit GeneralTensor(GeneralTensor<T, OtherRank, Alloc> &&existingTensor, std::string name, Dims... dims)
         : _name{std::move(name)}, _data(std::move(existingTensor._data)) {
         static_assert(Rank == sizeof...(dims), "Declared rank does not match provided dims");
 
@@ -315,7 +329,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param dims The dimensions of the new tensor in Dim form.
      */
-    explicit Tensor(Dim<Rank> dims) : _impl(nullptr, dims) {
+    explicit GeneralTensor(Dim<Rank> dims) : _impl(nullptr, dims) {
         // Resize the data structure
         _data.resize(_impl.size());
 
@@ -332,7 +346,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param dims The dimensions of the new tensor in Dim form.
      */
-    explicit Tensor(bool row_major, Dim<Rank> dims) : _impl(nullptr, dims, row_major) {
+    explicit GeneralTensor(bool row_major, Dim<Rank> dims) : _impl(nullptr, dims, row_major) {
         // Resize the data structure
         _data.resize(_impl.size());
 
@@ -351,7 +365,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param other The tensor view to copy.
      */
-    Tensor(TensorView<T, rank> const &other) : _name{other.name()}, _impl(nullptr, other.dims()) {
+    GeneralTensor(TensorView<T, rank> const &other) : _name{other.name()}, _impl(nullptr, other.dims(), row_major_default) {
         // Resize the data structure
         _data.resize(_impl.size());
 
@@ -368,7 +382,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * @brief Construct a new Tensor from the implementation of another.
      */
-    Tensor(detail::TensorImpl<T> const &other) : _impl(nullptr, other.dims()) {
+    GeneralTensor(detail::TensorImpl<T> const &other) : _impl(nullptr, other.dims()) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -620,7 +634,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     }
 
     /**
-     * @copydoc Tensor<T, Rank>::operator(MultiIndex...) -> T&
+     * @copydoc GeneralTensor<T, Rank, Alloc>::operator(MultiIndex...) -> T&
      */
     template <Container Index>
         requires requires {
@@ -632,7 +646,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     }
 
     /**
-     * @copydoc Tensor<T, Rank>::operator(MultiIndex...) -> T&
+     * @copydoc GeneralTensor<T, Rank, Alloc>::operator(MultiIndex...) -> T&
      */
     template <Container Index>
         requires requires {
@@ -648,7 +662,35 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param other The tensor to copy.
      */
-    auto operator=(Tensor const &other) -> Tensor & {
+    auto operator=(GeneralTensor const &other) -> GeneralTensor & {
+        LabeledSection("operator=");
+        bool realloc{false};
+        for (int i = 0; i < Rank; i++) {
+            if (dim(i) == 0 || (dim(i) != other.dim(i))) {
+                realloc = true;
+            }
+        }
+
+        if (realloc) {
+            _impl = other.impl();
+
+            _data.resize(_impl.size());
+
+            _impl.set_data(_data.data());
+        }
+
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+
+        detail::copy_to(other.impl(), _impl);
+
+        return *this;
+    }
+
+    template <typename Alloc2>
+    auto operator=(GeneralTensor<T, Rank, Alloc2> const &other) -> GeneralTensor & {
         LabeledSection("operator=");
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
@@ -680,9 +722,9 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @param other The tensor to cast and copy.
      */
-    template <typename TOther>
+    template <typename TOther, typename Alloc2>
         requires(!std::same_as<T, TOther>)
-    auto operator=(Tensor<TOther, Rank> const &other) -> Tensor & {
+    auto operator=(GeneralTensor<TOther, Rank, Alloc2> const &other) -> GeneralTensor & {
         LabeledSection("operator=");
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
@@ -714,7 +756,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
 
     template <BasicTensorConcept OtherTensor>
-    auto operator=(OtherTensor const &other) -> Tensor & {
+    auto operator=(OtherTensor const &other) -> GeneralTensor & {
         detail::copy_to(other.impl(), _impl);
 
         return *this;
@@ -723,10 +765,10 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     template <TensorConcept OtherTensor>
         requires requires {
             requires !BasicTensorConcept<OtherTensor>;
-            requires SameRank<Tensor, OtherTensor>;
+            requires SameRank<GeneralTensor, OtherTensor>;
             requires CoreTensorConcept<OtherTensor>;
         }
-    auto operator=(OtherTensor const &other) -> Tensor & {
+    auto operator=(OtherTensor const &other) -> GeneralTensor & {
         LabeledSection("operator=");
         size_t size = this->size();
 
@@ -744,7 +786,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      * Cast the data from a tensor view while copying into this tensor.
      */
     template <typename TOther>
-    auto operator=(TensorView<TOther, Rank> const &other) -> Tensor & {
+    auto operator=(TensorView<TOther, Rank> const &other) -> GeneralTensor & {
         LabeledSection("operator=");
     detail:
         copy_to(other.impl(), _impl);
@@ -756,7 +798,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * Copy the data from the device into this tensor.
      */
-    auto operator=(DeviceTensor<T, Rank> const &other) -> Tensor<T, Rank> & {
+    auto operator=(DeviceTensor<T, Rank> const &other) -> GeneralTensor<T, Rank, Alloc> & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
             if (dim(i) == 0 || (dim(i) != other.dim(i))) {
@@ -787,38 +829,38 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * Fill this tensor with a value.
      */
-    auto operator=(T const &fill_value) -> Tensor & {
+    auto operator=(T const &fill_value) -> GeneralTensor & {
         LabeledSection("operator= value");
         set_all(fill_value);
         return *this;
     }
 
-    Tensor &operator+=(T const &b) {
+    GeneralTensor &operator+=(T const &b) {
         detail::impl_scalar_add_contiguous(b, _impl);
 
         return *this;
     }
 
-    Tensor &operator-=(T const &b) {
+    GeneralTensor &operator-=(T const &b) {
         detail::impl_scalar_add_contiguous(-b, _impl);
 
         return *this;
     }
 
-    Tensor &operator*=(T const &b) {
+    GeneralTensor &operator*=(T const &b) {
         detail::impl_scal_contiguous(b, _impl);
 
         return *this;
     }
 
-    Tensor &operator/=(T const &b) {
+    GeneralTensor &operator/=(T const &b) {
         detail::impl_div_scalar_contiguous(b, _impl);
 
         return *this;
     }
 
-    template <typename TOther>
-    Tensor &operator+=(Tensor<TOther, rank> const &other) {
+    template <typename TOther, typename Alloc2>
+    GeneralTensor &operator+=(GeneralTensor<TOther, rank, Alloc2> const &other) {
         if (_impl.is_column_major() == other.impl().is_column_major()) {
             if constexpr (std::is_integral_v<T>) {
                 detail::impl_axpy_contiguous(T{1}, other.impl(), _impl);
@@ -836,8 +878,8 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         return *this;
     }
 
-    template <typename TOther>
-    Tensor &operator-=(Tensor<TOther, rank> const &other) {
+    template <typename TOther, typename Alloc2>
+    GeneralTensor &operator-=(GeneralTensor<TOther, rank, Alloc2> const &other) {
         if (_impl.is_column_major() == other.impl().is_column_major()) {
             if constexpr (std::is_integral_v<T>) {
                 detail::impl_axpy_contiguous(T{-1}, other.impl(), _impl);
@@ -855,8 +897,8 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         return *this;
     }
 
-    template <typename TOther>
-    Tensor &operator*=(Tensor<TOther, rank> const &other) {
+    template <typename TOther, typename Alloc2>
+    GeneralTensor &operator*=(GeneralTensor<TOther, rank, Alloc2> const &other) {
         if (_impl.is_column_major() == other.impl().is_column_major()) {
             detail::impl_mult_contiguous(other.impl(), _impl);
         } else {
@@ -866,8 +908,8 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
         return *this;
     }
 
-    template <typename TOther>
-    Tensor &operator/=(Tensor<TOther, rank> const &other) {
+    template <typename TOther, typename Alloc2>
+    GeneralTensor &operator/=(GeneralTensor<TOther, rank, Alloc2> const &other) {
         if (_impl.is_column_major() == other.impl().is_column_major()) {
             detail::impl_div_contiguous(other.impl(), _impl);
         } else {
@@ -878,28 +920,28 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     }
 
     template <BasicTensorConcept TOther>
-    Tensor &operator+=(TOther const &other) {
+    GeneralTensor &operator+=(TOther const &other) {
         detail::add_assign(other.impl(), _impl);
 
         return *this;
     }
 
     template <BasicTensorConcept TOther>
-    Tensor &operator-=(TOther const &other) {
+    GeneralTensor &operator-=(TOther const &other) {
         detail::sub_assign(other.impl(), _impl);
 
         return *this;
     }
 
     template <BasicTensorConcept TOther>
-    Tensor &operator*=(TOther const &other) {
+    GeneralTensor &operator*=(TOther const &other) {
         detail::mult_assign(other.impl(), _impl);
 
         return *this;
     }
 
     template <BasicTensorConcept TOther>
-    Tensor &operator/=(TOther const &other) {
+    GeneralTensor &operator/=(TOther const &other) {
         detail::div_assign(other.impl(), _impl);
 
         return *this;
@@ -920,7 +962,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
     auto vector_data() const -> Vector const & { return _data; }
 
-    /// @copydoc Tensor<T,Rank>::vector_data() const
+    /// @copydoc GeneralTensor<T,Rank, Alloc>::vector_data() const
     auto vector_data() -> Vector & { return _data; }
 
     /**
@@ -979,7 +1021,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
   private:
     std::string _name{"(unnamed)"};
 
-    BufferVector<T> _data{};
+    Vector _data{};
 
     detail::TensorImpl<T> _impl{};
 
@@ -989,8 +1031,8 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     template <typename T_, size_t Rank_>
     friend struct TensorView;
 
-    template <typename T_, size_t OtherRank>
-    friend struct Tensor;
+    template <typename T_, size_t OtherRank, typename Alloc2>
+    friend struct GeneralTensor;
 };
 
 /**
@@ -1000,8 +1042,10 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
  *
  * @tparam T The data type being stored.
  */
-template <typename T>
-struct Tensor<T, 0> final : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
+template <typename T, typename Alloc>
+struct GeneralTensor<T, 0, Alloc> final : tensor_base::CoreTensor,
+                                          design_pats::Lockable<std::recursive_mutex>,
+                                          tensor_base::AlgebraOptimizedTensor {
 
     /**
      * @typedef ValueType
@@ -1020,33 +1064,33 @@ struct Tensor<T, 0> final : tensor_base::CoreTensor, design_pats::Lockable<std::
     /**
      * Default constructor
      */
-    Tensor() = default;
+    GeneralTensor() = default;
 
     /**
      * Default copy constructor
      */
-    Tensor(Tensor const &) = default;
+    GeneralTensor(GeneralTensor const &) = default;
 
     /**
      * Default move constructor
      */
-    Tensor(Tensor &&) noexcept = default;
+    GeneralTensor(GeneralTensor &&) noexcept = default;
 
     /**
      * Default destructor
      */
-    ~Tensor() = default;
+    ~GeneralTensor() = default;
 
     /**
      * Create a new zero-rank tensor with the given name.
      */
-    explicit Tensor(std::string name) : _name{std::move(name)} {};
+    explicit GeneralTensor(std::string name) : _name{std::move(name)} {};
 
     /**
      * Create a new zero-rank tensor with the given dimensions. Since it is zero-rank,
      * the dimensions will be empty, and are ignored.
      */
-    explicit Tensor(Dim<0> _ignore) {}
+    explicit GeneralTensor(Dim<0> _ignore) {}
 
     /**
      * Get the pointer to the data stored by this tensor.
@@ -1054,14 +1098,14 @@ struct Tensor<T, 0> final : tensor_base::CoreTensor, design_pats::Lockable<std::
     T *data() { return &_data; }
 
     /**
-     * @copydoc Tensor<T,0>::data()
+     * @copydoc GeneralTensor<T,0,Alloc>::data()
      */
     T const *data() const { return &_data; }
 
     /**
      * Copy assignment.
      */
-    auto operator=(Tensor const &other) -> Tensor & {
+    auto operator=(GeneralTensor const &other) -> GeneralTensor & {
         _data = other._data;
         return *this;
     }
@@ -1069,7 +1113,7 @@ struct Tensor<T, 0> final : tensor_base::CoreTensor, design_pats::Lockable<std::
     /**
      * Set the value of the tensor to the value passed in.
      */
-    auto operator=(T const &other) -> Tensor & {
+    auto operator=(T const &other) -> GeneralTensor & {
         _data = other;
         return *this;
     }
@@ -1079,7 +1123,7 @@ struct Tensor<T, 0> final : tensor_base::CoreTensor, design_pats::Lockable<std::
 #        undef OPERATOR
 #    endif
 #    define OPERATOR(OP)                                                                                                                   \
-        auto operator OP(const T &other)->Tensor & {                                                                                       \
+        auto operator OP(const T &other)->GeneralTensor & {                                                                                \
             _data OP other;                                                                                                                \
             return *this;                                                                                                                  \
         }
@@ -1228,16 +1272,16 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Creates a view of a tensor with the given properties.
      */
-    template <size_t OtherRank, Container Dim, typename... Args>
-    explicit TensorView(Tensor<T, OtherRank> const &other, Dim const &dims, Args &&...args) : _name{other._name} {
-        common_initialization(const_cast<Tensor<T, OtherRank> &>(other), dims, std::forward<Args>(args)...);
+    template <size_t OtherRank, Container Dim, typename Alloc, typename... Args>
+    explicit TensorView(GeneralTensor<T, OtherRank, Alloc> const &other, Dim const &dims, Args &&...args) : _name{other._name} {
+        common_initialization(const_cast<GeneralTensor<T, OtherRank, Alloc> &>(other), dims, std::forward<Args>(args)...);
     }
 
     /**
      * Creates a view of a tensor with the given properties.
      */
-    template <size_t OtherRank, Container Dim, typename... Args>
-    explicit TensorView(Tensor<T, OtherRank> &other, Dim const &dims, Args &&...args) : _name{other._name} {
+    template <size_t OtherRank, Container Dim, typename Alloc, typename... Args>
+    explicit TensorView(GeneralTensor<T, OtherRank, Alloc> &other, Dim const &dims, Args &&...args) : _name{other._name} {
         common_initialization(other, dims, std::forward<Args>(args)...);
     }
 
@@ -1260,8 +1304,9 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Creates a view of a tensor with the given properties.
      */
-    template <size_t OtherRank, Container Dim, typename... Args>
-    explicit TensorView(std::string name, Tensor<T, OtherRank> &other, Dim const &dims, Args &&...args) : _name{std::move(name)} {
+    template <size_t OtherRank, Container Dim, typename Alloc, typename... Args>
+    explicit TensorView(std::string name, GeneralTensor<T, OtherRank, Alloc> &other, Dim const &dims, Args &&...args)
+        : _name{std::move(name)} {
         common_initialization(other, dims, std::forward<Args>(args)...);
     }
 
@@ -1421,10 +1466,10 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Copy the data from another tensor into this view.
      */
-    template <template <typename, size_t> typename AType>
-        requires CoreRankTensor<AType<T, Rank>, Rank, T>
-    auto operator=(AType<T, Rank> const &other) -> TensorView & {
-        if constexpr (std::is_same_v<AType<T, Rank>, TensorView>) {
+    template <typename AType>
+        requires CoreRankTensor<AType, Rank, T>
+    auto operator=(AType const &other) -> TensorView & {
+        if constexpr (std::is_same_v<AType, TensorView>) {
             if (this == &other)
                 return *this;
         }
@@ -1909,12 +1954,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         size_t ordinal = indices_to_sentinel(other.strides(), temp_offsets);
 
         // Find source dimensions
-        if constexpr (std::is_same_v<TensorType, TensorView<T, Rank>>) {
-            _source_dims    = other.dims();
-            _offsets        = temp_offsets;
-            _offset_ordinal = ordinal;
-            ordinal         = 0;
-        } else if constexpr (std::is_same_v<TensorType, Tensor<T, Rank>>) {
+        if constexpr (IsIncoreBasicTensorV<TensorType> && IsSameUnderlyingAndRankV<TensorType, TensorView<T, Rank>>) {
             _source_dims    = other.dims();
             _offsets        = temp_offsets;
             _offset_ordinal = ordinal;
@@ -2032,8 +2072,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
     T *_parent{nullptr};
 
-    template <typename T_, size_t Rank_>
-    friend struct Tensor;
+    template <typename T_, size_t Rank_, typename Alloc>
+    friend struct GeneralTensor;
 
     template <typename T_, size_t OtherRank_>
     friend struct TensorView;
@@ -2042,33 +2082,34 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 /**
  * Function that zeros a tensor.
  */
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
-void zero(TensorType<T, Rank> &A) {
+template <TensorConcept TensorType>
+void zero(TensorType &A) {
     A.zero();
 }
 
 #ifndef DOXYGEN
 #    ifdef __cpp_deduction_guides
 template <typename... Args>
-Tensor(std::string const &, Args...) -> Tensor<double, sizeof...(Args)>;
+GeneralTensor(std::string const &, Args...) -> GeneralTensor<double, sizeof...(Args), std::allocator<double>>;
 
 template <typename... Args>
-Tensor(bool, std::string const &, Args...) -> Tensor<double, sizeof...(Args)>;
+GeneralTensor(bool, std::string const &, Args...) -> GeneralTensor<double, sizeof...(Args), std::allocator<double>>;
 
-template <typename T, size_t OtherRank, typename... Dims>
-explicit Tensor(Tensor<T, OtherRank> &&otherTensor, std::string name, Dims... dims) -> Tensor<T, sizeof...(dims)>;
-
-template <size_t Rank, typename... Args>
-explicit Tensor(Dim<Rank> const &, Args...) -> Tensor<double, Rank>;
+template <typename T, size_t OtherRank, typename Alloc, typename... Dims>
+explicit GeneralTensor(GeneralTensor<T, OtherRank, Alloc> &&otherTensor, std::string name, Dims... dims)
+    -> GeneralTensor<T, sizeof...(dims), Alloc>;
 
 template <size_t Rank, typename... Args>
-explicit Tensor(bool, Dim<Rank> const &, Args...) -> Tensor<double, Rank>;
+explicit GeneralTensor(Dim<Rank> const &, Args...) -> GeneralTensor<double, Rank, std::allocator<double>>;
 
-template <typename T, size_t Rank, size_t OtherRank, typename... Args>
-TensorView(Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
+template <size_t Rank, typename... Args>
+explicit GeneralTensor(bool, Dim<Rank> const &, Args...) -> GeneralTensor<double, Rank, std::allocator<double>>;
 
-template <typename T, size_t Rank, size_t OtherRank, typename... Args>
-TensorView(Tensor<T, OtherRank> const &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
+template <typename T, size_t Rank, size_t OtherRank, typename Alloc, typename... Args>
+TensorView(GeneralTensor<T, OtherRank, Alloc> &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
+
+template <typename T, size_t Rank, size_t OtherRank, typename Alloc, typename... Args>
+TensorView(GeneralTensor<T, OtherRank, Alloc> const &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
 
 template <typename T, size_t Rank, size_t OtherRank, typename... Args>
 TensorView(TensorView<T, OtherRank> &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
@@ -2076,8 +2117,8 @@ TensorView(TensorView<T, OtherRank> &, Dim<Rank> const &, Args...) -> TensorView
 template <typename T, size_t Rank, size_t OtherRank, typename... Args>
 TensorView(TensorView<T, OtherRank> const &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
 
-template <typename T, size_t Rank, size_t OtherRank, typename... Args>
-TensorView(std::string, Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
+template <typename T, size_t Rank, size_t OtherRank, typename Alloc, typename... Args>
+TensorView(std::string, GeneralTensor<T, OtherRank, Alloc> &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
 
 // Supposedly C++20 will allow template deduction guides for template aliases. i.e. Dim, Stride, Offset, Count, Range.
 // Clang has no support for class template argument deduction for alias templates. P1814R0
@@ -2227,8 +2268,10 @@ void println(AType const &A, TensorPrintOptions options) {
     fprintln(std::cout, A, options);
 }
 
-TENSOR_EXPORT_RANK(Tensor, 0)
-TENSOR_EXPORT(Tensor)
+TENSOR_EXPORT_ALLOC_RANK(GeneralTensor, 0, std::allocator)
+TENSOR_ALLOC_EXPORT(GeneralTensor, std::allocator)
+TENSOR_ALLOC_EXPORT(GeneralTensor, BufferAllocator)
+
 TENSOR_EXPORT(TensorView)
 #endif
 
