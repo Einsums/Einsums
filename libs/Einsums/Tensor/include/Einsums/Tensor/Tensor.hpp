@@ -1645,6 +1645,49 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         return _impl.subscript(std::forward<MultiIndex>(index)...);
     }
 
+    template <typename... MultiIndex>
+        requires(AtLeastOneOfType<AllT, std::remove_cvref_t<MultiIndex>...> || AtLeastOneOfType<Range, std::remove_cvref_t<MultiIndex>...>)
+    auto operator()(MultiIndex &&...index) -> TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
+                                                                count_of_type<Range, std::remove_cvref_t<MultiIndex>...>()> {
+        static_assert(sizeof...(MultiIndex) == Rank);
+
+        return TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
+                                 count_of_type<Range, std::remove_cvref_t<MultiIndex>...>()>(
+            _impl.template subscript<true>(std::forward<MultiIndex>(index)...), _parent);
+    }
+
+    template <typename... MultiIndex>
+        requires(AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>)
+    auto operator()(MultiIndex &&...index) const
+        -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> const {
+        static_assert(sizeof...(MultiIndex) == Rank);
+
+        return TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
+                                 count_of_type<Range, std::remove_cvref_t<MultiIndex>...>()>(
+            _impl.template subscript<true>(std::forward<MultiIndex>(index)...), _parent);
+    }
+
+    template <typename... MultiIndex>
+        requires(AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>)
+    auto subscript(MultiIndex &&...index) -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
+        static_assert(sizeof...(MultiIndex) == Rank);
+
+        return TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
+                                 count_of_type<Range, std::remove_cvref_t<MultiIndex>...>()>(
+            _impl.template subscript<true>(std::forward<MultiIndex>(index)...), _parent);
+    }
+
+    template <typename... MultiIndex>
+        requires(AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>)
+    auto subscript(MultiIndex &&...index) const
+        -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> const {
+        static_assert(sizeof...(MultiIndex) == Rank);
+
+        return TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
+                                 count_of_type<Range, std::remove_cvref_t<MultiIndex>...>()>(
+            _impl.template subscript<true>(std::forward<MultiIndex>(index)...), _parent);
+    }
+
     /**
      * @brief Subscript into the tensor.
      *

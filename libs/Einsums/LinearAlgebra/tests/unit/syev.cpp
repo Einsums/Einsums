@@ -7,6 +7,8 @@
 #include <Einsums/TensorUtilities/CreateRandomDefinite.hpp>
 #include <Einsums/TensorUtilities/CreateRandomSemidefinite.hpp>
 
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
+
 #include <Einsums/Testing.hpp>
 
 using namespace einsums;
@@ -57,6 +59,47 @@ void test_syev() {
 }
 
 template <typename T>
+void test_disk_syev() {
+    auto             A = create_random_definite<T>("A", 10, 10);
+    auto             x = create_tensor<T>("x", 10);
+    DiskTensor<T, 2> A_disk("A disk", 10, 10);
+
+    A_disk.write(A);
+
+    einsums::linear_algebra::syev(&A, &x);
+
+    auto [vecs, vals] = einsums::linear_algebra::truncated_syev(A_disk, 5);
+
+    println(vecs.get());
+    println(A);
+    println(vals);
+    println(x);
+
+    for (int i = 0; i < vals.dim(0); i++) {
+        bool found = false;
+        int  index = 0;
+
+        for (int j = 0; j < 10; j++) {
+            if (std::abs(vals(i) - x(j)) < 1e-6) {
+                index = j;
+                found = true;
+                break;
+            }
+        }
+
+        REQUIRE(found);
+        if (found) {
+            auto vec   = vecs(All, index);
+            T    scale = A(0, index) / vec.get()(0);
+
+            for (int j = 0; j < 10; j++) {
+                REQUIRE_THAT(scale * vec.get()(j), Catch::Matchers::WithinAbs(A(j, index), 1e-6));
+            }
+        }
+    }
+}
+
+template <typename T>
 void test_strided_syev() {
     auto x = create_tensor<T>("x", 3);
 
@@ -101,6 +144,7 @@ void test_strided_syev() {
 TEMPLATE_TEST_CASE("syev", "[linear-algebra]", float, double) {
     test_syev<TestType>();
     test_strided_syev<TestType>();
+    test_disk_syev<TestType>();
 }
 
 TEMPLATE_TEST_CASE("definite and semidefinite", "[linear-algebra]", float, double) {

@@ -8,6 +8,9 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 #include <Einsums/TensorImpl/TensorImplOperations.hpp>
+#ifdef EINSUMS_COMPUTE_CODE
+#    include <Einsums/hipBLAS.hpp>
+#endif
 
 namespace einsums {
 namespace linear_algebra {
@@ -241,6 +244,231 @@ void impl_gemm_contiguous(char transA, char transB, T alpha, einsums::detail::Te
 template <typename AType, typename BType, typename CType, typename AlphaType, typename BetaType>
 void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::TensorImpl<AType> const &A,
                einsums::detail::TensorImpl<BType> const &B, BetaType beta, einsums::detail::TensorImpl<CType> *C) {
+#ifdef EINSUMS_COMPUTE_CODE
+    if constexpr (std::is_same_v<AType, BType> && std::is_same_v<AType, CType> && blas::IsBlasableV<AType>) {
+        using T = AType;
+        uint64_t two_megabytes =
+            2147483648; //  The parameters to hipblasXgemm are ints, so this is basically the maximum we can handle at once.
+        if (A.size() > 1024 && B.size() > 1024 && C->size() > 1024 && A.size() < two_megabytes && B.size() < two_megabytes &&
+            C->size() < two_megabytes) {
+            char tA = std::tolower(transA), tB = std::tolower(transB);
+            auto A_block = A.gpu_cache_tensor();
+            auto B_block = B.gpu_cache_tensor();
+            auto C_block = C->gpu_cache_tensor();
+
+            if (A_block && B_block && C_block) {
+
+                A.tensor_to_gpu();
+                B.tensor_to_gpu();
+                C->tensor_to_gpu();
+
+                auto m = C->dim(0), n = C->dim(1), k = (tA == 'n') ? A.dim(1) : A.dim(0);
+
+                blas::gpu::gemm(transA, transB, m, n, k, (T)alpha, A.get_gpu_pointer().get(), A.dim(0), B.get_gpu_pointer().get(), B.dim(0),
+                                (T)beta, C->get_gpu_pointer().get(), C->dim(0));
+                gpu::stream_wait();
+                return;
+            }
+        } else if (A.size() > 1024 && B.size() > 1024 && C->size() > 1024) {
+            bool tA = std::tolower(transA) != 'n', tB = std::tolower(transB) != 'n';
+            int  min_dim = 500;
+
+            auto m = C->dim(0), n = C->dim(1), k = (tA == 'n') ? A.dim(1) : A.dim(0);
+
+            int m_loops = m / min_dim;
+            int n_loops = n / min_dim;
+            int k_loops = k / min_dim;
+
+            auto m_dim = std::min((int)m, min_dim);
+            auto n_dim = std::min((int)n, min_dim);
+            auto k_dim = std::min((int)k, min_dim);
+
+            einsums::detail::impl_scal(beta, *C);
+
+            for (int i = 0; i < m_loops; i++) {
+                for (int j = 0; j < n_loops; j++) {
+                    auto C_view = C->subscript(Range{i * min_dim, (i + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim});
+                    for (int l = 0; l < k_loops; l++) {
+                        if (tA && tB) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{i * min_dim, (i + 1) * min_dim}),
+                                      B.subscript(Range{j * min_dim, (j + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
+                                      BetaType{1.0}, &C_view);
+                        } else if (tA) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{i * min_dim, (i + 1) * min_dim}),
+                                      B.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim}),
+                                      BetaType{1.0}, &C_view);
+                        } else if (tB) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{i * min_dim, (i + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
+                                      B.subscript(Range{j * min_dim, (j + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
+                                      BetaType{1.0}, &C_view);
+                        } else {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{i * min_dim, (i + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
+                                      B.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim}),
+                                      BetaType{1.0}, &C_view);
+                        }
+                    }
+
+                    if (k - k_loops * min_dim != 0) {
+                        if (tA && tB) {
+                            impl_gemm(
+                                transA, transB, alpha, A.subscript(Range{k_loops * min_dim, k}, Range{i * min_dim, (i + 1) * min_dim}),
+                                B.subscript(Range{j * min_dim, (j + 1) * min_dim}, Range{k_loops * min_dim, k}), BetaType{1.0}, &C_view);
+                        } else if (tA) {
+                            impl_gemm(
+                                transA, transB, alpha, A.subscript(Range{k_loops * min_dim, k}, Range{i * min_dim, (i + 1) * min_dim}),
+                                B.subscript(Range{k_loops * min_dim, k}, Range{j * min_dim, (j + 1) * min_dim}), BetaType{1.0}, &C_view);
+                        } else if (tB) {
+                            impl_gemm(
+                                transA, transB, alpha, A.subscript(Range{i * min_dim, (i + 1) * min_dim}, Range{k_loops * min_dim, k}),
+                                B.subscript(Range{j * min_dim, (j + 1) * min_dim}, Range{k_loops * min_dim, k}), BetaType{1.0}, &C_view);
+                        } else {
+                            impl_gemm(
+                                transA, transB, alpha, A.subscript(Range{i * min_dim, (i + 1) * min_dim}, Range{k_loops * min_dim, k}),
+                                B.subscript(Range{k_loops * min_dim, k}, Range{j * min_dim, (j + 1) * min_dim}), BetaType{1.0}, &C_view);
+                        }
+                    }
+                }
+                if (n - n_loops * min_dim != 0) {
+                    auto C_view = C->subscript(Range{i * min_dim, (i + 1) * min_dim}, Range{n_loops * min_dim, n});
+                    for (int l = 0; l < k_loops; l++) {
+                        if (tA && tB) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{i * min_dim, (i + 1) * min_dim}),
+                                      B.subscript(Range{n_loops * min_dim, n}, Range{l * min_dim, (l + 1) * min_dim}), BetaType{1.0},
+                                      &C_view);
+                        } else if (tA) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{i * min_dim, (i + 1) * min_dim}),
+                                      B.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{n_loops * min_dim, n}), BetaType{1.0},
+                                      &C_view);
+                        } else if (tB) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{i * min_dim, (i + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
+                                      B.subscript(Range{n_loops * min_dim, n}, Range{l * min_dim, (l + 1) * min_dim}), BetaType{1.0},
+                                      &C_view);
+                        } else {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{i * min_dim, (i + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
+                                      B.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{n_loops * min_dim, n}), BetaType{1.0},
+                                      &C_view);
+                        }
+                    }
+
+                    if (k - k_loops * min_dim != 0) {
+                        if (tA && tB) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{k_loops * min_dim, k}, Range{i * min_dim, (i + 1) * min_dim}),
+                                      B.subscript(Range{n_loops * min_dim, n}, Range{k_loops * min_dim, k}), BetaType{1.0}, &C_view);
+                        } else if (tA) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{k_loops * min_dim, k}, Range{i * min_dim, (i + 1) * min_dim}),
+                                      B.subscript(Range{k_loops * min_dim, k}, Range{n_loops * min_dim, n}), BetaType{1.0}, &C_view);
+                        } else if (tB) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{i * min_dim, (i + 1) * min_dim}, Range{k_loops * min_dim, k}),
+                                      B.subscript(Range{n_loops * min_dim, n}, Range{k_loops * min_dim, k}), BetaType{1.0}, &C_view);
+                        } else {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{i * min_dim, (i + 1) * min_dim}, Range{k_loops * min_dim, k}),
+                                      B.subscript(Range{k_loops * min_dim, k}, Range{n_loops * min_dim, n}), BetaType{1.0}, &C_view);
+                        }
+                    }
+                }
+            }
+            if (m - m_loops * min_dim != 0) {
+                for (int j = 0; j < n_loops; j++) {
+                    auto C_view = C->subscript(Range{m - m_loops * min_dim, m}, Range{j * min_dim, (j + 1) * min_dim});
+                    for (int l = 0; l < k_loops; l++) {
+                        if (tA && tB) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{m - m_loops * min_dim, m}),
+                                      B.subscript(Range{j * min_dim, (j + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
+                                      BetaType{1.0}, &C_view);
+                        } else if (tA) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{m - m_loops * min_dim, m}),
+                                      B.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim}),
+                                      BetaType{1.0}, &C_view);
+                        } else if (tB) {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{m - m_loops * min_dim, m}, Range{l * min_dim, (l + 1) * min_dim}),
+                                      B.subscript(Range{j * min_dim, (j + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
+                                      BetaType{1.0}, &C_view);
+                        } else {
+                            impl_gemm(transA, transB, alpha,
+                                      A.subscript(Range{m - m_loops * min_dim, m}, Range{l * min_dim, (l + 1) * min_dim}),
+                                      B.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim}),
+                                      BetaType{1.0}, &C_view);
+                        }
+                    }
+
+                    if (k - k_loops * min_dim != 0) {
+                        if (tA && tB) {
+                            impl_gemm(transA, transB, alpha, A.subscript(Range{k_loops * min_dim, k}, Range{m - m_loops * min_dim, m}),
+                                      B.subscript(Range{j * min_dim, (j + 1) * min_dim}, Range{k_loops * min_dim, k}), BetaType{1.0},
+                                      &C_view);
+                        } else if (tA) {
+                            impl_gemm(transA, transB, alpha, A.subscript(Range{k_loops * min_dim, k}, Range{m - m_loops * min_dim, m}),
+                                      B.subscript(Range{k_loops * min_dim, k}, Range{j * min_dim, (j + 1) * min_dim}), BetaType{1.0},
+                                      &C_view);
+                        } else if (tB) {
+                            impl_gemm(transA, transB, alpha, A.subscript(Range{m - m_loops * min_dim, m}, Range{k_loops * min_dim, k}),
+                                      B.subscript(Range{j * min_dim, (j + 1) * min_dim}, Range{k_loops * min_dim, k}), BetaType{1.0},
+                                      &C_view);
+                        } else {
+                            impl_gemm(transA, transB, alpha, A.subscript(Range{m - m_loops * min_dim, m}, Range{k_loops * min_dim, k}),
+                                      B.subscript(Range{k_loops * min_dim, k}, Range{j * min_dim, (j + 1) * min_dim}), BetaType{1.0},
+                                      &C_view);
+                        }
+                    }
+                }
+                if (n - n_loops * min_dim != 0) {
+                    auto C_view = C->subscript(Range{m - m_loops * min_dim, m}, Range{n_loops * min_dim, n});
+                    for (int l = 0; l < k_loops; l++) {
+                        if (tA && tB) {
+                            impl_gemm(
+                                transA, transB, alpha, A.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{m - m_loops * min_dim, m}),
+                                B.subscript(Range{n_loops * min_dim, n}, Range{l * min_dim, (l + 1) * min_dim}), BetaType{1.0}, &C_view);
+                        } else if (tA) {
+                            impl_gemm(
+                                transA, transB, alpha, A.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{m - m_loops * min_dim, m}),
+                                B.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{n_loops * min_dim, n}), BetaType{1.0}, &C_view);
+                        } else if (tB) {
+                            impl_gemm(
+                                transA, transB, alpha, A.subscript(Range{m - m_loops * min_dim, m}, Range{l * min_dim, (l + 1) * min_dim}),
+                                B.subscript(Range{n_loops * min_dim, n}, Range{l * min_dim, (l + 1) * min_dim}), BetaType{1.0}, &C_view);
+                        } else {
+                            impl_gemm(
+                                transA, transB, alpha, A.subscript(Range{m - m_loops * min_dim, m}, Range{l * min_dim, (l + 1) * min_dim}),
+                                B.subscript(Range{l * min_dim, (l + 1) * min_dim}, Range{n_loops * min_dim, n}), BetaType{1.0}, &C_view);
+                        }
+                    }
+
+                    if (k - k_loops * min_dim != 0) {
+                        if (tA && tB) {
+                            impl_gemm(transA, transB, alpha, A.subscript(Range{k_loops * min_dim, k}, Range{m - m_loops * min_dim, m}),
+                                      B.subscript(Range{n_loops * min_dim, n}, Range{k_loops * min_dim, k}), BetaType{1.0}, &C_view);
+                        } else if (tA) {
+                            impl_gemm(transA, transB, alpha, A.subscript(Range{k_loops * min_dim, k}, Range{m - m_loops * min_dim, m}),
+                                      B.subscript(Range{k_loops * min_dim, k}, Range{n_loops * min_dim, n}), BetaType{1.0}, &C_view);
+                        } else if (tB) {
+                            impl_gemm(transA, transB, alpha, A.subscript(Range{m - m_loops * min_dim, m}, Range{k_loops * min_dim, k}),
+                                      B.subscript(Range{n_loops * min_dim, n}, Range{k_loops * min_dim, k}), BetaType{1.0}, &C_view);
+                        } else {
+                            impl_gemm(transA, transB, alpha, A.subscript(Range{m - m_loops * min_dim, m}, Range{k_loops * min_dim, k}),
+                                      B.subscript(Range{k_loops * min_dim, k}, Range{n_loops * min_dim, n}), BetaType{1.0}, &C_view);
+                        }
+                    }
+                }
+            }
+            return;
+        }
+    }
+#endif
     if constexpr (!std::is_same_v<AType, BType> || !std::is_same_v<AType, CType>) {
         impl_gemm_noncontiguous(transA, transB, einsums::detail::convert<AlphaType, CType>(alpha), A, B,
                                 einsums::detail::convert<AlphaType, CType>(beta), C);

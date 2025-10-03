@@ -164,8 +164,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      * Default destructor.
      */
     ~DiskTensor() {
-
         if (_dataset != H5I_INVALID_HID) {
+            put();
             H5Dclose(_dataset);
         }
 
@@ -190,7 +190,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         _size = dims_to_strides(_dims, _strides);
 
-        _dataspace = H5Screate_simple(Rank, reinterpret_cast<hsize_t *>(_dims.data()), NULL);
+        std::array<hsize_t, Rank> max_dims;
+        max_dims.fill(H5S_UNLIMITED);
+
+        _dataspace = H5Screate_simple(Rank, reinterpret_cast<hsize_t *>(_dims.data()), max_dims.data());
 
         if (_dataspace == H5I_INVALID_HID) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Dataspace creation failed!");
@@ -303,6 +306,20 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         : DiskTensor(detail::Einsums_Tensor_vars::get_singleton().hdf5_file, name, std::forward<Dims>(dims)...) {}
 
     // Provides ability to store another tensor to a part of a disk tensor.
+
+    template <std::integral... Dims>
+    void resize(Dims... dims) {
+        resize(Dim<Rank>{dims...});
+    }
+
+    void resize(Dim<Rank> const &new_dims) {
+        auto err = H5Dset_extent(_dataset, (hsize_t *)new_dims.data());
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not extend the disk tensor!");
+        }
+        H5Sclose(_dataspace);
+        _dataspace = H5Dget_space(_dataset);
+    }
 
     /**
      * Get the dimension along a given axis.
@@ -521,8 +538,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
     template <CoreBasicTensorConcept TensorType>
         requires(RankTensorConcept<TensorType, rank>)
-    void write(TensorType &tensor) {
-        std::array<size_t, rank> dims, counts, block;
+    void write(TensorType const &tensor) {
+        std::array<size_t, rank> dims, counts;
 
         counts.fill(1);
 
@@ -541,6 +558,84 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             H5Sclose(mem_dataspace);
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not write data to HDF5 file!");
         }
+    }
+
+    BufferTensor<T, rank> &get() {
+        auto                     lock = std::lock_guard(*this);
+        std::array<size_t, rank> counts;
+
+        counts.fill(1);
+
+        hid_t mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+
+        if (mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+        }
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+
+            auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+            if (err < 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+            }
+        }
+        return _tensor;
+    }
+
+    BufferTensor<T, rank> const &get() const {
+        auto                     lock = std::lock_guard(*this);
+        std::array<size_t, rank> counts;
+
+        counts.fill(1);
+
+        hid_t mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+
+        if (mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+        }
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+
+            auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+            if (err < 0) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+            }
+        }
+        return _tensor;
+    }
+
+    void put() {
+        std::array<size_t, rank> counts;
+
+        counts.fill(1);
+
+        hid_t mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+
+        if (mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+        }
+        H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+    }
+
+    void put() const {
+        std::array<size_t, rank> counts;
+
+        counts.fill(1);
+
+        hid_t mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+
+        if (mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+        }
+        H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
     }
 
   private:
@@ -580,6 +675,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      * Did the entry already exist on disk? Doesn't indicate validity of the data just the existence of the entry.
      */
     bool _existed{false};
+
+    mutable bool _constructed{false};
+
+    mutable BufferTensor<T, rank> _tensor;
 };
 
 /**
@@ -862,10 +961,10 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Gets the underlying tensor holding the data.
      */
-    auto get() -> Tensor<T, rank> & {
+    auto get() -> BufferTensor<T, rank> & {
         auto lock = std::lock_guard(*this);
         if (!_constructed) {
-            _tensor      = Tensor<T, Rank>{true, _dims};
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
             _constructed = true;
 
             auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
@@ -880,10 +979,10 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Gets the underlying tensor holding the data.
      */
-    auto get() const -> Tensor<T, rank> const & {
+    auto get() const -> BufferTensor<T, rank> const & {
         auto lock = std::lock_guard(*this);
         if (!_constructed) {
-            _tensor      = Tensor<T, Rank>{true, _dims};
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
             _constructed = true;
 
             auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
@@ -1135,12 +1234,12 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Cast the tensor to Tensor<T,ViewRank>.
      */
-    operator Tensor<T, rank> &() { return get(); } // NOLINT
+    operator BufferTensor<T, rank> &() { return get(); } // NOLINT
 
     /**
      * Cast the tensor to Tensor<T,ViewRank>.
      */
-    operator Tensor<T, rank> const &() const { return get(); } // NOLINT
+    operator BufferTensor<T, rank> const &() const { return get(); } // NOLINT
 
     /**
      * Set all of the values of the tensor to zero.
@@ -1205,7 +1304,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      *
      * This is the in-core representation of the view.
      */
-    mutable Tensor<T, rank> _tensor;
+    mutable BufferTensor<T, rank> _tensor;
 
     /**
      * @var _name
