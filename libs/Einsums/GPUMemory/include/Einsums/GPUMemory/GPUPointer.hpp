@@ -718,4 +718,12 @@ einsums::gpu::GPUPointer<T> memcpy(einsums::gpu::GPUPointer<T> &dest, einsums::g
 
     return dest;
 }
+
+template <typename T>
+einsums::gpu::GPUPointer<T> memset(einsums::gpu::GPUPointer<T> &dest, int ch, size_t count) {
+    einsums::hip_catch(hipMemset((void *)dest, ch, count));
+
+    return dest;
+}
+
 } // namespace std

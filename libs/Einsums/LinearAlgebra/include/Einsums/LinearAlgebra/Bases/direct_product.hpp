@@ -85,112 +85,50 @@ void impl_direct_product(CType alpha, einsums::detail::TensorImpl<AType> const &
 
 #ifdef EINSUMS_COMPUTE_CODE
     if constexpr (std::is_same_v<AType, BType> && std::is_same_v<AType, CType> && blas::IsBlasableV<AType>) {
-        gpu::GPUAllocator<AType> A_alloc;
-        gpu::GPUAllocator<BType> B_alloc;
-        gpu::GPUAllocator<CType> C_alloc;
+        int number_of_cached_tensors = 0;
 
-        size_t buffer_size = std::min(A_alloc.work_size(), std::min(B_alloc.work_size(), C_alloc.work_size()));
-
-        if (A.size() > buffer_size) {
-            // Calculate the things needed to loop over the tensors.
-            size_t    loop_step = 1, loop_skip = 0;
-            ptrdiff_t rank_step = -1, rank_skip = -1;
-            size_t    view1_size = 1, remaining_size = 0, step_size = 1;
-            bool      found_max = false;
-
-            for (int i = A.rank() - 1; i >= 0; i--) {
-                if (buffer_size > A.dim(i) * view1_size && !found_max) {
-                    view1_size *= A.dim(i);
-                } else if (buffer_size <= A.dim(i) * view1_size && view1_size < buffer_size && !found_max) {
-                    size_t max_dim = buffer_size / view1_size;
-                    rank_skip      = i;
-                    view1_size *= max_dim;
-                    step_size      = max_dim;
-                    remaining_size = A.dim(i) % max_dim;
-                    loop_skip      = A.dim(i) / max_dim;
-                    found_max      = true;
-                } else {
-                    loop_step *= A.dim(i);
-                    rank_step = std::max(rank_step, (ptrdiff_t)i);
-                }
-            }
-
-            if (rank_skip < rank_step) {
-                rank_skip = rank_step;
-            }
-
-            // Set up the indices for the view.
-            BufferVector<Range> view_indices(A.rank());
-
-            for (int i = rank_skip; i < A.rank(); i++) {
-                view_indices[i] = Range{0, A.dim(i)};
-            }
-
-            auto A_block = BlockManager::get_singleton().request_gpu_block(buffer_size * sizeof(AType));
-            auto A_lock  = A_block.lock();
-            auto B_block = BlockManager::get_singleton().request_gpu_block(buffer_size * sizeof(BType));
-            auto B_lock  = B_block.lock();
-            auto C_block = BlockManager::get_singleton().request_gpu_block(buffer_size * sizeof(CType));
-            auto C_lock  = C_block.lock();
-
-            for (size_t i = 0; i < loop_step; i++) {
-                size_t temp = i;
-                for (int k = rank_step; k >= 0; k--) {
-                    view_indices[k] = Range{temp % A.dim(k), temp % A.dim(k) + 1};
-                    temp /= A.dim(k);
-                }
-                for (size_t j = 0; j < loop_skip; j++) {
-                    // Generate the view.
-                    view_indices[rank_skip] = Range{j * step_size, (j + 1) * step_size};
-
-                    // Find the view.
-                    auto A_view = A.subscript(view_indices);
-                    auto B_view = B.subscript(view_indices);
-                    auto C_view = C->subscript(view_indices);
-
-                    // Make the view point to the buffer.
-                    A_view.set_gpu_memory(A_lock);
-                    B_view.set_gpu_memory(B_lock);
-                    C_view.set_gpu_memory(C_lock);
-
-                    // Copy the data to the GPU.
-                    A_view.tensor_to_gpu();
-                    B_view.tensor_to_gpu();
-                    C_view.tensor_to_gpu();
-
-                    // Perform the operation.
-                    blas::gpu::scal(C_view.size(), beta, C_view.get_gpu_pointer().get(), 1);
-                    blas::gpu::dirprod(A_view.size(), alpha, A_view.get_gpu_pointer().get(), 1, B_view.get_gpu_pointer().get(), 1,
-                                       C_view.get_gpu_pointer().get(), 1);
-                }
-
-                // Handle the remainder.
-                if (remaining_size != 0) {
-                    view_indices[rank_skip] = Range{loop_skip * step_size, loop_skip * step_size + remaining_size};
-
-                    // Find the view.
-                    auto A_view = A.subscript(view_indices);
-                    auto B_view = B.subscript(view_indices);
-                    auto C_view = C->subscript(view_indices);
-
-                    // Make the view point to the buffer.
-                    A_view.set_gpu_memory(A_lock);
-                    B_view.set_gpu_memory(B_lock);
-                    C_view.set_gpu_memory(C_lock);
-
-                    // Copy the data to the GPU.
-                    A_view.tensor_to_gpu();
-                    B_view.tensor_to_gpu();
-                    C_view.tensor_to_gpu();
-
-                    // Perform the operation.
-                    blas::gpu::scal(C_view.size(), beta, C_view.get_gpu_pointer().get(), 1);
-                    blas::gpu::dirprod(A_view.size(), alpha, A_view.get_gpu_pointer().get(), 1, B_view.get_gpu_pointer().get(), 1,
-                                       C_view.get_gpu_pointer().get(), 1);
-                }
-            }
-            return;
+        if (A.get_gpu_pointer()) {
+            number_of_cached_tensors++;
         }
+
+        if (B.get_gpu_pointer()) {
+            number_of_cached_tensors++;
+        }
+
+        if (C->get_gpu_pointer()) {
+            number_of_cached_tensors++;
+        }
+
+        // If two or more tensors are cached, do the GPU algorithm.
+        if (number_of_cached_tensors >= 2) {
+            try {
+
+                auto A_lock = A.gpu_cache_tensor();
+                auto B_lock = B.gpu_cache_tensor();
+                auto C_lock = C->gpu_cache_tensor();
+
+                // Next, make sure that all of the pointers were able to be allocated.
+                if (A.get_gpu_pointer() && B.get_gpu_pointer() && C->get_gpu_pointer()) {
+
+                    if (beta == CType{0.0}) {
+                        // memset has been overloaded for GPUPointers.
+                        std::memset(C->get_gpu_pointer(), 0, C->size() * sizeof(CType));
+                    } else if (beta != CType{1.0}) {
+                        blas::gpu::scal(C->size(), beta, C->get_gpu_pointer().get(), 1);
+                    }
+
+                    blas::gpu::dirprod(A.size(), alpha, A.get_gpu_pointer().get(), 1, B.get_gpu_pointer().get(), 1,
+                                       C->get_gpu_pointer().get(), 1);
+
+                    return;
+                }
+            } catch (std::exception &e) {
+                // We couldn't do the GPU algorithm. Do the CPU algorithm.
+            }
+        }
+
+        // Otherwise, perform a writeback any tensors on the GPU and perform the in-core algorithm.
+        C->tensor_from_gpu();
     }
 #endif
 

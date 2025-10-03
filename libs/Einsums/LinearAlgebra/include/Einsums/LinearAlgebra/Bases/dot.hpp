@@ -137,105 +137,22 @@ BiggestTypeT<T, TOther> impl_dot(einsums::detail::TensorImpl<T> const &in, einsu
 
 #ifdef EINSUMS_COMPUTE_CODE
     if constexpr (std::is_same_v<T, TOther> && blas::IsBlasableV<T>) {
-        gpu::GPUAllocator<T>      in_alloc;
-        gpu::GPUAllocator<TOther> out_alloc;
+        // If one or both of the tensors are on GPU, use the GPU algorithm.
+        if (in.get_gpu_pointer() || out.get_gpu_pointer()) {
+            try {
+                auto in_lock = in.gpu_cache_tensor();
+                auto out_lock = out.gpu_cache_tensor();
 
-        size_t buffer_size = std::min(in_alloc.work_size(), out_alloc.work_size());
-
-        if (in.size() > buffer_size) {
-            // Calculate the things needed to loop over the tensors.
-            size_t    loop_step = 1, loop_skip = 0;
-            ptrdiff_t rank_step = -1, rank_skip = -1;
-            size_t    view1_size = 1, remaining_size = 0, step_size = 1;
-            bool      found_max = false;
-
-            for (int i = in.rank() - 1; i >= 0; i--) {
-                if (buffer_size > in.dim(i) * view1_size && !found_max) {
-                    view1_size *= in.dim(i);
-                } else if (buffer_size <= in.dim(i) * view1_size && view1_size < buffer_size && !found_max) {
-                    size_t max_dim = buffer_size / view1_size;
-                    rank_skip      = i;
-                    view1_size *= max_dim;
-                    step_size      = max_dim;
-                    remaining_size = in.dim(i) % max_dim;
-                    loop_skip      = in.dim(i) / max_dim;
-                    found_max      = true;
-                } else {
-                    loop_step *= in.dim(i);
-                    rank_step = std::max(rank_step, (ptrdiff_t)i);
+                // Make sure the pointers got allocated.
+                if (in.get_gpu_pointer() && out.get_gpu_pointer()) {
+                    return blas::gpu::dot(in.size(), in.get_gpu_pointer().get(), 1, out.get_gpu_pointer().get(), 1);
                 }
+            } catch (std::exception &) {
+                // We couldn't allocate the pointers.
             }
-
-            if (rank_skip < rank_step) {
-                rank_skip = rank_step;
-            }
-
-            // Set up the indices for the view.
-            BufferVector<Range> view_indices(in.rank());
-
-            for (int i = rank_skip; i < in.rank(); i++) {
-                view_indices[i] = Range{0, in.dim(i)};
-            }
-
-            auto in_block  = BlockManager::get_singleton().request_gpu_block(buffer_size * sizeof(T));
-            auto in_lock   = in_block.lock();
-            auto out_block = BlockManager::get_singleton().request_gpu_block(buffer_size * sizeof(TOther));
-            auto out_lock  = out_block.lock();
-
-            einsums::BiggestTypeT<T, TOther> big_sum{0.0}, medium_sum{0.0}, small_sum{0.0};
-
-            bool not_big_re = true, not_big_im = true;
-
-            for (size_t i = 0; i < loop_step; i++) {
-                size_t temp = i;
-                for (int k = rank_step; k >= 0; k--) {
-                    view_indices[k] = Range{temp % in.dim(k), temp % in.dim(k) + 1};
-                    temp /= in.dim(k);
-                }
-                for (size_t j = 0; j < loop_skip; j++) {
-                    // Generate the view.
-                    view_indices[rank_skip] = Range{j * step_size, (j + 1) * step_size};
-
-                    // Find the view.
-                    auto in_view  = in.subscript(view_indices);
-                    auto out_view = out.subscript(view_indices);
-
-                    // Make the view point to the buffer.
-                    in_view.set_gpu_memory(in_lock);
-                    out_view.set_gpu_memory(out_lock);
-
-                    // Copy the data to the GPU.
-                    in_view.tensor_to_gpu();
-                    out_view.tensor_to_gpu();
-
-                    // Perform the operation.
-                    add_scale(blas::gpu::dot(in_view.size(), in_view.get_gpu_pointer().get(), 1, out_view.get_gpu_pointer().get(), 1),
-                              big_sum, medium_sum, small_sum, not_big_re, not_big_im);
-                }
-
-                // Handle the remainder.
-                if (remaining_size != 0) {
-                    view_indices[rank_skip] = Range{loop_skip * step_size, loop_skip * step_size + remaining_size};
-
-                    // Find the view.
-                    auto in_view  = in.subscript(view_indices);
-                    auto out_view = out.subscript(view_indices);
-
-                    // Make the view point to the buffer.
-                    in_view.set_gpu_memory(in_lock);
-                    out_view.set_gpu_memory(out_lock);
-
-                    // Copy the data to the GPU.
-                    in_view.tensor_to_gpu();
-                    out_view.tensor_to_gpu();
-
-                    // Perform the operation.
-                    add_scale(blas::gpu::dot(in_view.size(), in_view.get_gpu_pointer().get(), 1, out_view.get_gpu_pointer().get(), 1),
-                              big_sum, medium_sum, small_sum, not_big_re, not_big_im);
-                }
-            }
-            return combine_accum(big_sum, medium_sum, small_sum);
         }
+
+        // No writeback since the tensors are const.
     }
 #endif
 
@@ -368,115 +285,26 @@ BiggestTypeT<T, TOther> impl_true_dot(einsums::detail::TensorImpl<T> const &in, 
 
 #ifdef EINSUMS_COMPUTE_CODE
     if constexpr (std::is_same_v<T, TOther> && blas::IsBlasableV<T>) {
-        gpu::GPUAllocator<T>      in_alloc;
-        gpu::GPUAllocator<TOther> out_alloc;
+        // If one or both of the tensors are on GPU, use the GPU algorithm.
+        if (in.get_gpu_pointer() || out.get_gpu_pointer()) {
+            try {
+                auto in_lock = in.gpu_cache_tensor();
+                auto out_lock = out.gpu_cache_tensor();
 
-        size_t buffer_size = std::min(in_alloc.work_size(), out_alloc.work_size());
-
-        if (in.size() > buffer_size) {
-            // Calculate the things needed to loop over the tensors.
-            size_t    loop_step = 1, loop_skip = 0;
-            ptrdiff_t rank_step = -1, rank_skip = -1;
-            size_t    view1_size = 1, remaining_size = 0, step_size = 1;
-            bool      found_max = false;
-
-            for (int i = in.rank() - 1; i >= 0; i--) {
-                if (buffer_size > in.dim(i) * view1_size && !found_max) {
-                    view1_size *= in.dim(i);
-                } else if (buffer_size <= in.dim(i) * view1_size && view1_size < buffer_size && !found_max) {
-                    size_t max_dim = buffer_size / view1_size;
-                    rank_skip      = i;
-                    view1_size *= max_dim;
-                    step_size      = max_dim;
-                    remaining_size = in.dim(i) % max_dim;
-                    loop_skip      = in.dim(i) / max_dim;
-                    found_max      = true;
-                } else {
-                    loop_step *= in.dim(i);
-                    rank_step = std::max(rank_step, (ptrdiff_t)i);
-                }
-            }
-
-            if (rank_skip < rank_step) {
-                rank_skip = rank_step;
-            }
-
-            // Set up the indices for the view.
-            BufferVector<Range> view_indices(in.rank());
-
-            for (int i = rank_skip; i < in.rank(); i++) {
-                view_indices[i] = Range{0, in.dim(i)};
-            }
-
-            auto in_block  = BlockManager::get_singleton().request_gpu_block(buffer_size * sizeof(T));
-            auto in_lock   = in_block.lock();
-            auto out_block = BlockManager::get_singleton().request_gpu_block(buffer_size * sizeof(TOther));
-            auto out_lock  = out_block.lock();
-
-            einsums::BiggestTypeT<T, TOther> big_sum{0.0}, medium_sum{0.0}, small_sum{0.0};
-
-            bool not_big_re = true, not_big_im = true;
-
-            for (size_t i = 0; i < loop_step; i++) {
-                size_t temp = i;
-                for (int k = rank_step; k >= 0; k--) {
-                    view_indices[k] = Range{temp % in.dim(k), temp % in.dim(k) + 1};
-                    temp /= in.dim(k);
-                }
-                for (size_t j = 0; j < loop_skip; j++) {
-                    // Generate the view.
-                    view_indices[rank_skip] = Range{j * step_size, (j + 1) * step_size};
-
-                    // Find the view.
-                    auto in_view  = in.subscript(view_indices);
-                    auto out_view = out.subscript(view_indices);
-
-                    // Make the view point to the buffer.
-                    in_view.set_gpu_memory(in_lock);
-                    out_view.set_gpu_memory(out_lock);
-
-                    // Copy the data to the GPU.
-                    in_view.tensor_to_gpu();
-                    out_view.tensor_to_gpu();
-
-                    // Perform the operation.
+                // Make sure the pointers got allocated.
+                if (in.get_gpu_pointer() && out.get_gpu_pointer()) {
                     if constexpr (IsComplexV<T>) {
-                        add_scale(blas::gpu::dotc(in_view.size(), in_view.get_gpu_pointer().get(), 1, out_view.get_gpu_pointer().get(), 1),
-                                  big_sum, medium_sum, small_sum, not_big_re, not_big_im);
+                        return blas::gpu::dotc(in.size(), in.get_gpu_pointer().get(), 1, out.get_gpu_pointer().get(), 1);
                     } else {
-                        add_scale(blas::gpu::dot(in_view.size(), in_view.get_gpu_pointer().get(), 1, out_view.get_gpu_pointer().get(), 1),
-                                  big_sum, medium_sum, small_sum, not_big_re, not_big_im);
+                        return blas::gpu::dot(in.size(), in.get_gpu_pointer().get(), 1, out.get_gpu_pointer().get(), 1);
                     }
                 }
-
-                // Handle the remainder.
-                if (remaining_size != 0) {
-                    view_indices[rank_skip] = Range{loop_skip * step_size, loop_skip * step_size + remaining_size};
-
-                    // Find the view.
-                    auto in_view  = in.subscript(view_indices);
-                    auto out_view = out.subscript(view_indices);
-
-                    // Make the view point to the buffer.
-                    in_view.set_gpu_memory(in_lock);
-                    out_view.set_gpu_memory(out_lock);
-
-                    // Copy the data to the GPU.
-                    in_view.tensor_to_gpu();
-                    out_view.tensor_to_gpu();
-
-                    // Perform the operation.
-                    if constexpr (IsComplexV<T>) {
-                        add_scale(blas::gpu::dotc(in_view.size(), in_view.get_gpu_pointer().get(), 1, out_view.get_gpu_pointer().get(), 1),
-                                  big_sum, medium_sum, small_sum, not_big_re, not_big_im);
-                    } else {
-                        add_scale(blas::gpu::dot(in_view.size(), in_view.get_gpu_pointer().get(), 1, out_view.get_gpu_pointer().get(), 1),
-                                  big_sum, medium_sum, small_sum, not_big_re, not_big_im);
-                    }
-                }
+            } catch (std::exception &) {
+                // We couldn't allocate the pointers.
             }
-            return combine_accum(big_sum, medium_sum, small_sum);
         }
+
+        // No copy since the tensors are const.
     }
 #endif
 

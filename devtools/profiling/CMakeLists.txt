@@ -38,7 +38,9 @@ add_executable(profile_fort_loop profile_fort_loop.f03)
 endif ()
 
 add_executable(profile_einsums profile_einsums.cpp)
+target_link_directories(profile_einsums PRIVATE /usr/lib/x86_64-linux-gnu)
 target_link_libraries(profile_einsums PRIVATE Einsums::Einsums)
 
 add_executable(profile_blas profile_blas.cpp)
+target_link_directories(profile_blas PRIVATE /usr/lib/x86_64-linux-gnu)
 target_link_libraries(profile_blas PRIVATE Einsums::Einsums)

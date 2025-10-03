@@ -189,14 +189,8 @@ struct GPUAllocator {
 
         vars.deallocate(n * type_size);
 
-        try {
+        if (!device_is_reset) {
             hip_catch(hipFree((void *)p));
-        } catch (ErrorInvalidValue &e) {
-            if (device_is_reset) {
-                EINSUMS_LOG_DEBUG("Device has already been reset, and the pointer being deallocated was unrecognized.");
-            } else {
-                std::rethrow_exception(std::current_exception());
-            }
         }
     }
 
