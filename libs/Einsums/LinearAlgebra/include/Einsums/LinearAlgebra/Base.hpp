@@ -1456,7 +1456,7 @@ auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job)
         }
     }
 
-    if (std::tolower(job) != 'n' && U.is_row_major()) {
+    if (std::tolower(job) != 'n' && Vt.is_row_major()) {
         U.impl() = U.impl().transpose_view();
         for (size_t i = 0; i < m; i++) {
             for (size_t j = 0; j < i; j++) {
