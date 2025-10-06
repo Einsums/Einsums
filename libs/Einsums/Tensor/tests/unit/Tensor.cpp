@@ -24,7 +24,7 @@ TEST_CASE("Tensor creation", "[tensor]") {
     A.resize(einsums::Dim{3, 3});
     B.resize(einsums::Dim{3, 3});
 
-    auto C = create_tensor<double, true>("C", 3, 3);
+    auto C = create_tensor<double>(true, "C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -69,7 +69,7 @@ TEST_CASE("Tensor GEMMs", "[tensor]") {
     A.vector_data() = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     B.vector_data() = {11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
 
-    if (einsums::row_major_default) {
+    if (einsums::GlobalConfigMap::get_singleton().get_bool("row-major")) {
         einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
         CHECK_THAT(C.vector_data(),
                    Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
@@ -116,7 +116,7 @@ TEST_CASE("Tensor GEMVs", "[tensor]") {
     A.vector_data() = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     x.vector_data() = {11.0, 22.0, 33.0};
 
-    if (einsums::row_major_default) {
+    if (einsums::GlobalConfigMap::get_singleton().get_bool("row-major")) {
         einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
         CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(einsums::VectorData<double>{330.0, 396.0, 462.0}));
 
@@ -184,7 +184,7 @@ TEST_CASE("TensorView creation", "[tensor]") {
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3 && A.dim(2) == 3));
     REQUIRE((viewA.dim(0) == 3 && viewA.dim(1) == 9));
 
-    if (einsums::row_major_default) {
+    if (GlobalConfigMap::get_singleton().get_bool("row-major")) {
         for (int i = 0, ij = 0; i < 3; i++)
             for (int j = 0; j < 9; j++, ij++)
                 REQUIRE(viewA(i, j) == A(i, j / 3, j % 3));
@@ -208,7 +208,7 @@ TEST_CASE("TensorView creation", "[tensor]") {
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                if constexpr (einsums::row_major_default) {
+                if (GlobalConfigMap::get_singleton().get_bool("row-major")) {
                     REQUIRE(view1(j, i) == array[i + j * 10]);
                     REQUIRE(const_view1(j, i) == array[i + j * 10]);
                 } else {
