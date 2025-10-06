@@ -69,8 +69,10 @@ EINSUMS_EXPORT void add_Einsums_Tensor_arguments() {
         "The name of the HDF5 file for Einsums. Defaults to einsums.[pid].h5, where [pid] is the PID of the current process.",
         TensorCategory, cl::Location(global_string["hdf5-file-name"]), cl::Default(fmt::format("einsums.{}.h5", pid)));
 
-    static cl::Flag delete_files("einsums::no-delete-hdf5-files", {}, "Tells Einsums not to clean up HDF5 files on exit.", TensorCategory,
+    static cl::Flag delete_files("einsums:no-delete-hdf5-files", {}, "Tells Einsums not to clean up HDF5 files on exit.", TensorCategory,
                                  cl::Location(global_bool["delete-hdf5-files"]), cl::Default(false));
+
+    static cl::Flag row_major("einsums:row-major-default")
 }
 
 static void create_complex_types() {

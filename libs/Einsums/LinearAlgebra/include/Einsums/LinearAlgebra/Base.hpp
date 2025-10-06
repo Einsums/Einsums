@@ -1264,7 +1264,7 @@ auto svd(einsums::detail::TensorImpl<T> const &_A, char jobu, char jobvt)
         EINSUMS_THROW_EXCEPTION(std::runtime_error, "svd: Algorithm did not converge!", info);
     }
 
-    if (std::tolower(jobu) != 'n' && row_major_default) {
+    if (std::tolower(jobu) != 'n' && U.is_row_major()) {
         U.impl() = U.impl().transpose_view();
         for (size_t i = 0; i < m; i++) {
             for (size_t j = 0; j < i; j++) {
@@ -1273,7 +1273,7 @@ auto svd(einsums::detail::TensorImpl<T> const &_A, char jobu, char jobvt)
         }
     }
 
-    if (std::tolower(jobvt) != 'n' && row_major_default) {
+    if (std::tolower(jobvt) != 'n' && Vt.is_row_major()) {
         Vt.impl() = Vt.impl().transpose_view();
         for (size_t i = 0; i < n; i++) {
             for (size_t j = 0; j < i; j++) {
@@ -1456,7 +1456,7 @@ auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job)
         }
     }
 
-    if (std::tolower(job) != 'n' && row_major_default) {
+    if (std::tolower(job) != 'n' && Vt.is_row_major()) {
         U.impl() = U.impl().transpose_view();
         for (size_t i = 0; i < m; i++) {
             for (size_t j = 0; j < i; j++) {
@@ -1497,7 +1497,7 @@ auto qr(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, Te
 
     Tensor<T, 1> tau("tau", std::min(m, n));
     // Compute QR factorization of Y
-    if constexpr (row_major_default) {
+    if (A.is_row_major()) {
         info = blas::gelqf(n, m, A.data(), A.impl().get_lda(), tau.data());
         if (info != 0) {
             EINSUMS_THROW_EXCEPTION(std::invalid_argument,
@@ -1526,7 +1526,7 @@ auto qr(einsums::detail::TensorImpl<T> const &_A) -> std::tuple<Tensor<T, 2>, Te
     }
 
     // Extract Matrix Q out of QR factorization
-    if constexpr (row_major_default) {
+    if (Q.is_row_major()) {
         if constexpr (IsComplexV<T>) {
             info = blas::unglq(m, m, tau.dim(0), Q.data(), Q.impl().get_lda(), tau.data());
         } else {

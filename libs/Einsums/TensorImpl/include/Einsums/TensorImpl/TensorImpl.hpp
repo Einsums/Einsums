@@ -94,6 +94,16 @@ struct TensorImpl final {
      */
     using const_reference = T const &;
 
+#ifdef EINSUMS_COMPUTE_CODE
+    using GPULock    = std::shared_ptr<GPUBlock>;
+    using GPUPromise = std::weak_ptr<GPUBlock>;
+    using GPUPointer = gpu::GPUPointer<T>;
+#else
+    using GPULock    = int;
+    using GPUPromise = int;
+    using GPUPointer = int;
+#endif
+
     // Rule of five methods.
 
     /**
@@ -1635,7 +1645,7 @@ struct TensorImpl final {
         }
     }
 
-    [[nodiscard]] std::shared_ptr<GPUBlock> gpu_cache_tensor() {
+    [[nodiscard]] GPULock gpu_cache_tensor() {
         if (_gpu_memory.expired()) {
             _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
         }
@@ -1646,7 +1656,7 @@ struct TensorImpl final {
         return cached_gpu_memory;
     }
 
-    [[nodiscard]] std::shared_ptr<GPUBlock> gpu_cache_tensor_nowrite() {
+    [[nodiscard]] GPULock gpu_cache_tensor_nowrite() {
         if (_gpu_memory.expired()) {
             _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
         }
@@ -1655,7 +1665,7 @@ struct TensorImpl final {
         return cached_gpu_memory;
     }
 
-    [[nodiscard]] std::shared_ptr<GPUBlock> gpu_cache_tensor() const {
+    [[nodiscard]] GPULock gpu_cache_tensor() const {
         if (_gpu_memory.expired()) {
             _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
         }
@@ -1666,7 +1676,7 @@ struct TensorImpl final {
         return cached_gpu_memory;
     }
 
-    [[nodiscard]] std::shared_ptr<GPUBlock> gpu_cache_tensor_nowrite() const {
+    [[nodiscard]] GPULock gpu_cache_tensor_nowrite() const {
         if (_gpu_memory.expired()) {
             _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
         }
@@ -1690,13 +1700,21 @@ struct TensorImpl final {
         }
     }
 
-    std::weak_ptr<GPUBlock> get_gpu_memory() const { return _gpu_memory; }
+    GPUPromise get_gpu_memory() const { return _gpu_memory; }
 
     bool gpu_is_expired() const { return _gpu_memory.expired(); }
 
-    void set_gpu_memory(std::shared_ptr<GPUBlock> const &other) const {
-        _gpu_memory = other;
-    }
+    void set_gpu_memory(GPULock const &other) const { _gpu_memory = other; }
+#else
+    constexpr void                  tensor_to_gpu() const {}
+    constexpr void                  tensor_from_gpu() const {}
+    [[nodiscard]] constexpr GPULock gpu_cache_tensor() const { return 0; }
+    [[nodiscard]] constexpr GPULock gpu_cache_tensor_nowrite() const { return 0; }
+    constexpr GPULock               get_gpu_pointer() const { return 0; }
+    constexpr GPUPromise            get_gpu_memory() const { return 0; }
+    constexpr bool                  gpu_is_expired() const { return true; }
+    template <typename Ignore>
+    constexpr void set_gpu_memory(Ignore const &) const {}
 #endif
 
   private:
