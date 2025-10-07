@@ -1478,19 +1478,14 @@ auto truncated_syev(AType const &A, size_t in_k)
 
     BufferTensor<T, 2> subspace("subspace", evecs.dim(1), evecs.dim(1));
 
-    std::string name = fmt::format("/output/syev{}.1", A.name());
+    std::string name = fmt::format("/output/syev{}", A.name());
     if (A.name().size() == 0) {
         name = "";
     }
 
     DiskTensor<T, 2> temp(name, A.dim(0), k);
 
-    name = fmt::format("/output/syev{}.2", A.name());
-    if (A.name().size() == 0) {
-        name = "";
-    }
-
-    DiskTensor<T, 2>   temp2(name, A.dim(0), k + 5);
+    DiskTensor<T, 2>   temp2("", A.dim(0), k + 5);
     BufferTensor<T, 1> subspace_vals("subspace eigenvalues", evecs.dim(1));
     BufferTensor<T, 1> correction("correction vector", A.dim(0)), z("z intermediate", A.dim(0));
 
@@ -1592,14 +1587,14 @@ auto truncated_syev(AType const &A, size_t in_k)
     syev(&subspace, &evals);
 
     // Compute the approximate eigenvectors.
-    gemm('n', 'n', 1.0, evecs, subspace(All, Range{0, k}), 0.0, &temp);
+    gemm('n', 'n', 1.0, evecs, subspace(All, Range{0, in_k}), 0.0, &temp);
 
     // Sort.
-    for (int i = 0; i < k; i++) {
+    for (int i = 0; i < in_k; i++) {
         T   min     = evals(i);
         int min_pos = i;
 
-        for (int j = i + 1; j < k; j++) {
+        for (int j = i + 1; j < in_k; j++) {
             if (min > evals(j)) {
                 min     = evals(j);
                 min_pos = j;
