@@ -107,11 +107,11 @@ void impl_gemv(char transA, AlphaType alpha, einsums::detail::TensorImpl<AType> 
                                 "The transpose character was invalid! Expected c, n, or t, case insensitive, got '{}'.", transA);
     }
 
-    if (A_m != X.dim(0) || A_n != Y->dim(0)) {
+    if (A_n != X.dim(0) || A_m != Y->dim(0)) {
         EINSUMS_THROW_EXCEPTION(dimension_error,
                                 "The tensors passed to gemv were incompatible! Got transA: '{}', A rows: {}, A columns: {}, X size: {}, Y "
                                 "size: {}. Based on transA, X size should be {} and Y size should be {}.",
-                                transA, A.dim(0), A.dim(1), X.dim(0), Y->dim(0), A_m, A_n);
+                                transA, A.dim(0), A.dim(1), X.dim(0), Y->dim(0), A_n, A_m);
     }
 #ifdef EINSUMS_COMPUTE_CODE
     if constexpr (std::is_same_v<AType, XType> && std::is_same_v<AType, YType> && blas::IsBlasableV<AType>) {
