@@ -2199,6 +2199,12 @@ explicit GeneralTensor(Dim<Rank> const &, Args...) -> GeneralTensor<double, Rank
 template <size_t Rank, typename... Args>
 explicit GeneralTensor(bool, Dim<Rank> const &, Args...) -> GeneralTensor<double, Rank, std::allocator<double>>;
 
+template <typename T, size_t Rank, typename Alloc>
+GeneralTensor(GeneralTensor<T, Rank, Alloc> const &) -> GeneralTensor<T, Rank, Alloc>;
+
+template <typename T, size_t Rank, typename Alloc>
+GeneralTensor(GeneralTensor<T, Rank, Alloc> &&) -> GeneralTensor<T, Rank, Alloc>;
+
 template <typename T, size_t Rank, size_t OtherRank, typename Alloc, typename... Args>
 TensorView(GeneralTensor<T, OtherRank, Alloc> &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
 
