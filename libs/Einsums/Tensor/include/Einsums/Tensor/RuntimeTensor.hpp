@@ -136,8 +136,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    GeneralRuntimeTensor(std::string name, Dim const &dims, bool row_major)
-        : _name{name}, _impl(nullptr, dims, row_major) {
+    GeneralRuntimeTensor(std::string name, Dim const &dims, bool row_major) : _name{name}, _impl(nullptr, dims, row_major) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -755,51 +754,47 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
 
     bool is_column_major() const { return _impl.is_column_major(); }
 
-    TensorView<T, Rank> transpose_view() { return TensorView<T, Rank>(_impl.transpose_view()); }
+    RuntimeTensorView<T> transpose_view() { return RuntimeTensorView<T>(_impl.transpose_view()); }
 
-    TensorView<T, Rank> const transpose_view() const { return TensorView<T, Rank>(_impl.transpose_view()); }
+    RuntimeTensorView<T> const transpose_view() const { return RuntimeTensorView<T>(_impl.transpose_view()); }
 
-    TensorView<T, Rank> to_row_major() { return TensorView<T, Rank>(_impl.to_row_major()); }
+    RuntimeTensorView<T> to_row_major() { return RuntimeTensorView<T>(_impl.to_row_major()); }
 
-    TensorView<T, Rank> const to_row_major() const { return TensorView<T, Rank>(_impl.to_row_major()); }
+    RuntimeTensorView<T> const to_row_major() const { return RuntimeTensorView<T>(_impl.to_row_major()); }
 
-    TensorView<T, Rank> to_column_major() { return TensorView<T, Rank>(_impl.to_column_major()); }
+    RuntimeTensorView<T> to_column_major() { return RuntimeTensorView<T>(_impl.to_column_major()); }
 
-    TensorView<T, Rank> const to_column_major() const { return TensorView<T, Rank>(_impl.to_column_major()); }
+    RuntimeTensorView<T> const to_column_major() const { return RuntimeTensorView<T>(_impl.to_column_major()); }
 
     template <std::integral... MultiIndex>
-    TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&...index) {
-        return TensorView<T, Rank - sizeof...(MultiIndex) + 1>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
+    RuntimeTensorView<T> tie_indices(MultiIndex &&...index) {
+        return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
     template <std::integral... MultiIndex>
-    TensorView<T, Rank - sizeof...(MultiIndex) + 1> const tie_indices(MultiIndex &&...index) const {
-        return TensorView<T, Rank - sizeof...(MultiIndex) + 1>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
+    RuntimeTensorView<T> const tie_indices(MultiIndex &&...index) const {
+        return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
-    constexpr void tensor_to_gpu() const { _impl.tensor_to_gpu(); }
+    void tensor_to_gpu() const { _impl.tensor_to_gpu(); }
 
-    constexpr void tensor_from_gpu() { _impl.tensor_from_gpu(); }
+    void tensor_from_gpu() { _impl.tensor_from_gpu(); }
 
-    constexpr auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
 
-    constexpr auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
+    auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
+    auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
 
-    constexpr auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
 
-    constexpr auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
+    auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
 
-    constexpr auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
-
-    constexpr auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
-
-    constexpr bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
+    bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
 
   protected:
     Vector _data{};
@@ -1397,51 +1392,47 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
 
     bool is_column_major() const { return _impl.is_column_major(); }
 
-    TensorView<T, Rank> transpose_view() { return TensorView<T, Rank>(_impl.transpose_view()); }
+    RuntimeTensorView<T> transpose_view() { return RuntimeTensorView<T>(_impl.transpose_view()); }
 
-    TensorView<T, Rank> const transpose_view() const { return TensorView<T, Rank>(_impl.transpose_view()); }
+    RuntimeTensorView<T> const transpose_view() const { return RuntimeTensorView<T>(_impl.transpose_view()); }
 
-    TensorView<T, Rank> to_row_major() { return TensorView<T, Rank>(_impl.to_row_major()); }
+    RuntimeTensorView<T> to_row_major() { return RuntimeTensorView<T>(_impl.to_row_major()); }
 
-    TensorView<T, Rank> const to_row_major() const { return TensorView<T, Rank>(_impl.to_row_major()); }
+    RuntimeTensorView<T> const to_row_major() const { return RuntimeTensorView<T>(_impl.to_row_major()); }
 
-    TensorView<T, Rank> to_column_major() { return TensorView<T, Rank>(_impl.to_column_major()); }
+    RuntimeTensorView<T> to_column_major() { return RuntimeTensorView<T>(_impl.to_column_major()); }
 
-    TensorView<T, Rank> const to_column_major() const { return TensorView<T, Rank>(_impl.to_column_major()); }
+    RuntimeTensorView<T> const to_column_major() const { return RuntimeTensorView<T>(_impl.to_column_major()); }
 
     template <std::integral... MultiIndex>
-    TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&...index) {
-        return TensorView<T, Rank - sizeof...(MultiIndex) + 1>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
+    RuntimeTensorView<T> tie_indices(MultiIndex &&...index) {
+        return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
     template <std::integral... MultiIndex>
-    TensorView<T, Rank - sizeof...(MultiIndex) + 1> const tie_indices(MultiIndex &&...index) const {
-        return TensorView<T, Rank - sizeof...(MultiIndex) + 1>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
+    RuntimeTensorView<T> const tie_indices(MultiIndex &&...index) const {
+        return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
-    constexpr void tensor_to_gpu() const { _impl.tensor_to_gpu(); }
+    void tensor_to_gpu() const { _impl.tensor_to_gpu(); }
 
-    constexpr void tensor_from_gpu() { _impl.tensor_from_gpu(); }
+    void tensor_from_gpu() { _impl.tensor_from_gpu(); }
 
-    constexpr auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
 
-    constexpr auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
+    auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
+    auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
 
-    constexpr auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
 
-    constexpr auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
+    auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
 
-    constexpr auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
-
-    constexpr auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
-
-    constexpr bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
+    bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
 
   protected:
     /**

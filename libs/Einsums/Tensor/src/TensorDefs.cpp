@@ -58,10 +58,27 @@ template class RuntimeTensorView<std::complex<float>>;
 template class RuntimeTensorView<std::complex<double>>;
 #endif
 
-namespace detail {
-bool verify_exists(hid_t loc_id, std::string const &path, hid_t lapl_id) {
-    if (path.length() == 0 || path == "/") {
+static bool verify_path(std::string const &path) {
+    if (path.size() == 0) {
         return true;
+    }
+
+    if (path[0] != '/' && path[0] != '.') {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error,
+                                "The format of the disk tensor name \"{}\" was invalid! It must be formatted as a path.", path);
+    }
+
+    return true;
+}
+
+namespace detail {
+
+bool verify_exists(hid_t loc_id, std::string const &path, hid_t lapl_id) {
+    if (!verify_path(path)) {
+        return false;
+    }
+    if (path.length() == 0) {
+        return false;
     }
 
     std::string temp_path;
