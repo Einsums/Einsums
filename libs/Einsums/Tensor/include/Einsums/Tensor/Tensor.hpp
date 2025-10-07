@@ -1039,29 +1039,25 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
         return TensorView<T, Rank - sizeof...(MultiIndex) + 1>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
-    constexpr void tensor_to_gpu() const { _impl.tensor_to_gpu(); }
+    void tensor_to_gpu() const { _impl.tensor_to_gpu(); }
 
-    constexpr void tensor_from_gpu() { _impl.tensor_from_gpu(); }
+    void tensor_from_gpu() { _impl.tensor_from_gpu(); }
 
-    constexpr auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
 
-    constexpr auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
+    auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
+    auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
 
-    constexpr auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
 
-    constexpr auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
+    auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
 
-    constexpr auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
-
-    constexpr auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
-
-    constexpr bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
+    bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
 
   private:
     std::string _name{"(unnamed)"};
@@ -1943,29 +1939,25 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
         return TensorView<T, Rank - sizeof...(MultiIndex) + 1>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
-    constexpr void tensor_to_gpu() const { _impl.tensor_to_gpu(); }
+    void tensor_to_gpu() const { _impl.tensor_to_gpu(); }
 
-    constexpr void tensor_from_gpu() { _impl.tensor_from_gpu(); }
+    void tensor_from_gpu() { _impl.tensor_from_gpu(); }
 
-    constexpr auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
 
-    constexpr auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
+    auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
+    auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
 
-    constexpr auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
 
-    constexpr auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
 
-    constexpr auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
+    auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
 
-    constexpr auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
-
-    constexpr auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
-
-    constexpr bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
+    bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
 
   private:
     /**

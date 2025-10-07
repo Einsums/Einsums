@@ -62,7 +62,7 @@ template <typename T>
 void test_disk_syev() {
     auto             A = create_random_definite<T>("A", 10, 10);
     auto             x = create_tensor<T>("x", 10);
-    DiskTensor<T, 2> A_disk("A disk", 10, 10);
+    DiskTensor<T, 2> A_disk(fmt::format("/test/syev/{}/A", type_name<T>()), 10, 10);
 
     A_disk.write(A);
 

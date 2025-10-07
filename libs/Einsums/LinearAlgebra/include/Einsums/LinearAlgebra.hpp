@@ -1448,22 +1448,22 @@ auto truncated_syev(AType const &A, size_t in_k)
     size_t k = in_k;
 
     // First, create the output tensors.
-    DiskTensor<T, 2> evecs("Eigenvectors", A.dim(0), k);
+    DiskTensor<T, 2> evecs("/temp/syev", A.dim(0), std::min(A.dim(1), k + 5));
 
-    evecs.write(create_random_tensor<T>("Eigenvectors", A.dim(0), k));
+    evecs.write(create_random_tensor<T>("Eigenvectors", A.dim(0), std::min(A.dim(1), k + 5)));
 
-    Tensor<T, 1> evals("Eigenvalues", k);
+    Tensor<T, 1> evals("Eigenvalues", std::min(A.dim(1), k + 5));
 
     // Orthonormalize the eigenvectors.
     // Start by normalizing.
-    for (int i = 0; i < k; i++) {
+    for (int i = 0; i < evecs.dim(1); i++) {
         auto view = evecs(All, i);
         auto norm = vec_norm(view.get());
         view.get() /= norm;
     }
 
     // Then orthonormalizing.
-    for (int i = 1; i < k; i++) {
+    for (int i = 1; i < evecs.dim(1); i++) {
         auto dest_view = evecs(All, i);
         for (int j = 0; j < i; j++) {
             auto src_view = evecs(All, j);
@@ -1476,12 +1476,23 @@ auto truncated_syev(AType const &A, size_t in_k)
         dest_view.get() /= norm;
     }
 
-    BufferTensor<T, 2> subspace("subspace", k, k);
+    BufferTensor<T, 2> subspace("subspace", evecs.dim(1), evecs.dim(1));
 
-    DiskTensor<T, 2>   temp("Eigenvalue Output", A.dim(0), k);
-    BufferTensor<T, 1> subspace_vals("subspace eigenvalues", k);
-    BufferTensor<T, 1> residual("residual", A.dim(0)), correction("correction vector", A.dim(0)), z("z intermediate", A.dim(0)),
-        error("error term", A.dim(0));
+    std::string name = fmt::format("/output/syev{}.1", A.name());
+    if (A.name().size() == 0) {
+        name = "";
+    }
+
+    DiskTensor<T, 2> temp(name, A.dim(0), k);
+
+    name = fmt::format("/output/syev{}.2", A.name());
+    if (A.name().size() == 0) {
+        name = "";
+    }
+
+    DiskTensor<T, 2>   temp2(name, A.dim(0), k + 5);
+    BufferTensor<T, 1> subspace_vals("subspace eigenvalues", evecs.dim(1));
+    BufferTensor<T, 1> correction("correction vector", A.dim(0)), z("z intermediate", A.dim(0));
 
     // Set up the convergence condition.
     std::vector<bool> converged(k);
@@ -1493,129 +1504,61 @@ auto truncated_syev(AType const &A, size_t in_k)
     // Get the diagonal entries for computing the over-relaxation parameter.
     BufferTensor<T, 1> diagonal("diagonal", A.dim(0));
 
-    {
-        BufferVector<size_t> coords(2 * A.dim(0));
+    for (int i = 0; i < A.dim(0) / 64; i++) {
+        auto  block_view   = A(Range{64 * i, 64 * (i + 1)}, Range{64 * i, 64 * (i + 1)});
+        auto &block_tensor = block_view.get();
 
-        for (int i = 0; i < A.dim(0); i++) {
-            coords[2 * i]     = i;
-            coords[2 * i + 1] = i;
-        }
+        diagonal(Range{64 * i, 64 * (i + 1)}) = block_tensor.tie_indices(0, 1);
+    }
 
-        size_t dim  = A.dim(0);
-        size_t size = A.size();
+    if (A.dim(0) % 64 != 0) {
+        auto  block_view   = A(Range{64 * (A.dim(0) / 64), A.dim(0)}, Range{64 * (A.dim(0) / 64), A.dim(0)});
+        auto &block_tensor = block_view.get();
 
-        auto disk_space = H5Scopy(A.dataspace());
-
-        auto err = H5Sselect_elements(disk_space, H5S_SELECT_SET, dim, (hsize_t *)coords.data());
-
-        auto mem_space = H5Screate_simple(1, (hsize_t *)&dim, (hsize_t *)&dim);
-
-        // size_t start = 0, stride = A.stride(0) + A.stride(1), count = A.dim(0), block = 1;
-        // auto   err = H5Sselect_hyperslab(disk_space, H5S_SELECT_SET, (hsize_t *)&start, (hsize_t *)&stride, (hsize_t *)&count, NULL);
-
-        if (err < 0) {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not select the diagonal entries of the input matrix in truncated_syev!");
-        }
-
-        auto data_type = H5I_INVALID_HID;
-
-        if constexpr (std::is_same_v<T, float>) {
-            data_type = H5T_NATIVE_FLOAT;
-        } else if constexpr (std::is_same_v<T, double>) {
-            data_type = H5T_NATIVE_DOUBLE;
-        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
-            data_type = einsums::detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
-        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-            data_type = einsums::detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
-        }
-
-        err = H5Dread(A.dataset(), data_type, mem_space, disk_space, H5P_DEFAULT, (void *)diagonal.data());
-
-        if (err < 0) {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not copy the diagonal entries of the input matrix in truncated_syev!");
-        }
-
-        H5Sclose(disk_space);
-        H5Sclose(mem_space);
+        diagonal(Range{64 * (A.dim(0) / 64), A.dim(0)}) = block_tensor.tie_indices(0, 1);
     }
 
     do {
         // Calculate the subspace matrix.
-        gemm('n', 'n', 1.0, A, evecs, 0.0, &temp);
-        gemm('t', 'n', 1.0, evecs, temp, 0.0, &subspace);
+        gemm('n', 'n', 1.0, A, evecs, 0.0, &temp2);
+        gemm('t', 'n', 1.0, evecs, temp2, 0.0, &subspace);
 
         // Decompose the subspace.
 
         syev(&subspace, &subspace_vals);
 
         // Compute the approximate eigenvectors.
-        gemm('t', 'n', 1.0, subspace, evecs, 0.0, &temp);
+        gemm('n', 'n', 1.0, evecs, subspace(All, Range{0, k}), 0.0, &temp);
 
         // Compute the residuals.
-        size_t new_k = k;
-        for (int i = 0; i < k; i++) {
+        size_t new_k = evecs.dim(1);
+        for (int i = 0; i < in_k; i++) {
             if (converged[i]) {
                 continue;
             }
             // Compute the residual.
-            residual = temp(All, i);
+            {
+                auto temp_vec = temp(All, i);
+                correction    = temp_vec.get();
 
-            gemv('n', T{1.0}, A, temp(All, i), -subspace_vals(i), &residual);
+                gemv('n', T{1.0}, A, temp_vec, -subspace_vals(i), &correction);
+            }
 
             // Check for convergence.
-            if (vec_norm(residual) < 1e-6) {
+            if (vec_norm(correction) < 1e-6) {
                 converged[i] = true;
                 continue;
             }
 
             // Solve for the correction.
-
-            // Compute the parameter for successive over-relaxation. Use the Gershgorin circle theorem to approximate it.
-            T furthest_center{0.0};
-
-            for (int i = 0; i < A.dim(0); i++) {
-                auto dist = diagonal(i) - subspace_vals(i);
-                if (std::abs(dist) > furthest_center) {
-                    furthest_center = std::abs(dist);
-                }
-            }
-
-            // Compute the parameter.
-            T mu = std::min(furthest_center, T{1.0});
-
-            T inner = (mu / (1 + std::sqrt(1 - mu * mu)));
-            T omega = 1 + inner * inner;
-
-            // Now, we need to create an initial guess. Use the current eigenvector.
-            correction = evecs(All, i);
-
-            do {
-                LabeledSection("truncated_syev microiterations");
-                // Calculate the error term.
-                error = residual;
-                gemv('n', T{1.0}, A, correction, T{1.0}, &error);
-                axpy(-subspace_vals(i), correction, &error);
-
-                // Solve for the adjustment term for simple iteration.
-                z = error;
-
-                for (int j = 0; j < A.dim(1); j++) {
-                    auto column = A(All, j).get();
-                    T    scale  = omega / (column(j) - subspace_vals(i));
-                    z(j) *= scale;
-
-                    for (int l = j + 1; l < A.dim(0); l++) {
-                        z(l) += column(j) * z(j);
-                    }
-                }
-                correction += z;
-            } while (vec_norm(error) > 1e-8);
+            scale(-T{1.0} / (diagonal(i) - subspace_vals(i)), &correction);
 
             // Now that we have the correction, solve for the corrected correction.
             z = correction; // Save the original correction.
-            for (int j = 0; j < k; j++) {
+            for (int j = 0; j < new_k; j++) {
                 auto view = evecs(All, j);
-                axpy(-dot(view.get(), z), view.get(), &correction);
+                auto tens = view.get();
+                axpy(-dot(tens, z), tens, &correction);
             }
 
             // Check the norms.
@@ -1623,16 +1566,17 @@ auto truncated_syev(AType const &A, size_t in_k)
             if (norm / vec_norm(z) > 1e-3) {
                 correction /= norm;
                 evecs.resize(A.dim(0), new_k + 1);
+                auto view  = evecs(All, new_k);
+                view.get() = correction;
                 new_k++;
-                converged.push_back(false);
             }
         }
 
         if (new_k != k) {
             evals.resize(new_k);
             subspace.resize(new_k, new_k);
-            temp.resize(A.dim(0), new_k);
             subspace_vals.resize(new_k);
+            temp2.resize(A.dim(0), new_k);
         }
         k = new_k;
     } while (!std::all_of(converged.begin(), converged.end(), [](bool n) { return n; }));
@@ -1640,15 +1584,15 @@ auto truncated_syev(AType const &A, size_t in_k)
     // Calculate the actual eigenvectors.
 
     // Calculate the subspace matrix.
-    gemm('n', 'n', 1.0, A, evecs, 0.0, &temp);
-    gemm('t', 'n', 1.0, evecs, temp, 0.0, &subspace);
+    gemm('n', 'n', 1.0, A, evecs, 0.0, &temp2);
+    gemm('t', 'n', 1.0, evecs, temp2, 0.0, &subspace);
 
     // Decompose the subspace.
 
     syev(&subspace, &evals);
 
     // Compute the approximate eigenvectors.
-    gemm('t', 'n', 1.0, subspace, evecs, 0.0, &temp);
+    gemm('n', 'n', 1.0, evecs, subspace(All, Range{0, k}), 0.0, &temp);
 
     // Sort.
     for (int i = 0; i < k; i++) {
@@ -1671,7 +1615,9 @@ auto truncated_syev(AType const &A, size_t in_k)
         }
     }
 
-    return std::make_tuple(temp, evals);
+    evecs.unlink();
+
+    return std::make_tuple(std::move(temp), std::move(evals));
 }
 
 /**

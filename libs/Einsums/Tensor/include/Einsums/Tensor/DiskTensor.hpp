@@ -20,6 +20,7 @@
 #include <Einsums/Utilities.hpp>
 
 #include <H5Dpublic.h>
+#include <H5Ipublic.h>
 #include <H5Ppublic.h>
 #include <H5Spublic.h>
 #include <H5Tpublic.h>
@@ -158,7 +159,18 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     /**
      * Default move constructor.
      */
-    DiskTensor(DiskTensor &&) {}
+    DiskTensor(DiskTensor &&other)
+        : _tensor(std::move(other._tensor)), _constructed(other._constructed), _creation_props(other._creation_props),
+          _data_type(other._data_type), _dataset(other._dataset), _dataspace(other._dataspace), _dims(std::move(other._dims)),
+          _existed(other._existed), _file(other._file), _size(other._size), _strides(std::move(other._strides)) {
+        other._constructed    = false;
+        other._creation_props = H5I_INVALID_HID;
+        other._dataset        = H5I_INVALID_HID;
+        other._dataspace      = H5I_INVALID_HID;
+        other._existed        = false;
+        other._file           = H5I_INVALID_HID;
+        other._size           = 0;
+    }
 
     /**
      * Default destructor.
@@ -188,7 +200,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     explicit DiskTensor(hid_t file, std::string name, Dim<Rank> dims, int deflate_level = -1)
         : _file{file}, _name{std::move(name)}, _dims{dims} {
 
-        _size = dims_to_strides(_dims, _strides);
+        _size = dims_to_strides(_dims, _strides, true);
 
         std::array<hsize_t, Rank> max_dims;
         max_dims.fill(H5S_UNLIMITED);
@@ -235,8 +247,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
             // Maximum chunk size is 2^32 - 1, but chunks can not be bigger than the data set in any dimension.
             for (int i = rank - 1; i >= 0; i--) {
-                if (prod * _dims[i] >= 0xffffffffUL) {
-                    chunk_dims[i] = 0xffffffffUL / prod;
+                if (prod * _dims[i] >= 0xffffffffUL / sizeof(T)) {
+                    chunk_dims[i] = 0xffffffffUL / sizeof(T) / prod;
                     break;
                 } else {
                     prod *= _dims[i];
@@ -313,12 +325,38 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     }
 
     void resize(Dim<Rank> const &new_dims) {
+        put();
+        _constructed = false;
+        H5Dflush(_dataset);
         auto err = H5Dset_extent(_dataset, (hsize_t *)new_dims.data());
         if (err < 0) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not extend the disk tensor!");
         }
+        H5Dflush(_dataset);
         H5Sclose(_dataspace);
         _dataspace = H5Dget_space(_dataset);
+        _dims      = new_dims;
+        _size      = dims_to_strides(_dims, _strides, true);
+
+        err = H5Sselect_all(_dataspace);
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not select the extended dataspace!");
+        }
+
+        Dim<Rank> test_dims, max_dims;
+
+        auto test_rank = H5Sget_simple_extent_dims(_dataspace, (hsize_t *)test_dims.data(), (hsize_t *)max_dims.data());
+
+        if (test_rank != Rank) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Something went wrong when creating the resized data space!");
+        }
+
+        for (int i = 0; i < Rank; i++) {
+            if (test_dims[i] != _dims[i]) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "The new dimensions did not get set properly during resize!");
+            }
+        }
     }
 
     /**
@@ -611,32 +649,38 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     }
 
     void put() {
-        std::array<size_t, rank> counts;
+        if (_constructed) {
+            std::array<size_t, rank> counts;
 
-        counts.fill(1);
+            counts.fill(1);
 
-        hid_t mem_dataspace =
-            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+            hid_t mem_dataspace =
+                H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
 
-        if (mem_dataspace == H5I_INVALID_HID) {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+            if (mem_dataspace == H5I_INVALID_HID) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+            }
+            H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
         }
-        H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
     }
 
     void put() const {
-        std::array<size_t, rank> counts;
+        if (_constructed) {
+            std::array<size_t, rank> counts;
 
-        counts.fill(1);
+            counts.fill(1);
 
-        hid_t mem_dataspace =
-            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+            hid_t mem_dataspace =
+                H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
 
-        if (mem_dataspace == H5I_INVALID_HID) {
-            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+            if (mem_dataspace == H5I_INVALID_HID) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+            }
+            H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
         }
-        H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
     }
+
+    void unlink() const { H5Ldelete(_file, _name.c_str(), H5P_DEFAULT); }
 
   private:
     /**

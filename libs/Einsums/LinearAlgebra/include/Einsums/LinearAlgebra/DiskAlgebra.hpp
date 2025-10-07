@@ -25,10 +25,8 @@ void scale(U alpha, CType *C) {
     size_t buffer_size = C_alloc.work_buffer_size();
 
     if (C->size() <= buffer_size) {
-
-        auto C_view = std::apply(*C, std::array<einsums::AllT, Rank>());
-
-        scale(alpha, &C_view.get());
+        scale(alpha, &C->get());
+        C->put();
         return;
     }
 
@@ -80,6 +78,7 @@ void scale(U alpha, CType *C) {
             auto C_view = std::apply(*C, view_indices);
 
             scale(alpha, &C_view.get());
+            C_view.put();
         }
 
         // Handle the remainder.
@@ -89,6 +88,7 @@ void scale(U alpha, CType *C) {
             auto C_view = std::apply(*C, view_indices);
 
             scale(alpha, &C_view.get());
+            C_view.put();
         }
     }
 }
@@ -110,47 +110,15 @@ auto dot_base(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
     size_t buffer_size = std::min(A_alloc.work_buffer_size(), B_alloc.work_buffer_size());
 
     if (A.size() <= buffer_size) {
-        bool A_reserved = A_alloc.reserve(A.size());
-        bool B_reserved = B_alloc.reserve(A.size());
-
-        while (!A_reserved) {
-            std::this_thread::yield();
-            A_reserved = A_alloc.reserve(A.size());
-        }
-
-        while (!B_reserved) {
-            std::this_thread::yield();
-            B_reserved = B_alloc.reserve(A.size());
-        }
-
-        auto A_view = std::apply(A, std::array<einsums::AllT, Rank>());
-        auto B_view = std::apply(B, std::array<einsums::AllT, Rank>());
-
         BiggestTypeT<typename AType::ValueType, typename BType::ValueType> out;
 
         if constexpr (Conjugate && IsComplexV<typename AType::ValueType>) {
-            out = true_dot(A_view.get(), B_view.get());
+            out = true_dot(A.get(), B.get());
         } else {
-            out = dot(A_view.get(), B_view.get());
+            out = dot(A.get(), B.get());
         }
 
-        A_alloc.release(A.size());
-        B_alloc.release(B.size());
-
         return out;
-    }
-
-    bool A_reserved = A_alloc.reserve(buffer_size);
-    bool B_reserved = B_alloc.reserve(buffer_size);
-
-    while (!A_reserved) {
-        std::this_thread::yield();
-        A_reserved = A_alloc.reserve(buffer_size);
-    }
-
-    while (!B_reserved) {
-        std::this_thread::yield();
-        B_reserved = B_alloc.reserve(buffer_size);
     }
 
     // Calculate the things needed to loop over the tensors.
@@ -227,8 +195,6 @@ auto dot_base(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
         }
     }
 
-    A_alloc.release(buffer_size);
-    B_alloc.release(buffer_size);
     return combine_accum(big_sum, medium_sum, small_sum);
 }
 
@@ -263,34 +229,9 @@ void direct_product(U alpha, AType const &A, BType const &B, U beta, CType *C) {
     size_t buffer_size = std::min(A_alloc.work_buffer_size(), std::min(B_alloc.work_buffer_size(), C_alloc.work_buffer_size()));
 
     if (A.size() <= buffer_size) {
-        bool A_reserved = A_alloc.reserve(A.size());
-        bool B_reserved = B_alloc.reserve(A.size());
-        bool C_reserved = C_alloc.reserve(A.size());
+        direct_product(alpha, A.get(), B.get(), beta, &C->get());
 
-        while (!A_reserved) {
-            std::this_thread::yield();
-            A_reserved = A_alloc.reserve(A.size());
-        }
-
-        while (!B_reserved) {
-            std::this_thread::yield();
-            B_reserved = B_alloc.reserve(A.size());
-        }
-
-        while (!C_reserved) {
-            std::this_thread::yield();
-            C_reserved = C_alloc.reserve(A.size());
-        }
-
-        auto A_view = std::apply(A, std::array<einsums::AllT, Rank>());
-        auto B_view = std::apply(B, std::array<einsums::AllT, Rank>());
-        auto C_view = std::apply(*C, std::array<einsums::AllT, Rank>());
-
-        direct_product(alpha, A_view.get(), B_view.get(), beta, &C_view.get());
-
-        A_alloc.release(A.size());
-        B_alloc.release(A.size());
-        C_alloc.release(A.size());
+        C->put();
         return;
     }
 
@@ -299,25 +240,6 @@ void direct_product(U alpha, AType const &A, BType const &B, U beta, CType *C) {
     ptrdiff_t rank_step = -1, rank_skip = -1;
     size_t    view1_size = 1, remaining_size = 0, step_size = 1;
     bool      found_max = false;
-
-    bool A_reserved = A_alloc.reserve(buffer_size);
-    bool B_reserved = B_alloc.reserve(buffer_size);
-    bool C_reserved = C_alloc.reserve(buffer_size);
-
-    while (!A_reserved) {
-        std::this_thread::yield();
-        A_reserved = A_alloc.reserve(buffer_size);
-    }
-
-    while (!B_reserved) {
-        std::this_thread::yield();
-        B_reserved = B_alloc.reserve(buffer_size);
-    }
-
-    while (!C_reserved) {
-        std::this_thread::yield();
-        C_reserved = C_alloc.reserve(buffer_size);
-    }
 
     for (int i = Rank - 1; i >= 0; i--) {
         if (buffer_size > A.dim(i) * view1_size && !found_max) {
@@ -363,6 +285,7 @@ void direct_product(U alpha, AType const &A, BType const &B, U beta, CType *C) {
             auto C_view = std::apply(*C, view_indices);
 
             direct_product(alpha, A_view.get(), B_view.get(), beta, &C_view.get());
+            C_view.put();
         }
 
         // Handle the remainder.
@@ -374,12 +297,9 @@ void direct_product(U alpha, AType const &A, BType const &B, U beta, CType *C) {
             auto C_view = std::apply(*C, view_indices);
 
             direct_product(alpha, A_view.get(), B_view.get(), beta, &C_view.get());
+            C_view.put();
         }
     }
-
-    A_alloc.release(buffer_size);
-    B_alloc.release(buffer_size);
-    C_alloc.release(buffer_size);
 }
 
 template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typename U>
@@ -413,18 +333,22 @@ void gemm(char transA, char transB, U alpha, AType const &A, BType const &B, U b
     if (m < 500 && n < 500 && k < 500) {
         if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType> && BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A.get(), B.get(), beta, &C->get());
+            C->put();
         } else if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType>) {
             detail::gemm(transA, transB, alpha, A.get(), B.get(), beta, C);
         } else if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A.get(), B, beta, &C->get());
+            C->put();
         } else if constexpr (BufferableTensorConcept<BType> && BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A, B.get(), beta, &C->get());
+            C->put();
         } else if constexpr (BufferableTensorConcept<AType>) {
             detail::gemm(transA, transB, alpha, A.get(), B, beta, C);
         } else if constexpr (BufferableTensorConcept<BType>) {
             detail::gemm(transA, transB, alpha, A, B.get(), beta, C);
         } else if constexpr (BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A, B, beta, &C->get());
+            C->put();
         } else {
             detail::gemm(transA, transB, alpha, A, B, beta, C);
         }
@@ -603,18 +527,22 @@ void gemv(char transA, U alpha, AType const &A, BType const &B, U beta, CType *C
     if (m < 500 && n < 500) {
         if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType> && BufferableTensorConcept<CType>) {
             detail::gemv(transA, alpha, A.get(), B.get(), beta, &C->get());
+            C->put();
         } else if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType>) {
             detail::gemv(transA, alpha, A.get(), B.get(), beta, C);
         } else if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<CType>) {
             detail::gemv(transA, alpha, A.get(), B, beta, &C->get());
+            C->put();
         } else if constexpr (BufferableTensorConcept<BType> && BufferableTensorConcept<CType>) {
             detail::gemv(transA, alpha, A, B.get(), beta, &C->get());
+            C->put();
         } else if constexpr (BufferableTensorConcept<AType>) {
             detail::gemv(transA, alpha, A.get(), B, beta, C);
         } else if constexpr (BufferableTensorConcept<BType>) {
             detail::gemv(transA, alpha, A, B.get(), beta, C);
         } else if constexpr (BufferableTensorConcept<CType>) {
             detail::gemv(transA, alpha, A, B, beta, &C->get());
+            C->put();
         } else {
             detail::gemv(transA, alpha, A, B, beta, C);
         }
@@ -689,10 +617,13 @@ void ger(U alpha, XType const &X, YType const &Y, AType *A) {
     if (m < 500 && n < 500) {
         if constexpr (BufferableTensorConcept<XType> && BufferableTensorConcept<YType>) {
             detail::ger(alpha, X.get(), Y.get(), &A->get());
+            A->put();
         } else if constexpr (BufferableTensorConcept<XType>) {
             detail::ger(alpha, X.get(), Y, &A->get());
+            A->put();
         } else if constexpr (BufferableTensorConcept<YType>) {
             detail::ger(alpha, X, Y.get(), &A->get());
+            A->put();
         } else {
             detail::ger(alpha, X, Y, &A->get());
         }
@@ -754,10 +685,13 @@ void gerc(U alpha, XType const &X, YType const &Y, AType *A) {
     if (m < 500 && n < 500) {
         if constexpr (BufferableTensorConcept<XType> && BufferableTensorConcept<YType>) {
             detail::gerc(alpha, X.get(), Y.get(), &A->get());
+            A->put();
         } else if constexpr (BufferableTensorConcept<XType>) {
             detail::gerc(alpha, X.get(), Y, &A->get());
+            A->put();
         } else if constexpr (BufferableTensorConcept<YType>) {
             detail::gerc(alpha, X, Y.get(), &A->get());
+            A->put();
         } else {
             detail::gerc(alpha, X, Y, &A->get());
         }

@@ -71,8 +71,6 @@ EINSUMS_EXPORT void add_Einsums_Tensor_arguments() {
 
     static cl::Flag delete_files("einsums:no-delete-hdf5-files", {}, "Tells Einsums not to clean up HDF5 files on exit.", TensorCategory,
                                  cl::Location(global_bool["delete-hdf5-files"]), cl::Default(false));
-
-    static cl::Flag row_major("einsums:row-major-default")
 }
 
 static void create_complex_types() {
