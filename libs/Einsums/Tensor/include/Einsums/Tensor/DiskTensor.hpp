@@ -359,6 +359,101 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         }
     }
 
+    DiskTensor &operator=(DiskTensor const &other) {
+        _dims        = other._dims;
+        _strides     = other._strides;
+        _size        = other._size;
+        _existed     = true;
+        _constructed = false;
+
+        if constexpr (std::is_same_v<T, float>) {
+            _data_type = H5T_NATIVE_FLOAT;
+        } else if constexpr (std::is_same_v<T, double>) {
+            _data_type = H5T_NATIVE_DOUBLE;
+        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
+        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
+        }
+
+        if (_file == H5I_INVALID_HID) {
+            _file = detail::Einsums_Tensor_vars::get_singleton().hdf5_file;
+        }
+
+        _creation_props = H5Pcopy(other._creation_props);
+
+        if (_name.size() == 0) {
+            // Create temporary names.
+            char temp_name1[L_tmpnam + 1], temp_name2[L_tmpnam + 1];
+
+            std::memset(temp_name1, 0, L_tmpnam + 1);
+            std::memset(temp_name2, 0, L_tmpnam + 1);
+
+            std::tmpnam(temp_name1);
+            std::tmpnam(temp_name2);
+
+            auto temp_name1_str = std::string(temp_name1);
+            auto temp_name2_str = std::string(temp_name2);
+
+            std::filesystem::path temp_path1(std::move(temp_name1_str)), temp_path2(std::move(temp_name2_str));
+
+            auto new_temp1 = fmt::format("/tmp/{}", temp_path1.filename()), new_temp2 = fmt::format("/tmp/{}", temp_path2.filename());
+
+            // Link the temporary dataset into a temporary location.
+            auto err = H5Olink(other._dataset, _file, new_temp1.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list,
+                               H5P_DEFAULT);
+
+            if (err < 0) {
+                H5Sclose(_dataspace);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not link anonymous tensor into file for copying!");
+            }
+
+            H5Dflush(other._dataset);
+
+            // Copy.
+            err = H5Ocopy(_file, new_temp1.c_str(), _file, new_temp2.c_str(), _creation_props,
+                          detail::Einsums_Tensor_vars::get_singleton().link_property_list);
+            if (err < 0) {
+                H5Ldelete(_file, new_temp1.c_str(), H5P_DEFAULT);
+                H5Ldelete(_file, new_temp2.c_str(), H5P_DEFAULT);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Something went wrong when copying anonymous disk tensors!");
+            }
+
+            // Unlink the datasets so they are deleted from the file when the tensors are freed.
+            H5Ldelete(_file, new_temp1.c_str(), H5P_DEFAULT);
+            H5Ldelete(_file, new_temp2.c_str(), H5P_DEFAULT);
+        } else {
+            // Create temporary name.
+            char temp_name[L_tmpnam + 1];
+
+            std::memset(temp_name, 0, L_tmpnam + 1);
+
+            std::tmpnam(temp_name);
+
+            auto temp_name_str = std::string(temp_name);
+
+            std::filesystem::path temp_path(std::move(temp_name_str));
+
+            auto new_temp = fmt::format("/tmp/{}", temp_path.filename());
+
+            H5Dflush(other._dataset);
+
+            // Copy.
+            auto err = H5Ocopy(_file, other.name().c_str(), _file, new_temp.c_str(), _creation_props,
+                               detail::Einsums_Tensor_vars::get_singleton().link_property_list);
+            if (err < 0) {
+                H5Ldelete(_file, new_temp.c_str(), H5P_DEFAULT);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Something went wrong when copying disk tensors!");
+            }
+
+            // Unlink the datasets so they are deleted from the file when the tensors are freed.
+            H5Ldelete(_file, new_temp.c_str(), H5P_DEFAULT);
+        }
+
+        _dataspace = H5Dget_space(_dataset);
+        return *this;
+    }
+
     /**
      * Get the dimension along a given axis.
      *

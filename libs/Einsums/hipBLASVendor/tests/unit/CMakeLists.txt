@@ -5,6 +5,7 @@
 
 set(hipblasvendor_tests
     hipblas_gesv.hip
+    hipblas_lassq.hip
 )
 
 foreach(test ${hipblasvendor_tests})

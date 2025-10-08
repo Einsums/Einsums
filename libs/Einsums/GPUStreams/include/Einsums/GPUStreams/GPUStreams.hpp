@@ -153,10 +153,10 @@ EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t set_solver_handle(hipsolverHandle_
  * @versionadded{1.0.0}
  */
 EINSUMS_HOST inline dim3 block_size(size_t compute_size) {
-    if (compute_size < 32) {
-        return dim3(32);
+    if (compute_size < 64) {
+        return dim3(64);
     } else if (compute_size < 256) {
-        return dim3(compute_size & 0xf0);
+        return dim3(compute_size & 0xe0);
     } else {
         return dim3(256);
     }
