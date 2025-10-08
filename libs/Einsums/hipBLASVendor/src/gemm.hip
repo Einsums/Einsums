@@ -21,8 +21,8 @@
 namespace einsums::blas::hip {
 
 #define GEMM_CHECK(transa, transb, m, n, k, lda, ldb, ldc)                                                                                 \
-    bool  notA = (std::tolower(transa) == 'n'), notB = (std::tolower(transb) == 'n');                                                      \
-    int nrowa, nrowb;                                                                                                                    \
+    bool notA = (std::tolower(transa) == 'n'), notB = (std::tolower(transb) == 'n');                                                       \
+    int  nrowa, nrowb;                                                                                                                     \
                                                                                                                                            \
     if (notA) {                                                                                                                            \
         nrowa = m;                                                                                                                         \
@@ -60,27 +60,27 @@ namespace einsums::blas::hip {
         EINSUMS_THROW_EXCEPTION(std::domain_error,                                                                                         \
                                 "The fifth argument (k) to gemm call was invalid! It must be greater than or equal to zero. Got {}.", k);  \
     }                                                                                                                                      \
-    if ((lda) < std::max((int)1, nrowa)) {                                                                                               \
+    if ((lda) < std::max((int)1, nrowa)) {                                                                                                 \
         EINSUMS_THROW_EXCEPTION(                                                                                                           \
             std::domain_error,                                                                                                             \
             "The eighth argument (lda) to gemm call was invalid! It must be at least 1 and at least the number of rows ({}). Got {}.",     \
             nrowa, lda);                                                                                                                   \
     }                                                                                                                                      \
-    if ((ldb) < std::max((int)1, nrowb)) {                                                                                               \
+    if ((ldb) < std::max((int)1, nrowb)) {                                                                                                 \
         EINSUMS_THROW_EXCEPTION(                                                                                                           \
             std::domain_error,                                                                                                             \
             "The tenth argument (ldb) to gemm call was invalid! It must be at least 1 and at least the number of rows ({}). Got {}.",      \
             nrowb, ldb);                                                                                                                   \
     }                                                                                                                                      \
-    if ((ldc) < std::max((int)1, m)) {                                                                                                   \
+    if ((ldc) < std::max((int)1, m)) {                                                                                                     \
         EINSUMS_THROW_EXCEPTION(                                                                                                           \
             std::domain_error,                                                                                                             \
             "The thirteenth argument (ldc) to gemm call was invalid! It must be at least 1 and at least the number of rows ({}). Got {}.", \
             m, ldc);                                                                                                                       \
     }
 
-void sgemm(char transa, char transb, int m, int n, int k, float alpha, float const *a, int lda, float const *b, int ldb,
-           float beta, float *c, int ldc) {
+void sgemm(char transa, char transb, int m, int n, int k, float alpha, float const *a, int lda, float const *b, int ldb, float beta,
+           float *c, int ldc) {
     LabeledSection0();
 
     if (m == 0 || n == 0 || k == 0)
@@ -88,19 +88,14 @@ void sgemm(char transa, char transb, int m, int n, int k, float alpha, float con
 
     GEMM_CHECK(transa, transb, m, n, k, lda, ldb, ldc)
 
-    float *alpha_gpu = gpu::register_host_variable(alpha), *beta_gpu = gpu::register_host_variable(beta);
-
-    hipblas_catch(hipblasSgemm(gpu::get_blas_handle(), vendor::char_to_op(transa), vendor::char_to_op(transb), m, n, k, alpha_gpu, a, lda,
-                               b, ldb, beta_gpu, c, ldc));
+    hipblas_catch(hipblasSgemm(gpu::get_blas_handle(), vendor::char_to_op(transa), vendor::char_to_op(transb), m, n, k, &alpha, a, lda, b,
+                               ldb, &beta, c, ldc));
 
     gpu::stream_wait();
-
-    gpu::unregister_host_variable(alpha);
-    gpu::unregister_host_variable(beta);
 }
 
-void dgemm(char transa, char transb, int m, int n, int k, double alpha, double const *a, int lda, double const *b, int ldb,
-           double beta, double *c, int ldc) {
+void dgemm(char transa, char transb, int m, int n, int k, double alpha, double const *a, int lda, double const *b, int ldb, double beta,
+           double *c, int ldc) {
     LabeledSection0();
 
     if (m == 0 || n == 0 || k == 0)
@@ -108,15 +103,10 @@ void dgemm(char transa, char transb, int m, int n, int k, double alpha, double c
 
     GEMM_CHECK(transa, transb, m, n, k, lda, ldb, ldc)
 
-    double *alpha_gpu = gpu::register_host_variable(alpha), *beta_gpu = gpu::register_host_variable(beta);
-
-    hipblas_catch(hipblasDgemm(gpu::get_blas_handle(), vendor::char_to_op(transa), vendor::char_to_op(transb), m, n, k, alpha_gpu, a, lda,
-                               b, ldb, beta_gpu, c, ldc));
+    hipblas_catch(hipblasDgemm(gpu::get_blas_handle(), vendor::char_to_op(transa), vendor::char_to_op(transb), m, n, k, &alpha, a, lda, b,
+                               ldb, &beta, c, ldc));
 
     gpu::stream_wait();
-
-    gpu::unregister_host_variable(alpha);
-    gpu::unregister_host_variable(beta);
 }
 
 void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> alpha, std::complex<float> const *a, int lda,
@@ -128,16 +118,12 @@ void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> al
 
     GEMM_CHECK(transa, transb, m, n, k, lda, ldb, ldc)
 
-    hipblasComplex *alpha_gpu = (hipblasComplex *)gpu::register_host_variable(alpha),
-                   *beta_gpu  = (hipblasComplex *)gpu::register_host_variable(beta);
+    hipblasComplex *alpha_gpu = (hipblasComplex *)&alpha, *beta_gpu = (hipblasComplex *)&beta;
 
     hipblas_catch(hipblasCgemm(gpu::get_blas_handle(), vendor::char_to_op(transa), vendor::char_to_op(transb), m, n, k, alpha_gpu,
                                (hipblasComplex *)a, lda, (hipblasComplex *)b, ldb, beta_gpu, (hipblasComplex *)c, ldc));
 
     gpu::stream_wait();
-
-    gpu::unregister_host_variable(alpha);
-    gpu::unregister_host_variable(beta);
 }
 
 void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> alpha, std::complex<double> const *a, int lda,
@@ -149,16 +135,13 @@ void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> a
 
     GEMM_CHECK(transa, transb, m, n, k, lda, ldb, ldc)
 
-    hipblasDoubleComplex *alpha_gpu = (hipblasDoubleComplex *)gpu::register_host_variable(alpha),
-                         *beta_gpu  = (hipblasDoubleComplex *)gpu::register_host_variable(beta);
+    hipblasDoubleComplex *alpha_gpu = (hipblasDoubleComplex *)&alpha,
+                         *beta_gpu  = (hipblasDoubleComplex *)&beta;
 
     hipblas_catch(hipblasZgemm(gpu::get_blas_handle(), vendor::char_to_op(transa), vendor::char_to_op(transb), m, n, k, alpha_gpu,
                                (hipblasDoubleComplex *)a, lda, (hipblasDoubleComplex *)b, ldb, beta_gpu, (hipblasDoubleComplex *)c, ldc));
 
     gpu::stream_wait();
-
-    gpu::unregister_host_variable(alpha);
-    gpu::unregister_host_variable(beta);
 }
 
 } // namespace einsums::blas::hip

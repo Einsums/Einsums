@@ -1434,186 +1434,206 @@ auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename ATyp
     return std::make_tuple(U, w);
 }
 
-template <DiskTensorConcept AType>
-    requires requires {
-        requires MatrixConcept<AType>;
-        requires !einsums::IsComplexV<typename AType::ValueType>;
-    }
-auto truncated_syev(AType const &A, size_t in_k)
-    -> std::tuple<DiskTensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 1>> {
-    LabeledSection("truncated_syev");
-    using T = typename AType::ValueType;
-    // Davidson-Liu algorithm.
+// template <DiskTensorConcept AType>
+//     requires requires {
+//         requires MatrixConcept<AType>;
+//         requires !einsums::IsComplexV<typename AType::ValueType>;
+//     }
+// auto truncated_syev(AType const &A, size_t in_k)
+//     -> std::tuple<DiskTensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 1>> {
+//     LabeledSection("truncated_syev");
+//     using T = typename AType::ValueType;
+//     // Davidson-Liu algorithm.
 
-    size_t k = in_k;
+//     size_t k = in_k;
 
-    // First, create the output tensors.
-    DiskTensor<T, 2> evecs("/temp/syev", A.dim(0), std::min(A.dim(1), k + 5));
+//     // First, create the output tensors.
+//     DiskTensor<T, 2> evecs("/temp/syev", A.dim(0), std::min(A.dim(1), k));
 
-    evecs.write(create_random_tensor<T>("Eigenvectors", A.dim(0), std::min(A.dim(1), k + 5)));
+//     evecs.write(create_random_tensor<T>("Eigenvectors", A.dim(0), std::min(A.dim(1), k)));
 
-    Tensor<T, 1> evals("Eigenvalues", std::min(A.dim(1), k + 5));
+//     Tensor<T, 1> evals("Eigenvalues", std::min(A.dim(1), k));
 
-    // Orthonormalize the eigenvectors.
-    // Start by normalizing.
-    for (int i = 0; i < evecs.dim(1); i++) {
-        auto view = evecs(All, i);
-        auto norm = vec_norm(view.get());
-        view.get() /= norm;
-    }
+//     // Orthonormalize the eigenvectors.
+//     // Start by normalizing.
+//     for (int i = 0; i < evecs.dim(1); i++) {
+//         auto view = evecs(All, i);
+//         auto norm = vec_norm(view.get());
+//         view.get() /= norm;
+//     }
 
-    // Then orthonormalizing.
-    for (int i = 1; i < evecs.dim(1); i++) {
-        auto dest_view = evecs(All, i);
-        for (int j = 0; j < i; j++) {
-            auto src_view = evecs(All, j);
-            auto overlap  = dot(src_view.get(), dest_view.get());
+//     // Then orthonormalizing.
+//     for (int i = 1; i < evecs.dim(1); i++) {
+//         auto dest_view = evecs(All, i);
+//         for (int j = 0; j < i; j++) {
+//             auto src_view = evecs(All, j);
+//             auto overlap  = dot(src_view.get(), dest_view.get());
 
-            axpy(-overlap, src_view.get(), &dest_view.get());
-        }
+//             axpy(-overlap, src_view.get(), &dest_view.get());
+//         }
 
-        auto norm = vec_norm(dest_view.get());
-        dest_view.get() /= norm;
-    }
+//         auto norm = vec_norm(dest_view.get());
+//         dest_view.get() /= norm;
+//     }
 
-    BufferTensor<T, 2> subspace("subspace", evecs.dim(1), evecs.dim(1));
+//     BufferTensor<T, 2> subspace("subspace", evecs.dim(1), evecs.dim(1));
 
-    std::string name = fmt::format("/output/syev{}", A.name());
-    if (A.name().size() == 0) {
-        name = "";
-    }
+//     std::string name = fmt::format("/output/syev{}", A.name());
+//     if (A.name().size() == 0) {
+//         name = "";
+//     }
 
-    DiskTensor<T, 2> temp(name, A.dim(0), k);
+//     DiskTensor<T, 2> temp(name, A.dim(0), k);
 
-    DiskTensor<T, 2>   temp2("", A.dim(0), k + 5);
-    BufferTensor<T, 1> subspace_vals("subspace eigenvalues", evecs.dim(1));
-    BufferTensor<T, 1> correction("correction vector", A.dim(0)), z("z intermediate", A.dim(0));
+//     DiskTensor<T, 2>   temp2("/temp/syev", A.dim(0), k);
+//     BufferTensor<T, 1> subspace_vals("subspace eigenvalues", evecs.dim(1));
+//     BufferTensor<T, 2> correction("correction vector", A.dim(0), in_k), z("z intermediate", A.dim(0), in_k);
 
-    // Set up the convergence condition.
-    std::vector<bool> converged(k);
+//     // Set up the convergence condition.
+//     std::vector<bool> converged(k);
 
-    for (int i = 0; i < k; i++) {
-        converged[i] = false;
-    }
+//     for (int i = 0; i < k; i++) {
+//         converged[i] = false;
+//     }
 
-    // Get the diagonal entries for computing the over-relaxation parameter.
-    BufferTensor<T, 1> diagonal("diagonal", A.dim(0));
+//     // Get the diagonal entries for computing the over-relaxation parameter.
+//     BufferTensor<T, 1> diagonal("diagonal", A.dim(0));
 
-    for (int i = 0; i < A.dim(0) / 64; i++) {
-        auto  block_view   = A(Range{64 * i, 64 * (i + 1)}, Range{64 * i, 64 * (i + 1)});
-        auto &block_tensor = block_view.get();
+//     for (int i = 0; i < A.dim(0) / 64; i++) {
+//         auto  block_view   = A(Range{64 * i, 64 * (i + 1)}, Range{64 * i, 64 * (i + 1)});
+//         auto &block_tensor = block_view.get();
 
-        diagonal(Range{64 * i, 64 * (i + 1)}) = block_tensor.tie_indices(0, 1);
-    }
+//         diagonal(Range{64 * i, 64 * (i + 1)}) = block_tensor.tie_indices(0, 1);
+//     }
 
-    if (A.dim(0) % 64 != 0) {
-        auto  block_view   = A(Range{64 * (A.dim(0) / 64), A.dim(0)}, Range{64 * (A.dim(0) / 64), A.dim(0)});
-        auto &block_tensor = block_view.get();
+//     if (A.dim(0) % 64 != 0) {
+//         auto  block_view   = A(Range{64 * (A.dim(0) / 64), A.dim(0)}, Range{64 * (A.dim(0) / 64), A.dim(0)});
+//         auto &block_tensor = block_view.get();
 
-        diagonal(Range{64 * (A.dim(0) / 64), A.dim(0)}) = block_tensor.tie_indices(0, 1);
-    }
+//         diagonal(Range{64 * (A.dim(0) / 64), A.dim(0)}) = block_tensor.tie_indices(0, 1);
+//     }
 
-    do {
-        // Calculate the subspace matrix.
-        gemm('n', 'n', 1.0, A, evecs, 0.0, &temp2);
-        gemm('t', 'n', 1.0, evecs, temp2, 0.0, &subspace);
+//     do {
+//         // Calculate the subspace matrix.
+//         gemm('n', 'n', 1.0, A, evecs, 0.0, &temp2);
+//         gemm('t', 'n', 1.0, evecs, temp2, 0.0, &subspace);
 
-        // Decompose the subspace.
+//         // Decompose the subspace.
 
-        syev(&subspace, &subspace_vals);
+//         syev(&subspace, &subspace_vals);
 
-        // Compute the approximate eigenvectors.
-        gemm('n', 'n', 1.0, evecs, subspace(All, Range{0, k}), 0.0, &temp);
+//         // Compute the approximate eigenvectors.
+//         gemm('n', 'n', 1.0, evecs, subspace(All, Range{0, in_k}), 0.0, &temp);
 
-        // Compute the residuals.
-        size_t new_k = evecs.dim(1);
-        for (int i = 0; i < in_k; i++) {
-            if (converged[i]) {
-                continue;
-            }
-            // Compute the residual.
-            {
-                auto temp_vec = temp(All, i);
-                correction    = temp_vec.get();
+//         // Compute the residuals.
+//         size_t new_k = evecs.dim(1);
+//         for (int i = 0; i < in_k; i++) {
+//             // Compute the residual.
+//             {
+//                 auto temp_vec = temp(All, Range{0, in_k});
+//                 correction    = temp_vec.get();
 
-                gemv('n', T{1.0}, A, temp_vec, -subspace_vals(i), &correction);
-            }
+//                 gemv('n', T{1.0}, A, temp_vec, T{0.0}, &correction);
+//                 axpy(-subspace_vals(i), temp_vec.get(), &correction);
+//             }
 
-            // Check for convergence.
-            if (vec_norm(correction) < 1e-6) {
-                converged[i] = true;
-                continue;
-            }
+//             // Check for convergence.
+//             if constexpr (std::is_same_v<T, float>) {
+//                 if (vec_norm(correction) < 1e-3) {
+//                     converged[i] = true;
+//                     continue;
+//                 } else {
+//                     converged[i] = false;
+//                 }
+//             } else {
+//                 if (vec_norm(correction) < 1e-6) {
+//                     converged[i] = true;
+//                     continue;
+//                 } else {
+//                     converged[i] = false;
+//                 }
+//             }
 
-            // Solve for the correction.
-            scale(-T{1.0} / (diagonal(i) - subspace_vals(i)), &correction);
+//             // Solve for the correction.
+//             for (size_t j = 0; j < A.dim(0); j++) {
+//                 correction(j) /= subspace_vals(i) - diagonal(j);
+//             }
 
-            // Now that we have the correction, solve for the corrected correction.
-            z = correction; // Save the original correction.
-            for (int j = 0; j < new_k; j++) {
-                auto view = evecs(All, j);
-                auto tens = view.get();
-                axpy(-dot(tens, z), tens, &correction);
-            }
+//             // correction /= vec_norm(correction);
 
-            // Check the norms.
-            auto norm = vec_norm(correction);
-            if (norm / vec_norm(z) > 1e-3) {
-                correction /= norm;
-                evecs.resize(A.dim(0), new_k + 1);
-                auto view  = evecs(All, new_k);
-                view.get() = correction;
-                new_k++;
-            }
-        }
+//             // Now that we have the correction, solve for the corrected correction.
+//             z = correction; // Save the original correction.
+//             for (int j = 0; j < new_k; j++) {
+//                 auto  view = evecs(All, j);
+//                 auto &tens = view.get();
+//                 axpy(-dot(tens, z), tens, &correction);
+//             }
 
-        if (new_k != k) {
-            evals.resize(new_k);
-            subspace.resize(new_k, new_k);
-            subspace_vals.resize(new_k);
-            temp2.resize(A.dim(0), new_k);
-        }
-        k = new_k;
-    } while (!std::all_of(converged.begin(), converged.end(), [](bool n) { return n; }));
+//             // Check the norms.
+//             auto norm = vec_norm(correction);
+//             if (norm / vec_norm(z) > 1e-3) {
+//                 correction /= norm;
+//                 evecs.resize(A.dim(0), new_k + 1);
+//                 auto view  = evecs(All, new_k);
+//                 view.get() = correction;
+//                 new_k++;
+//                 break;
+//             }
+//         }
 
-    // Calculate the actual eigenvectors.
+//         if (new_k != k) {
+//             subspace.resize(new_k, new_k);
+//             subspace_vals.resize(new_k);
+//             temp2.resize(A.dim(0), new_k);
+//         } else {
+//             temp2 = evecs;
+//             gemm('n', 'n', T{1.0}, temp2, subspace, T{0.0}, &evecs);
+//         }
 
-    // Calculate the subspace matrix.
-    gemm('n', 'n', 1.0, A, evecs, 0.0, &temp2);
-    gemm('t', 'n', 1.0, evecs, temp2, 0.0, &subspace);
+//         k = new_k;
+//     } while (!std::all_of(converged.begin(), converged.end(), [](bool n) { return n; }));
 
-    // Decompose the subspace.
+//     // Calculate the actual eigenvectors.
 
-    syev(&subspace, &evals);
+//     // Calculate the subspace matrix.
+//     gemm('n', 'n', 1.0, A, evecs, 0.0, &temp2);
+//     gemm('t', 'n', 1.0, evecs, temp2, 0.0, &subspace);
 
-    // Compute the approximate eigenvectors.
-    gemm('n', 'n', 1.0, evecs, subspace(All, Range{0, in_k}), 0.0, &temp);
+//     // Decompose the subspace.
 
-    // Sort.
-    for (int i = 0; i < in_k; i++) {
-        T   min     = evals(i);
-        int min_pos = i;
+//     syev(&subspace, &subspace_vals);
 
-        for (int j = i + 1; j < in_k; j++) {
-            if (min > evals(j)) {
-                min     = evals(j);
-                min_pos = j;
-            }
-        }
+//     evals = subspace_vals(Range{0, in_k});
 
-        if (min_pos != i) {
-            auto &vec1 = evecs(All, min_pos).get();
-            auto &vec2 = evecs(All, i).get();
+//     // Compute the approximate eigenvectors.
+//     gemm('n', 'n', 1.0, evecs, subspace(All, Range{0, in_k}), 0.0, &temp);
 
-            std::swap(vec1, vec2);
-            std::swap(evals(i), evals(min_pos));
-        }
-    }
+//     // Sort.
+//     for (int i = 0; i < in_k; i++) {
+//         T   min     = evals(i);
+//         int min_pos = i;
 
-    evecs.unlink();
+//         for (int j = i + 1; j < in_k; j++) {
+//             if (min > evals(j)) {
+//                 min     = evals(j);
+//                 min_pos = j;
+//             }
+//         }
 
-    return std::make_tuple(std::move(temp), std::move(evals));
-}
+//         if (min_pos != i) {
+//             auto &vec1 = temp(All, min_pos).get();
+//             auto &vec2 = temp(All, i).get();
+
+//             std::swap(vec1, vec2);
+//             std::swap(evals(i), evals(min_pos));
+//         }
+//     }
+
+//     evecs.unlink();
+//     temp2.unlink();
+
+//     return std::make_tuple(std::move(temp), std::move(evals));
+// }
 
 /**
  * Compute the pseudoinverse of a matrix.

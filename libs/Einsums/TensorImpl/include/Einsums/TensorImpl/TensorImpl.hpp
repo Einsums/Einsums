@@ -1710,6 +1710,13 @@ struct TensorImpl final {
         }
         auto cached_gpu_memory = _gpu_memory.lock();
 
+        if (cached_gpu_memory->size < _size * sizeof(T)) {
+            cached_gpu_memory.reset();
+            _gpu_memory.reset();
+            _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            cached_gpu_memory = _gpu_memory.lock();
+        }
+
         tensor_to_gpu();
 
         return cached_gpu_memory;
@@ -1721,6 +1728,13 @@ struct TensorImpl final {
         }
         auto cached_gpu_memory = _gpu_memory.lock();
 
+        if (cached_gpu_memory->size < _size * sizeof(T)) {
+            cached_gpu_memory.reset();
+            _gpu_memory.reset();
+            _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            cached_gpu_memory = _gpu_memory.lock();
+        }
+
         return cached_gpu_memory;
     }
 
@@ -1729,6 +1743,13 @@ struct TensorImpl final {
             _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
         }
         auto cached_gpu_memory = _gpu_memory.lock();
+
+        if (cached_gpu_memory->size < _size * sizeof(T)) {
+            cached_gpu_memory.reset();
+            _gpu_memory.reset();
+            _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            cached_gpu_memory = _gpu_memory.lock();
+        }
 
         tensor_to_gpu();
 
@@ -1740,7 +1761,16 @@ struct TensorImpl final {
             _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
         }
 
-        return _gpu_memory.lock();
+        auto cached_gpu_memory = _gpu_memory.lock();
+
+        if (cached_gpu_memory->size < _size * sizeof(T)) {
+            cached_gpu_memory.reset();
+            _gpu_memory.reset();
+            _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            cached_gpu_memory = _gpu_memory.lock();
+        }
+
+        return cached_gpu_memory;
     }
 
     gpu::GPUPointer<T> get_gpu_pointer() {
