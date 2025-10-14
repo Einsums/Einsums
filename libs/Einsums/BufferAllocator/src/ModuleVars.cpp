@@ -46,6 +46,9 @@ bool Einsums_BufferAllocator_vars::request_bytes(size_t bytes) {
     auto lock = std::lock_guard(_lock);
 
     if (bytes + _curr_size > _max_size) {
+        EINSUMS_LOG_WARN("An allocator attempted to request too much memory! Einsums currently has {} bytes allocated to it, of which {} "
+                         "are in use. The requested allocation would require {} more bytes for a total of {} bytes.",
+                         _max_size, _curr_size, bytes, bytes + _curr_size);
         return false;
     }
 
