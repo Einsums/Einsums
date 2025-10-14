@@ -93,14 +93,14 @@ TEMPLATE_TEST_CASE("gesv", "[linear-algebra]", float, double) {
     linear_algebra::gesv(&a, &b);
 
     CHECK_THAT(a.vector_data(), Catch::Matchers::Approx(std::vector<T>{8.23000000,  0.82624544,  0.68772783,   0.72539490,   -0.25637910,
-                                                                      1.08000000,  -6.94234508, -0.66508563,  0.75240087,   0.43545957,
-                                                                      9.04000000,  -7.91925881, -14.18404477, 0.02320302,   -0.58842060,
-                                                                      2.14000000,  6.55183475,  7.23579360,   -13.81984350, -0.33743379,
-                                                                      -6.87000000, -3.99369380, -5.19145820,  14.18877913,  -3.42921969})
+                                                                       1.08000000,  -6.94234508, -0.66508563,  0.75240087,   0.43545957,
+                                                                       9.04000000,  -7.91925881, -14.18404477, 0.02320302,   -0.58842060,
+                                                                       2.14000000,  6.55183475,  7.23579360,   -13.81984350, -0.33743379,
+                                                                       -6.87000000, -3.99369380, -5.19145820,  14.18877913,  -3.42921969})
                                     .margin(0.00001));
     CHECK_THAT(b.vector_data(), Catch::Matchers::Approx(std::vector<T>{-0.80071403, -0.69524338, 0.59391499, 1.32172561, 0.56575620,
-                                                                      -0.38962139, -0.55442713, 0.84222739, -0.10380185, 0.10571095,
-                                                                      0.95546491, 0.22065963, 1.90063673, 5.35766149, 4.04060266})
+                                                                       -0.38962139, -0.55442713, 0.84222739, -0.10380185, 0.10571095,
+                                                                       0.95546491, 0.22065963, 1.90063673, 5.35766149, 4.04060266})
                                     .margin(0.00001));
 
     linear_algebra::gesv(&a_swap, &b_swap);
@@ -114,3 +114,27 @@ TEMPLATE_TEST_CASE("gesv", "[linear-algebra]", float, double) {
         }
     }
 }
+
+// TEMPLATE_TEST_CASE("disk gesv", "[linear-algebra]", float, double) {
+//     using namespace einsums;
+
+//     constexpr int size = 20;
+
+//     auto A = create_random_tensor<TestType>("coefficients", size, size);
+//     auto B = create_random_tensor<TestType>("results", size);
+
+//     DiskTensor<TestType, 2> A_disk(fmt::format("/test/gesv/{}/A", type_name<TestType>()), size, size);
+//     auto                    B_copy = B;
+
+//     A_disk.write(A);
+
+//     SECTION("Solve") {
+//         linear_algebra::gesv(&A_disk, &B_copy);
+
+//         linear_algebra::gesv(&A, &B);
+
+//         for (int i = 0; i < size; i++) {
+//             REQUIRE_THAT(B_copy(i), Catch::Matchers::WithinRel(B(i)));
+//         }
+//     }
+// }

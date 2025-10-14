@@ -489,7 +489,6 @@ void heev(AType *A, WType *W) {
  */
 template <MatrixConcept AType, TensorConcept BType>
     requires requires {
-        requires InSamePlace<AType, BType>;
         requires SameUnderlying<AType, BType>;
         requires MatrixConcept<BType> || VectorConcept<BType>;
     }

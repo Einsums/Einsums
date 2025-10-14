@@ -6,6 +6,7 @@
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
 
+#include <Einsums/Testing.hpp>
 #include <catch2/catch_all.hpp>
 
 using namespace einsums;
@@ -53,7 +54,7 @@ TEMPLATE_TEST_CASE("gemv", "[linear-algebra]", float, double, std::complex<float
         REQUIRE((y.dim(0) == 3));
 
         A.vector_data() = {TestType{1.0}, TestType{2.0}, TestType{3.0}, TestType{4.0}, TestType{5.0},
-                                                         TestType{6.0}, TestType{7.0}, TestType{8.0}, TestType{9.0}};
+                           TestType{6.0}, TestType{7.0}, TestType{8.0}, TestType{9.0}};
 
         x.vector_data() = {TestType{11.0}, TestType{22.0}, TestType{33.0}};
 
@@ -73,7 +74,7 @@ TEMPLATE_TEST_CASE("gemv", "[linear-algebra]", float, double, std::complex<float
         REQUIRE((x.dim(0) == 3));
         REQUIRE((y.dim(0) == 3));
         std::vector<TestType> temp = std::vector{TestType{1.0}, TestType{2.0}, TestType{3.0}, TestType{4.0}, TestType{5.0},
-                                                         TestType{6.0}, TestType{7.0}, TestType{8.0}, TestType{9.0}};
+                                                 TestType{6.0}, TestType{7.0}, TestType{8.0}, TestType{9.0}};
 
         A.vector_data() = temp;
 
@@ -85,6 +86,53 @@ TEMPLATE_TEST_CASE("gemv", "[linear-algebra]", float, double, std::complex<float
 
         einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
         CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(std::vector<TestType>{TestType{330.0}, TestType{396.0}, TestType{462.0}}));
+    }
+
+    SECTION("Disk") {
+        constexpr int size = 10;
+        auto          A    = create_random_tensor<TestType>("A", size, size);
+        auto          x    = create_random_tensor<TestType>("x", size);
+        auto          y    = create_tensor<TestType>("y", size);
+        auto          y2   = create_tensor<TestType>("y2", size);
+
+        DiskTensor<TestType, 2> A_disk(fmt::format("/test/gemv/{}/A", type_name<TestType>()), size, size);
+        DiskTensor<TestType, 1> x_disk(fmt::format("/test/gemv/{}/x", type_name<TestType>()), size);
+        DiskTensor<TestType, 1> y_disk(fmt::format("/test/gemv/{}/y", type_name<TestType>()), size);
+
+        A_disk.write(A);
+        x_disk.write(x);
+
+        einsums::linear_algebra::gemv('n', TestType{1.0}, A, x, TestType{0.0}, &y);
+        einsums::linear_algebra::gemv('n', TestType{1.0}, A_disk, x, TestType{0.0}, &y2);
+
+        for (int i = 0; i < size; i++) {
+            REQUIRE_THAT(y2(i), einsums::CheckWithinRel(y(i)));
+        }
+
+        einsums::linear_algebra::gemv('n', TestType{1.0}, A_disk, x_disk, TestType{0.0}, &y2);
+
+        for (int i = 0; i < size; i++) {
+            REQUIRE_THAT(y2(i), einsums::CheckWithinRel(y(i)));
+        }
+
+        einsums::linear_algebra::gemv('n', TestType{1.0}, A_disk, x, TestType{0.0}, &y_disk);
+
+        {
+            auto y_view = y_disk.get();
+
+            for (int i = 0; i < size; i++) {
+                REQUIRE_THAT(y_view(i), einsums::CheckWithinRel(y(i)));
+            }
+        }
+
+        einsums::linear_algebra::gemv('n', TestType{1.0}, A_disk, x_disk, TestType{0.0}, &y_disk);
+
+        {
+            auto y_view = y_disk.get();
+            for (int i = 0; i < size; i++) {
+                REQUIRE_THAT(y_view(i), einsums::CheckWithinRel(y(i)));
+            }
+        }
     }
 }
 
