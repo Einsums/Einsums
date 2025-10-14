@@ -11,8 +11,7 @@
 #include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/LinearAlgebra/Bases/high_precision.hpp>
 #include <Einsums/Tensor/DiskTensor.hpp>
-
-#include <thread>
+#include <Einsums/Utilities/Random.hpp>
 
 namespace einsums::linear_algebra::detail {
 
@@ -749,241 +748,214 @@ void gerc(U alpha, XType const &X, YType const &Y, AType *A) {
  */
 EINSUMS_EXPORT BufferVector<uint64_t> choose_all_n(uint64_t n);
 
-namespace {
-template <typename T>
-inline T connected_moment(BufferList<T> const &moments, BufferList<T> &connected_moments, int term) {
-    if (term == 1) {
-        return moments[0];
-    }
-    T out = moments[term - 1];
+// namespace {
 
-    auto coefs = choose_all_n(term - 1);
+// template <DiskTensorConcept AType, VectorConcept XType>
+// void strict_upper_gemv(AType const &A, XType *X) {
+//     for (size_t i = 1; i < A.dim(1); i++) {
+//         (*X)(i - 1) = dot(A(i - 1, Range{i, A.dim(1)}).get(), (*X)(Range{i, A.dim(1)}));
+//     }
+//     (*X)(A.dim(1) - 1) = typename XType::ValueType{0.0};
+// }
 
-    for (int i = 0; i <= term - 2; i++) {
-        out -= coefs[i] * connected_moments[i] * moments[term - i - 2];
-    }
+// template <DiskTensorConcept AType, VectorConcept XType, typename OType>
+// void lower_inv(AType const &A, XType *X, OType omega) {
+//     for (size_t i = 0; i < A.dim(1); i++) {
+//         auto  column_view = A(Range{i, A.dim(0)}, i);
+//         auto &column      = column_view.get();
 
-    connected_moments.push_back(out);
+//         (*X)(i) *= omega / column(0);
+//         auto scale = (*X)(i);
 
-    return out;
-}
+//         for (size_t j = i + 1; j < A.dim(0); j++) {
+//             (*X)(j) -= column(j - i) * scale;
+//         }
+//     }
+// }
 
-template <typename T>
-T compute_moment_term(BufferVector<T> &connected_moments, int term, BufferVector<T> &work) {
-    if (term == 0) {
-        return connected_moments[0];
-    }
+// template <DiskTensorConcept AType, MatrixConcept XType, typename OType>
+// void lower_inv(AType const &A, XType *X, OType omega) {
+//     for (size_t i = 0; i < A.dim(1); i++) {
+//         auto  column_view = A(Range{i, A.dim(0)}, i);
+//         auto &column      = column_view.get();
 
-    if (term == 1) {
-        return connected_moments[1] * connected_moments[1] / connected_moments[2];
-    }
+//         (*X)(i) *= omega / column(0);
+//         auto scale_view = (*X)(i, All);
 
-    // Compute the next moments.
-    for (int i = 1; i < connected_moments.size() - 2; i++) {
-        work[i] = connected_moments[i] * connected_moments[i + 2] - connected_moments[i + 1] * connected_moments[i + 1];
-    }
+//         for (size_t j = i + 1; j < A.dim(0); j++) {
+//             auto X_view = (*X)(j, All);
+//             axpy(-column(j - i), scale_view, &X_view);
+//         }
+//     }
+// }
 
-    work[connected_moments.size() - 2] = -connected_moments[connected_moments.size() - 1] * connected_moments[connected_moments.size() - 1];
-    work[connected_moments.size() - 1] = T{0.0};
+// template <typename T>
+// constexpr T conv();
 
-    T denom = connected_moments[2];
+// template <>
+// constexpr float conv<float>() {
+//     return 1e-6f;
+// }
 
-    // Swap which buffer is which.
-    return compute_moment_term(work, term - 1, connected_moments) / denom;
-}
+// template <>
+// constexpr double conv<double>() {
+//     return 1e-10;
+// }
 
-template <DiskTensorConcept AType, VectorConcept XType>
-void strict_upper_gemv(AType const &A, XType *X) {
-    for (size_t i = 1; i < A.dim(1); i++) {
-        (*X)(i - 1) = dot(A(i - 1, Range{i, A.dim(1)}).get(), (*X)(Range{i, A.dim(1)}));
-    }
-    (*X)(A.dim(1) - 1) = typename XType::ValueType{0.0};
-}
+// } // namespace
 
-template <DiskTensorConcept AType, VectorConcept XType, typename OType>
-void lower_inv(AType const &A, XType *X, OType omega) {
-    for (size_t i = 0; i < A.dim(1); i++) {
-        auto  column_view = A(Range{i, A.dim(0)}, i);
-        auto &column      = column_view.get();
+// template <BufferableTensorConcept AType, VectorConcept BType>
+// int gesv(AType *A_ptr, BType *B) {
+//     using T = typename AType::ValueType;
+//     auto &A = *A_ptr;
 
-        (*X)(i) *= omega / column(0);
-        auto scale = (*X)(i);
+//     // Generate a guess vector.
+//     BufferTensor<T, 1> guess("guess", A.dim(1)), residual("residual", A.dim(0)), rhat("rhat", A.dim(0)),
+//         bicg_vector("bicg vector", A.dim(0)), bicg_vector_hat("bicg vector hat", A.dim(0)), temp("temp", A.dim(0));
+//     BufferTensor<T, 2> gmres_basis("gmres basis", A.dim(0), 2), gmres_inv_basis("gmres inverse basis", A.dim(0), 2);
 
-        for (size_t j = i + 1; j < A.dim(0); j++) {
-            (*X)(j) -= column(j - i - 1) * scale;
-        }
-    }
-}
+//     auto q1  = gmres_inv_basis(All, 0);
+//     auto q2  = gmres_inv_basis(All, 1);
+//     auto qh1 = gmres_basis(All, 0);
+//     auto qh2 = gmres_basis(All, 1);
 
-template <DiskTensorConcept AType, MatrixConcept XType, typename OType>
-void lower_inv(AType const &A, XType *X, OType omega) {
-    for (size_t i = 0; i < A.dim(1); i++) {
-        auto  column_view = A(Range{i, A.dim(0)}, i);
-        auto &column      = column_view.get();
+//     // Set an initial guess.
+//     guess = A(0, All).get();
 
-        (*X)(i) *= omega / column(0);
-        auto scale_view = (*X)(i, All);
+//     // Find the residual.
+//     residual = *B;
+//     gemv('n', T{-1.0}, A, guess, T{1.0}, &residual);
 
-        for (size_t j = i + 1; j < A.dim(0); j++) {
-            auto X_view = (*X)(j, All);
-            axpy(-column(j - i - 1), scale_view, &X_view);
-        }
-    }
-}
+//     // Choose initial rhat.
+//     {
+//         auto dist = einsums::detail::unit_circle_distribution<T>();
+//         for (size_t i = 0; i < A.dim(0); i++) {
+//             rhat(i) = dist(einsums::random_engine);
+//         }
+//     }
 
-template <DiskTensorConcept AType, VectorConcept XType>
-void omega_gemv(AType const &A, XType *X) {
-    struct_upper_gemv(A, X);
-    lower_inv(A, X, 1);
-}
+//     while (vec_norm(residual) > conv<T>()) {
+//         // Do BiCG twice.
+//         bicg_vector     = residual;
+//         bicg_vector_hat = rhat;
+//         T rdot          = true_dot(rhat, residual);
+//         for (int i = 0; i < 2; i++) {
 
-template <BufferableTensorConcept AType>
-auto compute_omega(AType const &A) -> typename AType::ValueType {
-    using T = typename AType::ValueType;
-    T max_eval, prev_max_eval;
+//             gemv('n', T{1.0}, A, bicg_vector, T{0.0}, &temp);
 
-    BufferList<T>   moments, connected_moments;
-    BufferVector<T> work1, work2;
+//             T alpha = rdot / true_dot(bicg_vector_hat, temp);
 
-    BufferTensor<T, 1> trial_vector = create_random_tensor<T>(A.dim(0));
+//             axpy(alpha, bicg_vector, &guess);
+//             axpy(-alpha, temp, &residual);
+//             gemv('n', -alpha, A, bicg_vector_hat, T{1.0}, &rhat);
 
-    trial_vector /= vec_norm(trial_vector);
+//             T new_rdot = true_dot(rhat, residual);
 
-    BufferTensor<T, 1> right_vector = trial_vector;
+//             T beta = new_rdot / rdot;
+//             rdot   = new_rdot;
 
-    // Calculate the first moment.
-    // Start by multiplying the right vector by (D + L)^{-1} U
-    omega_gemv(A, &right_vector);
+//             axpby(T{1.0}, residual, beta, &bicg_vector);
+//             axpby(T{1.0}, rhat, beta, &bicg_vector_hat);
 
-    // Calculate the moment.
-    moments.push_back(true_dot(trial_vector, right_vector));
+//             if (vec_norm(residual) < conv<T>()) {
+//                 *B = bicg_vector;
+//                 return 0;
+//             }
+//         }
 
-    // The connected moment is the same as the moment.
-    connected_moments.push_back(moments[0]);
+//         // Do GMRES twice.
+//         q1 = residual;
+//         gemv('n', T{1.0}, A, residual, T{0.0}, &qh1);
 
-    // Calculate the eigenvalue.
-    max_eval = moments[0];
+//         T beta = vec_norm(qh1);
 
-    int term = 1;
+//         q1 /= beta;
+//         qh1 /= beta;
 
-    do {
-        // Save the previous to check for convergence.
-        prev_max_eval = max_eval;
+//         T alpha = true_dot(residual, qh1);
 
-        // Now, calculate moments until we have enough for the next term.
-        while (connected_moments.size() < 2 * term + 1) {
-            // Calculate the next moment.
-            // Start by multiplying the right vector by (D + L)^{-1} U
-            omega_gemv(A, &right_vector);
+//         axpy(alpha, q1, &guess);
+//         axpy(-alpha, qh1, &residual);
 
-            // Calculate the moment.
-            moments.push_back(true_dot(trial_vector, right_vector));
+//         if (vec_norm(residual) < conv<T>()) {
+//             *B = guess;
+//             return 0;
+//         }
 
-            // Calculate the corresponding connected moment.
-            connected_moment(moments, connected_moments, moments.size());
-        }
+//         q2 = qh1;
+//         gemv('n', T{1.0}, A, q2, T{0.0}, &qh2);
 
-        // Calculate the next approximation.
-        work1.assign(connected_moments.begin(), connected_moments.end());
-        work2.resize(connected_moments.size());
+//         T gamma = true_dot(qh2, qh1);
 
-        max_eval -= compute_moment_term(work1, term, work2);
-        term++;
-    } while (std::abs(max_eval - prev_max_eval) > 1e-6);
+//         axpy(-gamma, qh1, &qh2);
+//         axpy(-gamma, q1, &q2);
+//         beta = vec_norm(qh2);
 
-    // Convergence has been reached.
-    if (max_eval <= T{1.0}) {
-        return T{2.0} / (T{1.0} + std::sqrt(T{1.0} - max_eval));
-    } else {
-        return T{1.0}; // If we couldn't find a good value, do Gauss-Seidel instead of successive over-relaxation.
-    }
-}
+//         q2 /= beta;
+//         qh2 /= beta;
 
-} // namespace
+//         alpha = true_dot(residual, qh2);
 
-template <BufferableTensorConcept AType, VectorConcept BType>
-void gesv(AType const *A_ptr, BType *B) {
-    using T       = typename AType::ValueType;
-    auto const &A = *A_ptr;
+//         axpy(alpha, q2, &guess);
+//         axpy(-alpha, qh2, &residual);
+//     }
 
-    // Do symmetric over-relaxation.
-    // Use the connected moments expansion to calculate the optimal relaxation parameter.
-    T omega = compute_omega(A);
+//     *B = guess;
 
-    // Generate a guess vector.
-    BufferTensor<T, 1> guess("guess", A.dim(1)), temp("temp", A.dim(0));
-    guess.zero();
+//     return 0;
+// }
 
-    // Compute the residual.
-    temp = *B;
-    gemv('n', T{-1.0}, A, guess, T{1.0}, &temp);
+// template <BufferableTensorConcept AType, MatrixConcept BType>
+// int gesv(AType const *A_ptr, BType *B) {
+//     using T       = typename AType::ValueType;
+//     auto const &A = *A_ptr;
 
-    // Perform successive over-relaxation.
-    while (vec_norm(temp) > 1e-8) {
+//     // Do symmetric over-relaxation.
+//     // Use the connected moments expansion to calculate the optimal relaxation parameter.
+//     T omega = compute_omega(A);
 
-        // Solve for the correction.
-        lower_inv(A, &temp, omega);
+//     // Go through the columns of B.
+//     for (size_t i = 0; i < B->dim(1); i++) {
+//         auto B_view = (*B)(All, i);
 
-        // Compute the next guess.
-        guess += temp;
+//         // Generate a guess vector.
+//         BufferTensor<T, 1> guess("guess", A.dim(1)), temp("temp", A.dim(0));
+//         guess.zero();
 
-        // Compute the residual.
-        temp = *B;
-        gemv('n', T{-1.0}, A, guess, T{1.0}, &temp);
-    }
+//         // Compute the residual.
+//         if constexpr (IsBufferableTensorV<BType>) {
+//             temp = B_view.get();
+//         } else {
+//             temp = B_view;
+//         }
+//         gemv('n', T{-1.0}, A, guess, T{1.0}, &temp);
 
-    *B = guess;
-}
+//         // Perform successive over-relaxation.
+//         while (vec_norm(temp) > 1e-8) {
 
-template <BufferableTensorConcept AType, MatrixConcept BType>
-void gesv(AType const *A_ptr, BType *B) {
-    using T       = typename AType::ValueType;
-    auto const &A = *A_ptr;
+//             // Solve for the correction.
+//             lower_inv(A, &temp, omega);
 
-    // Do symmetric over-relaxation.
-    // Use the connected moments expansion to calculate the optimal relaxation parameter.
-    T omega = compute_omega(A);
+//             // Compute the next guess.
+//             guess += temp;
 
-    // Go through the columns of B.
-    for (size_t i = 0; i < B->dim(1); i++) {
-        auto B_view = (*B)(All, i);
+//             // Compute the residual.
+//             if constexpr (IsBufferableTensorV<BType>) {
+//                 temp = B_view.get();
+//             } else {
+//                 temp = B_view;
+//             }
+//             gemv('n', T{-1.0}, A, guess, T{1.0}, &temp);
+//         }
 
-        // Generate a guess vector.
-        BufferTensor<T, 1> guess("guess", A.dim(1)), temp("temp", A.dim(0));
-        guess.zero();
+//         if constexpr (IsBufferableTensorV<BType>) {
+//             B_view.get() = guess;
+//         } else {
+//             B_view = guess;
+//         }
+//     }
 
-        // Compute the residual.
-        if constexpr (IsBufferableTensorV<BType>) {
-            temp = B_view.get();
-        } else {
-            temp = B_view;
-        }
-        gemv('n', T{-1.0}, A, guess, T{1.0}, &temp);
-
-        // Perform successive over-relaxation.
-        while (vec_norm(temp) > 1e-8) {
-
-            // Solve for the correction.
-            lower_inv(A, &temp, omega);
-
-            // Compute the next guess.
-            guess += temp;
-
-            // Compute the residual.
-            if constexpr (IsBufferableTensorV<BType>) {
-                temp = B_view.get();
-            } else {
-                temp = B_view;
-            }
-            gemv('n', T{-1.0}, A, guess, T{1.0}, &temp);
-        }
-
-        if constexpr (IsBufferableTensorV<BType>) {
-            B_view.get() = guess;
-        } else {
-            B_view = guess;
-        }
-    }
-}
+//     return 0;
+// }
 
 } // namespace einsums::linear_algebra::detail

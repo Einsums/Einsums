@@ -640,12 +640,16 @@ template <CoreBasicTensorConcept AType, VectorConcept WType, typename LVecPtr, t
 void geev(AType *A, WType *W, LVecPtr lvecs, RVecPtr rvecs) {
     einsums::detail::TensorImpl<AddComplexT<typename AType::ValueType>> *lvec_ptr = nullptr, *rvec_ptr = nullptr;
 
-    if (lvecs != nullptr) {
-        lvec_ptr = &lvecs->impl();
+    if constexpr (!std::is_null_pointer_v<LVecPtr>) {
+        if (lvecs != nullptr) {
+            lvec_ptr = &lvecs->impl();
+        }
     }
 
-    if (rvecs != nullptr) {
-        rvec_ptr = &rvecs->impl();
+    if constexpr (!std::is_null_pointer_v<RVecPtr>) {
+        if (rvecs != nullptr) {
+            rvec_ptr = &rvecs->impl();
+        }
     }
 
     geev(&A->impl(), &W->impl(), lvec_ptr, rvec_ptr);
