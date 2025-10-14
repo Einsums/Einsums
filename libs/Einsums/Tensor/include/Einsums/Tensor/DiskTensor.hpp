@@ -693,6 +693,9 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         }
     }
 
+    /**
+     * Gets the underlying tensor holding the data.
+     */
     BufferTensor<T, rank> &get() {
         auto                     lock = std::lock_guard(*this);
         std::array<size_t, rank> counts;
@@ -718,6 +721,9 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         return _tensor;
     }
 
+    /**
+     * Gets the underlying tensor holding the data.
+     */
     BufferTensor<T, rank> const &get() const {
         auto                     lock = std::lock_guard(*this);
         std::array<size_t, rank> counts;
@@ -743,6 +749,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         return _tensor;
     }
 
+    /**
+     * Gets the underlying tensor holding the data. If the tensor has already been created,
+     * update it with what is stored on disk.
+     */
     BufferTensor<T, rank> &get_update() {
         auto                     lock = std::lock_guard(*this);
         std::array<size_t, rank> counts;
@@ -768,6 +778,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         return _tensor;
     }
 
+    /**
+     * Gets the underlying tensor holding the data. If the tensor has already been created,
+     * update it with what is stored on disk.
+     */
     BufferTensor<T, rank> const &get_update() const {
         auto                     lock = std::lock_guard(*this);
         std::array<size_t, rank> counts;
@@ -794,6 +808,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         return _tensor;
     }
 
+    /**
+     * Writes the buffered tensor's data to the disk then destroys the buffered tensor.
+     * There is no const version.
+     */
     void unget() {
         if (_constructed) {
             put();
@@ -803,30 +821,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         }
     }
 
-    void unget() const {
-        if (_constructed) {
-            _tensor.~BufferTensor<T, rank>();
-            _constructed = false;
-        }
-    }
-
+    /**
+     * Push any changes to the view to the disk. There is no const version.
+     */
     void put() {
-        if (_constructed) {
-            std::array<size_t, rank> counts;
-
-            counts.fill(1);
-
-            hid_t mem_dataspace =
-                H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
-
-            if (mem_dataspace == H5I_INVALID_HID) {
-                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
-            }
-            H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
-        }
-    }
-
-    void put() const {
         if (_constructed) {
             std::array<size_t, rank> counts;
 
@@ -1201,7 +1199,8 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     }
 
     /**
-     * Gets the underlying tensor holding the data.
+     * Gets the underlying tensor holding the data. If the tensor has already been created,
+     * update it with what is stored on disk.
      */
     auto get_update() -> BufferTensor<T, rank> & {
         auto lock = std::lock_guard(*this);
@@ -1220,7 +1219,8 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     }
 
     /**
-     * Gets the underlying tensor holding the data.
+     * Gets the underlying tensor holding the data. If the tensor has already been created,
+     * update it with what is stored on disk.
      */
     auto get_update() const -> BufferTensor<T, rank> const & {
         auto lock = std::lock_guard(*this);
@@ -1238,17 +1238,14 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
         return _tensor;
     }
 
+    /**
+     * Writes the buffered tensor's data to the disk then destroys the buffered tensor.
+     * There is no const version.
+     */
     void unget() {
         if (_constructed) {
             put();
 
-            _tensor.~BufferTensor<T, rank>();
-            _constructed = false;
-        }
-    }
-
-    void unget() const {
-        if (_constructed) {
             _tensor.~BufferTensor<T, rank>();
             _constructed = false;
         }
