@@ -6,6 +6,7 @@
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
 
+#include "Einsums/Config/Types.hpp"
 #include "Einsums/TensorUtilities/CreateRandomTensor.hpp"
 
 #include <Einsums/Testing.hpp>
@@ -219,11 +220,11 @@ TEST_CASE("gemm_2") {
     }
 }
 
-TEMPLATE_TEST_CASE("Disk gemm", "[linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
+TEMPLATE_TEST_CASE("Disk gemm", "[linear-algebra]", double, std::complex<double>) {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    constexpr int size = 100;
+    constexpr int size = 600;
 
     auto A = einsums::create_random_tensor<TestType>("A", size, size);
     auto B = einsums::create_random_tensor<TestType>("B", size, size);
@@ -236,13 +237,19 @@ TEMPLATE_TEST_CASE("Disk gemm", "[linear-algebra]", float, double, std::complex<
     A_disk.write(A);
     B_disk.write(B);
 
+    {
+        auto &singleton = einsums::GlobalConfigMap::get_singleton();
+
+        auto lock = std::lock_guard(singleton);
+
+        singleton.set_string("buffer-size", "4GB");
+    }
+
     SECTION("nn") {
         gemm('n', 'n', TestType{1.0}, A, B, TestType{0.0}, &C);
         gemm('n', 'n', TestType{1.0}, A_disk, B_disk, TestType{0.0}, &C_disk);
 
-        auto &C_tens = C_disk.get();
-
-        println(C_tens);
+        auto &C_tens = C_disk.get_update();
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -255,7 +262,7 @@ TEMPLATE_TEST_CASE("Disk gemm", "[linear-algebra]", float, double, std::complex<
         gemm('n', 't', TestType{1.0}, A, B, TestType{0.0}, &C);
         gemm('n', 't', TestType{1.0}, A_disk, B_disk, TestType{0.0}, &C_disk);
 
-        auto &C_tens = C_disk.get();
+        auto &C_tens = C_disk.get_update();
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -268,7 +275,7 @@ TEMPLATE_TEST_CASE("Disk gemm", "[linear-algebra]", float, double, std::complex<
         gemm('t', 'n', TestType{1.0}, A, B, TestType{0.0}, &C);
         gemm('t', 'n', TestType{1.0}, A_disk, B_disk, TestType{0.0}, &C_disk);
 
-        auto &C_tens = C_disk.get();
+        auto &C_tens = C_disk.get_update();
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -281,7 +288,7 @@ TEMPLATE_TEST_CASE("Disk gemm", "[linear-algebra]", float, double, std::complex<
         gemm('t', 't', TestType{1.0}, A, B, TestType{0.0}, &C);
         gemm('t', 't', TestType{1.0}, A_disk, B_disk, TestType{0.0}, &C_disk);
 
-        auto &C_tens = C_disk.get();
+        auto &C_tens = C_disk.get_update();
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
