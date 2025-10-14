@@ -743,6 +743,73 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         return _tensor;
     }
 
+    BufferTensor<T, rank> &get_update() {
+        auto                     lock = std::lock_guard(*this);
+        std::array<size_t, rank> counts;
+
+        counts.fill(1);
+
+        hid_t mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+
+        if (mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+        }
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+        }
+        auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+        }
+
+        return _tensor;
+    }
+
+    BufferTensor<T, rank> const &get_update() const {
+        auto                     lock = std::lock_guard(*this);
+        std::array<size_t, rank> counts;
+
+        counts.fill(1);
+
+        hid_t mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+
+        if (mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+        }
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+        }
+
+        auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+        }
+
+        return _tensor;
+    }
+
+    void unget() {
+        if (_constructed) {
+            put();
+
+            _tensor.~BufferTensor<T, rank>();
+            _constructed = false;
+        }
+    }
+
+    void unget() const {
+        if (_constructed) {
+            _tensor.~BufferTensor<T, rank>();
+            _constructed = false;
+        }
+    }
+
     void put() {
         if (_constructed) {
             std::array<size_t, rank> counts;
@@ -1134,6 +1201,60 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     }
 
     /**
+     * Gets the underlying tensor holding the data.
+     */
+    auto get_update() -> BufferTensor<T, rank> & {
+        auto lock = std::lock_guard(*this);
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+        }
+
+        auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+        }
+
+        return _tensor;
+    }
+
+    /**
+     * Gets the underlying tensor holding the data.
+     */
+    auto get_update() const -> BufferTensor<T, rank> const & {
+        auto lock = std::lock_guard(*this);
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+        }
+
+        auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+        }
+
+        return _tensor;
+    }
+
+    void unget() {
+        if (_constructed) {
+            put();
+
+            _tensor.~BufferTensor<T, rank>();
+            _constructed = false;
+        }
+    }
+
+    void unget() const {
+        if (_constructed) {
+            _tensor.~BufferTensor<T, rank>();
+            _constructed = false;
+        }
+    }
+
+    /**
      * Push any changes to the view to the disk.
      */
     void put() {
@@ -1323,7 +1444,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
                 j++;
             }
 
-            while (block[j] == 1 && j < rank) {
+            while (j < rank && block[j] == 1) {
                 j++;
             }
         }

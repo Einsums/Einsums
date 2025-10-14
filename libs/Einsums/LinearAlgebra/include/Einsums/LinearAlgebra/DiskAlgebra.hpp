@@ -332,22 +332,18 @@ void gemm(char transA, char transB, U alpha, AType const &A, BType const &B, U b
     if (m < 500 && n < 500 && k < 500) {
         if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType> && BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A.get(), B.get(), beta, &C->get());
-            C->put();
         } else if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType>) {
             detail::gemm(transA, transB, alpha, A.get(), B.get(), beta, C);
         } else if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A.get(), B, beta, &C->get());
-            C->put();
         } else if constexpr (BufferableTensorConcept<BType> && BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A, B.get(), beta, &C->get());
-            C->put();
         } else if constexpr (BufferableTensorConcept<AType>) {
             detail::gemm(transA, transB, alpha, A.get(), B, beta, C);
         } else if constexpr (BufferableTensorConcept<BType>) {
             detail::gemm(transA, transB, alpha, A, B.get(), beta, C);
         } else if constexpr (BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A, B, beta, &C->get());
-            C->put();
         } else {
             detail::gemm(transA, transB, alpha, A, B, beta, C);
         }
@@ -358,7 +354,7 @@ void gemm(char transA, char transB, U alpha, AType const &A, BType const &B, U b
         }
 
         // Next, we are going to loop over the indices in blocks of 500.
-        int min_dim = 500;
+        int min_dim = 100;
 
         int m_loops = m / min_dim;
         int n_loops = n / min_dim;
@@ -552,7 +548,7 @@ void gemv(char transA, U alpha, AType const &A, BType const &B, U beta, CType *C
         }
 
         // Next, we are going to loop over the indices in blocks of 500.
-        int min_dim = 500;
+        int min_dim = 100;
 
         int m_loops = m / min_dim;
         int n_loops = n / min_dim;
@@ -628,7 +624,7 @@ void ger(U alpha, XType const &X, YType const &Y, AType *A) {
         }
     } else {
         // We are going to loop over the indices in blocks of 500.
-        int min_dim = 500;
+        int min_dim = 100;
 
         int m_loops = m / min_dim;
         int n_loops = n / min_dim;
@@ -696,7 +692,7 @@ void gerc(U alpha, XType const &X, YType const &Y, AType *A) {
         }
     } else {
         // We are going to loop over the indices in blocks of 500.
-        int min_dim = 500;
+        int min_dim = 100;
 
         int m_loops = m / min_dim;
         int n_loops = n / min_dim;
