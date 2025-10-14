@@ -86,14 +86,14 @@ __global__ void scsum1_kernel(int n, hipComplex const *x, int incx, float *resul
         }
 
         // Poll the threads in the warp to combine their work.
-#pragma unroll
-        for (int i = warpSize / 2; i >= 1; i /= 2) {
-            work_var += __shfl_down(work_var, i);
-        }
+// #pragma unroll
+//         for (int i = warpSize / 2; i >= 1; i /= 2) {
+//             work_var += __shfl_down(work_var, i);
+//         }
 
-        if (inwarp_id == 0) {
+//         if (inwarp_id == 0) {
             atomicAdd(result, work_var);
-        }
+        // }
     }
 
     if (thread_id == 0) {
@@ -128,14 +128,14 @@ __global__ void dzsum1_kernel(int n, hipDoubleComplex const *x, int incx, double
         }
 
         // Poll the threads in the warp to combine their work.
-#pragma unroll
-        for (int i = warpSize / 2; i >= 1; i /= 2) {
-            work_var += __shfl_down(work_var, i);
-        }
+// #pragma unroll
+//         for (int i = warpSize / 2; i >= 1; i /= 2) {
+//             work_var += __shfl_down(work_var, i);
+//         }
 
-        if (inwarp_id == 0) {
+//         if (inwarp_id == 0) {
             atomicAdd(result, work_var);
-        }
+        // }
     }
 
     if (thread_id == 0) {
