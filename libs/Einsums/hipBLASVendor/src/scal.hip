@@ -19,43 +19,59 @@
 
 namespace einsums::blas::hip {
 
-void sscal(int n, float alpha, float *vec, int inc) {
+void sscal(int64_t n, float alpha, float *vec, int64_t inc) {
     LabeledSection0();
 
     hipblas_catch(hipblasSscal(gpu::get_blas_handle(), n, &alpha, vec, inc));
 }
 
-void dscal(int n, double alpha, double *vec, int inc) {
+void dscal(int64_t n, double alpha, double *vec, int64_t inc) {
     LabeledSection0();
 
     hipblas_catch(hipblasDscal(gpu::get_blas_handle(), n, &alpha, vec, inc));
 }
 
-void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc) {
+void cscal(int64_t n, std::complex<float> alpha, std::complex<float> *vec, int64_t inc) {
     LabeledSection0();
 
-    hipblas_catch(hipblasCscal(gpu::get_blas_handle(), n, (hipblasComplex *) &alpha, (hipblasComplex *)vec, inc));
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasCscal(gpu::get_blas_handle(), n, (hipblasComplex *)&alpha, (hipblasComplex *)vec, inc));
+#else
+    hipblas_catch(hipblasCscal(gpu::get_blas_handle(), n, (hipComplex *)&alpha, (hipComplex *)vec, inc));
+#endif
 }
 
-void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc) {
+void zscal(int64_t n, std::complex<double> alpha, std::complex<double> *vec, int64_t inc) {
     LabeledSection0();
 
-    hipblas_catch(hipblasZscal(gpu::get_blas_handle(), n, (hipblasDoubleComplex *) &alpha, (hipblasDoubleComplex *)vec, inc));
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasZscal(gpu::get_blas_handle(), n, (hipblasDoubleComplex *)&alpha, (hipblasDoubleComplex *)vec, inc));
+#else
+    hipblas_catch(hipblasZscal(gpu::get_blas_handle(), n, (hipDoubleComplex *)&alpha, (hipDoubleComplex *)vec, inc));
+#endif
 }
 
-void csscal(int n, float alpha, std::complex<float> *vec, int inc) {
+void csscal(int64_t n, float alpha, std::complex<float> *vec, int64_t inc) {
     LabeledSection0();
 
+#if hipblasVersionMajor < 3
     hipblas_catch(hipblasCsscal(gpu::get_blas_handle(), n, &alpha, (hipblasComplex *)vec, inc));
+#else
+    hipblas_catch(hipblasCsscal(gpu::get_blas_handle(), n, &alpha, (hipComplex *)vec, inc));
+#endif
 }
 
-void zdscal(int n, double alpha, std::complex<double> *vec, int inc) {
+void zdscal(int64_t n, double alpha, std::complex<double> *vec, int64_t inc) {
     LabeledSection0();
 
+#if hipblasVersionMajor < 3
     hipblas_catch(hipblasZdscal(gpu::get_blas_handle(), n, &alpha, (hipblasDoubleComplex *)vec, inc));
+#else
+    hipblas_catch(hipblasZdscal(gpu::get_blas_handle(), n, &alpha, (hipDoubleComplex *)vec, inc));
+#endif
 }
 
-void srscl(int n, float alpha, float *vec, int inc) {
+void srscl(int64_t n, float alpha, float *vec, int64_t inc) {
     LabeledSection0();
 
     if (n <= 0) {
@@ -94,7 +110,7 @@ void srscl(int n, float alpha, float *vec, int inc) {
     } while (!finished);
 }
 
-void drscl(int n, double alpha, double *vec, int inc) {
+void drscl(int64_t n, double alpha, double *vec, int64_t inc) {
     LabeledSection0();
 
     if (n <= 0) {
@@ -133,7 +149,7 @@ void drscl(int n, double alpha, double *vec, int inc) {
     } while (!finished);
 }
 
-void csrscl(int n, float alpha, std::complex<float> *vec, int inc) {
+void csrscl(int64_t n, float alpha, std::complex<float> *vec, int64_t inc) {
     LabeledSection0();
 
     if (n <= 0) {
@@ -172,7 +188,7 @@ void csrscl(int n, float alpha, std::complex<float> *vec, int inc) {
     } while (!finished);
 }
 
-void zdrscl(int n, double alpha, std::complex<double> *vec, int inc) {
+void zdrscl(int64_t n, double alpha, std::complex<double> *vec, int64_t inc) {
     LabeledSection0();
 
     if (n <= 0) {

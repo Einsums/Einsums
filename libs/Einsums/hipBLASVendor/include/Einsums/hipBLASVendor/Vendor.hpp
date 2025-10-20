@@ -34,17 +34,17 @@ namespace einsums::blas::hip {
  *
  * @versionadded{2.0.0}
  */
-void sgemm(char transa, char transb, int m, int n, int k, float alpha, float const *a, int lda, float const *b, int ldb, float beta,
-           float *c, int ldc);
+void sgemm(char transa, char transb, int64_t m, int64_t n, int64_t k, float alpha, float const *a, int64_t lda, float const *b, int64_t ldb, float beta,
+           float *c, int64_t ldc);
 /// @copydoc sgemm
-void dgemm(char transa, char transb, int m, int n, int k, double alpha, double const *a, int lda, double const *b, int ldb, double beta,
-           double *c, int ldc);
+void dgemm(char transa, char transb, int64_t m, int64_t n, int64_t k, double alpha, double const *a, int64_t lda, double const *b, int64_t ldb, double beta,
+           double *c, int64_t ldc);
 /// @copydoc sgemm
-void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> alpha, std::complex<float> const *a, int lda,
-           std::complex<float> const *b, int ldb, std::complex<float> beta, std::complex<float> *c, int ldc);
+void cgemm(char transa, char transb, int64_t m, int64_t n, int64_t k, std::complex<float> alpha, std::complex<float> const *a, int64_t lda,
+           std::complex<float> const *b, int64_t ldb, std::complex<float> beta, std::complex<float> *c, int64_t ldc);
 /// @copydoc sgemm
-void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> alpha, std::complex<double> const *a, int lda,
-           std::complex<double> const *b, int ldb, std::complex<double> beta, std::complex<double> *c, int ldc);
+void zgemm(char transa, char transb, int64_t m, int64_t n, int64_t k, std::complex<double> alpha, std::complex<double> const *a, int64_t lda,
+           std::complex<double> const *b, int64_t ldb, std::complex<double> beta, std::complex<double> *c, int64_t ldc);
 
 /**
  * Performs matrix vector multiplication.
@@ -66,15 +66,15 @@ void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> a
  *
  * @versionadded{2.0.0}
  */
-void sgemv(char transa, int m, int n, float alpha, float const *a, int lda, float const *x, int incx, float beta, float *y, int incy);
+void sgemv(char transa, int64_t m, int64_t n, float alpha, float const *a, int64_t lda, float const *x, int64_t incx, float beta, float *y, int64_t incy);
 /// @copydoc sgemv
-void dgemv(char transa, int m, int n, double alpha, double const *a, int lda, double const *x, int incx, double beta, double *y, int incy);
+void dgemv(char transa, int64_t m, int64_t n, double alpha, double const *a, int64_t lda, double const *x, int64_t incx, double beta, double *y, int64_t incy);
 /// @copydoc sgemv
-void cgemv(char transa, int m, int n, std::complex<float> alpha, std::complex<float> const *a, int lda, std::complex<float> const *x,
-           int incx, std::complex<float> beta, std::complex<float> *y, int incy);
+void cgemv(char transa, int64_t m, int64_t n, std::complex<float> alpha, std::complex<float> const *a, int64_t lda, std::complex<float> const *x,
+           int64_t incx, std::complex<float> beta, std::complex<float> *y, int64_t incy);
 /// @copydoc sgemv
-void zgemv(char transa, int m, int n, std::complex<double> alpha, std::complex<double> const *a, int lda, std::complex<double> const *x,
-           int incx, std::complex<double> beta, std::complex<double> *y, int incy);
+void zgemv(char transa, int64_t m, int64_t n, std::complex<double> alpha, std::complex<double> const *a, int64_t lda, std::complex<double> const *x,
+           int64_t incx, std::complex<double> beta, std::complex<double> *y, int64_t incy);
 
 /**
  * Scales and adds two vectors.
@@ -90,15 +90,15 @@ void zgemv(char transa, int m, int n, std::complex<double> alpha, std::complex<d
  *
  * @versionadded{2.0.0}
  */
-void saxpby(int const n, float const a, float const *x, int const incx, float const b, float *y, int const incy);
+void saxpby(int64_t const n, float const a, float const *x, int64_t const incx, float const b, float *y, int64_t const incy);
 /// @copydoc saxpby
-void daxpby(int const n, double const a, double const *x, int const incx, double const b, double *y, int const incy);
+void daxpby(int64_t const n, double const a, double const *x, int64_t const incx, double const b, double *y, int64_t const incy);
 /// @copydoc saxpby
-void caxpby(int const n, std::complex<float> const a, std::complex<float> const *x, int const incx, std::complex<float> const b,
-            std::complex<float> *y, int const incy);
+void caxpby(int64_t const n, std::complex<float> const a, std::complex<float> const *x, int64_t const incx, std::complex<float> const b,
+            std::complex<float> *y, int64_t const incy);
 /// @copydoc saxpby
-void zaxpby(int const n, std::complex<double> const a, std::complex<double> const *x, int const incx, std::complex<double> const b,
-            std::complex<double> *y, int const incy);
+void zaxpby(int64_t const n, std::complex<double> const a, std::complex<double> const *x, int64_t const incx, std::complex<double> const b,
+            std::complex<double> *y, int64_t const incy);
 
 /**
  * Performs symmetric matrix diagonalization.
@@ -184,17 +184,17 @@ auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::co
  *
  * @versionadded{2.0.0}
  */
-void sscal(int n, float alpha, float *vec, int inc);
+void sscal(int64_t n, float alpha, float *vec, int64_t inc);
 /// @copydoc sscal
-void dscal(int n, double alpha, double *vec, int inc);
+void dscal(int64_t n, double alpha, double *vec, int64_t inc);
 /// @copydoc sscal
-void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc);
+void cscal(int64_t n, std::complex<float> alpha, std::complex<float> *vec, int64_t inc);
 /// @copydoc sscal
-void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc);
+void zscal(int64_t n, std::complex<double> alpha, std::complex<double> *vec, int64_t inc);
 /// @copydoc sscal
-void csscal(int n, float alpha, std::complex<float> *vec, int inc);
+void csscal(int64_t n, float alpha, std::complex<float> *vec, int64_t inc);
 /// @copydoc sscal
-void zdscal(int n, double alpha, std::complex<double> *vec, int inc);
+void zdscal(int64_t n, double alpha, std::complex<double> *vec, int64_t inc);
 
 /**
  * Scales a vector by the reciprocal of a real value.
@@ -206,10 +206,10 @@ void zdscal(int n, double alpha, std::complex<double> *vec, int inc);
  *
  * @versionadded{2.0.0}
  */
-void srscl(int n, float alpha, float *vec, int inc);
-void drscl(int n, double alpha, double *vec, int inc);
-void csrscl(int n, float alpha, std::complex<float> *vec, int inc);
-void zdrscl(int n, double alpha, std::complex<double> *vec, int inc);
+void srscl(int64_t n, float alpha, float *vec, int64_t inc);
+void drscl(int64_t n, double alpha, double *vec, int64_t inc);
+void csrscl(int64_t n, float alpha, std::complex<float> *vec, int64_t inc);
+void zdrscl(int64_t n, double alpha, std::complex<double> *vec, int64_t inc);
 
 /**
  * Compute the dot product between two vectors.
@@ -224,9 +224,9 @@ void zdrscl(int n, double alpha, std::complex<double> *vec, int inc);
  *
  * @versionadded{2.0.0}
  */
-auto sdot(int n, float const *x, int incx, float const *y, int incy) -> float;
+auto sdot(int64_t n, float const *x, int64_t incx, float const *y, int64_t incy) -> float;
 /// @copydoc sdot
-auto ddot(int n, double const *x, int incx, double const *y, int incy) -> double;
+auto ddot(int64_t n, double const *x, int64_t incx, double const *y, int64_t incy) -> double;
 /**
  * Compute the unconjugated dot product between two vectors. The dot product is normally defined to be @f$ \sum_{i} x_i^*y_i@f$,
  * where the left vector is conjugated. However, this function performs @f$\sum_{i} x_iy_i@f$, akin to how it is done for
@@ -245,9 +245,9 @@ auto ddot(int n, double const *x, int incx, double const *y, int incy) -> double
  *
  * @versionadded{2.0.0}
  */
-auto cdot(int n, std::complex<float> const *x, int incx, std::complex<float> const *y, int incy) -> std::complex<float>;
+auto cdot(int64_t n, std::complex<float> const *x, int64_t incx, std::complex<float> const *y, int64_t incy) -> std::complex<float>;
 /// @copydoc cdot
-auto zdot(int n, std::complex<double> const *x, int incx, std::complex<double> const *y, int incy) -> std::complex<double>;
+auto zdot(int64_t n, std::complex<double> const *x, int64_t incx, std::complex<double> const *y, int64_t incy) -> std::complex<double>;
 /**
  * Compute the dot product between two vectors. The dot product is normally defined to be @f$ \sum_{i} x_i^*y_i@f$,
  * where the left vector is conjugated. This is how this function works. There is another way, where the first vector is not conjugated. For
@@ -264,9 +264,9 @@ auto zdot(int n, std::complex<double> const *x, int incx, std::complex<double> c
  *
  * @versionadded{2.0.0}
  */
-auto cdotc(int n, std::complex<float> const *x, int incx, std::complex<float> const *y, int incy) -> std::complex<float>;
+auto cdotc(int64_t n, std::complex<float> const *x, int64_t incx, std::complex<float> const *y, int64_t incy) -> std::complex<float>;
 /// @copydoc cdotc
-auto zdotc(int n, std::complex<double> const *x, int incx, std::complex<double> const *y, int incy) -> std::complex<double>;
+auto zdotc(int64_t n, std::complex<double> const *x, int64_t incx, std::complex<double> const *y, int64_t incy) -> std::complex<double>;
 
 /**
  * Scale and add a vector to another. Performs @f$\mathbf{y} := \alpha\mathbf{x} + \mathbf{y}@f$.
@@ -280,13 +280,13 @@ auto zdotc(int n, std::complex<double> const *x, int incx, std::complex<double> 
  *
  * @versionadded{2.0.0}
  */
-void saxpy(int n, float alpha_x, float const *x, int inc_x, float *y, int inc_y);
+void saxpy(int64_t n, float alpha_x, float const *x, int64_t inc_x, float *y, int64_t inc_y);
 /// @copydoc saxpy
-void daxpy(int n, double alpha_x, double const *x, int inc_x, double *y, int inc_y);
+void daxpy(int64_t n, double alpha_x, double const *x, int64_t inc_x, double *y, int64_t inc_y);
 /// @copydoc saxpy
-void caxpy(int n, std::complex<float> alpha_x, std::complex<float> const *x, int inc_x, std::complex<float> *y, int inc_y);
+void caxpy(int64_t n, std::complex<float> alpha_x, std::complex<float> const *x, int64_t inc_x, std::complex<float> *y, int64_t inc_y);
 /// @copydoc saxpy
-void zaxpy(int n, std::complex<double> alpha_x, std::complex<double> const *x, int inc_x, std::complex<double> *y, int inc_y);
+void zaxpy(int64_t n, std::complex<double> alpha_x, std::complex<double> const *x, int64_t inc_x, std::complex<double> *y, int64_t inc_y);
 
 /*!
  * Performs a rank-1 update of a general matrix.
@@ -311,15 +311,15 @@ void zaxpy(int n, std::complex<double> alpha_x, std::complex<double> const *x, i
  *
  * @versionadded{2.0.0}
  */
-void sger(int m, int n, float alpha, float const *x, int inc_x, float const *y, int inc_y, float *a, int lda);
+void sger(int64_t m, int64_t n, float alpha, float const *x, int64_t inc_x, float const *y, int64_t inc_y, float *a, int64_t lda);
 /// @copydoc sger
-void dger(int m, int n, double alpha, double const *x, int inc_x, double const *y, int inc_y, double *a, int lda);
+void dger(int64_t m, int64_t n, double alpha, double const *x, int64_t inc_x, double const *y, int64_t inc_y, double *a, int64_t lda);
 /// @copydoc sger
-void cger(int m, int n, std::complex<float> alpha, std::complex<float> const *x, int inc_x, std::complex<float> const *y, int inc_y,
-          std::complex<float> *a, int lda);
+void cger(int64_t m, int64_t n, std::complex<float> alpha, std::complex<float> const *x, int64_t inc_x, std::complex<float> const *y, int64_t inc_y,
+          std::complex<float> *a, int64_t lda);
 /// @copydoc sger
-void zger(int m, int n, std::complex<double> alpha, std::complex<double> const *x, int inc_x, std::complex<double> const *y, int inc_y,
-          std::complex<double> *a, int lda);
+void zger(int64_t m, int64_t n, std::complex<double> alpha, std::complex<double> const *x, int64_t inc_x, std::complex<double> const *y, int64_t inc_y,
+          std::complex<double> *a, int64_t lda);
 /*!
  * Performs a rank-1 update of a general matrix.
  *
@@ -343,11 +343,11 @@ void zger(int m, int n, std::complex<double> alpha, std::complex<double> const *
  *
  * @versionadded{2.0.0}
  */
-void cgerc(int m, int n, std::complex<float> alpha, std::complex<float> const *x, int inc_x, std::complex<float> const *y, int inc_y,
-           std::complex<float> *a, int lda);
+void cgerc(int64_t m, int64_t n, std::complex<float> alpha, std::complex<float> const *x, int64_t inc_x, std::complex<float> const *y, int64_t inc_y,
+           std::complex<float> *a, int64_t lda);
 /// @copydoc cgerc
-void zgerc(int m, int n, std::complex<double> alpha, std::complex<double> const *x, int inc_x, std::complex<double> const *y, int inc_y,
-           std::complex<double> *a, int lda);
+void zgerc(int64_t m, int64_t n, std::complex<double> alpha, std::complex<double> const *x, int64_t inc_x, std::complex<double> const *y, int64_t inc_y,
+           std::complex<double> *a, int64_t lda);
 
 /*!
  * Computes the LU factorization of a general M-by-N matrix A
@@ -418,13 +418,13 @@ auto zgetri(int n, std::complex<double> const *A, int lda, int *ipiv, std::compl
  *
  * @versionadded{2.0.0}
  */
-void slassq(int n, float const *x, int incx, float *scale, float *sumsq);
+void slassq(int64_t n, float const *x, int64_t incx, float *scale, float *sumsq);
 /// @copydoc slassq
-void dlassq(int n, double const *x, int incx, double *scale, double *sumsq);
+void dlassq(int64_t n, double const *x, int64_t incx, double *scale, double *sumsq);
 /// @copydoc slassq
-void classq(int n, std::complex<float> const *x, int incx, float *scale, float *sumsq);
+void classq(int64_t n, std::complex<float> const *x, int64_t incx, float *scale, float *sumsq);
 /// @copydoc slassq
-void zlassq(int n, std::complex<double> const *x, int incx, double *scale, double *sumsq);
+void zlassq(int64_t n, std::complex<double> const *x, int64_t incx, double *scale, double *sumsq);
 
 /**
  * Compute the Euclidean norm of a vector.
@@ -437,13 +437,13 @@ void zlassq(int n, std::complex<double> const *x, int incx, double *scale, doubl
  *
  * @versionadded{2.0.0}
  */
-float snrm2(int n, float const *x, int incx);
+float snrm2(int64_t n, float const *x, int64_t incx);
 /// @copydoc snrm2
-double dnrm2(int n, double const *x, int incx);
+double dnrm2(int64_t n, double const *x, int64_t incx);
 /// @copydoc snrm2
-float scnrm2(int n, std::complex<float> const *x, int incx);
+float scnrm2(int64_t n, std::complex<float> const *x, int64_t incx);
 /// @copydoc snrm2
-double dznrm2(int n, std::complex<double> const *x, int incx);
+double dznrm2(int64_t n, std::complex<double> const *x, int64_t incx);
 
 /**
  * Compute the singular value decomposition using the QR algorithm.
@@ -533,13 +533,13 @@ auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, std::complex<
  *
  * @versionadded{2.0.0}
  */
-void scopy(int n, float const *x, int incx, float *y, int incy);
+void scopy(int64_t n, float const *x, int64_t incx, float *y, int64_t incy);
 /// @copydoc scopy
-void dcopy(int n, double const *x, int incx, double *y, int incy);
+void dcopy(int64_t n, double const *x, int64_t incx, double *y, int64_t incy);
 /// @copydoc scopy
-void ccopy(int n, std::complex<float> const *x, int incx, std::complex<float> *y, int incy);
+void ccopy(int64_t n, std::complex<float> const *x, int64_t incx, std::complex<float> *y, int64_t incy);
 /// @copydoc scopy
-void zcopy(int n, std::complex<double> const *x, int incx, std::complex<double> *y, int incy);
+void zcopy(int64_t n, std::complex<double> const *x, int64_t incx, std::complex<double> *y, int64_t incy);
 
 /**
  * Advanced matrix scaling operation that scales a matrix by <tt>cto/cfrom</tt> without overflow/underflow.
@@ -577,15 +577,15 @@ int dlascl(char type, int kl, int ku, double cfrom, double cto, int m, int n, do
  *
  * @versionadded{2.0.0}
  */
-void sdirprod(int n, float alpha, float const *x, int incx, float const *y, int incy, float *z, int incz);
+void sdirprod(int64_t n, float alpha, float const *x, int64_t incx, float const *y, int64_t incy, float *z, int64_t incz);
 /// @copydoc sdirprod
-void ddirprod(int n, double alpha, double const *x, int incx, double const *y, int incy, double *z, int incz);
+void ddirprod(int64_t n, double alpha, double const *x, int64_t incx, double const *y, int64_t incy, double *z, int64_t incz);
 /// @copydoc sdirprod
-void cdirprod(int n, std::complex<float> alpha, std::complex<float> const *x, int incx, std::complex<float> const *y, int incy,
-              std::complex<float> *z, int incz);
+void cdirprod(int64_t n, std::complex<float> alpha, std::complex<float> const *x, int64_t incx, std::complex<float> const *y, int64_t incy,
+              std::complex<float> *z, int64_t incz);
 /// @copydoc sdirprod
-void zdirprod(int n, std::complex<double> alpha, std::complex<double> const *x, int incx, std::complex<double> const *y, int incy,
-              std::complex<double> *z, int incz);
+void zdirprod(int64_t n, std::complex<double> alpha, std::complex<double> const *x, int64_t incx, std::complex<double> const *y, int64_t incy,
+              std::complex<double> *z, int64_t incz);
 
 /**
  * Computes the sum of the absolute values of the input vector. If the vector is complex,
@@ -599,13 +599,13 @@ void zdirprod(int n, std::complex<double> alpha, std::complex<double> const *x, 
  *
  * @versionadded{2.0.0}
  */
-float sasum(int n, float const *x, int incx);
+float sasum(int64_t n, float const *x, int64_t incx);
 /// @copydoc sasum
-double dasum(int n, double const *x, int incx);
+double dasum(int64_t n, double const *x, int64_t incx);
 /// @copydoc sasum
-float scasum(int n, std::complex<float> const *x, int incx);
+float scasum(int64_t n, std::complex<float> const *x, int64_t incx);
 /// @copydoc sasum
-double dzasum(int n, std::complex<double> const *x, int incx);
+double dzasum(int64_t n, std::complex<double> const *x, int64_t incx);
 
 /**
  * Computes the sum of the absolute values of the input vector.
@@ -618,9 +618,9 @@ double dzasum(int n, std::complex<double> const *x, int incx);
  *
  * @versionadded{2.0.0}
  */
-float scsum1(int n, std::complex<float> const *x, int incx);
+float scsum1(int64_t n, std::complex<float> const *x, int64_t incx);
 /// @copydoc scsum1
-double dzsum1(int n, std::complex<double> const *x, int incx);
+double dzsum1(int64_t n, std::complex<double> const *x, int64_t incx);
 
 /**
  * Conjugate a vector.
@@ -629,7 +629,7 @@ double dzsum1(int n, std::complex<double> const *x, int incx);
  * @param[inout] x The vector to conjugate.
  * @param[in] incx The skip value for the vector.
  */
-void clacgv(int n, std::complex<float> *x, int incx);
+void clacgv(int64_t n, std::complex<float> *x, int64_t incx);
 /// @copydoc clacgv
-void zlacgv(int n, std::complex<double> *x, int incx);
+void zlacgv(int64_t n, std::complex<double> *x, int64_t incx);
 } // namespace einsums::blas::hip

@@ -21,6 +21,7 @@
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
+#include <Einsums/Assert.hpp>
 
 #include <cstddef>
 #include <hip/driver_types.h>
@@ -123,7 +124,9 @@ class HostDevReference {
      * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator=(T const &other) {
-        assert(_ptr != nullptr);
+#ifndef EINSUMS_COMPUTE_DEVICE_CODE
+        EINSUMS_ASSERT(_ptr != nullptr);
+#endif
         if (is_on_host) {
             *_ptr = other;
         } else {
@@ -667,7 +670,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    void read(std::vector<T> const &data);
+    __host__ void read(std::vector<T> const &data);
 
     /**
      * Sends data from the device to the host.
@@ -685,7 +688,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    void read(T const *data);
+    __host__ void read(T const *data);
 
     /**
      * Sends data from the device to the host.

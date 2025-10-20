@@ -16,64 +16,47 @@
 
 namespace einsums::blas::hip {
 
-void saxpy(int n, float alpha_x, float const *x, int inc_x, float *y, int inc_y) {
+void saxpy(int64_t n, float alpha, float const *x, int64_t inc_x, float *y, int64_t inc_y) {
     LabeledSection0();
 
-    float *alpha_x_gpu;
-
-    hip_catch(hipHostRegister((void *)&alpha_x, sizeof(float), hipHostRegisterDefault));
-    hip_catch(hipHostGetDevicePointer((void **)&alpha_x_gpu, (void *)&alpha_x, 0));
-
-    hipblas_catch(hipblasSaxpy(gpu::get_blas_handle(), n, alpha_x_gpu, x, inc_x, y, inc_y));
+    hipblas_catch(hipblasSaxpy_64(gpu::get_blas_handle(), n, &alpha, x, inc_x, y, inc_y));
     gpu::stream_wait();
-
-    hip_catch(hipHostUnregister(&alpha_x));
 }
 
-void daxpy(int n, double alpha_x, double const *x, int inc_x, double *y, int inc_y) {
+void daxpy(int64_t n, double alpha, double const *x, int64_t inc_x, double *y, int64_t inc_y) {
     LabeledSection0();
 
-    double *alpha_x_gpu;
-
-    hip_catch(hipHostRegister((void *)&alpha_x, sizeof(double), hipHostRegisterDefault));
-    hip_catch(hipHostGetDevicePointer((void **)&alpha_x_gpu, (void *)&alpha_x, 0));
-
-    hipblas_catch(hipblasDaxpy(gpu::get_blas_handle(), n, alpha_x_gpu, x, inc_x, y, inc_y));
+    hipblas_catch(hipblasDaxpy_64(gpu::get_blas_handle(), n, &alpha, x, inc_x, y, inc_y));
     gpu::stream_wait();
-
-    hip_catch(hipHostUnregister(&alpha_x));
 }
 
-void caxpy(int n, std::complex<float> alpha_x, std::complex<float> const *x, int inc_x, std::complex<float> *y, int inc_y) {
+void caxpy(int64_t n, std::complex<float> alpha, std::complex<float> const *x, int64_t inc_x, std::complex<float> *y, int64_t inc_y) {
     LabeledSection0();
 
-    hipblasComplex *alpha_x_gpu;
-
-    hip_catch(hipHostRegister((void *)&alpha_x, sizeof(hipComplex), hipHostRegisterDefault));
-    hip_catch(hipHostGetDevicePointer((void **)&alpha_x_gpu, (void *)&alpha_x, 0));
-
-    hipblas_catch(hipblasCaxpy(gpu::get_blas_handle(), n, alpha_x_gpu, (hipblasComplex const *)x, inc_x, (hipblasComplex *)y, inc_y));
-    gpu::stream_wait();
-
-    hip_catch(hipHostUnregister(&alpha_x));
-}
-
-void zaxpy(int n, std::complex<double> alpha_x, std::complex<double> const *x, int inc_x, std::complex<double> *y, int inc_y) {
-    LabeledSection0();
-
-    hipblasDoubleComplex *alpha_x_gpu;
-
-    hip_catch(hipHostRegister((void *)&alpha_x, sizeof(hipDoubleComplex), hipHostRegisterDefault));
-    hip_catch(hipHostGetDevicePointer((void **)&alpha_x_gpu, (void *)&alpha_x, 0));
-
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasCaxpy_64(gpu::get_blas_handle(), n, (hipblasComplex const *)&alpha, (hipblasComplex const *)x, inc_x,
+                               (hipblasComplex *)y, inc_y));
+#else
     hipblas_catch(
-        hipblasZaxpy(gpu::get_blas_handle(), n, alpha_x_gpu, (hipblasDoubleComplex const *)x, inc_x, (hipblasDoubleComplex *)y, inc_y));
+        hipblasCaxpy_64(gpu::get_blas_handle(), n, (hipComplex const *)&alpha, (hipComplex const *)x, inc_x, (hipComplex *)y, inc_y));
+#endif
     gpu::stream_wait();
-
-    hip_catch(hipHostUnregister(&alpha_x));
 }
 
-void saxpby(int const n, float const a, float const *x, int const incx, float const b, float *y, int const incy) {
+void zaxpy(int64_t n, std::complex<double> alpha, std::complex<double> const *x, int64_t inc_x, std::complex<double> *y, int64_t inc_y) {
+    LabeledSection0();
+
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasZaxpy_64(gpu::get_blas_handle(), n, (hipblasDoubleComplex const *)&alpha, (hipblasDoubleComplex const *)x, inc_x,
+                               (hipblasDoubleComplex *)y, inc_y));
+#else
+    hipblas_catch(hipblasZaxpy_64(gpu::get_blas_handle(), n, (hipDoubleComplex const *)&alpha, (hipDoubleComplex const *)x, inc_x,
+                               (hipDoubleComplex *)y, inc_y));
+#endif
+    gpu::stream_wait();
+}
+
+void saxpby(int64_t const n, float const a, float const *x, int64_t const incx, float const b, float *y, int64_t const incy) {
     LabeledSection0();
     if (incy == 0) {
         *y *= b;
@@ -83,7 +66,7 @@ void saxpby(int const n, float const a, float const *x, int const incx, float co
     saxpy(n, a, x, incx, y, incy);
 }
 
-void daxpby(int const n, double const a, double const *x, int const incx, double const b, double *y, int const incy) {
+void daxpby(int64_t const n, double const a, double const *x, int64_t const incx, double const b, double *y, int64_t const incy) {
     LabeledSection0();
     if (incy == 0) {
         *y *= b;
@@ -93,8 +76,8 @@ void daxpby(int const n, double const a, double const *x, int const incx, double
     daxpy(n, a, x, incx, y, incy);
 }
 
-void caxpby(int const n, std::complex<float> const a, std::complex<float> const *x, int const incx, std::complex<float> const b,
-            std::complex<float> *y, int const incy) {
+void caxpby(int64_t const n, std::complex<float> const a, std::complex<float> const *x, int64_t const incx, std::complex<float> const b,
+            std::complex<float> *y, int64_t const incy) {
     LabeledSection0();
     if (incy == 0) {
         *y *= b;
@@ -104,8 +87,8 @@ void caxpby(int const n, std::complex<float> const a, std::complex<float> const 
     caxpy(n, a, x, incx, y, incy);
 }
 
-void zaxpby(int const n, std::complex<double> const a, std::complex<double> const *x, int const incx, std::complex<double> const b,
-            std::complex<double> *y, int const incy) {
+void zaxpby(int64_t const n, std::complex<double> const a, std::complex<double> const *x, int64_t const incx, std::complex<double> const b,
+            std::complex<double> *y, int64_t const incy) {
     LabeledSection0();
     if (incy == 0) {
         *y *= b;

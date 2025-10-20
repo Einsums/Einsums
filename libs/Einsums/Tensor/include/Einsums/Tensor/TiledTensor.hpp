@@ -1369,7 +1369,7 @@ struct TiledDeviceTensor final : tensor_base::TiledTensor<T, Rank, einsums::Devi
      * @param pos The position to put the new tensor.
      */
     void add_tile(std::array<int, Rank> const &pos) override {
-        std::lock_guard(*this);
+        auto lock = std::lock_guard(*this);
         std::string tile_name = this->_name + " - (";
         Dim<Rank>   dims{};
 

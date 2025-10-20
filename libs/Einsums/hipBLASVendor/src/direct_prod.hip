@@ -17,20 +17,20 @@
 
 namespace einsums::blas::hip {
 
-static __global__ void sdirprod_kernel(int n, float alpha, float const *x, int incx, float const *y, int incy, float *z, int incz) {
+static __global__ void sdirprod_kernel(int64_t n, float alpha, float const *x, int64_t incx, float const *y, int64_t incy, float *z, int64_t incz) {
     int thread_id, num_threads;
 
     get_worker_info(thread_id, num_threads);
 
-    int block_size = n / num_threads;
-    int remaining  = n % num_threads;
+    int64_t block_size = n / num_threads;
+    int64_t remaining  = n % num_threads;
 
     if (block_size != 0) {
         float const *curr_x = x + (ptrdiff_t)thread_id * block_size * incx;
         float const *curr_y = y + (ptrdiff_t)thread_id * block_size * incy;
         float       *curr_z = z + (ptrdiff_t)thread_id * block_size * incz;
 
-        for (int i = 0; i < block_size; i++) {
+        for (int64_t i = 0; i < block_size; i++) {
             curr_z[i * incz] += alpha * curr_x[i * incx] * curr_y[i * incy];
         }
     }
@@ -40,20 +40,20 @@ static __global__ void sdirprod_kernel(int n, float alpha, float const *x, int i
         float const *curr_y = y + (ptrdiff_t)num_threads * block_size * incy;
         float       *curr_z = z + (ptrdiff_t)num_threads * block_size * incz;
 
-        for (int i = 0; i < remaining; i++) {
+        for (int64_t i = 0; i < remaining; i++) {
             curr_z[i * incz] += alpha * curr_x[i * incx] * curr_y[i * incy];
         }
     }
 }
 
 // Vectorized kernel
-static __global__ void sdirprod_all1_kernel(int n, float alpha, float const *x, float const *y, float *z) {
+static __global__ void sdirprod_all1_kernel(int64_t n, float alpha, float const *x, float const *y, float *z) {
     int thread_id, num_threads;
 
     get_worker_info(thread_id, num_threads);
 
-    int block_size = n / (4 * num_threads);
-    int remaining  = n % (4 * num_threads);
+    int64_t block_size = n / (4 * num_threads);
+    int64_t remaining  = n % (4 * num_threads);
 
     float4 alpha_vec = make_float4(alpha, alpha, alpha, alpha);
 
@@ -62,7 +62,7 @@ static __global__ void sdirprod_all1_kernel(int n, float alpha, float const *x, 
         float4 const *curr_y = (float4 const *)(y + (ptrdiff_t)thread_id * block_size * 4);
         float4       *curr_z = (float4 *)(z + (ptrdiff_t)thread_id * block_size * 4);
 
-        for (int i = 0; i < block_size; i++) {
+        for (int64_t i = 0; i < block_size; i++) {
             curr_z[i] += alpha_vec * curr_x[i] * curr_y[i];
         }
     }
@@ -72,26 +72,26 @@ static __global__ void sdirprod_all1_kernel(int n, float alpha, float const *x, 
         float const *curr_y = y + (ptrdiff_t)num_threads * block_size * 4;
         float       *curr_z = z + (ptrdiff_t)num_threads * block_size * 4;
 
-        for (int i = 0; i < remaining; i++) {
+        for (int64_t i = 0; i < remaining; i++) {
             curr_z[i] += alpha * curr_x[i] * curr_y[i];
         }
     }
 }
 
-static __global__ void ddirprod_kernel(int n, double alpha, double const *x, int incx, double const *y, int incy, double *z, int incz) {
+static __global__ void ddirprod_kernel(int64_t n, double alpha, double const *x, int64_t incx, double const *y, int64_t incy, double *z, int64_t incz) {
     int thread_id, num_threads;
 
     get_worker_info(thread_id, num_threads);
 
-    int block_size = n / num_threads;
-    int remaining  = n % num_threads;
+    int64_t block_size = n / num_threads;
+    int64_t remaining  = n % num_threads;
 
     if (block_size != 0) {
         double const *curr_x = x + (ptrdiff_t)thread_id * block_size * incx;
         double const *curr_y = y + (ptrdiff_t)thread_id * block_size * incy;
         double       *curr_z = z + (ptrdiff_t)thread_id * block_size * incz;
 
-        for (int i = 0; i < block_size; i++) {
+        for (int64_t i = 0; i < block_size; i++) {
             curr_z[i * incz] += alpha * curr_x[i * incx] * curr_y[i * incy];
         }
     }
@@ -101,20 +101,20 @@ static __global__ void ddirprod_kernel(int n, double alpha, double const *x, int
         double const *curr_y = y + (ptrdiff_t)num_threads * block_size * incy;
         double       *curr_z = z + (ptrdiff_t)num_threads * block_size * incz;
 
-        for (int i = 0; i < remaining; i++) {
+        for (int64_t i = 0; i < remaining; i++) {
             curr_z[i * incz] += alpha * curr_x[i * incx] * curr_y[i * incy];
         }
     }
 }
 
 // Vectorized kernel
-static __global__ void ddirprod_all1_kernel(int n, double alpha, double const *x, double const *y, double *z) {
+static __global__ void ddirprod_all1_kernel(int64_t n, double alpha, double const *x, double const *y, double *z) {
     int thread_id, num_threads;
 
     get_worker_info(thread_id, num_threads);
 
-    int block_size = n / (4 * num_threads);
-    int remaining  = n % (4 * num_threads);
+    int64_t block_size = n / (4 * num_threads);
+    int64_t remaining  = n % (4 * num_threads);
 
     double4 alpha_vec = make_double4(alpha, alpha, alpha, alpha);
 
@@ -123,7 +123,7 @@ static __global__ void ddirprod_all1_kernel(int n, double alpha, double const *x
         double4 const *curr_y = (double4 const *)(y + (ptrdiff_t)thread_id * block_size * 4);
         double4       *curr_z = (double4 *)(z + (ptrdiff_t)thread_id * block_size * 4);
 
-        for (int i = 0; i < block_size; i++) {
+        for (int64_t i = 0; i < block_size; i++) {
             curr_z[i] += alpha_vec * curr_x[i] * curr_y[i];
         }
     }
@@ -133,27 +133,27 @@ static __global__ void ddirprod_all1_kernel(int n, double alpha, double const *x
         double const *curr_y = y + (ptrdiff_t)num_threads * block_size * 4;
         double       *curr_z = z + (ptrdiff_t)num_threads * block_size * 4;
 
-        for (int i = 0; i < remaining; i++) {
+        for (int64_t i = 0; i < remaining; i++) {
             curr_z[i] += alpha * curr_x[i] * curr_y[i];
         }
     }
 }
 
-static __global__ void cdirprod_kernel(int n, hipFloatComplex alpha, hipFloatComplex const *x, int incx, hipFloatComplex const *y, int incy,
-                                       hipFloatComplex *z, int incz) {
+static __global__ void cdirprod_kernel(int64_t n, hipFloatComplex alpha, hipFloatComplex const *x, int64_t incx, hipFloatComplex const *y, int64_t incy,
+                                       hipFloatComplex *z, int64_t incz) {
     int thread_id, num_threads;
 
     get_worker_info(thread_id, num_threads);
 
-    int block_size = n / num_threads;
-    int remaining  = n % num_threads;
+    int64_t block_size = n / num_threads;
+    int64_t remaining  = n % num_threads;
 
     if (block_size != 0) {
         hipFloatComplex const *curr_x = x + (ptrdiff_t)thread_id * block_size * incx;
         hipFloatComplex const *curr_y = y + (ptrdiff_t)thread_id * block_size * incy;
         hipFloatComplex       *curr_z = z + (ptrdiff_t)thread_id * block_size * incz;
 
-        for (int i = 0; i < block_size; i++) {
+        for (int64_t i = 0; i < block_size; i++) {
             curr_z[i * incz] = hipCaddf(curr_z[i * incz], hipCmulf(alpha, hipCmulf(curr_x[i * incx], curr_y[i * incy])));
         }
     }
@@ -163,27 +163,27 @@ static __global__ void cdirprod_kernel(int n, hipFloatComplex alpha, hipFloatCom
         hipFloatComplex const *curr_y = y + (ptrdiff_t)num_threads * block_size * incy;
         hipFloatComplex       *curr_z = z + (ptrdiff_t)num_threads * block_size * incz;
 
-        for (int i = 0; i < remaining; i++) {
+        for (int64_t i = 0; i < remaining; i++) {
             curr_z[i * incz] = hipCaddf(curr_z[i * incz], hipCmulf(alpha, hipCmulf(curr_x[i * incx], curr_y[i * incy])));
         }
     }
 }
 
-static __global__ void zdirprod_kernel(int n, hipDoubleComplex alpha, hipDoubleComplex const *x, int incx, hipDoubleComplex const *y,
-                                       int incy, hipDoubleComplex *z, int incz) {
+static __global__ void zdirprod_kernel(int64_t n, hipDoubleComplex alpha, hipDoubleComplex const *x, int64_t incx, hipDoubleComplex const *y,
+                                       int64_t incy, hipDoubleComplex *z, int64_t incz) {
     int thread_id, num_threads;
 
     get_worker_info(thread_id, num_threads);
 
-    int block_size = n / num_threads;
-    int remaining  = n % num_threads;
+    int64_t block_size = n / num_threads;
+    int64_t remaining  = n % num_threads;
 
     if (block_size != 0) {
         hipDoubleComplex const *curr_x = x + (ptrdiff_t)thread_id * block_size * incx;
         hipDoubleComplex const *curr_y = y + (ptrdiff_t)thread_id * block_size * incy;
         hipDoubleComplex       *curr_z = z + (ptrdiff_t)thread_id * block_size * incz;
 
-        for (int i = 0; i < block_size; i++) {
+        for (int64_t i = 0; i < block_size; i++) {
             curr_z[i * incz] = hipCadd(curr_z[i * incz], hipCmul(alpha, hipCmul(curr_x[i * incx], curr_y[i * incy])));
         }
     }
@@ -193,13 +193,13 @@ static __global__ void zdirprod_kernel(int n, hipDoubleComplex alpha, hipDoubleC
         hipDoubleComplex const *curr_y = y + (ptrdiff_t)num_threads * block_size * incy;
         hipDoubleComplex       *curr_z = z + (ptrdiff_t)num_threads * block_size * incz;
 
-        for (int i = 0; i < remaining; i++) {
+        for (int64_t i = 0; i < remaining; i++) {
             curr_z[i * incz] = hipCadd(curr_z[i * incz], hipCmul(alpha, hipCmul(curr_x[i * incx], curr_y[i * incy])));
         }
     }
 }
 
-void sdirprod(int n, float alpha, float const *x, int incx, float const *y, int incy, float *z, int incz) {
+void sdirprod(int64_t n, float alpha, float const *x, int64_t incx, float const *y, int64_t incy, float *z, int64_t incz) {
     LabeledSection0();
 
     hipStream_t stream;
@@ -219,7 +219,7 @@ void sdirprod(int n, float alpha, float const *x, int incx, float const *y, int 
     }
 }
 
-void ddirprod(int n, double alpha, double const *x, int incx, double const *y, int incy, double *z, int incz) {
+void ddirprod(int64_t n, double alpha, double const *x, int64_t incx, double const *y, int64_t incy, double *z, int64_t incz) {
     LabeledSection0();
 
     hipStream_t stream;
@@ -239,8 +239,8 @@ void ddirprod(int n, double alpha, double const *x, int incx, double const *y, i
     }
 }
 
-void cdirprod(int n, std::complex<float> alpha, std::complex<float> const *x, int incx, std::complex<float> const *y, int incy,
-              std::complex<float> *z, int incz) {
+void cdirprod(int64_t n, std::complex<float> alpha, std::complex<float> const *x, int64_t incx, std::complex<float> const *y, int64_t incy,
+              std::complex<float> *z, int64_t incz) {
     LabeledSection0();
 
     hipStream_t stream;
@@ -254,8 +254,8 @@ void cdirprod(int n, std::complex<float> alpha, std::complex<float> const *x, in
                                                        (hipComplex const *)y, incy, (hipComplex *)z, incz);
 }
 
-void zdirprod(int n, std::complex<double> alpha, std::complex<double> const *x, int incx, std::complex<double> const *y, int incy,
-              std::complex<double> *z, int incz) {
+void zdirprod(int64_t n, std::complex<double> alpha, std::complex<double> const *x, int64_t incx, std::complex<double> const *y, int64_t incy,
+              std::complex<double> *z, int64_t incz) {
     LabeledSection0();
 
     hipStream_t stream;

@@ -21,24 +21,24 @@
 
 namespace einsums::blas::hip {
 
-auto sdot(int n, float const *x, int incx, float const *y, int incy) -> float {
+auto sdot(int64_t n, float const *x, int64_t incx, float const *y, int64_t incy) -> float {
     LabeledSection0();
 
     float result;
 
-    hipblas_catch(hipblasSdot(gpu::get_blas_handle(), n, x, incx, y, incy, &result));
+    hipblas_catch(hipblasSdot_64(gpu::get_blas_handle(), n, x, incx, y, incy, &result));
 
     gpu::stream_wait();
 
     return result;
 }
 
-auto ddot(int n, double const *x, int incx, double const *y, int incy) -> double {
+auto ddot(int64_t n, double const *x, int64_t incx, double const *y, int64_t incy) -> double {
     LabeledSection0();
 
     double result;
 
-    hipblas_catch(hipblasDdot(gpu::get_blas_handle(), n, x, incx, y, incy, &result));
+    hipblas_catch(hipblasDdot_64(gpu::get_blas_handle(), n, x, incx, y, incy, &result));
 
     gpu::stream_wait();
 
@@ -46,13 +46,17 @@ auto ddot(int n, double const *x, int incx, double const *y, int incy) -> double
 }
 
 // We implement the cdotu as the default for cdot.
-auto cdot(int n, std::complex<float> const *x, int incx, std::complex<float> const *y, int incy) -> std::complex<float> {
+auto cdot(int64_t n, std::complex<float> const *x, int64_t incx, std::complex<float> const *y, int64_t incy) -> std::complex<float> {
     LabeledSection0();
 
     std::complex<float> result;
 
-    hipblas_catch(hipblasCdotu(gpu::get_blas_handle(), n, (hipblasComplex const *)x, incx, (hipblasComplex const *)y, incy,
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasCdotu_64(gpu::get_blas_handle(), n, (hipblasComplex const *)x, incx, (hipblasComplex const *)y, incy,
                                (hipblasComplex *)&result));
+#else
+    hipblas_catch(hipblasCdotu_64(gpu::get_blas_handle(), n, (hipComplex const *)x, incx, (hipComplex const *)y, incy, (hipComplex *)&result));
+#endif
 
     gpu::stream_wait();
 
@@ -60,39 +64,53 @@ auto cdot(int n, std::complex<float> const *x, int incx, std::complex<float> con
 }
 
 // We implement the zdotu as the default for cdot.
-auto zdot(int n, std::complex<double> const *x, int incx, std::complex<double> const *y, int incy) -> std::complex<double> {
+auto zdot(int64_t n, std::complex<double> const *x, int64_t incx, std::complex<double> const *y, int64_t incy) -> std::complex<double> {
     LabeledSection0();
 
     std::complex<double> result;
 
-    hipblas_catch(hipblasZdotu(gpu::get_blas_handle(), n, (hipblasDoubleComplex const *)x, incx, (hipblasDoubleComplex const *)y, incy,
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasZdotu_64(gpu::get_blas_handle(), n, (hipblasDoubleComplex const *)x, incx, (hipblasDoubleComplex const *)y, incy,
                                (hipblasDoubleComplex *)&result));
+#else
+    hipblas_catch(hipblasZdotu_64(gpu::get_blas_handle(), n, (hipDoubleComplex const *)x, incx, (hipDoubleComplex const *)y, incy,
+                               (hipDoubleComplex *)&result));
+#endif
 
     gpu::stream_wait();
 
     return result;
 }
 
-auto cdotc(int n, std::complex<float> const *x, int incx, std::complex<float> const *y, int incy) -> std::complex<float> {
+auto cdotc(int64_t n, std::complex<float> const *x, int64_t incx, std::complex<float> const *y, int64_t incy) -> std::complex<float> {
     LabeledSection0();
 
     std::complex<float> result;
 
-    hipblas_catch(hipblasCdotc(gpu::get_blas_handle(), n, (hipblasComplex const *)x, incx, (hipblasComplex const *)y, incy,
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasCdotc_64(gpu::get_blas_handle(), n, (hipblasComplex const *)x, incx, (hipblasComplex const *)y, incy,
                                (hipblasComplex *)&result));
+#else
+    hipblas_catch(hipblasCdotc_64(gpu::get_blas_handle(), n, (hipComplex const *)x, incx, (hipComplex const *)y, incy, (hipComplex *)&result));
+#endif
 
     gpu::stream_wait();
 
     return result;
 }
 
-auto zdotc(int n, std::complex<double> const *x, int incx, std::complex<double> const *y, int incy) -> std::complex<double> {
+auto zdotc(int64_t n, std::complex<double> const *x, int64_t incx, std::complex<double> const *y, int64_t incy) -> std::complex<double> {
     LabeledSection0();
 
     std::complex<double> result;
 
-    hipblas_catch(hipblasZdotc(gpu::get_blas_handle(), n, (hipblasDoubleComplex const *)x, incx, (hipblasDoubleComplex const *)y, incy,
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasZdotc_64(gpu::get_blas_handle(), n, (hipblasDoubleComplex const *)x, incx, (hipblasDoubleComplex const *)y, incy,
                                (hipblasDoubleComplex *)&result));
+#else
+    hipblas_catch(hipblasZdotc_64(gpu::get_blas_handle(), n, (hipDoubleComplex const *)x, incx, (hipDoubleComplex const *)y, incy,
+                               (hipDoubleComplex *)&result));
+#endif
 
     gpu::stream_wait();
 

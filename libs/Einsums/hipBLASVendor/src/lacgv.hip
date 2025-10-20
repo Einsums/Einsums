@@ -23,7 +23,7 @@
 
 namespace einsums::blas::hip {
 
-void clacgv(int n, std::complex<float> *x, int incx) {
+void clacgv(int64_t n, std::complex<float> *x, int64_t incx) {
     LabeledSection0();
 
     float *x_imag = (float *)x;
@@ -32,7 +32,7 @@ void clacgv(int n, std::complex<float> *x, int incx) {
     sscal(n, -1.0f, x_imag, 2 * incx);
 }
 
-void zlacgv(int n, std::complex<double> *x, int incx) {
+void zlacgv(int64_t n, std::complex<double> *x, int64_t incx) {
     LabeledSection0();
 
     double *x_imag = (double *)x;

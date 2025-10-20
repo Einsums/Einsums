@@ -40,7 +40,7 @@ namespace einsums::blas::hip {
             std::domain_error, "The third argument (n) to gemv call is invalid. Expected a number greater than or equal to zero, got {}.", \
             n);                                                                                                                            \
     }                                                                                                                                      \
-    if ((lda) < std::max((int)1, m)) {                                                                                                     \
+    if ((lda) < std::max((int64_t)1, m)) {                                                                                                     \
         EINSUMS_THROW_EXCEPTION(std::domain_error,                                                                                         \
                                 "The sixth argument (lda) to gemv call is invalid. Expected a number at least 1 and at least {}, got {}.", \
                                 m, lda);                                                                                                   \
@@ -54,7 +54,7 @@ namespace einsums::blas::hip {
                                 "The eleventh argument (incy) to gemv call is invalid. Expected a non-zero value, got zero.");             \
     }
 
-void sgemv(char transa, int m, int n, float alpha, float const *a, int lda, float const *x, int incx, float beta, float *y, int incy) {
+void sgemv(char transa, int64_t m, int64_t n, float alpha, float const *a, int64_t lda, float const *x, int64_t incx, float beta, float *y, int64_t incy) {
     LabeledSection0();
 
     if (m == 0 || n == 0)
@@ -62,12 +62,12 @@ void sgemv(char transa, int m, int n, float alpha, float const *a, int lda, floa
 
     GEMV_CHECK(transa, m, n, lda, incx, incy)
 
-    hipblas_catch(hipblasSgemv(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, &alpha, a, lda, x, incx, &beta, y, incy));
+    hipblas_catch(hipblasSgemv_64(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, &alpha, a, lda, x, incx, &beta, y, incy));
 
     gpu::stream_wait();
 }
 
-void dgemv(char transa, int m, int n, double alpha, double const *a, int lda, double const *x, int incx, double beta, double *y, int incy) {
+void dgemv(char transa, int64_t m, int64_t n, double alpha, double const *a, int64_t lda, double const *x, int64_t incx, double beta, double *y, int64_t incy) {
     LabeledSection0();
 
     if (m == 0 || n == 0)
@@ -75,13 +75,13 @@ void dgemv(char transa, int m, int n, double alpha, double const *a, int lda, do
 
     GEMV_CHECK(transa, m, n, lda, incx, incy)
 
-    hipblas_catch(hipblasDgemv(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, &alpha, a, lda, x, incx, &beta, y, incy));
+    hipblas_catch(hipblasDgemv_64(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, &alpha, a, lda, x, incx, &beta, y, incy));
 
     gpu::stream_wait();
 }
 
-void cgemv(char transa, int m, int n, std::complex<float> alpha, std::complex<float> const *a, int lda, std::complex<float> const *x,
-           int incx, std::complex<float> beta, std::complex<float> *y, int incy) {
+void cgemv(char transa, int64_t m, int64_t n, std::complex<float> alpha, std::complex<float> const *a, int64_t lda, std::complex<float> const *x,
+           int64_t incx, std::complex<float> beta, std::complex<float> *y, int64_t incy) {
     LabeledSection0();
 
     if (m == 0 || n == 0)
@@ -89,14 +89,19 @@ void cgemv(char transa, int m, int n, std::complex<float> alpha, std::complex<fl
 
     GEMV_CHECK(transa, m, n, lda, incx, incy)
 
-    hipblas_catch(hipblasCgemv(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, (hipblasComplex *) &alpha, (hipblasComplex *)a, lda,
-                               (hipblasComplex *)x, incx, (hipblasComplex *) &beta, (hipblasComplex *)y, incy));
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasCgemv_64(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, (hipblasComplex *)&alpha, (hipblasComplex *)a, lda,
+                               (hipblasComplex *)x, incx, (hipblasComplex *)&beta, (hipblasComplex *)y, incy));
+#else
+    hipblas_catch(hipblasCgemv_64(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, (hipComplex *)&alpha, (hipComplex *)a, lda,
+                               (hipComplex *)x, incx, (hipComplex *)&beta, (hipComplex *)y, incy));
+#endif
 
     gpu::stream_wait();
 }
 
-void zgemv(char transa, int m, int n, std::complex<double> alpha, std::complex<double> const *a, int lda, std::complex<double> const *x,
-           int incx, std::complex<double> beta, std::complex<double> *y, int incy) {
+void zgemv(char transa, int64_t m, int64_t n, std::complex<double> alpha, std::complex<double> const *a, int64_t lda, std::complex<double> const *x,
+           int64_t incx, std::complex<double> beta, std::complex<double> *y, int64_t incy) {
     LabeledSection0();
 
     if (m == 0 || n == 0)
@@ -104,8 +109,14 @@ void zgemv(char transa, int m, int n, std::complex<double> alpha, std::complex<d
 
     GEMV_CHECK(transa, m, n, lda, incx, incy)
 
-    hipblas_catch(hipblasZgemv(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, (hipblasDoubleComplex *) &alpha, (hipblasDoubleComplex *)a, lda,
-                               (hipblasDoubleComplex *)x, incx, (hipblasDoubleComplex *) &beta, (hipblasDoubleComplex *)y, incy));
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasZgemv_64(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, (hipblasDoubleComplex *)&alpha,
+                               (hipblasDoubleComplex *)a, lda, (hipblasDoubleComplex *)x, incx, (hipblasDoubleComplex *)&beta,
+                               (hipblasDoubleComplex *)y, incy));
+#else
+    hipblas_catch(hipblasZgemv_64(gpu::get_blas_handle(), vendor::char_to_op(transa), m, n, (hipDoubleComplex *)&alpha, (hipDoubleComplex *)a,
+                               lda, (hipDoubleComplex *)x, incx, (hipDoubleComplex *)&beta, (hipDoubleComplex *)y, incy));
+#endif
 
     gpu::stream_wait();
 }
