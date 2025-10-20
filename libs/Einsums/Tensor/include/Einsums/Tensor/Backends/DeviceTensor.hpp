@@ -780,11 +780,12 @@ auto DeviceTensor<T, rank>::operator()(MultiIndex... index)
         } else if constexpr (std::is_same_v<AllT, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
             strides[counter] = _strides[i];
             dims[counter]    = _dims[i];
+            offsets[i]       = 0;
             counter++;
 
         } else if constexpr (std::is_same_v<Range, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
-            auto range       = std::get<i>(indices);
-            offsets[counter] = range[0];
+            auto range = std::get<i>(indices);
+            offsets[i] = range[0];
             if (range[1] < 0) {
                 auto temp = _dims[i] + range[1];
                 range[1]  = temp;

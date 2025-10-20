@@ -132,7 +132,8 @@ void gemm(char transA, char transB, T alpha, AType const &A, BType const &B, T b
     int lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
     // Flip the A and B matrices. Row-major vs column major.
-    blas::gpu::gemm(transA, transB, n, m, k, alpha, (typename AType::ValueType *)B.gpu_data(), ldb,
+    char new_transA = (std::tolower(transA) == 'n')? 't': 'n', new_transB = (std::tolower(transB) == 'n')? 't': 'n';
+    blas::gpu::gemm(transB, transA, n, m, k, alpha, (typename AType::ValueType *)B.gpu_data(), ldb,
                     (typename AType::ValueType *)A.gpu_data(), lda, beta, (typename AType::ValueType *)C->gpu_data(), ldc);
     stream_wait();
 }
@@ -322,7 +323,13 @@ void gerc(T alpha, XType const &X, YType const &Y, AType *A) {
 
     using dev_datatype = typename AType::dev_datatype;
 
-    blas::gpu::gerc(Y.dim(0), X.dim(0), alpha, (typename AType::ValueType *)Y.gpu_data(), Y.stride(0),
+    DeviceTensor<T, 1> X_temp("x_temp", X.dim(0));
+
+    X_temp = X;
+
+    blas::gpu::lacgv(X_temp.dim(0), (T *)X_temp.gpu_data(), X_temp.stride(0));
+
+    blas::gpu::ger(Y.dim(0), X.dim(0), alpha, (typename AType::ValueType *)Y.gpu_data(), Y.stride(0),
                     (typename AType::ValueType *)X.gpu_data(), X.stride(0), (typename AType::ValueType *)A->gpu_data(), A->stride(0));
 
     // No wait needed. sort waits.
@@ -348,8 +355,33 @@ void gemv(char transA, T alpha, AType const &A, XType const &x, T beta, YType *y
                                 transA);
     }
 
-    blas::gpu::gemv(transA, m, n, alpha, (typename AType::ValueType *)A.gpu_data(), A.stride(0), (typename AType::ValueType *)x.gpu_data(),
-                    x.stride(0), beta, (typename AType::ValueType *)y->gpu_data(), y->stride(0));
+    if (std::tolower(transA) == 'n') {
+        blas::gpu::gemv('t', m, n, alpha, (typename AType::ValueType *)A.gpu_data(), A.stride(0), (typename AType::ValueType *)x.gpu_data(),
+                        x.stride(0), beta, (typename AType::ValueType *)y->gpu_data(), y->stride(0));
+    } else if (std::tolower(transA) == 't') {
+        blas::gpu::gemv('n', m, n, alpha, (typename AType::ValueType *)A.gpu_data(), A.stride(0), (typename AType::ValueType *)x.gpu_data(),
+                        x.stride(0), beta, (typename AType::ValueType *)y->gpu_data(), y->stride(0));
+    } else {
+        if constexpr (IsComplexV<T>) {
+            DeviceTensor<T, 1> x_temp("temp", x.dim(0));
+
+            x_temp = x;
+
+            blas::gpu::lacgv(x_temp.dim(0), (typename AType::ValueType *)x_temp.gpu_data(), x_temp.stride(0));
+            blas::gpu::lacgv(y->dim(0), (typename AType::ValueType *)y->gpu_data(), y->stride(0));
+
+            blas::gpu::gemv('n', m, n, std::conj(alpha), (typename AType::ValueType *)A.gpu_data(), A.stride(0),
+                            (typename AType::ValueType *)x_temp.gpu_data(), x_temp.stride(0), std::conj(beta),
+                            (typename AType::ValueType *)y->gpu_data(), y->stride(0));
+
+            blas::gpu::lacgv(y->dim(0), (typename AType::ValueType *)y->gpu_data(), y->stride(0));
+        } else {
+            blas::gpu::gemv('n', m, n, alpha, (typename AType::ValueType *)A.gpu_data(), A.stride(0),
+                            (typename AType::ValueType *)x.gpu_data(), x.stride(0), beta, (typename AType::ValueType *)y->gpu_data(),
+                            y->stride(0));
+        }
+    }
+
     stream_wait();
 }
 
