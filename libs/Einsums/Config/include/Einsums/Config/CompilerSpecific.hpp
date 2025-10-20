@@ -483,14 +483,14 @@
 // from the version definition
 #  define EINSUMS_CUDA_VERSION (__CUDACC_VER_MAJOR__*100 + __CUDACC_VER_MINOR__)
 #  define EINSUMS_COMPUTE_CODE
-#  if defined(__CUDA_ARCH__)
+#  if defined(__CUDA_ARCH__) && __CUDA_ARCH__ != 0
      // nvcc compiling CUDA code, device mode.
 #    define EINSUMS_COMPUTE_DEVICE_CODE
 #  endif
 // Detecting Clang CUDA
 #elif defined(__clang__) && defined(__CUDA__)
 #  define EINSUMS_COMPUTE_CODE
-#  if defined(__CUDA_ARCH__)
+#  if defined(__CUDA_ARCH__) && __CUDA_ARCH__ != 0
      // clang compiling CUDA code, device mode.
 #    define EINSUMS_COMPUTE_DEVICE_CODE
 #  endif
@@ -510,7 +510,7 @@
 #    pragma clang diagnostic pop
 #  endif
 #  define EINSUMS_COMPUTE_CODE
-#  if defined(__HIP_DEVICE_COMPILE__)
+#  if defined(__HIP_DEVICE_COMPILE__) && __HIP_DEVICE_COMPILE__ != 0
      // hipclang compiling CUDA/HIP code, device mode.
 #    define EINSUMS_COMPUTE_DEVICE_CODE
 #  endif

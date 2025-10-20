@@ -68,9 +68,13 @@ auto cgetri(int n, std::complex<float> const *a, int lda, int *ipiv, std::comple
 
     int info;
 
+#if hipblasVersionMajor < 3
     hipblasComplex *const *a_addr_gpu = (hipblasComplex *const *)gpu::register_host_variable(a);
     hipblasComplex       **c_addr_gpu = (hipblasComplex **)gpu::register_host_variable(c);
-
+#else
+    hipComplex *const *a_addr_gpu = (hipComplex *const *)gpu::register_host_variable(a);
+    hipComplex       **c_addr_gpu = (hipComplex **)gpu::register_host_variable(c);
+#endif
     int *dev_info = gpu::register_host_variable(info);
 
     hipblas_catch(hipblasCgetriBatched(gpu::get_blas_handle(), n, a_addr_gpu, lda, ipiv, c_addr_gpu, ldc, dev_info, 1));
@@ -88,8 +92,13 @@ auto zgetri(int n, std::complex<double> const *a, int lda, int *ipiv, std::compl
 
     int info;
 
+#if hipblasVersionMajor < 3
     hipblasDoubleComplex *const *a_addr_gpu = (hipblasDoubleComplex *const *)gpu::register_host_variable(a);
     hipblasDoubleComplex       **c_addr_gpu = (hipblasDoubleComplex **)gpu::register_host_variable(c);
+#else
+    hipDoubleComplex *const *a_addr_gpu = (hipDoubleComplex *const *)gpu::register_host_variable(a);
+    hipDoubleComplex       **c_addr_gpu = (hipDoubleComplex **)gpu::register_host_variable(c);
+#endif
 
     int *dev_info = gpu::register_host_variable(info);
 

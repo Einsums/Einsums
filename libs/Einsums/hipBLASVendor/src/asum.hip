@@ -20,58 +20,66 @@
 #include "Common.hpp"
 
 namespace einsums::blas::hip {
-float sasum(int n, float const *x, int incx) {
+float sasum(int64_t n, float const *x, int64_t incx) {
     LabeledSection0();
 
     float out;
 
-    hipblas_catch(hipblasSasum(gpu::get_blas_handle(), n, x, incx, &out));
+    hipblas_catch(hipblasSasum_64(gpu::get_blas_handle(), n, x, incx, &out));
     gpu::stream_wait();
 
     return out;
 }
 
-double dasum(int n, double const *x, int incx) {
+double dasum(int64_t n, double const *x, int64_t incx) {
     LabeledSection0();
 
     double out;
 
-    hipblas_catch(hipblasDasum(gpu::get_blas_handle(), n, x, incx, &out));
+    hipblas_catch(hipblasDasum_64(gpu::get_blas_handle(), n, x, incx, &out));
     gpu::stream_wait();
 
     return out;
 }
 
-float scasum(int n, std::complex<float> const *x, int incx) {
+float scasum(int64_t n, std::complex<float> const *x, int64_t incx) {
     LabeledSection0();
 
     float out;
 
-    hipblas_catch(hipblasScasum(gpu::get_blas_handle(), n, (hipblasComplex const *)x, incx, &out));
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasScasum_64(gpu::get_blas_handle(), n, (hipblasComplex const *)x, incx, &out));
+#else
+    hipblas_catch(hipblasScasum_64(gpu::get_blas_handle(), n, (hipComplex const *)x, incx, &out));
+#endif
     gpu::stream_wait();
 
     return out;
 }
 
-double dzasum(int n, std::complex<double> const *x, int incx) {
+double dzasum(int64_t n, std::complex<double> const *x, int64_t incx) {
     LabeledSection0();
 
     double out;
 
-    hipblas_catch(hipblasDzasum(gpu::get_blas_handle(), n, (hipblasDoubleComplex const *)x, incx, &out));
+#if hipblasVersionMajor < 3
+    hipblas_catch(hipblasDzasum_64(gpu::get_blas_handle(), n, (hipblasDoubleComplex const *)x, incx, &out));
+#else
+    hipblas_catch(hipblasDzasum_64(gpu::get_blas_handle(), n, (hipDoubleComplex const *)x, incx, &out));
+#endif
     gpu::stream_wait();
 
     return out;
 }
 
-__global__ void scsum1_kernel(int n, hipComplex const *x, int incx, float *result) {
+__global__ void scsum1_kernel(int64_t n, hipComplex const *x, int64_t incx, float *result) {
     int thread_id, num_threads;
     get_worker_info(thread_id, num_threads);
 
     int inwarp_id = thread_id % warpSize;
 
     ptrdiff_t const mega_block_size = n / (num_threads);
-    int const       remainder       = n % (num_threads);
+    int64_t const       remainder       = n % (num_threads);
 
     if (mega_block_size != 0) {
         hipComplex const *current_block = x + (ptrdiff_t)incx * thread_id * mega_block_size;
@@ -86,13 +94,13 @@ __global__ void scsum1_kernel(int n, hipComplex const *x, int incx, float *resul
         }
 
         // Poll the threads in the warp to combine their work.
-// #pragma unroll
-//         for (int i = warpSize / 2; i >= 1; i /= 2) {
-//             work_var += __shfl_down(work_var, i);
-//         }
+        // #pragma unroll
+        //         for (int i = warpSize / 2; i >= 1; i /= 2) {
+        //             work_var += __shfl_down(work_var, i);
+        //         }
 
-//         if (inwarp_id == 0) {
-            atomicAdd(result, work_var);
+        //         if (inwarp_id == 0) {
+        atomicAdd(result, work_var);
         // }
     }
 
@@ -106,14 +114,14 @@ __global__ void scsum1_kernel(int n, hipComplex const *x, int incx, float *resul
     }
 }
 
-__global__ void dzsum1_kernel(int n, hipDoubleComplex const *x, int incx, double *result) {
+__global__ void dzsum1_kernel(int64_t n, hipDoubleComplex const *x, int64_t incx, double *result) {
     int thread_id, num_threads;
     get_worker_info(thread_id, num_threads);
 
     int inwarp_id = thread_id % warpSize;
 
     ptrdiff_t const mega_block_size = n / (num_threads);
-    int const       remainder       = n % (num_threads);
+    int64_t const       remainder       = n % (num_threads);
 
     if (mega_block_size != 0) {
         hipDoubleComplex const *current_block = x + (ptrdiff_t)incx * thread_id * mega_block_size;
@@ -128,13 +136,13 @@ __global__ void dzsum1_kernel(int n, hipDoubleComplex const *x, int incx, double
         }
 
         // Poll the threads in the warp to combine their work.
-// #pragma unroll
-//         for (int i = warpSize / 2; i >= 1; i /= 2) {
-//             work_var += __shfl_down(work_var, i);
-//         }
+        // #pragma unroll
+        //         for (int i = warpSize / 2; i >= 1; i /= 2) {
+        //             work_var += __shfl_down(work_var, i);
+        //         }
 
-//         if (inwarp_id == 0) {
-            atomicAdd(result, work_var);
+        //         if (inwarp_id == 0) {
+        atomicAdd(result, work_var);
         // }
     }
 
@@ -148,7 +156,7 @@ __global__ void dzsum1_kernel(int n, hipDoubleComplex const *x, int incx, double
     }
 }
 
-float scsum1(int n, std::complex<float> const *x, int incx) {
+float scsum1(int64_t n, std::complex<float> const *x, int64_t incx) {
     LabeledSection0();
 
     auto block_size = gpu::block_size(n);
@@ -174,7 +182,7 @@ float scsum1(int n, std::complex<float> const *x, int incx) {
     return out;
 }
 
-double dzsum1(int n, std::complex<double> const *x, int incx) {
+double dzsum1(int64_t n, std::complex<double> const *x, int64_t incx) {
     LabeledSection0();
 
     auto block_size = gpu::block_size(n);

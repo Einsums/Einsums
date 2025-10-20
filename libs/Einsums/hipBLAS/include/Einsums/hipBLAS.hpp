@@ -383,27 +383,27 @@ inline auto heev<double>(char job, char uplo, int_t n, std::complex<double> *a, 
  * @versionadded{2.0.0}
  */
 template <typename T>
-auto gesv(int_t n, int_t nrhs, T *a, int_t lda, int_t *ipiv, T *b, int_t ldb, T *x, int_t ldx) -> int_t;
+auto gesv(int_t n, int_t nrhs, T *a, int_t lda, int *ipiv, T *b, int_t ldb, T *x, int_t ldx) -> int_t;
 
 #ifndef DOXYGEN
 template <>
-inline auto gesv<float>(int_t n, int_t nrhs, float *a, int_t lda, int_t *ipiv, float *b, int_t ldb, float *x, int_t ldx) -> int_t {
+inline auto gesv<float>(int_t n, int_t nrhs, float *a, int_t lda, int *ipiv, float *b, int_t ldb, float *x, int_t ldx) -> int_t {
     return blas::hip::sgesv(n, nrhs, a, lda, ipiv, b, ldb, x, ldx);
 }
 
 template <>
-inline auto gesv<double>(int_t n, int_t nrhs, double *a, int_t lda, int_t *ipiv, double *b, int_t ldb, double *x, int_t ldx) -> int_t {
+inline auto gesv<double>(int_t n, int_t nrhs, double *a, int_t lda, int *ipiv, double *b, int_t ldb, double *x, int_t ldx) -> int_t {
     return blas::hip::dgesv(n, nrhs, a, lda, ipiv, b, ldb, x, ldx);
 }
 
 template <>
-inline auto gesv<std::complex<float>>(int_t n, int_t nrhs, std::complex<float> *a, int_t lda, int_t *ipiv, std::complex<float> *b,
-                                      int_t ldb, std::complex<float> *x, int_t ldx) -> int_t {
+inline auto gesv<std::complex<float>>(int_t n, int_t nrhs, std::complex<float> *a, int_t lda, int *ipiv, std::complex<float> *b, int_t ldb,
+                                      std::complex<float> *x, int_t ldx) -> int_t {
     return blas::hip::cgesv(n, nrhs, a, lda, ipiv, b, ldb, x, ldx);
 }
 
 template <>
-inline auto gesv<std::complex<double>>(int_t n, int_t nrhs, std::complex<double> *a, int_t lda, int_t *ipiv, std::complex<double> *b,
+inline auto gesv<std::complex<double>>(int_t n, int_t nrhs, std::complex<double> *a, int_t lda, int *ipiv, std::complex<double> *b,
                                        int_t ldb, std::complex<double> *x, int_t ldx) -> int_t {
     return blas::hip::zgesv(n, nrhs, a, lda, ipiv, b, ldb, x, ldx);
 }
@@ -820,26 +820,26 @@ inline void gerc<std::complex<double>>(int_t m, int_t n, std::complex<double> al
  * @versionadded{2.0.0}
  */
 template <typename T>
-auto getrf(int_t m, int_t n, T *a, int_t lda, int_t *ipiv) -> int_t;
+auto getrf(int_t m, int_t n, T *a, int_t lda, int *ipiv) -> int_t;
 
 #ifndef DOXYGEN
 template <>
-inline auto getrf<float>(int_t m, int_t n, float *a, int_t lda, int_t *ipiv) -> int_t {
+inline auto getrf<float>(int_t m, int_t n, float *a, int_t lda, int *ipiv) -> int_t {
     return blas::hip::sgetrf(m, n, a, lda, ipiv);
 }
 
 template <>
-inline auto getrf<double>(int_t m, int_t n, double *a, int_t lda, int_t *ipiv) -> int_t {
+inline auto getrf<double>(int_t m, int_t n, double *a, int_t lda, int *ipiv) -> int_t {
     return blas::hip::dgetrf(m, n, a, lda, ipiv);
 }
 
 template <>
-inline auto getrf<std::complex<float>>(int_t m, int_t n, std::complex<float> *a, int_t lda, int_t *ipiv) -> int_t {
+inline auto getrf<std::complex<float>>(int_t m, int_t n, std::complex<float> *a, int_t lda, int *ipiv) -> int_t {
     return blas::hip::cgetrf(m, n, a, lda, ipiv);
 }
 
 template <>
-inline auto getrf<std::complex<double>>(int_t m, int_t n, std::complex<double> *a, int_t lda, int_t *ipiv) -> int_t {
+inline auto getrf<std::complex<double>>(int_t m, int_t n, std::complex<double> *a, int_t lda, int *ipiv) -> int_t {
     return blas::hip::zgetrf(m, n, a, lda, ipiv);
 }
 #endif
@@ -862,27 +862,27 @@ inline auto getrf<std::complex<double>>(int_t m, int_t n, std::complex<double> *
  * @versionadded{2.0.0}
  */
 template <typename T>
-auto getri(int_t n, T *a, int_t lda, int_t *ipiv, T *c, int_t ldc) -> int_t;
+auto getri(int_t n, T *a, int_t lda, int *ipiv, T *c, int_t ldc) -> int_t;
 
 #ifndef DOXYGEN
 template <>
-inline auto getri<float>(int_t n, float *a, int_t lda, int_t *ipiv, float *c, int_t ldc) -> int_t {
+inline auto getri<float>(int_t n, float *a, int_t lda, int *ipiv, float *c, int_t ldc) -> int_t {
     return blas::hip::sgetri(n, a, lda, ipiv, c, ldc);
 }
 
 template <>
-inline auto getri<double>(int_t n, double *a, int_t lda, int_t *ipiv, double *c, int_t ldc) -> int_t {
+inline auto getri<double>(int_t n, double *a, int_t lda, int *ipiv, double *c, int_t ldc) -> int_t {
     return blas::hip::dgetri(n, a, lda, ipiv, c, ldc);
 }
 
 template <>
-inline auto getri<std::complex<float>>(int_t n, std::complex<float> *a, int_t lda, int_t *ipiv, std::complex<float> *c, int_t ldc)
+inline auto getri<std::complex<float>>(int_t n, std::complex<float> *a, int_t lda, int *ipiv, std::complex<float> *c, int_t ldc)
     -> int_t {
     return blas::hip::cgetri(n, a, lda, ipiv, c, ldc);
 }
 
 template <>
-inline auto getri<std::complex<double>>(int_t n, std::complex<double> *a, int_t lda, int_t *ipiv, std::complex<double> *c, int_t ldc)
+inline auto getri<std::complex<double>>(int_t n, std::complex<double> *a, int_t lda, int *ipiv, std::complex<double> *c, int_t ldc)
     -> int_t {
     return blas::hip::zgetri(n, a, lda, ipiv, c, ldc);
 }
@@ -1374,7 +1374,7 @@ inline auto ungqr<std::complex<double>>(int_t m, int_t n, int_t k, std::complex<
 template <typename T>
 auto gelqf(int_t m, int_t n, T *a, int_t lda, T *tau) -> int_t;
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
 template <>
 inline auto gelqf<float>(int_t m, int_t n, float *a, int_t lda, float *tau) -> int_t {
     return blas::hip::sgelqf(m, n, a, lda, tau);
@@ -1394,7 +1394,7 @@ template <>
 inline auto gelqf<std::complex<double>>(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t {
     return blas::hip::zgelqf(m, n, a, lda, tau);
 }
-#endif
+#    endif
 
 /**
  * Extract the Q matrix after a call to gelqf.
@@ -1415,7 +1415,7 @@ inline auto gelqf<std::complex<double>>(int_t m, int_t n, std::complex<double> *
 template <typename T>
 auto orglq(int_t m, int_t n, int_t k, T *a, int_t lda, T const *tau) -> int_t;
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
 template <>
 inline auto orglq<float>(int_t m, int_t n, int_t k, float *a, int_t lda, float const *tau) -> int_t {
     return blas::hip::sorglq(m, n, k, a, lda, tau);
@@ -1440,7 +1440,7 @@ inline auto unglq<std::complex<double>>(int_t m, int_t n, int_t k, std::complex<
     -> int_t {
     return blas::hip::zunglq(m, n, k, a, lda, tau);
 }
-#endif
+#    endif
 #endif
 
 /**

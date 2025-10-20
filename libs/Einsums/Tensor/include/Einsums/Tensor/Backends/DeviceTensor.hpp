@@ -8,6 +8,7 @@
 
 // If this is included on its own, we should not include DeviceTensorView.hpp here.
 // It depends on functions in this file, and tests break if it is included first.
+#include <Einsums/Assert.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/Tensor/DeviceTensor.hpp>
@@ -104,9 +105,7 @@ DeviceTensor<T, rank>::DeviceTensor(std::string name, einsums::detail::HostToDev
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * rank));
     this->_gpu_strides = this->_gpu_dims + rank;
 
-    if (this->_gpu_dims == nullptr || this->_dims.data() == nullptr) {
-        EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not allocate memory for dimension arrays.");
-    }
+    EINSUMS_ASSERT(this->_gpu_dims != nullptr && this->_dims.data() != nullptr);
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (void const *)this->_dims.data(), sizeof(size_t) * rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (void const *)this->_strides.data(), sizeof(size_t) * rank, hipMemcpyHostToDevice));
@@ -160,7 +159,7 @@ DeviceTensor<T, rank>::DeviceTensor(std::string name, Dims... dims)
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * rank));
     this->_gpu_strides = this->_gpu_dims + rank;
 
-    assert(this->_gpu_dims != nullptr && this->_dims.data() != nullptr);
+    EINSUMS_ASSERT(this->_gpu_dims != nullptr && this->_dims.data() != nullptr);
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (void const *)this->_dims.data(), sizeof(size_t) * rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (void const *)this->_strides.data(), sizeof(size_t) * rank, hipMemcpyHostToDevice));
@@ -546,7 +545,7 @@ template <typename... MultiIndex>
 DeviceTensor<T, rank>::dev_datatype *DeviceTensor<T, rank>::gpu_data(MultiIndex... index) {
     using namespace einsums::gpu;
 #    if !defined(DOXYGEN)
-    assert(sizeof...(MultiIndex) <= _dims.size());
+    EINSUMS_ASSERT(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
     for (auto [i, _index] : einsums::enumerate(index_list)) {
@@ -568,7 +567,7 @@ template <typename... MultiIndex>
 DeviceTensor<T, rank>::dev_datatype const *DeviceTensor<T, rank>::gpu_data(MultiIndex... index) const {
     using namespace einsums::gpu;
 #    if !defined(DOXYGEN)
-    assert(sizeof...(MultiIndex) <= _dims.size());
+    EINSUMS_ASSERT(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
     for (auto [i, _index] : einsums::enumerate(index_list)) {
@@ -590,7 +589,7 @@ template <typename... MultiIndex>
 DeviceTensor<T, rank>::host_datatype *DeviceTensor<T, rank>::data(MultiIndex... index) {
     using namespace einsums::gpu;
 #    if !defined(DOXYGEN)
-    assert(sizeof...(MultiIndex) <= _dims.size());
+    EINSUMS_ASSERT(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
     for (auto [i, _index] : einsums::enumerate(index_list)) {
@@ -612,7 +611,7 @@ template <typename... MultiIndex>
 DeviceTensor<T, rank>::host_datatype const *DeviceTensor<T, rank>::data(MultiIndex... index) const {
     using namespace einsums::gpu;
 #    if !defined(DOXYGEN)
-    assert(sizeof...(MultiIndex) <= _dims.size());
+    EINSUMS_ASSERT(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};
     for (auto [i, _index] : einsums::enumerate(index_list)) {
@@ -626,11 +625,9 @@ DeviceTensor<T, rank>::host_datatype const *DeviceTensor<T, rank>::data(MultiInd
 }
 
 template <typename T, size_t rank>
-void DeviceTensor<T, rank>::read(std::vector<T> const &data) {
+__host__ void DeviceTensor<T, rank>::read(std::vector<T> const &data) {
     using namespace einsums::gpu;
-    if (data.size() > this->size()) {
-        EINSUMS_THROW_EXCEPTION(std::runtime_error, "Can not read more data than is allocated to the GPU!");
-    }
+    EINSUMS_ASSERT(data.size() <= this->size());
 
     switch (_mode) {
     case einsums::detail::MAPPED:
@@ -668,7 +665,7 @@ void DeviceTensor<T, rank>::write(std::vector<T> &data) {
 }
 
 template <typename T, size_t rank>
-void DeviceTensor<T, rank>::read(T const *data) {
+__host__ void DeviceTensor<T, rank>::read(T const *data) {
     using namespace einsums::gpu;
 
     switch (_mode) {
@@ -717,7 +714,7 @@ auto DeviceTensor<T, rank>::operator()(MultiIndex &&...index) const -> T {
     switch (_mode) {
     case einsums::detail::MAPPED:
     case einsums::detail::PINNED:
-        assert(sizeof...(MultiIndex) <= _dims.size());
+        EINSUMS_ASSERT(sizeof...(MultiIndex) <= _dims.size());
 
         return this->_host_data[ordinal];
     case einsums::detail::DEV_ONLY:

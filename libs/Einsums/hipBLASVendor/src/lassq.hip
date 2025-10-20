@@ -25,7 +25,7 @@
 
 namespace einsums::blas::hip {
 
-__global__ void slassq_kernel(int n, float const *__restrict__ x, int incx, float *__restrict__ big_sum_all,
+__global__ void slassq_kernel(int64_t n, float const *__restrict__ x, int64_t incx, float *__restrict__ big_sum_all,
                               float *__restrict__ medium_sum_all, float *__restrict__ small_sum_all) {
     constexpr float big_thresh   = 4503599600000000.0f;
     constexpr float small_thresh = 1.0842022e-19f;
@@ -41,8 +41,8 @@ __global__ void slassq_kernel(int n, float const *__restrict__ x, int incx, floa
 
     int num_warps = num_threads / warpSize;
 
-    int parallel_elems  = n / num_threads;
-    int remaining_elems = n % num_threads;
+    int64_t parallel_elems  = n / num_threads;
+    int64_t remaining_elems = n % num_threads;
 
     float small_sum  = 0.0f;
     float medium_sum = 0.0f;
@@ -51,7 +51,7 @@ __global__ void slassq_kernel(int n, float const *__restrict__ x, int incx, floa
     // float const *x_curr = x + (ptrdiff_t)warp_id * warpSize * parallel_elems * incx;
 
     // Do the things.
-    for (int i = inwarp_id; i < parallel_elems * warpSize; i += incx * warpSize) {
+    for (int64_t i = inwarp_id; i < parallel_elems * warpSize; i += incx * warpSize) {
         // shared[thread_id] += x[i + warp_id * warpSize * parallel_elems * incx];
         float ax = fabsf(x[i + warp_id * warpSize * parallel_elems * incx]);
         if (ax > big_thresh) {
@@ -89,7 +89,7 @@ __global__ void slassq_kernel(int n, float const *__restrict__ x, int incx, floa
     // }
 }
 
-__global__ void dlassq_kernel(int n, double const *__restrict__ x, int incx, double *__restrict__ big_sum_all,
+__global__ void dlassq_kernel(int64_t n, double const *__restrict__ x, int64_t incx, double *__restrict__ big_sum_all,
                               double *__restrict__ medium_sum_all, double *__restrict__ small_sum_all) {
     constexpr double big_thresh   = 9.989595361011175e+145;
     constexpr double small_thresh = 1.4916681462400413e-154;
@@ -104,15 +104,15 @@ __global__ void dlassq_kernel(int n, double const *__restrict__ x, int incx, dou
 
     int num_warps = num_threads / warpSize;
 
-    int parallel_elems  = n / num_threads;
-    int remaining_elems = n % num_threads;
+    int64_t parallel_elems  = n / num_threads;
+    int64_t remaining_elems = n % num_threads;
 
     double small_sum  = 0.0f;
     double medium_sum = 0.0f;
     double big_sum    = 0.0f;
 
     // Do the things.
-    for (int i = inwarp_id; i < parallel_elems * warpSize; i += incx * warpSize) {
+    for (int64_t i = inwarp_id; i < parallel_elems * warpSize; i += incx * warpSize) {
         double ax = fabs(x[i + warp_id * warpSize * parallel_elems * incx]);
         if (ax > big_thresh) {
             big_sum += (ax * big_scale) * (ax * big_scale);
@@ -148,7 +148,7 @@ __global__ void dlassq_kernel(int n, double const *__restrict__ x, int incx, dou
     // }
 }
 
-__global__ void classq_kernel(int n, hipComplex const *__restrict__ x, int incx, float *__restrict__ big_sum_all,
+__global__ void classq_kernel(int64_t n, hipComplex const *__restrict__ x, int64_t incx, float *__restrict__ big_sum_all,
                               float *__restrict__ medium_sum_all, float *__restrict__ small_sum_all) {
 
     constexpr float big_thresh   = 4503599600000000.0f;
@@ -164,8 +164,8 @@ __global__ void classq_kernel(int n, hipComplex const *__restrict__ x, int incx,
 
     int num_warps = num_threads / warpSize;
 
-    int parallel_elems  = n / num_threads;
-    int remaining_elems = n % num_threads;
+    int64_t parallel_elems  = n / num_threads;
+    int64_t remaining_elems = n % num_threads;
 
     float small_sum  = 0.0f;
     float medium_sum = 0.0f;
@@ -174,7 +174,7 @@ __global__ void classq_kernel(int n, hipComplex const *__restrict__ x, int incx,
     // float const *x_curr = x + (ptrdiff_t)warp_id * warpSize * parallel_elems * incx;
 
     // Do the things.
-    for (int i = inwarp_id; i < parallel_elems * warpSize; i += incx * warpSize) {
+    for (int64_t i = inwarp_id; i < parallel_elems * warpSize; i += incx * warpSize) {
         // shared[thread_id] += x[i + warp_id * warpSize * parallel_elems * incx];
         float ax = fabsf(x[i + warp_id * warpSize * parallel_elems * incx].x);
         if (ax > big_thresh) {
@@ -230,7 +230,7 @@ __global__ void classq_kernel(int n, hipComplex const *__restrict__ x, int incx,
     // }
 }
 
-__global__ void zlassq_kernel(int n, hipDoubleComplex const *__restrict__ x, int incx, double *__restrict__ big_sum_all,
+__global__ void zlassq_kernel(int64_t n, hipDoubleComplex const *__restrict__ x, int64_t incx, double *__restrict__ big_sum_all,
                               double *__restrict__ medium_sum_all, double *__restrict__ small_sum_all) {
     constexpr double big_thresh   = 9.989595361011175e+145;
     constexpr double small_thresh = 1.4916681462400413e-154;
@@ -245,8 +245,8 @@ __global__ void zlassq_kernel(int n, hipDoubleComplex const *__restrict__ x, int
 
     int num_warps = num_threads / warpSize;
 
-    int parallel_elems  = n / num_threads;
-    int remaining_elems = n % num_threads;
+    int64_t parallel_elems  = n / num_threads;
+    int64_t remaining_elems = n % num_threads;
 
     double small_sum  = 0.0;
     double medium_sum = 0.0;
@@ -255,7 +255,7 @@ __global__ void zlassq_kernel(int n, hipDoubleComplex const *__restrict__ x, int
     // float const *x_curr = x + (ptrdiff_t)warp_id * warpSize * parallel_elems * incx;
 
     // Do the things.
-    for (int i = inwarp_id; i < parallel_elems * warpSize; i += incx * warpSize) {
+    for (int64_t i = inwarp_id; i < parallel_elems * warpSize; i += incx * warpSize) {
         // shared[thread_id] += x[i + warp_id * warpSize * parallel_elems * incx];
         double ax = fabs(x[i + warp_id * warpSize * parallel_elems * incx].x);
         if (ax > big_thresh) {
@@ -311,7 +311,7 @@ __global__ void zlassq_kernel(int n, hipDoubleComplex const *__restrict__ x, int
     // }
 }
 
-void slassq(int n, float const *x, int incx, float *scale, float *sumsq) {
+void slassq(int64_t n, float const *x, int64_t incx, float *scale, float *sumsq) {
     LabeledSection("slassq");
 
     if (std::isnan(*scale) || std::isnan(*sumsq)) {
@@ -401,7 +401,7 @@ void slassq(int n, float const *x, int incx, float *scale, float *sumsq) {
     gpu_alloc.deallocate(work, 3);
 }
 
-void dlassq(int n, double const *x, int incx, double *scale, double *sumsq) {
+void dlassq(int64_t n, double const *x, int64_t incx, double *scale, double *sumsq) {
     LabeledSection("dlassq");
 
     if (std::isnan(*scale) || std::isnan(*sumsq)) {
@@ -491,7 +491,7 @@ void dlassq(int n, double const *x, int incx, double *scale, double *sumsq) {
     gpu_alloc.deallocate(work, 3);
 }
 
-void classq(int n, std::complex<float> const *x, int incx, float *scale, float *sumsq) {
+void classq(int64_t n, std::complex<float> const *x, int64_t incx, float *scale, float *sumsq) {
     LabeledSection("classq");
 
     if (std::isnan(*scale) || std::isnan(*sumsq)) {
@@ -581,7 +581,7 @@ void classq(int n, std::complex<float> const *x, int incx, float *scale, float *
     gpu_alloc.deallocate(work, 3);
 }
 
-void zlassq(int n, std::complex<double> const *x, int incx, double *scale, double *sumsq) {
+void zlassq(int64_t n, std::complex<double> const *x, int64_t incx, double *scale, double *sumsq) {
     LabeledSection("zlassq");
 
     if (std::isnan(*scale) || std::isnan(*sumsq)) {
@@ -671,45 +671,53 @@ void zlassq(int n, std::complex<double> const *x, int incx, double *scale, doubl
     gpu_alloc.deallocate(work, 3);
 }
 
-float snrm2(int n, float const *x, int incx) {
+float snrm2(int64_t n, float const *x, int64_t incx) {
     LabeledSection0();
 
     float result;
 
-    hipblas_catch(hipblasSnrm2(gpu::get_blas_handle(), n, x, incx, &result));
+    hipblas_catch(hipblasSnrm2_64(gpu::get_blas_handle(), n, x, incx, &result));
 
     gpu::stream_wait();
     return result;
 }
 
-double dnrm2(int n, double const *x, int incx) {
+double dnrm2(int64_t n, double const *x, int64_t incx) {
     LabeledSection0();
 
     double result;
 
-    hipblas_catch(hipblasDnrm2(gpu::get_blas_handle(), n, x, incx, &result));
+    hipblas_catch(hipblasDnrm2_64(gpu::get_blas_handle(), n, x, incx, &result));
 
     gpu::stream_wait();
     return result;
 }
 
-float scnrm2(int n, std::complex<float> const *x, int incx) {
+float scnrm2(int64_t n, std::complex<float> const *x, int64_t incx) {
     LabeledSection0();
 
     float result;
 
+#if hipblasVersionMajor < 3
     hipblas_catch(hipblasScnrm2(gpu::get_blas_handle(), n, (hipblasComplex *)x, incx, &result));
+#else
+    hipblas_catch(hipblasScnrm2_64(gpu::get_blas_handle(), n, (hipComplex *)x, incx, &result));
+#endif
 
     gpu::stream_wait();
     return result;
 }
 
-double dznrm2(int n, std::complex<double> const *x, int incx) {
+double dznrm2(int64_t n, std::complex<double> const *x, int64_t incx) {
     LabeledSection0();
 
     double result;
 
+#if hipblasVersionMajor < 3
     hipblas_catch(hipblasDznrm2(gpu::get_blas_handle(), n, (hipblasDoubleComplex *)x, incx, &result));
+#else
+    hipblas_catch(hipblasDznrm2_64(gpu::get_blas_handle(), n, (hipDoubleComplex *)x, incx, &result));
+#endif
 
     gpu::stream_wait();
     return result;
