@@ -247,7 +247,7 @@ auto DeviceTensorView<T, rank>::operator()(MultiIndex &&...index) const -> T {
     T out;
 
     size_t ordinal = einsums::indices_to_sentinel_negative_check(
-        _strides, _dims, std::vector<int64_t>{static_cast<int64_t>(std::forward<MultiIndex>(index))...});;
+        _strides, _dims, BufferVector<int64_t>{static_cast<int64_t>(std::forward<MultiIndex>(index))...});
 
     hip_catch(hipMemcpy(&out, (void const *)(this->_data + ordinal), sizeof(T), hipMemcpyDeviceToHost));
     // no sync

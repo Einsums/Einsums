@@ -2148,6 +2148,8 @@ TEST_CASE("GPU F12 - V term") {
     einsum(Indices{i, j, k, l}, &ijkl_2, Indices{i, j, m, q}, G_oooc, Indices{k, l, m, q}, F_oooc);
     einsum(Indices{i, j, k, l}, &ijkl_3, Indices{i, j, p, q}, G_oopq, Indices{k, l, p, q}, F_oopq);
 
+    gpu::device_synchronize();
+
     result.set_all(0.0);
     result2.set_all(0.0);
     for (size_t _i = 0; _i < nocc; _i++) {
@@ -2517,6 +2519,7 @@ TEST_CASE("GPU andy") {
         zero(c);
 
         einsum(0.0, Indices{index::p, index::q}, &c, -1.0, Indices{index::p, index::q}, a, Indices{index::p, index::q}, b);
+        gpu::device_synchronize();
 
         for (int x = 0; x < nvirt_; x++) {
             for (int y = 0; y < nvirt_; y++) {
