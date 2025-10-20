@@ -247,29 +247,30 @@ void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::Tenso
 #ifdef EINSUMS_COMPUTE_CODE
     if constexpr (std::is_same_v<AType, BType> && std::is_same_v<AType, CType> && blas::IsBlasableV<AType>) {
         using T = AType;
-        uint64_t two_megabytes =
-            2147483648; //  The parameters to hipblasXgemm are ints, so this is basically the maximum we can handle at once.
-        if (A.size() > 1024 && B.size() > 1024 && C->size() > 1024 && A.size() < two_megabytes && B.size() < two_megabytes &&
-            C->size() < two_megabytes) {
-            char tA = std::tolower(transA), tB = std::tolower(transB);
-            auto A_block = A.gpu_cache_tensor();
-            auto B_block = B.gpu_cache_tensor();
-            auto C_block = C->gpu_cache_tensor();
 
-            if (A_block && B_block && C_block) {
+        if (A.size() >= 1024 && B.size() >= 1024 && C->size() >= 1024 && A.dim(0) <= 500 && A.dim(1) <= 500 && B.dim(0) <= 500 &&
+            B.dim(1) <= 500 && C->dim(0) <= 500 && C->dim(1) <= 500) {
+            try {
+                char tA = std::tolower(transA), tB = std::tolower(transB);
+                auto A_block = A.gpu_cache_tensor();
+                auto B_block = B.gpu_cache_tensor();
+                auto C_block = C->gpu_cache_tensor();
 
-                A.tensor_to_gpu();
-                B.tensor_to_gpu();
-                C->tensor_to_gpu();
+                if (A_block && B_block && C_block) {
 
-                auto m = C->dim(0), n = C->dim(1), k = (tA == 'n') ? A.dim(1) : A.dim(0);
+                    auto m = C->dim(0), n = C->dim(1), k = (tA == 'n') ? A.dim(1) : A.dim(0);
 
-                blas::gpu::gemm(transA, transB, m, n, k, (T)alpha, A.get_gpu_pointer().get(), A.dim(0), B.get_gpu_pointer().get(), B.dim(0),
-                                (T)beta, C->get_gpu_pointer().get(), C->dim(0));
-                gpu::stream_wait();
-                return;
+                    blas::gpu::gemm(transA, transB, m, n, k, (T)alpha, A.get_gpu_pointer().get(), A.dim(0), B.get_gpu_pointer().get(),
+                                    B.dim(0), (T)beta, C->get_gpu_pointer().get(), C->dim(0));
+                    gpu::stream_wait();
+                    C->increment_gpu_modify();
+
+                    return;
+                }
+            } catch (std::runtime_error &e) {
+                ; // We couldn't allocate all the data, so don't do the GPU algorithm.
             }
-        } else if (A.size() > 1024 && B.size() > 1024 && C->size() > 1024) {
+        } else if (A.size() >= 1024 && B.size() >= 1024 && C->size() >= 1024) {
             bool tA = std::tolower(transA) != 'n', tB = std::tolower(transB) != 'n';
             int  min_dim = 500;
 
@@ -283,7 +284,9 @@ void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::Tenso
             auto n_dim = std::min((int)n, min_dim);
             auto k_dim = std::min((int)k, min_dim);
 
-            einsums::detail::impl_scal(beta, *C);
+            if (beta != BetaType{1.0}) {
+                einsums::detail::impl_scal(beta, *C);
+            }
 
             for (int i = 0; i < m_loops; i++) {
                 for (int j = 0; j < n_loops; j++) {
@@ -331,6 +334,7 @@ void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::Tenso
                                 B.subscript(Range{k_loops * min_dim, k}, Range{j * min_dim, (j + 1) * min_dim}), BetaType{1.0}, &C_view);
                         }
                     }
+                    C_view.tensor_from_gpu();
                 }
                 if (n - n_loops * min_dim != 0) {
                     auto C_view = C->subscript(Range{i * min_dim, (i + 1) * min_dim}, Range{n_loops * min_dim, n});
@@ -377,6 +381,7 @@ void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::Tenso
                                       B.subscript(Range{k_loops * min_dim, k}, Range{n_loops * min_dim, n}), BetaType{1.0}, &C_view);
                         }
                     }
+                    C_view.tensor_from_gpu();
                 }
             }
             if (m - m_loops * min_dim != 0) {
@@ -425,6 +430,7 @@ void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::Tenso
                                       &C_view);
                         }
                     }
+                    C_view.tensor_from_gpu();
                 }
                 if (n - n_loops * min_dim != 0) {
                     auto C_view = C->subscript(Range{m - m_loops * min_dim, m}, Range{n_loops * min_dim, n});
@@ -463,11 +469,14 @@ void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::Tenso
                                       B.subscript(Range{k_loops * min_dim, k}, Range{n_loops * min_dim, n}), BetaType{1.0}, &C_view);
                         }
                     }
+                    C_view.tensor_from_gpu();
                 }
             }
             return;
         }
     }
+    C->tensor_from_gpu();
+    C->increment_core_modify();
 #endif
     if constexpr (!std::is_same_v<AType, BType> || !std::is_same_v<AType, CType>) {
         impl_gemm_noncontiguous(transA, transB, einsums::detail::convert<AlphaType, CType>(alpha), A, B,

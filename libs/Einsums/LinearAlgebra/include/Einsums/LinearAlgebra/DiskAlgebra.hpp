@@ -329,7 +329,7 @@ void gemm(char transA, char transB, U alpha, AType const &A, BType const &B, U b
     size_t m = A_m, n = B_n, k = A_k;
 
     // If all parameters are less than 500, then perform the normal matrix multiplication.
-    if (m < 500 && n < 500 && k < 500) {
+    if (m <= 500 && n <= 500 && k <= 500) {
         if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType> && BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A.get(), B.get(), beta, &C->get());
         } else if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType>) {
@@ -354,7 +354,7 @@ void gemm(char transA, char transB, U alpha, AType const &A, BType const &B, U b
         }
 
         // Next, we are going to loop over the indices in blocks of 500.
-        int min_dim = 100;
+        int min_dim = 500;
 
         int m_loops = m / min_dim;
         int n_loops = n / min_dim;

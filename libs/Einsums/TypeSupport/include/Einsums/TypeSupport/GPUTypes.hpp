@@ -11,7 +11,7 @@
 #include <hip/hip_runtime_api.h>
 
 #if __has_include(<stdfloat>)
-#    include <stfloat>
+#    include <stdfloat>
 #endif
 
 namespace einsums::gpu {

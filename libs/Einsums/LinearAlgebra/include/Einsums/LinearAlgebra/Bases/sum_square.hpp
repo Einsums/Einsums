@@ -8,6 +8,10 @@
 #include <Einsums/Profile.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 
+#ifdef EINSUMS_COMPUTE_CODE
+#include <Einsums/hipBLAS.hpp>
+#endif
+
 namespace einsums {
 namespace linear_algebra {
 namespace detail {
