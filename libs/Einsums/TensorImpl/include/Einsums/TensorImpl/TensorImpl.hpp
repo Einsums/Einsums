@@ -25,7 +25,10 @@ namespace detail {
 template <typename T>
     requires(!std::is_const_v<T>)
 struct TensorImpl;
-}
+
+template <typename T, typename TOther>
+void copy_to(TensorImpl<TOther> const &in, TensorImpl<T> &out);
+} // namespace detail
 
 #ifndef DOXYGEN
 // Forward declaration of the Tensor printing function.
@@ -366,6 +369,14 @@ struct TensorImpl final {
         } else {
             _row_major = false;
         }
+    }
+
+    ~TensorImpl() {
+#ifdef EINSUMS_COMPUTE_CODE
+        if (this->_ptr != nullptr && (size_t)_core_modify_count < (size_t)_gpu_modify_count) {
+            this->tensor_from_gpu();
+        }
+#endif
     }
 
     // Getters and setters.
@@ -1669,7 +1680,7 @@ struct TensorImpl final {
 
         auto out = gpu::GPUPointer<T>(_gpu_memory.lock()->gpu_pointer);
 
-        if (get_incx() == 1 && is_totally_vectorable()) {
+        if (get_incx() == 1 && is_totally_vectorable() && is_column_major()) {
             std::memcpy(out, _ptr, _size * sizeof(T));
         } else {
             BufferVector<T> temp_buffer(_size);
@@ -1677,7 +1688,7 @@ struct TensorImpl final {
             // Force the use of column major since hipBLAS, hipSolver, and hipTensor all use column major.
             TensorImpl<T> temp(temp_buffer.data(), _dims, false);
 
-            impl_copy(*this, temp);
+            copy_to(*this, temp);
 
             std::memcpy(out, temp.data(), _size * sizeof(T));
         }
@@ -1688,7 +1699,7 @@ struct TensorImpl final {
         if (!_gpu_memory.expired()) {
             auto gpu_ptr = gpu::GPUPointer<T>(_gpu_memory.lock()->gpu_pointer);
 
-            if (get_incx() == 1 && is_totally_vectorable()) {
+            if (get_incx() == 1 && is_totally_vectorable() && is_column_major()) {
                 std::memcpy(_ptr, gpu_ptr, _size * sizeof(T));
             } else {
                 BufferVector<T> temp_buffer(_size);
@@ -1706,7 +1717,9 @@ struct TensorImpl final {
 
     [[nodiscard]] GPULock gpu_cache_tensor() {
         if (_gpu_memory.expired()) {
-            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            _gpu_modify_count = (size_t)_core_modify_count;
+            tensor_to_gpu();
         }
         auto cached_gpu_memory = _gpu_memory.lock();
 
@@ -1715,9 +1728,12 @@ struct TensorImpl final {
             _gpu_memory.reset();
             _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
             cached_gpu_memory = _gpu_memory.lock();
+            tensor_to_gpu();
         }
 
-        tensor_to_gpu();
+        if ((size_t)_gpu_modify_count < (size_t)_core_modify_count) {
+            tensor_to_gpu();
+        }
 
         return cached_gpu_memory;
     }
@@ -1741,6 +1757,7 @@ struct TensorImpl final {
     [[nodiscard]] GPULock gpu_cache_tensor() const {
         if (_gpu_memory.expired()) {
             _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            tensor_to_gpu();
         }
         auto cached_gpu_memory = _gpu_memory.lock();
 
@@ -1749,9 +1766,12 @@ struct TensorImpl final {
             _gpu_memory.reset();
             _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
             cached_gpu_memory = _gpu_memory.lock();
+            tensor_to_gpu();
         }
 
-        tensor_to_gpu();
+        if ((size_t)_gpu_modify_count < (size_t)_core_modify_count) {
+            tensor_to_gpu();
+        }
 
         return cached_gpu_memory;
     }
@@ -1777,6 +1797,7 @@ struct TensorImpl final {
         if (_gpu_memory.expired()) {
             return nullptr;
         } else {
+            _gpu_modify_count++;
             return _gpu_memory.lock()->gpu_pointer;
         }
     }
@@ -1794,6 +1815,15 @@ struct TensorImpl final {
     bool gpu_is_expired() const { return _gpu_memory.expired(); }
 
     void set_gpu_memory(GPULock const &other) const { _gpu_memory = other; }
+
+    void increment_core_modify() { _core_modify_count++; }
+
+    void increment_gpu_modify() { _gpu_modify_count++; }
+
+    void increment_core_modify() const { _core_modify_count++; }
+
+    void increment_gpu_modify() const { _gpu_modify_count++; }
+
 #else
     constexpr void                  tensor_to_gpu() const {}
     constexpr void                  tensor_from_gpu() const {}
@@ -1804,6 +1834,14 @@ struct TensorImpl final {
     constexpr bool                  gpu_is_expired() const { return true; }
     template <typename Ignore>
     constexpr void set_gpu_memory(Ignore const &) const {}
+
+    constexpr void increment_core_modify() {}
+
+    constexpr void increment_gpu_modify() {}
+
+    constexpr void increment_core_modify() const {}
+
+    constexpr void increment_gpu_modify() const {}
 #endif
 
   private:
@@ -2113,3 +2151,5 @@ void println(detail::TensorImpl<T> const &A, TensorPrintOptions options) {
 #endif
 
 } // namespace einsums
+
+#include <Einsums/TensorImpl/TensorImplOperations.hpp>

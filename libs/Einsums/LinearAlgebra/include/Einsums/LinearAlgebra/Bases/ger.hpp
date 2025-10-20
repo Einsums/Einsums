@@ -7,6 +7,10 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 
+#ifdef EINSUMS_COMPUTE_CODE
+#include <Einsums/hipBLAS.hpp>
+#endif
+
 namespace einsums::linear_algebra::detail {
 
 template <typename T>

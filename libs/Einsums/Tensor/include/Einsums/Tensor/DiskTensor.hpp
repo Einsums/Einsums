@@ -826,6 +826,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      */
     void put() {
         if (_constructed) {
+            _tensor.tensor_from_gpu();
             std::array<size_t, rank> counts;
 
             counts.fill(1);
@@ -1255,8 +1256,10 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      * Push any changes to the view to the disk.
      */
     void put() {
-        if (!_readOnly && _constructed)
+        if (!_readOnly && _constructed) {
+            _tensor.tensor_from_gpu();
             H5Dwrite(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+        }
     }
 
     /**

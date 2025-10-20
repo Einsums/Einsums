@@ -10,7 +10,11 @@
 
 #include <stdexcept>
 
-#include "Einsums/Errors/Error.hpp"
+#include <Einsums/Errors/Error.hpp>
+
+#ifdef EINSUMS_COMPUTE_CODE
+#include <Einsums/hipBLAS.hpp>
+#endif
 
 namespace einsums {
 namespace linear_algebra {
