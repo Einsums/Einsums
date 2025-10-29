@@ -124,7 +124,7 @@ void impl_real_contiguous_gpu(TensorImpl<std::complex<T>> const &in, TensorImpl<
         auto blocks     = gpu::blocks(in.size());
         auto block_dims = gpu::block_size(in.size());
 
-        impl_copy_kernel<<<block_dims, blocks, 0, gpu::get_stream()>>>(in.size(), static_cast<T const *>(in.get_gpu_pointer()), 2,
+        impl_copy_kernel<<<blocks, block_dims, 0, gpu::get_stream()>>>(in.size(), static_cast<T const *>(in.get_gpu_pointer()), 2,
                                                                        out.get_gpu_pointer(), 1);
 
         gpu::stream_wait();
@@ -146,22 +146,22 @@ void impl_real_noncontiguous_vectorable_gpu(int depth, int hard_rank, size_t eas
             auto blocks     = gpu::blocks(in.size());
             auto block_dims = gpu::block_size(in.size());
 
-            impl_copy_kernel<<<block_dims, blocks, 0, gpu::get_stream()>>>(in.size(), static_cast<T const *>(in.get_gpu_pointer()), 2,
+            impl_copy_kernel<<<blocks, block_dims, 0, gpu::get_stream()>>>(in.size(), static_cast<T const *>(in.get_gpu_pointer()), 2,
                                                                            out.get_gpu_pointer(), 1);
 
             gpu::stream_wait();
         }
     } else {
         for (int i = 0; i < dims[depth]; i++) {
-            impl_real_noncontiguous_vectorable_gpu(depth + 1, hard_rank, easy_size, dims, in + i * in_strides[depth], in_strides, twice_inc_in,
-                                               out + i * out_strides[depth], out_strides, inc_out);
+            impl_real_noncontiguous_vectorable_gpu(depth + 1, hard_rank, easy_size, dims, in + i * in_strides[depth], in_strides,
+                                                   twice_inc_in, out + i * out_strides[depth], out_strides, inc_out);
         }
     }
 }
 
 template <typename T, Container Dims, Container InStrides, Container OutStrides>
 void impl_real_noncontiguous_gpu(int depth, int rank, Dims const &dims, std::complex<T> const *in, InStrides const &in_strides, T *out,
-                             OutStrides const &out_strides) {
+                                 OutStrides const &out_strides) {
     if (depth == rank) {
         *out = std::real(*in);
     } else {

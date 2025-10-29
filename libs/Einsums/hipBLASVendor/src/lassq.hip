@@ -75,18 +75,20 @@ __global__ void slassq_kernel(int64_t n, float const *__restrict__ x, int64_t in
         }
     }
 
-    // Combine accross warps.
-    // #pragma unroll
-    //     for (uint32_t i = warpSize / 2; i >= 1; i /= 2) {
-    //         medium_sum = medium_sum + __shfl_down(medium_sum, i + warpSize);
-    //     }
+// Combine accross warps.
+#pragma unroll
+    for (uint32_t i = warpSize / 2; i >= 1; i /= 2) {
+        big_sum    = big_sum + __shfl_down(big_sum, i);
+        medium_sum = medium_sum + __shfl_down(medium_sum, i);
+        small_sum  = small_sum + __shfl_down(small_sum, i);
+    }
 
     // Combine the sums.
-    // if (inwarp_id == 0) {
-    atomicAdd(big_sum_all, big_sum);
-    atomicAdd(medium_sum_all, medium_sum);
-    atomicAdd(small_sum_all, small_sum);
-    // }
+    if (inwarp_id == 0) {
+        atomicAdd(big_sum_all, big_sum);
+        atomicAdd(medium_sum_all, medium_sum);
+        atomicAdd(small_sum_all, small_sum);
+    }
 }
 
 __global__ void dlassq_kernel(int64_t n, double const *__restrict__ x, int64_t incx, double *__restrict__ big_sum_all,
@@ -336,7 +338,7 @@ void slassq(int64_t n, float const *x, int64_t incx, float *scale, float *sumsq)
 
     hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
 
-    slassq_kernel<<<block_size, blocks, 0, stream>>>(n, x, incx, work, work + 1, work + 2);
+    slassq_kernel<<<blocks, block_size, 0, stream>>>(n, x, incx, work, work + 1, work + 2);
 
     gpu::stream_wait();
 
@@ -426,7 +428,7 @@ void dlassq(int64_t n, double const *x, int64_t incx, double *scale, double *sum
 
     hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
 
-    dlassq_kernel<<<block_size, blocks, 0, stream>>>(n, x, incx, work, work + 1, work + 2);
+    dlassq_kernel<<<blocks, block_size, 0, stream>>>(n, x, incx, work, work + 1, work + 2);
 
     gpu::stream_wait();
 
@@ -516,7 +518,7 @@ void classq(int64_t n, std::complex<float> const *x, int64_t incx, float *scale,
 
     hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
 
-    classq_kernel<<<block_size, blocks, 0, stream>>>(n, (hipComplex *)x, incx, work, work + 1, work + 2);
+    classq_kernel<<<blocks, block_size, 0, stream>>>(n, (hipComplex *)x, incx, work, work + 1, work + 2);
 
     gpu::stream_wait();
 
@@ -606,7 +608,7 @@ void zlassq(int64_t n, std::complex<double> const *x, int64_t incx, double *scal
 
     hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
 
-    zlassq_kernel<<<block_size, blocks, 0, stream>>>(n, (hipDoubleComplex *)x, incx, work, work + 1, work + 2);
+    zlassq_kernel<<<blocks, block_size, 0, stream>>>(n, (hipDoubleComplex *)x, incx, work, work + 1, work + 2);
 
     gpu::stream_wait();
 

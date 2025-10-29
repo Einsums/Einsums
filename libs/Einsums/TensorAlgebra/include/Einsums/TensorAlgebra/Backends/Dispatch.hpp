@@ -559,6 +559,10 @@ bool einsum_do_matrix_product(ValueTypeT<CType> const C_prefactor, std::tuple<CI
     constexpr bool transpose_B = std::get<1>(link_position_in_B) != 0;
     constexpr bool transpose_C = std::get<1>(A_target_position_in_C) != 0;
 
+    if(!A.full_view_of_underlying() || !B.full_view_of_underlying() || !C->full_view_of_underlying()) {
+        return false;
+    }
+
     Dim<2>    dA, dB, dC;
     Stride<2> sA, sB, sC;
 
