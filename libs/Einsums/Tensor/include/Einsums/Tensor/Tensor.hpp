@@ -51,7 +51,7 @@
 #include <vector>
 
 #include "Einsums/Config/CompilerSpecific.hpp"
-#include "Einsums/Config/Types.hpp"
+#include "Einsums/Tensor/DeviceTensor.hpp"
 #include "Einsums/TensorImpl/TensorImplOperations.hpp"
 
 #if defined(EINSUMS_COMPUTE_CODE)
@@ -1030,6 +1030,10 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
 
     TensorView<T, Rank> const to_column_major() const { return TensorView<T, Rank>(_impl.to_column_major()); }
 
+    bool is_gemmable(size_t *lda = nullptr) const { return _impl.is_gemmable(lda); }
+
+    bool is_totally_vectorable(size_t *incx = nullptr) const { return _impl.is_totally_vectorable(incx); }
+
     template <std::integral... MultiIndex>
     TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&...index) {
         return TensorView<T, Rank - sizeof...(MultiIndex) + 1>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
@@ -1961,6 +1965,10 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     TensorView<T, Rank> to_column_major() { return TensorView<T, Rank>(_impl.to_column_major()); }
 
     TensorView<T, Rank> const to_column_major() const { return TensorView<T, Rank>(_impl.to_column_major()); }
+
+    bool is_gemmable(size_t *lda = nullptr) const { return _impl.is_gemmable(lda); }
+
+    bool is_totally_vectorable(size_t *incx = nullptr) const { return _impl.is_totally_vectorable(incx); }
 
     template <std::integral... MultiIndex>
     TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&...index) {

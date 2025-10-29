@@ -1094,6 +1094,57 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      */
     operator einsums::Tensor<T, rank>() const;
 
+    bool is_row_major() const {
+        if (Rank < 2) {
+            return true;
+        } else if (stride(0) > stride(-1)) {
+            return true;
+        } else if (stride(0) == stride(-1)) {
+            return (dim(0) > dim(-1));
+        } else {
+            return false;
+        }
+    }
+
+    bool is_column_major() const {
+        if (Rank < 2) {
+            return true;
+        } else if (stride(0) > stride(-1)) {
+            return false;
+        } else if (stride(0) == stride(-1)) {
+            return !(dim(0) > dim(-1));
+        } else {
+            return true;
+        }
+    }
+
+    bool is_totally_vectorable(size_t *incx = nullptr) const {
+        if constexpr (rank == 0) {
+            if (incx != nullptr) {
+                *incx = 0;
+            }
+            return false;
+        } else if constexpr (rank == 1) {
+            if (incx != nullptr) {
+                *incx = stride(0);
+            }
+            return true;
+        } else {
+            if (stride(0) < stride(-1)) {
+                if (incx != nullptr) {
+                    *incx = stride(0);
+                }
+                return dim(-1) * stride(-1) == size() * stride(0);
+            } else {
+                if (incx != nullptr) {
+                    *incx = stride(-1);
+                }
+                return dim(0) * stride(0) == size() * stride(-1);
+            }
+        }
+    }
+
+
   private:
     /**
      * @property _name
@@ -2190,6 +2241,32 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
             return !(dim(0) > dim(-1));
         } else {
             return true;
+        }
+    }
+
+    bool is_totally_vectorable(size_t *incx = nullptr) const {
+        if constexpr (rank == 0) {
+            if (incx != nullptr) {
+                *incx = 0;
+            }
+            return false;
+        } else if constexpr (rank == 1) {
+            if (incx != nullptr) {
+                *incx = stride(0);
+            }
+            return true;
+        } else {
+            if (stride(0) < stride(-1)) {
+                if (incx != nullptr) {
+                    *incx = stride(0);
+                }
+                return dim(-1) * stride(-1) == size() * stride(0);
+            } else {
+                if (incx != nullptr) {
+                    *incx = stride(-1);
+                }
+                return dim(0) * stride(0) == size() * stride(-1);
+            }
         }
     }
 
