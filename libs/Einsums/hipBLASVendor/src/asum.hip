@@ -79,7 +79,7 @@ __global__ void scsum1_kernel(int64_t n, hipComplex const *x, int64_t incx, floa
     int inwarp_id = thread_id % warpSize;
 
     ptrdiff_t const mega_block_size = n / (num_threads);
-    int64_t const       remainder       = n % (num_threads);
+    int64_t const   remainder       = n % (num_threads);
 
     if (mega_block_size != 0) {
         hipComplex const *current_block = x + (ptrdiff_t)incx * thread_id * mega_block_size;
@@ -121,7 +121,7 @@ __global__ void dzsum1_kernel(int64_t n, hipDoubleComplex const *x, int64_t incx
     int inwarp_id = thread_id % warpSize;
 
     ptrdiff_t const mega_block_size = n / (num_threads);
-    int64_t const       remainder       = n % (num_threads);
+    int64_t const   remainder       = n % (num_threads);
 
     if (mega_block_size != 0) {
         hipDoubleComplex const *current_block = x + (ptrdiff_t)incx * thread_id * mega_block_size;
@@ -174,7 +174,7 @@ float scsum1(int64_t n, std::complex<float> const *x, int64_t incx) {
 
     hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
 
-    scsum1_kernel<<<block_size, blocks, 0, stream>>>(n, (hipComplex const *)x, incx, gpu_out);
+    scsum1_kernel<<<blocks, block_size, 0, stream>>>(n, (hipComplex const *)x, incx, gpu_out);
     gpu::stream_wait();
 
     hip_catch(hipHostUnregister(&out));
@@ -200,7 +200,7 @@ double dzsum1(int64_t n, std::complex<double> const *x, int64_t incx) {
 
     hipblas_catch(hipblasGetStream(gpu::get_blas_handle(), &stream));
 
-    dzsum1_kernel<<<block_size, blocks, 0, stream>>>(n, (hipDoubleComplex const *)x, incx, gpu_out);
+    dzsum1_kernel<<<blocks, block_size, 0, stream>>>(n, (hipDoubleComplex const *)x, incx, gpu_out);
     gpu::stream_wait();
 
     hip_catch(hipHostUnregister(&out));

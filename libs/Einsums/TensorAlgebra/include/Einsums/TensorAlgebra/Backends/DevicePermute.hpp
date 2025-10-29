@@ -31,7 +31,7 @@ void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipFloatComplex 
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipDoubleComplex const alpha, hipDoubleComplex const *A, int const *sizeA,
                                 hipDoubleComplex const beta, hipDoubleComplex *B);
 
-template <bool ConjA, typename T, size_t Rank>
+template <bool ConjA, bool ZeroB, typename T, size_t Rank>
 __global__ void permute_kernel(int const *perm, T const alpha, T const *A, size_t const *strideA, T const beta, T *B, size_t const *strideB,
                                size_t size) {
     int thread_id, kernel_size;
@@ -41,7 +41,7 @@ __global__ void permute_kernel(int const *perm, T const alpha, T const *A, size_
     size_t A_index[Rank], B_index[Rank];
     size_t A_sentinel, B_sentinel;
 
-    for (ptrdiff_t curr_index = thread_id; curr_index < size; curr_index++) {
+    for (ptrdiff_t curr_index = thread_id; curr_index < size; curr_index += kernel_size) {
         sentinel_to_indices<Rank>(curr_index, strideA, A_index);
         A_sentinel = 0;
         B_sentinel = 0;
@@ -56,10 +56,18 @@ __global__ void permute_kernel(int const *perm, T const alpha, T const *A, size_
             B_sentinel += strideB[i] * A_index[perm[i]];
         }
 
-        if constexpr (ConjA && IsComplexV<T>) {
-            B[B_sentinel] = gpu_ops::fma(alpha, gpu_ops::conj(A[A_sentinel]), beta * B[B_sentinel]);
+        if constexpr (ZeroB) {
+            if constexpr (ConjA && IsComplexV<T>) {
+                B[B_sentinel] = gpu_ops::mult(alpha, gpu_ops::conj(A[A_sentinel]));
+            } else {
+                B[B_sentinel] = gpu_ops::mult(alpha, A[A_sentinel]);
+            }
         } else {
-            B[B_sentinel] = gpu_ops::fma(alpha, A[A_sentinel], beta * B[B_sentinel]);
+            if constexpr (ConjA && IsComplexV<T>) {
+                B[B_sentinel] = gpu_ops::fma(alpha, gpu_ops::conj(A[A_sentinel]), beta * B[B_sentinel]);
+            } else {
+                B[B_sentinel] = gpu_ops::fma(alpha, A[A_sentinel], beta * B[B_sentinel]);
+            }
         }
     }
 }
@@ -176,9 +184,15 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
         using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
 
-        detail::permute_kernel<ConjA, T_devtype, ARank><<<gpu::blocks(A.size()), gpu::block_size(A.size()), 0, stream>>>(
-            gpu_index_table, HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(), stride_A_gpu,
-            HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data(), stride_C_gpu, A.size());
+        if (C_prefactor == T{0.0}) {
+            detail::permute_kernel<ConjA, true, T_devtype, ARank><<<gpu::blocks(A.size()), gpu::block_size(A.size()), 0, stream>>>(
+                gpu_index_table, HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(), stride_A_gpu,
+                HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data(), stride_C_gpu, A.size());
+        } else {
+            detail::permute_kernel<ConjA, false, T_devtype, ARank><<<gpu::blocks(A.size()), gpu::block_size(A.size()), 0, stream>>>(
+                gpu_index_table, HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(), stride_A_gpu,
+                HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data(), stride_C_gpu, A.size());
+        }
         hipEvent_t wait_event;
 
         hip_catch(hipEventCreate(&wait_event));

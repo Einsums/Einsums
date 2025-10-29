@@ -556,7 +556,7 @@ int slascl(char type, int kl, int ku, float cfrom, float cto, int m, int n, floa
                 dim3 block_dims{col_block_dims.x, row_block_dims.x, 1};
                 dim3 blocks{col_blocks.x, row_blocks.x, 1};
 
-                slascl_full_matrix<<<block_dims, blocks, 0, stream>>>(mult, m, n, vec, lda);
+                slascl_full_matrix<<<blocks, block_dims, 0, stream>>>(mult, m, n, vec, lda);
                 gpu::stream_wait();
             }
             break;
@@ -787,7 +787,7 @@ int dlascl(char type, int kl, int ku, double cfrom, double cto, int m, int n, do
                 dim3 block_dims{col_block_dims.x, row_block_dims.x, 1};
                 dim3 blocks{col_blocks.x, row_blocks.x, 1};
 
-                dlascl_full_matrix<<<block_dims, blocks, 0, stream>>>(mult, m, n, vec, lda);
+                dlascl_full_matrix<<<blocks, block_dims, 0, stream>>>(mult, m, n, vec, lda);
                 gpu::stream_wait();
             }
             break;

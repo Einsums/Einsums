@@ -321,11 +321,11 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
             hip_catch(hipMemcpyAsync(C_data, C, sizeof(C_devtype), hipMemcpyHostToDevice, get_stream()));
         }
 
-        einsum_generic_zero_rank_gpu<ConjA, ConjB, C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, ARank, BRank>
-            <<<grid, threads, 0, get_stream()>>>(unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C_data,
-                                                 HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_dims(),
-                                                 A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
-                                                 std::get<0>(unique_dims) * unique_strides[0]);
+        einsum_generic_zero_rank_gpu<ConjA, ConjB, C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, ARank,
+                                     BRank><<<grid, threads, 0, get_stream()>>>(
+            unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C_data, HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor),
+            A.gpu_data(), A.gpu_dims(), A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
+            std::get<0>(unique_dims) * unique_strides[0]);
         gpu::stream_wait();
 
         if constexpr (!einsums::IsTensorV<CType>) {

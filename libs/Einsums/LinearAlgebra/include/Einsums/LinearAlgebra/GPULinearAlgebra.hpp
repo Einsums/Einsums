@@ -128,11 +128,11 @@ void gemm(char transA, char transB, T alpha, AType const &A, BType const &B, T b
 
     using dev_datatype = typename AType::dev_datatype;
 
-    int m = C->dim(0), n = C->dim(1), k = (std::tolower(transA) != 'n') ? A.dim(0) : A.dim(1);
+    int m = C->dim(0), n = C->dim(1), k = (std::tolower(transA) == 'n') ? A.dim(1) : A.dim(0);
     int lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
     // Flip the A and B matrices. Row-major vs column major.
-    char new_transA = (std::tolower(transA) == 'n')? 't': 'n', new_transB = (std::tolower(transB) == 'n')? 't': 'n';
+    char new_transA = (std::tolower(transA) == 'n') ? 't' : 'n', new_transB = (std::tolower(transB) == 'n') ? 't' : 'n';
     blas::gpu::gemm(transB, transA, n, m, k, alpha, (typename AType::ValueType *)B.gpu_data(), ldb,
                     (typename AType::ValueType *)A.gpu_data(), lda, beta, (typename AType::ValueType *)C->gpu_data(), ldc);
     stream_wait();
@@ -205,9 +205,9 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
         T out{0.0};
         hip_catch(hipMemcpy(gpu_out, &out, sizeof(T), hipMemcpyHostToDevice));
 
-    gpu::dot_kernel<Rank><<<blocks(A.size()), block_size(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(),
-                                                                                       gpu_strides, A.gpu_strides(), B.gpu_strides());
-    stream_wait();
+        gpu::dot_kernel<Rank><<<num_blocks, grid, 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(), gpu_strides,
+                                                                     A.gpu_strides(), B.gpu_strides());
+        stream_wait();
 
         hip_catch(hipMemcpy((void *)&out, (void *)gpu_out, sizeof(T), hipMemcpyDeviceToHost));
         // No sync
@@ -277,9 +277,9 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
         T out{0.0};
         hip_catch(hipMemcpy(gpu_out, &out, sizeof(T), hipMemcpyHostToDevice));
 
-    gpu::true_dot_kernel<Rank><<<blocks(A.size()), block_size(A.size()), 0, get_stream()>>>(
-        gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(), gpu_strides, A.gpu_strides(), B.gpu_strides());
-    stream_wait();
+        gpu::true_dot_kernel<Rank><<<num_blocks, grid, 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(), gpu_strides,
+                                                                          A.gpu_strides(), B.gpu_strides());
+        stream_wait();
 
         hip_catch(hipMemcpy((void *)&out, (void *)gpu_out, sizeof(T), hipMemcpyDeviceToHost));
         // No sync
@@ -330,7 +330,7 @@ void gerc(T alpha, XType const &X, YType const &Y, AType *A) {
     blas::gpu::lacgv(X_temp.dim(0), (T *)X_temp.gpu_data(), X_temp.stride(0));
 
     blas::gpu::ger(Y.dim(0), X.dim(0), alpha, (typename AType::ValueType *)Y.gpu_data(), Y.stride(0),
-                    (typename AType::ValueType *)X.gpu_data(), X.stride(0), (typename AType::ValueType *)A->gpu_data(), A->stride(0));
+                   (typename AType::ValueType *)X.gpu_data(), X.stride(0), (typename AType::ValueType *)A->gpu_data(), A->stride(0));
 
     // No wait needed. sort waits.
 }
