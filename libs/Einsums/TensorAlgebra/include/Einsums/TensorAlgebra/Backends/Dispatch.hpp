@@ -284,23 +284,68 @@ bool einsum_do_outer_product(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
     constexpr auto B_target_position_in_C = detail::find_type_with_position(B_indices, C_indices);
 
     EINSUMS_LOG_TRACE("outer_product");
-    if (!A.full_view_of_underlying() || !B.full_view_of_underlying()) {
-        EINSUMS_LOG_TRACE("do not have full view of underlying data A {} B{}", !A.full_view_of_underlying(), !B.full_view_of_underlying());
+    if (!A.is_totally_vectorable() || !B.is_totally_vectorable()) {
+        EINSUMS_LOG_TRACE("do not have full view of underlying data A {} B{}", !A.is_totally_vectorable(), !B.is_totally_vectorable());
         return false;
-    }
-
-    if constexpr (DryRun) {
-        return true;
     }
 
     constexpr bool swap_AB = std::get<1>(A_target_position_in_C) != 0;
     EINSUMS_LOG_TRACE("swap_AB {}", swap_AB);
 
     Dim<2> dC;
+    Stride<2> sC;
     dC[0] = product_dims(A_target_position_in_C, *C);
     dC[1] = product_dims(B_target_position_in_C, *C);
-    if constexpr (swap_AB)
+    sC[0] = last_stride(A_target_position_in_C, *C);
+    sC[1] = last_stride(B_target_position_in_C, *C);
+    if constexpr (CRank == 2) {
+        if (C->stride(0) != 1 && C->stride(1) != 1) {
+            EINSUMS_LOG_TRACE("do not have gerable view of C.");
+            return false;
+        }
+    } else {
+        if (C->is_row_major()) {
+            size_t cutoff_stride = std::max(sC[0], sC[1]);
+            size_t check_stride  = 1;
+
+            for (ptrdiff_t i = CRank - 1; i >= 0; i--) {
+                // Check to see if we reach the cutoff between the two sets of strides.
+                // If we did, check against a new set of strides.
+                if (C->stride(i) == cutoff_stride) {
+                    check_stride = cutoff_stride;
+                }
+                if (C->stride(i) != check_stride) {
+                    EINSUMS_LOG_TRACE("do not have gerable view of C.");
+                    return false;
+                }
+                check_stride *= C->dim(i);
+            }
+        } else {
+            size_t cutoff_stride = std::max(sC[0], sC[1]);
+            size_t check_stride  = 1;
+
+            for (ptrdiff_t i = 0; i < CRank; i++) {
+                // Check to see if we reach the cutoff between the two sets of strides.
+                // If we did, check against a new set of strides.
+                if (C->stride(i) == cutoff_stride) {
+                    check_stride = cutoff_stride;
+                }
+                if (C->stride(i) != check_stride) {
+                    EINSUMS_LOG_TRACE("do not have gerable view of C.");
+                    return false;
+                }
+                check_stride *= C->dim(i);
+            }
+        }
+    }
+
+    if constexpr (swap_AB) {
         std::swap(dC[0], dC[1]);
+    }
+
+    if constexpr (DryRun) {
+        return true;
+    }
 
 #    ifdef EINSUMS_COMPUTE_CODE
     std::conditional_t<IsIncoreRankTensorV<CType, CRank, CDataType>, TensorView<CDataType, 2>, DeviceTensorView<CDataType, 2>> tC{*C, dC};
@@ -421,18 +466,11 @@ bool einsum_do_matrix_vector(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
     constexpr auto target_position_in_A   = detail::find_type_with_position(C_unique, A_indices);
     constexpr auto A_target_position_in_C = detail::find_type_with_position(A_indices, C_indices);
 
-    if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
-        // Fall through to generic algorithm.
-        EINSUMS_LOG_TRACE("do not have full view of underlying data A {} B{} C{}", !A.full_view_of_underlying(),
-                          !B.full_view_of_underlying(), !C->full_view_of_underlying());
+    constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
+
+    if (!B.is_totally_vectorable() || !C->is_totally_vectorable()) {
         return false;
     }
-
-    if constexpr (DryRun) {
-        return true;
-    }
-
-    constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
 
     Dim<2>    dA;
     Dim<1>    dB, dC;
@@ -443,6 +481,52 @@ bool einsum_do_matrix_vector(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
     dA[1] = product_dims(link_position_in_A, A);
     sA[0] = last_stride(target_position_in_A, A);
     sA[1] = last_stride(link_position_in_A, A);
+
+    if constexpr (ARank == 2) {
+        if (A.stride(0) != 1 && A.stride(1) != 1) {
+            EINSUMS_LOG_TRACE("do not have gemvable view of A.");
+            return false;
+        }
+    } else {
+        if (A.is_row_major()) {
+            size_t cutoff_stride = std::max(sA[0], sA[1]);
+            size_t check_stride  = 1;
+
+            for (ptrdiff_t i = ARank - 1; i >= 0; i--) {
+                // Check to see if we reach the cutoff between the two sets of strides.
+                // If we did, check against a new set of strides.
+                if (A.stride(i) == cutoff_stride) {
+                    check_stride = cutoff_stride;
+                }
+                if (A.stride(i) != check_stride) {
+                    EINSUMS_LOG_TRACE("do not have gemvable view of A.");
+                    return false;
+                }
+                check_stride *= A.dim(i);
+            }
+        } else {
+            size_t cutoff_stride = std::max(sA[0], sA[1]);
+            size_t check_stride  = 1;
+
+            for (ptrdiff_t i = 0; i < ARank; i++) {
+                // Check to see if we reach the cutoff between the two sets of strides.
+                // If we did, check against a new set of strides.
+                if (A.stride(i) == cutoff_stride) {
+                    check_stride = cutoff_stride;
+                }
+                if (A.stride(i) != check_stride) {
+                    EINSUMS_LOG_TRACE("do not have gemvable view of A.");
+                    return false;
+                }
+                check_stride *= A.dim(i);
+            }
+        }
+    }
+
+    if constexpr (DryRun) {
+        return true;
+    }
+
     if constexpr (transpose_A) {
         std::swap(dA[0], dA[1]);
         std::swap(sA[0], sA[1]);
@@ -559,10 +643,6 @@ bool einsum_do_matrix_product(ValueTypeT<CType> const C_prefactor, std::tuple<CI
     constexpr bool transpose_B = std::get<1>(link_position_in_B) != 0;
     constexpr bool transpose_C = std::get<1>(A_target_position_in_C) != 0;
 
-    if(!A.full_view_of_underlying() || !B.full_view_of_underlying() || !C->full_view_of_underlying()) {
-        return false;
-    }
-
     Dim<2>    dA, dB, dC;
     Stride<2> sA, sB, sC;
 
@@ -570,6 +650,48 @@ bool einsum_do_matrix_product(ValueTypeT<CType> const C_prefactor, std::tuple<CI
     dA[1] = product_dims(link_position_in_A, A);
     sA[0] = last_stride(target_position_in_A, A);
     sA[1] = last_stride(link_position_in_A, A);
+
+    if constexpr (ARank == 2) {
+        if (A.stride(0) != 1 && A.stride(1) != 1) {
+            EINSUMS_LOG_TRACE("do not have gemmable view of A.");
+            return false;
+        }
+    } else {
+        if (A.is_row_major()) {
+            size_t cutoff_stride = std::max(sA[0], sA[1]);
+            size_t check_stride  = 1;
+
+            for (ptrdiff_t i = ARank - 1; i >= 0; i--) {
+                // Check to see if we reach the cutoff between the two sets of strides.
+                // If we did, check against a new set of strides.
+                if (A.stride(i) == cutoff_stride) {
+                    check_stride = cutoff_stride;
+                }
+                if (A.stride(i) != check_stride) {
+                    EINSUMS_LOG_TRACE("do not have gemmable view of A.");
+                    return false;
+                }
+                check_stride *= A.dim(i);
+            }
+        } else {
+            size_t cutoff_stride = std::max(sA[0], sA[1]);
+            size_t check_stride  = 1;
+
+            for (ptrdiff_t i = 0; i < ARank; i++) {
+                // Check to see if we reach the cutoff between the two sets of strides.
+                // If we did, check against a new set of strides.
+                if (A.stride(i) == cutoff_stride) {
+                    check_stride = cutoff_stride;
+                }
+                if (A.stride(i) != check_stride) {
+                    EINSUMS_LOG_TRACE("do not have gemmable view of A.");
+                    return false;
+                }
+                check_stride *= A.dim(i);
+            }
+        }
+    }
+
     if constexpr (transpose_A) {
         std::swap(dA[0], dA[1]);
         std::swap(sA[0], sA[1]);
@@ -579,6 +701,48 @@ bool einsum_do_matrix_product(ValueTypeT<CType> const C_prefactor, std::tuple<CI
     dB[1] = product_dims(B_target_position_in_C, *C);
     sB[0] = last_stride(link_position_in_B, B);
     sB[1] = last_stride(target_position_in_B, B);
+
+    if constexpr (BRank == 2) {
+        if (B.stride(0) != 1 && B.stride(1) != 1) {
+            EINSUMS_LOG_TRACE("do not have gemmable view of B.");
+            return false;
+        }
+    } else {
+        if (B.is_row_major()) {
+            size_t cutoff_stride = std::max(sB[0], sB[1]);
+            size_t check_stride  = 1;
+
+            for (ptrdiff_t i = BRank - 1; i >= 0; i--) {
+                // Check to see if we reach the cutoff between the two sets of strides.
+                // If we did, check against a new set of strides.
+                if (B.stride(i) == cutoff_stride) {
+                    check_stride = cutoff_stride;
+                }
+                if (B.stride(i) != check_stride) {
+                    EINSUMS_LOG_TRACE("do not have gemmable view of B.");
+                    return false;
+                }
+                check_stride *= B.dim(i);
+            }
+        } else {
+            size_t cutoff_stride = std::max(sB[0], sB[1]);
+            size_t check_stride  = 1;
+
+            for (ptrdiff_t i = 0; i < BRank; i++) {
+                // Check to see if we reach the cutoff between the two sets of strides.
+                // If we did, check against a new set of strides.
+                if (B.stride(i) == cutoff_stride) {
+                    check_stride = cutoff_stride;
+                }
+                if (B.stride(i) != check_stride) {
+                    EINSUMS_LOG_TRACE("do not have gemmable view of B.");
+                    return false;
+                }
+                check_stride *= B.dim(i);
+            }
+        }
+    }
+
     if constexpr (transpose_B) {
         std::swap(dB[0], dB[1]);
         std::swap(sB[0], sB[1]);
@@ -588,6 +752,48 @@ bool einsum_do_matrix_product(ValueTypeT<CType> const C_prefactor, std::tuple<CI
     dC[1] = product_dims(B_target_position_in_C, *C);
     sC[0] = last_stride(A_target_position_in_C, *C);
     sC[1] = last_stride(B_target_position_in_C, *C);
+
+    if constexpr (CRank == 2) {
+        if (C->stride(0) != 1 && C->stride(1) != 1) {
+            EINSUMS_LOG_TRACE("do not have gemmable view of C.");
+            return false;
+        }
+    } else {
+        if (C->is_row_major()) {
+            size_t cutoff_stride = std::max(sC[0], sC[1]);
+            size_t check_stride  = 1;
+
+            for (ptrdiff_t i = CRank - 1; i >= 0; i--) {
+                // Check to see if we reach the cutoff between the two sets of strides.
+                // If we did, check against a new set of strides.
+                if (C->stride(i) == cutoff_stride) {
+                    check_stride = cutoff_stride;
+                }
+                if (C->stride(i) != check_stride) {
+                    EINSUMS_LOG_TRACE("do not have gemmable view of C.");
+                    return false;
+                }
+                check_stride *= C->dim(i);
+            }
+        } else {
+            size_t cutoff_stride = std::max(sC[0], sC[1]);
+            size_t check_stride  = 1;
+
+            for (ptrdiff_t i = 0; i < CRank; i++) {
+                // Check to see if we reach the cutoff between the two sets of strides.
+                // If we did, check against a new set of strides.
+                if (C->stride(i) == cutoff_stride) {
+                    check_stride = cutoff_stride;
+                }
+                if (C->stride(i) != check_stride) {
+                    EINSUMS_LOG_TRACE("do not have gemmable view of C.");
+                    return false;
+                }
+                check_stride *= C->dim(i);
+            }
+        }
+    }
+
     if constexpr (transpose_C) {
         std::swap(dC[0], dC[1]);
         std::swap(sC[0], sC[1]);
