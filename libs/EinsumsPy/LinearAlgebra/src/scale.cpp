@@ -11,13 +11,13 @@
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
 #include <EinsumsPy/LinearAlgebra/LinearAlgebra.hpp>
+#include <EinsumsPy/Tensor/PyTensor.hpp>
 #include <pybind11/buffer_info.h>
 #include <pybind11/detail/common.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <stdexcept>
 
-#include "EinsumsPy/Tensor/PyTensor.hpp"
 #include "macros.hpp"
 
 namespace py = pybind11;

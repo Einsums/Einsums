@@ -4,6 +4,7 @@
 //----------------------------------------------------------------------------------------------
 
 #include <Einsums/CommandLine/CommandLine.hpp>
+#include <Einsums/HPTT/HPTTTypes.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Tensor.hpp>
@@ -12,8 +13,6 @@
 
 #include <filesystem>
 #include <vector>
-
-#include "Einsums/HPTT/HPTTTypes.hpp"
 
 using namespace einsums;
 using namespace einsums::tensor_algebra;

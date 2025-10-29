@@ -3,12 +3,11 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorUtilities/ARange.hpp>
 #include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
-
-#include "Einsums/Config/CompilerSpecific.hpp"
 
 #include <Einsums/Testing.hpp>
 
@@ -161,8 +160,8 @@ TEST_CASE("Tensor Invert") {
 
     einsums::linear_algebra::invert(&A);
 
-    CHECK_THAT(A.vector_data(), Catch::Matchers::Approx(std::vector<double>{-5.0 / 12, 0.25, 1.0 / 3.0, 7.0 / 12.0, 0.25,
-                                                                                    -2.0 / 3.0, 1.0 / 12.0, -0.25, 1.0 / 3.0})
+    CHECK_THAT(A.vector_data(), Catch::Matchers::Approx(std::vector<double>{-5.0 / 12, 0.25, 1.0 / 3.0, 7.0 / 12.0, 0.25, -2.0 / 3.0,
+                                                                            1.0 / 12.0, -0.25, 1.0 / 3.0})
                                     .margin(0.00001));
 }
 

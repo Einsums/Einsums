@@ -15,13 +15,12 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
 #include <EinsumsPy/LinearAlgebra/LinearAlgebra.hpp>
+#include <EinsumsPy/Tensor/PyTensor.hpp>
 #include <omp.h>
-
-#include "Einsums/LinearAlgebra.hpp"
-#include "EinsumsPy/Tensor/PyTensor.hpp"
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/GPUStreams/GPUStreams.hpp>

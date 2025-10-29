@@ -31,6 +31,7 @@ What's New
   `gerc`, and `direct_prod`.  Work is being done to get `gesv` and `truncated_syev` working, though the implementation is not yet ready
 * Tensors can be cached to GPU. When tensors are cached, certain operations can use GPU algorithms instead of CPU algorithms to speed up
   calculations.
+* The `einsum` dispatcher now uses smarter rules for whether a tensor can be passed to a BLAS call.
 
 What's Removed
 --------------
@@ -41,6 +42,8 @@ What's Removed
 
 Bug Fixes
 ---------
+* Fixed a bug where GPU kernels were being launched with the block and grid sizes in the wrong order, leading to 31 inactive threads
+  in a 32-thread warp.
 
 Known Issues
 ------------
