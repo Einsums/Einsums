@@ -332,18 +332,22 @@ void gemm(char transA, char transB, U alpha, AType const &A, BType const &B, U b
     if (m <= 500 && n <= 500 && k <= 500) {
         if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType> && BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A.get(), B.get(), beta, &C->get());
+            C->put();
         } else if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType>) {
             detail::gemm(transA, transB, alpha, A.get(), B.get(), beta, C);
         } else if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A.get(), B, beta, &C->get());
+            C->put();
         } else if constexpr (BufferableTensorConcept<BType> && BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A, B.get(), beta, &C->get());
+            C->put();
         } else if constexpr (BufferableTensorConcept<AType>) {
             detail::gemm(transA, transB, alpha, A.get(), B, beta, C);
         } else if constexpr (BufferableTensorConcept<BType>) {
             detail::gemm(transA, transB, alpha, A, B.get(), beta, C);
         } else if constexpr (BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A, B, beta, &C->get());
+            C->put();
         } else {
             detail::gemm(transA, transB, alpha, A, B, beta, C);
         }

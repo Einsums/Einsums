@@ -243,8 +243,12 @@ void impl_gemm_contiguous(char transA, char transB, T alpha, einsums::detail::Te
 
 template <typename AType, typename BType, typename CType, typename AlphaType, typename BetaType>
 void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::TensorImpl<AType> const &A,
-               einsums::detail::TensorImpl<BType> const &B, BetaType beta, einsums::detail::TensorImpl<CType> *C) {
+               einsums::detail::TensorImpl<BType> const &B, BetaType beta, einsums::detail::TensorImpl<CType> *C);
+
 #ifdef EINSUMS_COMPUTE_CODE
+template <typename AType, typename BType, typename CType, typename AlphaType, typename BetaType>
+bool impl_gemm_gpu(char transA, char transB, AlphaType alpha, einsums::detail::TensorImpl<AType> const &A,
+                   einsums::detail::TensorImpl<BType> const &B, BetaType beta, einsums::detail::TensorImpl<CType> *C) {
     if constexpr (std::is_same_v<AType, BType> && std::is_same_v<AType, CType> && blas::IsBlasableV<AType>) {
         using T = AType;
 
@@ -265,10 +269,11 @@ void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::Tenso
                     gpu::stream_wait();
                     C->increment_gpu_modify();
 
-                    return;
+                    return true;
                 }
+                return false;
             } catch (std::runtime_error &e) {
-                ; // We couldn't allocate all the data, so don't do the GPU algorithm.
+                return false; // We couldn't allocate all the data, so don't do the GPU algorithm.
             }
         } else if (A.size() >= 1024 && B.size() >= 1024 && C->size() >= 1024) {
             bool tA = std::tolower(transA) != 'n', tB = std::tolower(transB) != 'n';
@@ -472,22 +477,42 @@ void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::Tenso
                     C_view.tensor_from_gpu();
                 }
             }
-            return;
+            return true;
         }
-    }
-    C->tensor_from_gpu();
-    C->increment_core_modify();
-#endif
-    if constexpr (!std::is_same_v<AType, BType> || !std::is_same_v<AType, CType>) {
-        impl_gemm_noncontiguous(transA, transB, einsums::detail::convert<AlphaType, CType>(alpha), A, B,
-                                einsums::detail::convert<AlphaType, CType>(beta), C);
+        return false;
     } else {
-        if (A.is_gemmable() && B.is_gemmable() && C->is_gemmable()) {
-            impl_gemm_contiguous(transA, transB, einsums::detail::convert<AlphaType, CType>(alpha), A, B,
-                                 einsums::detail::convert<AlphaType, CType>(beta), C);
-        } else {
+        return false;
+    }
+}
+#else
+template <typename AType, typename BType, typename CType, typename AlphaType, typename BetaType>
+constexpr bool impl_gemm_gpu(char transA, char transB, AlphaType alpha, einsums::detail::TensorImpl<AType> const &A,
+                             einsums::detail::TensorImpl<BType> const &B, BetaType beta, einsums::detail::TensorImpl<CType> *C) {
+    return false;
+}
+#endif
+
+template <typename AType, typename BType, typename CType, typename AlphaType, typename BetaType>
+void impl_gemm(char transA, char transB, AlphaType alpha, einsums::detail::TensorImpl<AType> const &A,
+               einsums::detail::TensorImpl<BType> const &B, BetaType beta, einsums::detail::TensorImpl<CType> *C) {
+    bool did_gpu = impl_gemm_gpu(transA, transB, alpha, A, B, beta, C);
+
+    if (!did_gpu) {
+#ifdef EINSUMS_COMPUTE_CODE
+        C->tensor_from_gpu();
+        C->increment_core_modify();
+#endif
+        if constexpr (!std::is_same_v<AType, BType> || !std::is_same_v<AType, CType>) {
             impl_gemm_noncontiguous(transA, transB, einsums::detail::convert<AlphaType, CType>(alpha), A, B,
                                     einsums::detail::convert<AlphaType, CType>(beta), C);
+        } else {
+            if (A.is_gemmable() && B.is_gemmable() && C->is_gemmable()) {
+                impl_gemm_contiguous(transA, transB, einsums::detail::convert<AlphaType, CType>(alpha), A, B,
+                                     einsums::detail::convert<AlphaType, CType>(beta), C);
+            } else {
+                impl_gemm_noncontiguous(transA, transB, einsums::detail::convert<AlphaType, CType>(alpha), A, B,
+                                        einsums::detail::convert<AlphaType, CType>(beta), C);
+            }
         }
     }
 }
