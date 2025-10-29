@@ -7,14 +7,13 @@
 
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Errors/Error.hpp>
+#include <Einsums/GPUStreams/GPUStreams.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Profile.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
+#include <Einsums/TypeSupport/GPUCast.hpp>
 
 #include <type_traits>
-
-#include "Einsums/GPUStreams/GPUStreams.hpp"
-#include "Einsums/TypeSupport/GPUCast.hpp"
 
 namespace einsums {
 namespace detail {

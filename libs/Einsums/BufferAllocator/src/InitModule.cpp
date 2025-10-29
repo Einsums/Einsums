@@ -6,11 +6,10 @@
 #include <Einsums/BufferAllocator/InitModule.hpp>
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
 #include <Einsums/CommandLine.hpp>
+#include <Einsums/CommandLine/CommandLine.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Runtime.hpp>
 #include <Einsums/StringUtil/MemoryString.hpp>
-
-#include "Einsums/CommandLine/CommandLine.hpp"
 
 namespace einsums {
 

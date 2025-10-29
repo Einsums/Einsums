@@ -5,10 +5,9 @@
 
 #pragma once
 #include <Einsums/BLAS.hpp>
+#include <Einsums/LinearAlgebra/Bases/high_precision.hpp>
 #include <Einsums/Profile.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
-
-#include "Einsums/LinearAlgebra/Bases/high_precision.hpp"
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/hipBLAS.hpp>
@@ -140,7 +139,7 @@ BiggestTypeT<T, TOther> impl_dot(einsums::detail::TensorImpl<T> const &in, einsu
         // If one or both of the tensors are on GPU, use the GPU algorithm.
         if (in.get_gpu_pointer() || out.get_gpu_pointer()) {
             try {
-                auto in_lock = in.gpu_cache_tensor();
+                auto in_lock  = in.gpu_cache_tensor();
                 auto out_lock = out.gpu_cache_tensor();
 
                 // Make sure the pointers got allocated.
@@ -288,7 +287,7 @@ BiggestTypeT<T, TOther> impl_true_dot(einsums::detail::TensorImpl<T> const &in, 
         // If one or both of the tensors are on GPU, use the GPU algorithm.
         if (in.get_gpu_pointer() || out.get_gpu_pointer()) {
             try {
-                auto in_lock = in.gpu_cache_tensor();
+                auto in_lock  = in.gpu_cache_tensor();
                 auto out_lock = out.gpu_cache_tensor();
 
                 // Make sure the pointers got allocated.

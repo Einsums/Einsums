@@ -17,9 +17,8 @@
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
-
-#include "Einsums/TensorImpl/TensorImpl.hpp"
-#include "Einsums/TensorImpl/TensorImplOperations.hpp"
+#include <Einsums/TensorImpl/TensorImpl.hpp>
+#include <Einsums/TensorImpl/TensorImplOperations.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <hip/hip_common.h>

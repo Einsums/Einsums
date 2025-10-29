@@ -6,10 +6,9 @@
 #include <Einsums/BlockManager/BlockManager.hpp>
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
+#include <Einsums/Config/Types.hpp>
 
 #include <mutex>
-
-#include "Einsums/Config/Types.hpp"
 
 #include <Einsums/Testing.hpp>
 

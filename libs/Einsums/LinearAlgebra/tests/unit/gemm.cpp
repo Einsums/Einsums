@@ -3,11 +3,10 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Config/Types.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
-
-#include "Einsums/Config/Types.hpp"
-#include "Einsums/TensorUtilities/CreateRandomTensor.hpp"
+#include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
 #include <Einsums/Testing.hpp>
 

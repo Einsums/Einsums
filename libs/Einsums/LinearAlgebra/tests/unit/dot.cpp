@@ -3,13 +3,12 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Config/Types.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Tensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-
-#include "Einsums/Config/Types.hpp"
 
 #include <Einsums/Testing.hpp>
 

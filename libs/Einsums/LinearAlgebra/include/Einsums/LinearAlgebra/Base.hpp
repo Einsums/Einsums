@@ -10,12 +10,14 @@
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/LinearAlgebra/Bases/direct_product.hpp>
 #include <Einsums/LinearAlgebra/Bases/dot.hpp>
 #include <Einsums/LinearAlgebra/Bases/gemm.hpp>
 #include <Einsums/LinearAlgebra/Bases/gemv.hpp>
 #include <Einsums/LinearAlgebra/Bases/ger.hpp>
+#include <Einsums/LinearAlgebra/Bases/norm.hpp>
 #include <Einsums/LinearAlgebra/Bases/sum_square.hpp>
 #include <Einsums/LinearAlgebra/Bases/syev.hpp>
 #include <Einsums/LinearAlgebra/Bases/triangular.hpp>
@@ -23,14 +25,11 @@
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
+#include <Einsums/TensorImpl/TensorImplOperations.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
 
 #include <optional>
 #include <stdexcept>
-
-#include "Einsums/Config/CompilerSpecific.hpp"
-#include "Einsums/LinearAlgebra/Bases/norm.hpp"
-#include "Einsums/TensorImpl/TensorImplOperations.hpp"
 
 namespace einsums::linear_algebra::detail {
 

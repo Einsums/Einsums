@@ -12,6 +12,7 @@
 #include <Einsums/Concepts/File.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/Logging.hpp>
@@ -21,6 +22,7 @@
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
+#include <Einsums/TensorImpl/TensorImplOperations.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
@@ -50,11 +52,9 @@
 #include <utility>
 #include <vector>
 
-#include "Einsums/Config/CompilerSpecific.hpp"
-#include "Einsums/Tensor/DeviceTensor.hpp"
-#include "Einsums/TensorImpl/TensorImplOperations.hpp"
-
 #if defined(EINSUMS_COMPUTE_CODE)
+#    include <Einsums/Tensor/DeviceTensor.hpp>
+
 #    include <hip/hip_common.h>
 #    include <hip/hip_runtime.h>
 #    include <hip/hip_runtime_api.h>

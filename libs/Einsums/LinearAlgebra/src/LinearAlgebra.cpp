@@ -5,11 +5,10 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 
 #include <queue>
-
-#include "Einsums/BufferAllocator/BufferAllocator.hpp"
 
 namespace einsums::linear_algebra::detail {
 BufferVector<uint64_t> choose_all_n(uint64_t n) {
