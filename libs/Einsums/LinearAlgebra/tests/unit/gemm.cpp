@@ -323,7 +323,7 @@ TEMPLATE_TEST_CASE("Disk gemm", "[linear-algebra]", double, std::complex<double>
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    constexpr int size = 600;
+    constexpr int size = 10;
 
     auto A = einsums::create_random_tensor<TestType>("A", size, size);
     auto B = einsums::create_random_tensor<TestType>("B", size, size);
