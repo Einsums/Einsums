@@ -12,9 +12,9 @@
 
 namespace einsums::detail {
 
-template <TensorConcept TensorType, typename DataType, typename Tuple, std::size_t... I>
-void set_to(TensorType &tensor, DataType value, Tuple const &tuple, std::index_sequence<I...>) {
-    tensor(std::get<I>(tuple)...) = (typename TensorType::ValueType)value;
+template <TensorConcept TensorType, typename DataType, typename Tuple, std::size_t... __I>
+void set_to(TensorType &tensor, DataType value, Tuple const &tuple, std::index_sequence<__I...>) {
+    tensor(std::get<__I>(tuple)...) = (typename TensorType::ValueType)value;
 }
 
 } // namespace einsums::detail
