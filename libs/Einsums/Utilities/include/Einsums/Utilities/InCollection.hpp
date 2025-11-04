@@ -16,13 +16,13 @@
 namespace einsums {
 
 namespace detail {
-template <typename T, typename Haystack, size_t... I>
+template <typename T, typename Haystack, size_t... __I>
     requires requires {
         { std::tuple_size_v<Haystack> };
         { std::get<0>(std::declval<Haystack>()) };
     }
-constexpr bool is_in(T &&needle, Haystack const &haystack, std::index_sequence<I...> const &) {
-    return ((needle == std::get<I>(haystack)) || ... || false);
+constexpr bool is_in(T &&needle, Haystack const &haystack, std::index_sequence<__I...> const &) {
+    return ((needle == std::get<__I>(haystack)) || ... || false);
 }
 
 template <typename T>

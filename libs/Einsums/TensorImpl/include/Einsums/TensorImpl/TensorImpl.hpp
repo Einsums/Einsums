@@ -1845,82 +1845,82 @@ struct TensorImpl final {
 #endif
 
   private:
-    template <size_t I, typename... MultiIndex>
+    template <size_t __I, typename... MultiIndex>
     constexpr void adjust_ranges(std::tuple<MultiIndex...> &indices) const {
-        if constexpr (I >= sizeof...(MultiIndex)) {
+        if constexpr (__I >= sizeof...(MultiIndex)) {
             return;
-        } else if constexpr (std::is_integral_v<std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-            auto &index = std::get<I>(indices);
+        } else if constexpr (std::is_integral_v<std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+            auto &index = std::get<__I>(indices);
             auto  temp  = index;
 
             if (index < 0) {
-                index += _dims[I];
+                index += _dims[__I];
             }
 
-            if (index < 0 || index >= _dims[I]) {
+            if (index < 0 || index >= _dims[__I]) {
                 EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                         "Index passed to view creation is out of range! Got {}, expected between {} and {}.", temp,
-                                        -static_cast<ptrdiff_t>(_dims[I]), _dims[I] - 1);
+                                        -static_cast<ptrdiff_t>(_dims[__I]), _dims[__I] - 1);
             }
-            adjust_ranges<I + 1>(indices);
-        } else if constexpr (std::is_base_of_v<Range, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-            auto &index = std::get<I>(indices);
+            adjust_ranges<__I + 1>(indices);
+        } else if constexpr (std::is_base_of_v<Range, std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+            auto &index = std::get<__I>(indices);
             auto  temp  = index;
 
             if (index[0] < 0) {
-                index[0] += _dims[I];
+                index[0] += _dims[__I];
             }
 
             if (index[1] < 0) {
-                index[1] += _dims[I];
+                index[1] += _dims[__I];
             }
 
-            if (index[0] < 0 || index[0] > _dims[I]) {
+            if (index[0] < 0 || index[0] > _dims[__I]) {
                 EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                         "Lower bound of range passed to view creation is out of range! Got {}, expected between {} and {}.",
-                                        temp[0], -static_cast<ptrdiff_t>(_dims[I]), _dims[I] - 1);
+                                        temp[0], -static_cast<ptrdiff_t>(_dims[__I]), _dims[__I] - 1);
             }
 
-            if (index[1] < index[0] || index[1] > _dims[I]) {
+            if (index[1] < index[0] || index[1] > _dims[__I]) {
                 EINSUMS_THROW_EXCEPTION(std::out_of_range,
                                         "Upper bound of range passed to view creation is out of range! Got {}, expected between {} and {}.",
-                                        temp[1], index[0], _dims[I]);
+                                        temp[1], index[0], _dims[__I]);
             }
-            adjust_ranges<I + 1>(indices);
+            adjust_ranges<__I + 1>(indices);
         } else {
-            adjust_ranges<I + 1>(indices);
+            adjust_ranges<__I + 1>(indices);
         }
     }
 
-    template <bool IgnoreRemoveRange, size_t I, typename... MultiIndex>
+    template <bool IgnoreRemoveRange, size_t __I, typename... MultiIndex>
         requires((std::is_integral_v<MultiIndex> || std::is_base_of_v<Range, MultiIndex> || std::is_base_of_v<AllT, MultiIndex>) && ... &&
                  true)
     constexpr size_t compute_view(BufferVector<size_t> &out_dims, BufferVector<size_t> &out_strides,
                                   std::tuple<MultiIndex...> const &indices) const {
-        if constexpr (I >= sizeof...(MultiIndex)) {
+        if constexpr (__I >= sizeof...(MultiIndex)) {
             return 0;
         } else {
-            if constexpr (std::is_integral_v<std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                return std::get<I>(indices) * _strides[I] + compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
+            if constexpr (std::is_integral_v<std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+                return std::get<__I>(indices) * _strides[__I] + compute_view<IgnoreRemoveRange, __I + 1>(out_dims, out_strides, indices);
             } else if constexpr (!IgnoreRemoveRange &&
-                                 std::is_base_of_v<RemovableRange, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                auto range = std::get<I>(indices);
+                                 std::is_base_of_v<RemovableRange, std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+                auto range = std::get<__I>(indices);
 
                 if (range[0] != range[1] && range.is_removable()) {
                     out_dims.push_back(range[1] - range[0]);
-                    out_strides.push_back(_strides[I]);
+                    out_strides.push_back(_strides[__I]);
                 }
-                return range[0] * _strides[I] + compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
-            } else if constexpr (std::is_base_of_v<Range, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                auto range = std::get<I>(indices);
+                return range[0] * _strides[__I] + compute_view<IgnoreRemoveRange, __I + 1>(out_dims, out_strides, indices);
+            } else if constexpr (std::is_base_of_v<Range, std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+                auto range = std::get<__I>(indices);
 
                 out_dims.push_back(range[1] - range[0]);
-                out_strides.push_back(_strides[I]);
-                return range[0] * _strides[I] + compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
-            } else if constexpr (std::is_base_of_v<AllT, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                out_dims.push_back(_dims[I]);
-                out_strides.push_back(_strides[I]);
-                return compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
+                out_strides.push_back(_strides[__I]);
+                return range[0] * _strides[__I] + compute_view<IgnoreRemoveRange, __I + 1>(out_dims, out_strides, indices);
+            } else if constexpr (std::is_base_of_v<AllT, std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+                out_dims.push_back(_dims[__I]);
+                out_strides.push_back(_strides[__I]);
+                return compute_view<IgnoreRemoveRange, __I + 1>(out_dims, out_strides, indices);
             }
         }
     }

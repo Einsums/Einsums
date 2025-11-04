@@ -22,34 +22,34 @@ constexpr auto create_tuple_from_array(T const &arr, std::index_sequence<Is...>)
     return std::tuple((arr[Is])...);
 }
 
-template <size_t NewN, typename T, size_t OldN, size_t... I>
-constexpr inline std::array<T, NewN> slice_array_impl(std::array<T, OldN> const &old_array, std::index_sequence<I...> const &) {
-    return {{old_array[I]...}};
+template <size_t NewN, typename T, size_t OldN, size_t... __I>
+constexpr inline std::array<T, NewN> slice_array_impl(std::array<T, OldN> const &old_array, std::index_sequence<__I...> const &) {
+    return {{old_array[__I]...}};
 }
 
-template <size_t NewN, typename T, size_t OldN, size_t... I>
-constexpr inline std::array<T, NewN> slice_array_impl(std::array<T, OldN> &&old_array, std::index_sequence<I...> const &) {
-    return {{std::move(old_array[I])...}};
+template <size_t NewN, typename T, size_t OldN, size_t... __I>
+constexpr inline std::array<T, NewN> slice_array_impl(std::array<T, OldN> &&old_array, std::index_sequence<__I...> const &) {
+    return {{std::move(old_array[__I])...}};
 }
 
-template <typename T, typename... TupleTypes, size_t... I>
+template <typename T, typename... TupleTypes, size_t... __I>
     requires(std::is_convertible_v<TupleTypes, T> && ...)
 constexpr inline std::array<T, sizeof...(TupleTypes)> create_array_from_tuple_impl(std::tuple<TupleTypes...> const &tuple,
-                                                                                   std::index_sequence<I...> const &) {
-    return {{std::get<I>(tuple)...}};
+                                                                                   std::index_sequence<__I...> const &) {
+    return {{std::get<__I>(tuple)...}};
 }
 
-template <typename T, typename... TupleTypes, size_t... I>
+template <typename T, typename... TupleTypes, size_t... __I>
     requires(std::is_convertible_v<TupleTypes, T> && ...)
 constexpr inline std::array<T, sizeof...(TupleTypes)> create_array_from_tuple_impl(std::tuple<TupleTypes...> &&tuple,
-                                                                                   std::index_sequence<I...> const &) {
-    return {{std::move(std::get<I>(tuple))...}};
+                                                                                   std::index_sequence<__I...> const &) {
+    return {{std::move(std::get<__I>(tuple))...}};
 }
 
-template <typename NewT, typename OldT, size_t N, size_t... I>
+template <typename NewT, typename OldT, size_t N, size_t... __I>
 constexpr inline std::array<std::remove_cv_t<NewT>, N> convert_array_impl(std::array<std::remove_cv_t<OldT>, N> const &arr,
-                                                                          std::index_sequence<I...> const &) {
-    return {{static_cast<std::remove_cv_t<NewT>>(arr[I])...}};
+                                                                          std::index_sequence<__I...> const &) {
+    return {{static_cast<std::remove_cv_t<NewT>>(arr[__I])...}};
 }
 
 } // namespace detail
