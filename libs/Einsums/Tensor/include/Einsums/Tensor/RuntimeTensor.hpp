@@ -176,7 +176,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    RuntimeTensor(std::string name, Dim const &dims) : _name{name}, _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
+    GeneralRuntimeTensor(std::string name, Dim const &dims) : _name{name}, _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -188,7 +188,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    explicit RuntimeTensor(Dim const &dims) : _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
+    explicit GeneralRuntimeTensor(Dim const &dims) : _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -200,16 +200,16 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param name the new name of the tensor.
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    RuntimeTensor(std::string name, std::initializer_list<size_t> dims)
-        : RuntimeTensor(name, std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
+    GeneralRuntimeTensor(std::string name, std::initializer_list<size_t> dims)
+        : GeneralRuntimeTensor(name, std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
 
     /**
      * @brief Create a new runtime tensor with the given dimensions using an initializer list.
      *
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    explicit RuntimeTensor(std::initializer_list<size_t> dims)
-        : RuntimeTensor(std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
+    explicit GeneralRuntimeTensor(std::initializer_list<size_t> dims)
+        : GeneralRuntimeTensor(std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
 
     /**
      * @brief Copy a tensor into a runtime tensor.
