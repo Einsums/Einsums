@@ -1362,7 +1362,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param data The pointer to wrap.
      * @param dims The dimensions of the view.
      */
-    explicit TensorView(T const *data, Dim<Rank> const &dims, bool row_major = row_major_default)
+    explicit TensorView(T const *data, Dim<Rank> const &dims, bool row_major)
         : _impl(const_cast<T *>(data), dims, row_major), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
         _source_dims = dims;
@@ -1378,8 +1378,40 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * @param data The pointer to wrap.
      * @param dims The dimensions of the view.
      */
-    explicit TensorView(T *data, Dim<Rank> const &dims, bool row_major = row_major_default)
+    explicit TensorView(T *data, Dim<Rank> const &dims, bool row_major)
         : _impl(const_cast<T *>(data), dims, row_major), _parent{const_cast<T *>(data)} {
+        _offsets.fill(0);
+        _source_dims = dims;
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+    }
+
+    /**
+     * Wrap a const pointer in a tensor view, specifying the dimensions.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the view.
+     */
+    explicit TensorView(T const *data, Dim<Rank> const &dims)
+        : _impl(const_cast<T *>(data), dims, GlobalConfigMap::get_singleton().get_bool("row-major")), _parent{const_cast<T *>(data)} {
+        _offsets.fill(0);
+        _source_dims = dims;
+        for (int i = 0; i < Rank; i++) {
+            _dim_array[i]    = _impl.dim(i);
+            _stride_array[i] = _impl.stride(i);
+        }
+    }
+
+    /**
+     * Wrap a pointer in a tensor view, specifying the dimensions.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the view.
+     */
+    explicit TensorView(T *data, Dim<Rank> const &dims)
+        : _impl(const_cast<T *>(data), dims, GlobalConfigMap::get_singleton().get_bool("row-major")), _parent{const_cast<T *>(data)} {
         _offsets.fill(0);
         _source_dims = dims;
         for (int i = 0; i < Rank; i++) {
@@ -2260,10 +2292,40 @@ TensorView(std::string, GeneralTensor<T, OtherRank, Alloc> &, Dim<Rank> const &,
  * @param args The arguments needed to construct the tensor.
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
-template <typename Type = double, bool RowMajor = einsums::row_major_default, typename... Args>
+template <typename Type = double, typename... Args>
 auto create_tensor(std::string const &name, Args... args) {
     EINSUMS_LOG_TRACE("creating tensor {}, {}", name, std::forward_as_tuple(args...));
-    return Tensor<Type, sizeof...(Args)>{RowMajor, name, args...};
+    return Tensor<Type, sizeof...(Args)>{name, args...};
+}
+
+/**
+ * @brief Create a new tensor with \p name and \p args .
+ *
+ * Just a simple factory function for creating new tensors. Defaults to using double for the
+ * underlying data and automatically determines rank of the tensor from args.
+ *
+ * A \p name for the tensor is required. \p name is used when printing and performing disk I/O.
+ *
+ * By default, the allocated tensor data is not initialized to zero. This was a performance
+ * decision. In many cases the next step after creating a tensor is to load or store data into
+ * it...why waste the CPU cycles zeroing something that will immediately get set to something
+ * else.  If you wish to explicitly zero the contents of your tensor use the zero function.
+ *
+ * @code
+ * auto a = create_tensor("a", 3, 3);           // auto -> Tensor<double, 2>
+ * auto b = create_tensor<float>("b", 4, 5, 6); // auto -> Tensor<float, 3>
+ * @endcode
+ *
+ * @tparam Type The datatype of the underlying tensor. Defaults to double.
+ * @tparam Args The datatype of the calling parameters. In almost all cases you should not need to worry about this parameter.
+ * @param name The name of the new tensor.
+ * @param args The arguments needed to construct the tensor.
+ * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
+ */
+template <typename Type = double, typename... Args>
+auto create_tensor(bool row_major, std::string const &name, Args... args) {
+    EINSUMS_LOG_TRACE("creating tensor {}, {}", name, std::forward_as_tuple(args...));
+    return Tensor<Type, sizeof...(Args)>{row_major, name, args...};
 }
 
 /**
@@ -2289,9 +2351,9 @@ auto create_tensor(std::string const &name, Args... args) {
  * @param args The arguments needed to construct the tensor.
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
-template <typename Type = double, bool RowMajor = einsums::row_major_default, std::integral... Args>
+template <typename Type = double, std::integral... Args>
 auto create_tensor(Args... args) {
-    return Tensor<Type, sizeof...(Args)>{RowMajor, "Temporary", args...};
+    return Tensor<Type, sizeof...(Args)>{"Temporary", args...};
 }
 
 #ifndef DOXYGEN

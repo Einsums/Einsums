@@ -1239,7 +1239,7 @@ auto svd(einsums::detail::TensorImpl<T> const &_A, char jobu, char jobvt)
 
     // Test if it is absolutely necessary to zero out these tensors first.
     if (std::tolower(jobu) != 'n') {
-        U = create_tensor<T, false>("U (stored columnwise)", m, m);
+        U = create_tensor<T>(false, "U (stored columnwise)", m, m);
         U.zero();
         U_data = U.data();
         ldu    = U.impl().get_lda();
@@ -1247,12 +1247,12 @@ auto svd(einsums::detail::TensorImpl<T> const &_A, char jobu, char jobvt)
     auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     S.zero();
     if (std::tolower(jobvt) != 'n') {
-        Vt = create_tensor<T, false>("Vt (stored rowwise)", n, n);
+        Vt = create_tensor<T>(false, "Vt (stored rowwise)", n, n);
         Vt.zero();
         Vt_data = Vt.data();
         ldvt    = Vt.impl().get_lda();
     }
-    auto superb = create_tensor<T, false>("superb", std::min(m, n));
+    auto superb = create_tensor<T>(false, "superb", std::min(m, n));
     superb.zero();
 
     //    int info{0};
@@ -1432,9 +1432,9 @@ auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job)
 
     // Test if it absolutely necessary to zero out these tensors first.
     if (std::tolower(job) != 'n') {
-        U = create_tensor<T, false>("U (stored columnwise)", m, m);
+        U = create_tensor<T>(false, "U (stored columnwise)", m, m);
         zero(U);
-        Vt = create_tensor<T, false>("Vt (stored rowwise)", n, n);
+        Vt = create_tensor<T>(false, "Vt (stored rowwise)", n, n);
         zero(Vt);
         U_data  = U.data();
         Vt_data = Vt.data();
@@ -1466,7 +1466,8 @@ auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job)
                 std::swap(U(i, j), U(j, i));
             }
         }
-
+    }
+    if (std::tolower(job) != 'n' && Vt.is_row_major()) {
         Vt.impl() = Vt.impl().transpose_view();
         for (size_t i = 0; i < n; i++) {
             for (size_t j = 0; j < i; j++) {

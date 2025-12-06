@@ -14,9 +14,9 @@ template <typename T>
 void test_gemm() {
     using namespace einsums;
 
-    Tensor A = create_tensor<T, true>("A", 3, 3);
-    Tensor B = create_tensor<T, true>("B", 3, 3);
-    Tensor C = create_tensor<T, true>("C", 3, 3);
+    Tensor A = create_tensor<T>(true, "A", 3, 3);
+    Tensor B = create_tensor<T>(true, "B", 3, 3);
+    Tensor C = create_tensor<T>(true, "C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));

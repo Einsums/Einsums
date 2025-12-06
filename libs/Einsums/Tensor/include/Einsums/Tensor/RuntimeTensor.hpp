@@ -170,6 +170,48 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
         : GeneralRuntimeTensor(std::vector<size_t>(dims), row_major) {}
 
     /**
+     * @brief Create a new runtime tensor with the given name and dimensions.
+     *
+     * @param name the new name of the tensor.
+     * @param dims The dimensions of the tensor.
+     */
+    template <Container Dim>
+    RuntimeTensor(std::string name, Dim const &dims) : _name{name}, _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+    }
+
+    /**
+     * @brief Create a new runtime tensor with the given dimensions.
+     *
+     * @param dims The dimensions of the tensor.
+     */
+    template <Container Dim>
+    explicit RuntimeTensor(Dim const &dims) : _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+    }
+
+    /**
+     * @brief Create a new runtime tensor with the given name and dimensions using an initializer list.
+     *
+     * @param name the new name of the tensor.
+     * @param dims The dimensions of the tensor as an initializer list.
+     */
+    RuntimeTensor(std::string name, std::initializer_list<size_t> dims)
+        : RuntimeTensor(name, std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
+
+    /**
+     * @brief Create a new runtime tensor with the given dimensions using an initializer list.
+     *
+     * @param dims The dimensions of the tensor as an initializer list.
+     */
+    explicit RuntimeTensor(std::initializer_list<size_t> dims)
+        : RuntimeTensor(std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
+
+    /**
      * @brief Copy a tensor into a runtime tensor.
      *
      * The data from the tensor will be copied, not mapped. If you want to alias the data, use a RuntimeTensorView instead.

@@ -696,7 +696,7 @@ inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_stri
  * @return The size calculated from the dimensions. Can be safely ignored.
  */
 template <typename Alloc1, typename Alloc2>
-size_t dims_to_strides(std::vector<size_t, Alloc1> const &dims, std::vector<size_t, Alloc2> &out, bool row_major = row_major_default) {
+size_t dims_to_strides(std::vector<size_t, Alloc1> const &dims, std::vector<size_t, Alloc2> &out, bool row_major) {
     size_t stride = 1;
 
     out.resize(dims.size());
@@ -726,11 +726,67 @@ size_t dims_to_strides(std::vector<size_t, Alloc1> const &dims, std::vector<size
  */
 template <typename arr_type1, typename arr_type2, size_t Dims>
     requires(std::is_integral_v<arr_type1> && std::is_integral_v<arr_type2>)
-constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out,
-                                 bool row_major = row_major_default) {
+constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out, bool row_major) {
     size_t stride = 1;
 
     if (row_major) {
+        for (int i = Dims - 1; i >= 0; i--) {
+            out[i] = stride;
+            stride *= dims[i];
+        }
+    } else {
+        for (int i = 0; i < Dims; i++) {
+            out[i] = stride;
+            stride *= dims[i];
+        }
+    }
+
+    return stride;
+}
+
+/**
+ * @brief Compute the strides for turning a sentinel into a list of indices.
+ *
+ * @param dims The list of dimensions.
+ * @param out The calculated strides.
+ * @param row_major If true, then the first stride will be the largest. If false, then the first stride will be the smallest.
+ * @return The size calculated from the dimensions. Can be safely ignored.
+ */
+template <typename Alloc1, typename Alloc2>
+size_t dims_to_strides(std::vector<size_t, Alloc1> const &dims, std::vector<size_t, Alloc2> &out) {
+    size_t stride = 1;
+
+    out.resize(dims.size());
+
+    if (GlobalConfigMap::get_singleton().get_bool("row-major")) {
+        for (int i = dims.size() - 1; i >= 0; i--) {
+            out[i] = stride;
+            stride *= dims[i];
+        }
+    } else {
+        for (int i = 0; i < dims.size(); i++) {
+            out[i] = stride;
+            stride *= dims[i];
+        }
+    }
+
+    return stride;
+}
+
+/**
+ * @brief Compute the strides for turning a sentinel into a list of indices.
+ *
+ * @param dims The list of dimensions.
+ * @param out The calculated strides.
+ * @param row_major If true, then the first stride will be the largest. If false, then the first stride will be the smallest.
+ * @return The size calculated from the dimensions. Can be safely ignored.
+ */
+template <typename arr_type1, typename arr_type2, size_t Dims>
+    requires(std::is_integral_v<arr_type1> && std::is_integral_v<arr_type2>)
+constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out) {
+    size_t stride = 1;
+
+    if (GlobalConfigMap::get_singleton().get_bool("row-major")) {
         for (int i = Dims - 1; i >= 0; i--) {
             out[i] = stride;
             stride *= dims[i];
@@ -788,10 +844,31 @@ template <typename arr_type2, size_t Dims, typename... TupleDims>
         requires sizeof...(TupleDims) == Dims;
         requires std::is_integral_v<arr_type2>;
     }
-constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out,
-                                 bool row_major = row_major_default) {
+constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out, bool row_major) {
 
     if (row_major) {
+        return detail::dims_to_strides<0, true>(dims, out);
+    } else {
+        return detail::dims_to_strides<Dims - 1, false>(dims, out);
+    }
+}
+
+/**
+ * @brief Compute the strides for turning a sentinel into a list of indices.
+ *
+ * @param dims The list of dimensions.
+ * @param out The calculated strides.
+ * @param row_major If true, then the first stride will be the largest. If false, then the first stride will be the smallest.
+ * @return The size calculated from the dimensions. Can be safely ignored.
+ */
+template <typename arr_type2, size_t Dims, typename... TupleDims>
+    requires requires {
+        requires sizeof...(TupleDims) == Dims;
+        requires std::is_integral_v<arr_type2>;
+    }
+constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out) {
+
+    if (GlobalConfigMap::get_singleton().get_bool("row-major")) {
         return detail::dims_to_strides<0, true>(dims, out);
     } else {
         return detail::dims_to_strides<Dims - 1, false>(dims, out);

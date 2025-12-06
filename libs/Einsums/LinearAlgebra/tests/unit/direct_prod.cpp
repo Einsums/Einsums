@@ -81,8 +81,8 @@ TEMPLATE_TEST_CASE("direct product", "[linear-algebra]", float, double, std::com
         Tensor<TestType, 2> A = create_random_tensor<TestType>(true, "A", size, 1);
         Tensor<TestType, 2> B = create_random_tensor<TestType>(true, "B", size, 2);
 
-        Tensor<TestType, 2> C      = create_tensor<TestType, true>("C", size, 3);
-        Tensor<TestType, 1> C_test = create_tensor<TestType>("C", size);
+        Tensor<TestType, 2> C(true, "C", size, 3);
+        Tensor<TestType, 1> C_test("C", size);
 
         auto A_view = A(All, 0);
         auto B_view = B(All, 0);
@@ -110,8 +110,8 @@ TEMPLATE_TEST_CASE("direct product", "[linear-algebra]", float, double, std::com
         Tensor<TestType, 2> A = create_random_tensor<TestType>(true, "A", size, 2);
         Tensor<TestType, 2> B = create_random_tensor<TestType>(true, "B", size, 2);
 
-        Tensor<TestType, 2> C      = create_tensor<TestType, true>("C", size, 2);
-        Tensor<TestType, 1> C_test = create_tensor<TestType>("C", size);
+        Tensor<TestType, 2> C(true, "C", size, 2);
+        Tensor<TestType, 1> C_test("C", size);
 
         auto A_view = A(All, 0);
         auto B_view = B(All, 0);

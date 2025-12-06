@@ -30,10 +30,10 @@ TEMPLATE_TEST_CASE("geev", "[linear-algebra]", float, double) {
 
     using T = TestType;
 
-    auto a  = create_tensor<T, true>("a", 5, 5);
+    auto a  = create_tensor<T>(true, "a", 5, 5);
     auto w  = create_tensor<AddComplexT<T>>("w", 5);
-    auto vl = create_tensor<AddComplexT<T>, true>("vl", 5, 5);
-    auto vr = create_tensor<AddComplexT<T>, true>("vr", 5, 5);
+    auto vl = create_tensor<AddComplexT<T>>(true, "vl", 5, 5);
+    auto vr = create_tensor<AddComplexT<T>>(true, "vr", 5, 5);
 
     auto a2  = create_tensor<T>("a2", 5, 5);
     auto w2  = create_tensor<AddComplexT<T>>("w2", 5);
@@ -81,10 +81,10 @@ TEMPLATE_TEST_CASE("geev", "[linear-algebra]", float, double) {
 TEMPLATE_TEST_CASE("geev complex", "[linear-algebra]", std::complex<float>, std::complex<double>) {
     using T = TestType;
 
-    auto a  = create_tensor<T, true>("a", 4, 4);
+    auto a  = create_tensor<T>(true, "a", 4, 4);
     auto w  = create_tensor<T>("w", 4);
-    auto vl = create_tensor<T, true>("vl", 4, 4);
-    auto vr = create_tensor<T, true>("vr", 4, 4);
+    auto vl = create_tensor<T>(true, "vl", 4, 4);
+    auto vr = create_tensor<T>(true, "vr", 4, 4);
 
     auto a2  = create_tensor<T>("a2", 4, 4);
     auto w2  = create_tensor<T>("w2", 4);
