@@ -111,9 +111,9 @@ auto create_random_tensor(bool row_major, std::string const &name, Distribution 
 template <typename T = double, bool Normalize = false, std::integral... MultiIndex>
 auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     if constexpr (IsComplexV<T>) {
-        return create_random_tensor<T, Normalize>(row_major_default, name, detail::unit_circle_distribution<T>(), index...);
+        return create_random_tensor<T, Normalize>(GlobalConfigMap::get_singleton().get_bool("row-major"), name, detail::unit_circle_distribution<T>(), index...);
     } else {
-        return create_random_tensor<T, Normalize>(row_major_default, name, std::uniform_real_distribution<T>(-1, 1), index...);
+        return create_random_tensor<T, Normalize>(GlobalConfigMap::get_singleton().get_bool("row-major"), name, std::uniform_real_distribution<T>(-1, 1), index...);
     }
 }
 
@@ -237,9 +237,9 @@ auto create_random_tensor(bool row_major, std::string const &name, Distribution 
 template <typename T = double, bool Normalize = false, Container Indices>
 auto create_random_tensor(std::string const &name, Indices const &index) -> RuntimeTensor<T> {
     if constexpr (IsComplexV<T>) {
-        return create_random_tensor<T, Normalize>(row_major_default, name, detail::unit_circle_distribution<T>(), index);
+        return create_random_tensor<T, Normalize>(GlobalConfigMap::get_singleton().get_bool("row-major"), name, detail::unit_circle_distribution<T>(), index);
     } else {
-        return create_random_tensor<T, Normalize>(row_major_default, name, std::uniform_real_distribution<T>(-1, 1), index);
+        return create_random_tensor<T, Normalize>(GlobalConfigMap::get_singleton().get_bool("row-major"), name, std::uniform_real_distribution<T>(-1, 1), index);
     }
 }
 
