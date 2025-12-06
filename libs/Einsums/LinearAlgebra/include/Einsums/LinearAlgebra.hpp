@@ -1214,9 +1214,9 @@ auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
     // Test if it is absolutely necessary to zero out these tensors first.
     auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     S.zero();
-    auto Vt = create_tensor<T, false>("Vt (stored rowwise)", n, n);
+    auto Vt = create_tensor<T>(false, "Vt (stored rowwise)", n, n);
     Vt.zero();
-    auto superb = create_tensor<T, false>("superb", std::min(m, n));
+    auto superb = create_tensor<T>(false, "superb", std::min(m, n));
     superb.zero();
 
     //    int info{0};

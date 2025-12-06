@@ -69,8 +69,18 @@ EINSUMS_EXPORT void add_Einsums_Tensor_arguments() {
         "The name of the HDF5 file for Einsums. Defaults to einsums.[pid].h5, where [pid] is the PID of the current process.",
         TensorCategory, cl::Location(global_string["hdf5-file-name"]), cl::Default(fmt::format("einsums.{}.h5", pid)));
 
-    static cl::Flag delete_files("einsums::no-delete-hdf5-files", {}, "Tells Einsums not to clean up HDF5 files on exit.", TensorCategory,
+    static cl::Flag delete_files("einsums:no-delete-hdf5-files", {}, "Tells Einsums not to clean up HDF5 files on exit.", TensorCategory,
                                  cl::Location(global_bool["delete-hdf5-files"]), cl::Default(false));
+
+    static cl::Flag row_major("einsums:row-major", {}, "Use row-major ordering for tensors by default.", TensorCategory,
+                              cl::Location(global_bool["row-major"]));
+    static cl::Flag col_major("einsums:column-major", {}, "Use column-major ordering for tensors by default.", TensorCategory,
+                              cl::Location(global_bool["row-major"]), cl::ImplicitValue(false));
+#ifdef EINSUMS_ROW_MAJOR_DEFAULT
+    static auto row_col_flag = cl::make_yes_no(row_major, col_major, true);
+#else
+    static auto row_col_flag = cl::make_yes_no(row_major, col_major, false);
+#endif
 }
 
 static void create_complex_types() {
