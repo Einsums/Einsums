@@ -140,16 +140,8 @@ TEST_CASE("TiledDeviceTensor GEMVs", "[tensor]") {
         x(i) = 11 * i + 11;
     }
 
-    println(A);
-    println(x);
-    println(y);
-
     einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
     auto res = einsums::VectorData<double>{154.0, 352.0, 550.0};
-
-    println(A);
-    println(x);
-    println(y);
 
     for (int i = 0; i < 3; i++) {
         CHECK((double)y(i) == res[i]);

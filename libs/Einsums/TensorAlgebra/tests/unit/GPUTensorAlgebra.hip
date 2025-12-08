@@ -2361,6 +2361,14 @@ void dot_test() {
 
     size_t i_{10}, j_{10}, a_{10}, b_{10};
 
+    RemoveComplexT<T> error;
+
+    if constexpr (std::is_same_v<RemoveComplexT<T>, float>) {
+        error = 0.001;
+    } else {
+        error = 0.00001;
+    }
+
     SECTION("1") {
         auto               A = create_random_gpu_tensor<T>("A", i_);
         auto               B = create_random_gpu_tensor<T>("B", i_);
@@ -2371,10 +2379,10 @@ void dot_test() {
         einsum(Indices{}, &C_obtained, Indices{i}, A, Indices{i}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, 0.0001));
+            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, error));
         } else {
-            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), error));
+            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), error));
         }
     }
 
@@ -2388,10 +2396,10 @@ void dot_test() {
         einsum(Indices{}, &C_obtained, Indices{i, j}, A, Indices{i, j}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, 0.0001));
+            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, error));
         } else {
-            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), error));
+            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), error));
         }
     }
 
@@ -2405,10 +2413,10 @@ void dot_test() {
         einsum(Indices{}, &C_obtained, Indices{i, j, a}, A, Indices{i, j, a}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, 0.0001));
+            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, error));
         } else {
-            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), error));
+            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), error));
         }
     }
 
@@ -2422,10 +2430,10 @@ void dot_test() {
         einsum(Indices{}, &C_obtained, Indices{i, j, a, b}, A, Indices{i, j, a, b}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, 0.0001));
+            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, error));
         } else {
-            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), error));
+            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), error));
         }
     }
 }
