@@ -20,7 +20,6 @@
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
-#include <new>
 
 namespace einsums {
 
