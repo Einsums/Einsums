@@ -119,14 +119,6 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
         _impl.set_data(_data.data());
     }
 
-    template <Container Dim>
-    GeneralRuntimeTensor(std::string name, Dim const &dims)
-        : _name{name}, _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
-        _data.resize(_impl.size());
-
-        _impl.set_data(_data.data());
-    }
-
     /**
      * @brief Create a new runtime tensor with the given name and dimensions.
      *
@@ -146,7 +138,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    explicit GeneralRuntimeTensor(Dim const &dims, bool row_major = row_major_default) : _impl(nullptr, dims, row_major) {
+    explicit GeneralRuntimeTensor(Dim const &dims, bool row_major) : _impl(nullptr, dims, row_major) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -158,7 +150,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param name the new name of the tensor.
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    GeneralRuntimeTensor(std::string name, std::initializer_list<size_t> dims, bool row_major = row_major_default)
+    GeneralRuntimeTensor(std::string name, std::initializer_list<size_t> dims, bool row_major)
         : GeneralRuntimeTensor(name, std::vector<size_t>(dims), row_major) {}
 
     /**
@@ -166,7 +158,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      *
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    explicit GeneralRuntimeTensor(std::initializer_list<size_t> dims, bool row_major = row_major_default)
+    explicit GeneralRuntimeTensor(std::initializer_list<size_t> dims, bool row_major)
         : GeneralRuntimeTensor(std::vector<size_t>(dims), row_major) {}
 
     /**
