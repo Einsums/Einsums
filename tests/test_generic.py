@@ -34,6 +34,23 @@ def test_generic(a: int, b: int, dtype, array):
         for j in range(b):
             assert C[i, j] == pytest.approx(C_actual[i, j])
 
+def test_generic_list(a: int, b: int, dtype, array) :
+    A = [ein.utils.random_tensor_factory(f"A {i}", [b, a], dtype, array) for i in range(10)]
+    B = [ein.utils.random_tensor_factory(f"B {i}", [a, b], dtype, array) for i in range(10)]
+    C = [ein.utils.tensor_factory(f"C {i}", [a, b], dtype, array) for i in range(10)]
+
+    plan = ein.core.compile_plan("ij", "ji", "ij")
+
+    assert type(plan) is ein.core.EinsumGenericPlan
+
+    plan.execute(0.0, C, 1.0, A, B)
+
+    C_actual = [a.T * b for a, b in zip(A, B)]
+
+    for c, c_act in zip(C, C_actual) :
+        for i in range(a) :
+            for j in range(b) :
+                assert c[i, j] == pytest.approx(c_act[i, j])
 
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"

@@ -19,8 +19,8 @@ pytestmark = [
 
 def test_direct_prod(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
-    B = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
-    C = ein.utils.tensor_factory("A", [a, b], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
+    C = ein.utils.tensor_factory("C", [a, b], dtype, array)
 
     plan = ein.core.compile_plan("ij", "ij", "ij")
 
@@ -34,14 +34,32 @@ def test_direct_prod(a, b, dtype, array):
         for j in range(b):
             assert C[i, j] == pytest.approx(C_actual[i, j])
 
+def test_direct_prod_list(a, b, dtype, array):
+    A = [ein.utils.random_tensor_factory(f"A {i}", [a, b], dtype, array) for i in range(10)]
+    B = [ein.utils.random_tensor_factory(f"B {i}", [a, b], dtype, array) for i in range(10)]
+    C = [ein.utils.tensor_factory(f"C {i}", [a, b], dtype, array) for i in range(10)]
+
+    plan = ein.core.compile_plan("ij", "ij", "ij")
+
+    assert type(plan) is ein.core.EinsumDirectProductPlan
+
+    plan.execute(0.0, C, 1.0, A, B)
+
+    C_actual = [a * b for a, b in zip(A, B)]
+
+    for c, c_act in zip(C, C_actual) :
+        for i in range(a):
+            for j in range(b):
+                assert c[i, j] == pytest.approx(c_act[i, j])
+
 
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
 def test_direct_prod_gpu_copy(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
-    B = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
-    C = ein.utils.tensor_factory("A", [a, b], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
+    C = ein.utils.tensor_factory("C", [a, b], dtype, array)
 
     A_view = ein.core.GPUView(A, ein.core.COPY)
     B_view = ein.core.GPUView(B, ein.core.COPY)
@@ -67,8 +85,8 @@ def test_direct_prod_gpu_copy(a, b, dtype, array):
 )
 def test_direct_prod_gpu_map(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
-    B = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
-    C = ein.utils.tensor_factory("A", [a, b], dtype, array)
+    B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
+    C = ein.utils.tensor_factory("C", [a, b], dtype, array)
 
     A_view = ein.core.GPUView(A, ein.core.MAP)
     B_view = ein.core.GPUView(B, ein.core.MAP)

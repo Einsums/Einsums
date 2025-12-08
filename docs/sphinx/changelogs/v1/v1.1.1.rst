@@ -8,6 +8,10 @@
 v1.1.1 Release
 ==============
 
+What's New
+----------
+* Batching over collections of tensors has been added to Python.
+
 Bug Fixes
 ---------
 
