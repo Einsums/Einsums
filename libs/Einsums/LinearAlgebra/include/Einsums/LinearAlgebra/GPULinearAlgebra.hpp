@@ -445,14 +445,14 @@ void gemm(T alpha, AType const &A, BType const &B, T beta, CType *C) {
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
     hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
-    hip_catch(hipMemcpyAsync((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     gemm<TransA, TransB>((T *)alpha_gpu, A, B, (T *)beta_gpu, C);
 
     // These can still be done async.
-    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
-    hip_catch(hipFreeAsync(beta_gpu, get_stream()));
+    hip_catch(hipFree(alpha_gpu));
+    hip_catch(hipFree(beta_gpu));
 }
 
 template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
@@ -496,13 +496,13 @@ void gemv(T alpha, AType const &A, XType const &x, T beta, YType *y) {
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
     hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync((void *)alpha_gpu, (void const *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
-    hip_catch(hipMemcpyAsync((void *)beta_gpu, (void const *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy((void *)alpha_gpu, (void const *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)beta_gpu, (void const *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     gemv<TransA>((T *)alpha_gpu, A, x, (T *)beta_gpu, y);
 
-    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
-    hip_catch(hipFreeAsync(beta_gpu, get_stream()));
+    hip_catch(hipFree(alpha_gpu));
+    hip_catch(hipFree(beta_gpu));
 }
 
 template <DeviceBasicTensorConcept AType, typename T>
