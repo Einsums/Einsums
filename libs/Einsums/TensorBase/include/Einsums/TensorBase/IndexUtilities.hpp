@@ -727,7 +727,7 @@ size_t dims_to_strides(std::vector<size_t, Alloc1> const &dims, std::vector<size
 template <typename arr_type1, typename arr_type2, size_t Dims>
     requires(std::is_integral_v<arr_type1> && std::is_integral_v<arr_type2>)
 constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out,
-                                 bool row_major = row_major_default) {
+                                 bool row_major) {
     size_t stride = 1;
 
     if (row_major) {
@@ -846,7 +846,7 @@ template <typename arr_type2, size_t Dims, typename... TupleDims>
         requires std::is_integral_v<arr_type2>;
     }
 constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out,
-                                 bool row_major = row_major_default) {
+                                 bool row_major) {
 
     if (row_major) {
         return detail::dims_to_strides<0, true>(dims, out);
