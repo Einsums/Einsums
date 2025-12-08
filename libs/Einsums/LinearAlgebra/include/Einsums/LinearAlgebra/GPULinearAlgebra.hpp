@@ -509,31 +509,6 @@ void gemm(char transA, char transB, T alpha, AType const &A, BType const &B, T b
     hip_catch(hipFreeAsync(beta_gpu, get_stream()));
 }
 
-template <bool TransA, bool TransB, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType, DeviceBasicTensorConcept CType,
-          typename T>
-    requires requires {
-        requires MatrixConcept<AType>;
-        requires SameUnderlyingAndRank<AType, BType, CType>;
-        requires std::is_same_v<typename AType::ValueType, T>;
-    }
-void gemm(T alpha, AType const &A, BType const &B, T beta, CType *C) {
-    using namespace einsums::gpu;
-
-    using dev_datatype = typename AType::dev_datatype;
-    dev_datatype *alpha_gpu, *beta_gpu;
-
-    hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
-    hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
-
-    hip_catch(hipMemcpy((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
-
-    gemm<TransA, TransB>((T *)alpha_gpu, A, B, (T *)beta_gpu, C);
-
-    hip_catch(hipFree(alpha_gpu));
-    hip_catch(hipFree(beta_gpu));
-}
-
 template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
     requires requires {
         requires MatrixConcept<AType>;
@@ -590,7 +565,7 @@ template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, Device
         requires SameUnderlying<AType, XType, YType>;
         requires std::is_same_v<typename AType::ValueType, T>;
     }
-void gemv(char transA, T alpha, AType const &A, XType const &x, T beta, YType *y) {
+void gemv(T alpha, AType const &A, XType const &x, T beta, YType *y) {
     using namespace einsums::gpu;
 
     using dev_datatype = typename AType::dev_datatype;
@@ -606,32 +581,6 @@ void gemv(char transA, T alpha, AType const &A, XType const &x, T beta, YType *y
 
     hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
     hip_catch(hipFreeAsync(beta_gpu, get_stream()));
-}
-
-template <bool TransA, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
-    requires requires {
-        requires MatrixConcept<AType>;
-        requires VectorConcept<XType>;
-        requires VectorConcept<YType>;
-        requires SameUnderlying<AType, XType, YType>;
-        requires std::is_same_v<typename AType::ValueType, T>;
-    }
-void gemv(T alpha, AType const &A, XType const &x, T beta, YType *y) {
-    using namespace einsums::gpu;
-
-    using dev_datatype = typename AType::dev_datatype;
-    dev_datatype *alpha_gpu, *beta_gpu;
-
-    hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
-    hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
-
-    hip_catch(hipMemcpy((void *)alpha_gpu, (void const *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)beta_gpu, (void const *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
-
-    gemv<TransA>((T *)alpha_gpu, A, x, (T *)beta_gpu, y);
-
-    hip_catch(hipFree(alpha_gpu));
-    hip_catch(hipFree(beta_gpu));
 }
 
 template <DeviceBasicTensorConcept AType, typename T>

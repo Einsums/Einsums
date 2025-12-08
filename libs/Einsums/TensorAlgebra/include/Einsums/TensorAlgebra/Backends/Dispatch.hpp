@@ -144,9 +144,8 @@ AlgorithmChoice einsum_generic_default(ValueTypeT<CType> const C_prefactor, std:
     constexpr auto B_indices = std::tuple<BIndices...>();
     constexpr auto C_indices = std::tuple<CIndices...>();
 
-    if constexpr (IsAlgebraTensorV<AType> && IsAlgebraTensorV<BType> &&
-                  (IsAlgebraTensorV<CType> || !IsTensorV<CType>)&&(!IsBasicTensorV<AType> || !IsBasicTensorV<BType> ||
-                                                                   (!IsBasicTensorV<CType> && IsTensorV<CType>))) {
+    if constexpr (IsAlgebraTensorV<AType> && IsAlgebraTensorV<BType> && (IsAlgebraTensorV<CType> || !IsTensorV<CType>) &&
+                  (!IsBasicTensorV<AType> || !IsBasicTensorV<BType> || (!IsBasicTensorV<CType> && IsTensorV<CType>))) {
         if constexpr (!DryRun) {
             einsum_special_dispatch<OnlyUseGenericAlgorithm, ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices,
                                                                            B);

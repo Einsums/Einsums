@@ -10,7 +10,7 @@
 Einsums's Documentation
 #######################
 
-.. toctree:: 
+.. toctree::  
    :maxdepth: 3
    :hidden:
 
