@@ -16,6 +16,11 @@
 #include <hipsolver/hipsolver.h>
 #include <source_location>
 
+#if hipblasVersionMajor >= 3
+using hipblasComplex = hipFloatComplex;
+using hipblasDoubleComplex = hipDoubleComplex;
+#endif
+
 namespace einsums {
 namespace gpu {
 

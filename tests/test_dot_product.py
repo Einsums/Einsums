@@ -25,9 +25,9 @@ def test_dot(a: int, dtype, array):
 
     assert C[0] == dtype(0.0)
 
-    plan.execute(0.0, C, 1.0, A, B)
+    plan.execute(0.0, C, 0.25, A, B)
 
-    C_actual = sum(a_ * b_ for a_, b_ in zip(A, B))
+    C_actual = sum(0.25 * a_ * b_ for a_, b_ in zip(A, B))
 
     assert C[0] == pytest.approx(C_actual)
 
@@ -48,11 +48,11 @@ def test_dot_copy(a: int, dtype, array):
 
     assert type(plan) is ein.core.EinsumDotPlan
 
-    plan.execute(0.0, C_view, 1.0, A_view, B_view)
+    plan.execute(0.0, C_view, 0.25, A_view, B_view)
 
     C_view.update_D2H()
 
-    C_actual = sum(a_ * b_ for a_, b_ in zip(A, B))
+    C_actual = sum(0.25 * a_ * b_ for a_, b_ in zip(A, B))
 
     assert C[0] == pytest.approx(C_actual)
 
@@ -73,8 +73,8 @@ def test_dot_map(a: int, dtype, array):
 
     assert type(plan) is ein.core.EinsumDotPlan
 
-    plan.execute(0.0, C_view, 1.0, A_view, B_view)
+    plan.execute(0.0, C_view, 0.25, A_view, B_view)
 
-    C_actual = sum(a_ * b_ for a_, b_ in zip(A, B))
+    C_actual = sum(0.25 * a_ * b_ for a_, b_ in zip(A, B))
 
     assert C[0] == pytest.approx(C_actual)

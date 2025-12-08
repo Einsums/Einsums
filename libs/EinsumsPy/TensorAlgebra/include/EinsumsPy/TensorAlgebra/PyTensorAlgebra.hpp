@@ -690,7 +690,7 @@ class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
             *C_data *= C_prefactor;
         }
 
-        *C_data = pybind11::cast<T>(einsums::python::detail::dot(A, B));
+        *C_data = AB_prefactor * pybind11::cast<T>(einsums::python::detail::dot(A, B));
     }
 
   public:

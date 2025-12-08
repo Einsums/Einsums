@@ -20,6 +20,7 @@
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
+#include <new>
 
 namespace einsums {
 
@@ -104,7 +105,9 @@ DeviceTensor<T, rank>::DeviceTensor(std::string name, einsums::detail::HostToDev
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * rank));
     this->_gpu_strides = this->_gpu_dims + rank;
 
-    assert(this->_gpu_dims != nullptr && this->_dims.data() != nullptr);
+    if (this->_gpu_dims == nullptr || this->_dims.data() == nullptr) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not allocate memory for dimension arrays.");
+    }
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (void const *)this->_dims.data(), sizeof(size_t) * rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (void const *)this->_strides.data(), sizeof(size_t) * rank, hipMemcpyHostToDevice));
@@ -626,7 +629,9 @@ DeviceTensor<T, rank>::host_datatype const *DeviceTensor<T, rank>::data(MultiInd
 template <typename T, size_t rank>
 void DeviceTensor<T, rank>::read(std::vector<T> const &data) {
     using namespace einsums::gpu;
-    assert(data.size() <= this->size());
+    if (data.size() > this->size()) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "Can not read more data than is allocated to the GPU!");
+    }
 
     switch (_mode) {
     case einsums::detail::MAPPED:

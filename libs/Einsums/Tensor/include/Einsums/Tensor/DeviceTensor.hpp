@@ -107,7 +107,9 @@ class HostDevReference {
      * Copy some data to the reference.
      */
     HostDevReference<T> &operator=(T const &other) {
-        assert(_ptr != nullptr);
+        if (_ptr == nullptr) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Can not write to null!");
+        }
         if (is_on_host) {
             *_ptr = other;
         } else {
