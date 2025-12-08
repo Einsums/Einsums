@@ -49,8 +49,7 @@ void export_Core(py::module_ &mod) {
         .def(
             "log_error", [](std::string const &str) { EINSUMS_LOG_ERROR(str); }, "Log a message at the error level.")
         .def(
-            "log_critical", [](std::string const &str) { EINSUMS_LOG_CRITICAL(str); }, "Log a message at the critical level.")
-        .def("version", []() { return einsums::full_version_as_string(); });
+            "log_critical", [](std::string const &str) { EINSUMS_LOG_CRITICAL(str); }, "Log a message at the critical level.");
 
     auto config_map = py::class_<einsums::GlobalConfigMap, std::shared_ptr<einsums::GlobalConfigMap>>(
         mod, "GlobalConfigMap", "Contains all of the options handled by Einsums.");
