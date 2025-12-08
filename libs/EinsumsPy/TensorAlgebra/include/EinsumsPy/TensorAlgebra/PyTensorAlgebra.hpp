@@ -464,14 +464,14 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
 
         if (_C_permute.size() != 0) {
             if (!_direct_product_swap) {
-                detail::einsum_generic_algorithm_gpu<DevDatatype<T>><<<threads, blocks, 0, gpu::get_stream()>>>(
+                detail::einsum_generic_algorithm_gpu<DevDatatype<T>><<<blocks, threads, , 0, gpu::get_stream()>>>(
                     gpu_unique_strides, gpu_C_index_strides, gpu_C_index_table, gpu_A_index_table, gpu_B_index_table,
                     HipCast<DevDatatype<T>, T>::cast(C_prefactor), (DevDatatype<T> *)C.dev_data(), C.gpu_strides(), gpu_C_unique_stride,
                     HipCast<DevDatatype<T>, T>::cast(AB_prefactor), (DevDatatype<T> *)A.dev_data(), A.gpu_strides(), gpu_A_unique_stride,
                     (DevDatatype<T> *)B.dev_data(), B.gpu_strides(), gpu_B_unique_stride, unique_dims[0] * unique_strides[0], C.size(),
                     C.rank(), A.rank(), B.rank(), unique_dims.size());
             } else {
-                detail::einsum_generic_algorithm_direct_product_gpu<DevDatatype<T>><<<threads, blocks, 0, gpu::get_stream()>>>(
+                detail::einsum_generic_algorithm_direct_product_gpu<DevDatatype<T>><<<blocks, threads, 0, gpu::get_stream()>>>(
                     gpu_unique_strides, gpu_C_index_strides, gpu_C_index_table, gpu_A_index_table, gpu_B_index_table,
                     HipCast<DevDatatype<T>, T>::cast(C_prefactor), (DevDatatype<T> *)C.dev_data(), C.gpu_strides(), gpu_C_unique_stride,
                     HipCast<DevDatatype<T>, T>::cast(AB_prefactor), (DevDatatype<T> *)A.dev_data(), A.gpu_strides(), gpu_A_unique_stride,
@@ -496,7 +496,7 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
 
             C.update_H2D();
 
-            detail::einsum_generic_zero_rank_gpu<DevDatatype<T>><<<threads, blocks, 0, gpu::get_stream()>>>(
+            detail::einsum_generic_zero_rank_gpu<DevDatatype<T>><<<blocks, threads, 0, gpu::get_stream()>>>(
                 gpu_unique_strides, gpu_A_index_table, gpu_B_index_table, (DevDatatype<T> *)C.dev_data(),
                 HipCast<DevDatatype<T>, T>::cast(AB_prefactor), (DevDatatype<T> *)A.dev_data(), A.gpu_strides(), gpu_A_unique_stride,
                 (DevDatatype<T> *)B.dev_data(), B.gpu_strides(), gpu_B_unique_stride, unique_dims[0] * unique_strides[0], _A_permute.size(),
@@ -660,7 +660,7 @@ class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
 
         auto threads = gpu::block_size(A.dim(0) * unique_strides[0]), blocks = gpu::blocks(A.dim(0) * unique_strides[0]);
 
-        detail::dot_kernel<DevDatatype<T>><<<threads, blocks, 0, gpu::get_stream()>>>(
+        detail::dot_kernel<DevDatatype<T>><<<blocks, threads, 0, gpu::get_stream()>>>(
             gpu_unique_strides, (DevDatatype<T> *)C.dev_data(), (DevDatatype<T> *)A.dev_data(), A.gpu_strides(),
             (DevDatatype<T> *)B.dev_data(), B.gpu_strides(), A.dim(0) * unique_strides[0], A.rank());
 
@@ -734,7 +734,7 @@ class EINSUMS_EXPORT PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
 
         auto threads = gpu::block_size(elements), blocks = gpu::blocks(elements);
 
-        detail::direct_product_kernel<DevDatatype<T>><<<threads, blocks, 0, gpu::get_stream()>>>(
+        detail::direct_product_kernel<DevDatatype<T>><<<blocks, threads, 0, gpu::get_stream()>>>(
             gpu_index_strides, HipCast<DevDatatype<T>, T>::cast(C_prefactor), (DevDatatype<T> *)C.dev_data(), C.gpu_strides(),
             HipCast<DevDatatype<T>, T>::cast(AB_prefactor), (DevDatatype<T> *)A.dev_data(), A.gpu_strides(), (DevDatatype<T> *)B.dev_data(),
             B.gpu_strides(), elements, rank);
@@ -836,7 +836,7 @@ class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
             // Scale the matrix.
             if (C_prefactor != T{1.0}) {
                 auto threads = gpu::block_size(C.size()), blocks = gpu::blocks(C.size());
-                detail::scale_array<<<threads, blocks, 0, gpu::get_stream()>>>(HipCast<DevDatatype<T>, T>::cast(C_prefactor),
+                detail::scale_array<<<blocks, threads, 0, gpu::get_stream()>>>(HipCast<DevDatatype<T>, T>::cast(C_prefactor),
                                                                                (DevDatatype<T> *)C.dev_data(), C.size());
             }
 

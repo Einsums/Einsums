@@ -290,7 +290,7 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
     T out{0.0};
     hip_catch(hipMemcpy(gpu_out, &out, sizeof(T), hipMemcpyHostToDevice));
 
-    gpu::dot_kernel<Rank><<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(),
+    gpu::dot_kernel<Rank><<<blocks(A.size()), block_size(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(),
                                                                                        gpu_strides, A.gpu_strides(), B.gpu_strides());
     stream_wait();
 
@@ -335,7 +335,7 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
     T out{0.0};
     hip_catch(hipMemcpy(gpu_out, &out, sizeof(T), hipMemcpyHostToDevice));
 
-    gpu::true_dot_kernel<Rank><<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(
+    gpu::true_dot_kernel<Rank><<<blocks(A.size()), block_size(A.size()), 0, get_stream()>>>(
         gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(), gpu_strides, A.gpu_strides(), B.gpu_strides());
     stream_wait();
 
@@ -423,8 +423,8 @@ void symm_gemm(AType const &A, BType const &B, CType *C) {
     }
     *C = typename CType::ValueType(0.0);
 
-    einsums::linear_algebra::detail::gpu::symm_gemm<<<block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)),
-                                                      blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), 0, get_stream()>>>(
+    einsums::linear_algebra::detail::gpu::symm_gemm<<<blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)),
+                                                      block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), 0, get_stream()>>>(
         TransA, TransB, A.dim(0), C->dim(0), A.gpu_data(), A.stride(0), B.gpu_data(), B.stride(0), C->gpu_data(), C->stride(0));
     stream_wait();
 }
@@ -744,7 +744,7 @@ void direct_product(T alpha, AType const &A, BType const &B, T beta, CType *C) {
 
     dim3 threads = block_size(elems), num_blocks = blocks(elems);
 
-    gpu::direct_product_kernel<Rank><<<threads, num_blocks, 0, get_stream()>>>(
+    gpu::direct_product_kernel<Rank><<<num_blocks, threads, 0, get_stream()>>>(
         HipCast<T_devtype, T_hosttype>::cast(beta), C->gpu_data(), C->gpu_strides(), HipCast<T_devtype, T_hosttype>::cast(alpha),
         A.gpu_data(), A.gpu_strides(), B.gpu_data(), B.gpu_strides(), A.gpu_dims(), gpu_Ind_strides, elems);
 
@@ -799,7 +799,7 @@ auto pow(AType const &a, typename AType::host_datatype alpha,
 
     Diag.zero();
 
-    gpu::eig_to_diag<<<dim3(32), dim3(1), 0, einsums::gpu::get_stream()>>>(Diag.gpu_data(), Diag.dim(0), Diag.stride(0), Evals.gpu_data(),
+    gpu::eig_to_diag<<<dim3(1), dim3(32), 0, einsums::gpu::get_stream()>>>(Diag.gpu_data(), Diag.dim(0), Diag.stride(0), Evals.gpu_data(),
                                                                            alpha);
 
     symm_gemm<false, false>(Diag, Evecs, &out);
