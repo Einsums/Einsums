@@ -464,7 +464,7 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
 
         if (_C_permute.size() != 0) {
             if (!_direct_product_swap) {
-                detail::einsum_generic_algorithm_gpu<DevDatatype<T>><<<blocks, threads, , 0, gpu::get_stream()>>>(
+                detail::einsum_generic_algorithm_gpu<DevDatatype<T>><<<blocks, threads, 0, gpu::get_stream()>>>(
                     gpu_unique_strides, gpu_C_index_strides, gpu_C_index_table, gpu_A_index_table, gpu_B_index_table,
                     HipCast<DevDatatype<T>, T>::cast(C_prefactor), (DevDatatype<T> *)C.dev_data(), C.gpu_strides(), gpu_C_unique_stride,
                     HipCast<DevDatatype<T>, T>::cast(AB_prefactor), (DevDatatype<T> *)A.dev_data(), A.gpu_strides(), gpu_A_unique_stride,
