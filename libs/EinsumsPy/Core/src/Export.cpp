@@ -18,6 +18,8 @@
 #include <pybind11/stl.h>
 #include <stdexcept>
 
+#include "Einsums/Version.hpp"
+
 namespace py = pybind11;
 using namespace einsums;
 

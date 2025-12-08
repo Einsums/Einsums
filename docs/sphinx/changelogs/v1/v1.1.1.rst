@@ -4,8 +4,6 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
-
 ==============
 v1.1.1 Release
 ==============
@@ -14,8 +12,12 @@ What's New
 ----------
 * Batching over collections of tensors has been added to Python.
 
-What's Removed
---------------
-
 Bug Fixes
 ---------
+
+* Fixed a consistent issue where the launch parameters in almost all GPU kernels were swapped. The correct order should be
+  :code:`<<<grid_specification, block_specification [, managed memory [, stream]]>>>`.
+* Fixed a race condition in most of the GPU linear algebra functions.
+* Removed assertions in the device tensor headers and replaced them with if statements.
+* Fixed a bug in the Python in-core dot product contraction where the :code:`AB_prefactor` was not actually used.
+

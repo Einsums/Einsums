@@ -290,7 +290,7 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
     T out{0.0};
     hip_catch(hipMemcpy(gpu_out, &out, sizeof(T), hipMemcpyHostToDevice));
 
-    gpu::dot_kernel<Rank><<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(),
+    gpu::dot_kernel<Rank><<<blocks(A.size()), block_size(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(),
                                                                                        gpu_strides, A.gpu_strides(), B.gpu_strides());
     stream_wait();
 
@@ -335,7 +335,7 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
     T out{0.0};
     hip_catch(hipMemcpy(gpu_out, &out, sizeof(T), hipMemcpyHostToDevice));
 
-    gpu::true_dot_kernel<Rank><<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(
+    gpu::true_dot_kernel<Rank><<<blocks(A.size()), block_size(A.size()), 0, get_stream()>>>(
         gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(), gpu_strides, A.gpu_strides(), B.gpu_strides());
     stream_wait();
 
@@ -423,8 +423,8 @@ void symm_gemm(AType const &A, BType const &B, CType *C) {
     }
     *C = typename CType::ValueType(0.0);
 
-    einsums::linear_algebra::detail::gpu::symm_gemm<<<block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)),
-                                                      blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), 0, get_stream()>>>(
+    einsums::linear_algebra::detail::gpu::symm_gemm<<<blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)),
+                                                      block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), 0, get_stream()>>>(
         TransA, TransB, A.dim(0), C->dim(0), A.gpu_data(), A.stride(0), B.gpu_data(), B.stride(0), C->gpu_data(), C->stride(0));
     stream_wait();
 }
@@ -445,14 +445,13 @@ void gemm(T alpha, AType const &A, BType const &B, T beta, CType *C) {
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
     hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
-    hip_catch(hipMemcpyAsync((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     gemm<TransA, TransB>((T *)alpha_gpu, A, B, (T *)beta_gpu, C);
 
-    // These can still be done async.
-    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
-    hip_catch(hipFreeAsync(beta_gpu, get_stream()));
+    hip_catch(hipFree(alpha_gpu));
+    hip_catch(hipFree(beta_gpu));
 }
 
 template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
@@ -472,11 +471,11 @@ void ger(T alpha, XType const &X, YType const &Y, AType *A) {
 
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     ger((T *)alpha_gpu, X, Y, A);
 
-    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
+    hip_catch(hipFree(alpha_gpu));
 }
 
 template <bool TransA, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
@@ -496,13 +495,13 @@ void gemv(T alpha, AType const &A, XType const &x, T beta, YType *y) {
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
     hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync((void *)alpha_gpu, (void const *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
-    hip_catch(hipMemcpyAsync((void *)beta_gpu, (void const *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy((void *)alpha_gpu, (void const *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)beta_gpu, (void const *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     gemv<TransA>((T *)alpha_gpu, A, x, (T *)beta_gpu, y);
 
-    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
-    hip_catch(hipFreeAsync(beta_gpu, get_stream()));
+    hip_catch(hipFree(alpha_gpu));
+    hip_catch(hipFree(beta_gpu));
 }
 
 template <DeviceBasicTensorConcept AType, typename T>
@@ -516,11 +515,11 @@ void scale(T scale_, AType *A) {
 
     hip_catch(hipMalloc((void **)&scale_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync(scale_gpu, &scale_, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy(scale_gpu, &scale_, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     scale((T *)scale_gpu, A);
 
-    hip_catch(hipFreeAsync(scale_gpu, get_stream()));
+    hip_catch(hipFree(scale_gpu));
 }
 
 template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType>
@@ -545,7 +544,7 @@ int gesv(AType *A, BType *B) {
     DeviceTensor<typename AType::ValueType, 2> X = DeviceTensor<typename AType::ValueType, 2>(einsums::detail::DEV_ONLY, B->dims());
 #endif
 
-    einsums::hip_catch(hipMallocAsync((void **)&ipiv, sizeof(int) * lwork, einsums::gpu::get_stream()));
+    einsums::hip_catch(hipMalloc((void **)&ipiv, sizeof(int) * lwork));
 
 #ifdef __HIP_PLATFORM_NVIDIA__
     info = gpu::gesv(n, nrhs, A->gpu_data(), lda, ipiv, B->gpu_data(), ldb, X.gpu_data(), X.stride(0));
@@ -555,7 +554,7 @@ int gesv(AType *A, BType *B) {
 
     stream_wait();
 
-    einsums::hip_catch(hipFreeAsync(ipiv, einsums::gpu::get_stream()));
+    einsums::hip_catch(hipFree(ipiv));
     return info;
 }
 
@@ -595,13 +594,13 @@ void axpy(T alpha, XType const &X, YType *Y) {
 
     dev_datatype *alpha_gpu;
 
-    hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
+    hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     axpy((T *)alpha_gpu, X, Y);
 
-    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
+    hip_catch(hipFree(alpha_gpu));
 }
 
 template <DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
@@ -616,14 +615,14 @@ void axpby(T alpha, XType const &X, T beta, YType *Y) {
 
     dev_datatype *alpha_beta_gpu;
 
-    hip_catch(hipMallocAsync((void **)&alpha_beta_gpu, sizeof(dev_datatype) * 2, get_stream()));
+    hip_catch(hipMalloc((void **)&alpha_beta_gpu, sizeof(dev_datatype) * 2));
 
-    hip_catch(hipMemcpyAsync(alpha_beta_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
-    hip_catch(hipMemcpyAsync(&(alpha_beta_gpu[1]), &beta, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy(alpha_beta_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(&(alpha_beta_gpu[1]), &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     axpby((T *)&(alpha_beta_gpu[0]), X, (T *)&(alpha_beta_gpu[1]), Y);
 
-    hip_catch(hipFreeAsync(alpha_beta_gpu, get_stream()));
+    hip_catch(hipFree(alpha_beta_gpu));
 }
 
 /**
@@ -680,13 +679,13 @@ void scale_row(size_t row, T alpha, AType *A) {
 
     dev_datatype *alpha_gpu;
 
-    hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
+    hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     scale_row(row, (T *)alpha_gpu, A);
 
-    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
+    hip_catch(hipFree(alpha_gpu));
 }
 
 template <DeviceBasicTensorConcept AType, typename T>
@@ -701,13 +700,13 @@ void scale_column(size_t col, T alpha, AType *A) {
 
     dev_datatype *alpha_gpu;
 
-    hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
+    hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     scale_column(col, (T *)alpha_gpu, A);
 
-    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
+    hip_catch(hipFree(alpha_gpu));
 }
 
 template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType, DeviceBasicTensorConcept CType, typename T>
@@ -744,7 +743,7 @@ void direct_product(T alpha, AType const &A, BType const &B, T beta, CType *C) {
 
     dim3 threads = block_size(elems), num_blocks = blocks(elems);
 
-    gpu::direct_product_kernel<Rank><<<threads, num_blocks, 0, get_stream()>>>(
+    gpu::direct_product_kernel<Rank><<<num_blocks, threads, 0, get_stream()>>>(
         HipCast<T_devtype, T_hosttype>::cast(beta), C->gpu_data(), C->gpu_strides(), HipCast<T_devtype, T_hosttype>::cast(alpha),
         A.gpu_data(), A.gpu_strides(), B.gpu_data(), B.gpu_strides(), A.gpu_dims(), gpu_Ind_strides, elems);
 
@@ -799,7 +798,7 @@ auto pow(AType const &a, typename AType::host_datatype alpha,
 
     Diag.zero();
 
-    gpu::eig_to_diag<<<dim3(32), dim3(1), 0, einsums::gpu::get_stream()>>>(Diag.gpu_data(), Diag.dim(0), Diag.stride(0), Evals.gpu_data(),
+    gpu::eig_to_diag<<<dim3(1), dim3(32), 0, einsums::gpu::get_stream()>>>(Diag.gpu_data(), Diag.dim(0), Diag.stride(0), Evals.gpu_data(),
                                                                            alpha);
 
     symm_gemm<false, false>(Diag, Evecs, &out);

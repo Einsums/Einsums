@@ -271,7 +271,7 @@ EINSUMS_EXPORT void axpby(int n, float const *alpha, float const *X, int incx, f
     // hipblas_catch(hipblasSaxpby(handle, n, alpha, X, incx, beta, Y, incy));
     hipStream_t stream;
     hipblas_catch(hipblasGetStream(handle, &stream));
-    saxpby_kernel<<<einsums::gpu::block_size(n), einsums::gpu::blocks(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
+    saxpby_kernel<<<einsums::gpu::blocks(n), einsums::gpu::block_size(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
 }
 
 EINSUMS_EXPORT void axpby(int n, double const *alpha, double const *X, int incx, double const *beta, double *Y, int incy) {
@@ -281,7 +281,7 @@ EINSUMS_EXPORT void axpby(int n, double const *alpha, double const *X, int incx,
 
     hipStream_t stream;
     hipblas_catch(hipblasGetStream(handle, &stream));
-    daxpby_kernel<<<einsums::gpu::block_size(n), einsums::gpu::blocks(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
+    daxpby_kernel<<<einsums::gpu::blocks(n), einsums::gpu::block_size(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
 }
 EINSUMS_EXPORT void axpby(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta, hipFloatComplex *Y, int incy) {
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
@@ -290,7 +290,7 @@ EINSUMS_EXPORT void axpby(int n, hipFloatComplex const *alpha, hipFloatComplex c
 
     hipStream_t stream;
     hipblas_catch(hipblasGetStream(handle, &stream));
-    caxpby_kernel<<<einsums::gpu::block_size(n), einsums::gpu::blocks(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
+    caxpby_kernel<<<einsums::gpu::blocks(n), einsums::gpu::block_size(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
 }
 EINSUMS_EXPORT void axpby(int n, hipDoubleComplex const *alpha, hipDoubleComplex const *X, int incx, hipDoubleComplex const *beta,
                           hipDoubleComplex *Y, int incy) {
@@ -301,7 +301,7 @@ EINSUMS_EXPORT void axpby(int n, hipDoubleComplex const *alpha, hipDoubleComplex
 
     hipStream_t stream;
     hipblas_catch(hipblasGetStream(handle, &stream));
-    zaxpby_kernel<<<einsums::gpu::block_size(n), einsums::gpu::blocks(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
+    zaxpby_kernel<<<einsums::gpu::blocks(n), einsums::gpu::block_size(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
 }
 
 __global__ EINSUMS_EXPORT void saxpby_kernel(int n, float const *alpha, float const *X, int incx, float const *beta, float *Y, int incy) {
