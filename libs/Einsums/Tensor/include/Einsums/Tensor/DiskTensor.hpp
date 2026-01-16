@@ -672,6 +672,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     template <CoreBasicTensorConcept TensorType>
         requires(RankTensorConcept<TensorType, rank>)
     void write(TensorType const &tensor) {
+
         std::array<size_t, rank> dims, counts;
 
         counts.fill(1);
@@ -683,12 +684,25 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
         }
 
-        auto err = H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, tensor.data());
+        herr_t err;
+
+        if (tensor.is_row_major()) {
+            err = H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, tensor.data());
+        } else {
+            auto lock = std::lock_guard(*this);
+            if (!_constructed) {
+                _tensor      = BufferTensor<T, Rank>{true, _dims};
+                _constructed = true;
+            }
+
+            _tensor = tensor;
+
+            err = H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+        }
 
         H5Sclose(mem_dataspace);
 
         if (err < 0) {
-            H5Sclose(mem_dataspace);
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not write data to HDF5 file!");
         }
     }
@@ -715,9 +729,12 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
 
             if (err < 0) {
+                H5Sclose(mem_dataspace);
                 EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
             }
         }
+
+        H5Sclose(mem_dataspace);
         return _tensor;
     }
 
@@ -743,9 +760,11 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
 
             if (err < 0) {
+                H5Sclose(mem_dataspace);
                 EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
             }
         }
+        H5Sclose(mem_dataspace);
         return _tensor;
     }
 
@@ -772,9 +791,11 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
 
         if (err < 0) {
+            H5Sclose(mem_dataspace);
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
         }
 
+        H5Sclose(mem_dataspace);
         return _tensor;
     }
 
@@ -802,9 +823,11 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
 
         if (err < 0) {
+            H5Sclose(mem_dataspace);
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
         }
 
+        H5Sclose(mem_dataspace);
         return _tensor;
     }
 
@@ -838,6 +861,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
                 EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
             }
             H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+            H5Sclose(mem_dataspace);
         }
     }
 

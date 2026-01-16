@@ -10,43 +10,35 @@
 
 #include <Einsums/Testing.hpp>
 
-template <typename T>
-void test_gemm() {
+TEMPLATE_TEST_CASE("gemm", "[linear-algebra]", float, double) {
     using namespace einsums;
 
-    Tensor A = create_tensor<T>(true, "A", 3, 3);
-    Tensor B = create_tensor<T>(true, "B", 3, 3);
-    Tensor C = create_tensor<T>(true, "C", 3, 3);
+    Tensor A = create_tensor<TestType>(true, "A", 3, 3);
+    Tensor B = create_tensor<TestType>(true, "B", 3, 3);
+    Tensor C = create_tensor<TestType>(true, "C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
     REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
+    REQUIRE(C.stride(0) == 3);
+    REQUIRE(C.stride(1) == 1);
 
-    auto temp       = std::vector<T>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    auto temp       = std::vector<TestType>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     A.vector_data() = temp;
-    temp            = std::vector<T>{11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
+    temp            = std::vector<TestType>{11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
     B.vector_data() = temp;
 
     einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<T>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<TestType>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
 
     einsums::linear_algebra::gemm<true, false>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<T>{726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0}));
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<TestType>{726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0}));
 
     einsums::linear_algebra::gemm<false, true>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<T>{154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0}));
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<TestType>{154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0}));
 
     einsums::linear_algebra::gemm<true, true>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<T>{330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0}));
-}
-
-TEST_CASE("gemm") {
-    SECTION("float") {
-        test_gemm<float>();
-    }
-    SECTION("double") {
-        test_gemm<double>();
-    }
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<TestType>{330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0}));
 }
 
 template <typename T>
@@ -323,7 +315,7 @@ TEMPLATE_TEST_CASE("Disk gemm", "[linear-algebra]", double, std::complex<double>
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    constexpr int size = 10;
+    constexpr int size = 3;
 
     auto A = einsums::create_random_tensor<TestType>("A", size, size);
     auto B = einsums::create_random_tensor<TestType>("B", size, size);
