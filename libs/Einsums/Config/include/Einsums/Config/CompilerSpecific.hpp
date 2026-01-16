@@ -604,13 +604,3 @@
 #if !defined(EINSUMS_NO_SANITIZE_ADDRESS)
 #    define EINSUMS_NO_SANITIZE_ADDRESS
 #endif
-
-#ifdef __cplusplus
-namespace einsums {
-#    ifdef EINSUMS_ROW_MAJOR_DEFAULT
-constexpr bool row_major_default = true;
-#    else
-constexpr bool row_major_default = false;
-#    endif
-} // namespace einsums
-#endif

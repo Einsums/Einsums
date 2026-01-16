@@ -203,7 +203,7 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
     template <std::integral... Dims>
         requires(sizeof...(Dims) == Rank)
     GeneralTensor(std::string name, Dims... dims)
-        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, row_major_default) {
+        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, GlobalConfigMap::get_singleton().get_bool("row-major")) {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
         // Resize the data structure
@@ -365,7 +365,7 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
      *
      * @param other The tensor view to copy.
      */
-    GeneralTensor(TensorView<T, rank> const &other) : _name{other.name()}, _impl(nullptr, other.dims(), row_major_default) {
+    GeneralTensor(TensorView<T, rank> const &other) : _name{other.name()}, _impl(nullptr, other.dims(), GlobalConfigMap::get_singleton().get_bool("row-major")) {
         // Resize the data structure
         _data.resize(_impl.size());
 

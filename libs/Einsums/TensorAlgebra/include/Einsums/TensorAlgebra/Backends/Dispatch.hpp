@@ -920,8 +920,6 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
         retval                    = DOT;
     } else if constexpr (einsum_is_direct_product<ConjA, ConjB>(C_indices, A_indices, B_indices)) {
         if constexpr (!DryRun) {
-            LabeledSection("element-wise multiplication");
-
             linear_algebra::direct_product(AB_prefactor, A, B, C_prefactor, C);
         }
 
@@ -982,7 +980,7 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     std::unique_ptr<profile::ScopedZone> _section;
 #    endif
     if constexpr (IsTensorV<CType>) {
-        EINSUMS_LOG_INFO(
+        EINSUMS_LOG_DEBUG(
             std::fabs(UC_prefactor) > EINSUMS_ZERO
                 ? fmt::format(R"(einsum: "{}"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
                               (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices,
@@ -999,7 +997,7 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                                                          __FILE__, __LINE__, __func__);
 #    endif
     } else {
-        EINSUMS_LOG_INFO(std::fabs(UC_prefactor) > EINSUMS_ZERO
+        EINSUMS_LOG_DEBUG(std::fabs(UC_prefactor) > EINSUMS_ZERO
                              ? fmt::format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "C"{})", C_indices, UAB_prefactor,
                                            (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "",
                                            B.name(), B_indices, (ConjB) ? ")" : "", UC_prefactor, C_indices)
