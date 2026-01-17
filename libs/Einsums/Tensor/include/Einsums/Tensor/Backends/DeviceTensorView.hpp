@@ -27,7 +27,7 @@ DeviceTensorView<T, rank>::DeviceTensorView(DeviceTensorView<T, rank> const &cop
     hip_catch(hipMemcpy((void *)this->_data, (void *)copy.gpu_data(), sizeof(T) * _dims[0] * _strides[0], hipMemcpyDeviceToDevice));
     this->_full_view_of_underlying = copy.full_view_of_underlying();
 
-    dims_to_strides(_dims, _index_strides);
+    this->_size = dims_to_strides(_dims, _index_strides, true);
 
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 3 * sizeof(size_t) * rank));
     this->_gpu_strides       = this->_gpu_dims + rank;
@@ -141,7 +141,7 @@ void DeviceTensorView<T, rank>::set_all(T const &fill_value) {
     using namespace einsums::gpu;
     einsums::detail::set_all<dev_datatype, rank><<<blocks(this->size()), block_size(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_index_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(fill_value),
-        _index_strides[0] * _dims[0]);
+        this->size());
     gpu::stream_wait();
 }
 
@@ -161,7 +161,7 @@ template <typename T, size_t rank>
 DeviceTensorView<T, rank> &DeviceTensorView<T, rank>::add_assign(T const &other) {
     using namespace einsums::gpu;
     einsums::detail::add_and_assign_scal<dev_datatype, rank><<<blocks(this->size()), block_size(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_index_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_index_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), this->size());
     gpu::stream_wait();
     return *this;
 }
@@ -170,7 +170,7 @@ template <typename T, size_t rank>
 DeviceTensorView<T, rank> &DeviceTensorView<T, rank>::sub_assign(T const &other) {
     using namespace einsums::gpu;
     einsums::detail::sub_and_assign_scal<dev_datatype, rank><<<blocks(this->size()), block_size(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_index_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_index_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), this->size());
     gpu::stream_wait();
     return *this;
 }
@@ -179,7 +179,7 @@ template <typename T, size_t rank>
 DeviceTensorView<T, rank> &DeviceTensorView<T, rank>::mult_assign(T const &other) {
     using namespace einsums::gpu;
     einsums::detail::mul_and_assign_scal<dev_datatype, rank><<<blocks(this->size()), block_size(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_index_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_index_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), this->size());
     gpu::stream_wait();
     return *this;
 }
@@ -188,7 +188,7 @@ template <typename T, size_t rank>
 DeviceTensorView<T, rank> &DeviceTensorView<T, rank>::div_assign(T const &other) {
     using namespace einsums::gpu;
     einsums::detail::div_and_assign_scal<dev_datatype, rank><<<blocks(this->size()), block_size(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_index_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_index_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), this->size());
     gpu::stream_wait();
     return *this;
 }
@@ -264,8 +264,7 @@ auto DeviceTensorView<T, rank>::to_rank_1_view() const -> DeviceTensorView<T, 1>
         if (_strides[rank - 1] != 1) {
             EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Creating a rank-1 TensorView for this Tensor(View) is not supported.");
         }
-        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
-        Dim<1> dim{size};
+        Dim<1> dim{_size};
 
 #    if defined(EINSUMS_SHOW_WARNING)
         println("Creating a rank-1 TensorView of an existing TensorView may not work. Be careful!");
@@ -324,7 +323,7 @@ void DeviceTensorView<T, rank>::common_initialization(TensorType<T, OtherRank> c
         // provide the information
     } else {
         if (std::accumulate(_dims.begin(), _dims.end(), 1, std::multiplies<>()) == other.size()) {
-            dims_to_strides(_dims, default_strides);
+            dims_to_strides(_dims, default_strides, other.is_row_major());
         } else {
             // Stride information cannot be automatically deduced.  It must be provided.
             default_strides = arguments::get(error_strides, args...);
@@ -340,7 +339,7 @@ void DeviceTensorView<T, rank>::common_initialization(TensorType<T, OtherRank> c
     _strides                         = arguments::get(default_strides, args...);
     Offset<OtherRank> const &offsets = arguments::get(default_offsets, args...);
 
-    dims_to_strides(_dims, _index_strides);
+    this->_size = dims_to_strides(_dims, _index_strides, true);
 
     // Determine the ordinal using the offsets provided (if any) and the strides of the parent
     size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), size_t{0});

@@ -68,7 +68,7 @@ template <RankTensorConcept AType>
 void println(AType const &A, TensorPrintOptions options = {});
 
 template <FileOrOStream Output, RankTensorConcept AType>
-    requires(BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>)
+    requires((BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>) && !DeviceTensorConcept<AType>)
 void fprintln(Output &fp, AType const &A, TensorPrintOptions options = {});
 #endif
 
@@ -2358,7 +2358,7 @@ auto create_tensor(Args... args) {
 
 #ifndef DOXYGEN
 template <FileOrOStream Output, RankTensorConcept AType>
-    requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
+    requires((einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>) && !einsums::DeviceTensorConcept<AType>)
 void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
     fprintln(fp, "Name: {}", A.name());
     {

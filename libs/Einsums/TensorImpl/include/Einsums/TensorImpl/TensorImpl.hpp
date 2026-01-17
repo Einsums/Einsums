@@ -2055,7 +2055,7 @@ void fprintln(Output &fp, detail::TensorImpl<T> const &A, TensorPrintOptions opt
                 fprintln(fp);
             } else if (Rank > 1) {
                 BufferVector<size_t> index_strides(Rank - 1);
-                size_t elements = dims_to_strides(BufferVector<size_t>(A.dims().begin(), std::prev(A.dims().end())), index_strides);
+                size_t elements = dims_to_strides(BufferVector<size_t>(A.dims().begin(), std::prev(A.dims().end())), index_strides, true);
 
                 auto                 final_dim = A.dim(Rank - 1);
                 auto                 ndigits   = detail::ndigits(final_dim);
