@@ -32,6 +32,7 @@ What's New
 * Tensors can be cached to GPU. When tensors are cached, certain operations can use GPU algorithms instead of CPU algorithms to speed up
   calculations.
 * The `einsum` dispatcher now uses smarter rules for whether a tensor can be passed to a BLAS call.
+* Some tensors can now specify an allocator template parameter which will be passed to the vector.
 
 What's Removed
 --------------

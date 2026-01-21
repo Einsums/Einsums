@@ -30,6 +30,7 @@ Optional requirements:
 * A Fast Fourier Transform library, either FFTW3 or DFT from MKL.
 * HIP for graphics card support. Uses hipBlas, hipSolver, and the HIP language. Does not yet support hipFFT.
 * cpptrace for backtraces.
+* LibreTT for GPU transposes.
 * pybind11 for the Python extension module.
 
 ## Examples
