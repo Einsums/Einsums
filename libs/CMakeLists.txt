@@ -124,6 +124,10 @@ set(PYTHON_LIBS
 )
 
 if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
+
+file(RELATIVE_PATH _ein_pymod_relDir ${CMAKE_INSTALL_PREFIX}/${EINSUMS_INSTALL_PYMODDIR}/einsums
+                                     ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+
   include(Einsums_ExtendWithPython)
 
   foreach(lib ${PYTHON_LIBS})
@@ -138,14 +142,31 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
     install(
       TARGETS ${lib}
       EXPORT einsums_targets
-      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/einsums
-      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/einsums
-      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/einsums COMPONENT ${lib}
+      LIBRARY DESTINATION ${EINSUMS_INSTALL_PYMODDIR}/einsums
+      ARCHIVE DESTINATION ${EINSUMS_INSTALL_PYMODDIR}/einsums
+      RUNTIME DESTINATION ${EINSUMS_INSTALL_PYMODDIR}/einsums COMPONENT ${lib}
     )
     einsums_export_targets(${lib})
 
     add_subdirectory(${lib})
   endforeach()
+
+  install(
+    DIRECTORY
+      ../tests
+    DESTINATION
+      ${EINSUMS_INSTALL_PYMODDIR}/einsums
+    USE_SOURCE_PERMISSIONS
+    FILES_MATCHING
+      PATTERN "test_*.py"
+  )
+  install(
+    FILES
+      ../pyeinsums/__init__.py
+      ../pyeinsums/utils.py
+    DESTINATION
+      ${EINSUMS_INSTALL_PYMODDIR}/einsums
+  )
 endif()
 
 # einsums_add_module populates EINSUMS_ENABLED_MODULES
