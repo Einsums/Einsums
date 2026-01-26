@@ -94,7 +94,8 @@ static void streamingStore(floatType *out, floatType const *in) {
         out[i] = in[i];
 }
 
-#ifdef __AVX__
+// We need AVX for obvious reasons, AVX2 for gather, and AVX512F and AVX512VL for scatter.
+#if defined(__AVX__) && defined(__AVX2__) && defined(__AVX512F__) && defined(__AVX512VL__)
 #    include <immintrin.h>
 
 template <typename floatType>
@@ -113,8 +114,7 @@ struct micro_kernel<double, betaIsZero, conjA> {
         __m256d rowA0, rowA1, rowA2, rowA3;
         __m256i indicesA;
         if (innerStrideA != 1) {
-            indicesA = _mm256_set_epi32(7 * innerStrideA, 6 * innerStrideA, 5 * innerStrideA, 4 * innerStrideA, 3 * innerStrideA,
-                                        2 * innerStrideA, 1 * innerStrideA, 0 * innerStrideA);
+            indicesA = _mm256_set_epi64x(3 * innerStrideA, 2 * innerStrideA, 1 * innerStrideA, 0 * innerStrideA);
             rowA0    = _mm256_i32gather_pd((A + 0 * lda), indicesA, sizeof(double));
             rowA1    = _mm256_i32gather_pd((A + 1 * lda), indicesA, sizeof(double));
             rowA2    = _mm256_i32gather_pd((A + 2 * lda), indicesA, sizeof(double));
@@ -148,12 +148,11 @@ struct micro_kernel<double, betaIsZero, conjA> {
             __m256d rowB0, rowB1, rowB2, rowB3;
             __m256i indicesB;
             if (innerStrideB != 1) {
-                indicesB = _mm256_set_epi32(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB, 3 * innerStrideB,
-                                            2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
-                rowB0    = _mm256_i32gather_pd((B + 0 * ldb), indicesB, sizeof(double));
-                rowB1    = _mm256_i32gather_pd((B + 1 * ldb), indicesB, sizeof(double));
-                rowB2    = _mm256_i32gather_pd((B + 2 * ldb), indicesB, sizeof(double));
-                rowB3    = _mm256_i32gather_pd((B + 3 * ldb), indicesB, sizeof(double));
+                indicesB = _mm256_set_epi64x(3 * innerStrideB, 2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
+                rowB0    = _mm256_i64gather_pd((B + 0 * ldb), indicesB, sizeof(double));
+                rowB1    = _mm256_i64gather_pd((B + 1 * ldb), indicesB, sizeof(double));
+                rowB2    = _mm256_i64gather_pd((B + 2 * ldb), indicesB, sizeof(double));
+                rowB3    = _mm256_i64gather_pd((B + 3 * ldb), indicesB, sizeof(double));
             } else {
                 rowB0 = _mm256_loadu_pd((B + 0 * ldb));
                 rowB1 = _mm256_loadu_pd((B + 1 * ldb));
@@ -167,10 +166,10 @@ struct micro_kernel<double, betaIsZero, conjA> {
             rowB3 = _mm256_add_pd(_mm256_mul_pd(rowB3, reg_beta), rowA3);
             // Store B
             if (innerStrideB != 1) {
-                _mm256_i32scatter_epi32((B + 0 * ldb), indicesB, rowB0, sizeof(double));
-                _mm256_i32scatter_epi32((B + 1 * ldb), indicesB, rowB1, sizeof(double));
-                _mm256_i32scatter_epi32((B + 2 * ldb), indicesB, rowB2, sizeof(double));
-                _mm256_i32scatter_epi32((B + 3 * ldb), indicesB, rowB3, sizeof(double));
+                _mm256_i64scatter_pd((B + 0 * ldb), indicesB, rowB0, sizeof(double));
+                _mm256_i64scatter_pd((B + 1 * ldb), indicesB, rowB1, sizeof(double));
+                _mm256_i64scatter_pd((B + 2 * ldb), indicesB, rowB2, sizeof(double));
+                _mm256_i64scatter_pd((B + 3 * ldb), indicesB, rowB3, sizeof(double));
             } else {
                 _mm256_storeu_pd((B + 0 * ldb), rowB0);
                 _mm256_storeu_pd((B + 1 * ldb), rowB1);
@@ -180,12 +179,12 @@ struct micro_kernel<double, betaIsZero, conjA> {
         } else {
             // Store B
             if (innerStrideB != 1) {
-                __m256i indicesB = _mm256_set_epi32(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB,
+                __m256i indicesB = _mm256_set_epi64x(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB,
                                                     3 * innerStrideB, 2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
-                _mm256_i32scatter_epi32((B + 0 * ldb), indicesB, rowA0, sizeof(double));
-                _mm256_i32scatter_epi32((B + 1 * ldb), indicesB, rowA1, sizeof(double));
-                _mm256_i32scatter_epi32((B + 2 * ldb), indicesB, rowA2, sizeof(double));
-                _mm256_i32scatter_epi32((B + 3 * ldb), indicesB, rowA3, sizeof(double));
+                _mm256_i64scatter_pd((B + 0 * ldb), indicesB, rowA0, sizeof(double));
+                _mm256_i64scatter_pd((B + 1 * ldb), indicesB, rowA1, sizeof(double));
+                _mm256_i64scatter_pd((B + 2 * ldb), indicesB, rowA2, sizeof(double));
+                _mm256_i64scatter_pd((B + 3 * ldb), indicesB, rowA3, sizeof(double));
             } else {
                 _mm256_storeu_pd((B + 0 * ldb), rowA0);
                 _mm256_storeu_pd((B + 1 * ldb), rowA1);
@@ -299,14 +298,14 @@ struct micro_kernel<float, betaIsZero, conjA> {
             rowB7 = _mm256_add_ps(_mm256_mul_ps(rowB7, reg_beta), rowA7);
             // Store B
             if (innerStrideB != 1) {
-                _mm256_i32scatter_epi32((B + 0 * ldb), indicesB, rowB0, sizeof(float));
-                _mm256_i32scatter_epi32((B + 1 * ldb), indicesB, rowB1, sizeof(float));
-                _mm256_i32scatter_epi32((B + 2 * ldb), indicesB, rowB2, sizeof(float));
-                _mm256_i32scatter_epi32((B + 3 * ldb), indicesB, rowB3, sizeof(float));
-                _mm256_i32scatter_epi32((B + 4 * ldb), indicesB, rowB4, sizeof(float));
-                _mm256_i32scatter_epi32((B + 5 * ldb), indicesB, rowB5, sizeof(float));
-                _mm256_i32scatter_epi32((B + 6 * ldb), indicesB, rowB6, sizeof(float));
-                _mm256_i32scatter_epi32((B + 7 * ldb), indicesB, rowB7, sizeof(float));
+                _mm256_i32scatter_ps((B + 0 * ldb), indicesB, rowB0, sizeof(float));
+                _mm256_i32scatter_ps((B + 1 * ldb), indicesB, rowB1, sizeof(float));
+                _mm256_i32scatter_ps((B + 2 * ldb), indicesB, rowB2, sizeof(float));
+                _mm256_i32scatter_ps((B + 3 * ldb), indicesB, rowB3, sizeof(float));
+                _mm256_i32scatter_ps((B + 4 * ldb), indicesB, rowB4, sizeof(float));
+                _mm256_i32scatter_ps((B + 5 * ldb), indicesB, rowB5, sizeof(float));
+                _mm256_i32scatter_ps((B + 6 * ldb), indicesB, rowB6, sizeof(float));
+                _mm256_i32scatter_ps((B + 7 * ldb), indicesB, rowB7, sizeof(float));
             } else {
                 _mm256_storeu_ps((B + 0 * ldb), rowB0);
                 _mm256_storeu_ps((B + 1 * ldb), rowB1);
@@ -321,14 +320,14 @@ struct micro_kernel<float, betaIsZero, conjA> {
             if (innerStrideB != 1) {
                 __m256i indicesB = _mm256_set_epi32(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB,
                                                     3 * innerStrideB, 2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
-                _mm256_i32scatter_epi32((B + 0 * ldb), indicesB, rowA0, sizeof(float));
-                _mm256_i32scatter_epi32((B + 1 * ldb), indicesB, rowA1, sizeof(float));
-                _mm256_i32scatter_epi32((B + 2 * ldb), indicesB, rowA2, sizeof(float));
-                _mm256_i32scatter_epi32((B + 3 * ldb), indicesB, rowA3, sizeof(float));
-                _mm256_i32scatter_epi32((B + 4 * ldb), indicesB, rowA4, sizeof(float));
-                _mm256_i32scatter_epi32((B + 5 * ldb), indicesB, rowA5, sizeof(float));
-                _mm256_i32scatter_epi32((B + 6 * ldb), indicesB, rowA6, sizeof(float));
-                _mm256_i32scatter_epi32((B + 7 * ldb), indicesB, rowA7, sizeof(float));
+                _mm256_i32scatter_ps((B + 0 * ldb), indicesB, rowA0, sizeof(float));
+                _mm256_i32scatter_ps((B + 1 * ldb), indicesB, rowA1, sizeof(float));
+                _mm256_i32scatter_ps((B + 2 * ldb), indicesB, rowA2, sizeof(float));
+                _mm256_i32scatter_ps((B + 3 * ldb), indicesB, rowA3, sizeof(float));
+                _mm256_i32scatter_ps((B + 4 * ldb), indicesB, rowA4, sizeof(float));
+                _mm256_i32scatter_ps((B + 5 * ldb), indicesB, rowA5, sizeof(float));
+                _mm256_i32scatter_ps((B + 6 * ldb), indicesB, rowA6, sizeof(float));
+                _mm256_i32scatter_ps((B + 7 * ldb), indicesB, rowA7, sizeof(float));
             } else {
                 _mm256_storeu_ps((B + 0 * ldb), rowA0);
                 _mm256_storeu_ps((B + 1 * ldb), rowA1);
