@@ -52,7 +52,7 @@ This page will discuss functions and classes relating to tensor algebra calls in
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
         Execute the plan. This can work when :code:`C_prefactor` and :code:`AB_prefactor` can be cast to numbers, as well
-        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects or all :py:class:`einsums.core.GPUView` objects.
+        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
 
@@ -69,7 +69,7 @@ This page will discuss functions and classes relating to tensor algebra calls in
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
         Execute the plan. This can work when :code:`C_prefactor` and :code:`AB_prefactor` can be cast to numbers, as well
-        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects or all :py:class:`einsums.core.GPUView` objects.
+        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
 
@@ -85,7 +85,7 @@ This page will discuss functions and classes relating to tensor algebra calls in
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
         Execute the plan. This can work when :code:`C_prefactor` and :code:`AB_prefactor` can be cast to numbers, as well
-        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects or all :py:class:`einsums.core.GPUView` objects.
+        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
 
@@ -101,7 +101,7 @@ This page will discuss functions and classes relating to tensor algebra calls in
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
         Execute the plan. This can work when :code:`C_prefactor` and :code:`AB_prefactor` can be cast to numbers, as well
-        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects or all :py:class:`einsums.core.GPUView` objects.
+        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
 
@@ -117,7 +117,7 @@ This page will discuss functions and classes relating to tensor algebra calls in
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
         Execute the plan. This can work when :code:`C_prefactor` and :code:`AB_prefactor` can be cast to numbers, as well
-        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects or all :py:class:`einsums.core.GPUView` objects.
+        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
 
@@ -133,7 +133,7 @@ This page will discuss functions and classes relating to tensor algebra calls in
     .. py:method:: execute(C_prefactor, C, AB_prefactor, A, B) -> None
 
         Execute the plan. This can work when :code:`C_prefactor` and :code:`AB_prefactor` can be cast to numbers, as well
-        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects or all :py:class:`einsums.core.GPUView` objects.
+        as when :code:`A`, :code:`B`, and :code:`C` are either all buffer objects, lists of buffer objects, or all :py:class:`einsums.core.GPUView` objects.
         If they are all :py:class:`einsums.core.GPUView` objects, make sure to watch the state of the synchronization of
         the objects, as they may become desynchronized.
 

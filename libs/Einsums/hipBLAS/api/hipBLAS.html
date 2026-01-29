@@ -1,0 +1,1393 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums/hipBLAS.hpp &#8212; Einsums 2.0.0-trunk documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=047b7709" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../_static/documentation_options.js?v=ecbcfc14"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/hipBLAS/api/hipBLAS';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Jan 29, 2026"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Developers' Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Building from source
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../overview.html">
+    Developers' Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/hipBLAS.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums/hipBLAS.hpp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-hipblas-hpp">
+<span id="modules-einsums-einsums-hipblas-hpp-api"></span><h1>Einsums/hipBLAS.hpp<a class="headerlink" href="#einsums-hipblas-hpp" title="Link to this heading">#</a></h1>
+<p>Defined in header Einsums/hipBLAS.hpp.</p>
+<p>See <a class="reference internal" href="../../../overview.html#modules-overview"><span class="std std-ref">Overview</span></a> for a list of names and headers that are part of the public
+<em>Einsums</em> API.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv47einsums">
+<span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="../../todo.html#todo_1_todo000004"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd></dd></dl>
+
+</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums4blasE">
+<span id="_CPPv3N7einsums4blasE"></span><span id="_CPPv2N7einsums4blasE"></span><span id="einsums::blas"></span><span class="target" id="namespaceeinsums_1_1blas"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">blas</span></span></span><br /></dt>
+<dd><dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums4blas3gpuE">
+<span id="_CPPv3N7einsums4blas3gpuE"></span><span id="_CPPv2N7einsums4blas3gpuE"></span><span id="einsums::blas::gpu"></span><span class="target" id="namespaceeinsums_1_1blas_1_1gpu"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gpu</span></span></span><a class="headerlink" href="#_CPPv4N7einsums4blas3gpuE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4gemmEvcc5int_t5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4gemmEcc5int_t5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4gemmEcc5int_t5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a8667e48e21c2294ce7b7ca8e37e130e8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gemm</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">transa</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">transb</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gemmEvcc5int_t5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gemmEvcc5int_t5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gemmEvcc5int_t5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ldb</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gemmEvcc5int_t5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gemmEvcc5int_t5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">c</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ldc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4gemmEvcc5int_t5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Perform a General Matrix Multiply (GEMM) operation. </p>
+<p>This function computes the product of two matrices,   <div class="math notranslate nohighlight">
+\[\mathbf{C} := \alpha \mathbf{A}\mathbf{B} + \beta\mathbf{C}
+\]</div>
+ where <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>, and <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> are matrices, and <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are scalar values.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The function performs one of the following matrix operations:<ul class="simple">
+<li><p>If transA is ‘N’ or ‘n’ and transB is ‘N’ or ‘n’: <span class="math notranslate nohighlight">\(\mathbf{C} = \alpha\mathbf{AB} + \beta\mathbf{C}\)</span></p></li>
+<li><p>If transA is ‘N’ or ‘n’ and transB is ‘T’ or ‘t’: <span class="math notranslate nohighlight">\(\mathbf{C} = \alpha\mathbf{A}\mathbf{B}^T + \beta\mathbf{C}\)</span></p></li>
+<li><p>If transA is ‘T’ or ‘t’ and transB is ‘N’ or ‘n’: <span class="math notranslate nohighlight">\(\mathbf{C} = \alpha\mathbf{A}^T\mathbf{B} + \beta\mathbf{C}\)</span></p></li>
+<li><p>If transA is ‘T’ or ‘t’ and transB is ‘T’ or ‘t’: <span class="math notranslate nohighlight">\(\mathbf{C} = \alpha\mathbf{A}^T\mathbf{B}^T + \beta\mathbf{C}\)</span></p></li>
+<li><p>If transA is ‘C’ or ‘c’ and transB is ‘N’ or ‘n’: <span class="math notranslate nohighlight">\(\mathbf{C} = \alpha\mathbf{A}^H\mathbf{B} + \beta\mathbf{C}\)</span></p></li>
+<li><p>If transA is ‘C’ or ‘c’ and transB is ‘T’ or ‘t’: <span class="math notranslate nohighlight">\(\mathbf{C} = \alpha\mathbf{A}^H\mathbf{B}^Y + \beta\mathbf{C}\)</span></p></li>
+<li><p>etc.</p></li>
+</ul>
+</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The datatype of the GEMM. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>transa</strong> – <strong>[in]</strong> Whether to transpose matrix a :<ul>
+<li><p>’N’ or ‘n’ for no transpose,</p></li>
+<li><p>’T’ or ‘t’ for transpose,</p></li>
+<li><p>’C’ or ‘c’ for conjugate transpose. </p></li>
+</ul>
+</p></li>
+<li><p><strong>transb</strong> – <strong>[in]</strong> Whether to transpose matrix b . </p></li>
+<li><p><strong>m</strong> – <strong>[in]</strong> The number of rows in matrix A and C. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of columns in matrix B and C. </p></li>
+<li><p><strong>k</strong> – <strong>[in]</strong> The number of columns in matrix A and rows in matrix B. </p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> The scalar alpha. </p></li>
+<li><p><strong>a</strong> – <strong>[in]</strong> A pointer to the matrix A with dimensions <code class="docutils literal notranslate"><span class="pre">(lda,</span> <span class="pre">k)</span></code> when transa is ‘N’ or ‘n’, and <code class="docutils literal notranslate"><span class="pre">(lda,</span> <span class="pre">m)</span></code> otherwise. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> Leading dimension of A, specifying the distance between two consecutive columns. </p></li>
+<li><p><strong>b</strong> – <strong>[in]</strong> A pointer to the matrix B with dimensions <code class="docutils literal notranslate"><span class="pre">(ldb,</span> <span class="pre">n)</span></code> when transB is ‘N’ or ‘n’, and <code class="docutils literal notranslate"><span class="pre">(ldb,</span> <span class="pre">k)</span></code> otherwise. </p></li>
+<li><p><strong>ldb</strong> – <strong>[in]</strong> Leading dimension of B, specifying the distance between two consecutive columns. </p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> The scalar beta. </p></li>
+<li><p><strong>c</strong> – <strong>[inout]</strong> A pointer to the matrix C with dimensions <code class="docutils literal notranslate"><span class="pre">(ldc,</span> <span class="pre">n)</span></code>. </p></li>
+<li><p><strong>ldc</strong> – <strong>[in]</strong> Leading dimension of C, specifying the distance between two consecutive columns.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If <code class="docutils literal notranslate"><span class="pre">transA</span></code> or <code class="docutils literal notranslate"><span class="pre">transB</span></code> are invalid. </p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">domain_error</span></span></span> – If the values of <code class="docutils literal notranslate"><span class="pre">m</span></code> , <code class="docutils literal notranslate"><span class="pre">n</span></code> , or <code class="docutils literal notranslate"><span class="pre">k</span></code> are negative, or the values of <code class="docutils literal notranslate"><span class="pre">lda</span></code> , <code class="docutils literal notranslate"><span class="pre">ldb</span></code> , or <code class="docutils literal notranslate"><span class="pre">ldc</span></code> are invalid.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4gemvEvc5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4gemvEc5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4gemvEc5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a6a1ecf7f16dc0eef2665e21ac889d24a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gemv</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">transa</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gemvEvc5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::gemv::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gemvEvc5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::gemv::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gemvEvc5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::gemv::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incx</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gemvEvc5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::gemv::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gemvEvc5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::gemv::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incy</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4gemvEvc5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes a matrix-vector product using a general matrix. </p>
+<p>The gemv routine performs a matrix-vector operation defined as:   <div class="math notranslate nohighlight">
+\[\mathbf{y} := \alpha \mathbf{A} \mathbf{x} + \beta \mathbf{y}
+\]</div>
+ or   <div class="math notranslate nohighlight">
+\[\mathbf{y} := \alpha \mathbf{A}^T \mathbf{x} + \beta \mathbf{y}
+\]</div>
+ or   <div class="math notranslate nohighlight">
+\[\mathbf{y} := \alpha \mathbf{A}^H \mathbf{x} + \beta \mathbf{y}
+\]</div>
+</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – the underlying data type of the matrix and vector </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>transa</strong> – <strong>[in]</strong> what to do with <code class="docutils literal notranslate"><span class="pre">a</span></code> - no trans, trans, conjg </p></li>
+<li><p><strong>m</strong> – <strong>[in]</strong> specifies the number of rows of <code class="docutils literal notranslate"><span class="pre">a</span></code></p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> specifies the number of columns of <code class="docutils literal notranslate"><span class="pre">a</span></code></p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> Specifies the scaler alpha </p></li>
+<li><p><strong>a</strong> – <strong>[in]</strong> Array, size lda * m </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> Specifies the leading dimension of <code class="docutils literal notranslate"><span class="pre">a</span></code> as declared in the calling function </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> array, vector x </p></li>
+<li><p><strong>incx</strong> – <strong>[in]</strong> Specifies the increment for the elements of <code class="docutils literal notranslate"><span class="pre">x</span></code></p></li>
+<li><p><strong>beta</strong> – <strong>[in]</strong> Specifies the scalar beta. When beta is set to zero, then <code class="docutils literal notranslate"><span class="pre">y</span></code> need not be set on input. </p></li>
+<li><p><strong>y</strong> – <strong>[inout]</strong> array, vector y </p></li>
+<li><p><strong>incy</strong> – <strong>[in]</strong> Specifies the increment for the elements of <code class="docutils literal notranslate"><span class="pre">y</span></code> .</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If <code class="docutils literal notranslate"><span class="pre">transA</span></code> is invalid. </p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">domain_error</span></span></span> – If the values of <code class="docutils literal notranslate"><span class="pre">m</span></code> or <code class="docutils literal notranslate"><span class="pre">n</span></code> are negative, the value of <code class="docutils literal notranslate"><span class="pre">lda</span></code> is invalid, or either <code class="docutils literal notranslate"><span class="pre">incx</span></code> or <code class="docutils literal notranslate"><span class="pre">incy</span></code> is zero.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4syevE5int_tcc5int_tP1T5int_tP1TP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4syevEcc5int_tP1T5int_tP1TP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4syevEcc5int_tP1T5int_tP1TP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1aa5cd061d1d8329339202c3daa25f8a8d"></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">syev</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">job</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">uplo</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4syevE5int_tcc5int_tP1T5int_tP1TP1T5int_t" title="einsums::blas::gpu::syev::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4syevE5int_tcc5int_tP1T5int_tP1TP1T5int_t" title="einsums::blas::gpu::syev::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">w</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4syevE5int_tcc5int_tP1T5int_tP1TP1T5int_t" title="einsums::blas::gpu::syev::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">work</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lwork</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4syevE5int_tcc5int_tP1T5int_tP1TP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Performs diagonalization of a symmetrix matrix. </p>
+<p>The syev routine finds the matrices that satisfy the following equation.   <div class="math notranslate nohighlight">
+\[\mathbf{A} = \mathbf{P} \mathbf{\Lambda} \mathbf{P}^T
+\]</div>
+ In the above equation, <span class="math notranslate nohighlight">\( \mathbf{A} \)</span> is a real symmetric matrix, <span class="math notranslate nohighlight">\( \mathbf{P} \)</span> is a real orthogonal matrix whose columns are the eigenvectors of <span class="math notranslate nohighlight">\( \mathbf{A} \)</span>, and <span class="math notranslate nohighlight">\( \mathbf{\Lambda} \)</span> is a diagonal matrix, whose elements are the eigenvalues of  <span class="math notranslate nohighlight">\(\mathbf{A} \)</span>. The eigenvalues are stored in a vector form on exit.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type the function will handle. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>job</strong> – <strong>[in]</strong> Whether to compute the eigenvectors. Can be either ‘n’ or ‘v’, case insensitive. </p></li>
+<li><p><strong>uplo</strong> – <strong>[in]</strong> Whether the matrix data is stored in the upper or lower triangle. Can be either ‘u’ or ‘l’, case insensitive. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of rows/columns of the input matrix. </p></li>
+<li><p><strong>a</strong> – <strong>[inout]</strong> The input matrix. On output, it will be changed. If the eigenvectors are requested, then they will be placed in the columns of <code class="docutils literal notranslate"><span class="pre">a</span></code> on exit. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of the input matrix. </p></li>
+<li><p><strong>w</strong> – <strong>[out]</strong> The output vector for the eigenvalues. </p></li>
+<li><p><strong>work</strong> – <strong>[inout]</strong> A work array. If <code class="docutils literal notranslate"><span class="pre">lwork</span></code> is -1, then no operations are performed and the first value in the work array is the optimal work buffer size. </p></li>
+<li><p><strong>lwork</strong> – <strong>[in]</strong> The size of the work array. If <code class="docutils literal notranslate"><span class="pre">lwork</span></code> is -1, then a workspace query is assumed. No operations will be performed and the optimal workspace size will be put into the first element of <code class="docutils literal notranslate"><span class="pre">work</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success. If positive, this means that the algorithm did not converge. The return value indicates the number of eigenvalues that were able to be computed. If negative, this means that one of the parameters was invalid. The absolute value indicates which parameter was bad.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4heevE5int_tcc5int_tPNSt7complexI1TEE5int_tP1TPNSt7complexI1TEE5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4heevEcc5int_tPNSt7complexI1TEE5int_tP1TPNSt7complexI1TEE5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4heevEcc5int_tPNSt7complexI1TEE5int_tP1TPNSt7complexI1TEE5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1aaa1cb3f1e282ff7a58276501bfb6ca0a"></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">heev</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">job</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">uplo</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">complex</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4heevE5int_tcc5int_tPNSt7complexI1TEE5int_tP1TPNSt7complexI1TEE5int_t" title="einsums::blas::gpu::heev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4heevE5int_tcc5int_tPNSt7complexI1TEE5int_tP1TPNSt7complexI1TEE5int_t" title="einsums::blas::gpu::heev::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">w</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">complex</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4heevE5int_tcc5int_tPNSt7complexI1TEE5int_tP1TPNSt7complexI1TEE5int_t" title="einsums::blas::gpu::heev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">work</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lwork</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4heevE5int_tcc5int_tPNSt7complexI1TEE5int_tP1TPNSt7complexI1TEE5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Performs diagonalization of a Hermitian matrix. </p>
+<p>The heev routine finds the matrices that satisfy the following equation.   <div class="math notranslate nohighlight">
+\[\mathbf{A} = \mathbf{P} \mathbf{\Lambda} \mathbf{P}^H
+\]</div>
+ In the above equation, <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> is a Hermitian matrix, <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> is a unitary matrix whose columns are the eigenvectors of <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>, and <span class="math notranslate nohighlight">\(\mathbf{\Lambda}\)</span> is a diagonal matrix, whose elements are the eigenvalues of <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>. The eigenvalues are stored in a vector form on exit.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>job</strong> – <strong>[in]</strong> Whether to compute the eigenvectors. Can be either ‘n’ or ‘v’, case insensitive. </p></li>
+<li><p><strong>uplo</strong> – <strong>[in]</strong> Whether the matrix data is stored in the upper or lower triangle. Can be either ‘u’ or ‘l’, case insensitive. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of rows/columns of the input matrix. </p></li>
+<li><p><strong>a</strong> – <strong>[inout]</strong> The input matrix. On output, it will be changed. If the eigenvectors are requested, then they will be placed in the columns of <code class="docutils literal notranslate"><span class="pre">a</span></code> on exit. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of the input matrix. </p></li>
+<li><p><strong>w</strong> – <strong>[out]</strong> The output vector for the eigenvalues. </p></li>
+<li><p><strong>work</strong> – <strong>[inout]</strong> A work array. If <code class="docutils literal notranslate"><span class="pre">lwork</span></code> is -1, then no operations are performed and the first value in the work array is the optimal work buffer size. </p></li>
+<li><p><strong>lwork</strong> – <strong>[in]</strong> The size of the work array. If <code class="docutils literal notranslate"><span class="pre">lwork</span></code> is -1, then a workspace query is assumed. No operations will be performed and the optimal workspace size will be put into the first element of <code class="docutils literal notranslate"><span class="pre">work</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success. If positive, this means that the algorithm did not converge. The return value indicates the number of eigenvalues that were able to be computed. If negative, this means that one of the parameters was invalid. The absolute value indicates which parameter was bad.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4gesvE5int_t5int_t5int_tP1T5int_tPiP1T5int_tP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4gesvE5int_t5int_tP1T5int_tPiP1T5int_tP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4gesvE5int_t5int_tP1T5int_tPiP1T5int_tP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a38f6cbc3f5d43fadfbd4eda75c27d4f6"></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gesv</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">nrhs</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gesvE5int_t5int_t5int_tP1T5int_tPiP1T5int_tP1T5int_t" title="einsums::blas::gpu::gesv::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ipiv</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gesvE5int_t5int_t5int_tP1T5int_tPiP1T5int_tP1T5int_t" title="einsums::blas::gpu::gesv::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ldb</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gesvE5int_t5int_t5int_tP1T5int_tPiP1T5int_tP1T5int_t" title="einsums::blas::gpu::gesv::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ldx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4gesvE5int_t5int_t5int_tP1T5int_tPiP1T5int_tP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Solve a system of linear equations. </p>
+<p>Solves equations of the following form.   <div class="math notranslate nohighlight">
+\[\mathbf{A}\mathbf{x} = \mathbf{B}
+\]</div>
+</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of rows and columns of <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and rows <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>. </p></li>
+<li><p><strong>nrhs</strong> – <strong>[in]</strong> The number of columns of <span class="math notranslate nohighlight">\(\mathbf{B}\)</span></p></li>
+<li><p><strong>a</strong> – <strong>[inout]</strong> The coefficient matrix. On exit, it contains the LU decomposition of <code class="docutils literal notranslate"><span class="pre">a</span></code>, where the lower-triangle matrix has unit diagonal entries, which are not stored. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of <code class="docutils literal notranslate"><span class="pre">a</span></code>. </p></li>
+<li><p><strong>ipiv</strong> – <strong>[out]</strong> A list of pivots used in the decomposition. </p></li>
+<li><p><strong>b</strong> – <strong>[in]</strong> The results matrix. Unlike normal LAPACK, this is not overwritten by the function. </p></li>
+<li><p><strong>ldb</strong> – <strong>[in]</strong> The leading dimension of <code class="docutils literal notranslate"><span class="pre">b</span></code>. </p></li>
+<li><p><strong>x</strong> – <strong>[out]</strong> The output matrix. On AMD cards, this is allowed &amp;#8212; even recommended &amp;#8212; to be the same as <code class="docutils literal notranslate"><span class="pre">b</span></code> . On NVidia cards, it is not. </p></li>
+<li><p><strong>ldx</strong> – <strong>[in]</strong> The leading dimension of the output matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success. If positive, then the matrix was singular. If negative, then a bad value was passed to the function. The absolute value indicates which parameter was bad.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4scalEv5int_tK1TP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4scalE5int_tK1TP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4scalE5int_tK1TP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1adb43d90320b0b1788cf73d37a1718992"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4scalEv5int_tK1TP1T5int_t" title="einsums::blas::gpu::scal::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4scalEv5int_tK1TP1T5int_t" title="einsums::blas::gpu::scal::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vec</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4scalEv5int_tK1TP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Scales a vector by a value. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements to scale the vector by. </p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> The scale factor. </p></li>
+<li><p><strong>vec</strong> – <strong>[inout]</strong> The vector to scale. </p></li>
+<li><p><strong>inc</strong> – <strong>[in]</strong> The spacing between elements of the vector.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_7ComplexEN7einsums4blas3gpu4scalEv5int_tK14RemoveComplexTI1TEP1T5int_t">
+<span id="_CPPv3I_7ComplexEN7einsums4blas3gpu4scalE5int_tK14RemoveComplexTI1TEP1T5int_t"></span><span id="_CPPv2I_7ComplexEN7einsums4blas3gpu4scalE5int_tK14RemoveComplexTI1TEP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Complex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a3ee4bbf88d76474ba6a83ca7bd5c9a33"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_7ComplexEN7einsums4blas3gpu4scalEv5int_tK14RemoveComplexTI1TEP1T5int_t" title="einsums::blas::gpu::scal::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_7ComplexEN7einsums4blas3gpu4scalEv5int_tK14RemoveComplexTI1TEP1T5int_t" title="einsums::blas::gpu::scal::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vec</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_7ComplexEN7einsums4blas3gpu4scalEv5int_tK14RemoveComplexTI1TEP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Scales a complex vector by a real value. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements to scale the vector by. </p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> The scale factor. </p></li>
+<li><p><strong>vec</strong> – <strong>[inout]</strong> The vector to scale. </p></li>
+<li><p><strong>inc</strong> – <strong>[in]</strong> The spacing between elements of the vector.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4rsclEv5int_tK1TP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4rsclE5int_tK1TP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4rsclE5int_tK1TP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1aa7b74240537a6f041293c8db84fd8061"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rscl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4rsclEv5int_tK1TP1T5int_t" title="einsums::blas::gpu::rscl::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4rsclEv5int_tK1TP1T5int_t" title="einsums::blas::gpu::rscl::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vec</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4rsclEv5int_tK1TP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Scales a vector by the reciprocal of a value. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements in the vector. </p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> The value to divide all the elements in the vector by. </p></li>
+<li><p><strong>vec</strong> – <strong>[inout]</strong> The vector to scale. </p></li>
+<li><p><strong>inc</strong> – <strong>[in]</strong> The spacing between elements in the vector.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_7ComplexEN7einsums4blas3gpu4rsclEv5int_tK14RemoveComplexTI1TEP1T5int_t">
+<span id="_CPPv3I_7ComplexEN7einsums4blas3gpu4rsclE5int_tK14RemoveComplexTI1TEP1T5int_t"></span><span id="_CPPv2I_7ComplexEN7einsums4blas3gpu4rsclE5int_tK14RemoveComplexTI1TEP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Complex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a1c89ee95778f6c9c525db8f74da1f4b5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rscl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_7ComplexEN7einsums4blas3gpu4rsclEv5int_tK14RemoveComplexTI1TEP1T5int_t" title="einsums::blas::gpu::rscl::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I_7ComplexEN7einsums4blas3gpu4rsclEv5int_tK14RemoveComplexTI1TEP1T5int_t" title="einsums::blas::gpu::rscl::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vec</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_7ComplexEN7einsums4blas3gpu4rsclEv5int_tK14RemoveComplexTI1TEP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Scales a complex vector by the reciprocal of a real value. </p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements in the vector. </p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> The value to divide all the elements in the vector by. </p></li>
+<li><p><strong>vec</strong> – <strong>[inout]</strong> The vector to scale. </p></li>
+<li><p><strong>inc</strong> – <strong>[in]</strong> The spacing between elements in the vector.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu3dotE1T5int_tPK1T5int_tPK1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu3dotE5int_tPK1T5int_tPK1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu3dotE5int_tPK1T5int_tPK1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a0d094c1bfeee0d15fcdb6326bbcbfd68"></span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu3dotE1T5int_tPK1T5int_tPK1T5int_t" title="einsums::blas::gpu::dot::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dot</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu3dotE1T5int_tPK1T5int_tPK1T5int_t" title="einsums::blas::gpu::dot::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incx</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu3dotE1T5int_tPK1T5int_tPK1T5int_t" title="einsums::blas::gpu::dot::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incy</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu3dotE1T5int_tPK1T5int_tPK1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the dot product of two vectors. For complex vectors it is the non-conjugated dot product; (c|z)dotu in BLAS nomenclature.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – underlying data type </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> length of the vectors </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> first vector </p></li>
+<li><p><strong>incx</strong> – <strong>[in]</strong> how many elements to skip in x </p></li>
+<li><p><strong>y</strong> – <strong>[in]</strong> second vector </p></li>
+<li><p><strong>incy</strong> – <strong>[in]</strong> how many elements to skip in yo </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>result of the dot product</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4dotcE1T5int_tPK1T5int_tPK1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4dotcE5int_tPK1T5int_tPK1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4dotcE5int_tPK1T5int_tPK1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a9e1f5b69d47d485667d0701fb72af268"></span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4dotcE1T5int_tPK1T5int_tPK1T5int_t" title="einsums::blas::gpu::dotc::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dotc</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4dotcE1T5int_tPK1T5int_tPK1T5int_t" title="einsums::blas::gpu::dotc::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incx</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4dotcE1T5int_tPK1T5int_tPK1T5int_t" title="einsums::blas::gpu::dotc::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incy</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4dotcE1T5int_tPK1T5int_tPK1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the dot product of two vectors. For complex vector it is the conjugated dot product; (c|z)dotc in BLAS nomenclature.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – underlying data type </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> length of the vectors </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> first vector </p></li>
+<li><p><strong>incx</strong> – <strong>[in]</strong> how many elements to skip in x </p></li>
+<li><p><strong>y</strong> – <strong>[in]</strong> second vector </p></li>
+<li><p><strong>incy</strong> – <strong>[in]</strong> how many elements to skip in yo </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>result of the dot product</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4axpyEv5int_t1TPK1T5int_tP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4axpyE5int_t1TPK1T5int_tP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4axpyE5int_t1TPK1T5int_tP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a78b88bca6d11ad197b1620f52e43d2ff"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">axpy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4axpyEv5int_t1TPK1T5int_tP1T5int_t" title="einsums::blas::gpu::axpy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha_x</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4axpyEv5int_t1TPK1T5int_tP1T5int_t" title="einsums::blas::gpu::axpy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_x</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4axpyEv5int_t1TPK1T5int_tP1T5int_t" title="einsums::blas::gpu::axpy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4axpyEv5int_t1TPK1T5int_tP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Adds two vectors together with a scale factor. </p>
+<p>Computes the following.   <div class="math notranslate nohighlight">
+\[\mathbf{y} := \alpha\mathbf{x} + \mathbf{y}
+\]</div>
+</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements in the vectors. </p></li>
+<li><p><strong>alpha_x</strong> – <strong>[in]</strong> The scale factor for the input vector. </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> The input vector. </p></li>
+<li><p><strong>inc_x</strong> – <strong>[in]</strong> The skip value for the output vector. It can be negative to go in reverse, or zero to broadcast values to <code class="docutils literal notranslate"><span class="pre">y</span></code>. </p></li>
+<li><p><strong>y</strong> – <strong>[inout]</strong> The output vector. </p></li>
+<li><p><strong>inc_y</strong> – <strong>[in]</strong> The skip value for the output vector. It can be negative to go in reverse, or zero to sum over the elements of <code class="docutils literal notranslate"><span class="pre">x</span></code> .</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu5axpbyEv5int_t1TPK1T5int_t1TP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu5axpbyE5int_t1TPK1T5int_t1TP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu5axpbyE5int_t1TPK1T5int_t1TP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1aa23b8e642af0d717f4f4d61553665147"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">axpby</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5axpbyEv5int_t1TPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::axpby::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha_x</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5axpbyEv5int_t1TPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::axpby::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_x</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5axpbyEv5int_t1TPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::axpby::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5axpbyEv5int_t1TPK1T5int_t1TP1T5int_t" title="einsums::blas::gpu::axpby::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu5axpbyEv5int_t1TPK1T5int_t1TP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Adds two vectors together with a scale factor. </p>
+<p>Computes the following.   <div class="math notranslate nohighlight">
+\[\mathbf{y} := \alpha\mathbf{x} + \beta\mathbf{y}
+\]</div>
+</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements in the vectors. </p></li>
+<li><p><strong>alpha_x</strong> – <strong>[in]</strong> The scale factor for the input vector. </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> The input vector. </p></li>
+<li><p><strong>inc_x</strong> – <strong>[in]</strong> The skip value for the output vector. It can be negative to go in reverse, or zero to broadcast values to <code class="docutils literal notranslate"><span class="pre">y</span></code>. </p></li>
+<li><p><strong>b</strong> – <strong>[in]</strong> The scale factor for the output vector. </p></li>
+<li><p><strong>y</strong> – <strong>[inout]</strong> The output vector. </p></li>
+<li><p><strong>inc_y</strong> – <strong>[in]</strong> The skip value for the output vector. It can be negative to go in reverse, or zero to sum over the elements of <code class="docutils literal notranslate"><span class="pre">x</span></code> .</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu3gerEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu3gerE5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu3gerE5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1af8c3e507d88dcf2645c112cdc932088a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ger</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu3gerEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::ger::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu3gerEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::ger::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_x</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu3gerEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::ger::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_y</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu3gerEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::ger::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu3gerEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Performs a rank-1 update of a general matrix.</p>
+<p>The ?ger routines perform a matrix-vector operator defined as   <div class="math notranslate nohighlight">
+\[   \mathbf{A} := \alpha\mathbf{x}\mathbf{y}^T + \mathbf{A}
+\]</div>
+</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> The number of entries in <code class="docutils literal notranslate"><span class="pre">x</span></code>. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of entries in <code class="docutils literal notranslate"><span class="pre">y</span></code>. </p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> The scale factor for the outer product. </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> The left input vector. </p></li>
+<li><p><strong>inc_x</strong> – <strong>[in]</strong> The skip value for the left input. May be negative to go in reverse. </p></li>
+<li><p><strong>y</strong> – <strong>[in]</strong> The right input vector. </p></li>
+<li><p><strong>inc_y</strong> – <strong>[in]</strong> The skip value for the right input. May be negative to go in reverse. </p></li>
+<li><p><strong>a</strong> – <strong>[inout]</strong> The output matrix. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of <code class="docutils literal notranslate"><span class="pre">a</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">domain_error</span></span></span> – If either of the dimension parameters are negative or the leading dimension of the matrix is less than the number of columns. </p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If either of the vector increments are zero.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4gercEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4gercE5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4gercE5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a6df4b0fb4b39c9eaf1e8cf377498b7a1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gerc</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gercEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::gerc::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gercEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::gerc::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_x</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gercEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::gerc::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_y</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4gercEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::gerc::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4gercEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Performs a rank-1 update of a general matrix.</p>
+<p>The ?gerc routines perform a matrix-vector operator defined as   <div class="math notranslate nohighlight">
+\[   \mathbf{A} := \alpha\mathbf{x}\mathbf{y}^H + \mathbf{A}
+\]</div>
+</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handle. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> The number of entries in <code class="docutils literal notranslate"><span class="pre">x</span></code>. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of entries in <code class="docutils literal notranslate"><span class="pre">y</span></code>. </p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> The scale factor for the outer product. </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> The left input vector. </p></li>
+<li><p><strong>inc_x</strong> – <strong>[in]</strong> The skip value for the left input. May be negative to go in reverse. </p></li>
+<li><p><strong>y</strong> – <strong>[in]</strong> The right input vector. </p></li>
+<li><p><strong>inc_y</strong> – <strong>[in]</strong> The skip value for the right input. May be negative to go in reverse. </p></li>
+<li><p><strong>a</strong> – <strong>[inout]</strong> The output matrix. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of <code class="docutils literal notranslate"><span class="pre">a</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">domain_error</span></span></span> – If either of the dimension parameters are negative or the leading dimension of the matrix is less than the number of columns. </p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n">std</span></a><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If either of the vector increments are zero.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu5getrfE5int_t5int_t5int_tP1T5int_tPi">
+<span id="_CPPv3I0EN7einsums4blas3gpu5getrfE5int_t5int_tP1T5int_tPi"></span><span id="_CPPv2I0EN7einsums4blas3gpu5getrfE5int_t5int_tP1T5int_tPi"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a6e1de18233df7de8eda41db6ad213953"></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getrf</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5getrfE5int_t5int_t5int_tP1T5int_tPi" title="einsums::blas::gpu::getrf::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ipiv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu5getrfE5int_t5int_t5int_tP1T5int_tPi" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the LU factorization of a general M-by-N matrix A using partial pivoting with row int_terchanges.</p>
+<p>The factorization has the form   <div class="math notranslate nohighlight">
+\[  \mathbf{A} = \mathbf{PLU}
+\]</div>
+ where <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> is a permutation matrix, <span class="math notranslate nohighlight">\(\mathbf{L}\)</span> is lower triangular with unit diagonal elements (lower trapezoidal if m &gt; n) and <span class="math notranslate nohighlight">\(\mathbf{U}\)</span> is upper triangular (upper trapezoidal if m &lt; n).</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> The number of rows in the input. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of columns in the input. </p></li>
+<li><p><strong>a</strong> – <strong>[inout]</strong> The input matrix. On exit, it contains the upper and lower triangular matrices. The elemnts of the lower triangular matrix are not stored since they are all 1. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of the matrix. </p></li>
+<li><p><strong>ipiv</strong> – <strong>[out]</strong> The list of pivots.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success. If positive, the matrix is singular and the result should not be used for solving systems of equations. The decomposition was performed, though. If negative, one of the inputs had an invalid value. The absolute value indicates which input it is.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu5getriE5int_t5int_tP1T5int_tPiP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu5getriE5int_tP1T5int_tPiP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu5getriE5int_tP1T5int_tPiP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a0c36ee72a8473abbddd2f2e4bb8ff0c6"></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getri</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5getriE5int_t5int_tP1T5int_tPiP1T5int_t" title="einsums::blas::gpu::getri::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ipiv</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5getriE5int_t5int_tP1T5int_tPiP1T5int_t" title="einsums::blas::gpu::getri::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">c</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ldc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu5getriE5int_t5int_tP1T5int_tPiP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the inverse of a matrix using the LU factorization computed by getrf.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of rows and columns of the matrix. </p></li>
+<li><p><strong>a</strong> – <strong>[in]</strong> The input matrix after being processed by getrf. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of the matrix. </p></li>
+<li><p><strong>ipiv</strong> – <strong>[in]</strong> The pivots from getrf. </p></li>
+<li><p><strong>c</strong> – <strong>[out]</strong> The calculated inverse. </p></li>
+<li><p><strong>ldc</strong> – <strong>[in]</strong> The leading dimension of the output matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success. If positive, the matrix is singular and an inverse could not be computed. If negative, one of the inputs is invalid, and the absolute value indicates which input is bad.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu5lassqEv5int_tPK1T5int_tP14RemoveComplexTI1TEP14RemoveComplexTI1TE">
+<span id="_CPPv3I0EN7einsums4blas3gpu5lassqE5int_tPK1T5int_tP14RemoveComplexTI1TEP14RemoveComplexTI1TE"></span><span id="_CPPv2I0EN7einsums4blas3gpu5lassqE5int_tPK1T5int_tP14RemoveComplexTI1TEP14RemoveComplexTI1TE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a4694c82dd7501ba0921b2cdd9c3182dd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lassq</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5lassqEv5int_tPK1T5int_tP14RemoveComplexTI1TEP14RemoveComplexTI1TE" title="einsums::blas::gpu::lassq::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incx</span></span>, <a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5lassqEv5int_tPK1T5int_tP14RemoveComplexTI1TEP14RemoveComplexTI1TE" title="einsums::blas::gpu::lassq::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">scale</span></span>, <a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5lassqEv5int_tPK1T5int_tP14RemoveComplexTI1TEP14RemoveComplexTI1TE" title="einsums::blas::gpu::lassq::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sumsq</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu5lassqEv5int_tPK1T5int_tP14RemoveComplexTI1TEP14RemoveComplexTI1TE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the sum of the squares of the input vector without roundoff error.   <div class="math notranslate nohighlight">
+\[scale^2 sumsq := \left|\mathbf{x}\right|^2 + scale^2 sumsq
+\]</div>
+</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements in the vector. </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> The input vector. </p></li>
+<li><p><strong>incx</strong> – <strong>[in]</strong> The skip value for the vector. </p></li>
+<li><p><strong>scale</strong> – <strong>[inout]</strong> The scale value used to avoid overflow/underflow. It is also used as an input to continue a previous calculation. </p></li>
+<li><p><strong>sumsq</strong> – <strong>[inout]</strong> The result of the operation, scaled to avoid overflow/underflow. It is also used as an input to continue a previous calculation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4nrm2E14RemoveComplexTI1TE5int_tPK1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4nrm2E5int_tPK1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4nrm2E5int_tPK1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a122846baadb618211cebd3df3d4faa98"></span><a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4nrm2E14RemoveComplexTI1TE5int_tPK1T5int_t" title="einsums::blas::gpu::nrm2::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nrm2</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4nrm2E14RemoveComplexTI1TE5int_tPK1T5int_t" title="einsums::blas::gpu::nrm2::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4nrm2E14RemoveComplexTI1TE5int_tPK1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the Euclidean norm of a vector.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements in the vector. </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> The input vector. </p></li>
+<li><p><strong>incx</strong> – <strong>[in]</strong> The skip value for the vector.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The Euclidean norm of the vector.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu5gesvdEDacc5int_t5int_tP1T5int_tP14RemoveComplexTI1TEP1T5int_tP1T5int_tP1T">
+<span id="_CPPv3I0EN7einsums4blas3gpu5gesvdEcc5int_t5int_tP1T5int_tP14RemoveComplexTI1TEP1T5int_tP1T5int_tP1T"></span><span id="_CPPv2I0EN7einsums4blas3gpu5gesvdEcc5int_t5int_tP1T5int_tP14RemoveComplexTI1TEP1T5int_tP1T5int_tP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a8a0e9976e1013a1aa1c65e330fb47134"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gesvd</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jobu</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jobvt</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5gesvdEDacc5int_t5int_tP1T5int_tP14RemoveComplexTI1TEP1T5int_tP1T5int_tP1T" title="einsums::blas::gpu::gesvd::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5gesvdEDacc5int_t5int_tP1T5int_tP14RemoveComplexTI1TEP1T5int_tP1T5int_tP1T" title="einsums::blas::gpu::gesvd::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5gesvdEDacc5int_t5int_tP1T5int_tP14RemoveComplexTI1TEP1T5int_tP1T5int_tP1T" title="einsums::blas::gpu::gesvd::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">u</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ldu</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5gesvdEDacc5int_t5int_tP1T5int_tP14RemoveComplexTI1TEP1T5int_tP1T5int_tP1T" title="einsums::blas::gpu::gesvd::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vt</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ldvt</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5gesvdEDacc5int_t5int_tP1T5int_tP14RemoveComplexTI1TEP1T5int_tP1T5int_tP1T" title="einsums::blas::gpu::gesvd::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">superb</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu5gesvdEDacc5int_t5int_tP1T5int_tP14RemoveComplexTI1TEP1T5int_tP1T5int_tP1T" title="Link to this definition">#</a><br /></dt>
+<dd><p>Performs singular value decomposition for a matrix using the QR algorithm.</p>
+<p><div class="math notranslate nohighlight">
+\[\mathbf{A} = \mathbf{U\Sigma V}^T
+\]</div>
+</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>jobu</strong> – <strong>[in]</strong> Whether to compute the U matrix. <a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_case"><span class="std std-ref">Case</span></a> insensitive. Can be ‘a’, ‘s’, ‘o’, or ‘n’. </p></li>
+<li><p><strong>jobvt</strong> – <strong>[in]</strong> Whether to compute the transpose of the V matrix. <a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_case"><span class="std std-ref">Case</span></a> insensitive. Can be ‘a’, ‘s’, ‘o’, or ‘n’. </p></li>
+<li><p><strong>m</strong> – <strong>[in]</strong> The number of rows of the input matrix. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of columns of the input matrix. </p></li>
+<li><p><strong>a</strong> – <strong>[inout]</strong> The input matrix. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of the input matrix. </p></li>
+<li><p><strong>s</strong> – <strong>[out]</strong> The singular values output. </p></li>
+<li><p><strong>u</strong> – <strong>[out]</strong> The U matrix from the singular value decomposition. </p></li>
+<li><p><strong>ldu</strong> – <strong>[in]</strong> The leading dimension of U. </p></li>
+<li><p><strong>vt</strong> – <strong>[out]</strong> The transpose of the V matrix from the singular value decomposition. </p></li>
+<li><p><strong>ldvt</strong> – <strong>[in]</strong> The leading dimension of the transpose of the V matrix. </p></li>
+<li><p><strong>superb</strong> – <strong>[inout]</strong> Temporary storage area for intermediates in the computation.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success. If positive, the algorithm did not converge. If negative, then one of the parameters had a bad value. The absolute value of the return gives the parameter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu5geqrfE5int_t5int_t5int_tP1T5int_tP1T">
+<span id="_CPPv3I0EN7einsums4blas3gpu5geqrfE5int_t5int_tP1T5int_tP1T"></span><span id="_CPPv2I0EN7einsums4blas3gpu5geqrfE5int_t5int_tP1T5int_tP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a7a453b8d5889d332ecb1012e5f51799a"></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">geqrf</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5geqrfE5int_t5int_t5int_tP1T5int_tP1T" title="einsums::blas::gpu::geqrf::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5geqrfE5int_t5int_t5int_tP1T5int_tP1T" title="einsums::blas::gpu::geqrf::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tau</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu5geqrfE5int_t5int_t5int_tP1T5int_tP1T" title="Link to this definition">#</a><br /></dt>
+<dd><p>Set up for computing the QR decomposition of a matrix.</p>
+<p><div class="math notranslate nohighlight">
+\[\mathbf{A} = \mathbf{QR}
+\]</div>
+</p>
+<p>Here, <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> is an orthogonal matrix and <span class="math notranslate nohighlight">\(\mathbf{R}\)</span> is an upper triangular matrix.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> The number of rows in the input matrix. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of columns in the input matrix. </p></li>
+<li><p><strong>a</strong> – <strong>[inout]</strong> The input matrix. On exit, contains the data needed to compute the Q and R matrices. The entries on and above the diagonal are the entries of the R matrix. The rest is needed to find the Q matrix. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of the input matrix. </p></li>
+<li><p><strong>tau</strong> – <strong>[out]</strong> On exit, holds the Householder reflector parameters for computing the Q matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success. If negative, one of the inputs had a bad value, and the absolute value of the return tells you which one it was.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu5orgqrE5int_t5int_t5int_t5int_tP1T5int_tP1T">
+<span id="_CPPv3I0EN7einsums4blas3gpu5orgqrE5int_t5int_t5int_tP1T5int_tP1T"></span><span id="_CPPv2I0EN7einsums4blas3gpu5orgqrE5int_t5int_t5int_tP1T5int_tP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1aeaf963e5f4b77fe668b8c4a56c986558"></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">orgqr</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5orgqrE5int_t5int_t5int_t5int_tP1T5int_tP1T" title="einsums::blas::gpu::orgqr::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5orgqrE5int_t5int_t5int_t5int_tP1T5int_tP1T" title="einsums::blas::gpu::orgqr::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tau</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu5orgqrE5int_t5int_t5int_t5int_tP1T5int_tP1T" title="Link to this definition">#</a><br /></dt>
+<dd><p>Extract the Q matrix after a call to geqrf.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> The number of rows of the input matrix. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of columns in the input matrix. </p></li>
+<li><p><strong>k</strong> – <strong>[in]</strong> The number of elementary reflectors used in the calculation. </p></li>
+<li><p><strong>a</strong> – <strong>[inout]</strong> The input matrix after being processed by geqrf. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of the input matrix. </p></li>
+<li><p><strong>tau</strong> – <strong>[in]</strong> The scales for the elementary reflectors from geqrf.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success. If negative, then one of the inputs had an invalid value, and the absolute value indicates which parameter it is.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4copyEv5int_tPK1T5int_tP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4copyE5int_tPK1T5int_tP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4copyE5int_tPK1T5int_tP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a2b7f682d1a3771d1dee7df7db4bbcd46"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4copyEv5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::copy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_x</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4copyEv5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::copy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">inc_y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4copyEv5int_tPK1T5int_tP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Copy data from one vector to another.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements to copy. </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> The input vector. </p></li>
+<li><p><strong>inc_x</strong> – <strong>[in]</strong> The skip value for the input vector. If negative, the vector is traversed backwards. If zero, the values are broadcast to the output vector. </p></li>
+<li><p><strong>y</strong> – <strong>[out]</strong> The output vector. </p></li>
+<li><p><strong>inc_y</strong> – <strong>[in]</strong> The skip value for the output vector. If negative, the vector is traversed backwards.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu5lasclE5int_tc5int_t5int_t1T1T5int_t5int_tP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu5lasclEc5int_t5int_t1T1T5int_t5int_tP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu5lasclEc5int_t5int_t1T1T5int_t5int_tP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a4907b28fe54d891ef4fa12f210e3765d"></span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lascl</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">kl</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ku</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5lasclE5int_tc5int_t5int_t1T1T5int_t5int_tP1T5int_t" title="einsums::blas::gpu::lascl::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">cfrom</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5lasclE5int_tc5int_t5int_t1T1T5int_t5int_tP1T5int_t" title="einsums::blas::gpu::lascl::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">cto</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5lasclE5int_tc5int_t5int_t1T1T5int_t5int_tP1T5int_t" title="einsums::blas::gpu::lascl::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lda</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu5lasclE5int_tc5int_t5int_t1T1T5int_t5int_tP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Scales a general matrix. The scale factor is <code class="docutils literal notranslate"> <span class="pre">cto</span> <span class="pre">/</span> <span class="pre">cfrom</span> </code>, but the scale is performed without overflow/underflow.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>type</strong> – <strong>[in]</strong> The type of matrix. <a class="reference internal" href="../../TypeSupport/api/TypeSwitch.html#structeinsums_1_1_case"><span class="std std-ref">Case</span></a> insensitive. ‘g’ is for general matrices, ‘l’ is for lower triangular matrices, ‘u’ if for upper triangular matrices, ‘h’ is for hessenberg matrices, ‘b’ is for symmetric band matrices with lower bandwidth <code class="docutils literal notranslate"><span class="pre">kl</span></code> and upper bandwidth of <code class="docutils literal notranslate"><span class="pre">ku</span></code> and with only the lower half stored, ‘q’ is the same as ‘b’ but with the upper half stored instead, and ‘z’ is the same as ‘b’ but with a more complicated storage scheme. </p></li>
+<li><p><strong>kl</strong> – <strong>[in]</strong> The lower bandwidth of the matrix. Only used if the type is ‘b’, ‘q’, or ‘z’. </p></li>
+<li><p><strong>ku</strong> – <strong>[in]</strong> The upper bandwidth of the matrix. Only used if the type is ‘b’, ‘q’, or ‘z’. </p></li>
+<li><p><strong>cfrom</strong> – <strong>[in]</strong> The denominator for the scale. </p></li>
+<li><p><strong>cto</strong> – <strong>[in]</strong> The numerator for the scale. </p></li>
+<li><p><strong>m</strong> – <strong>[in]</strong> The number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of columns in the matrix. </p></li>
+<li><p><strong>A</strong> – <strong>[inout]</strong> The matrix being scaled. </p></li>
+<li><p><strong>lda</strong> – <strong>[in]</strong> The leading dimension of the matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success. If negative, then one of the parameters had an invalid value. The absolute value of the return indicates which parameter it was.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu7dirprodEv5int_t1TPK1T5int_tPK1T5int_tP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu7dirprodE5int_t1TPK1T5int_tPK1T5int_tP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu7dirprodE5int_t1TPK1T5int_tPK1T5int_tP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1a2af280029b2eeda46c4743b58144dbde"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dirprod</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu7dirprodEv5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::dirprod::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu7dirprodEv5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::dirprod::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incx</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu7dirprodEv5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::dirprod::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incy</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu7dirprodEv5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="einsums::blas::gpu::dirprod::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">z</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incz</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu7dirprodEv5int_t1TPK1T5int_tPK1T5int_tP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the direct product between two vectors.</p>
+<p><div class="math notranslate nohighlight">
+\[z_i := z_i + \alpha x_i y_i
+\]</div>
+</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements in the vectors. </p></li>
+<li><p><strong>alpha</strong> – <strong>[in]</strong> The scale factor for the product. </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> The first input vector. </p></li>
+<li><p><strong>incx</strong> – <strong>[in]</strong> The skip value for the first vector. </p></li>
+<li><p><strong>y</strong> – <strong>[in]</strong> The second input vector. </p></li>
+<li><p><strong>incy</strong> – <strong>[in]</strong> The skip value for the second vector. </p></li>
+<li><p><strong>z</strong> – <strong>[inout]</strong> The accumulation vector. </p></li>
+<li><p><strong>incz</strong> – <strong>[in]</strong> The skip value for the accumulation vector.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4asumE14RemoveComplexTI1TE5int_tPK1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4asumE5int_tPK1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4asumE5int_tPK1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1abc946e5e2f616ffec0a6b9c9fdec95ac"></span><a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4asumE14RemoveComplexTI1TE5int_tPK1T5int_t" title="einsums::blas::gpu::asum::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">asum</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4asumE14RemoveComplexTI1TE5int_tPK1T5int_t" title="einsums::blas::gpu::asum::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4asumE14RemoveComplexTI1TE5int_tPK1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the sum of the absolute values of the input vector. If the vector is complex, then it is the sum of the absolute values of the components, not the magnitudes.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements. </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> The vector to process. </p></li>
+<li><p><strong>incx</strong> – <strong>[in]</strong> The skip value for the vector.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The sum of the absolute values of the inputs as stated above.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu4sum1E14RemoveComplexTI1TE5int_tPK1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu4sum1E5int_tPK1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu4sum1E5int_tPK1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1af0d648d4b325148627cfcb90619d59c0"></span><a class="reference internal" href="../../Concepts/api/Complex.html#_CPPv4I0EN7einsums14RemoveComplexTE" title="einsums::RemoveComplexT"><span class="n"><span class="pre">RemoveComplexT</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4sum1E14RemoveComplexTI1TE5int_tPK1T5int_t" title="einsums::blas::gpu::sum1::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sum1</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu4sum1E14RemoveComplexTI1TE5int_tPK1T5int_t" title="einsums::blas::gpu::sum1::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu4sum1E14RemoveComplexTI1TE5int_tPK1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the sum of the absolute values of the input vector. If the vector is complex, then it is the sum of the magnitudes.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements. </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> The vector to process. </p></li>
+<li><p><strong>incx</strong> – <strong>[in]</strong> The skip value for the vector.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The sum of the absolute values of the inputs as stated above.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums4blas3gpu5lacgvEv5int_tP1T5int_t">
+<span id="_CPPv3I0EN7einsums4blas3gpu5lacgvE5int_tP1T5int_t"></span><span id="_CPPv2I0EN7einsums4blas3gpu5lacgvE5int_tP1T5int_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="hip_b_l_a_s_8hpp_1ae203e1b7303b4bb96113359d7a5e41b8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lacgv</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums4blas3gpu5lacgvEv5int_tP1T5int_t" title="einsums::blas::gpu::lacgv::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../../BLASBase/api/Types.html#_CPPv4N7einsums4blas5int_tE" title="einsums::blas::int_t"><span class="n"><span class="pre">int_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">incx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7einsums4blas3gpu5lacgvEv5int_tP1T5int_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Take the conjugate of a vector. Does nothing if the vector is real.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type this function handles. </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n</strong> – <strong>[in]</strong> The number of elements in the vector. </p></li>
+<li><p><strong>x</strong> – <strong>[in]</strong> The input vector. </p></li>
+<li><p><strong>incx</strong> – <strong>[in]</strong> The skip value for the vector.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv47einsums"><code class="docutils literal notranslate"><span class="pre">einsums</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums4blasE"><code class="docutils literal notranslate"><span class="pre">einsums::blas</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums4blas3gpuE"><code class="docutils literal notranslate"><span class="pre">einsums::blas::gpu</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4gemmEvcc5int_t5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t"><code class="docutils literal notranslate"><span class="pre">gemm()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4gemvEvc5int_t5int_t1TPK1T5int_tPK1T5int_t1TP1T5int_t"><code class="docutils literal notranslate"><span class="pre">gemv()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4syevE5int_tcc5int_tP1T5int_tP1TP1T5int_t"><code class="docutils literal notranslate"><span class="pre">syev()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4heevE5int_tcc5int_tPNSt7complexI1TEE5int_tP1TPNSt7complexI1TEE5int_t"><code class="docutils literal notranslate"><span class="pre">heev()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4gesvE5int_t5int_t5int_tP1T5int_tPiP1T5int_tP1T5int_t"><code class="docutils literal notranslate"><span class="pre">gesv()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4scalEv5int_tK1TP1T5int_t"><code class="docutils literal notranslate"><span class="pre">scal()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_7ComplexEN7einsums4blas3gpu4scalEv5int_tK14RemoveComplexTI1TEP1T5int_t"><code class="docutils literal notranslate"><span class="pre">scal()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4rsclEv5int_tK1TP1T5int_t"><code class="docutils literal notranslate"><span class="pre">rscl()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_7ComplexEN7einsums4blas3gpu4rsclEv5int_tK14RemoveComplexTI1TEP1T5int_t"><code class="docutils literal notranslate"><span class="pre">rscl()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu3dotE1T5int_tPK1T5int_tPK1T5int_t"><code class="docutils literal notranslate"><span class="pre">dot()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4dotcE1T5int_tPK1T5int_tPK1T5int_t"><code class="docutils literal notranslate"><span class="pre">dotc()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4axpyEv5int_t1TPK1T5int_tP1T5int_t"><code class="docutils literal notranslate"><span class="pre">axpy()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu5axpbyEv5int_t1TPK1T5int_t1TP1T5int_t"><code class="docutils literal notranslate"><span class="pre">axpby()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu3gerEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t"><code class="docutils literal notranslate"><span class="pre">ger()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4gercEv5int_t5int_t1TPK1T5int_tPK1T5int_tP1T5int_t"><code class="docutils literal notranslate"><span class="pre">gerc()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu5getrfE5int_t5int_t5int_tP1T5int_tPi"><code class="docutils literal notranslate"><span class="pre">getrf()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu5getriE5int_t5int_tP1T5int_tPiP1T5int_t"><code class="docutils literal notranslate"><span class="pre">getri()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu5lassqEv5int_tPK1T5int_tP14RemoveComplexTI1TEP14RemoveComplexTI1TE"><code class="docutils literal notranslate"><span class="pre">lassq()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4nrm2E14RemoveComplexTI1TE5int_tPK1T5int_t"><code class="docutils literal notranslate"><span class="pre">nrm2()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu5gesvdEDacc5int_t5int_tP1T5int_tP14RemoveComplexTI1TEP1T5int_tP1T5int_tP1T"><code class="docutils literal notranslate"><span class="pre">gesvd()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu5geqrfE5int_t5int_t5int_tP1T5int_tP1T"><code class="docutils literal notranslate"><span class="pre">geqrf()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu5orgqrE5int_t5int_t5int_t5int_tP1T5int_tP1T"><code class="docutils literal notranslate"><span class="pre">orgqr()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4copyEv5int_tPK1T5int_tP1T5int_t"><code class="docutils literal notranslate"><span class="pre">copy()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu5lasclE5int_tc5int_t5int_t1T1T5int_t5int_tP1T5int_t"><code class="docutils literal notranslate"><span class="pre">lascl()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu7dirprodEv5int_t1TPK1T5int_tPK1T5int_tP1T5int_t"><code class="docutils literal notranslate"><span class="pre">dirprod()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4asumE14RemoveComplexTI1TE5int_tPK1T5int_t"><code class="docutils literal notranslate"><span class="pre">asum()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu4sum1E14RemoveComplexTI1TE5int_tPK1T5int_t"><code class="docutils literal notranslate"><span class="pre">sum1()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums4blas3gpu5lacgvEv5int_tP1T5int_t"><code class="docutils literal notranslate"><span class="pre">lacgv()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

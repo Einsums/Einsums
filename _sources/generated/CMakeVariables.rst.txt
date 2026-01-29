@@ -57,6 +57,7 @@ Build Targets options
 ---------------------
 
 * :option:`BUILD_SHARED_LIBS:BOOL`
+* :option:`EINSUMS_USE_LIBRETT:BOOL`
 * :option:`EINSUMS_WITH_BINARY_DIR:PATH`
 * :option:`EINSUMS_WITH_COMPILE_ONLY_TESTS:BOOL`
 * :option:`EINSUMS_WITH_CUDA:BOOL`
@@ -84,6 +85,10 @@ Build Targets options
 .. option:: BUILD_SHARED_LIBS:BOOL
 
    Build using shared libraries (default: ON)
+
+.. option:: EINSUMS_USE_LIBRETT:BOOL
+
+   Whether to build Einsums with LibreTT for GPU tensor contractions.
 
 .. option:: EINSUMS_WITH_BINARY_DIR:PATH
 

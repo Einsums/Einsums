@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Dec 06, 2025"/>
+    <meta name="docbuild:last-update" content="Jan 29, 2026"/>
   </head>
   
   
@@ -157,6 +157,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -247,6 +254,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../overview.html">
     Developers' Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
   </a>
 </li>
 
@@ -362,7 +376,7 @@
 <dd><div class="docutils container">
 <em>#include &lt;TensorBase.hpp&gt;</em></div>
 <p>Specifies that the tensor type can be used by einsum to select different routines other than the generic algorithm. </p>
-<p>Subclassed by <a class="reference internal" href="../../Tensor/api/DeviceTensor.html#structeinsums_1_1_device_tensor_3_01_t_00_010_01_4"><span class="std std-ref">einsums::DeviceTensor&lt; T, 0 &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor"><span class="std std-ref">einsums::Tensor&lt; T, Rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor_3_01_t_00_010_01_4"><span class="std std-ref">einsums::Tensor&lt; T, 0 &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/BlockTensor.html#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">einsums::tensor_base::BlockTensor&lt; T, Rank, Tensor&lt; T, Rank &gt; &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1tensor__base_1_1_tiled_tensor"><span class="std std-ref">einsums::tensor_base::TiledTensor&lt; T, Rank, einsums::Tensor&lt; T, Rank &gt; &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1tensor__base_1_1_tiled_tensor"><span class="std std-ref">einsums::tensor_base::TiledTensor&lt; T, Rank, einsums::TensorView&lt; T, Rank &gt; &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/DeviceTensor.html#structeinsums_1_1_device_tensor"><span class="std std-ref">einsums::DeviceTensor&lt; T, rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/DeviceTensor.html#structeinsums_1_1_device_tensor_3_01_t_00_010_01_4"><span class="std std-ref">einsums::DeviceTensor&lt; T, 0 &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/DeviceTensor.html#structeinsums_1_1_device_tensor_view"><span class="std std-ref">einsums::DeviceTensorView&lt; T, rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor"><span class="std std-ref">einsums::Tensor&lt; T, rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor_3_01_t_00_010_01_4"><span class="std std-ref">einsums::Tensor&lt; T, 0 &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor_view"><span class="std std-ref">einsums::TensorView&lt; T, rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/BlockTensor.html#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">einsums::tensor_base::BlockTensor&lt; T, rank, TensorType &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1tensor__base_1_1_tiled_tensor"><span class="std std-ref">einsums::tensor_base::TiledTensor&lt; T, rank, TensorType &gt;</span></a></p>
+<p>Subclassed by <a class="reference internal" href="../../Tensor/api/DeviceTensor.html#structeinsums_1_1_device_tensor_3_01_t_00_010_01_4"><span class="std std-ref">einsums::DeviceTensor&lt; T, 0 &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_general_tensor_3_01_t_00_010_00_01_alloc_01_4"><span class="std std-ref">einsums::GeneralTensor&lt; T, 0, Alloc &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/BlockTensor.html#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">einsums::tensor_base::BlockTensor&lt; T, Rank, Tensor&lt; T, Rank &gt; &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1tensor__base_1_1_tiled_tensor"><span class="std std-ref">einsums::tensor_base::TiledTensor&lt; T, Rank, einsums::Tensor&lt; T, Rank &gt; &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1tensor__base_1_1_tiled_tensor"><span class="std std-ref">einsums::tensor_base::TiledTensor&lt; T, Rank, einsums::TensorView&lt; T, Rank &gt; &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/DeviceTensor.html#structeinsums_1_1_device_tensor"><span class="std std-ref">einsums::DeviceTensor&lt; T, rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/DeviceTensor.html#structeinsums_1_1_device_tensor_3_01_t_00_010_01_4"><span class="std std-ref">einsums::DeviceTensor&lt; T, 0 &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/DeviceTensor.html#structeinsums_1_1_device_tensor_view"><span class="std std-ref">einsums::DeviceTensorView&lt; T, rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_general_tensor"><span class="std std-ref">einsums::GeneralTensor&lt; T, rank, Alloc &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_general_tensor_3_01_t_00_010_00_01_alloc_01_4"><span class="std std-ref">einsums::GeneralTensor&lt; T, 0, Alloc &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor_view"><span class="std std-ref">einsums::TensorView&lt; T, rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/BlockTensor.html#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">einsums::tensor_base::BlockTensor&lt; T, rank, TensorType &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1tensor__base_1_1_tiled_tensor"><span class="std std-ref">einsums::tensor_base::TiledTensor&lt; T, rank, TensorType &gt;</span></a></p>
 </dd></dl>
 
 <dl class="cpp struct">
@@ -381,7 +395,7 @@
 <dd><div class="docutils container">
 <em>#include &lt;TensorBase.hpp&gt;</em></div>
 <p>Represents a tensor only available to the core. </p>
-<p>Subclassed by <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor"><span class="std std-ref">einsums::Tensor&lt; T, Rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor_3_01_t_00_010_01_4"><span class="std std-ref">einsums::Tensor&lt; T, 0 &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/FunctionTensor.html#structeinsums_1_1tensor__base_1_1_function_tensor"><span class="std std-ref">einsums::tensor_base::FunctionTensor&lt; T, Rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/FunctionTensor.html#structeinsums_1_1tensor__base_1_1_function_tensor"><span class="std std-ref">einsums::tensor_base::FunctionTensor&lt; T, UnderlyingRank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/ArithmeticTensor.html#structeinsums_1_1_arithmetic_tensor"><span class="std std-ref">einsums::ArithmeticTensor&lt; T, rank, Args &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/BlockTensor.html#structeinsums_1_1_block_tensor"><span class="std std-ref">einsums::BlockTensor&lt; T, Rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/RuntimeTensor.html#structeinsums_1_1_runtime_tensor"><span class="std std-ref">einsums::RuntimeTensor&lt; T &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/RuntimeTensor.html#structeinsums_1_1_runtime_tensor_view"><span class="std std-ref">einsums::RuntimeTensorView&lt; T &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor"><span class="std std-ref">einsums::Tensor&lt; T, rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor_3_01_t_00_010_01_4"><span class="std std-ref">einsums::Tensor&lt; T, 0 &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor_view"><span class="std std-ref">einsums::TensorView&lt; T, rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1_tiled_tensor"><span class="std std-ref">einsums::TiledTensor&lt; T, Rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1_tiled_tensor_view"><span class="std std-ref">einsums::TiledTensorView&lt; T, Rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/FunctionTensor.html#structeinsums_1_1tensor__base_1_1_function_tensor"><span class="std std-ref">einsums::tensor_base::FunctionTensor&lt; T, rank &gt;</span></a></p>
+<p>Subclassed by <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_general_tensor_3_01_t_00_010_00_01_alloc_01_4"><span class="std std-ref">einsums::GeneralTensor&lt; T, 0, Alloc &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/FunctionTensor.html#structeinsums_1_1tensor__base_1_1_function_tensor"><span class="std std-ref">einsums::tensor_base::FunctionTensor&lt; T, Rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/FunctionTensor.html#structeinsums_1_1tensor__base_1_1_function_tensor"><span class="std std-ref">einsums::tensor_base::FunctionTensor&lt; T, UnderlyingRank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/ArithmeticTensor.html#structeinsums_1_1_arithmetic_tensor"><span class="std std-ref">einsums::ArithmeticTensor&lt; T, rank, Args &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/BlockTensor.html#structeinsums_1_1_block_tensor"><span class="std std-ref">einsums::BlockTensor&lt; T, Rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/RuntimeTensor.html#structeinsums_1_1_general_runtime_tensor"><span class="std std-ref">einsums::GeneralRuntimeTensor&lt; T, Alloc &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_general_tensor"><span class="std std-ref">einsums::GeneralTensor&lt; T, rank, Alloc &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_general_tensor_3_01_t_00_010_00_01_alloc_01_4"><span class="std std-ref">einsums::GeneralTensor&lt; T, 0, Alloc &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/RuntimeTensor.html#structeinsums_1_1_runtime_tensor_view"><span class="std std-ref">einsums::RuntimeTensorView&lt; T &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/Tensor.html#structeinsums_1_1_tensor_view"><span class="std std-ref">einsums::TensorView&lt; T, rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1_tiled_tensor"><span class="std std-ref">einsums::TiledTensor&lt; T, Rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/TiledTensor.html#structeinsums_1_1_tiled_tensor_view"><span class="std std-ref">einsums::TiledTensorView&lt; T, Rank &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/FunctionTensor.html#structeinsums_1_1tensor__base_1_1_function_tensor"><span class="std std-ref">einsums::tensor_base::FunctionTensor&lt; T, rank &gt;</span></a></p>
 </dd></dl>
 
 <dl class="cpp struct">
@@ -396,7 +410,7 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums11tensor_base19RuntimeTensorNoTypeE">
 <span id="_CPPv3N7einsums11tensor_base19RuntimeTensorNoTypeE"></span><span id="_CPPv2N7einsums11tensor_base19RuntimeTensorNoTypeE"></span><span id="einsums::tensor_base::RuntimeTensorNoType"></span><span class="target" id="classeinsums_1_1tensor__base_1_1_runtime_tensor_no_type"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RuntimeTensorNoType</span></span></span><a class="headerlink" href="#_CPPv4N7einsums11tensor_base19RuntimeTensorNoTypeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Subclassed by <a class="reference internal" href="../../Tensor/api/RuntimeTensor.html#structeinsums_1_1_runtime_tensor"><span class="std std-ref">einsums::RuntimeTensor&lt; T &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/RuntimeTensor.html#structeinsums_1_1_runtime_tensor_view"><span class="std std-ref">einsums::RuntimeTensorView&lt; T &gt;</span></a></p>
+<dd><p>Subclassed by <a class="reference internal" href="../../Tensor/api/RuntimeTensor.html#structeinsums_1_1_general_runtime_tensor"><span class="std std-ref">einsums::GeneralRuntimeTensor&lt; T, Alloc &gt;</span></a>, <a class="reference internal" href="../../Tensor/api/RuntimeTensor.html#structeinsums_1_1_runtime_tensor_view"><span class="std std-ref">einsums::RuntimeTensorView&lt; T &gt;</span></a></p>
 </dd></dl>
 
 <dl class="cpp class">
@@ -491,7 +505,7 @@
 
   <p class="copyright">
     
-      © Copyright 2022-2025, Einsums Developers.
+      © Copyright 2022-2026, Einsums Developers.
       <br/>
     
   </p>

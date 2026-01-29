@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Dec 06, 2025"/>
+    <meta name="docbuild:last-update" content="Jan 29, 2026"/>
   </head>
   
   
@@ -160,6 +160,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -253,6 +260,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -295,6 +309,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLAS/docs/index.html">BLAS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLASBase/docs/index.html">BLASBase</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BlockManager/docs/index.html">Einsums BlockManager</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">BufferAllocator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/CommandLine/docs/index.html">Einsums CommandLine</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
@@ -322,6 +337,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/TypeSupport/docs/index.html">TypeSupport</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Utilities/docs/index.html">Utilities</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Version/docs/index.html">Einsums Version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/hipBLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/hipBLASVendor/docs/index.html">hipBLASVendor</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/todo.html">Einsums Library TODO</a></li>
@@ -479,7 +496,7 @@ stride is more than one element (usually).</p>
 <dt class="sig sig-object py" id="einsums.core.EinsumsGenericPlan.execute">
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsGenericPlan.execute" title="Link to this definition">#</a></dt>
 <dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
-as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects, lists of buffer objects, or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
 If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
 the objects, as they may become desynchronized.</p>
 <div class="versionadded">
@@ -502,7 +519,7 @@ The form of the dot product is this: <span class="math notranslate nohighlight">
 <dt class="sig sig-object py" id="einsums.core.EinsumsDotPlan.execute">
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsDotPlan.execute" title="Link to this definition">#</a></dt>
 <dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
-as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects, lists of buffer objects, or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
 If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
 the objects, as they may become desynchronized.</p>
 <div class="versionadded">
@@ -524,7 +541,7 @@ the objects, as they may become desynchronized.</p>
 <dt class="sig sig-object py" id="einsums.core.EinsumsDirectProductPlan.execute">
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsDirectProductPlan.execute" title="Link to this definition">#</a></dt>
 <dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
-as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects, lists of buffer objects, or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
 If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
 the objects, as they may become desynchronized.</p>
 <div class="versionadded">
@@ -546,7 +563,7 @@ The ideal form of the direct product is this: <span class="math notranslate nohi
 <dt class="sig sig-object py" id="einsums.core.EinsumsGerPlan.execute">
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsGerPlan.execute" title="Link to this definition">#</a></dt>
 <dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
-as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects, lists of buffer objects, or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
 If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
 the objects, as they may become desynchronized.</p>
 <div class="versionadded">
@@ -568,7 +585,7 @@ The ideal form of the direct product is this: <span class="math notranslate nohi
 <dt class="sig sig-object py" id="einsums.core.EinsumsGemvPlan.execute">
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsGemvPlan.execute" title="Link to this definition">#</a></dt>
 <dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
-as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects, lists of buffer objects, or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
 If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
 the objects, as they may become desynchronized.</p>
 <div class="versionadded">
@@ -590,7 +607,7 @@ The ideal form of the direct product is this: <span class="math notranslate nohi
 <dt class="sig sig-object py" id="einsums.core.EinsumsGemmPlan.execute">
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsGemmPlan.execute" title="Link to this definition">#</a></dt>
 <dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
-as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects, lists of buffer objects, or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
 If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
 the objects, as they may become desynchronized.</p>
 <div class="versionadded">
@@ -702,7 +719,7 @@ the objects, as they may become desynchronized.</p>
 
   <p class="copyright">
     
-      © Copyright 2022-2025, Einsums Developers.
+      © Copyright 2022-2026, Einsums Developers.
       <br/>
     
   </p>

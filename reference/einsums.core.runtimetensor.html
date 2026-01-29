@@ -55,7 +55,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Dec 06, 2025"/>
+    <meta name="docbuild:last-update" content="Jan 29, 2026"/>
   </head>
   
   
@@ -159,6 +159,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -252,6 +259,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -294,6 +308,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLAS/docs/index.html">BLAS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLASBase/docs/index.html">BLASBase</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BlockManager/docs/index.html">Einsums BlockManager</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">BufferAllocator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/CommandLine/docs/index.html">Einsums CommandLine</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
@@ -321,6 +336,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/TypeSupport/docs/index.html">TypeSupport</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Utilities/docs/index.html">Utilities</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/Version/docs/index.html">Einsums Version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/hipBLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libs/Einsums/hipBLASVendor/docs/index.html">hipBLASVendor</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/todo.html">Einsums Library TODO</a></li>
@@ -452,7 +469,7 @@ much code to itself.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">RuntimeTensorX</span></span><a class="headerlink" href="#einsums.core.RuntimeTensorX" title="Link to this definition">#</a></dt>
 <dd><p>These are the tensor classes that allow the Einsums Python code to interface with the C++ library.
 It has a runtime-computed rank, since compile-time computed ranks are not available in Python. This
-wraps the <a class="reference internal" href="../libs/Einsums/Tensor/api/RuntimeTensor.html#_CPPv4I0EN7einsums13RuntimeTensorE" title="einsums::RuntimeTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::RuntimeTensor</span></code></a> class with a trampoline class provided by <a class="reference internal" href="../libs/EinsumsPy/Tensor/api/PyTensor.html#_CPPv4I0EN7einsums6python8PyTensorE" title="einsums::python::PyTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::python::PyTensor</span></code></a>.</p>
+wraps the <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::RuntimeTensor</span></code> class with a trampoline class provided by <a class="reference internal" href="../libs/EinsumsPy/Tensor/api/PyTensor.html#_CPPv4I0EN7einsums6python8PyTensorE" title="einsums::python::PyTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::python::PyTensor</span></code></a>.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
 </div>
@@ -514,7 +531,7 @@ and its data will be copied from this object.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.RuntimeTensorX.zero">
 <span class="sig-name descname"><span class="pre">zero</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.RuntimeTensorX.zero" title="Link to this definition">#</a></dt>
-<dd><p>Zero out the data in the tensor. Wraps <a class="reference internal" href="../libs/Einsums/Tensor/api/RuntimeTensor.html#_CPPv4N7einsums13RuntimeTensor4zeroEv" title="einsums::RuntimeTensor::zero"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::RuntimeTensor::zero</span></code></a>.</p>
+<dd><p>Zero out the data in the tensor. Wraps <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::RuntimeTensor::zero</span></code>.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
 </div>
@@ -523,7 +540,7 @@ and its data will be copied from this object.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="einsums.core.RuntimeTensorX.set_all">
 <span class="sig-name descname"><span class="pre">set_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.RuntimeTensorX.set_all" title="Link to this definition">#</a></dt>
-<dd><p>Set all values in the tensor to the value passed to the function. Wraps <a class="reference internal" href="../libs/Einsums/Tensor/api/RuntimeTensor.html#_CPPv4N7einsums13RuntimeTensor7set_allE1T" title="einsums::RuntimeTensor::set_all"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::RuntimeTensor::set_all</span></code></a></p>
+<dd><p>Set all values in the tensor to the value passed to the function. Wraps <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::RuntimeTensor::set_all</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>value</strong> – The value to fill the tensor with.</p>
@@ -1014,7 +1031,7 @@ These will create a new tensor before operating and will return that new tensor.
 
   <p class="copyright">
     
-      © Copyright 2022-2025, Einsums Developers.
+      © Copyright 2022-2026, Einsums Developers.
       <br/>
     
   </p>

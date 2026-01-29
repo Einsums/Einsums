@@ -51,11 +51,11 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="EinsumsPy" href="../EinsumsPy/index.html" />
-    <link rel="prev" title="Einsums Version" href="Version/docs/index.html" />
+    <link rel="prev" title="hipBLASVendor" href="hipBLASVendor/docs/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Dec 06, 2025"/>
+    <meta name="docbuild:last-update" content="Jan 29, 2026"/>
   </head>
   
   
@@ -159,6 +159,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -252,6 +259,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -294,6 +308,7 @@
 <li class="toctree-l4"><a class="reference internal" href="BLAS/docs/index.html">BLAS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="BLASBase/docs/index.html">BLASBase</a></li>
 <li class="toctree-l4"><a class="reference internal" href="BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="BlockManager/docs/index.html">Einsums BlockManager</a></li>
 <li class="toctree-l4"><a class="reference internal" href="BufferAllocator/docs/index.html">BufferAllocator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CommandLine/docs/index.html">Einsums CommandLine</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Concepts/docs/index.html">Concepts</a></li>
@@ -321,6 +336,8 @@
 <li class="toctree-l4"><a class="reference internal" href="TypeSupport/docs/index.html">TypeSupport</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Utilities/docs/index.html">Utilities</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Version/docs/index.html">Einsums Version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hipBLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hipBLASVendor/docs/index.html">hipBLASVendor</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">Einsums Library TODO</a></li>
@@ -457,14 +474,14 @@ a sign that the todo list is finished.</p>
 
 <dl>
 <dt class="sig sig-object cpp">
-<span class="pre">Member</span> <a class="reference internal" href="RuntimeConfiguration/api/RuntimeConfiguration.html#structeinsums_1_1_runtime_configuration_1a29f1792000de3bdab82a3a91460bb09d"><span class="std std-ref"><span class="pre">einsums::RuntimeConfiguration::original</span></span></a></dt>
-<dd><p><span class="target" id="todo_1_todo000006"></span>Document. </p>
+<span class="pre">Member</span> <a class="reference internal" href="Tensor/api/RuntimeTensor.html#structeinsums_1_1_general_runtime_tensor_1a63dc0eb2ac88a065dbd9b2991e05cede"><span class="std std-ref"><span class="pre">einsums::GeneralRuntimeTensor&lt;</span> <span class="pre">T,</span> <span class="pre">Alloc</span> <span class="pre">&gt;::operator()</span></span></a>&#160; <span class="pre">(Args</span> <span class="pre">const</span> <span class="pre">&amp;...args)</span></dt>
+<dd><p><span class="target" id="todo_1_todo000005"></span>std::variant can’t handle references. We may be able to make our own, but for right now, this will not be able to handle the wrong number of arguments.  </p>
 </dd></dl>
 
 <dl>
 <dt class="sig sig-object cpp">
-<span class="pre">Member</span> <a class="reference internal" href="Tensor/api/RuntimeTensor.html#structeinsums_1_1_runtime_tensor_1a32d2101821623359cc3064b1f6861e43"><span class="std std-ref"><span class="pre">einsums::RuntimeTensor&lt;</span> <span class="pre">T</span> <span class="pre">&gt;::operator()</span></span></a>&#160; <span class="pre">(Args</span> <span class="pre">const</span> <span class="pre">&amp;...args)</span></dt>
-<dd><p><span class="target" id="todo_1_todo000005"></span>std::variant can’t handle references. We may be able to make our own, but for right now, this will not be able to handle the wrong number of arguments.  </p>
+<span class="pre">Member</span> <a class="reference internal" href="RuntimeConfiguration/api/RuntimeConfiguration.html#structeinsums_1_1_runtime_configuration_1a29f1792000de3bdab82a3a91460bb09d"><span class="std std-ref"><span class="pre">einsums::RuntimeConfiguration::original</span></span></a></dt>
+<dd><p><span class="target" id="todo_1_todo000006"></span>Document. </p>
 </dd></dl>
 
 <dl>
@@ -489,12 +506,12 @@ a sign that the todo list is finished.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="Version/docs/index.html"
+       href="hipBLASVendor/docs/index.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Einsums Version</p>
+        <p class="prev-next-title">hipBLASVendor</p>
       </div>
     </a>
     <a class="right-next"
@@ -554,7 +571,7 @@ a sign that the todo list is finished.</p>
 
   <p class="copyright">
     
-      © Copyright 2022-2025, Einsums Developers.
+      © Copyright 2022-2026, Einsums Developers.
       <br/>
     
   </p>

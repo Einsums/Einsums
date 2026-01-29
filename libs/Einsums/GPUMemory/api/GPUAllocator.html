@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Dec 06, 2025"/>
+    <meta name="docbuild:last-update" content="Jan 29, 2026"/>
   </head>
   
   
@@ -157,6 +157,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -247,6 +254,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../overview.html">
     Developers' Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
   </a>
 </li>
 
@@ -509,8 +523,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator9constructE7pointerRK1T">
-<span id="_CPPv3N7einsums3gpu12GPUAllocator9constructE7pointerRK1T"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator9constructE7pointerRK1T"></span><span id="einsums::gpu::GPUAllocator::construct__pointer.TCR"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a7337b68803f391be5f41a98cbd82895d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">construct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu12GPUAllocator7pointerE" title="einsums::gpu::GPUAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">xp</span></span>, <a class="reference internal" href="#_CPPv4I0EN7einsums3gpu12GPUAllocatorE" title="einsums::gpu::GPUAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator9constructE7pointerRK1T" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator9constructE7pointerNSt11add_const_tIN6detail19reference_or_void_tI1TEEEE">
+<span id="_CPPv3N7einsums3gpu12GPUAllocator9constructE7pointerNSt11add_const_tIN6detail19reference_or_void_tI1TEEEE"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator9constructE7pointerNSt11add_const_tIN6detail19reference_or_void_tI1TEEEE"></span><span id="einsums::gpu::GPUAllocator::construct__pointer.std::add_const_t:detail::reference_or_void_t:T::"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a621747253730590cadabcbe2f6b7cc25"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">construct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums3gpu12GPUAllocator7pointerE" title="einsums::gpu::GPUAllocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">xp</span></span>, <a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">add_const_t</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">reference_or_void_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu12GPUAllocatorE" title="einsums::gpu::GPUAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator9constructE7pointerNSt11add_const_tIN6detail19reference_or_void_tI1TEEEE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Construct a value at a pointer. </p>
 <p>This copies the data from the value to the requested location.</p>
 <p><p><div class="versionadded">
@@ -564,6 +578,41 @@
 </dl>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu12GPUAllocator14available_sizeEv">
+<span id="_CPPv3NK7einsums3gpu12GPUAllocator14available_sizeEv"></span><span id="_CPPv2NK7einsums3gpu12GPUAllocator14available_sizeEv"></span><span id="einsums::gpu::GPUAllocator::available_sizeC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a26597643ca28f1856f137e5bafd58d09"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu12GPUAllocator9size_typeE" title="einsums::gpu::GPUAllocator::size_type"><span class="n"><span class="pre">size_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">available_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu12GPUAllocator14available_sizeEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Query the number of elements the allocator has free. </p>
+<p>This will return the number of elements that have not yet been allocated.</p>
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.1.0.</span></p>
+</div>
+</p>
+ </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of elements available to allocate.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums3gpu12GPUAllocator9work_sizeEv">
+<span id="_CPPv3NK7einsums3gpu12GPUAllocator9work_sizeEv"></span><span id="_CPPv2NK7einsums3gpu12GPUAllocator9work_sizeEv"></span><span id="einsums::gpu::GPUAllocator::work_sizeC"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1a90d7432c9e173c3f5d33eb0a29318c20"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums3gpu12GPUAllocator9size_typeE" title="einsums::gpu::GPUAllocator::size_type"><span class="n"><span class="pre">size_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">work_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums3gpu12GPUAllocator9work_sizeEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums3gpu12GPUAllocator9type_sizeE">
+<span id="_CPPv3N7einsums3gpu12GPUAllocator9type_sizeE"></span><span id="_CPPv2N7einsums3gpu12GPUAllocator9type_sizeE"></span><span id="einsums::gpu::GPUAllocator::type_size__s"></span><span class="target" id="structeinsums_1_1gpu_1_1_g_p_u_allocator_1ab135ae96f6dcc3b32f35bb91b831b82e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type_size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_void_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_cv_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu12GPUAllocatorE" title="einsums::gpu::GPUAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums3gpu12GPUAllocatorE" title="einsums::gpu::GPUAllocator::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N7einsums3gpu12GPUAllocator9type_sizeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The size of the types handled by this allocator. This is needed to handle void pointers, which traditionally don’t have a size, but should be treated as one byte.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
+</dd></dl>
+
 </div>
 </dd></dl>
 
@@ -615,9 +664,12 @@
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu12GPUAllocator15difference_typeE"><code class="docutils literal notranslate"><span class="pre">difference_type</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu12GPUAllocator8allocateE6size_t"><code class="docutils literal notranslate"><span class="pre">allocate()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu12GPUAllocator10deallocateE7pointer6size_t"><code class="docutils literal notranslate"><span class="pre">deallocate()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu12GPUAllocator9constructE7pointerRK1T"><code class="docutils literal notranslate"><span class="pre">construct()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu12GPUAllocator9constructE7pointerNSt11add_const_tIN6detail19reference_or_void_tI1TEEEE"><code class="docutils literal notranslate"><span class="pre">construct()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu12GPUAllocator7destroyE7pointer"><code class="docutils literal notranslate"><span class="pre">destroy()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu12GPUAllocator8max_sizeEv"><code class="docutils literal notranslate"><span class="pre">max_size()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu12GPUAllocator14available_sizeEv"><code class="docutils literal notranslate"><span class="pre">available_size()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums3gpu12GPUAllocator9work_sizeEv"><code class="docutils literal notranslate"><span class="pre">work_size()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums3gpu12GPUAllocator9type_sizeE"><code class="docutils literal notranslate"><span class="pre">type_size</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -652,7 +704,7 @@
 
   <p class="copyright">
     
-      © Copyright 2022-2025, Einsums Developers.
+      © Copyright 2022-2026, Einsums Developers.
       <br/>
     
   </p>

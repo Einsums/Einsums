@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Dec 06, 2025"/>
+    <meta name="docbuild:last-update" content="Jan 29, 2026"/>
   </head>
   
   
@@ -157,6 +157,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -247,6 +254,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../overview.html">
     Developers' Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
   </a>
 </li>
 
@@ -734,6 +748,17 @@
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums19IsBufferableTensorVE">
+<span id="_CPPv3I0EN7einsums19IsBufferableTensorVE"></span><span id="_CPPv2I0EN7einsums19IsBufferableTensorVE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">D</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a76927f0e30a4cb2466f6b9b68d6a04b4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsBufferableTensorV</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><code class="docutils literal notranslate"><span class="pre">requires(D</span> <span class="pre">&amp;d,</span> <span class="pre">D</span> <span class="pre">const</span> <span class="pre">&amp;cd)</span> <span class="pre">{requiresIsTensorV&lt;D&gt;;{</span> <span class="pre">d.get()</span> <span class="pre">};{</span> <span class="pre">cd.get()</span> <span class="pre">};}</span></code><a class="headerlink" href="#_CPPv4I0EN7einsums19IsBufferableTensorVE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Checks to see if the tensor can be buffered. </p>
+<p>This is used for when a tensor does not store its data in-core, but its data can brought in-core. For instance, DiskTensors can have their data read into internal buffers, while FunctionTensors can have their values calculated and put into a buffer on the fly.</p>
+<p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</p>
 </dd></dl>
 
 <dl class="cpp var">
@@ -1416,6 +1441,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN7einsums18IsCollectedTensorVE"><code class="docutils literal notranslate"><span class="pre">IsCollectedTensorV</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN7einsums14IsTiledTensorVE"><code class="docutils literal notranslate"><span class="pre">IsTiledTensorV</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN7einsums14IsBlockTensorVE"><code class="docutils literal notranslate"><span class="pre">IsBlockTensorV</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums19IsBufferableTensorVE"><code class="docutils literal notranslate"><span class="pre">IsBufferableTensorV</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums17IsFunctionTensorVE"><code class="docutils literal notranslate"><span class="pre">IsFunctionTensorV</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums20IsFastSubscriptableVE"><code class="docutils literal notranslate"><span class="pre">IsFastSubscriptableV</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7einsums16IsAlgebraTensorVE"><code class="docutils literal notranslate"><span class="pre">IsAlgebraTensorV</span></code></a></li>
@@ -1488,7 +1514,7 @@
 
   <p class="copyright">
     
-      © Copyright 2022-2025, Einsums Developers.
+      © Copyright 2022-2026, Einsums Developers.
       <br/>
     
   </p>

@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Dec 06, 2025"/>
+    <meta name="docbuild:last-update" content="Jan 29, 2026"/>
   </head>
   
   
@@ -157,6 +157,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -247,6 +254,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../overview.html">
     Developers' Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
   </a>
 </li>
 
@@ -440,6 +454,63 @@
 </dd></dl>
 
 <dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.TENSOR_EXPORT_ALLOC_TR">
+<span class="target" id="_tensor_forward_8hpp_1aee6f6ab30b4c19c520a5e61702a1e65d"></span><span class="sig-name descname"><span class="n"><span class="pre">TENSOR_EXPORT_ALLOC_TR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">tensortype</span></span>, <span class="n"><span class="pre">type</span></span>, <span class="n"><span class="pre">rank</span></span>, <span class="n"><span class="pre">alloc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.TENSOR_EXPORT_ALLOC_TR" title="Link to this definition">#</a><br /></dt>
+<dd><p>Creates an exported template declaration for a tensor with the given type and rank.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tensortype</strong> – The kind of tensor to declare. </p></li>
+<li><p><strong>type</strong> – The type held by that tensor. </p></li>
+<li><p><strong>rank</strong> – The rank of the tensor. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.TENSOR_EXPORT_ALLOC_RANK">
+<span class="target" id="_tensor_forward_8hpp_1a2b959d1a28ea5e67e7f368b4757cf8be"></span><span class="sig-name descname"><span class="n"><span class="pre">TENSOR_EXPORT_ALLOC_RANK</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">tensortype</span></span>, <span class="n"><span class="pre">rank</span></span>, <span class="n"><span class="pre">alloc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.TENSOR_EXPORT_ALLOC_RANK" title="Link to this definition">#</a><br /></dt>
+<dd><p>Creates exported template declarations for a tensor with the given rank, and for each stored type from <code class="docutils literal notranslate"><span class="pre">float</span></code> , <code class="docutils literal notranslate"><span class="pre">double</span></code> , <code class="docutils literal notranslate"><span class="pre">std::complex&lt;float&gt;</span></code> , and <code class="docutils literal notranslate"><span class="pre">std::complex&lt;double&gt;</span></code> .</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tensortype</strong> – The type of tensor to declare. </p></li>
+<li><p><strong>rank</strong> – The rank of the tensor. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.TENSOR_ALLOC_EXPORT">
+<span class="target" id="_tensor_forward_8hpp_1a103de814416fceff239406f9b1b4fdb5"></span><span class="sig-name descname"><span class="n"><span class="pre">TENSOR_ALLOC_EXPORT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">tensortype</span></span>, <span class="n"><span class="pre">alloc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.TENSOR_ALLOC_EXPORT" title="Link to this definition">#</a><br /></dt>
+<dd><p>Creates exported template declarations for a tensor for each stored type from <code class="docutils literal notranslate"><span class="pre">float</span></code> , <code class="docutils literal notranslate"><span class="pre">double</span></code> , <code class="docutils literal notranslate"><span class="pre">std::complex&lt;float&gt;</span></code> , and <code class="docutils literal notranslate"><span class="pre">std::complex&lt;double&gt;</span></code> , and for all ranks between 1 and 4 inclusive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tensortype</strong> – The type of tensor to declare. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.TENSOR_DEFINE_ALLOC_TR">
+<span class="target" id="_tensor_forward_8hpp_1a75cf2bd4c613e1ccada99064807ea3ee"></span><span class="sig-name descname"><span class="n"><span class="pre">TENSOR_DEFINE_ALLOC_TR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">tensortype</span></span>, <span class="n"><span class="pre">type</span></span>, <span class="n"><span class="pre">rank</span></span>, <span class="n"><span class="pre">alloc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.TENSOR_DEFINE_ALLOC_TR" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.TENSOR_DEFINE_ALLOC_RANK">
+<span class="target" id="_tensor_forward_8hpp_1a35da2f3a992a08504692d01998003d05"></span><span class="sig-name descname"><span class="n"><span class="pre">TENSOR_DEFINE_ALLOC_RANK</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">tensortype</span></span>, <span class="n"><span class="pre">rank</span></span>, <span class="n"><span class="pre">alloc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.TENSOR_DEFINE_ALLOC_RANK" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.TENSOR_ALLOC_DEFINE">
+<span class="target" id="_tensor_forward_8hpp_1a76ad6fe43621df3dd161df9afcaa59b7"></span><span class="sig-name descname"><span class="n"><span class="pre">TENSOR_ALLOC_DEFINE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">tensortype</span></span>, <span class="n"><span class="pre">alloc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.TENSOR_ALLOC_DEFINE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.TENSOR_EXPORT_TR_DISK_VIEW">
 <span class="target" id="_tensor_forward_8hpp_1a11adaedbe17f247da6149689645f132d"></span><span class="sig-name descname"><span class="n"><span class="pre">TENSOR_EXPORT_TR_DISK_VIEW</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">tensortype</span></span>, <span class="n"><span class="pre">type</span></span>, <span class="n"><span class="pre">view_rank</span></span>, <span class="n"><span class="pre">rank</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.TENSOR_EXPORT_TR_DISK_VIEW" title="Link to this definition">#</a><br /></dt>
 <dd><p>Creates an exported template declaration for a tensor with the given type and rank.</p>
@@ -627,6 +698,12 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_DEFINE_TR"><code class="docutils literal notranslate"><span class="pre">TENSOR_DEFINE_TR</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_DEFINE_RANK"><code class="docutils literal notranslate"><span class="pre">TENSOR_DEFINE_RANK</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_DEFINE"><code class="docutils literal notranslate"><span class="pre">TENSOR_DEFINE</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_EXPORT_ALLOC_TR"><code class="docutils literal notranslate"><span class="pre">TENSOR_EXPORT_ALLOC_TR</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_EXPORT_ALLOC_RANK"><code class="docutils literal notranslate"><span class="pre">TENSOR_EXPORT_ALLOC_RANK</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_ALLOC_EXPORT"><code class="docutils literal notranslate"><span class="pre">TENSOR_ALLOC_EXPORT</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_DEFINE_ALLOC_TR"><code class="docutils literal notranslate"><span class="pre">TENSOR_DEFINE_ALLOC_TR</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_DEFINE_ALLOC_RANK"><code class="docutils literal notranslate"><span class="pre">TENSOR_DEFINE_ALLOC_RANK</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_ALLOC_DEFINE"><code class="docutils literal notranslate"><span class="pre">TENSOR_ALLOC_DEFINE</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_EXPORT_TR_DISK_VIEW"><code class="docutils literal notranslate"><span class="pre">TENSOR_EXPORT_TR_DISK_VIEW</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_EXPORT_RANK_DISK_VIEW"><code class="docutils literal notranslate"><span class="pre">TENSOR_EXPORT_RANK_DISK_VIEW</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c.TENSOR_EXPORT_RANK2_DISK_VIEW"><code class="docutils literal notranslate"><span class="pre">TENSOR_EXPORT_RANK2_DISK_VIEW</span></code></a></li>
@@ -671,7 +748,7 @@
 
   <p class="copyright">
     
-      © Copyright 2022-2025, Einsums Developers.
+      © Copyright 2022-2026, Einsums Developers.
       <br/>
     
   </p>

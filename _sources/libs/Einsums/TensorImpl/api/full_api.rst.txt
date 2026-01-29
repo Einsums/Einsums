@@ -20,3 +20,4 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 
    /libs/Einsums/TensorImpl/api/TensorImplOperations.rst
    /libs/Einsums/TensorImpl/api/TensorImpl.rst
+   /libs/Einsums/TensorImpl/api/TensorImplGPUOperations.rst

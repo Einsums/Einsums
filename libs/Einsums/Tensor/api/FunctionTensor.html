@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Dec 06, 2025"/>
+    <meta name="docbuild:last-update" content="Jan 29, 2026"/>
   </head>
   
   
@@ -157,6 +157,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -247,6 +254,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../overview.html">
     Developers' Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Changelog
   </a>
 </li>
 
@@ -702,7 +716,7 @@
 <dd><div class="docutils container">
 <em>#include &lt;FunctionTensor.hpp&gt;</em></div>
 <p>Optional base class for function tensors. This class provides some useful functionality. </p>
-<p>A function tensor is one which takes advantage of the use of the operator() to index tensors to provide a way to call a function. An example of this might be the Kronecker delta, which has such simple structure that creating a whole new tensor object for it would be wasteful. This class does not define all function tensors. Instead, it provides some useful behavior so that users can create their own with minimal effort. The only thing that is required of function tensors is that they follow TensorConcept and they provide a function call operator that can take as many arguments as the rank of the tensor. This does mean that other tensor classes, like <a class="reference internal" href="Tensor.html#structeinsums_1_1_tensor"><span class="std std-ref">Tensor</span></a> and <a class="reference internal" href="BlockTensor.html#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a>, are also function tensors, though they do not inherit this class. </p>
+<p>A function tensor is one which takes advantage of the use of the operator() to index tensors to provide a way to call a function. An example of this might be the Kronecker delta, which has such simple structure that creating a whole new tensor object for it would be wasteful. This class does not define all function tensors. Instead, it provides some useful behavior so that users can create their own with minimal effort. The only thing that is required of function tensors is that they follow TensorConcept and they provide a function call operator that can take as many arguments as the rank of the tensor. This does mean that other tensor classes, like Tensor and <a class="reference internal" href="BlockTensor.html#structeinsums_1_1tensor__base_1_1_block_tensor"><span class="std std-ref">BlockTensor</span></a>, are also function tensors, though they do not inherit this class. </p>
 <p>Subclassed by <a class="reference internal" href="#structeinsums_1_1_function_tensor_view"><span class="std std-ref">einsums::FunctionTensorView&lt; T, rank, UnderlyingRank &gt;</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -874,10 +888,15 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base14FunctionTensorcv6TensorI1T4RankEEv">
-<span id="_CPPv3NK7einsums11tensor_base14FunctionTensorcv6TensorI1T4RankEEv"></span><span id="_CPPv2NK7einsums11tensor_base14FunctionTensorcv6TensorI1T4RankEEv"></span><span id="einsums::tensor_base::FunctionTensor::castto-Tensor:T.Rank:-operatorC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_function_tensor_1a6b996ef4dcd793130106ecbafdb83eeb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="Tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums11tensor_base14FunctionTensorE" title="einsums::tensor_base::FunctionTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums11tensor_base14FunctionTensor4RankE" title="einsums::tensor_base::FunctionTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base14FunctionTensorcv6TensorI1T4RankEEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base14FunctionTensor3getEv">
+<span id="_CPPv3NK7einsums11tensor_base14FunctionTensor3getEv"></span><span id="_CPPv2NK7einsums11tensor_base14FunctionTensor3getEv"></span><span id="einsums::tensor_base::FunctionTensor::getC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_function_tensor_1a59038e218e413b3d8c30687adcb4e473"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">BufferTensor</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums11tensor_base14FunctionTensorE" title="einsums::tensor_base::FunctionTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums11tensor_base14FunctionTensor4RankE" title="einsums::tensor_base::FunctionTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base14FunctionTensor3getEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Convert the function tensor into a regular tensor. </p>
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base14FunctionTensorcv12BufferTensorI1T4RankEEv">
+<span id="_CPPv3NK7einsums11tensor_base14FunctionTensorcv12BufferTensorI1T4RankEEv"></span><span id="_CPPv2NK7einsums11tensor_base14FunctionTensorcv12BufferTensorI1T4RankEEv"></span><span id="einsums::tensor_base::FunctionTensor::castto-BufferTensor:T.Rank:-operatorC"></span><span class="target" id="structeinsums_1_1tensor__base_1_1_function_tensor_1ab2b24a3949d7629231d2ff9c2473c8b1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><span class="n"><span class="pre">BufferTensor</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums11tensor_base14FunctionTensorE" title="einsums::tensor_base::FunctionTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums11tensor_base14FunctionTensor4RankE" title="einsums::tensor_base::FunctionTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums11tensor_base14FunctionTensorcv12BufferTensorI1T4RankEEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums11tensor_base14FunctionTensor23full_view_of_underlyingEv">
@@ -1026,7 +1045,8 @@
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums11tensor_base14FunctionTensor3dimEi"><code class="docutils literal notranslate"><span class="pre">dim()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums11tensor_base14FunctionTensor4nameEv"><code class="docutils literal notranslate"><span class="pre">name()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums11tensor_base14FunctionTensor8set_nameERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">set_name()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums11tensor_base14FunctionTensorcv6TensorI1T4RankEEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">Tensor&lt;</span> <span class="pre">T,</span> <span class="pre">Rank</span> <span class="pre">&gt;()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums11tensor_base14FunctionTensor3getEv"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums11tensor_base14FunctionTensorcv12BufferTensorI1T4RankEEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">BufferTensor&lt;</span> <span class="pre">T,</span> <span class="pre">Rank</span> <span class="pre">&gt;()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums11tensor_base14FunctionTensor23full_view_of_underlyingEv"><code class="docutils literal notranslate"><span class="pre">full_view_of_underlying()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums11tensor_base14FunctionTensor4RankE"><code class="docutils literal notranslate"><span class="pre">Rank</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums11tensor_base14FunctionTensor11fix_indicesEPNSt5arrayI9ptrdiff_t4rankEE"><code class="docutils literal notranslate"><span class="pre">fix_indices()</span></code></a></li>
@@ -1067,7 +1087,7 @@
 
   <p class="copyright">
     
-      © Copyright 2022-2025, Einsums Developers.
+      © Copyright 2022-2026, Einsums Developers.
       <br/>
     
   </p>
