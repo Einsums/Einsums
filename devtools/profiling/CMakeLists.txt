@@ -42,8 +42,8 @@ endif ()
 # point to /lib64 in many cases, which is the wrong directory at least on Debian.
 add_executable(profile_einsums profile_einsums.cpp)
 #target_link_directories(profile_einsums PRIVATE /usr/lib/x86_64-linux-gnu)
-target_link_libraries(profile_einsums PUBLIC Einsums::Einsums)
+target_link_libraries(profile_einsums RIVATE Einsums::Einsums)
 
 add_executable(profile_blas profile_blas.cpp)
 #target_link_directories(profile_blas PRIVATE /usr/lib/x86_64-linux-gnu)
-target_link_libraries(profile_blas PUBLIC Einsums::Einsums)
+target_link_libraries(profile_blas PRIVATE Einsums::Einsums)
