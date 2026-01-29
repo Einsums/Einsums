@@ -143,6 +143,32 @@ struct BufferAllocator {
      */
     constexpr static size_t type_size = sizeof(std::conditional_t<std::is_void_v<std::remove_cv_t<T>>, char, T>);
 
+    constexpr BufferAllocator() noexcept = default;
+
+    constexpr BufferAllocator(BufferAllocator const &) noexcept = default;
+
+    template <typename U>
+    constexpr BufferAllocator(BufferAllocator<U> const &) noexcept {}
+
+    constexpr BufferAllocator(BufferAllocator &&) = default;
+
+    template <typename U>
+    constexpr BufferAllocator(BufferAllocator<U> &&) {}
+
+    constexpr BufferAllocator &operator=(BufferAllocator const &) noexcept = default;
+
+    template <typename U>
+    constexpr BufferAllocator &operator=(BufferAllocator<U> const &) noexcept {
+        return *this;
+    }
+
+    constexpr BufferAllocator &operator=(BufferAllocator &&) = default;
+
+    template <typename U>
+    constexpr BufferAllocator &operator=(BufferAllocator<U> &&) {
+        return *this;
+    }
+
     /**
      * @brief Allocate an array of values.
      *
@@ -286,6 +312,21 @@ struct BufferAllocator {
         try {
             return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size;
 
+        } catch (std::runtime_error &) {
+            return 0;
+        }
+    }
+
+    /**
+     * @brief Query the recommended work buffer size.
+     *
+     * This will give the recommended size of a work buffer.
+     *
+     * @versionadded{2.0.0}
+     */
+    [[nodiscard]] size_type work_buffer_size() const {
+        try {
+            return detail::Einsums_BufferAllocator_vars::get_singleton().get_work_buffer_size() / type_size;
         } catch (std::runtime_error &) {
             return 0;
         }

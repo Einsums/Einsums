@@ -53,6 +53,29 @@ def test_mat_prod(set_big_memory, a, b, c, dtype, rel, array):
         for j in range(c):
             assert C[i, j] == pytest.approx(C_actual[i, j], rel=rel)
 
+def test_mat_prod_list(a, b, c, dtype, rel, array):
+    A = [ein.utils.random_tensor_factory(f"A {i}", [a, b], dtype, array) for i in range(10)]
+    B = [ein.utils.random_tensor_factory(f"B {i}", [b, c], dtype, array) for i in range(10)]
+    C = [ein.utils.tensor_factory(f"C {i}", [a, c], dtype, array) for i in range(10)]
+
+    C_actual = [np.array([[0.0 for i in range(c)] for j in range(a)], dtype=dtype) for i in range(10)]
+
+    plan = ein.core.compile_plan("ij", "ik", "kj")
+
+    assert type(plan) is ein.core.EinsumGemmPlan
+
+    plan.execute(0.0, C, 1.0, A, B)
+
+    # Numpy hates doing matrix multiplication with einsums imported
+    for item in range(10) :
+        for i in range(a):
+            for j in range(c):
+                for k in range(b):
+                    C_actual[item][i, j] += A[item][i, k] * B[item][k, j]
+
+        for i in range(a):
+            for j in range(c):
+                assert C[item][i, j] == pytest.approx(C_actual[item][i, j], rel=rel)
 
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"

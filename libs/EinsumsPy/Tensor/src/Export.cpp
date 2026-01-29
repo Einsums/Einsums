@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/BlockManager/BlockManager.hpp>
+
 #include <EinsumsPy/Tensor/PyTensor.hpp>
 #include <EinsumsPy/Tensor/TensorExport.hpp>
 #include <complex>
@@ -15,6 +17,10 @@ void export_Tensor(py::module_ &mod) {
         mod, "RuntimeTensor");
     pybind11::class_<einsums::tensor_base::RuntimeTensorViewNoType, std::shared_ptr<einsums::tensor_base::RuntimeTensorViewNoType>>(
         mod, "RuntimeTensorView");
+
+#ifdef EINSUMS_COMPUTE_CODE
+    pybind11::class_<einsums::GPUBlock, std::shared_ptr<einsums::GPUBlock>>(mod, "GPULock");
+#endif
 
     einsums::python::export_tensor<float>(mod);
     einsums::python::export_tensor<double>(mod);

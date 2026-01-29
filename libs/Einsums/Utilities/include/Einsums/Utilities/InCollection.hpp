@@ -16,14 +16,20 @@
 namespace einsums {
 
 namespace detail {
-template <typename T, typename Haystack, size_t... I>
+template <typename T, typename Haystack, size_t... __I>
     requires requires {
         { std::tuple_size_v<Haystack> };
         { std::get<0>(std::declval<Haystack>()) };
     }
-constexpr bool is_in(T &&needle, Haystack const &haystack, std::index_sequence<I...> const &) {
-    return ((needle == std::get<I>(haystack)) || ... || false);
+constexpr bool is_in(T &&needle, Haystack const &haystack, std::index_sequence<__I...> const &) {
+    return ((needle == std::get<__I>(haystack)) || ... || false);
 }
+
+template <typename T>
+concept IsTupleOrArray = requires {
+    { std::tuple_size_v<T> };
+    { std::get<0>(std::declval<T>()) };
+};
 } // namespace detail
 
 /**
@@ -31,13 +37,9 @@ constexpr bool is_in(T &&needle, Haystack const &haystack, std::index_sequence<I
  *
  * @versionadded{1.1.0}
  */
-template <typename T, typename Haystack>
-    requires requires {
-        { std::tuple_size_v<Haystack> };
-        { std::get<0>(std::declval<Haystack>()) };
-    }
+template <typename T, detail::IsTupleOrArray Haystack>
 constexpr bool is_in(T &&needle, Haystack const &haystack) {
-    return detail::is_in(std::forward<T>(needle), std::forward<Haystack>(haystack),
+    return detail::is_in(std::forward<T>(needle), haystack,
                          std::make_index_sequence<std::tuple_size_v<Haystack>>());
 }
 
@@ -47,6 +49,7 @@ constexpr bool is_in(T &&needle, Haystack const &haystack) {
  * @versionadded{1.1.0}
  */
 template <typename T, Container Haystack>
+    requires(!detail::IsTupleOrArray<Haystack>)
 constexpr bool is_in(T &&needle, Haystack const &haystack) {
     for (auto test : haystack) {
         if (needle == test) {
@@ -76,11 +79,7 @@ constexpr bool is_in(T &&needle, std::initializer_list<std::decay_t<T>> haystack
  *
  * @versionadded{1.1.0}
  */
-template <typename T, typename Haystack>
-    requires requires {
-        { std::tuple_size_v<Haystack> };
-        { std::get<0>(std::declval<Haystack>()) };
-    }
+template <typename T, detail::IsTupleOrArray Haystack>
 constexpr bool not_in(T &&needle, Haystack const &haystack) {
     return !detail::is_in(std::forward<T>(needle), std::forward<Haystack>(haystack),
                           std::make_index_sequence<std::tuple_size_v<Haystack>>());
@@ -92,6 +91,7 @@ constexpr bool not_in(T &&needle, Haystack const &haystack) {
  * @versionadded{1.1.0}
  */
 template <typename T, Container Haystack>
+    requires(!detail::IsTupleOrArray<Haystack>)
 constexpr bool not_in(T &&needle, Haystack const &haystack) {
     for (auto test : haystack) {
         if (needle == test) {

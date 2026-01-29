@@ -5,8 +5,13 @@
 
 #pragma once
 #include <Einsums/BLAS.hpp>
+#include <Einsums/LinearAlgebra/Bases/high_precision.hpp>
 #include <Einsums/Profile.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
+
+#ifdef EINSUMS_COMPUTE_CODE
+#    include <Einsums/hipBLAS.hpp>
+#endif
 
 namespace einsums {
 namespace linear_algebra {
@@ -36,6 +41,9 @@ template <typename T, typename TOther, Container HardDims, Container InStrides, 
 BiggestTypeT<T, TOther> impl_dot_noncontiguous_vectorable(int depth, int hard_rank, size_t easy_size, HardDims const &dims, T const *in,
                                                           InStrides const &in_strides, size_t inc_in, TOther const *out,
                                                           OutStrides const &out_strides, size_t inc_out) {
+
+    using U = BiggestTypeT<T, TOther>;
+
     if (depth == hard_rank) {
         if constexpr (std::is_same_v<T, TOther> && blas::IsBlasableV<T>) {
             return blas::dot(easy_size, in, inc_in, out, inc_out);
@@ -49,28 +57,68 @@ BiggestTypeT<T, TOther> impl_dot_noncontiguous_vectorable(int depth, int hard_ra
             return sum;
         }
     } else {
-        BiggestTypeT<T, TOther> sum{0.0};
+        if constexpr (IsComplexV<U>) {
+            BiggestTypeT<T, TOther> big_sum{0.0}, medium_sum{0.0}, small_sum{0.0};
 
-        for (int i = 0; i < dims[depth]; i++) {
-            sum += impl_dot_noncontiguous_vectorable(depth + 1, hard_rank, easy_size, dims, in + i * in_strides[depth], in_strides, inc_in,
-                                                     out + i * out_strides[depth], out_strides, inc_out);
+            bool not_big_re = true, not_big_im = true;
+
+            for (int i = 0; i < dims[depth]; i++) {
+                auto ret = impl_dot_noncontiguous_vectorable(depth + 1, hard_rank, easy_size, dims, in + i * in_strides[depth], in_strides,
+                                                             inc_in, out + i * out_strides[depth], out_strides, inc_out);
+
+                add_scale(ret, big_sum, medium_sum, small_sum, not_big_re, not_big_im);
+            }
+            return combine_accum(big_sum, medium_sum, small_sum);
+        } else {
+            BiggestTypeT<T, TOther> big_sum{0.0}, medium_sum{0.0}, small_sum{0.0};
+
+            bool not_big = true;
+
+            for (int i = 0; i < dims[depth]; i++) {
+                auto ret = impl_dot_noncontiguous_vectorable(depth + 1, hard_rank, easy_size, dims, in + i * in_strides[depth], in_strides,
+                                                             inc_in, out + i * out_strides[depth], out_strides, inc_out);
+
+                add_scale(ret, big_sum, medium_sum, small_sum, not_big);
+            }
+            return combine_accum(big_sum, medium_sum, small_sum);
         }
-        return sum;
     }
 }
 
 template <typename T, typename TOther, Container Dims, Container InStrides, Container OutStrides>
 BiggestTypeT<T, TOther> impl_dot_noncontiguous(int depth, int rank, Dims const &dims, T const *in, InStrides const &in_strides,
                                                TOther const *out, OutStrides const &out_strides) {
+
+    using U = BiggestTypeT<T, TOther>;
+
     if (depth == rank) {
         return *in * *out;
     } else {
-        BiggestTypeT<T, TOther> sum{0.0};
-        for (int i = 0; i < dims[depth]; i++) {
-            sum += impl_dot_noncontiguous(depth + 1, rank, dims, in + i * in_strides[depth], in_strides, out + i * out_strides[depth],
-                                          out_strides);
+        if constexpr (IsComplexV<U>) {
+            BiggestTypeT<T, TOther> big_sum{0.0}, medium_sum{0.0}, small_sum{0.0};
+
+            bool not_big_re = true, not_big_im = true;
+
+            for (int i = 0; i < dims[depth]; i++) {
+                auto ret = impl_dot_noncontiguous(depth + 1, rank, dims, in + i * in_strides[depth], in_strides,
+                                                  out + i * out_strides[depth], out_strides);
+
+                add_scale(ret, big_sum, medium_sum, small_sum, not_big_re, not_big_im);
+            }
+            return combine_accum(big_sum, medium_sum, small_sum);
+        } else {
+            BiggestTypeT<T, TOther> big_sum{0.0}, medium_sum{0.0}, small_sum{0.0};
+
+            bool not_big = true;
+
+            for (int i = 0; i < dims[depth]; i++) {
+                auto ret = impl_dot_noncontiguous(depth + 1, rank, dims, in + i * in_strides[depth], in_strides,
+                                                  out + i * out_strides[depth], out_strides);
+
+                add_scale(ret, big_sum, medium_sum, small_sum, not_big);
+            }
+            return combine_accum(big_sum, medium_sum, small_sum);
         }
-        return sum;
     }
 }
 
@@ -85,6 +133,27 @@ BiggestTypeT<T, TOther> impl_dot(einsums::detail::TensorImpl<T> const &in, einsu
     if (in.dims() != out.dims()) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "Can not add two tensors with different sizes!");
     }
+
+#ifdef EINSUMS_COMPUTE_CODE
+    if constexpr (std::is_same_v<T, TOther> && blas::IsBlasableV<T>) {
+        // If one or both of the tensors are on GPU, use the GPU algorithm.
+        if (in.get_gpu_pointer() || out.get_gpu_pointer()) {
+            try {
+                auto in_lock  = in.gpu_cache_tensor();
+                auto out_lock = out.gpu_cache_tensor();
+
+                // Make sure the pointers got allocated.
+                if (in.get_gpu_pointer() && out.get_gpu_pointer()) {
+                    return blas::gpu::dot(in.size(), in.get_gpu_pointer().get(), 1, out.get_gpu_pointer().get(), 1);
+                }
+            } catch (std::exception &) {
+                // We couldn't allocate the pointers.
+            }
+        }
+
+        // No writeback since the tensors are const.
+    }
+#endif
 
     if (in.is_column_major() != out.is_column_major()) {
         EINSUMS_LOG_DEBUG("Can't necessarily combine row major and column major tensors. Using the fallback algorithm.");
@@ -212,6 +281,31 @@ BiggestTypeT<T, TOther> impl_true_dot(einsums::detail::TensorImpl<T> const &in, 
     if (in.dims() != out.dims()) {
         EINSUMS_THROW_EXCEPTION(dimension_error, "Can not add two tensors with different sizes!");
     }
+
+#ifdef EINSUMS_COMPUTE_CODE
+    if constexpr (std::is_same_v<T, TOther> && blas::IsBlasableV<T>) {
+        // If one or both of the tensors are on GPU, use the GPU algorithm.
+        if (in.get_gpu_pointer() || out.get_gpu_pointer()) {
+            try {
+                auto in_lock  = in.gpu_cache_tensor();
+                auto out_lock = out.gpu_cache_tensor();
+
+                // Make sure the pointers got allocated.
+                if (in.get_gpu_pointer() && out.get_gpu_pointer()) {
+                    if constexpr (IsComplexV<T>) {
+                        return blas::gpu::dotc(in.size(), in.get_gpu_pointer().get(), 1, out.get_gpu_pointer().get(), 1);
+                    } else {
+                        return blas::gpu::dot(in.size(), in.get_gpu_pointer().get(), 1, out.get_gpu_pointer().get(), 1);
+                    }
+                }
+            } catch (std::exception &) {
+                // We couldn't allocate the pointers.
+            }
+        }
+
+        // No copy since the tensors are const.
+    }
+#endif
 
     if (in.is_column_major() != out.is_column_major()) {
         EINSUMS_LOG_DEBUG("Can't necessarily combine row major and column major tensors. Using the fallback algorithm.");
@@ -419,18 +513,18 @@ BiggestTypeT<A, B, C> impl_dot(einsums::detail::TensorImpl<A> const &a, einsums:
 
 #ifndef DOXYGEN
 extern template EINSUMS_EXPORT float  impl_dot<float, float>(einsums::detail::TensorImpl<float> const &a,
-                                                            einsums::detail::TensorImpl<float> const &b);
+                                                             einsums::detail::TensorImpl<float> const &b);
 extern template EINSUMS_EXPORT double impl_dot<double, double>(einsums::detail::TensorImpl<double> const &a,
                                                                einsums::detail::TensorImpl<double> const &b);
 extern template EINSUMS_EXPORT        std::complex<float>
                                impl_dot<std::complex<float>, std::complex<float>>(einsums::detail::TensorImpl<std::complex<float>> const &a,
-                                                   einsums::detail::TensorImpl<std::complex<float>> const &b);
+                                                                                  einsums::detail::TensorImpl<std::complex<float>> const &b);
 extern template EINSUMS_EXPORT std::complex<double>
 impl_dot<std::complex<double>, std::complex<double>>(einsums::detail::TensorImpl<std::complex<double>> const &a,
                                                      einsums::detail::TensorImpl<std::complex<double>> const &b);
 
 extern template EINSUMS_EXPORT float  impl_true_dot<float, float>(einsums::detail::TensorImpl<float> const &a,
-                                                                 einsums::detail::TensorImpl<float> const &b);
+                                                                  einsums::detail::TensorImpl<float> const &b);
 extern template EINSUMS_EXPORT double impl_true_dot<double, double>(einsums::detail::TensorImpl<double> const &a,
                                                                     einsums::detail::TensorImpl<double> const &b);
 extern template EINSUMS_EXPORT        std::complex<float>

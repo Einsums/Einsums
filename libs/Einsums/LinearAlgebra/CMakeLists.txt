@@ -7,10 +7,11 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(LinearAlgebraHeaders
     Einsums/LinearAlgebra.hpp Einsums/LinearAlgebra/Base.hpp Einsums/LinearAlgebra/BlockTensor.hpp
-    Einsums/LinearAlgebra/TiledTensor.hpp Einsums/LinearAlgebra/Unoptimized.hpp Einsums/LinearAlgebra/Bases/dot.hpp
+    Einsums/LinearAlgebra/TiledTensor.hpp Einsums/LinearAlgebra/Bases/dot.hpp
     Einsums/LinearAlgebra/Bases/direct_product.hpp Einsums/LinearAlgebra/Bases/gemm.hpp Einsums/LinearAlgebra/Bases/gemv.hpp
     Einsums/LinearAlgebra/Bases/ger.hpp Einsums/LinearAlgebra/Bases/high_precision.hpp Einsums/LinearAlgebra/Bases/norm.hpp Einsums/LinearAlgebra/Bases/sum_square.hpp
     Einsums/LinearAlgebra/Bases/syev.hpp
+    Einsums/LinearAlgebra/DiskAlgebra.hpp
 )
 
 set(LinearAlgebraSources LinearAlgebra.cpp ForwardDeclarations.cpp)
@@ -18,7 +19,7 @@ set(LinearAlgebraSources LinearAlgebra.cpp ForwardDeclarations.cpp)
 if(EINSUMS_WITH_GPU_SUPPORT)
   list(APPEND LinearAlgebraHeaders Einsums/LinearAlgebra/GPULinearAlgebra.hpp)
   list(APPEND LinearAlgebraSources GPULinearAlgebra.hip)
-  set(LinAlgGPUModules Einsums_GPUStreams roc::hipblas roc::hipsolver hip::host hip::device)
+  set(LinAlgGPUModules Einsums_GPUStreams Einsums_hipBLAS roc::hipblas roc::hipsolver hip::host hip::device)
 
   if(EINSUMS_WITH_CUDA)
     foreach(f IN LISTS LinearAlgebraSources)

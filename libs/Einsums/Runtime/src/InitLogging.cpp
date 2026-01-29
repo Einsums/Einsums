@@ -17,8 +17,6 @@
 
 namespace einsums::detail {
 
-static char const *amd_log_level_strs[] = {"0", "1", "2", "3", "4", "5"};
-
 namespace {
 /*
  * The desired output is "tid/description". Modern operating systems

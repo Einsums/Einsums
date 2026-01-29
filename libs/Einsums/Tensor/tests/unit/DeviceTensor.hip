@@ -1076,9 +1076,9 @@ TEST_CASE("Test device-host interfacing", "[gpu][tensor]") {
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            CHECK((A_host(i, j) == 3 * i + j + 1));
-            CHECK((B_host(i, j) == 10 * (3 * i + j + 1)));
-            CHECK((C_host(i, j) == 20 * (3 * i + j + 1)));
+            CHECK(A_host(i, j) == 3 * i + j + 1);
+            CHECK(B_host(i, j) == 10 * (3 * i + j + 1));
+            CHECK(C_host(i, j) == 20 * (3 * i + j + 1));
         }
     }
 }

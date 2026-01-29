@@ -32,13 +32,33 @@ class IsBlasable {
     constexpr static bool value = false;
 };
 #else
-// Base instantiation.
 template <typename T>
-struct IsBlasable : std::is_floating_point<std::remove_cvref_t<T>> {};
+class IsBlasable {
+  public:
+    constexpr static bool value = false;
+};
+// Base instantiation.
+template<>
+struct IsBlasable<float> {
+    public:
+    constexpr static bool value = true;
+};
+
+template<>
+struct IsBlasable<double> {
+    constexpr static bool value = true;
+};
 
 // Complex instantiation.
-template <typename T>
-struct IsBlasable<std::complex<T>> : std::is_floating_point<T> {};
+template<>
+struct IsBlasable<std::complex<float>> {
+    constexpr static bool value = true;
+};
+
+template<>
+struct IsBlasable<std::complex<double>> {
+    constexpr static bool value = true;
+};
 #endif
 
 /**

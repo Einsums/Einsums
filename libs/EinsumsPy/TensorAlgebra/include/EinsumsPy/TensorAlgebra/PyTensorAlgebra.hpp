@@ -15,13 +15,12 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
 #include <EinsumsPy/LinearAlgebra/LinearAlgebra.hpp>
+#include <EinsumsPy/Tensor/PyTensor.hpp>
 #include <omp.h>
-
-#include "Einsums/LinearAlgebra.hpp"
-#include "EinsumsPy/Tensor/PyTensor.hpp"
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/GPUStreams/GPUStreams.hpp>
@@ -467,14 +466,14 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
 
         if (_C_permute.size() != 0) {
             if (!_direct_product_swap) {
-                detail::einsum_generic_algorithm_gpu<DevDatatype<T>><<<threads, blocks, 0, gpu::get_stream()>>>(
+                detail::einsum_generic_algorithm_gpu<DevDatatype<T>><<<blocks, threads, 0, gpu::get_stream()>>>(
                     gpu_unique_strides, gpu_C_index_strides, gpu_C_index_table, gpu_A_index_table, gpu_B_index_table,
                     HipCast<DevDatatype<T>, T>::cast(C_prefactor), (DevDatatype<T> *)C.dev_data(), C.gpu_strides(), gpu_C_unique_stride,
                     HipCast<DevDatatype<T>, T>::cast(AB_prefactor), (DevDatatype<T> *)A.dev_data(), A.gpu_strides(), gpu_A_unique_stride,
                     (DevDatatype<T> *)B.dev_data(), B.gpu_strides(), gpu_B_unique_stride, unique_dims[0] * unique_strides[0], C.size(),
                     C.rank(), A.rank(), B.rank(), unique_dims.size());
             } else {
-                detail::einsum_generic_algorithm_direct_product_gpu<DevDatatype<T>><<<threads, blocks, 0, gpu::get_stream()>>>(
+                detail::einsum_generic_algorithm_direct_product_gpu<DevDatatype<T>><<<blocks, threads, 0, gpu::get_stream()>>>(
                     gpu_unique_strides, gpu_C_index_strides, gpu_C_index_table, gpu_A_index_table, gpu_B_index_table,
                     HipCast<DevDatatype<T>, T>::cast(C_prefactor), (DevDatatype<T> *)C.dev_data(), C.gpu_strides(), gpu_C_unique_stride,
                     HipCast<DevDatatype<T>, T>::cast(AB_prefactor), (DevDatatype<T> *)A.dev_data(), A.gpu_strides(), gpu_A_unique_stride,
@@ -499,7 +498,7 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
 
             C.update_H2D();
 
-            detail::einsum_generic_zero_rank_gpu<DevDatatype<T>><<<threads, blocks, 0, gpu::get_stream()>>>(
+            detail::einsum_generic_zero_rank_gpu<DevDatatype<T>><<<blocks, threads, 0, gpu::get_stream()>>>(
                 gpu_unique_strides, gpu_A_index_table, gpu_B_index_table, (DevDatatype<T> *)C.dev_data(),
                 HipCast<DevDatatype<T>, T>::cast(AB_prefactor), (DevDatatype<T> *)A.dev_data(), A.gpu_strides(), gpu_A_unique_stride,
                 (DevDatatype<T> *)B.dev_data(), B.gpu_strides(), gpu_B_unique_stride, unique_dims[0] * unique_strides[0], _A_permute.size(),
@@ -663,7 +662,7 @@ class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
 
         auto threads = gpu::block_size(A.dim(0) * unique_strides[0]), blocks = gpu::blocks(A.dim(0) * unique_strides[0]);
 
-        detail::dot_kernel<DevDatatype<T>><<<threads, blocks, 0, gpu::get_stream()>>>(
+        detail::dot_kernel<DevDatatype<T>><<<blocks, threads, 0, gpu::get_stream()>>>(
             gpu_unique_strides, (DevDatatype<T> *)C.dev_data(), (DevDatatype<T> *)A.dev_data(), A.gpu_strides(),
             (DevDatatype<T> *)B.dev_data(), B.gpu_strides(), A.dim(0) * unique_strides[0], A.rank());
 
@@ -693,7 +692,7 @@ class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
             *C_data *= C_prefactor;
         }
 
-        *C_data = pybind11::cast<T>(einsums::python::detail::dot(A, B));
+        *C_data = AB_prefactor * pybind11::cast<T>(einsums::python::detail::dot(A, B));
     }
 
   public:
@@ -737,7 +736,7 @@ class EINSUMS_EXPORT PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
 
         auto threads = gpu::block_size(elements), blocks = gpu::blocks(elements);
 
-        detail::direct_product_kernel<DevDatatype<T>><<<threads, blocks, 0, gpu::get_stream()>>>(
+        detail::direct_product_kernel<DevDatatype<T>><<<blocks, threads, 0, gpu::get_stream()>>>(
             gpu_index_strides, HipCast<DevDatatype<T>, T>::cast(C_prefactor), (DevDatatype<T> *)C.dev_data(), C.gpu_strides(),
             HipCast<DevDatatype<T>, T>::cast(AB_prefactor), (DevDatatype<T> *)A.dev_data(), A.gpu_strides(), (DevDatatype<T> *)B.dev_data(),
             B.gpu_strides(), elements, rank);
@@ -814,7 +813,7 @@ class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
             // Scale the matrix.
             if (C_prefactor != T{1.0}) {
                 auto threads = gpu::block_size(C.size()), blocks = gpu::blocks(C.size());
-                detail::scale_array<<<threads, blocks, 0, gpu::get_stream()>>>(HipCast<DevDatatype<T>, T>::cast(C_prefactor),
+                detail::scale_array<<<blocks, threads, 0, gpu::get_stream()>>>(HipCast<DevDatatype<T>, T>::cast(C_prefactor),
                                                                                (DevDatatype<T> *)C.dev_data(), C.size());
             }
 
@@ -832,13 +831,25 @@ class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
                     hipblas_catch(hipblasDger(gpu::get_blas_handle(), dC0, dC1, gpu_AB_prefactor, gpu_A, 1, gpu_B, 1,
                                               (DevDatatype<T> *)C.dev_data(), dC0));
                 } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+#    if hipblasVersionMajor < 3
                     hipblas_catch(hipblasCgeru(gpu::get_blas_handle(), dC0, dC1, (hipblasComplex const *)gpu_AB_prefactor,
                                                (hipblasComplex const *)gpu_A, 1, (hipblasComplex const *)gpu_B, 1,
                                                (hipblasComplex *)C.dev_data(), dC0));
+#    else
+                    hipblas_catch(hipblasCgeru(gpu::get_blas_handle(), dC0, dC1, (hipComplex const *)gpu_AB_prefactor,
+                                               (hipComplex const *)gpu_A, 1, (hipComplex const *)gpu_B, 1, (hipComplex *)C.dev_data(),
+                                               dC0));
+#    endif
                 } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+#    if hipblasVersionMajor < 3
                     hipblas_catch(hipblasZgeru(gpu::get_blas_handle(), dC0, dC1, (hipblasDoubleComplex const *)gpu_AB_prefactor,
                                                (hipblasDoubleComplex const *)gpu_A, 1, (hipblasDoubleComplex const *)gpu_B, 1,
                                                (hipblasDoubleComplex *)C.dev_data(), dC0));
+#    else
+                    hipblas_catch(hipblasZgeru(gpu::get_blas_handle(), dC0, dC1, (hipDoubleComplex const *)gpu_AB_prefactor,
+                                               (hipDoubleComplex const *)gpu_A, 1, (hipDoubleComplex const *)gpu_B, 1,
+                                               (hipDoubleComplex *)C.dev_data(), dC0));
+#    endif
                 }
             } else {
                 if constexpr (std::is_same_v<T, float>) {
@@ -848,13 +859,25 @@ class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
                     hipblas_catch(hipblasDger(gpu::get_blas_handle(), dC1, dC0, gpu_AB_prefactor, gpu_B, 1, gpu_A, 1,
                                               (DevDatatype<T> *)C.dev_data(), dC1));
                 } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+#    if hipblasVersionMajor < 3
                     hipblas_catch(hipblasCgeru(gpu::get_blas_handle(), dC1, dC0, (hipblasComplex const *)gpu_AB_prefactor,
                                                (hipblasComplex const *)gpu_B, 1, (hipblasComplex const *)gpu_A, 1,
                                                (hipblasComplex *)C.dev_data(), dC1));
+#    else
+                    hipblas_catch(hipblasCgeru(gpu::get_blas_handle(), dC1, dC0, (hipComplex const *)gpu_AB_prefactor,
+                                               (hipComplex const *)gpu_B, 1, (hipComplex const *)gpu_A, 1, (hipComplex *)C.dev_data(),
+                                               dC1));
+#    endif
                 } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+#    if hipblasVersionMajor < 3
                     hipblas_catch(hipblasZgeru(gpu::get_blas_handle(), dC1, dC0, (hipblasDoubleComplex const *)gpu_AB_prefactor,
                                                (hipblasDoubleComplex const *)gpu_B, 1, (hipblasDoubleComplex const *)gpu_A, 1,
                                                (hipblasDoubleComplex *)C.dev_data(), dC1));
+#    else
+                    hipblas_catch(hipblasZgeru(gpu::get_blas_handle(), dC1, dC0, (hipDoubleComplex const *)gpu_AB_prefactor,
+                                               (hipDoubleComplex const *)gpu_B, 1, (hipDoubleComplex const *)gpu_A, 1,
+                                               (hipDoubleComplex *)C.dev_data(), dC1));
+#    endif
                 }
             }
 
@@ -985,15 +1008,29 @@ class EINSUMS_EXPORT PyEinsumGemvPlan : public PyEinsumGenericPlan {
                                            (double const *)A.dev_data(), sA0, (double const *)B.dev_data(), sB, gpu_C_prefactor,
                                            (double *)C.dev_data(), sC));
             } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+#    if hipblasVersionMajor < 3
                 hipblas_catch(hipblasCgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA1, dA0,
                                            (hipblasComplex const *)gpu_AB_prefactor, (hipblasComplex const *)A.dev_data(), sA0,
                                            (hipblasComplex const *)B.dev_data(), sB, (hipblasComplex const *)gpu_C_prefactor,
                                            (hipblasComplex *)C.dev_data(), sC));
+#    else
+                hipblas_catch(hipblasCgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA1, dA0,
+                                           (hipComplex const *)gpu_AB_prefactor, (hipComplex const *)A.dev_data(), sA0,
+                                           (hipComplex const *)B.dev_data(), sB, (hipComplex const *)gpu_C_prefactor,
+                                           (hipComplex *)C.dev_data(), sC));
+#    endif
             } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+#    if hipblasVersionMajor < 3
                 hipblas_catch(hipblasZgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA1, dA0,
                                            (hipblasDoubleComplex const *)gpu_AB_prefactor, (hipblasDoubleComplex const *)A.dev_data(), sA0,
                                            (hipblasDoubleComplex const *)B.dev_data(), sB, (hipblasDoubleComplex const *)gpu_C_prefactor,
                                            (hipblasDoubleComplex *)C.dev_data(), sC));
+#    else
+                hipblas_catch(hipblasZgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA1, dA0,
+                                           (hipDoubleComplex const *)gpu_AB_prefactor, (hipDoubleComplex const *)A.dev_data(), sA0,
+                                           (hipDoubleComplex const *)B.dev_data(), sB, (hipDoubleComplex const *)gpu_C_prefactor,
+                                           (hipDoubleComplex *)C.dev_data(), sC));
+#    endif
             }
 
             gpu::stream_wait();
@@ -1174,17 +1211,32 @@ class EINSUMS_EXPORT PyEinsumGemmPlan : public PyEinsumGenericPlan {
                                                (double const *)A.dev_data(), sA0, (double const *)B.dev_data(), sB0, gpu_C_prefactor,
                                                (double *)C.dev_data(), sC0));
                 } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+#    if hipblasVersionMajor < 3
                     hipblas_catch(hipblasCgemm(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
                                                (!_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dB1, dA1,
                                                (hipblasComplex const *)gpu_AB_prefactor, (hipblasComplex const *)A.dev_data(), sA0,
                                                (hipblasComplex const *)B.dev_data(), sB0, (hipblasComplex const *)gpu_C_prefactor,
                                                (hipblasComplex *)C.dev_data(), sC0));
+#    else
+                    hipblas_catch(hipblasCgemm(
+                        gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, (!_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0,
+                        dB1, dA1, (hipComplex const *)gpu_AB_prefactor, (hipComplex const *)A.dev_data(), sA0,
+                        (hipComplex const *)B.dev_data(), sB0, (hipComplex const *)gpu_C_prefactor, (hipComplex *)C.dev_data(), sC0));
+#    endif
                 } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+#    if hipblasVersionMajor < 3
                     hipblas_catch(hipblasZgemm(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
                                                (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dB1, dA1,
                                                (hipblasDoubleComplex const *)gpu_AB_prefactor, (hipblasDoubleComplex const *)A.dev_data(),
                                                sA0, (hipblasDoubleComplex const *)B.dev_data(), sB0,
                                                (hipblasDoubleComplex const *)gpu_C_prefactor, (hipblasDoubleComplex *)C.dev_data(), sC0));
+#    else
+                    hipblas_catch(hipblasZgemm(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
+                                               (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dB1, dA1,
+                                               (hipDoubleComplex const *)gpu_AB_prefactor, (hipDoubleComplex const *)A.dev_data(), sA0,
+                                               (hipDoubleComplex const *)B.dev_data(), sB0, (hipDoubleComplex const *)gpu_C_prefactor,
+                                               (hipDoubleComplex *)C.dev_data(), sC0));
+#    endif
                 }
             } else {
                 if constexpr (std::is_same_v<T, float>) {
@@ -1198,16 +1250,31 @@ class EINSUMS_EXPORT PyEinsumGemmPlan : public PyEinsumGenericPlan {
                                                (double const *)B.dev_data(), sB0, (double const *)A.dev_data(), sA0, gpu_C_prefactor,
                                                (double *)C.dev_data(), sC0));
                 } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+#    if hipblasVersionMajor < 3
                     hipblas_catch(hipblasCgemm(gpu::get_blas_handle(), (_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
                                                (_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dB1, dA0, dA1, (hipblasComplex *)gpu_AB_prefactor,
                                                (hipblasComplex const *)B.dev_data(), sB0, (hipblasComplex const *)A.dev_data(), sA0,
                                                (hipblasComplex *)gpu_C_prefactor, (hipblasComplex *)C.dev_data(), sC0));
+#    else
+                    hipblas_catch(hipblasCgemm(gpu::get_blas_handle(), (_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
+                                               (_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dB1, dA0, dA1, (hipComplex *)gpu_AB_prefactor,
+                                               (hipComplex const *)B.dev_data(), sB0, (hipComplex const *)A.dev_data(), sA0,
+                                               (hipComplex *)gpu_C_prefactor, (hipComplex *)C.dev_data(), sC0));
+#    endif
                 } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+#    if hipblasVersionMajor < 3
                     hipblas_catch(hipblasZgemm(gpu::get_blas_handle(), (_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
                                                (_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dB1, dA0, dA1,
                                                (hipblasDoubleComplex const *)gpu_AB_prefactor, (hipblasDoubleComplex const *)B.dev_data(),
                                                sB0, (hipblasDoubleComplex const *)A.dev_data(), sA0,
                                                (hipblasDoubleComplex const *)gpu_C_prefactor, (hipblasDoubleComplex *)C.dev_data(), sC0));
+#    else
+                    hipblas_catch(hipblasZgemm(gpu::get_blas_handle(), (_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
+                                               (_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dB1, dA0, dA1,
+                                               (hipDoubleComplex const *)gpu_AB_prefactor, (hipDoubleComplex const *)B.dev_data(), sB0,
+                                               (hipDoubleComplex const *)A.dev_data(), sA0, (hipDoubleComplex const *)gpu_C_prefactor,
+                                               (hipDoubleComplex *)C.dev_data(), sC0));
+#    endif
                 }
             }
 
@@ -1280,12 +1347,12 @@ class EINSUMS_EXPORT PyEinsumGemmPlan : public PyEinsumGenericPlan {
         //     T *C_data = (T *)C_info.ptr;
 
         //     if (!_trans_C) {
-        //         einsums::blas::gemm((_trans_A) ? 'T' : 'N', (_trans_B) ? 'T' : 'N', dA0, dB1, dA1, AB_prefactor, A_data, sA0, B_data,
-        //         sB0,
+        //         einsums::blas::gemm((_trans_A) ? 'T' : 'N', (_trans_B) ? 'T' : 'N', dA0, dB1, dA1, AB_prefactor, A_data, sA0,
+        //         B_data, sB0,
         //                             C_prefactor, C_data, sC0);
         //     } else {
-        //         einsums::blas::gemm((!_trans_B) ? 'T' : 'N', (!_trans_A) ? 'T' : 'N', dB1, dA0, dA1, AB_prefactor, B_data, sB0, A_data,
-        //         sA0,
+        //         einsums::blas::gemm((!_trans_B) ? 'T' : 'N', (!_trans_A) ? 'T' : 'N', dB1, dA0, dA1, AB_prefactor, B_data,
+        //         sB0, A_data, sA0,
         //                             C_prefactor, C_data, sC0);
         //     }
         // }

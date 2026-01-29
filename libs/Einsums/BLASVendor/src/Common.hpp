@@ -12,7 +12,7 @@
 
 #include <omp.h>
 
-#if !defined(FC_SYMBOL)
+#ifndef FC_SYMBOL
 #    define FC_SYMBOL 2
 #endif
 

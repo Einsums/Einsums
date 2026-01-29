@@ -14,8 +14,8 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/LinearAlgebra/BlockTensor.hpp>
+#include <Einsums/LinearAlgebra/DiskAlgebra.hpp>
 #include <Einsums/LinearAlgebra/TiledTensor.hpp>
-#include <Einsums/LinearAlgebra/Unoptimized.hpp>
 #include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
@@ -103,7 +103,6 @@ void sum_square(AType const &a, RemoveComplexT<typename AType::ValueType> *scale
  */
 template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U>
     requires requires {
-        requires InSamePlace<AType, BType, CType>;
         requires std::convertible_to<U, typename AType::ValueType>;
         requires SameUnderlying<AType, BType, CType>;
     }
@@ -153,7 +152,6 @@ void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C)
  */
 template <MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U>
     requires requires {
-        requires InSamePlace<AType, BType, CType>;
         requires std::convertible_to<U, typename AType::ValueType>;
         requires SameUnderlying<AType, BType, CType>;
     }
@@ -193,7 +191,6 @@ void gemm(char transA, char transB, U const alpha, AType const &A, BType const &
  */
 template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, typename U>
     requires requires {
-        requires InSamePlace<AType, BType>;
         requires std::is_same_v<RemoveViewT<AType>, RemoveViewT<BType>>;
         requires std::convertible_to<U, typename AType::ValueType>;
         requires SameUnderlying<AType, BType>;
@@ -270,7 +267,6 @@ void symm_gemm(AType const &A, BType const &B, CType *C) {
  */
 template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U>
     requires requires {
-        requires InSamePlace<AType, XType, YType>;
         requires SameUnderlying<AType, XType, YType>;
         requires std::convertible_to<U, typename AType::ValueType>;
     }
@@ -308,7 +304,6 @@ void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y)
  */
 template <MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U>
     requires requires {
-        requires InSamePlace<AType, XType, YType>;
         requires SameUnderlying<AType, XType, YType>;
         requires std::convertible_to<U, typename AType::ValueType>;
     }
@@ -494,7 +489,6 @@ void heev(AType *A, WType *W) {
  */
 template <MatrixConcept AType, TensorConcept BType>
     requires requires {
-        requires InSamePlace<AType, BType>;
         requires SameUnderlying<AType, BType>;
         requires MatrixConcept<BType> || VectorConcept<BType>;
     }
@@ -854,12 +848,9 @@ void axpby(typename XType::ValueType alpha, XType const &X, typename XType::Valu
  *      Can now handle non-unit strides and both row- and colum-major layouts.
  * @endversion
  */
-template <MatrixConcept AType, VectorConcept XYType>
-    requires requires {
-        requires SameUnderlying<AType, XYType>;
-        requires InSamePlace<AType, XYType>;
-    }
-void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
+template <MatrixConcept AType, VectorConcept XType, VectorConcept YType>
+    requires requires { requires SameUnderlying<AType, XType, YType>; }
+void ger(typename AType::ValueType alpha, XType const &X, YType const &Y, AType *A) {
     LabeledSection0();
 
     detail::ger(alpha, X, Y, A);
@@ -885,12 +876,9 @@ void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, ATyp
  *
  * @versionadded{2.0.0}
  */
-template <MatrixConcept AType, VectorConcept XYType>
-    requires requires {
-        requires SameUnderlying<AType, XYType>;
-        requires InSamePlace<AType, XYType>;
-    }
-void gerc(typename AType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
+template <MatrixConcept AType, VectorConcept XType, VectorConcept YType>
+    requires requires { requires SameUnderlying<AType, XType, YType>; }
+void gerc(typename AType::ValueType alpha, XType const &X, YType const &Y, AType *A) {
     LabeledSection0();
 
     detail::gerc(alpha, X, Y, A);
@@ -1444,6 +1432,207 @@ auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename ATyp
 
     return std::make_tuple(U, w);
 }
+
+// template <DiskTensorConcept AType>
+//     requires requires {
+//         requires MatrixConcept<AType>;
+//         requires !einsums::IsComplexV<typename AType::ValueType>;
+//     }
+// auto truncated_syev(AType const &A, size_t in_k)
+//     -> std::tuple<DiskTensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 1>> {
+//     LabeledSection("truncated_syev");
+//     using T = typename AType::ValueType;
+//     // Davidson-Liu algorithm.
+
+//     size_t k = in_k;
+
+//     // First, create the output tensors.
+//     DiskTensor<T, 2> evecs("/temp/syev", A.dim(0), std::min(A.dim(1), k));
+
+//     evecs.write(create_random_tensor<T>("Eigenvectors", A.dim(0), std::min(A.dim(1), k)));
+
+//     Tensor<T, 1> evals("Eigenvalues", std::min(A.dim(1), k));
+
+//     // Orthonormalize the eigenvectors.
+//     // Start by normalizing.
+//     for (int i = 0; i < evecs.dim(1); i++) {
+//         auto view = evecs(All, i);
+//         auto norm = vec_norm(view.get());
+//         view.get() /= norm;
+//     }
+
+//     // Then orthonormalizing.
+//     for (int i = 1; i < evecs.dim(1); i++) {
+//         auto dest_view = evecs(All, i);
+//         for (int j = 0; j < i; j++) {
+//             auto src_view = evecs(All, j);
+//             auto overlap  = dot(src_view.get(), dest_view.get());
+
+//             axpy(-overlap, src_view.get(), &dest_view.get());
+//         }
+
+//         auto norm = vec_norm(dest_view.get());
+//         dest_view.get() /= norm;
+//     }
+
+//     BufferTensor<T, 2> subspace("subspace", evecs.dim(1), evecs.dim(1));
+
+//     std::string name = fmt::format("/output/syev{}", A.name());
+//     if (A.name().size() == 0) {
+//         name = "";
+//     }
+
+//     DiskTensor<T, 2> temp(name, A.dim(0), k);
+
+//     DiskTensor<T, 2>   temp2("/temp/syev", A.dim(0), k);
+//     BufferTensor<T, 1> subspace_vals("subspace eigenvalues", evecs.dim(1));
+//     BufferTensor<T, 2> correction("correction vector", A.dim(0), in_k), z("z intermediate", A.dim(0), in_k);
+
+//     // Set up the convergence condition.
+//     std::vector<bool> converged(k);
+
+//     for (int i = 0; i < k; i++) {
+//         converged[i] = false;
+//     }
+
+//     // Get the diagonal entries for computing the over-relaxation parameter.
+//     BufferTensor<T, 1> diagonal("diagonal", A.dim(0));
+
+//     for (int i = 0; i < A.dim(0) / 64; i++) {
+//         auto  block_view   = A(Range{64 * i, 64 * (i + 1)}, Range{64 * i, 64 * (i + 1)});
+//         auto &block_tensor = block_view.get();
+
+//         diagonal(Range{64 * i, 64 * (i + 1)}) = block_tensor.tie_indices(0, 1);
+//     }
+
+//     if (A.dim(0) % 64 != 0) {
+//         auto  block_view   = A(Range{64 * (A.dim(0) / 64), A.dim(0)}, Range{64 * (A.dim(0) / 64), A.dim(0)});
+//         auto &block_tensor = block_view.get();
+
+//         diagonal(Range{64 * (A.dim(0) / 64), A.dim(0)}) = block_tensor.tie_indices(0, 1);
+//     }
+
+//     do {
+//         // Calculate the subspace matrix.
+//         gemm('n', 'n', 1.0, A, evecs, 0.0, &temp2);
+//         gemm('t', 'n', 1.0, evecs, temp2, 0.0, &subspace);
+
+//         // Decompose the subspace.
+
+//         syev(&subspace, &subspace_vals);
+
+//         // Compute the approximate eigenvectors.
+//         gemm('n', 'n', 1.0, evecs, subspace(All, Range{0, in_k}), 0.0, &temp);
+
+//         // Compute the residuals.
+//         size_t new_k = evecs.dim(1);
+//         for (int i = 0; i < in_k; i++) {
+//             // Compute the residual.
+//             {
+//                 auto temp_vec = temp(All, Range{0, in_k});
+//                 correction    = temp_vec.get();
+
+//                 gemv('n', T{1.0}, A, temp_vec, T{0.0}, &correction);
+//                 axpy(-subspace_vals(i), temp_vec.get(), &correction);
+//             }
+
+//             // Check for convergence.
+//             if constexpr (std::is_same_v<T, float>) {
+//                 if (vec_norm(correction) < 1e-3) {
+//                     converged[i] = true;
+//                     continue;
+//                 } else {
+//                     converged[i] = false;
+//                 }
+//             } else {
+//                 if (vec_norm(correction) < 1e-6) {
+//                     converged[i] = true;
+//                     continue;
+//                 } else {
+//                     converged[i] = false;
+//                 }
+//             }
+
+//             // Solve for the correction.
+//             for (size_t j = 0; j < A.dim(0); j++) {
+//                 correction(j) /= subspace_vals(i) - diagonal(j);
+//             }
+
+//             // correction /= vec_norm(correction);
+
+//             // Now that we have the correction, solve for the corrected correction.
+//             z = correction; // Save the original correction.
+//             for (int j = 0; j < new_k; j++) {
+//                 auto  view = evecs(All, j);
+//                 auto &tens = view.get();
+//                 axpy(-dot(tens, z), tens, &correction);
+//             }
+
+//             // Check the norms.
+//             auto norm = vec_norm(correction);
+//             if (norm / vec_norm(z) > 1e-3) {
+//                 correction /= norm;
+//                 evecs.resize(A.dim(0), new_k + 1);
+//                 auto view  = evecs(All, new_k);
+//                 view.get() = correction;
+//                 new_k++;
+//                 break;
+//             }
+//         }
+
+//         if (new_k != k) {
+//             subspace.resize(new_k, new_k);
+//             subspace_vals.resize(new_k);
+//             temp2.resize(A.dim(0), new_k);
+//         } else {
+//             temp2 = evecs;
+//             gemm('n', 'n', T{1.0}, temp2, subspace, T{0.0}, &evecs);
+//         }
+
+//         k = new_k;
+//     } while (!std::all_of(converged.begin(), converged.end(), [](bool n) { return n; }));
+
+//     // Calculate the actual eigenvectors.
+
+//     // Calculate the subspace matrix.
+//     gemm('n', 'n', 1.0, A, evecs, 0.0, &temp2);
+//     gemm('t', 'n', 1.0, evecs, temp2, 0.0, &subspace);
+
+//     // Decompose the subspace.
+
+//     syev(&subspace, &subspace_vals);
+
+//     evals = subspace_vals(Range{0, in_k});
+
+//     // Compute the approximate eigenvectors.
+//     gemm('n', 'n', 1.0, evecs, subspace(All, Range{0, in_k}), 0.0, &temp);
+
+//     // Sort.
+//     for (int i = 0; i < in_k; i++) {
+//         T   min     = evals(i);
+//         int min_pos = i;
+
+//         for (int j = i + 1; j < in_k; j++) {
+//             if (min > evals(j)) {
+//                 min     = evals(j);
+//                 min_pos = j;
+//             }
+//         }
+
+//         if (min_pos != i) {
+//             auto &vec1 = temp(All, min_pos).get();
+//             auto &vec2 = temp(All, i).get();
+
+//             std::swap(vec1, vec2);
+//             std::swap(evals(i), evals(min_pos));
+//         }
+//     }
+
+//     evecs.unlink();
+//     temp2.unlink();
+
+//     return std::make_tuple(std::move(temp), std::move(evals));
+// }
 
 /**
  * Compute the pseudoinverse of a matrix.

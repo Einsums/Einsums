@@ -17,12 +17,17 @@
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
+#include <Einsums/Utilities.hpp>
 
 #include <H5Dpublic.h>
+#include <H5Ipublic.h>
 #include <H5Ppublic.h>
 #include <H5Spublic.h>
 #include <H5Tpublic.h>
+#include <cstdio>
+#include <mutex>
 #include <source_location>
+#include <stdexcept>
 #include <string>
 
 namespace einsums {
@@ -66,18 +71,113 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     /**
      * Default copy constructor.
      */
-    DiskTensor(DiskTensor const &) = default;
+    DiskTensor(DiskTensor const &other) : _file{other._file}, _name{other.name()}, _dims{other.dims()}, _size{other.size()} {
+        _dataspace = H5Scopy(other._dataspace);
+
+        if constexpr (std::is_same_v<T, float>) {
+            _data_type = H5T_NATIVE_FLOAT;
+        } else if constexpr (std::is_same_v<T, double>) {
+            _data_type = H5T_NATIVE_DOUBLE;
+        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
+        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
+        }
+        _existed = false;
+
+        _creation_props = H5Pcopy(other._creation_props);
+
+        if (_name.size() == 0) {
+            // Create temporary names.
+            char temp_name1[L_tmpnam + 1], temp_name2[L_tmpnam + 1];
+
+            std::memset(temp_name1, 0, L_tmpnam + 1);
+            std::memset(temp_name2, 0, L_tmpnam + 1);
+
+            std::tmpnam(temp_name1);
+            std::tmpnam(temp_name2);
+
+            auto temp_name1_str = std::string(temp_name1);
+            auto temp_name2_str = std::string(temp_name2);
+
+            std::filesystem::path temp_path1(std::move(temp_name1_str)), temp_path2(std::move(temp_name2_str));
+
+            auto new_temp1 = fmt::format("/tmp/{}", temp_path1.filename()), new_temp2 = fmt::format("/tmp/{}", temp_path2.filename());
+
+            // Link the temporary dataset into a temporary location.
+            auto err = H5Olink(other._dataset, _file, new_temp1.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list,
+                               H5P_DEFAULT);
+
+            if (err < 0) {
+                H5Sclose(_dataspace);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not link anonymous tensor into file for copying!");
+            }
+
+            H5Dflush(other._dataset);
+
+            // Copy.
+            err = H5Ocopy(_file, new_temp1.c_str(), _file, new_temp2.c_str(), _creation_props,
+                          detail::Einsums_Tensor_vars::get_singleton().link_property_list);
+            if (err < 0) {
+                H5Ldelete(_file, new_temp1.c_str(), H5P_DEFAULT);
+                H5Ldelete(_file, new_temp2.c_str(), H5P_DEFAULT);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Something went wrong when copying anonymous disk tensors!");
+            }
+
+            // Unlink the datasets so they are deleted from the file when the tensors are freed.
+            H5Ldelete(_file, new_temp1.c_str(), H5P_DEFAULT);
+            H5Ldelete(_file, new_temp2.c_str(), H5P_DEFAULT);
+        } else {
+            // Create temporary name.
+            char temp_name[L_tmpnam + 1];
+
+            std::memset(temp_name, 0, L_tmpnam + 1);
+
+            std::tmpnam(temp_name);
+
+            auto temp_name_str = std::string(temp_name);
+
+            std::filesystem::path temp_path(std::move(temp_name_str));
+
+            auto new_temp = fmt::format("/tmp/{}", temp_path.filename());
+
+            H5Dflush(other._dataset);
+
+            // Copy.
+            auto err = H5Ocopy(_file, other.name().c_str(), _file, new_temp.c_str(), _creation_props,
+                               detail::Einsums_Tensor_vars::get_singleton().link_property_list);
+            if (err < 0) {
+                H5Ldelete(_file, new_temp.c_str(), H5P_DEFAULT);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Something went wrong when copying disk tensors!");
+            }
+
+            // Unlink the datasets so they are deleted from the file when the tensors are freed.
+            H5Ldelete(_file, new_temp.c_str(), H5P_DEFAULT);
+        }
+    }
 
     /**
      * Default move constructor.
      */
-    DiskTensor(DiskTensor &&) noexcept = default;
+    DiskTensor(DiskTensor &&other)
+        : _tensor(std::move(other._tensor)), _constructed(other._constructed), _creation_props(other._creation_props),
+          _data_type(other._data_type), _dataset(other._dataset), _dataspace(other._dataspace), _dims(std::move(other._dims)),
+          _existed(other._existed), _file(other._file), _size(other._size), _strides(std::move(other._strides)) {
+        other._constructed    = false;
+        other._creation_props = H5I_INVALID_HID;
+        other._dataset        = H5I_INVALID_HID;
+        other._dataspace      = H5I_INVALID_HID;
+        other._existed        = false;
+        other._file           = H5I_INVALID_HID;
+        other._size           = 0;
+    }
 
     /**
      * Default destructor.
      */
     ~DiskTensor() {
         if (_dataset != H5I_INVALID_HID) {
+            put();
             H5Dclose(_dataset);
         }
 
@@ -100,9 +200,12 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     explicit DiskTensor(hid_t file, std::string name, Dim<Rank> dims, int deflate_level = -1)
         : _file{file}, _name{std::move(name)}, _dims{dims} {
 
-        size_t size = dims_to_strides(_dims, _strides);
+        _size = dims_to_strides(_dims, _strides, true);
 
-        _dataspace = H5Screate_simple(Rank, reinterpret_cast<hsize_t *>(_dims.data()), NULL);
+        std::array<hsize_t, Rank> max_dims;
+        max_dims.fill(H5S_UNLIMITED);
+
+        _dataspace = H5Screate_simple(Rank, reinterpret_cast<hsize_t *>(_dims.data()), max_dims.data());
 
         if (_dataspace == H5I_INVALID_HID) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Dataspace creation failed!");
@@ -144,8 +247,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
             // Maximum chunk size is 2^32 - 1, but chunks can not be bigger than the data set in any dimension.
             for (int i = rank - 1; i >= 0; i--) {
-                if (prod * _dims[i] >= 0xffffffffUL) {
-                    chunk_dims[i] = 0xffffffffUL / prod;
+                if (prod * _dims[i] >= 0xffffffffUL / sizeof(T)) {
+                    chunk_dims[i] = 0xffffffffUL / sizeof(T) / prod;
                     break;
                 } else {
                     prod *= _dims[i];
@@ -165,7 +268,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
                 EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not set up the chunk options!");
             }
 
-            if (deflate_level < 0 && size > 0xffffffff) {
+            if (deflate_level < 0 && _size > 0xffffffff) {
                 deflate_level = 1;
             }
 
@@ -177,8 +280,12 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
                 }
             }
 
-            _dataset = H5Dcreate(_file, _name.c_str(), _data_type, _dataspace,
-                                 detail::Einsums_Tensor_vars::get_singleton().link_property_list, _creation_props, H5P_DEFAULT);
+            if (_name.size() > 0) {
+                _dataset = H5Dcreate(_file, _name.c_str(), _data_type, _dataspace,
+                                     detail::Einsums_Tensor_vars::get_singleton().link_property_list, _creation_props, H5P_DEFAULT);
+            } else {
+                _dataset = H5Dcreate_anon(_file, _data_type, _dataspace, _creation_props, H5P_DEFAULT);
+            }
         }
 
         if (_dataset == H5I_INVALID_HID) {
@@ -211,6 +318,141 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         : DiskTensor(detail::Einsums_Tensor_vars::get_singleton().hdf5_file, name, std::forward<Dims>(dims)...) {}
 
     // Provides ability to store another tensor to a part of a disk tensor.
+
+    template <std::integral... Dims>
+    void resize(Dims... dims) {
+        resize(Dim<Rank>{dims...});
+    }
+
+    void resize(Dim<Rank> const &new_dims) {
+        put();
+        _constructed = false;
+        H5Dflush(_dataset);
+        auto err = H5Dset_extent(_dataset, (hsize_t *)new_dims.data());
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not extend the disk tensor!");
+        }
+        H5Dflush(_dataset);
+        H5Sclose(_dataspace);
+        _dataspace = H5Dget_space(_dataset);
+        _dims      = new_dims;
+        _size      = dims_to_strides(_dims, _strides, true);
+
+        err = H5Sselect_all(_dataspace);
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not select the extended dataspace!");
+        }
+
+        Dim<Rank> test_dims, max_dims;
+
+        auto test_rank = H5Sget_simple_extent_dims(_dataspace, (hsize_t *)test_dims.data(), (hsize_t *)max_dims.data());
+
+        if (test_rank != Rank) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Something went wrong when creating the resized data space!");
+        }
+
+        for (int i = 0; i < Rank; i++) {
+            if (test_dims[i] != _dims[i]) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "The new dimensions did not get set properly during resize!");
+            }
+        }
+    }
+
+    DiskTensor &operator=(DiskTensor const &other) {
+        _dims        = other._dims;
+        _strides     = other._strides;
+        _size        = other._size;
+        _existed     = true;
+        _constructed = false;
+
+        if constexpr (std::is_same_v<T, float>) {
+            _data_type = H5T_NATIVE_FLOAT;
+        } else if constexpr (std::is_same_v<T, double>) {
+            _data_type = H5T_NATIVE_DOUBLE;
+        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
+        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
+        }
+
+        if (_file == H5I_INVALID_HID) {
+            _file = detail::Einsums_Tensor_vars::get_singleton().hdf5_file;
+        }
+
+        _creation_props = H5Pcopy(other._creation_props);
+
+        if (_name.size() == 0) {
+            // Create temporary names.
+            char temp_name1[L_tmpnam + 1], temp_name2[L_tmpnam + 1];
+
+            std::memset(temp_name1, 0, L_tmpnam + 1);
+            std::memset(temp_name2, 0, L_tmpnam + 1);
+
+            std::tmpnam(temp_name1);
+            std::tmpnam(temp_name2);
+
+            auto temp_name1_str = std::string(temp_name1);
+            auto temp_name2_str = std::string(temp_name2);
+
+            std::filesystem::path temp_path1(std::move(temp_name1_str)), temp_path2(std::move(temp_name2_str));
+
+            auto new_temp1 = fmt::format("/tmp/{}", temp_path1.filename()), new_temp2 = fmt::format("/tmp/{}", temp_path2.filename());
+
+            // Link the temporary dataset into a temporary location.
+            auto err = H5Olink(other._dataset, _file, new_temp1.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list,
+                               H5P_DEFAULT);
+
+            if (err < 0) {
+                H5Sclose(_dataspace);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not link anonymous tensor into file for copying!");
+            }
+
+            H5Dflush(other._dataset);
+
+            // Copy.
+            err = H5Ocopy(_file, new_temp1.c_str(), _file, new_temp2.c_str(), _creation_props,
+                          detail::Einsums_Tensor_vars::get_singleton().link_property_list);
+            if (err < 0) {
+                H5Ldelete(_file, new_temp1.c_str(), H5P_DEFAULT);
+                H5Ldelete(_file, new_temp2.c_str(), H5P_DEFAULT);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Something went wrong when copying anonymous disk tensors!");
+            }
+
+            // Unlink the datasets so they are deleted from the file when the tensors are freed.
+            H5Ldelete(_file, new_temp1.c_str(), H5P_DEFAULT);
+            H5Ldelete(_file, new_temp2.c_str(), H5P_DEFAULT);
+        } else {
+            // Create temporary name.
+            char temp_name[L_tmpnam + 1];
+
+            std::memset(temp_name, 0, L_tmpnam + 1);
+
+            std::tmpnam(temp_name);
+
+            auto temp_name_str = std::string(temp_name);
+
+            std::filesystem::path temp_path(std::move(temp_name_str));
+
+            auto new_temp = fmt::format("/tmp/{}", temp_path.filename());
+
+            H5Dflush(other._dataset);
+
+            // Copy.
+            auto err = H5Ocopy(_file, other.name().c_str(), _file, new_temp.c_str(), _creation_props,
+                               detail::Einsums_Tensor_vars::get_singleton().link_property_list);
+            if (err < 0) {
+                H5Ldelete(_file, new_temp.c_str(), H5P_DEFAULT);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Something went wrong when copying disk tensors!");
+            }
+
+            // Unlink the datasets so they are deleted from the file when the tensors are freed.
+            H5Ldelete(_file, new_temp.c_str(), H5P_DEFAULT);
+        }
+
+        _dataspace = H5Dget_space(_dataset);
+        return *this;
+    }
 
     /**
      * Get the dimension along a given axis.
@@ -253,8 +495,25 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
     /**
      * Set the name of the tensor.
+     *
+     * @versionchangeddesc{2.0.0}
+     *      When changing the name of a tensor, links are now moved within the file.
+     * @endversion
      */
-    void set_name(std::string const &new_name) { _name = new_name; }
+    void set_name(std::string const &new_name) {
+        herr_t err;
+        if (_name.size() == 0) {
+            err = H5Olink(_dataset, _file, new_name.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list, H5P_DEFAULT);
+        } else {
+            err = H5Lmove(_file, _name.c_str(), _file, new_name.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list,
+                          H5P_DEFAULT);
+        }
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Error when changing the name of a disk tensor! Could not create new link!");
+        }
+        _name = new_name;
+    }
 
     /**
      * Get the stride along a given axis.
@@ -265,6 +524,11 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      * @brief Get the array of strides for this tensor.
      */
     Stride<Rank> strides() const { return _strides; }
+
+    /**
+     * Get the size of the tensor.
+     */
+    size_t size() const { return _size; }
 
     /**
      * @brief Returns whether this tensor is viewing the entirety of the data.
@@ -314,9 +578,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
         int dims_index = 0;
-        for (auto cnt : block) {
-            if (cnt > 1) {
-                dims_all[dims_index++] = cnt;
+        for (int i = 0; i < Rank; i++) {
+            if (!is_in(i, index_positions)) {
+                dims_all[dims_index] = block[i];
+                dims_index++;
             }
         }
 
@@ -379,9 +644,10 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
         int dims_index = 0;
-        for (auto cnt : block) {
-            if (cnt > 1) {
-                dims_all[dims_index++] = cnt;
+        for (int i = 0; i < Rank; i++) {
+            if (!is_in(i, index_positions)) {
+                dims_all[dims_index] = block[i];
+                dims_index++;
             }
         }
 
@@ -405,8 +671,9 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
     template <CoreBasicTensorConcept TensorType>
         requires(RankTensorConcept<TensorType, rank>)
-    void write(TensorType &tensor) {
-        std::array<size_t, rank> dims, counts, block;
+    void write(TensorType const &tensor) {
+
+        std::array<size_t, rank> dims, counts;
 
         counts.fill(1);
 
@@ -417,15 +684,188 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
         }
 
-        auto err = H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, tensor.data());
+        herr_t err;
+
+        if (tensor.is_row_major()) {
+            err = H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, tensor.data());
+        } else {
+            auto lock = std::lock_guard(*this);
+            if (!_constructed) {
+                _tensor      = BufferTensor<T, Rank>{true, _dims};
+                _constructed = true;
+            }
+
+            _tensor = tensor;
+
+            err = H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+        }
 
         H5Sclose(mem_dataspace);
 
         if (err < 0) {
-            H5Sclose(mem_dataspace);
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not write data to HDF5 file!");
         }
     }
+
+    /**
+     * Gets the underlying tensor holding the data.
+     */
+    BufferTensor<T, rank> &get() {
+        auto                     lock = std::lock_guard(*this);
+        std::array<size_t, rank> counts;
+
+        counts.fill(1);
+
+        hid_t mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+
+        if (mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+        }
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+
+            auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+            if (err < 0) {
+                H5Sclose(mem_dataspace);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+            }
+        }
+
+        H5Sclose(mem_dataspace);
+        return _tensor;
+    }
+
+    /**
+     * Gets the underlying tensor holding the data.
+     */
+    BufferTensor<T, rank> const &get() const {
+        auto                     lock = std::lock_guard(*this);
+        std::array<size_t, rank> counts;
+
+        counts.fill(1);
+
+        hid_t mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+
+        if (mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+        }
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+
+            auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+            if (err < 0) {
+                H5Sclose(mem_dataspace);
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+            }
+        }
+        H5Sclose(mem_dataspace);
+        return _tensor;
+    }
+
+    /**
+     * Gets the underlying tensor holding the data. If the tensor has already been created,
+     * update it with what is stored on disk.
+     */
+    BufferTensor<T, rank> &get_update() {
+        auto                     lock = std::lock_guard(*this);
+        std::array<size_t, rank> counts;
+
+        counts.fill(1);
+
+        hid_t mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+
+        if (mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+        }
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+        }
+        auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+        if (err < 0) {
+            H5Sclose(mem_dataspace);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+        }
+
+        H5Sclose(mem_dataspace);
+        return _tensor;
+    }
+
+    /**
+     * Gets the underlying tensor holding the data. If the tensor has already been created,
+     * update it with what is stored on disk.
+     */
+    BufferTensor<T, rank> const &get_update() const {
+        auto                     lock = std::lock_guard(*this);
+        std::array<size_t, rank> counts;
+
+        counts.fill(1);
+
+        hid_t mem_dataspace =
+            H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+
+        if (mem_dataspace == H5I_INVALID_HID) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+        }
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+        }
+
+        auto err = H5Dread(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+        if (err < 0) {
+            H5Sclose(mem_dataspace);
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+        }
+
+        H5Sclose(mem_dataspace);
+        return _tensor;
+    }
+
+    /**
+     * Writes the buffered tensor's data to the disk then destroys the buffered tensor.
+     * There is no const version.
+     */
+    void unget() {
+        if (_constructed) {
+            put();
+
+            _tensor.~BufferTensor<T, rank>();
+            _constructed = false;
+        }
+    }
+
+    /**
+     * Push any changes to the view to the disk. There is no const version.
+     */
+    void put() {
+        if (_constructed) {
+            _tensor.tensor_from_gpu();
+            std::array<size_t, rank> counts;
+
+            counts.fill(1);
+
+            hid_t mem_dataspace =
+                H5Screate_simple(rank, reinterpret_cast<hsize_t const *>(dims().data()), reinterpret_cast<hsize_t const *>(dims().data()));
+
+            if (mem_dataspace == H5I_INVALID_HID) {
+                EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not create memory dataspace!");
+            }
+            H5Dwrite(_dataset, _data_type, mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+            H5Sclose(mem_dataspace);
+        }
+    }
+
+    void unlink() const { H5Ldelete(_file, _name.c_str(), H5P_DEFAULT); }
 
   private:
     /**
@@ -452,11 +892,22 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     hid_t _file{H5I_INVALID_HID}, _dataspace{H5I_INVALID_HID}, _dataset{H5I_INVALID_HID}, _data_type{H5I_INVALID_HID},
         _creation_props{H5I_INVALID_HID};
 
+    /**
+     * @var _size
+     *
+     * Holds the size of the tensor.
+     */
+    size_t _size;
+
     /** @var _existed
      *
      * Did the entry already exist on disk? Doesn't indicate validity of the data just the existence of the entry.
      */
     bool _existed{false};
+
+    mutable bool _constructed{false};
+
+    mutable BufferTensor<T, rank> _tensor;
 };
 
 /**
@@ -529,6 +980,8 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
             _mem_dataspace == H5I_INVALID_HID) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not initialize disk view!");
         }
+
+        _size = prod;
     }
 
     /**
@@ -571,6 +1024,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
         }
 
         set_read_only(true);
+        _size = prod;
     }
 
     /**
@@ -611,6 +1065,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
             _mem_dataspace == H5I_INVALID_HID) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not initialize disk view!");
         }
+        _size = prod;
     }
 
     /**
@@ -653,6 +1108,8 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
         }
 
         set_read_only(true);
+
+        _size = prod;
     }
 
     /**
@@ -707,8 +1164,9 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Copy a tensor into disk.
      */
-    template <template <typename, size_t> typename TType>
-    auto operator=(TType<T, rank> const &other) -> DiskView & {
+    template <TensorConcept TType>
+        requires SameUnderlyingAndRank<TType, DiskView>
+    auto operator=(TType const &other) -> DiskView & {
         if (_readOnly) {
             EINSUMS_THROW_EXCEPTION(access_denied, "Attempting to write data to a read only disk view.");
         }
@@ -732,10 +1190,10 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Gets the underlying tensor holding the data.
      */
-    auto get() -> Tensor<T, rank> & {
+    auto get() -> BufferTensor<T, rank> & {
         auto lock = std::lock_guard(*this);
         if (!_constructed) {
-            _tensor      = Tensor<T, Rank>{true, _dims};
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
             _constructed = true;
 
             auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
@@ -750,10 +1208,10 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Gets the underlying tensor holding the data.
      */
-    auto get() const -> Tensor<T, rank> const & {
+    auto get() const -> BufferTensor<T, rank> const & {
         auto lock = std::lock_guard(*this);
         if (!_constructed) {
-            _tensor      = Tensor<T, Rank>{true, _dims};
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
             _constructed = true;
 
             auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
@@ -766,11 +1224,66 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     }
 
     /**
+     * Gets the underlying tensor holding the data. If the tensor has already been created,
+     * update it with what is stored on disk.
+     */
+    auto get_update() -> BufferTensor<T, rank> & {
+        auto lock = std::lock_guard(*this);
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+        }
+
+        auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+        }
+
+        return _tensor;
+    }
+
+    /**
+     * Gets the underlying tensor holding the data. If the tensor has already been created,
+     * update it with what is stored on disk.
+     */
+    auto get_update() const -> BufferTensor<T, rank> const & {
+        auto lock = std::lock_guard(*this);
+        if (!_constructed) {
+            _tensor      = BufferTensor<T, Rank>{true, _dims};
+            _constructed = true;
+        }
+
+        auto err = H5Dread(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+
+        if (err < 0) {
+            EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read tensor data!");
+        }
+
+        return _tensor;
+    }
+
+    /**
+     * Writes the buffered tensor's data to the disk then destroys the buffered tensor.
+     * There is no const version.
+     */
+    void unget() {
+        if (_constructed) {
+            put();
+
+            _tensor.~BufferTensor<T, rank>();
+            _constructed = false;
+        }
+    }
+
+    /**
      * Push any changes to the view to the disk.
      */
     void put() {
-        if (!_readOnly && _constructed)
+        if (!_readOnly && _constructed) {
+            _tensor.tensor_from_gpu();
             H5Dwrite(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
+        }
     }
 
     /**
@@ -830,9 +1343,10 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
         int dims_index = 0;
-        for (auto cnt : block) {
-            if (cnt > 1) {
-                dims_all[dims_index++] = cnt;
+        for (int i = 0; i < Rank; i++) {
+            if (!is_in(i, index_positions)) {
+                dims_all[dims_index] = block[i];
+                dims_index++;
             }
         }
 
@@ -921,9 +1435,10 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
         int dims_index = 0;
-        for (auto cnt : block) {
-            if (cnt > 1) {
-                dims_all[dims_index++] = cnt;
+        for (int i = 0; i < Rank; i++) {
+            if (!is_in(i, index_positions)) {
+                dims_all[dims_index] = block[i];
+                dims_index++;
             }
         }
 
@@ -953,7 +1468,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
                 j++;
             }
 
-            while (block[j] == 1 && j < rank) {
+            while (j < rank && block[j] == 1) {
                 j++;
             }
         }
@@ -986,6 +1501,11 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     Dim<rank> dims() const { return _dims; }
 
     /**
+     * Get the size of the view.
+     */
+    size_t size() const { return _size; }
+
+    /**
      * Get the name of the tensor.
      */
     std::string const &name() const { return _name; }
@@ -998,12 +1518,12 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Cast the tensor to Tensor<T,ViewRank>.
      */
-    operator Tensor<T, rank> &() { return get(); } // NOLINT
+    operator BufferTensor<T, rank> &() { return get(); } // NOLINT
 
     /**
      * Cast the tensor to Tensor<T,ViewRank>.
      */
-    operator Tensor<T, rank> const &() const { return get(); } // NOLINT
+    operator BufferTensor<T, rank> const &() const { return get(); } // NOLINT
 
     /**
      * Set all of the values of the tensor to zero.
@@ -1057,11 +1577,18 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     Dim<rank> _dims;
 
     /**
+     * @var _size
+     *
+     * The size of the tensor view.
+     */
+    size_t _size;
+
+    /**
      * @var _tensor
      *
      * This is the in-core representation of the view.
      */
-    mutable Tensor<T, rank> _tensor;
+    mutable BufferTensor<T, rank> _tensor;
 
     /**
      * @var _name
