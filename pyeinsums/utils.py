@@ -12,7 +12,7 @@ import functools
 import typing
 import random
 
-from einsums import core
+from pyeinsums import core
 
 import numpy as np
 
