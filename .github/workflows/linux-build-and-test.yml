@@ -156,9 +156,7 @@ jobs:
           else
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
-          mkdir "${{github.workspace}}/backup"
-          mv "${{github.workspace}}/src/einsums" "${{github.workspace}}/backup/einsums"
-          pytest "${{github.workspace}}/src/tests" --cov="${{github.workspace}}/installed/lib" --cov="${{github.workspace}}/src" --cov-report=xml
+          pytest "${{github.workspace}}/installed" --cov="${{github.workspace}}/installed/lib" --cov="${{github.workspace}}/src" --cov-report=xml
 
       - name: Generate coverage information
         if: ${{ contains(matrix.compiler, 'default') }}
