@@ -1,6 +1,6 @@
 /*build*/
 testing/consume/build
-.vscode/Testing
+.vscode/
 
 # Prerequisites
 *.d
