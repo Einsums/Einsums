@@ -1,0 +1,10 @@
+name: einsums-dev
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - cxx-compiler
+  - clang=17.*
+  - clangxx=17.*
+  - llvm-openmp=17.*
+  - compiler-rt=17.*
