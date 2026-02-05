@@ -25,13 +25,18 @@ jobs:
       fail-fast: false
       matrix:
         # compiler = default, implies the default compiler for the platform. for linux, this is gcc/g++
-        compiler: [ default, intel ]
+        compiler: [ default, clang, intel ]
         blas: [ openblas, mkl ]
         build_type: [ RelWithDebInfo ]
         variant: [ default ]
         include:
           - compiler: default
             cmake_extra: >
+              -DEINSUMS_WITH_COVERAGE=ON
+          - compiler: clang
+            cmake_extra: >
+              -DCMAKE_C_COMPILER=clang
+              -DCMAKE_CXX_COMPILER=clang++
               -DEINSUMS_WITH_COVERAGE=ON
           - compiler: intel
             blas: mkl

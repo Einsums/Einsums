@@ -27,7 +27,7 @@ jobs:
       fail-fast: false
       matrix:
         # compiler = default, implies the default compiler for the platform. for linux, this is gcc/g++
-        compiler: [ default ]
+        compiler: [ default, clang ]
         blas: [ openblas ]
         build_type: [ Debug ]
         variant: [ default ]
