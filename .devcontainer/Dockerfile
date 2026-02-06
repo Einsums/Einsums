@@ -1,6 +1,4 @@
 ARG VARIANT
-ARG INSTALL_INTEL
-
 FROM buildpack-deps:${VARIANT}-curl
 
 COPY einsums_env.yml /tmp/einsums_env.yml
@@ -15,10 +13,11 @@ RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y reinstall --no-install-recommends tzdata
 
-RUN if ["$INSTALL_INTEL" == "True"]; then \
-    wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null \
-    && echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list \
-    && apt-get -y install intel-hpckit; \
+ARG INSTALL_INTEL
+RUN if [ "${INSTALL_INTEL}" = "True" ]; then \
+        wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null \
+        && echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | tee /etc/apt/sources.list.d/oneAPI.list \
+        && apt-get -y install intel-hpckit; \
     fi
 
 # Cleanup the image
