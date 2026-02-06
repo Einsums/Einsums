@@ -8,3 +8,6 @@ dependencies:
   - clangxx=17.*
   - llvm-openmp=17.*
   - compiler-rt=17.*
+  # Necessary for cpptrace
+  - clang-tools=17.*
+  - libclang=17.*
