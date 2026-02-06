@@ -3,6 +3,10 @@
 # Activates the einsums environment by adding it to the .zshrc file
 echo 'micromamba activate einsums # added by devcontainer.json' >> ~/.zshrc
 
+# Make symbolic links to cmake and ninja to allow non-root user install
+ln -s /opt/conda/envs/einsums/bin/cmake /usr/bin/cmake
+ln -s /opt/conda/envs/einsums/bin/ninja /usr/bin/ninja
+
 # Copies VSCode helper files to main workspace
 if [ -d "/workspaces/Einsums/.vscode" ]; then
   echo "VSCode files already set! Reference files located in .devcontainer/vscode"
