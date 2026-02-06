@@ -6,8 +6,10 @@
   "build": {
       "dockerfile": "Dockerfile",
       "args": {
+        // VARIANT options on https://hub.docker.com/_/buildpack-deps/, auto installs *-curl version
         "VARIANT": "noble",
-        "INSTALL_INTEL": "False"  // True or False, do not install Intel on ARM64
+        // INSTALL_INTEL can be True or False (case sensitive), do not install Intel on ARM64
+        "INSTALL_INTEL": "False"
       }
   },
   // Features to add to the dev container. More info: https://containers.dev/features.
