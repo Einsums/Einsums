@@ -1,0 +1,143 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "Release GNU Compilers",
+            "displayName": "Release GNU Compilers",
+            "description": "Using compilers: C = gcc, CXX = g++",
+            "binaryDir": "${sourceDir}/build_gnu",
+            "generator": "Ninja",
+            "environment": {
+                "PATH": "/opt/conda/envs/einsums/bin:$penv{PATH}",
+                "LD_LIBRARY_PATH": "/opt/conda/envs/einsums/lib:$penv{LD_LIBRARY_PATH}"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_COMPILER": "/opt/conda/envs/einsums/bin/gcc",
+                "CMAKE_CXX_COMPILER": "/opt/conda/envs/einsums/bin/g++"
+            }
+        },
+        {
+            "name": "Debug GNU Compilers",
+            "displayName": "Debug GNU Compilers",
+            "description": "Using compilers: C = gcc, CXX = g++",
+            "binaryDir": "${sourceDir}/build_gnu_debug",
+            "generator": "Ninja",
+            "environment": {
+                "PATH": "/opt/conda/envs/einsums/bin:$penv{PATH}",
+                "LD_LIBRARY_PATH": "/opt/conda/envs/einsums/lib:$penv{LD_LIBRARY_PATH}"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_COMPILER": "/opt/conda/envs/einsums/bin/gcc",
+                "CMAKE_CXX_COMPILER": "/opt/conda/envs/einsums/bin/g++"
+            }
+        },
+        {
+            "name": "Release LLVM Compilers",
+            "displayName": "Release LLVM Compilers",
+            "description": "Using compilers: C = clang, CXX = clang++",
+            "binaryDir": "${sourceDir}/build_llvm",
+            "generator": "Ninja",
+            "environment": {
+                "PATH": "/opt/conda/envs/einsums/bin:$penv{PATH}",
+                "LD_LIBRARY_PATH": "/opt/conda/envs/einsums/lib:$penv{LD_LIBRARY_PATH}"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_COMPILER": "/opt/conda/envs/einsums/bin/clang",
+                "CMAKE_CXX_COMPILER": "/opt/conda/envs/einsums/bin/clang++",
+                "OpenMP_C_FLAGS": "-fopenmp=libomp -Wno-unused-command-line-argument",
+                "OpenMP_CXX_FLAGS": "-fopenmp=libomp -Wno-unused-command-line-argument",
+                "OpenMP_CXX_LIB_NAMES": "omp;gomp;iomp5",
+                "OpenMP_omp_LIBRARY": "/opt/conda/envs/einsums/lib/libomp.so",
+                "OpenMP_gomp_LIBRARY": "/opt/conda/envs/einsums/lib/libgomp.so",
+                "OpenMP_iomp5_LIBRARY": "/opt/conda/envs/einsums/lib/libiomp5.so"
+            }
+        },
+        {
+            "name": "Debug LLVM Compilers",
+            "displayName": "Debug LLVM Compilers",
+            "description": "Using compilers: C = clang, CXX = clang++",
+            "binaryDir": "${sourceDir}/build_llvm_debug",
+            "generator": "Ninja",
+            "environment": {
+                "PATH": "/opt/conda/envs/einsums/bin:$penv{PATH}",
+                "LD_LIBRARY_PATH": "/opt/conda/envs/einsums/lib:$penv{LD_LIBRARY_PATH}"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_COMPILER": "/opt/conda/envs/einsums/bin/clang",
+                "CMAKE_CXX_COMPILER": "/opt/conda/envs/einsums/bin/clang++",
+                "OpenMP_C_FLAGS": "-fopenmp=libomp -Wno-unused-command-line-argument",
+                "OpenMP_CXX_FLAGS": "-fopenmp=libomp -Wno-unused-command-line-argument",
+                "OpenMP_CXX_LIB_NAMES": "omp;gomp;iomp5",
+                "OpenMP_omp_LIBRARY": "/opt/conda/envs/einsums/lib/libomp.so",
+                "OpenMP_gomp_LIBRARY": "/opt/conda/envs/einsums/lib/libgomp.so",
+                "OpenMP_iomp5_LIBRARY": "/opt/conda/envs/einsums/lib/libiomp5.so"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Release GNU",
+            "displayName": "Build Release",
+            "configurePreset": "Release GNU Compilers",
+            "jobs": 1,
+            "targets": [
+                "all"
+            ]
+        },
+        {
+            "name": "Debug GNU",
+            "displayName": "Build Debug",
+            "configurePreset": "Debug GNU Compilers",
+            "jobs": 1,
+            "targets": [
+                "all"
+            ]
+        },
+        {
+            "name": "Release LLVM",
+            "displayName": "Build Release",
+            "configurePreset": "Release LLVM Compilers",
+            "jobs": 1,
+            "targets": [
+                "all"
+            ]
+        },
+        {
+            "name": "Debug LLVM",
+            "displayName": "Build Debug",
+            "configurePreset": "Debug LLVM Compilers",
+            "jobs": 1,
+            "targets": [
+                "all"
+            ]
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "GNU: All Tests",
+            "configurePreset": "Release GNU Compilers",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error",
+                "stopOnFailure": true
+            }
+        },
+        {
+            "name": "LLVM: All Tests",
+            "configurePreset": "Release LLVM Compilers",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error",
+                "stopOnFailure": true
+            }
+        }
+    ]
+}

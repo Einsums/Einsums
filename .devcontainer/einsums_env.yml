@@ -1,0 +1,33 @@
+# Created using merge_yml.py
+# Contains necessary packages for a GCC or Clang build using OpenBLAS
+# Usable with x86_64 or ARM64 architectures
+name: einsums-dev
+channels:
+- conda-forge
+- nodefaults
+dependencies:
+- cmake
+- ccache
+- cxx-compiler
+- ninja
+- lcov
+- pre-commit
+- catch2
+- fftw
+- fmt
+- spdlog
+- hdf5
+- zlib
+- mimalloc
+- pybind11
+- pytest
+- numpy
+- pytest-cov
+- coverage
+- scipy
+- clang=17.*
+- clangxx=17.*
+- llvm-openmp=17.*
+- compiler-rt=17.*
+- libblas[build=*openblas]
+- openblas[build=*openmp*]
