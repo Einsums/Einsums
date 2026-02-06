@@ -13,6 +13,7 @@
             },
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_INSTALL_PREFIX": "${sourceParentDir}/install_gnu_release",
                 "CMAKE_PREFIX_PATH": "/opt/conda/envs/einsums",
                 "CMAKE_C_COMPILER": "/opt/conda/envs/einsums/bin/gcc",
                 "CMAKE_CXX_COMPILER": "/opt/conda/envs/einsums/bin/g++"
@@ -31,6 +32,7 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_PREFIX_PATH": "/opt/conda/envs/einsums",
+                "CMAKE_INSTALL_PREFIX": "${sourceParentDir}/install_gnu_debug",
                 "CMAKE_C_COMPILER": "/opt/conda/envs/einsums/bin/gcc",
                 "CMAKE_CXX_COMPILER": "/opt/conda/envs/einsums/bin/g++"
             }
@@ -48,6 +50,7 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_PREFIX_PATH": "/opt/conda/envs/einsums",
+                "CMAKE_INSTALL_PREFIX": "${sourceParentDir}/install_llvm_release",
                 "CMAKE_C_COMPILER": "/opt/conda/envs/einsums/bin/clang",
                 "CMAKE_CXX_COMPILER": "/opt/conda/envs/einsums/bin/clang++",
                 "OpenMP_CXX_INCLUDE_DIR": "/opt/conda/envs/einsums/include"
@@ -66,6 +69,7 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_PREFIX_PATH": "/opt/conda/envs/einsums",
+                "CMAKE_INSTALL_PREFIX": "${sourceParentDir}/install_llvm_debug",
                 "CMAKE_C_COMPILER": "/opt/conda/envs/einsums/bin/clang",
                 "CMAKE_CXX_COMPILER": "/opt/conda/envs/einsums/bin/clang++",
                 "OpenMP_CXX_INCLUDE_DIR": "/opt/conda/envs/einsums/include"
@@ -79,7 +83,9 @@
             "configurePreset": "Release GNU Compilers",
             "jobs": 8,
             "targets": [
-                "all"
+                "all",
+                "install",
+                "clean"
             ]
         },
         {
@@ -88,7 +94,9 @@
             "configurePreset": "Debug GNU Compilers",
             "jobs": 1,
             "targets": [
-                "all"
+                "all",
+                "install",
+                "clean"
             ]
         },
         {
@@ -97,7 +105,9 @@
             "configurePreset": "Release LLVM Compilers",
             "jobs": 8,
             "targets": [
-                "all"
+                "all",
+                "install",
+                "clean"
             ]
         },
         {
@@ -106,7 +116,9 @@
             "configurePreset": "Debug LLVM Compilers",
             "jobs": 1,
             "targets": [
-                "all"
+                "all",
+                "install",
+                "clean"
             ]
         }
     ],
