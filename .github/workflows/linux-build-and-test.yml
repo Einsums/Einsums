@@ -37,6 +37,12 @@ jobs:
             cmake_extra: >
               -DCMAKE_C_COMPILER=clang
               -DCMAKE_CXX_COMPILER=clang++
+              -DOpenMP_C_FLAGS=-fopenmp=libomp -Wno-unused-command-line-argument
+              -DOpenMP_CXX_FLAGS=-fopenmp=libomp -Wno-unused-command-line-argument
+              "OpenMP_CXX_LIB_NAMES": "omp;gomp;iomp5",
+              -DOpenMP_omp_LIBRARY=${CONDA_PREFIX}/lib/libomp.so
+              -DOpenMP_gomp_LIBRARY=${CONDA_PREFIX}/lib/libgomp.so
+              -DOpenMP_iomp5_LIBRARY=${CONDA_PREFIX}/lib/libiomp5.so
               -DEINSUMS_WITH_COVERAGE=ON
           - compiler: intel
             blas: mkl
