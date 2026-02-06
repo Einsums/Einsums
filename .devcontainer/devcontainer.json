@@ -52,6 +52,7 @@
         "ms-python.debugpy",
         "ms-python.vscode-pylance",
         "ms-python.vscode-python-envs",
+        "vadimcn.vscode-lldb",
         "mutantdino.resourcemonitor",
         "matepek.vscode-catch2-test-adapter"
       ]
