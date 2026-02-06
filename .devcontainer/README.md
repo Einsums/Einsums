@@ -1,3 +1,12 @@
+# Using the development container
+
+Container is set to use Ubuntu 24.04 (Noble) by default. Docker image accepts two arguments:
+ - `VARIANT` - Accepts the base tags from [buildpack-deps](https://hub.docker.com/_/buildpack-deps/) for an Ubuntu image
+ - `INSTALL_INTEL` - Boolean that controls whether or not to install the Intel HPC Toolkit, which includes VTune
+Nearly all packages are installed via micromamba to use the latest versions with the list of packages in the einsums_env.yml file.
+Optionally, VSCode files for the container are provided and set to the main workspace directory if .vscode/ is not already present.
+Same for CMakePresets.json, one is provided if not already present.
+
 # Running VTune inside of Docker container
 
 This uses the

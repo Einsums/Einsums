@@ -1,9 +1,0 @@
-[
-    {
-        "name": "Intel oneAPI Latest",
-        "compilers": {
-            "C": "/opt/intel/oneapi/compiler/latest/bin/icx",
-            "CXX": "/opt/intel/oneapi/compiler/latest/bin/icpx"
-        }
-    }
-]

@@ -1,0 +1,48 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "GNU Debug Unit Tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build_gnu/libs/Einsums/.../tests/unit/...",
+      "args": [],
+      "stopAtEntry": false,
+      "environment": [
+        {
+          "PATH": "/opt/conda/envs/einsums/bin:$penv{PATH}",
+          "LD_LIBRARY_PATH": "/opt/conda/envs/einsums/lib:$penv{LD_LIBRARY_PATH}"
+        }
+      ],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": false
+        },
+        {
+          "description": "Set Disassembly Flavor to Intel",
+          "text": "-gdb-set disassembly-flavor intel",
+          "ignoreFailures": false
+        }
+      ]
+    },
+    {
+      "name": "LLVM Debug Unit Tests",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build_gnu/libs/Einsums/.../tests/unit/...",
+      "args": [],
+      "env": {
+        "PATH": "/opt/conda/envs/einsums/bin:$penv{PATH}",
+        "LD_LIBRARY_PATH": "/opt/conda/envs/einsums/lib:$penv{LD_LIBRARY_PATH}"
+      }
+    }
+  ]
+}
