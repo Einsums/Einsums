@@ -37,7 +37,6 @@ jobs:
             cmake_extra: >
               -DCMAKE_C_COMPILER=clang
               -DCMAKE_CXX_COMPILER=clang++
-              -DOpenMP_CXX_FLAGS=-fopenmp=libomp -Wno-unused-command-line-argument
               -DOpenMP_CXX_INCLUDE_DIR=${CONDA_PREFIX}/include
               -DEINSUMS_WITH_COVERAGE=ON
           - compiler: intel
