@@ -4,8 +4,8 @@
 echo 'micromamba activate einsums # added by devcontainer.json' >> ~/.zshrc
 
 # Make symbolic links to cmake and ninja to allow non-root user install
-ln -s /opt/conda/envs/einsums/bin/cmake /usr/bin/cmake
-ln -s /opt/conda/envs/einsums/bin/ninja /usr/bin/ninja
+sudo ln -s /opt/conda/envs/einsums/bin/cmake /usr/bin/cmake
+sudo ln -s /opt/conda/envs/einsums/bin/ninja /usr/bin/ninja
 
 # Copies VSCode helper files to main workspace
 if [ -d "/workspaces/Einsums/.vscode" ]; then
@@ -18,5 +18,5 @@ fi
 if [ -f "/workspaces/Einsums/CMakePresets.json" ]; then
   echo "CMakePresets file already set! Reference file located in .devcontainer/CMakePresets.json"
 else
-  cp -r /workspaces/Einsums/.devcontainer/CMakePresets_ref.json /workspaces/Einsums/
+  cp -r /workspaces/Einsums/.devcontainer/CMakePresets_ref.json /workspaces/Einsums/CMakePresets.json
 fi
