@@ -1,0 +1,13 @@
+name: einsums-dev
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - cxx-compiler
+  - clang
+  - clangxx
+  - llvm-openmp
+  - compiler-rt
+  # Necessary for cpptrace
+  - clang-tools
+  - libclang
