@@ -63,6 +63,8 @@ jobs:
         exclude:
           - compiler: intel
             blas: openblas
+          - compiler: clang
+            blas: mkl
 
     name: "${{ matrix.compiler }} • ${{ matrix.blas }} • ${{ matrix.build_type }} • ${{ matrix.variant }}"
     runs-on: ubuntu-latest
