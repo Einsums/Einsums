@@ -1,6 +1,7 @@
 /*build*/
 testing/consume/build
 .vscode/
+CMakePresets.json
 
 # Prerequisites
 *.d
