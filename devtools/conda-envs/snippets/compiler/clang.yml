@@ -4,10 +4,10 @@ channels:
   - nodefaults
 dependencies:
   - cxx-compiler
-  - clang=17.*
-  - clangxx=17.*
-  - llvm-openmp=17.*
-  - compiler-rt=17.*
+  - clang
+  - clangxx
+  - llvm-openmp
+  - compiler-rt
   # Necessary for cpptrace
-  - clang-tools=17.*
-  - libclang=17.*
+  - clang-tools
+  - libclang
