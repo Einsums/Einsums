@@ -1,5 +1,5 @@
 {
-  "cmake.cmakePath": "/opt/conda/envs/einsums/bin/cmake",
+  "cmake.cmakePath": "/usr/bin/cmake",
   "files.associations": {
     "__bit_reference": "cpp",
     "__node_handle": "cpp",
