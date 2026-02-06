@@ -2,43 +2,48 @@
 # Usable with x86_64 or ARM64 architectures
 name: einsums-dev
 channels:
-- conda-forge
-- nodefaults
+ - conda-forge
+ - nodefaults
 dependencies:
-# CMake Tools
-- cmake
-- ninja
-- ccache
-# GNU Compilers
-- cxx-compiler
-# LLVM Compilers
-- clang=17.*
-- clangxx=17.*
-- llvm-openmp=17.*
-- compiler-rt=17.*
-# Necessary for cpptrace
-- clang-tools=17.*
-- libclang=17.*
-# OpenBLAS
-- libblas[build=*openblas]
-- openblas[build=*openmp*]
-# Prebuilts to save einsums the work
-- catch2
-- fftw
-- fmt
-- spdlog
-# HDF5
-# * zlib brings headers; hdf5 package only bring libzlib
-- hdf5
-- zlib
-- mimalloc
-# Python
-- pybind11
-- pytest
-- numpy
-- scipy
-# Coverage and Testing
-- pytest-cov
-- coverage
-- lcov
-- pre-commit
+ # Use Python 3.13
+ - python=3.13
+ - debugpy
+ # CMake Tools
+ - cmake
+ - ninja
+ - ccache
+ # GNU Compilers
+ - cxx-compiler
+ - gdb
+ # LLVM Compilers
+ - clang
+ - clangxx
+ - llvm-openmp
+ - compiler-rt
+ - lldb
+ # Necessary for cpptrace
+ - clang-tools
+ - libclang
+ # OpenBLAS
+ - libblas[build=*openblas]
+ - openblas[build=*openmp*]
+ # Prebuilts to save einsums the work
+ - catch2
+ - fftw
+ - fmt
+ - spdlog
+ # HDF5
+ # * zlib brings headers; hdf5 package only bring libzlib
+ - hdf5
+ - zlib
+ - mimalloc
+ # Python
+ - pybind11
+ - pytest
+ - numpy
+ - scipy
+ # Coverage and Testing
+ - pytest-cov
+ - coverage
+ - lcov
+ - pre-commit
