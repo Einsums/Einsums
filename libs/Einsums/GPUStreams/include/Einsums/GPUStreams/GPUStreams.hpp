@@ -368,6 +368,15 @@ EINSUMS_DEVICE inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleCo
     atomicAdd(&(address->y), value.y);
 }
 
+/**
+ * @brief Register a variable from the host on the device.
+ *
+ * @param value The variable to register.
+ *
+ * @return A device pointer that references the variable.
+ *
+ * @versionadded{2.0.0}
+ */
 template <typename T>
 EINSUMS_HOST inline T *register_host_variable(T &value) {
     hip_catch(hipHostRegister((void *)&value, sizeof(std::remove_cv_t<T>), hipHostRegisterDefault));
@@ -377,6 +386,15 @@ EINSUMS_HOST inline T *register_host_variable(T &value) {
     return out;
 }
 
+/**
+ * @brief Register a variable from the host on the device.
+ *
+ * @param value The variable to register.
+ *
+ * @return A device pointer that references the variable.
+ *
+ * @versionadded{2.0.0}
+ */
 template <typename T>
 EINSUMS_HOST inline T *register_host_variable(T const &value) {
     hip_catch(hipHostRegister(const_cast<void *>(&value), sizeof(std::remove_cv_t<T>), hipHostRegisterDefault));
@@ -386,11 +404,25 @@ EINSUMS_HOST inline T *register_host_variable(T const &value) {
     return out;
 }
 
+/**
+ * @brief Unregister a variable that was registered with register_host_variable.
+ *
+ * @param The host reference to the variable.
+ *
+ * @versionadded{2.0.0}
+ */
 template <typename T>
 EINSUMS_HOST inline void unregister_host_variable(T &value) {
     hip_catch(hipHostUnregister((void *)&value));
 }
 
+/**
+ * @brief Unregister a variable that was registered with register_host_variable.
+ *
+ * @param The host reference to the variable.
+ *
+ * @versionadded{2.0.0}
+ */
 template <typename T>
 EINSUMS_HOST inline void unregister_host_variable(T const &value) {
     hip_catch(hipHostUnregister(const_cast<void *>(&value)));

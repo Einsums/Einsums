@@ -590,8 +590,22 @@ struct GPUPointer final {
         return reinterpret_cast<U *>(gpu_ptr_);
     }
 
+    /**
+     * @brief Get the underlying device pointer in the host type.
+     *
+     * @return The underlying device pointer in a type the host can understand.
+     *
+     * @versionadded{2.0.0}
+     */
     constexpr T *get() noexcept { return reinterpret_cast<T *>(gpu_ptr_); }
 
+    /**
+     * @brief Get the underlying device pointer in the device type.
+     *
+     * @return The underlying device pointer in a type the device can understand.
+     *
+     * @versionadded{2.0.0}
+     */
     constexpr dev_datatype *get_dev() noexcept { return reinterpret_cast<dev_datatype *>(gpu_ptr_); }
 
     /**

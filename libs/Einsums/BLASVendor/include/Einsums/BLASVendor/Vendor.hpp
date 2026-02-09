@@ -240,6 +240,7 @@ auto zgeev(char jobvl, char jobvr, int_t n, std::complex<double> *a, int_t lda, 
  */
 auto cheev(char job, char uplo, int_t n, std::complex<float> *a, int_t lda, float *w, std::complex<float> *work, int_t lwork, float *rwork)
     -> int_t;
+/// @copydoc cheev
 auto zheev(char job, char uplo, int_t n, std::complex<double> *a, int_t lda, double *w, std::complex<double> *work, int_t lwork,
            double *rwork) -> int_t;
 
@@ -915,7 +916,9 @@ double dzsum1(int_t n, std::complex<double> const *x, int_t incx);
  *
  * @param[in] n The number of elements in the vector.
  * @param[inout] x The vector to conjugate.
- * @param[in] incx The skip value for the vector.
+ * @param[in] incx The skip value for the vector. 
+ *
+ * @versionadded{2.0.0}
  */
 void clacgv(int_t n, std::complex<float> *x, int_t incx);
 /// @copydoc clacgv

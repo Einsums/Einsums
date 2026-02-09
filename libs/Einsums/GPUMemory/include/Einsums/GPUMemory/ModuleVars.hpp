@@ -23,6 +23,14 @@ namespace detail {
 class EINSUMS_EXPORT Einsums_GPUMemory_vars final : public design_pats::Lockable<std::recursive_mutex> {
     EINSUMS_SINGLETON_DEF(Einsums_GPUMemory_vars)
 
+    /**
+     * @fn get_singleton()
+     *
+     * @brief Get the single unique implementation of this class.
+     *
+     * @versionadded{1.1.0}
+     */
+
   public:
     // Put module-global variables here.
 
