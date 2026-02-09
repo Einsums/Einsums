@@ -83,3 +83,8 @@ conda.yml
 
 # Profiling files.
 *profile.txt*
+
+# Eclipse files.
+*.project
+*.cproject
+.externalToolBuilders/*

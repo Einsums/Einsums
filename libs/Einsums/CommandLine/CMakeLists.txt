@@ -5,9 +5,9 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(CommandLineHeaders Einsums/CommandLine/CommandLine.hpp)
+set(CommandLineHeaders Einsums/CommandLine/CommandLine.hpp Einsums/CommandLine/Utils.hpp)
 
-set(CommandLineSources CommandLine.cpp)
+set(CommandLineSources CommandLine.cpp Registry.cpp OptionCategory.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(

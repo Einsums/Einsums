@@ -19,7 +19,7 @@ Opt<int>       Iters{"iters",
                Visibility::Normal,
                Occurrence::Optional,
                ValueExpected::ValueRequired,
-               RangeBetween(1, 1000000)};
+               Range(1, 1000000)};
 
 OptionCategory   ToolsCat{"Tools"};
 Opt<std::string> ToolName{"tool", {'t'}, "Which tool", ToolsCat};
@@ -30,8 +30,8 @@ int main(int argc, char **argv) {
     std::vector<std::string> args(argv, argv + argc);
 
     auto pr = parse_with_config(args, "ein-tool", "1.2.3", "config.json");
-    if (!pr.ok)
-        return pr.exit_code;
+    if (pr)
+        return pr;
     fmt::print("verbose={} iters={} inputs={}\n", Verbose.get(), Iters.get(), Inputs.values().size());
     return 0;
 }
