@@ -6,7 +6,6 @@
 #pragma once
 
 #include <Einsums/Config.hpp>
-#include <Einsums/CommandLine/Utils.hpp>
 #include <Einsums/TypeSupport/Singleton.hpp>
 
 #include <fmt/core.h>
@@ -38,7 +37,7 @@ struct ExclusiveCategory;
 
 // -------------------------- Registry ------------------------------------- //
 
-struct final Registry {
+struct Registry final {
     EINSUMS_MAKE_SINGLETON(Registry)
 public:
     void add_option(OptionBase *option);
