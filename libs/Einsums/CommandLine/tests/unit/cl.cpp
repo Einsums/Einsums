@@ -6,6 +6,7 @@
 #include <Einsums/CommandLine.hpp>
 
 #include "Einsums/CommandLine/CommandLine.hpp"
+#include <Einsums/CommandLine/Utils.hpp>
 
 #include <Einsums/Testing.hpp>
 
@@ -29,13 +30,13 @@ TEST_CASE("Defaults and explicit override", "[opt][defaults]") {
 
     OptionCategory Cat{"T1"};
     int            threads_bound = 0;
-    Opt<int>       Threads{"t1-threads", {'T'}, "threads", Default(4), Cat, RangeBetween(1, 256), ValueName("N")};
+    Opt<int>       Threads{"t1-threads", {'T'}, "threads", Default(4), Cat, Range(1, 256), ValueName("N")};
     Threads.OnSet([&](int v) { threads_bound = v; });
 
     SECTION("No args -> default 4") {
         auto args = to_args({"prog"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(Threads.get() == 4);
         REQUIRE(threads_bound == 4);
     }
@@ -43,7 +44,7 @@ TEST_CASE("Defaults and explicit override", "[opt][defaults]") {
     SECTION("Explicit CLI override -> 8") {
         auto args = to_args({"prog", "--t1-threads", "8"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(Threads.get() == 8);
         REQUIRE(threads_bound == 8);
     }
@@ -58,14 +59,14 @@ TEST_CASE("Implicit value when present without argument", "[opt][implicit]") {
     SECTION("Appears without value -> implicit 7") {
         auto args = to_args({"prog", "--t2-level"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(Level.get() == 7);
     }
 
     SECTION("Appears with value -> explicit wins (9)") {
         auto args = to_args({"prog", "--t2-level=9"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(Level.get() == 9);
     }
 }
@@ -84,7 +85,7 @@ TEST_CASE("Flag default and implicit override", "[flag]") {
     SECTION("Default false") {
         auto args = to_args({"prog"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE_FALSE(Verbose.get());
         REQUIRE_FALSE(verbose_bound);
     }
@@ -92,7 +93,7 @@ TEST_CASE("Flag default and implicit override", "[flag]") {
     SECTION("Presence -> true") {
         auto args = to_args({"prog", "-v"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(Verbose.get());
         REQUIRE(verbose_bound);
     }
@@ -100,7 +101,7 @@ TEST_CASE("Flag default and implicit override", "[flag]") {
     SECTION("Explicit false via value") {
         auto args = to_args({"prog", "--t3-verbose=false"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE_FALSE(Verbose.get());
     }
 
@@ -108,7 +109,7 @@ TEST_CASE("Flag default and implicit override", "[flag]") {
         auto args1 = to_args({"prog", "--yes"});
 
         auto pr = parse(args1);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(yes_no_test);
     }
 
@@ -116,7 +117,7 @@ TEST_CASE("Flag default and implicit override", "[flag]") {
         auto args2 = to_args({"prog", "--no"});
 
         auto pr = parse(args2);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(!yes_no_test);
     }
 
@@ -124,7 +125,7 @@ TEST_CASE("Flag default and implicit override", "[flag]") {
         auto args3 = to_args({"prog", "--yes", "--no"});
 
         auto pr = parse(args3);
-        REQUIRE(!pr.ok);
+        REQUIRE(pr == INCOMPATIBLE_ARGUMENT);
     }
 }
 
@@ -139,7 +140,7 @@ TEST_CASE("Bundled short options and attached value", "[short][bundle]") {
     SECTION("-ab sets both; -o12 attaches value") {
         auto args = to_args({"prog", "-ab", "-o12"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(A.get());
         REQUIRE(B.get());
         REQUIRE(O.get() == 12);
@@ -148,7 +149,7 @@ TEST_CASE("Bundled short options and attached value", "[short][bundle]") {
     SECTION("-o 34 with space") {
         auto args = to_args({"prog", "-o", "34"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(O.get() == 34);
     }
 }
@@ -161,7 +162,7 @@ TEST_CASE("Positional list captures multiple tokens", "[positional][list]") {
 
     auto args = to_args({"prog", "a.txt", "b.txt", "c.txt"});
     auto pr   = parse(args);
-    REQUIRE(pr.ok);
+    REQUIRE(pr == SUCCESS);
     auto const &vals = Inputs.values();
     REQUIRE(vals.size() == 3);
     REQUIRE(vals[0] == "a.txt");
@@ -180,22 +181,21 @@ TEST_CASE("Enum option maps strings to enum values", "[enum]") {
     SECTION("Default is Fast") {
         auto args = to_args({"prog"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(M.to_string() == "fast");
     }
 
     SECTION("Set to accurate") {
         auto args = to_args({"prog", "--t6-mode", "accurate"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(M.to_string() == "accurate");
     }
 
     SECTION("Invalid value errors") {
         auto args = to_args({"prog", "--t6-mode", "banana"});
         auto pr   = parse(args);
-        REQUIRE_FALSE(pr.ok);
-        REQUIRE(pr.exit_code == 1);
+        REQUIRE(pr == INVALID_ARGUMENT);
     }
 }
 #endif
@@ -204,20 +204,19 @@ TEST_CASE("Range validation enforces bounds", "[range]") {
     CLITestFixture _;
 
     OptionCategory Cat{"T7"};
-    Opt<int>       R{"t7-ranged", {'r'}, "ranged", Default(10), Cat, RangeBetween(5, 15)};
+    Opt<int>       R{"t7-ranged", {'r'}, "ranged", Default(10), Cat, Range(5, 15)};
 
     SECTION("In range ok") {
         auto args = to_args({"prog", "--t7-ranged=12"});
         auto pr   = parse(args);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(R.get() == 12);
     }
 
     SECTION("Out of range produces error") {
         auto args = to_args({"prog", "--t7-ranged=100"});
         auto pr   = parse(args);
-        REQUIRE_FALSE(pr.ok);
-        REQUIRE(pr.exit_code == 1);
+        REQUIRE(pr == INVALID_ARGUMENT);
     }
 }
 
@@ -235,7 +234,7 @@ TEST_CASE("Config precedence: defaults < config < CLI", "[config][precedence]") 
         auto                     args = to_args({"prog"});
         std::vector<std::string> unknown;
         auto                     pr = parse_internal(args, "prog", "1.0", &cfg, &unknown);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(T.get() == 6);
         REQUIRE(threads_cfg == 6);
     }
@@ -244,7 +243,7 @@ TEST_CASE("Config precedence: defaults < config < CLI", "[config][precedence]") 
         auto                     args = to_args({"prog", "--t8-threads=9"});
         std::vector<std::string> unknown;
         auto                     pr = parse_internal(args, "prog", "1.0", &cfg, &unknown);
-        REQUIRE(pr.ok);
+        REQUIRE(pr == SUCCESS);
         REQUIRE(T.get() == 9);
         REQUIRE(threads_cfg == 9);
     }
@@ -259,7 +258,7 @@ TEST_CASE("Unknown args collection (including after --)", "[unknown]") {
     auto                     args = to_args({"prog", "--nope", "-z", "--", "pos1", "--still", "-x"});
     std::vector<std::string> unknown;
     auto                     pr = parse_internal(args, "prog", "1.0", nullptr, &unknown);
-    REQUIRE(pr.ok);
+    REQUIRE(pr == SUCCESS);
 
     REQUIRE_FALSE(K.get()); // known flag not present
 
@@ -277,13 +276,11 @@ TEST_CASE("Builtins: --help and --version exit 0", "[builtins]") {
     SECTION("--help exits 0") {
         auto args = to_args({"prog", "--help"});
         auto pr   = parse(args, "prog", "9.9");
-        REQUIRE_FALSE(pr.ok);
-        REQUIRE(pr.exit_code == 0);
+        REQUIRE_FALSE(pr == HELP);
     }
     SECTION("--version exits 0") {
         auto args = to_args({"prog", "--version"});
         auto pr   = parse(args, "prog", "9.9");
-        REQUIRE_FALSE(pr.ok);
-        REQUIRE(pr.exit_code == 0);
+        REQUIRE_FALSE(pr == VERSION);
     }
 }
