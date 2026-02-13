@@ -44,7 +44,6 @@
 #if defined(__ICC) || defined(__INTEL_COMPILER)
 #    define INLINE __forceinline
 #elif defined(__GNUC__) || defined(__GNUG__)
-
 #    define INLINE __attribute__((always_inline)) inline
 #else
 #    define INLINE inline
