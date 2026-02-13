@@ -4,18 +4,17 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. include:: v1.1.2.rst
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
 
-.. include:: v1.1.1.rst
+==============
+v1.1.2 Release
+==============
 
-.. include:: v1.1.0.rst
+What's New
+----------
+* You can now install the Python module where ever you want.
 
-.. include:: v1.0.4.rst
 
-.. include:: v1.0.3.rst
-
-.. include:: v1.0.2.rst
-
-.. include:: v1.0.1.rst
-
-.. include:: v1.0.0.rst
+Bug Fixes
+---------
+* Fixed a compilation error with HPTT using AVX512 intrinsics on incompatible systems.

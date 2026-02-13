@@ -13,9 +13,9 @@ TEMPLATE_TEST_CASE("Allocations", "[memory]", double, void, std::complex<double>
 
     {
         auto &config = GlobalConfigMap::get_singleton();
-        auto  lock   = std::lock_guard(config);
+        auto lock = std::lock_guard(config);
 
-        config.get_string_map()->get_value()["buffer-size"] = "4MB"; // Set to some reasonable number of bytes.
+        config.get_string_map()->get_value()["buffer-size"] = "4MB"; // Set to a reasonable number of bytes.
     }
 
     SECTION("Big allocations") {
