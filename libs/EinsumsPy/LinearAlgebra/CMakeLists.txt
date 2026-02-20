@@ -32,15 +32,14 @@ einsums_add_module(
   SOURCES ${LinearAlgebraSources}
   HEADERS ${LinearAlgebraHeaders}
   DEPENDENCIES Einsums
-        MODULE_DEPENDENCIES
-        Einsums_Runtime
-        Einsums_Logging
-        Einsums_TypeSupport
-        Einsums_Config
-        EinsumsPy_Tensor
-        Einsums_HPTT
-        Einsums_TensorAlgebra
-        Einsums_LinearAlgebra
+  MODULE_DEPENDENCIES
+    Einsums_Runtime
+    Einsums_Logging
+    Einsums_TypeSupport
+    Einsums_Config
+    EinsumsPy_Tensor
+    Einsums_TensorAlgebra
+    Einsums_LinearAlgebra
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME EinsumsPy
 )
