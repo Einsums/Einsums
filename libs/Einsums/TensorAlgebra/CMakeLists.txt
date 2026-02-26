@@ -20,6 +20,7 @@ set(TensorAlgebraHeaders
     Einsums/TensorAlgebra/Backends/Unfold.hpp
     Einsums/TensorAlgebra/Detail/Index.hpp
     Einsums/TensorAlgebra/Detail/Utilities.hpp
+    Einsums/TensorAlgebra/ContractionPattern.hpp
 )
 
 if(NOT WIN32)
