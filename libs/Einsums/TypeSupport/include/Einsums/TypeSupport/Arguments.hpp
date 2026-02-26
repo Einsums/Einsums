@@ -87,9 +87,9 @@ constexpr auto get_array_from_tuple(Tuple &&tuple) -> Result {
     return std::apply(get_array, std::forward<Tuple>(tuple));
 }
 
-template <class Tuple, class F, std::size_t... I>
-constexpr auto for_each_impl(Tuple &&t, F &&f, std::index_sequence<I...>) -> F {
-    return (void)std::initializer_list<int>{(std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))), 0)...}, f;
+template <class Tuple, class F, std::size_t... __I>
+constexpr auto for_each_impl(Tuple &&t, F &&f, std::index_sequence<__I...>) -> F {
+    return (void)std::initializer_list<int>{(std::forward<F>(f)(std::get<__I>(std::forward<Tuple>(t))), 0)...}, f;
 }
 
 template <class Tuple, class F>

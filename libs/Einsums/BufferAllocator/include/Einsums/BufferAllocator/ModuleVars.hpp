@@ -70,6 +70,13 @@ class EINSUMS_EXPORT Einsums_BufferAllocator_vars final : public design_pats::Lo
     size_t get_max_size() const;
 
     /**
+     * @brief Get the size for a work buffer.
+     *
+     * @versionadded{2.0.0}
+     */
+    size_t get_work_buffer_size() const;
+
+    /**
      * @brief Set the maximum size of the counter.
      */
     void set_max_size(size_t val);
@@ -99,6 +106,13 @@ class EINSUMS_EXPORT Einsums_BufferAllocator_vars final : public design_pats::Lo
      * @versionadded{1.1.0}
      */
     size_t _curr_size{0};
+
+    /**
+     * The recommended size for a work buffer.
+     *
+     * @versionadded{2.0.0}
+     */
+    size_t _work_buffer{1024};
 
     /**
      * Mutex for avoiding race conditions.

@@ -302,9 +302,8 @@ EINSUMS_EXPORT void axpby(int n, float const *alpha, float const *X, int incx, f
     hipblasHandle_t handle = einsums::gpu::get_blas_handle();
 
     // hipblas_catch(hipblasSaxpby(handle, n, alpha, X, incx, beta, Y, incy));
-    hipStream_t stream;
-    hipblas_catch(hipblasGetStream(handle, &stream));
-    saxpby_kernel<<<einsums::gpu::blocks(n), einsums::gpu::block_size(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
+    hipblas_catch(hipblasSscal(handle, n, beta, Y, incy));
+    hipblas_catch(hipblasSaxpy(handle, n, alpha, X, incx, Y, incy));
 }
 
 EINSUMS_EXPORT void axpby(int n, double const *alpha, double const *X, int incx, double const *beta, double *Y, int incy) {
@@ -312,9 +311,8 @@ EINSUMS_EXPORT void axpby(int n, double const *alpha, double const *X, int incx,
 
     // hipblas_catch(hipblasDaxpby(handle, n, alpha, X, incx, beta, Y, incy));
 
-    hipStream_t stream;
-    hipblas_catch(hipblasGetStream(handle, &stream));
-    daxpby_kernel<<<einsums::gpu::blocks(n), einsums::gpu::block_size(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
+    hipblas_catch(hipblasDscal(handle, n, beta, Y, incy));
+    hipblas_catch(hipblasDaxpy(handle, n, alpha, X, incx, Y, incy));
 }
 EINSUMS_EXPORT void axpby(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx, hipFloatComplex const *beta,
                           hipFloatComplex *Y, int incy) {
@@ -322,9 +320,8 @@ EINSUMS_EXPORT void axpby(int n, hipFloatComplex const *alpha, hipFloatComplex c
 
     // hipblas_catch(hipblasCaxpby(handle, n, (hipblasComplex *)alpha, (hipblasComplex *)X, incx, beta, (hipblasComplex *)Y, incy));
 
-    hipStream_t stream;
-    hipblas_catch(hipblasGetStream(handle, &stream));
-    caxpby_kernel<<<einsums::gpu::blocks(n), einsums::gpu::block_size(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
+    hipblas_catch(hipblasCscal(handle, n, (hipblasComplex *)beta, (hipblasComplex *)Y, incy));
+    hipblas_catch(hipblasCaxpy(handle, n, (hipblasComplex *)alpha, (hipblasComplex *)X, incx, (hipblasComplex *)Y, incy));
 }
 EINSUMS_EXPORT void axpby(int n, hipDoubleComplex const *alpha, hipDoubleComplex const *X, int incx, hipDoubleComplex const *beta,
                           hipDoubleComplex *Y, int incy) {
@@ -332,62 +329,8 @@ EINSUMS_EXPORT void axpby(int n, hipDoubleComplex const *alpha, hipDoubleComplex
 
     // hipblas_catch(
     //     hipblasZaxpby(handle, n, (hipblasDoubleComplex *)alpha, (hipblasDoubleComplex *)X, incx, beta, (hipblasDoubleComplex *)Y, incy));
-
-    hipStream_t stream;
-    hipblas_catch(hipblasGetStream(handle, &stream));
-    zaxpby_kernel<<<einsums::gpu::blocks(n), einsums::gpu::block_size(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
-}
-
-__global__ EINSUMS_EXPORT void saxpby_kernel(int n, float const *alpha, float const *X, int incx, float const *beta, float *Y, int incy) {
-    int thread, kernel_size;
-
-    get_worker_info(thread, kernel_size);
-
-    for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
-        size_t x_index = incx * curr_index;
-        size_t y_index = incy * curr_index;
-
-        Y[y_index] = gpu_ops::fma(*alpha, X[x_index], gpu_ops::mult(*beta, Y[y_index]));
-    }
-}
-__global__ EINSUMS_EXPORT void daxpby_kernel(int n, double const *alpha, double const *X, int incx, double const *beta, double *Y,
-                                             int incy) {
-    int thread, kernel_size;
-
-    get_worker_info(thread, kernel_size);
-
-    for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
-        size_t x_index = incx * curr_index;
-        size_t y_index = incy * curr_index;
-
-        Y[y_index] = gpu_ops::fma(*alpha, X[x_index], gpu_ops::mult(*beta, Y[y_index]));
-    }
-}
-__global__ EINSUMS_EXPORT void caxpby_kernel(int n, hipFloatComplex const *alpha, hipFloatComplex const *X, int incx,
-                                             hipFloatComplex const *beta, hipFloatComplex *Y, int incy) {
-    int thread, kernel_size;
-
-    get_worker_info(thread, kernel_size);
-
-    for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
-        size_t x_index = incx * curr_index;
-        size_t y_index = incy * curr_index;
-
-        Y[y_index] = gpu_ops::fma(*alpha, X[x_index], gpu_ops::mult(*beta, Y[y_index]));
-    }
-}
-__global__ EINSUMS_EXPORT void zaxpby_kernel(int n, hipDoubleComplex const *alpha, hipDoubleComplex const *X, int incx,
-                                             hipDoubleComplex const *beta, hipDoubleComplex *Y, int incy) {
-    int thread, kernel_size;
-
-    get_worker_info(thread, kernel_size);
-
-    for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
-        size_t x_index = incx * curr_index;
-        size_t y_index = incy * curr_index;
-
-        Y[y_index] = gpu_ops::fma(*alpha, X[x_index], gpu_ops::mult(*beta, Y[y_index]));
-    }
+    hipblas_catch(hipblasZscal(handle, n, (hipblasDoubleComplex *)beta, (hipblasDoubleComplex *)Y, incy));
+    hipblas_catch(hipblasZaxpy(handle, n, (hipblasDoubleComplex *)alpha, (hipblasDoubleComplex *)X, incx, (hipblasDoubleComplex *)Y, incy));
 }
 
 __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, float const *A, int lda, float const *B, int ldb, float *C,

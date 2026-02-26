@@ -4,9 +4,10 @@
 //----------------------------------------------------------------------------------------------
 
 #include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/Tensor/DiskTensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
-#include "catch2/matchers/catch_matchers_floating_point.hpp"
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 #include <Einsums/Testing.hpp>
 
@@ -190,5 +191,54 @@ TEST_CASE("mixed dots", "[linear-algebra]") {
         auto dot_res = dot(A, B);
 
         REQUIRE_THAT(dot_res, einsums::WithinStrict(test, double{100000.0}));
+    }
+}
+
+TEMPLATE_TEST_CASE("Disk direct products", "[linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    GlobalConfigMap::get_singleton().set_string("work-buffer-size", "1024");
+
+    SECTION("Rank 1 tensors") {
+        constexpr int size = 2000;
+
+        Tensor<TestType, 1> A = create_random_tensor<TestType>("A", size);
+        Tensor<TestType, 1> B = create_random_tensor<TestType>("B", size);
+
+        Tensor<TestType, 1> C = create_tensor<TestType>("C", size);
+        C.zero();
+        Tensor<TestType, 1> C_test = create_tensor<TestType>("C", size);
+
+        DiskTensor<TestType, 1> A_disk{fmt::format("/dirprod/rank1/{}/A", type_name<TestType>()), size};
+        DiskTensor<TestType, 1> B_disk{fmt::format("/dirprod/rank1/{}/B", type_name<TestType>()), size};
+        DiskTensor<TestType, 1> C_disk{fmt::format("/dirprod/rank1/{}/C", type_name<TestType>()), size};
+
+        A_disk(All).get() = A;
+        B_disk(All).get() = B;
+
+        if constexpr (IsComplexV<TestType>) {
+            for (int i = 0; i < size; i++) {
+                C_test(i) = TestType{1.0, 1.0} * A(i) * B(i);
+            }
+            direct_product(TestType{1.0, 1.0}, A_disk, B_disk, TestType{0.0}, &C_disk);
+        } else {
+
+            for (int i = 0; i < size; i++) {
+                C_test(i) = A(i) * B(i);
+            }
+            direct_product(TestType{1.0}, A_disk, B_disk, TestType{0.0}, &C_disk);
+        }
+
+        C = C_disk(All).get();
+
+        for (int i = 0; i < size; i++) {
+            if constexpr (IsComplexV<TestType>) {
+                REQUIRE_THAT(std::real(C_test(i)), Catch::Matchers::WithinAbs(std::real(C(i)), (RemoveComplexT<TestType>)1e-6));
+                REQUIRE_THAT(std::imag(C_test(i)), Catch::Matchers::WithinAbs(std::imag(C(i)), (RemoveComplexT<TestType>)1e-6));
+            } else {
+                REQUIRE_THAT(C_test(i), Catch::Matchers::WithinRel(C(i), (TestType)1.0e-6));
+            }
+        }
     }
 }

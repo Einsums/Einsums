@@ -13,6 +13,7 @@ set(_Einsums_modules
   BLAS
   BLASBase
   BLASVendor
+  BlockManager
   BufferAllocator
   CommandLine
   Concepts
@@ -40,6 +41,8 @@ set(_Einsums_modules
   TypeSupport
   Utilities
   Version
+  hipBLAS
+  hipBLASVendor
   )
 # cmake-format: on
 

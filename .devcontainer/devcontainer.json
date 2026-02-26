@@ -1,15 +1,37 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
   "name": "Einsums",
-  "image": "jetturney/code-dev:latest",
-  "runArgs": [
-    "--cap-add=SYS_PTRACE",
-    "--security-opt",
-    "seccomp=unconfined",
-    "--userns=host"
-  ],
-  "remoteUser": "vscode",
+  // Uses a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "build": {
+      "dockerfile": "Dockerfile",
+      "args": {
+        // VARIANT options on https://hub.docker.com/_/buildpack-deps/, auto installs *-curl version
+        "VARIANT": "noble",
+        // INSTALL_INTEL can be True or False (case sensitive), do not install Intel on ARM64
+        "INSTALL_INTEL": "False"
+      }
+  },
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true,
+      "username": "vscode"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest"
+    },
+    "ghcr.io/mamba-org/devcontainer-features/micromamba:1": {
+      "channels": "conda-forge nodefaults",
+      "envFile": "/tmp/einsums_env.yml",
+      "envName": "einsums"
+    }
+  },
+  // Configure tool-specific properties.
   "customizations": {
+    // Configure properties specific to VS Code.
     "vscode": {
+      // Set *default* container specific settings.json values on container create.
       "settings": {
         "terminal.integrated": {
           "profiles.linux": {
@@ -23,12 +45,23 @@
         "resmon.show.battery": false,
         "resmon.show.cpufreq": false
       },
+      // Add the IDs of extensions you want installed when the container is created.
       "extensions": [
         "ms-vscode.cmake-tools",
-        "llvm-vs-code-extensions.vscode-clangd",
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-python.python",
+        "ms-python.debugpy",
+        "ms-python.vscode-pylance",
+        "ms-python.vscode-python-envs",
+        "vadimcn.vscode-lldb",
         "mutantdino.resourcemonitor",
         "matepek.vscode-catch2-test-adapter"
       ]
     }
-  }
+  },
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "sh /tmp/postCreateCommands.sh",
+  // Set `remoteUser` to `root` to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+  "remoteUser": "vscode"
 }

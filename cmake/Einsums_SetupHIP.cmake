@@ -63,7 +63,6 @@ if(EINSUMS_WITH_HIP AND NOT TARGET roc::rocblas)
 
     cmake_path(APPEND __hip_cmake_dir "hipsolver" OUTPUT_VARIABLE hipsolver_DIR)
     set(ENV{hipsolver_DIR} ${hipsolver_DIR})
-
   endif()
 
   enable_language(HIP)

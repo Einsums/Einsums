@@ -37,8 +37,13 @@ if (EINSUMS_HAVE_FORTRAN)
 add_executable(profile_fort_loop profile_fort_loop.f03)
 endif ()
 
+# If you get an error about not being able to find libm, uncomment the commented out lines and replace
+# the given directory with the appropriate one for your system. Conda's sysroot package's libraries
+# point to /lib64 in many cases, which is the wrong directory at least on Debian.
 add_executable(profile_einsums profile_einsums.cpp)
-target_link_libraries(profile_einsums PRIVATE Einsums::Einsums)
+#target_link_directories(profile_einsums PRIVATE /usr/lib/x86_64-linux-gnu)
+target_link_libraries(profile_einsums RIVATE Einsums::Einsums)
 
 add_executable(profile_blas profile_blas.cpp)
+#target_link_directories(profile_blas PRIVATE /usr/lib/x86_64-linux-gnu)
 target_link_libraries(profile_blas PRIVATE Einsums::Einsums)

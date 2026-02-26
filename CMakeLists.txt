@@ -350,6 +350,12 @@ else()
   )
 endif()
 
+einsums_option(EINSUMS_USE_LIBRETT BOOL "Whether to build Einsums with LibreTT for GPU tensor contractions." OFF CATEGORY "Build Targets")
+
+if(EINSUMS_USE_LIBRETT)
+  einsums_add_config_define(EINSUMS_USE_LIBRETT)
+endif()
+
 # ##################################################################################################
 # Utility configuration
 # ##################################################################################################

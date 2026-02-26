@@ -5,20 +5,19 @@
 
 #pragma once
 
+#include <Einsums/BlockManager/BlockManager.hpp>
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
+#include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/File.hpp>
 #include <Einsums/Concepts/NamedRequirements.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Logging.hpp>
+#include <Einsums/Print.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
 #include <type_traits>
-
-#include "Einsums/Concepts/Complex.hpp"
-#include "Einsums/Config/CompilerSpecific.hpp"
-#include "Einsums/Config/Types.hpp"
-#include "Einsums/Print.hpp"
 
 namespace einsums {
 
@@ -26,7 +25,10 @@ namespace detail {
 template <typename T>
     requires(!std::is_const_v<T>)
 struct TensorImpl;
-}
+
+template <typename T, typename TOther>
+void copy_to(TensorImpl<TOther> const &in, TensorImpl<T> &out);
+} // namespace detail
 
 #ifndef DOXYGEN
 // Forward declaration of the Tensor printing function.
@@ -94,6 +96,16 @@ struct TensorImpl final {
      * @brief The const reference type returned by this class.
      */
     using const_reference = T const &;
+
+#ifdef EINSUMS_COMPUTE_CODE
+    using GPULock    = std::shared_ptr<GPUBlock>;
+    using GPUPromise = std::weak_ptr<GPUBlock>;
+    using GPUPointer = gpu::GPUPointer<T>;
+#else
+    using GPULock    = int;
+    using GPUPromise = int;
+    using GPUPointer = int;
+#endif
 
     // Rule of five methods.
 
@@ -357,6 +369,14 @@ struct TensorImpl final {
         } else {
             _row_major = false;
         }
+    }
+
+    ~TensorImpl() {
+#ifdef EINSUMS_COMPUTE_CODE
+        if (this->_ptr != nullptr && (size_t)_core_modify_count < (size_t)_gpu_modify_count) {
+            this->tensor_from_gpu();
+        }
+#endif
     }
 
     // Getters and setters.
@@ -1637,83 +1657,270 @@ struct TensorImpl final {
         }
     }
 
-  private:
-    template <size_t I, typename... MultiIndex>
-    constexpr void adjust_ranges(std::tuple<MultiIndex...> &indices) const {
-        if constexpr (I >= sizeof...(MultiIndex)) {
+    void lock() const { _mutex.lock(); }
+
+    void unlock() const { _mutex.unlock(); }
+
+    bool try_lock() const { return _mutex.try_lock(); }
+
+#ifdef EINSUMS_COMPUTE_CODE
+    void lock() { _mutex.lock(); }
+
+    void unlock() {
+        _mutex.unlock();
+        _core_modify_count++;
+    }
+
+    bool try_lock() { return _mutex.try_lock(); }
+
+    void tensor_to_gpu() const {
+        if (_gpu_memory.expired()) {
             return;
-        } else if constexpr (std::is_integral_v<std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-            auto &index = std::get<I>(indices);
-            auto  temp  = index;
+        }
 
-            if (index < 0) {
-                index += _dims[I];
-            }
+        auto out = gpu::GPUPointer<T>(_gpu_memory.lock()->gpu_pointer);
 
-            if (index < 0 || index >= _dims[I]) {
-                EINSUMS_THROW_EXCEPTION(std::out_of_range,
-                                        "Index passed to view creation is out of range! Got {}, expected between {} and {}.", temp,
-                                        -static_cast<ptrdiff_t>(_dims[I]), _dims[I] - 1);
-            }
-            adjust_ranges<I + 1>(indices);
-        } else if constexpr (std::is_base_of_v<Range, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-            auto &index = std::get<I>(indices);
-            auto  temp  = index;
-
-            if (index[0] < 0) {
-                index[0] += _dims[I];
-            }
-
-            if (index[1] < 0) {
-                index[1] += _dims[I];
-            }
-
-            if (index[0] < 0 || index[0] > _dims[I]) {
-                EINSUMS_THROW_EXCEPTION(std::out_of_range,
-                                        "Lower bound of range passed to view creation is out of range! Got {}, expected between {} and {}.",
-                                        temp[0], -static_cast<ptrdiff_t>(_dims[I]), _dims[I] - 1);
-            }
-
-            if (index[1] < index[0] || index[1] > _dims[I]) {
-                EINSUMS_THROW_EXCEPTION(std::out_of_range,
-                                        "Upper bound of range passed to view creation is out of range! Got {}, expected between {} and {}.",
-                                        temp[1], index[0], _dims[I]);
-            }
-            adjust_ranges<I + 1>(indices);
+        if (get_incx() == 1 && is_totally_vectorable() && is_column_major()) {
+            std::memcpy(out, _ptr, _size * sizeof(T));
         } else {
-            adjust_ranges<I + 1>(indices);
+            BufferVector<T> temp_buffer(_size);
+
+            // Force the use of column major since hipBLAS, hipSolver, and hipTensor all use column major.
+            TensorImpl<T> temp(temp_buffer.data(), _dims, false);
+
+            copy_to(*this, temp);
+
+            std::memcpy(out, temp.data(), _size * sizeof(T));
+        }
+        _gpu_modify_count = (size_t)_core_modify_count;
+    }
+
+    void tensor_from_gpu() {
+        if (!_gpu_memory.expired()) {
+            auto gpu_ptr = gpu::GPUPointer<T>(_gpu_memory.lock()->gpu_pointer);
+
+            if (get_incx() == 1 && is_totally_vectorable() && is_column_major()) {
+                std::memcpy(_ptr, gpu_ptr, _size * sizeof(T));
+            } else {
+                BufferVector<T> temp_buffer(_size);
+
+                // Force the use of column major since hipBLAS, hipSolver, and hipTensor all use column major.
+                TensorImpl<T> temp(temp_buffer.data(), _dims, false);
+
+                std::memcpy(temp.data(), gpu_ptr, _size * sizeof(T));
+
+                copy_to(temp, *this);
+            }
+            _core_modify_count = (size_t)_gpu_modify_count;
         }
     }
 
-    template <bool IgnoreRemoveRange, size_t I, typename... MultiIndex>
+    [[nodiscard]] GPULock gpu_cache_tensor() {
+        if (_gpu_memory.expired()) {
+            _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            _gpu_modify_count = (size_t)_core_modify_count;
+            tensor_to_gpu();
+        }
+        auto cached_gpu_memory = _gpu_memory.lock();
+
+        if (cached_gpu_memory->size < _size * sizeof(T)) {
+            cached_gpu_memory.reset();
+            _gpu_memory.reset();
+            _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            cached_gpu_memory = _gpu_memory.lock();
+            tensor_to_gpu();
+        }
+
+        if ((size_t)_gpu_modify_count < (size_t)_core_modify_count) {
+            tensor_to_gpu();
+        }
+
+        return cached_gpu_memory;
+    }
+
+    [[nodiscard]] GPULock gpu_cache_tensor_nowrite() {
+        if (_gpu_memory.expired()) {
+            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+        }
+        auto cached_gpu_memory = _gpu_memory.lock();
+
+        if (cached_gpu_memory->size < _size * sizeof(T)) {
+            cached_gpu_memory.reset();
+            _gpu_memory.reset();
+            _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            cached_gpu_memory = _gpu_memory.lock();
+        }
+
+        return cached_gpu_memory;
+    }
+
+    [[nodiscard]] GPULock gpu_cache_tensor() const {
+        if (_gpu_memory.expired()) {
+            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            tensor_to_gpu();
+        }
+        auto cached_gpu_memory = _gpu_memory.lock();
+
+        if (cached_gpu_memory->size < _size * sizeof(T)) {
+            cached_gpu_memory.reset();
+            _gpu_memory.reset();
+            _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            cached_gpu_memory = _gpu_memory.lock();
+            tensor_to_gpu();
+        }
+
+        if ((size_t)_gpu_modify_count < (size_t)_core_modify_count) {
+            tensor_to_gpu();
+        }
+
+        return cached_gpu_memory;
+    }
+
+    [[nodiscard]] GPULock gpu_cache_tensor_nowrite() const {
+        if (_gpu_memory.expired()) {
+            _gpu_memory = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+        }
+
+        auto cached_gpu_memory = _gpu_memory.lock();
+
+        if (cached_gpu_memory->size < _size * sizeof(T)) {
+            cached_gpu_memory.reset();
+            _gpu_memory.reset();
+            _gpu_memory       = BlockManager::get_singleton().request_gpu_block(_size * sizeof(T));
+            cached_gpu_memory = _gpu_memory.lock();
+        }
+
+        return cached_gpu_memory;
+    }
+
+    gpu::GPUPointer<T> get_gpu_pointer() {
+        if (_gpu_memory.expired()) {
+            return nullptr;
+        } else {
+            _gpu_modify_count++;
+            return _gpu_memory.lock()->gpu_pointer;
+        }
+    }
+
+    gpu::GPUPointer<T const> get_gpu_pointer() const {
+        if (_gpu_memory.expired()) {
+            return nullptr;
+        } else {
+            return _gpu_memory.lock()->gpu_pointer;
+        }
+    }
+
+    GPUPromise get_gpu_memory() const { return _gpu_memory; }
+
+    bool gpu_is_expired() const { return _gpu_memory.expired(); }
+
+    void set_gpu_memory(GPULock const &other) const { _gpu_memory = other; }
+
+    void increment_core_modify() { _core_modify_count++; }
+
+    void increment_gpu_modify() { _gpu_modify_count++; }
+
+    void increment_core_modify() const { _core_modify_count++; }
+
+    void increment_gpu_modify() const { _gpu_modify_count++; }
+
+#else
+    constexpr void                  tensor_to_gpu() const {}
+    constexpr void                  tensor_from_gpu() const {}
+    [[nodiscard]] constexpr GPULock gpu_cache_tensor() const { return 0; }
+    [[nodiscard]] constexpr GPULock gpu_cache_tensor_nowrite() const { return 0; }
+    constexpr GPULock               get_gpu_pointer() const { return 0; }
+    constexpr GPUPromise            get_gpu_memory() const { return 0; }
+    constexpr bool                  gpu_is_expired() const { return true; }
+    template <typename Ignore>
+    constexpr void set_gpu_memory(Ignore const &) const {}
+
+    constexpr void increment_core_modify() {}
+
+    constexpr void increment_gpu_modify() {}
+
+    constexpr void increment_core_modify() const {}
+
+    constexpr void increment_gpu_modify() const {}
+#endif
+
+  private:
+    template <size_t __I, typename... MultiIndex>
+    constexpr void adjust_ranges(std::tuple<MultiIndex...> &indices) const {
+        if constexpr (__I >= sizeof...(MultiIndex)) {
+            return;
+        } else if constexpr (std::is_integral_v<std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+            auto &index = std::get<__I>(indices);
+            auto  temp  = index;
+
+            if (index < 0) {
+                index += _dims[__I];
+            }
+
+            if (index < 0 || index >= _dims[__I]) {
+                EINSUMS_THROW_EXCEPTION(std::out_of_range,
+                                        "Index passed to view creation is out of range! Got {}, expected between {} and {}.", temp,
+                                        -static_cast<ptrdiff_t>(_dims[__I]), _dims[__I] - 1);
+            }
+            adjust_ranges<__I + 1>(indices);
+        } else if constexpr (std::is_base_of_v<Range, std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+            auto &index = std::get<__I>(indices);
+            auto  temp  = index;
+
+            if (index[0] < 0) {
+                index[0] += _dims[__I];
+            }
+
+            if (index[1] < 0) {
+                index[1] += _dims[__I];
+            }
+
+            if (index[0] < 0 || index[0] > _dims[__I]) {
+                EINSUMS_THROW_EXCEPTION(std::out_of_range,
+                                        "Lower bound of range passed to view creation is out of range! Got {}, expected between {} and {}.",
+                                        temp[0], -static_cast<ptrdiff_t>(_dims[__I]), _dims[__I] - 1);
+            }
+
+            if (index[1] < index[0] || index[1] > _dims[__I]) {
+                EINSUMS_THROW_EXCEPTION(std::out_of_range,
+                                        "Upper bound of range passed to view creation is out of range! Got {}, expected between {} and {}.",
+                                        temp[1], index[0], _dims[__I]);
+            }
+            adjust_ranges<__I + 1>(indices);
+        } else {
+            adjust_ranges<__I + 1>(indices);
+        }
+    }
+
+    template <bool IgnoreRemoveRange, size_t __I, typename... MultiIndex>
         requires((std::is_integral_v<MultiIndex> || std::is_base_of_v<Range, MultiIndex> || std::is_base_of_v<AllT, MultiIndex>) && ... &&
                  true)
     constexpr size_t compute_view(BufferVector<size_t> &out_dims, BufferVector<size_t> &out_strides,
                                   std::tuple<MultiIndex...> const &indices) const {
-        if constexpr (I >= sizeof...(MultiIndex)) {
+        if constexpr (__I >= sizeof...(MultiIndex)) {
             return 0;
         } else {
-            if constexpr (std::is_integral_v<std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                return std::get<I>(indices) * _strides[I] + compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
+            if constexpr (std::is_integral_v<std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+                return std::get<__I>(indices) * _strides[__I] + compute_view<IgnoreRemoveRange, __I + 1>(out_dims, out_strides, indices);
             } else if constexpr (!IgnoreRemoveRange &&
-                                 std::is_base_of_v<RemovableRange, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                auto range = std::get<I>(indices);
+                                 std::is_base_of_v<RemovableRange, std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+                auto range = std::get<__I>(indices);
 
                 if (range[0] != range[1] && range.is_removable()) {
                     out_dims.push_back(range[1] - range[0]);
-                    out_strides.push_back(_strides[I]);
+                    out_strides.push_back(_strides[__I]);
                 }
-                return range[0] * _strides[I] + compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
-            } else if constexpr (std::is_base_of_v<Range, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                auto range = std::get<I>(indices);
+                return range[0] * _strides[__I] + compute_view<IgnoreRemoveRange, __I + 1>(out_dims, out_strides, indices);
+            } else if constexpr (std::is_base_of_v<Range, std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+                auto range = std::get<__I>(indices);
 
                 out_dims.push_back(range[1] - range[0]);
-                out_strides.push_back(_strides[I]);
-                return range[0] * _strides[I] + compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
-            } else if constexpr (std::is_base_of_v<AllT, std::tuple_element_t<I, std::remove_cvref_t<decltype(indices)>>>) {
-                out_dims.push_back(_dims[I]);
-                out_strides.push_back(_strides[I]);
-                return compute_view<IgnoreRemoveRange, I + 1>(out_dims, out_strides, indices);
+                out_strides.push_back(_strides[__I]);
+                return range[0] * _strides[__I] + compute_view<IgnoreRemoveRange, __I + 1>(out_dims, out_strides, indices);
+            } else if constexpr (std::is_base_of_v<AllT, std::tuple_element_t<__I, std::remove_cvref_t<decltype(indices)>>>) {
+                out_dims.push_back(_dims[__I]);
+                out_strides.push_back(_strides[__I]);
+                return compute_view<IgnoreRemoveRange, __I + 1>(out_dims, out_strides, indices);
             }
         }
     }
@@ -1771,6 +1978,12 @@ struct TensorImpl final {
     size_t               _rank, _size;
     BufferVector<size_t> _dims, _strides;
     bool                 _row_major;
+    std::mutex mutable _mutex;
+
+#ifdef EINSUMS_COMPUTE_CODE
+    std::weak_ptr<GPUBlock> mutable _gpu_memory;
+    std::atomic<size_t> mutable _core_modify_count{0}, _gpu_modify_count{0};
+#endif
 };
 
 } // namespace detail
@@ -1842,7 +2055,7 @@ void fprintln(Output &fp, detail::TensorImpl<T> const &A, TensorPrintOptions opt
                 fprintln(fp);
             } else if (Rank > 1) {
                 BufferVector<size_t> index_strides(Rank - 1);
-                size_t elements = dims_to_strides(BufferVector<size_t>(A.dims().begin(), std::prev(A.dims().end())), index_strides);
+                size_t elements = dims_to_strides(BufferVector<size_t>(A.dims().begin(), std::prev(A.dims().end())), index_strides, true);
 
                 auto                 final_dim = A.dim(Rank - 1);
                 auto                 ndigits   = detail::ndigits(final_dim);
@@ -1938,3 +2151,5 @@ void println(detail::TensorImpl<T> const &A, TensorPrintOptions options) {
 #endif
 
 } // namespace einsums
+
+#include <Einsums/TensorImpl/TensorImplOperations.hpp>
