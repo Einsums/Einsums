@@ -8,7 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Complex.hpp>
-#include <Einsums/Concepts/TensorConcept.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 
 #include <complex>
 #include <memory>
