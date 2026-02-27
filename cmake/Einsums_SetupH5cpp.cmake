@@ -41,8 +41,7 @@ target_include_directories(
   # SYSTEM suppresses "error: non-constant-expression cannot be narrowed" for some compilers
   SYSTEM
   INTERFACE $<BUILD_INTERFACE:${h5cpp_SOURCE_DIR}>
-            # TODO return to this when build headers adjusted
-            # $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
 target_link_libraries(Einsums_h5cpp INTERFACE tgt::hdf5 ZLIB::ZLIB)
