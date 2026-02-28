@@ -23,6 +23,7 @@ set(TensorAlgebraTests
     Sort.cpp
     Transpose.cpp
     UniquePointer.cpp
+    SharedPointer.cpp
     GPUTensorAlgebra.hip
     GPUTensorAlgebraTasks.hip
     QChemTests.cpp
