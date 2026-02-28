@@ -43,6 +43,7 @@ template <bool ConjA = false, bool ConjB = false, TensorConcept AType, TensorCon
     requires requires {
         requires InSamePlace<AType, BType>;
         requires InSamePlace<AType, CType> || !TensorConcept<CType>;
+        requires !SmartPointer<CType>;
     }
 void einsum(U const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C, U const UAB_prefactor,
             std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B,
@@ -57,138 +58,82 @@ void einsum(CPrefactorType const C_prefactor, std::tuple<CIndices...> const &C_i
             std::tuple<AIndices...> const &A_indices, AType const &A_list, std::tuple<BIndices...> const &B_indices, BType const &B_list,
             detail::AlgorithmChoice *algorithm_choice = nullptr);
 
-// Einsums with provided prefactors.
-// 1. C n A n B n is defined above as the base implementation.
+namespace detail {
 
-// 2. C n A n B y
-template <bool ConjA = false, bool ConjB = false, NotASmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices, typename T>
-void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
-            detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, *B, algorithm_choice);
+// Type trait: for a SmartPointer, yields its element_type; otherwise yields T itself.
+template <typename T, bool = SmartPointer<T>>
+struct DerefTypeHelper {
+    using type = T;
+};
+
+template <typename T>
+struct DerefTypeHelper<T, true> {
+    using type = typename T::element_type;
+};
+
+template <typename T>
+using deref_type_t = typename DerefTypeHelper<T>::type;
+
+// Dereference A or B: smart-pointer → *ptr; anything else → passthrough.
+// Note: weak_ptr satisfies SmartPointer but has no operator* — calling auto_deref
+// on one fails to compile, matching the behaviour of the old explicit overloads.
+template <typename T>
+[[nodiscard]] decltype(auto) auto_deref(T &&t) {
+    if constexpr (SmartPointer<std::remove_cvref_t<T>>)
+        return (*t);
+    else
+        return std::forward<T>(t);
 }
 
-// 3. C n A y B n
-template <bool ConjA = false, bool ConjB = false, SmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices, typename T>
-void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
-            detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, B, algorithm_choice);
+// Dereference C (passed as pointer-to-wrapper):
+//   shared_ptr<Tensor>*  →  Tensor*   (via ->get())
+//   Tensor*              →  Tensor*   (passthrough)
+template <typename T>
+[[nodiscard]] auto auto_deref_c(T *ptr) {
+    if constexpr (SmartPointer<T>)
+        return ptr->get();
+    else
+        return ptr;
 }
 
-// 4. C n A y B y
-template <bool ConjA = false, bool ConjB = false, SmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices, typename T>
-void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
-            detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, *B, algorithm_choice);
-}
+} // namespace detail
 
-// 5. C y A n B n
-template <bool ConjA = false, bool ConjB = false, NotASmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices, typename T>
-void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
-            detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, B, algorithm_choice);
-}
-
-// 6. C y A n B y
-template <bool ConjA = false, bool ConjB = false, NotASmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices, typename T>
-void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
-            detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, *B, algorithm_choice);
-}
-
-// 7. C y A y B n
-template <bool ConjA = false, bool ConjB = false, SmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices, typename T>
-void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
-            detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, B, algorithm_choice);
-}
-
-// 8. C y A y B y
-template <bool ConjA = false, bool ConjB = false, SmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices, typename T>
-void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
-            std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,
-            detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, *B, algorithm_choice);
-}
-
-//
-// Einsums with default prefactors.
-//
-
-// 1. C n A n B n
-template <bool ConjA = false, bool ConjB = false, NotASmartPointer AType, NotASmartPointer BType, NotASmartPointer CType,
+// Smart-pointer dispatcher with prefactors.
+// Fires when at least one of A, B, or C is a SmartPointer.
+template <bool ConjA = false, bool ConjB = false,
+          typename AType, typename BType, typename CType, typename U,
           typename... CIndices, typename... AIndices, typename... BIndices>
-void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    requires(
+        (SmartPointer<AType> || SmartPointer<BType> || SmartPointer<CType>) &&
+        TensorConcept<detail::deref_type_t<AType>> &&
+        TensorConcept<detail::deref_type_t<BType>> &&
+        requires {
+            requires InSamePlace<detail::deref_type_t<AType>, detail::deref_type_t<BType>>;
+            requires InSamePlace<detail::deref_type_t<AType>, detail::deref_type_t<CType>>
+                      || !TensorConcept<detail::deref_type_t<CType>>;
+        }
+    )
+void einsum(U const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
+            U const AB_prefactor,
+            std::tuple<AIndices...> const &A_indices, AType const &A,
+            std::tuple<BIndices...> const &B_indices, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice = nullptr) {
+    einsum<ConjA, ConjB>(C_prefactor, C_indices, detail::auto_deref_c(C),
+                         AB_prefactor, A_indices, detail::auto_deref(A),
+                         B_indices, detail::auto_deref(B), algorithm_choice);
+}
+
+// Default-prefactor dispatcher: handles all pointer/non-pointer combinations,
+// including containers (batched einsum). No TensorConcept constraint here —
+// the forwarded with-prefactors call is responsible for type checking.
+template <bool ConjA = false, bool ConjB = false,
+          typename AType, typename BType, typename CType,
+          typename... CIndices, typename... AIndices, typename... BIndices>
+void einsum(std::tuple<CIndices...> const &C_indices, CType *C,
+            std::tuple<AIndices...> const &A_indices, AType const &A,
+            std::tuple<BIndices...> const &B_indices, BType const &B,
+            detail::AlgorithmChoice *algorithm_choice = nullptr) {
     einsum<ConjA, ConjB>(0, C_indices, C, 1, A_indices, A, B_indices, B, algorithm_choice);
-}
-
-// 2. C n A n B y
-template <bool ConjA = false, bool ConjB = false, NotASmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
-void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(0, C_indices, C, 1, A_indices, A, B_indices, *B, algorithm_choice);
-}
-
-// 3. C n A y B n
-template <bool ConjA = false, bool ConjB = false, SmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
-void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(0, C_indices, C, 1, A_indices, *A, B_indices, B, algorithm_choice);
-}
-
-// 4. C n A y B y
-template <bool ConjA = false, bool ConjB = false, SmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
-void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(0, C_indices, C, 1, A_indices, *A, B_indices, *B, algorithm_choice);
-}
-
-// 5. C y A n B n
-template <bool ConjA = false, bool ConjB = false, NotASmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
-void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(0, C_indices, C->get(), 1, A_indices, A, B_indices, B, algorithm_choice);
-}
-
-// 6. C y A n B y
-template <bool ConjA = false, bool ConjB = false, NotASmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
-void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(0, C_indices, C->get(), 1, A_indices, A, B_indices, *B, algorithm_choice);
-}
-
-// 7. C y A y B n
-template <bool ConjA = false, bool ConjB = false, SmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
-void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(0, C_indices, C->get(), 1, A_indices, *A, B_indices, B, algorithm_choice);
-}
-
-// 8. C y A y B y
-template <bool ConjA = false, bool ConjB = false, SmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
-void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndices...> const &A_indices, AType const &A,
-            std::tuple<BIndices...> const &B_indices, BType const &B, detail::AlgorithmChoice *algorithm_choice = nullptr) {
-    einsum<ConjA, ConjB>(0, C_indices, C->get(), 1, A_indices, *A, B_indices, *B, algorithm_choice);
 }
 
 //
