@@ -290,7 +290,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      *
      * @versionadded{1.0.0}
      */
-    int block_of(size_t index) const {
+    [[nodiscard]] int block_of(size_t index) const {
         for (int i = 0; i < _ranges.size(); i++) {
             if (_ranges[i][0] <= index && _ranges[i][1] > index) {
                 return i;
@@ -339,10 +339,10 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      *
      * @versionadded{1.0.0}
      */
-    TensorType const &block(int id) const { return _blocks.at(id); }
+    [[nodiscard]] TensorType const &block(int id) const { return _blocks.at(id); }
 
     /// @copydoc block(int) const
-    TensorType &block(int id) { return _blocks.at(id); }
+    [[nodiscard]] TensorType &block(int id) { return _blocks.at(id); }
 
     /**
      * @brief Return the first block with the given name.
@@ -355,7 +355,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      *
      * @versionadded{1.0.0}
      */
-    TensorType const &block(std::string const &name) const {
+    [[nodiscard]] TensorType const &block(std::string const &name) const {
         for (int i = 0; i < _blocks.size(); i++) {
             if (_blocks[i].name() == name) {
                 return _blocks[i];
@@ -370,7 +370,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     /**
      * @copydoc block(std::string const &) const
      */
-    TensorType &block(std::string const &name) {
+    [[nodiscard]] TensorType &block(std::string const &name) {
         for (int i = 0; i < _blocks.size(); i++) {
             if (_blocks[i].name() == name) {
                 return _blocks[i];
@@ -465,7 +465,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
         }
-    auto data(MultiIndex... index) -> T * {
+    [[nodiscard]] auto data(MultiIndex... index) -> T * {
 #if !defined(DOXYGEN)
         assert(sizeof...(MultiIndex) <= Rank);
 
@@ -905,7 +905,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     /**
      * @brief Return the number of blocks.
      */
-    size_t num_blocks() const { return _blocks.size(); }
+    [[nodiscard]] size_t num_blocks() const { return _blocks.size(); }
 
     /**
      * @brief Return the dimensions of each block.
@@ -915,17 +915,17 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     /**
      * @brief Return a list containing the ranges for each block.
      */
-    std::vector<Range> ranges() const { return _ranges; }
+    [[nodiscard]] std::vector<Range> ranges() const { return _ranges; }
 
     /**
      * @brief Return the range for a given block.
      */
-    Range block_range(int i) const { return _ranges.at(i); }
+    [[nodiscard]] Range block_range(int i) const { return _ranges.at(i); }
 
     /**
      * @brief Return the dimensions of the given block.
      */
-    Dim<Rank> block_dims(size_t block) const { return _blocks.at(block).dims(); }
+    [[nodiscard]] Dim<Rank> block_dims(size_t block) const { return _blocks.at(block).dims(); }
 
     /**
      * @brief Return the dimension of a block on a given axis.
@@ -933,12 +933,12 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * Because the tensors are assumed to be square, changing the second parameter should not affect the output.
      * The second parameter is not ignored.
      */
-    size_t block_dim(size_t block, int ind = 0) const { return _blocks.at(block).dim(ind); }
+    [[nodiscard]] size_t block_dim(size_t block, int ind = 0) const { return _blocks.at(block).dim(ind); }
 
     /**
      * @brief Return the dimensions of a given block.
      */
-    Dim<Rank> block_dims(std::string const &name) const {
+    [[nodiscard]] Dim<Rank> block_dims(std::string const &name) const {
         for (auto tens : _blocks) {
             if (tens.name() == name) {
                 return tens.block_dims();
@@ -954,7 +954,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      * Because the tensors are assumed to be square, changing the second parameter should not affect the output.
      * The second parameter is not ignored.
      */
-    size_t block_dim(std::string const &name, int ind = 0) const {
+    [[nodiscard]] size_t block_dim(std::string const &name, int ind = 0) const {
         for (auto tens : _blocks) {
             if (tens.name() == name) {
                 return tens.block_dim(ind);
@@ -967,7 +967,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     /**
      * @brief Return the dimensions of this tensor.
      */
-    virtual Dim<Rank> dims() const {
+    [[nodiscard]] virtual Dim<Rank> dims() const {
         Dim<Rank> out;
         out.fill(_dim);
         return out;
@@ -978,17 +978,17 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
      *
      * Because the tensor is square, the argument is ignored.
      */
-    virtual size_t dim(int dim) const { return _dim; }
+    [[nodiscard]] virtual size_t dim(int dim) const { return _dim; }
 
     /**
      * @brief Return the dimension of this tensor along the first axis.
      */
-    virtual size_t dim() const { return _dim; }
+    [[nodiscard]] virtual size_t dim() const { return _dim; }
 
     /**
      * @brief Return the dimensions of each of the blocks.
      */
-    std::vector<size_t> vector_dims() const {
+    [[nodiscard]] std::vector<size_t> vector_dims() const {
         std::vector<size_t> out(num_blocks());
 
         for (int i = 0; i < out.size(); i++) {
@@ -1001,12 +1001,12 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     /**
      * @brief Returns the list of tensors.
      */
-    auto vector_data() const -> std::vector<TensorType> const & { return _blocks; }
+    [[nodiscard]] auto vector_data() const -> std::vector<TensorType> const & { return _blocks; }
 
     /**
      * @copydoc vector_data() const
      */
-    auto vector_data() -> std::vector<TensorType> & { return _blocks; }
+    [[nodiscard]] auto vector_data() -> std::vector<TensorType> & { return _blocks; }
 
     /**
      * @brief Gets the name of the tensor.
@@ -1031,7 +1031,7 @@ struct BlockTensor : public BlockTensorNoExtra, public design_pats::Lockable<std
     /**
      * @brief Returns the strides of a given block.
      */
-    auto strides(int i) const noexcept -> auto const & { return _blocks[i].strides(); }
+    [[nodiscard]] auto strides(int i) const noexcept -> auto const & { return _blocks[i].strides(); }
 
     /**
      * Returns the size of the tensor. That is, the product of the dimensions.
@@ -1550,7 +1550,7 @@ struct BlockDeviceTensor : public tensor_base::BlockTensor<T, Rank, einsums::Dev
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
         }
-    auto gpu_data(MultiIndex... index) -> T * {
+    [[nodiscard]] auto gpu_data(MultiIndex... index) -> T * {
 #    if !defined(DOXYGEN)
         assert(sizeof...(MultiIndex) <= Rank);
 

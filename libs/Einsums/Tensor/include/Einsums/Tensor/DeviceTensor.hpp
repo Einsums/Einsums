@@ -540,7 +540,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    auto gpu_data() -> dev_datatype * { return _data; }
+    [[nodiscard]] auto gpu_data() -> dev_datatype * { return _data; }
 
     /**
      * @brief Returns a constant pointer to the data.
@@ -552,7 +552,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    auto gpu_data() const -> dev_datatype const * { return _data; }
+    [[nodiscard]] auto gpu_data() const -> dev_datatype const * { return _data; }
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -575,7 +575,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
         }
-    auto gpu_data(MultiIndex... index) -> dev_datatype *;
+    [[nodiscard]] auto gpu_data(MultiIndex... index) -> dev_datatype *;
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -598,7 +598,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
         }
-    auto gpu_data(MultiIndex... index) const -> dev_datatype const *;
+    [[nodiscard]] auto gpu_data(MultiIndex... index) const -> dev_datatype const *;
 
     /**
      * @brief Returns a pointer to the host-readable data.
@@ -611,7 +611,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    host_datatype *data() { return _host_data; }
+    [[nodiscard]] host_datatype *data() { return _host_data; }
 
     /**
      * @brief Returns a pointer to the host-readable data.
@@ -624,7 +624,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    host_datatype const *data() const { return _host_data; }
+    [[nodiscard]] host_datatype const *data() const { return _host_data; }
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -647,7 +647,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
         }
-    auto data(MultiIndex... index) -> host_datatype *;
+    [[nodiscard]] auto data(MultiIndex... index) -> host_datatype *;
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -670,7 +670,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
         }
-    auto data(MultiIndex... index) const -> host_datatype const *;
+    [[nodiscard]] auto data(MultiIndex... index) const -> host_datatype const *;
 
     /**
      * Sends data from the host to the device.
@@ -978,7 +978,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    size_t dim(int d) const {
+    [[nodiscard]] size_t dim(int d) const {
         // Add support for negative indices.
         if (d < 0)
             d += rank;
@@ -990,28 +990,28 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    Dim<rank> dims() const { return _dims; }
+    [[nodiscard]] Dim<rank> dims() const { return _dims; }
 
     /**
      * @brief Get the dimension list that is visible to the GPU.
      *
      * @versionadded{1.0.0}
      */
-    size_t *gpu_dims() { return _gpu_dims; }
+    [[nodiscard]] size_t *gpu_dims() { return _gpu_dims; }
 
     /**
      * @brief Get the dimension list that is visible to the GPU.
      *
      * @versionadded{1.0.0}
      */
-    size_t const *gpu_dims() const { return _gpu_dims; }
+    [[nodiscard]] size_t const *gpu_dims() const { return _gpu_dims; }
 
     /**
      * @brief Get the name of the tensor.
      *
      * @versionadded{1.0.0}
      */
-    std::string const &name() const { return _name; }
+    [[nodiscard]] std::string const &name() const { return _name; }
 
     /**
      * @brief Set the name of the tensor.
@@ -1025,7 +1025,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    size_t stride(int d) const noexcept {
+    [[nodiscard]] size_t stride(int d) const noexcept {
         if (d < 0)
             d += rank;
         return _strides[d];
@@ -1036,28 +1036,28 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    Stride<rank> strides() const noexcept { return _strides; }
+    [[nodiscard]] Stride<rank> strides() const noexcept { return _strides; }
 
     /**
      * @brief Get the stride list that is visible to the GPU.
      *
      * @versionadded{1.0.0}
      */
-    size_t *gpu_strides() { return _gpu_strides; }
+    [[nodiscard]] size_t *gpu_strides() { return _gpu_strides; }
 
     /**
      * @brief Get the stride list that is visible to the GPU.
      *
      * @versionadded{1.0.0}
      */
-    size_t const *gpu_strides() const { return _gpu_strides; }
+    [[nodiscard]] size_t const *gpu_strides() const { return _gpu_strides; }
 
     /**
      * Convert to a rank 1 tensor view.
      *
      * @versionadded{1.0.0}
      */
-    DeviceTensorView<T, 1> to_rank_1_view() const {
+    [[nodiscard]] DeviceTensorView<T, 1> to_rank_1_view() const {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
         Dim<1> dim{size};
 
@@ -1069,21 +1069,21 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    size_t size() const { return _dims[0] * _strides[0]; }
+    [[nodiscard]] size_t size() const { return _dims[0] * _strides[0]; }
 
     /**
      * @brief Whether this object is the full view.
      *
      * @versionadded{1.0.0}
      */
-    bool full_view_of_underlying() const noexcept { return true; }
+    [[nodiscard]] bool full_view_of_underlying() const noexcept { return true; }
 
     /**
      * Return the mode of the tensor.
      *
      * @versionadded{1.0.0}
      */
-    detail::HostToDeviceMode mode() const { return _mode; }
+    [[nodiscard]] detail::HostToDeviceMode mode() const { return _mode; }
 
     /**********************************************
      * Interface between device and host tensors. *
@@ -1103,7 +1103,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      */
     operator einsums::Tensor<T, rank>() const;
 
-    bool is_row_major() const {
+    [[nodiscard]] bool is_row_major() const {
         if (Rank < 2) {
             return true;
         } else if (stride(0) > stride(-1)) {
@@ -1115,7 +1115,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
         }
     }
 
-    bool is_column_major() const {
+    [[nodiscard]] bool is_column_major() const {
         if (Rank < 2) {
             return true;
         } else if (stride(0) > stride(-1)) {
@@ -1127,7 +1127,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
         }
     }
 
-    bool is_totally_vectorable(size_t *incx = nullptr) const {
+    [[nodiscard]] bool is_totally_vectorable(size_t *incx = nullptr) const {
         if constexpr (rank == 0) {
             if (incx != nullptr) {
                 *incx = 0;
@@ -1395,7 +1395,7 @@ struct DeviceTensor<T, 0>
      *
      * @versionadded{1.0.0}
      */
-    auto gpu_data() -> dev_datatype * { return _data; }
+    [[nodiscard]] auto gpu_data() -> dev_datatype * { return _data; }
 
     /**
      * @copydoc DeviceTensor::gpu_data
@@ -1409,7 +1409,7 @@ struct DeviceTensor<T, 0>
      *
      * @versionadded{1.0.0}
      */
-    auto data() -> host_datatype * { return _host_data; }
+    [[nodiscard]] auto data() -> host_datatype * { return _host_data; }
 
     /**
      * @copydoc DeviceTensor::data()
@@ -1611,7 +1611,7 @@ struct DeviceTensor<T, 0>
      *
      * @versionadded{1.0.0}
      */
-    auto strides() const noexcept -> Stride<0> { return Stride<0>{}; }
+    [[nodiscard]] auto strides() const noexcept -> Stride<0> { return Stride<0>{}; }
 
     /**********************************************
      * Interface between device and host tensors. *
@@ -1658,7 +1658,7 @@ struct DeviceTensor<T, 0>
         return out;
     }
 
-    bool is_row_major() const {
+    [[nodiscard]] bool is_row_major() const {
         if (Rank < 2) {
             return true;
         } else if (stride(0) > stride(-1)) {
@@ -1670,7 +1670,7 @@ struct DeviceTensor<T, 0>
         }
     }
 
-    bool is_column_major() const {
+    [[nodiscard]] bool is_column_major() const {
         if (Rank < 2) {
             return true;
         } else if (stride(0) > stride(-1)) {
@@ -2032,7 +2032,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    host_datatype *data() { return _host_data; }
+    [[nodiscard]] host_datatype *data() { return _host_data; }
 
     /**
      * @brief Returns a pointer to the host-readable data.
@@ -2045,21 +2045,21 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    host_datatype const *data() const { return _host_data; }
+    [[nodiscard]] host_datatype const *data() const { return _host_data; }
 
     /**
      * @brief Get a pointer to the GPU data.
      *
      * @versionadded{1.0.0}
      */
-    dev_datatype *gpu_data() { return _data; }
+    [[nodiscard]] dev_datatype *gpu_data() { return _data; }
 
     /**
      * @brief Get a pointer to the GPU data.
      *
      * @versionadded{1.0.0}
      */
-    dev_datatype const *gpu_data() const { return const_cast<dev_datatype const *>(_data); }
+    [[nodiscard]] dev_datatype const *gpu_data() const { return const_cast<dev_datatype const *>(_data); }
 
     /**
      * @brief Get a pointer to an element in the view.
@@ -2067,7 +2067,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
-    dev_datatype *gpu_data(MultiIndex... index);
+    [[nodiscard]] dev_datatype *gpu_data(MultiIndex... index);
 
     /**
      * @brief Get a const pointer to an element in the view.
@@ -2075,21 +2075,21 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      * @versionadded{1.0.0}
      */
     template <typename... MultiIndex>
-    dev_datatype const *gpu_data(MultiIndex... index) const;
+    [[nodiscard]] dev_datatype const *gpu_data(MultiIndex... index) const;
 
     /**
      * @brief Get a pointer to an element in the view.
      *
      * @versionadded{1.0.0}
      */
-    dev_datatype *gpu_data_array(std::array<size_t, rank> const &index_list);
+    [[nodiscard]] dev_datatype *gpu_data_array(std::array<size_t, rank> const &index_list);
 
     /**
      * @brief Get a const pointer to an element in the view.
      *
      * @versionadded{1.0.0}
      */
-    dev_datatype const *gpu_data_array(std::array<size_t, rank> const &index_list) const;
+    [[nodiscard]] dev_datatype const *gpu_data_array(std::array<size_t, rank> const &index_list) const;
 
     /**
      * @brief Get a value from the view.
@@ -2123,7 +2123,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    size_t dim(int d) const {
+    [[nodiscard]] size_t dim(int d) const {
         if (d < 0)
             d += rank;
         return _dims[d];
@@ -2134,28 +2134,28 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    Dim<rank> dims() const { return _dims; }
+    [[nodiscard]] Dim<rank> dims() const { return _dims; }
 
     /**
      * @brief Get the dimensions of the view made available to the GPU.
      *
      * @versionadded{1.0.0}
      */
-    size_t *gpu_dims() { return _gpu_dims; }
+    [[nodiscard]] size_t *gpu_dims() { return _gpu_dims; }
 
     /**
      * @brief Get the dimensions of the view made available to the GPU.
      *
      * @versionadded{1.0.0}
      */
-    size_t const *gpu_dims() const { return _gpu_dims; }
+    [[nodiscard]] size_t const *gpu_dims() const { return _gpu_dims; }
 
     /**
      * @brief Get the name of the view.
      *
      * @versionadded{1.0.0}
      */
-    std::string const &name() const { return _name; }
+    [[nodiscard]] std::string const &name() const { return _name; }
 
     /**
      * @brief Set the name of the view.
@@ -2169,7 +2169,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    size_t stride(int d) const noexcept {
+    [[nodiscard]] size_t stride(int d) const noexcept {
         if (d < 0)
             d += rank;
         return _strides[d];
@@ -2180,42 +2180,42 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-    Stride<rank> strides() const noexcept { return _strides; }
+    [[nodiscard]] Stride<rank> strides() const noexcept { return _strides; }
 
     /**
      * @brief Get the strides of the view made available to the GPU.
      *
      * @versionadded{1.0.0}
      */
-    size_t *gpu_strides() { return _gpu_strides; }
+    [[nodiscard]] size_t *gpu_strides() { return _gpu_strides; }
 
     /**
      * @brief Get the strides of the view made available to the GPU.
      *
      * @versionadded{1.0.0}
      */
-    size_t const *gpu_strides() const { return _gpu_strides; }
+    [[nodiscard]] size_t const *gpu_strides() const { return _gpu_strides; }
 
     /**
      * @brief Convert the view to a one-dimensional array.
      *
      * @versionadded{1.0.0}
      */
-    auto to_rank_1_view() const -> DeviceTensorView<T, 1>;
+    [[nodiscard]] auto to_rank_1_view() const -> DeviceTensorView<T, 1>;
 
     /**
      * @brief Whether the view wraps all the data.
      *
      * @versionadded{1.0.0}
      */
-    bool full_view_of_underlying() const noexcept { return _full_view_of_underlying; }
+    [[nodiscard]] bool full_view_of_underlying() const noexcept { return _full_view_of_underlying; }
 
     /**
      * @brief Get the size of the view.
      *
      * @versionadded{1.0.0}
      */
-    size_t size() const { return _size; }
+    [[nodiscard]] size_t size() const { return _size; }
 
     /**
      * @brief Copy the data into an in-core tensor.
@@ -2228,7 +2228,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
         return (einsums::Tensor<T, rank>)temp;
     }
 
-    bool is_row_major() const {
+    [[nodiscard]] bool is_row_major() const {
         if (Rank < 2) {
             return true;
         } else if (stride(0) > stride(-1)) {
@@ -2240,7 +2240,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
         }
     }
 
-    bool is_column_major() const {
+    [[nodiscard]] bool is_column_major() const {
         if (Rank < 2) {
             return true;
         } else if (stride(0) > stride(-1)) {
@@ -2252,7 +2252,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
         }
     }
 
-    bool is_totally_vectorable(size_t *incx = nullptr) const {
+    [[nodiscard]] bool is_totally_vectorable(size_t *incx = nullptr) const {
         if constexpr (rank == 0) {
             if (incx != nullptr) {
                 *incx = 0;

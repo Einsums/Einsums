@@ -459,12 +459,12 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      *
      * @param d The axis to query.
      */
-    size_t dim(int d) const { return _dims[d]; }
+    [[nodiscard]] size_t dim(int d) const { return _dims[d]; }
 
     /**
      * Get the dimensions.
      */
-    Dim<Rank> dims() const { return _dims; }
+    [[nodiscard]] Dim<Rank> dims() const { return _dims; }
 
     /**
      * Check whether the data already existed on disk.
@@ -491,7 +491,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     /**
      * Get the name of the tensor.
      */
-    std::string const &name() const { return _name; }
+    [[nodiscard]] std::string const &name() const { return _name; }
 
     /**
      * Set the name of the tensor.
@@ -518,24 +518,24 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     /**
      * Get the stride along a given axis.
      */
-    size_t stride(int d) const { return _strides[d]; }
+    [[nodiscard]] size_t stride(int d) const { return _strides[d]; }
 
     /**
      * @brief Get the array of strides for this tensor.
      */
-    Stride<Rank> strides() const { return _strides; }
+    [[nodiscard]] Stride<Rank> strides() const { return _strides; }
 
     /**
      * Get the size of the tensor.
      */
-    size_t size() const { return _size; }
+    [[nodiscard]] size_t size() const { return _size; }
 
     /**
      * @brief Returns whether this tensor is viewing the entirety of the data.
      *
      * For this kind of tensor, this will always return true.
      */
-    constexpr bool full_view_of_underlying() { return true; }
+    [[nodiscard]] constexpr bool full_view_of_underlying() { return true; }
 
     /// This creates a Disk object with its Rank being equal to the number of All{} parameters
     /// Range is not inclusive. Range{10, 11} === size of 1
@@ -710,7 +710,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     /**
      * Gets the underlying tensor holding the data.
      */
-    BufferTensor<T, rank> &get() {
+    [[nodiscard]] BufferTensor<T, rank> &get() {
         auto                     lock = std::lock_guard(*this);
         std::array<size_t, rank> counts;
 
@@ -741,7 +741,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     /**
      * Gets the underlying tensor holding the data.
      */
-    BufferTensor<T, rank> const &get() const {
+    [[nodiscard]] BufferTensor<T, rank> const &get() const {
         auto                     lock = std::lock_guard(*this);
         std::array<size_t, rank> counts;
 
@@ -772,7 +772,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      * Gets the underlying tensor holding the data. If the tensor has already been created,
      * update it with what is stored on disk.
      */
-    BufferTensor<T, rank> &get_update() {
+    [[nodiscard]] BufferTensor<T, rank> &get_update() {
         auto                     lock = std::lock_guard(*this);
         std::array<size_t, rank> counts;
 
@@ -803,7 +803,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
      * Gets the underlying tensor holding the data. If the tensor has already been created,
      * update it with what is stored on disk.
      */
-    BufferTensor<T, rank> const &get_update() const {
+    [[nodiscard]] BufferTensor<T, rank> const &get_update() const {
         auto                     lock = std::lock_guard(*this);
         std::array<size_t, rank> counts;
 
@@ -1190,7 +1190,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Gets the underlying tensor holding the data.
      */
-    auto get() -> BufferTensor<T, rank> & {
+    [[nodiscard]] auto get() -> BufferTensor<T, rank> & {
         auto lock = std::lock_guard(*this);
         if (!_constructed) {
             _tensor      = BufferTensor<T, Rank>{true, _dims};
@@ -1208,7 +1208,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Gets the underlying tensor holding the data.
      */
-    auto get() const -> BufferTensor<T, rank> const & {
+    [[nodiscard]] auto get() const -> BufferTensor<T, rank> const & {
         auto lock = std::lock_guard(*this);
         if (!_constructed) {
             _tensor      = BufferTensor<T, Rank>{true, _dims};
@@ -1227,7 +1227,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      * Gets the underlying tensor holding the data. If the tensor has already been created,
      * update it with what is stored on disk.
      */
-    auto get_update() -> BufferTensor<T, rank> & {
+    [[nodiscard]] auto get_update() -> BufferTensor<T, rank> & {
         auto lock = std::lock_guard(*this);
         if (!_constructed) {
             _tensor      = BufferTensor<T, Rank>{true, _dims};
@@ -1247,7 +1247,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      * Gets the underlying tensor holding the data. If the tensor has already been created,
      * update it with what is stored on disk.
      */
-    auto get_update() const -> BufferTensor<T, rank> const & {
+    [[nodiscard]] auto get_update() const -> BufferTensor<T, rank> const & {
         auto lock = std::lock_guard(*this);
         if (!_constructed) {
             _tensor      = BufferTensor<T, Rank>{true, _dims};
@@ -1488,7 +1488,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Get the dimension along a given axis.
      */
-    size_t dim(int d) const {
+    [[nodiscard]] size_t dim(int d) const {
         if (d < 0) {
             d += rank;
         }
@@ -1498,17 +1498,17 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Get all the dimensions of the view.
      */
-    Dim<rank> dims() const { return _dims; }
+    [[nodiscard]] Dim<rank> dims() const { return _dims; }
 
     /**
      * Get the size of the view.
      */
-    size_t size() const { return _size; }
+    [[nodiscard]] size_t size() const { return _size; }
 
     /**
      * Get the name of the tensor.
      */
-    std::string const &name() const { return _name; }
+    [[nodiscard]] std::string const &name() const { return _name; }
 
     /**
      * Set the name of the tensor.
@@ -1538,7 +1538,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Gets whether the view is showing the whole tensor.
      */
-    bool full_view_of_underlying() const { return _full_view; }
+    [[nodiscard]] bool full_view_of_underlying() const { return _full_view; }
 
   private:
     /**
