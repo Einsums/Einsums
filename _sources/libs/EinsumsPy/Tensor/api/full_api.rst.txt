@@ -18,5 +18,5 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
 .. toctree::
    :maxdepth: 1
 
-   /libs/EinsumsPy/Tensor/api/PyTensor.rst
    /libs/EinsumsPy/Tensor/api/TensorExport.rst
+   /libs/EinsumsPy/Tensor/api/PyTensor.rst

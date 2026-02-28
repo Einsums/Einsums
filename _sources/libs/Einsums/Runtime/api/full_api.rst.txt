@@ -19,9 +19,9 @@ See :ref:`modules_overview` for a list of names and headers that are part of the
    :maxdepth: 1
 
    /libs/Einsums/Runtime/api/Runtime.rst
-   /libs/Einsums/Runtime/api/RuntimeForward.rst
+   /libs/Einsums/Runtime/api/StartupFunction.rst
    /libs/Einsums/Runtime/api/Runtime_Runtime.rst
    /libs/Einsums/Runtime/api/ShutdownFunction.rst
-   /libs/Einsums/Runtime/api/StartupFunction.rst
+   /libs/Einsums/Runtime/api/RuntimeForward.rst
    /libs/Einsums/Runtime/api/InitRuntime.rst
    /libs/Einsums/Runtime/api/InitLogging.rst
