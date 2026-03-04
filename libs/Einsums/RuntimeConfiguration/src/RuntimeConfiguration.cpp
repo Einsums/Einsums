@@ -16,6 +16,7 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <cstdlib>
 
 #if defined(EINSUMS_WINDOWS)
 #    include <process.h>
@@ -185,10 +186,10 @@ std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<
 #if defined(EINSUMS_DEBUG)
                                              SPDLOG_LEVEL_DEBUG
 #else
-                                             SPDLOG_LEVEL_INFO
+                                             SPDLOG_LEVEL_WARN
 #endif
                                              )),
-                                         cl::RangeBetween(0, 4), cl::ValueName("LogLevel"));
+                                         cl::Range(0, 4), cl::ValueName("LogLevel"));
 
         static cl::Opt<std::string> logDestination("einsums:log:destination", {}, "Log destination", logCategory,
                                                    cl::Location(global_strings["log-destination"]), cl::Default(std::string("cerr")));
@@ -234,12 +235,14 @@ std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<
 
         auto pr = cl::parse(original, "Einsums", full_version_as_string(), &unknown_args);
 
-        if (!pr.ok) {
-            std::exit(pr.exit_code);
+        if (pr == cl::HELP || pr == cl::VERSION) {
+            std::exit(EXIT_SUCCESS);
+        } else if(pr) {
+            std::exit(static_cast<int>(pr));
         }
         return unknown_args;
     } catch (std::exception const &) {
-        std::exit(1);
+        std::exit(EXIT_FAILURE);
     }
 }
 
