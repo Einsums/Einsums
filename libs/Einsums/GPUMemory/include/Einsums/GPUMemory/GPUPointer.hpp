@@ -590,8 +590,22 @@ struct GPUPointer final {
         return reinterpret_cast<U *>(gpu_ptr_);
     }
 
+    /**
+     * @brief Get the device pointer held by this object in the host datatype.
+     *
+     * @return The held pointer.
+     *
+     * @versionadded{2.0.0}
+     */
     constexpr T *get() noexcept { return reinterpret_cast<T *>(gpu_ptr_); }
 
+    /**
+     * @brief Get the device pointer held by this object in the device datatype.
+     *
+     * @return The held pointer.
+     *
+     * @versionadded{2.0.0}
+     */
     constexpr dev_datatype *get_dev() noexcept { return reinterpret_cast<dev_datatype *>(gpu_ptr_); }
 
     /**
@@ -719,6 +733,17 @@ einsums::gpu::GPUPointer<T> memcpy(einsums::gpu::GPUPointer<T> &dest, einsums::g
     return dest;
 }
 
+/**
+ * @brief Fill the array pointed to by the pointer to the specified value.
+ *
+ * @param dest The destination array.
+ * @param ch The byte to fill.
+ * @param count The number of bytes in the buffer being filled.
+ *
+ * @return The input pointer.
+ * 
+ * @versionadded{1.1.0}
+ */
 template <typename T>
 einsums::gpu::GPUPointer<T> memset(einsums::gpu::GPUPointer<T> &dest, int ch, size_t count) {
     einsums::hip_catch(hipMemset((void *)dest, ch, count));

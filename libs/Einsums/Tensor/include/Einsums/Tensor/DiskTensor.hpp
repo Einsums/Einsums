@@ -669,6 +669,11 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
                                                                                                          dataspace);
     }
 
+    /**
+     * @brief Copy the data from a core tensor into the disk.
+     *
+     * @param tensor The tensor to copy.
+     */
     template <CoreBasicTensorConcept TensorType>
         requires(RankTensorConcept<TensorType, rank>)
     void write(TensorType const &tensor) {
@@ -865,6 +870,9 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         }
     }
 
+    /**
+     * Remove the tensor from the tensor file tree. It will still exist until it is destroyed.
+     */
     void unlink() const { H5Ldelete(_file, _name.c_str(), H5P_DEFAULT); }
 
   private:

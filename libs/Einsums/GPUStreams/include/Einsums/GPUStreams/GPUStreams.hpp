@@ -368,6 +368,15 @@ EINSUMS_DEVICE inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleCo
     atomicAdd(&(address->y), value.y);
 }
 
+/**
+ * @brief Register a variable on the host machine in the device memory space for use in a subsequent GPU call.
+ *
+ * @param value The variable to register.
+ *
+ * @return The pointer to the GPU variable.
+ *
+ * @versionadded{2.0.0}
+ */
 template <typename T>
 EINSUMS_HOST inline T *register_host_variable(T &value) {
     hip_catch(hipHostRegister((void *)&value, sizeof(std::remove_cv_t<T>), hipHostRegisterDefault));
@@ -377,6 +386,15 @@ EINSUMS_HOST inline T *register_host_variable(T &value) {
     return out;
 }
 
+/**
+ * @brief Register a variable on the host machine in the device memory space for use in a subsequent GPU call.
+ *
+ * @param value The variable to register.
+ *
+ * @return The pointer to the GPU variable.
+ *
+ * @versionadded{2.0.0}
+ */
 template <typename T>
 EINSUMS_HOST inline T *register_host_variable(T const &value) {
     hip_catch(hipHostRegister(const_cast<void *>(&value), sizeof(std::remove_cv_t<T>), hipHostRegisterDefault));
@@ -386,11 +404,26 @@ EINSUMS_HOST inline T *register_host_variable(T const &value) {
     return out;
 }
 
+/**
+ * @brief Unregister a variable registered by register_host_variable(T&).
+ *
+ * @param value The host reference for the variable to unregister.
+ *
+ * @versionadded{2.0.0}
+ */
 template <typename T>
 EINSUMS_HOST inline void unregister_host_variable(T &value) {
     hip_catch(hipHostUnregister((void *)&value));
 }
 
+
+/**
+ * @brief Unregister a variable registered by register_host_variable(T const&).
+ *
+ * @param value The host reference for the variable to unregister.
+ *
+ * @versionadded{2.0.0}
+ */
 template <typename T>
 EINSUMS_HOST inline void unregister_host_variable(T const &value) {
     hip_catch(hipHostUnregister(const_cast<void *>(&value)));

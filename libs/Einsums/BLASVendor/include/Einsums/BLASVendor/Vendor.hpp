@@ -916,6 +916,8 @@ double dzsum1(int_t n, std::complex<double> const *x, int_t incx);
  * @param[in] n The number of elements in the vector.
  * @param[inout] x The vector to conjugate.
  * @param[in] incx The skip value for the vector.
+ *
+ * @versionadded{2.0.0}
  */
 void clacgv(int_t n, std::complex<float> *x, int_t incx);
 /// @copydoc clacgv
