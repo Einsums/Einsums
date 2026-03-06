@@ -442,6 +442,26 @@ void direct_product(typename AType::ValueType alpha, AType const &A, BType const
     }
 }
 
+template<CoreBasicTensorConcept AType>
+requires(MatrixConcept<AType>)
+typename AType::ValueType trace(AType const &A) {
+    using T = typename AType::ValueType;
+    if(A.dim(0) == 0 && A.dim(1) == 0) {
+        return T{0.0};
+    }
+
+    size_t skip = A.stride(0) + A.stride(1);
+    T const *A_ptr = A.data(0, 0);
+    T out{0.0};
+
+    EINSUMS_OMP_PARALLEL_FOR_SIMD
+    for(size_t i = 0; i < A.dim(0); i++) {
+        out += A_ptr[i * skip];
+    }
+
+    return out;
+}
+
 template <CoreBasicTensorConcept AType>
     requires MatrixConcept<AType>
 auto pow(AType const &a, typename AType::ValueType alpha,
