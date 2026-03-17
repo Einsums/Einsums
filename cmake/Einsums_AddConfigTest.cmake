@@ -446,15 +446,21 @@ function(einsums_check_for_cxx_lambda_capture_decltype)
 endfunction()
 
 function(einsums_check_for_dot_subroutine)
+  if(_int STREQUAL ilp64)
+  	set(__int_interface_macro EINSUMS_BLAS_INTERFACE_ILP64)
+  elseif(_int STREQUAL lp64)
+  	set(__int_interface_macro EINSUMS_BLAS_INTERFACE_ILP64)
+  endif()
+
   if(DEFINED FC_SYMBOL)
   	einsums_add_config_test(
     	EINSUMS_DOT_SUBROUTINE SOURCE cmake/tests/dot_subroutine.cpp 
-    	FILE NOT_REQUIRED EXECUTE COMPILE_DEFINITIONS FC_SYMBOL=${FC_SYMBOL} ${ARGN}
+    	FILE NOT_REQUIRED EXECUTE COMPILE_DEFINITIONS FC_SYMBOL=${FC_SYMBOL} ${__int_interface_macro} ${ARGN}
   	)
   else()
 	  einsums_add_config_test(
     	EINSUMS_DOT_SUBROUTINE SOURCE cmake/tests/dot_subroutine.cpp 
-    	FILE NOT_REQUIRED EXECUTE ${ARGN}
+    	FILE NOT_REQUIRED EXECUTE COMPILE_DEFINITIONS FC_SYMBOL=2 ${__int_interface_macro} ${ARGN}
   	)
   endif()
 endfunction()
