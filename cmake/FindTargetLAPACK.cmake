@@ -176,9 +176,9 @@ endif()
 einsums_check_for_dot_subroutine(DEFINITIONS EINSUMS_DOT_SUBROUTINE LIBRARIES tgt::lapack m)
 
 if(EINSUMS_DOT_SUBROUTINE)
-message("-- Complex dot products are subroutines.")
+message("-- Complex dot products are subroutines. Choosing appropriate code path.")
 else()
-message("-- Complex dot products are not subroutines.")
+message("-- Complex dot products are not subroutines. Choosing appropriate code path.")
 endif()
 
 include(FindPackageHandleStandardArgs)
