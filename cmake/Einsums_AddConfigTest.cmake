@@ -441,3 +441,10 @@ function(einsums_check_for_cxx_lambda_capture_decltype)
                                                     FILE ${ARGN}
   )
 endfunction()
+
+function(einsums_check_for_dot_subroutine)
+  einsums_add_config_test(
+    EINSUMS_DOT_SUBROUTINE SOURCE cmake/tests/dot_subroutine.cpp EXECUTE
+    FILE NOT_REQUIRED LIBRARIES ${_illb} ${ARGN}
+  )
+endfunction()
