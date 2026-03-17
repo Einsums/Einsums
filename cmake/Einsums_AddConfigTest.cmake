@@ -126,6 +126,7 @@ function(einsums_add_config_test variable)
             CXX_STANDARD ${EINSUMS_WITH_CXX_STANDARD}
             CXX_STANDARD_REQUIRED ON
             CXX_EXTENSIONS FALSE
+            COPY_FILE ${test_binary}
             RUN_OUTPUT_VARIABLE ${variable}_OUTPUT
             ARGS ${${variable}_ARGS}
         )
@@ -445,14 +446,8 @@ function(einsums_check_for_cxx_lambda_capture_decltype)
 endfunction()
 
 function(einsums_check_for_dot_subroutine)
-  if(DEFINED FC_SYMBOL)
-  	set(FC_SYMBOL_DEFINITION "-DFC_SYMBOL=${FC_SYMBOL}")
-  else()
-  	set(FC_SYMBOL_DEFINITION "-DFC_SYMBOL=2")
-  endif()
-
   einsums_add_config_test(
     EINSUMS_DOT_SUBROUTINE SOURCE cmake/tests/dot_subroutine.cpp 
-    FILE NOT_REQUIRED EXECUTE COMPILE_DEFINITIONS ${FC_SYMBOL_DEFINITION} ${ARGN}
+    FILE NOT_REQUIRED EXECUTE ${ARGN}
   )
 endfunction()
