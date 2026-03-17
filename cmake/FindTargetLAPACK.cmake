@@ -28,8 +28,6 @@
 
 set(PN TargetLAPACK)
 
-set(EINSUMS_DOT_IS_SUBROUTINE False)
-
 # 1st precedence - libraries passed in through -DLAPACK_LIBRARIES
 if(LAPACK_LIBRARIES)
   if(NOT ${PN}_FIND_QUIETLY)
@@ -51,7 +49,7 @@ if(LAPACK_LIBRARIES)
     endif()
   endforeach()
   
-  message(INFO "Using LAPACK vendor ${_VENDOR}")
+  message("-- Using LAPACK vendor ${_VENDOR}")
   
 
   add_library(tgt::lapack INTERFACE IMPORTED)
@@ -175,7 +173,7 @@ if((TARGET tgt::blas) AND (TARGET tgt::lapk))
   set(${PN}_MESSAGE "Found LAPACK ${_ven}w/${_int}: ${_illl};${_illb}")
 endif()
 
-einsums_check_for_dot_subroutine(DEFINITIONS EINSUMS_DOT_SUBROUTINE)
+einsums_check_for_dot_subroutine(DEFINITIONS EINSUMS_DOT_SUBROUTINE LIBRARIES tgt::lapack m)
 
 if(EINSUMS_DOT_SUBROUTINE)
 message("-- Complex dot products are subroutines.")
