@@ -753,6 +753,71 @@ void direct_product(T alpha, AType const &A, BType const &B, T beta, CType *C) {
 }
 
 namespace gpu {
+template<typename T>
+__global__ void list_sum_kernel_general(size_t elements, T const *__restrict__ X, int incx, T *out) {
+    int thread_id, num_threads;
+
+    get_worker_info(thread_id, num_threads);
+
+    size_t elements_per_group = num_threads / elements;
+
+    size_t remainder = num_threads % elements;
+
+    T const *ptr = X + thread_id * elements_per_group * incx;
+
+    T sum{0.0};
+
+    for(size_t i = 0; i < elements_per_group * incx; i += incx) {
+        sum += ptr[i];
+    }
+
+    for(int i = warpSize / 2; i != 0; i /= 2) {
+        sum += __shfl_down(sum, i);
+    }
+
+    if(thread_id == 0) {
+        ptr = X + num_threads * elements_per_group * incx;
+        for(size_t i = num_threads * elements_per_group * incx; i < elements * incx; i += incx) {
+            sum += ptr[i];
+        }
+    }
+
+    atomicAdd(out, sum);
+}
+
+EINSUMS_EXPORT __global__ void list_sum_kernel_general(size_t elements, hipFloatComplex *const __restrict__ X, int incx, hipFloatComplex *out);
+
+EINSUMS_EXPORT __global__ void list_sum_kernel_general(size_t elements, hipDoubleComplex *const __restrict__ X, int incx, hipDoubleComplex *out);
+}
+
+template<DeviceBasicTensorConcept AType>
+requires(MatrixConcept<AType>)
+typename AType::ValueType trace(AType const &A) {
+    using T = typename AType::ValueType;
+
+    size_t elems = A.size();
+
+    T out{0.0};
+
+    typename AType::dev_datatype *out_gpu;
+
+    hip_catch(hipMalloc((void **)&out_gpu, sizeof(T)));
+
+    hip_catch(hipMemcpy((void *) out_gpu, (void const *) &out, sizeof(T), hipMemcpyHostToDevice));
+
+    dim3 threads = einsums::gpu::block_size(elems), num_blocks = einsums::gpu::blocks(elems);
+
+    gpu::list_sum_kernel_general<<<num_blocks, threads, 0, einsums::gpu::get_stream()>>>(
+            elems, A.data(), A.stride(0) + A.stride(1), out_gpu);
+
+    einsums::gpu::stream_wait();
+
+    hip_catch(hipMemcpy((void *) &out, (void const *) out_gpu, sizeof(T), hipMemcpyDeviceToHost));
+
+    return out;
+}
+
+namespace gpu {
 /**
  * @brief Copy a list of eigenvalues onto the diagonal of a matrix.
  *
@@ -790,7 +855,7 @@ auto pow(AType const &a, typename AType::host_datatype alpha,
 
     Evecs.assign(a);
 
-    if constexpr (einsums::IsComplexTensorV<AType>) {
+    if constexpr (einsums::IsComplexTensor<AType>) {
         heev<true>(&Evecs, &Evals);
     } else {
         syev<true>(&Evecs, &Evals);
