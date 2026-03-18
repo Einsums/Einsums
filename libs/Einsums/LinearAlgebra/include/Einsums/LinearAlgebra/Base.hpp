@@ -459,7 +459,7 @@ auto pow(AType const &a, typename AType::ValueType alpha,
     result.zero();
 
     // Diagonalize
-    if constexpr (IsComplexTensorV<AType>) {
+    if constexpr (IsComplexTensor<AType>) {
         heev<true>(&a1, &e);
     } else {
         syev<true>(&a1, &e);
