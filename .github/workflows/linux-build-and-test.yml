@@ -25,13 +25,19 @@ jobs:
       fail-fast: false
       matrix:
         # compiler = default, implies the default compiler for the platform. for linux, this is gcc/g++
-        compiler: [ default, intel ]
+        compiler: [ default, clang, intel ]
         blas: [ openblas, mkl ]
         build_type: [ RelWithDebInfo ]
         variant: [ default ]
         include:
           - compiler: default
             cmake_extra: >
+              -DEINSUMS_WITH_COVERAGE=ON
+          - compiler: clang
+            cmake_extra: >
+              -DCMAKE_C_COMPILER=clang
+              -DCMAKE_CXX_COMPILER=clang++
+              -DOpenMP_CXX_INCLUDE_DIR=${CONDA_PREFIX}/include
               -DEINSUMS_WITH_COVERAGE=ON
           - compiler: intel
             blas: mkl
@@ -56,6 +62,8 @@ jobs:
         exclude:
           - compiler: intel
             blas: openblas
+          - compiler: clang
+            blas: mkl
 
     name: "${{ matrix.compiler }} • ${{ matrix.blas }} • ${{ matrix.build_type }} • ${{ matrix.variant }}"
     runs-on: ubuntu-latest
