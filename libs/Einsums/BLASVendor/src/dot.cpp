@@ -19,7 +19,7 @@ EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
 extern "C" {
 extern float  FC_GLOBAL(sdot, SDOT)(int_t *, float const *, int_t *, float const *, int_t *);
 extern double FC_GLOBAL(ddot, DDOT)(int_t *, double const *, int_t *, double const *, int_t *);
-#ifdef EINSUMS_HAVE_MKL
+#ifdef EINSUMS_DOT_SUBROUTINE
 extern void FC_GLOBAL(cdotc, CDOTC)(std::complex<float> *, int_t *, std::complex<float> const *, int_t *, std::complex<float> const *,
                                     int_t *);
 extern void FC_GLOBAL(zdotc, ZDOTC)(std::complex<double> *, int_t *, std::complex<double> const *, int_t *, std::complex<double> const *,
@@ -53,7 +53,7 @@ auto ddot(int_t n, double const *x, int_t incx, double const *y, int_t incy) -> 
 auto cdot(int_t n, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy) -> std::complex<float> {
     LabeledSection0();
 
-#ifdef EINSUMS_HAVE_MKL
+#ifdef EINSUMS_DOT_SUBROUTINE
     std::complex<float> out{0.0, 0.0};
     FC_GLOBAL(cdotu, CDOTU)(&out, &n, x, &incx, y, &incy);
     return out;
@@ -66,7 +66,7 @@ auto cdot(int_t n, std::complex<float> const *x, int_t incx, std::complex<float>
 auto zdot(int_t n, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy) -> std::complex<double> {
     LabeledSection0();
 
-#ifdef EINSUMS_HAVE_MKL
+#ifdef EINSUMS_DOT_SUBROUTINE
     std::complex<double> out{0.0, 0.0};
     FC_GLOBAL(zdotu, ZDOTU)(&out, &n, x, &incx, y, &incy);
     return out;
@@ -78,7 +78,7 @@ auto zdot(int_t n, std::complex<double> const *x, int_t incx, std::complex<doubl
 auto cdotc(int_t n, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy) -> std::complex<float> {
     LabeledSection0();
 
-#ifdef EINSUMS_HAVE_MKL
+#ifdef EINSUMS_DOT_SUBROUTINE
     std::complex<float> out{0.0, 0.0};
     FC_GLOBAL(cdotc, CDOTC)(&out, &n, x, &incx, y, &incy);
     return out;
@@ -90,7 +90,7 @@ auto cdotc(int_t n, std::complex<float> const *x, int_t incx, std::complex<float
 auto zdotc(int_t n, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy) -> std::complex<double> {
     LabeledSection0();
 
-#ifdef EINSUMS_HAVE_MKL
+#ifdef EINSUMS_DOT_SUBROUTINE
     std::complex<double> out{0.0, 0.0};
     FC_GLOBAL(zdotc, ZDOTC)(&out, &n, x, &incx, y, &incy);
     return out;

@@ -155,6 +155,10 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
 auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
     EINSUMS_ASSERT(A.dim(0) == B.dim(0));
 
+    if (A.dim(0) == 0) {
+        return typename AType::ValueType{0.0};
+    }
+
     auto result = blas::dot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
     return result;
 }
@@ -171,6 +175,10 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
     using OutType = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
 
     OutType result = OutType{0.0};
+
+    if (A.dim(0) == 0) {
+        return result;
+    }
 
     auto const *A_data   = A.data();
     auto const *B_data   = B.data();
@@ -201,8 +209,7 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
             dim[0] *= A.dim(i);
         }
 
-        return dot(TensorView<typename AType::ValueType, 1>(const_cast<AType &>(A), dim),
-                   TensorView<typename BType::ValueType, 1>(const_cast<BType &>(B), dim));
+        return blas::dot(A.size(), A.data(), A.stride(AType::Rank - 1), B.data(), B.stride(AType::Rank - 1));
     } else {
         auto dims = A.dims();
 
@@ -233,6 +240,10 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
 auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
     assert(A.dim(0) == B.dim(0));
 
+    if (A.dim(0) == 0) {
+        return typename AType::ValueType{0.0};
+    }
+
     if constexpr (IsComplexV<AType>) {
         return blas::dotc(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
     } else {
@@ -252,6 +263,10 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
     using OutType = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
 
     OutType result = OutType{0.0};
+
+    if (A.dim(0) == 0) {
+        return result;
+    }
 
     auto const *A_data   = A.data();
     auto const *B_data   = B.data();
@@ -277,15 +292,11 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
     }
 auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
-        Dim<1> dim{1};
-
-        for (size_t i = 0; i < AType::Rank; i++) {
-            assert(A.dim(i) == B.dim(i));
-            dim[0] *= A.dim(i);
+        if constexpr (IsComplexV<AType>) {
+            return blas::dotc(A.size(), A.data(), A.stride(AType::Rank - 1), B.data(), B.stride(AType::Rank - 1));
+        } else {
+            return blas::dot(A.size(), A.data(), A.stride(AType::Rank - 1), B.data(), B.stride(AType::Rank - 1));
         }
-
-        return true_dot(TensorView<typename AType::ValueType, 1>(const_cast<AType &>(A), dim),
-                        TensorView<typename BType::ValueType, 1>(const_cast<BType &>(B), dim));
     } else {
         auto dims = A.dims();
 

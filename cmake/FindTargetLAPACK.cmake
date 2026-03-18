@@ -43,8 +43,14 @@ if(LAPACK_LIBRARIES)
     elseif(${_lname} MATCHES "openblas")
       set(_VENDOR "OpenBLAS")
       break()
+    else()
+      set(_VENDOR "${_lname}")
+      # no break. If we fall through the loop, we need some diagnostics.
     endif()
   endforeach()
+  
+  message("-- Using LAPACK vendor ${_VENDOR}")
+  
 
   add_library(tgt::lapack INTERFACE IMPORTED)
   set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES ${LAPACK_LIBRARIES})
@@ -165,6 +171,14 @@ if((TARGET tgt::blas) AND (TARGET tgt::lapk))
     PROPERTY INTERFACE_LINK_LIBRARIES
   )
   set(${PN}_MESSAGE "Found LAPACK ${_ven}w/${_int}: ${_illl};${_illb}")
+endif()
+
+einsums_check_for_dot_subroutine(DEFINITIONS EINSUMS_DOT_SUBROUTINE LIBRARIES tgt::lapack m)
+
+if(EINSUMS_DOT_SUBROUTINE)
+message("-- Complex dot products are subroutines. Choosing appropriate code path.")
+else()
+message("-- Complex dot products are not subroutines. Choosing appropriate code path.")
 endif()
 
 include(FindPackageHandleStandardArgs)
