@@ -601,7 +601,7 @@ auto pow(AType const &a, typename AType::host_datatype alpha,
 
     Evecs.assign(a);
 
-    if constexpr (einsums::IsComplexTensorV<AType>) {
+    if constexpr (einsums::IsComplexTensor<AType>) {
         heev<true>(&Evecs, &Evals);
     } else {
         syev<true>(&Evecs, &Evals);
