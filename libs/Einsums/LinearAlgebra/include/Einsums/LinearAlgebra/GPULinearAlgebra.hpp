@@ -795,7 +795,7 @@ requires(MatrixConcept<AType>)
 typename AType::ValueType trace(AType const &A) {
     using T = typename AType::ValueType;
 
-    size_t elems = A.size();
+    size_t elems = A.dim(0);
 
     T out{0.0};
 
