@@ -1,7 +1,7 @@
 #include <complex>
 #include <cstdint>
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 
 using namespace std;
 
@@ -14,13 +14,13 @@ using int_t   = int;
 using euint_t = unsigned int;
 using elong   = long int;
 #else
-using int_t = int;
+using int_t   = int;
 using euint_t = unsigned int;
-using elong = long int;
+using elong   = long int;
 #endif
 
 #ifndef FC_SYMBOL
-#define FC_SYMBOL 2
+#    define FC_SYMBOL 2
 #endif
 
 #if FC_SYMBOL == 1
@@ -38,33 +38,35 @@ using elong = long int;
 #endif
 
 extern "C" {
-//extern std::complex<float> FC_GLOBAL(cdotu, CDOTU)(int_t*, std::complex<float> const*, int_t*, std::complex<float> const*, int_t*, uint64_t);
-extern void FC_GLOBAL(cdotu, CDOTU)(std::complex<float> *, int_t*, std::complex<float> const*, int_t*, std::complex<float> const*, int_t*);
+// extern std::complex<float> FC_GLOBAL(cdotu, CDOTU)(int_t*, std::complex<float> const*, int_t*, std::complex<float> const*, int_t*,
+// uint64_t);
+extern void FC_GLOBAL(cdotu, CDOTU)(std::complex<float> *, int_t *, std::complex<float> const *, int_t *, std::complex<float> const *,
+                                    int_t *);
 }
 
 auto cdot(int_t n, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy) -> std::complex<float> {
     struct {
-        int_t n;
+        int_t                      n;
         std::complex<float> const *x;
-        int_t incx;
+        int_t                      incx;
         std::complex<float> const *y;
-        int_t incy;
+        int_t                      incy;
     } args{n, x, incx, y, incy};
 
     std::complex<float> test{0.0}, out{0.0};
 
-    for(int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         test += x[i * incx] * y[i * incy];
     }
 
     FC_GLOBAL(cdotu, CDOTU)(&out, &args.n, args.x, &args.incx, args.y, &args.incy);
 
-    if(std::fabs(test - out) > 1e-4) {
+    if (std::fabs(test - out) > 1e-4) {
         printf("Error 1");
         std::exit(-1);
     }
 
-    if(args.n != n || args.x != x || args.incx != incx || args.y != y || args.incy != incy) {
+    if (args.n != n || args.x != x || args.incx != incx || args.y != y || args.incy != incy) {
         printf("Error 2");
         std::exit(-2);
     }
@@ -77,7 +79,7 @@ auto cdot(int_t n, std::complex<float> const *x, int_t incx, std::complex<float>
 int main(void) {
     std::complex<float> arr1[10], arr2[10];
 
-    for(int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         arr1[i] = std::complex<float>{(float)i};
         arr2[i] = std::complex<float>{(float)10 * i};
     }
