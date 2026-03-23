@@ -23,6 +23,12 @@ namespace detail {
 class EINSUMS_EXPORT Einsums_Tensor_vars final : public design_pats::Lockable<std::recursive_mutex> {
     EINSUMS_SINGLETON_DEF(Einsums_Tensor_vars)
 
+    /**
+     * @fn get_singleton()
+     *
+     * @brief Get the single unique instance of the class.
+     */
+
   public:
     // Put module-global variables here.
     hid_t hdf5_file;

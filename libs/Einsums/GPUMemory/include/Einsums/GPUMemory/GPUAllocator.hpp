@@ -251,6 +251,13 @@ struct GPUAllocator {
         }
     }
 
+    /**
+     * @brief Return the maximum size of a work array on the GPU.
+     *
+     * @return The maximum size of a work array on the GPU.
+     *
+     * @versionadded{2.0.0}
+     */
     [[nodiscard]] size_type work_size() const {
         try {
             return detail::Einsums_GPUMemory_vars::get_singleton().get_work_size() / type_size;

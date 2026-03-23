@@ -15,6 +15,15 @@
 #include <Einsums/Config/Types.hpp>
 #include <Einsums/Config/Version.hpp>
 
+/**
+ * @def EINSUMS_ZERO
+ *
+ * @brief A very small number.
+ *
+ * Represents a small number. Values less than this may be considered to be zero.
+ *
+ * @versionadded{1.0.0}
+ */
 #if !defined(EINSUMS_ZERO)
 #    define EINSUMS_ZERO (1.0e-10)
 #endif

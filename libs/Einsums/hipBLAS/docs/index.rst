@@ -14,3 +14,9 @@ These are considered to be internal functions used behind tensor operations.
 See the :ref:`API reference <modules_Einsums_BLAS_api>` of this module for more
 details.
 
+Important Notes
+---------------
+
+hipBLAS and hipSolver are missing several functions that users may wish to use. Among these is
+the general eigensolver, :code:`geev`. The others are :code:`sterf`, :code:`lange`, :code:`svdd`
+(though there are other SVD solvers), :code:`gees`, :code:`trsyl`, and the LQ decomposition routines.
