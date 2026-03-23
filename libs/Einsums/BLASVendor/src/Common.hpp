@@ -7,8 +7,12 @@
 
 #include <Einsums/Assert.hpp>
 #include <Einsums/BLAS/Types.hpp>
+#include <Einsums/Config.hpp>
+
+#ifndef EINSUMS_WINDOWS
 #include <Einsums/HPTT/HPTT.hpp>
 #include <Einsums/HPTT/HPTTTypes.hpp>
+#endif
 
 #include <omp.h>
 
@@ -47,6 +51,8 @@ void transpose(int_t m, int_t n, T const *in, int_t ldin, T *out, int_t ldout) {
     EINSUMS_ASSERT(m >= 0);
     EINSUMS_ASSERT(n >= 0);
 
+#ifndef EINSUMS_WINDOWS
+
     std::vector<int>    perm{1, 0};
     std::vector<size_t> size_in{static_cast<unsigned long>(m), static_cast<unsigned long>(n)}, outer_size_in, outer_size_out;
     if constexpr (Order == OrderMajor::Row) {
@@ -61,6 +67,27 @@ void transpose(int_t m, int_t n, T const *in, int_t ldin, T *out, int_t ldout) {
                                   omp_get_max_threads(), {}, Order == OrderMajor::Row);
 
     plan->execute();
+#else
+	int_t i, j, x, y;
+
+
+    if constexpr (Order == OrderMajor::Column) {
+        x = n;
+        y = m;
+    } else if constexpr (Order == OrderMajor::Row) {
+        x = m;
+        y = n;
+    } else {
+        static_assert(Order == OrderMajor::Column || Order == OrderMajor::Row, "Invalid OrderMajor");
+    }
+
+    // Look into replacing this with hptt or librett
+    for (i = 0; i < std::min(y, ldin); i++) {
+        for (j = 0; j < std::min(x, ldout); j++) {
+            out[(size_t)i * ldout + j] = in[(size_t)j * ldin + i];
+        }
+    }
+#endif
 }
 
 template <OrderMajor Order, typename T>
