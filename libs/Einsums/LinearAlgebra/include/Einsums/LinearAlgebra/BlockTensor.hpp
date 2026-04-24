@@ -324,6 +324,23 @@ void axpby(typename XType::ValueType alpha, XType const &X, typename YType::Valu
     }
 }
 
+template<BlockTensorConcept AType>
+requires(MatrixConcept<AType>)
+typename AType::ValueType trace(AType const &A) {
+    using T = typename AType::ValueType;
+
+    T out{0.0};
+    EINSUMS_OMP_PARALLEL_FOR
+    for(int i = 0; i < A.num_blocks(); i++) {
+        if(A.block_dim(i) == 0) {
+            continue;
+        }
+
+        out += trace(A.block(i));
+    }
+    return out;
+}
+
 template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
 void direct_product(typename AType::ValueType alpha, AType const &A, BType const &B, typename CType::ValueType beta, CType *C) {

@@ -995,6 +995,18 @@ void direct_product(T alpha, AType const &A, BType const &B, T beta, CType *C) {
     detail::direct_product(alpha, A, B, beta, C);
 }
 
+template<MatrixConcept AType>
+typename AType::ValueType trace(AType const &A) {
+    LabeledSection0();
+    using T = typename AType::ValueType;
+
+    if(A.dim(0) != A.dim(1)) {
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Can only find the trace of a square matrix!");
+    }
+
+    return detail::trace(A);
+}
+
 /**
  * Computes the determinant of a matrix.
  */
