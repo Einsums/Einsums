@@ -29,7 +29,9 @@
 
 #    include <algorithm>
 #    include <cmath>
+#    include <complex>
 #    include <cstddef>
+#    include <cstdlib>
 #    include <stdexcept>
 #    include <string>
 #    include <tuple>
@@ -74,14 +76,14 @@ void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndic
                 if (dimA != dimB) {
 #    if !defined(EINSUMS_IS_TESTING)
                     if constexpr (TensorConcept<CType>) {
-                        EINSUMS_LOG_ERROR(std::fabs(C_prefactor) > EINSUMS_ZERO
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
                                               ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices,
                                                             AB_prefactor, A.name(), A_indices, B.name(), B_indices, C_prefactor, C->name(),
                                                             C_indices)
                                               : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, AB_prefactor,
                                                             A.name(), A_indices, B.name(), B_indices));
                     } else {
-                        EINSUMS_LOG_ERROR(std::fabs(C_prefactor) > EINSUMS_ZERO
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
                                               ? fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{} + {} "x"{})", C_indices, AB_prefactor,
                                                             A.name(), A_indices, B.name(), B_indices, C_prefactor, C_indices)
                                               : fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{})", C_indices, AB_prefactor, A.name(),
@@ -103,14 +105,14 @@ void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndic
                 if (dimA != dimC) {
 #    if !defined(EINSUMS_IS_TESTING)
                     if constexpr (TensorConcept<CType>) {
-                        EINSUMS_LOG_ERROR(std::fabs(C_prefactor) > EINSUMS_ZERO
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
                                               ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices,
                                                             AB_prefactor, A.name(), A_indices, B.name(), B_indices, C_prefactor, C->name(),
                                                             C_indices)
                                               : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, AB_prefactor,
                                                             A.name(), A_indices, B.name(), B_indices));
                     } else {
-                        EINSUMS_LOG_ERROR(std::fabs(C_prefactor) > EINSUMS_ZERO
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
                                               ? fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{} + {} "x"{})", C_indices, AB_prefactor,
                                                             A.name(), A_indices, B.name(), B_indices, C_prefactor, C_indices)
                                               : fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{})", C_indices, AB_prefactor, A.name(),
@@ -135,14 +137,14 @@ void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndic
                 if (dimB != dimC) {
 #    if !defined(EINSUMS_IS_TESTING)
                     if constexpr (TensorConcept<CType>) {
-                        EINSUMS_LOG_ERROR(std::fabs(C_prefactor) > EINSUMS_ZERO
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
                                               ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices,
                                                             AB_prefactor, A.name(), A_indices, B.name(), B_indices, C_prefactor, C->name(),
                                                             C_indices)
                                               : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, AB_prefactor,
                                                             A.name(), A_indices, B.name(), B_indices));
                     } else {
-                        EINSUMS_LOG_ERROR(std::fabs(C_prefactor) > EINSUMS_ZERO
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
                                               ? fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{} + {} "x"{})", C_indices, AB_prefactor,
                                                             A.name(), A_indices, B.name(), B_indices, C_prefactor, C_indices)
                                               : fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{})", C_indices, AB_prefactor, A.name(),
