@@ -7,7 +7,7 @@
 .. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
 
 ==============
-vX.Y.Z Release
+v1.1.3 Release
 ==============
 
 What's New
@@ -19,3 +19,4 @@ Bug Fixes
 ---------
 - Fixed a typo in the GPU matrix power function which caused it to fail to compile.
 - Fixed an issue where dot products were dereferencing invalid pointers.
+- Fixed an issue with the inclusion of :code:`<h5cpp/core>` from upstream.
