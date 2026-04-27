@@ -14,6 +14,8 @@ What's New
 ----------
 - Default logging level is now WARN for the release build and DEBUG for debugging builds.
 - The debugger wait loop is no longer the default for release builds.
+- The flag for tensor index checking was missing, meaning it was impossible to have Einsums check your tensors' indices. This has been added
+  as `EINSUMS_RUNTIME_INDICES_CHECK`. It is on by default.
 
 Bug Fixes
 ---------
