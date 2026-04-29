@@ -1,0 +1,24 @@
+.. 
+    ---------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
+
+==============
+v1.1.3 Release
+==============
+
+What's New
+----------
+- Default logging level is now WARN for the release build and DEBUG for debugging builds.
+- The debugger wait loop is no longer the default for release builds.
+- The flag for tensor index checking was missing, meaning it was impossible to have Einsums check your tensors' indices. This has been added
+  as `EINSUMS_RUNTIME_INDICES_CHECK`. It is on by default.
+
+Bug Fixes
+---------
+- Fixed a typo in the GPU matrix power function which caused it to fail to compile.
+- Fixed an issue where dot products were dereferencing invalid pointers.
+- Fixed an issue with the inclusion of :code:`<h5cpp/core>` from upstream.

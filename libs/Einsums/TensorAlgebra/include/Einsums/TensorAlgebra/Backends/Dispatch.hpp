@@ -29,7 +29,9 @@
 
 #    include <algorithm>
 #    include <cmath>
+#    include <complex>
 #    include <cstddef>
+#    include <cstdlib>
 #    include <stdexcept>
 #    include <string>
 #    include <tuple>
@@ -53,8 +55,7 @@ AlgorithmChoice einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices.
 /**
  * @brief Perform runtime checks for the tensor dimensions.
  */
-template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
 void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
                           BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                           std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
@@ -74,9 +75,20 @@ void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndic
             if (std::get<a>(A_indices).letter == std::get<b>(B_indices).letter) {
                 if (dimA != dimB) {
 #    if !defined(EINSUMS_IS_TESTING)
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
-                            print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
-                            print_tuple_no_type(B_indices));
+                    if constexpr (TensorConcept<CType>) {
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
+                                              ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices,
+                                                            AB_prefactor, A.name(), A_indices, B.name(), B_indices, C_prefactor, C->name(),
+                                                            C_indices)
+                                              : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, AB_prefactor,
+                                                            A.name(), A_indices, B.name(), B_indices));
+                    } else {
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
+                                              ? fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{} + {} "x"{})", C_indices, AB_prefactor,
+                                                            A.name(), A_indices, B.name(), B_indices, C_prefactor, C_indices)
+                                              : fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{})", C_indices, AB_prefactor, A.name(),
+                                                            A_indices, B.name(), B_indices));
+                    }
 #    endif
                     runtime_indices_abort = true;
                 }
@@ -92,9 +104,20 @@ void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndic
             if (std::get<a>(A_indices).letter == std::get<c>(C_indices).letter) {
                 if (dimA != dimC) {
 #    if !defined(EINSUMS_IS_TESTING)
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
-                            print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
-                            print_tuple_no_type(B_indices));
+                    if constexpr (TensorConcept<CType>) {
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
+                                              ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices,
+                                                            AB_prefactor, A.name(), A_indices, B.name(), B_indices, C_prefactor, C->name(),
+                                                            C_indices)
+                                              : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, AB_prefactor,
+                                                            A.name(), A_indices, B.name(), B_indices));
+                    } else {
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
+                                              ? fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{} + {} "x"{})", C_indices, AB_prefactor,
+                                                            A.name(), A_indices, B.name(), B_indices, C_prefactor, C_indices)
+                                              : fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{})", C_indices, AB_prefactor, A.name(),
+                                                            A_indices, B.name(), B_indices));
+                    }
 #    endif
                     runtime_indices_abort = true;
                 }
@@ -113,10 +136,22 @@ void einsum_runtime_check(ValueTypeT<CType> const C_prefactor, std::tuple<CIndic
             if (std::get<b>(B_indices).letter == std::get<c>(C_indices).letter) {
                 if (dimB != dimC) {
 #    if !defined(EINSUMS_IS_TESTING)
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
-                            print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
-                            print_tuple_no_type(B_indices));
+                    if constexpr (TensorConcept<CType>) {
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
+                                              ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices,
+                                                            AB_prefactor, A.name(), A_indices, B.name(), B_indices, C_prefactor, C->name(),
+                                                            C_indices)
+                                              : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, AB_prefactor,
+                                                            A.name(), A_indices, B.name(), B_indices));
+                    } else {
+                        EINSUMS_LOG_ERROR(std::abs(C_prefactor) > EINSUMS_ZERO
+                                              ? fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{} + {} "x"{})", C_indices, AB_prefactor,
+                                                            A.name(), A_indices, B.name(), B_indices, C_prefactor, C_indices)
+                                              : fmt::format(R"(einsum: "x"{} = {} "{}"{} * "{}"{})", C_indices, AB_prefactor, A.name(),
+                                                            A_indices, B.name(), B_indices));
+                    }
 #    endif
+
                     runtime_indices_abort = true;
                 }
             }
@@ -653,7 +688,7 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
 
     // Runtime check of sizes
 #    if defined(EINSUMS_RUNTIME_INDICES_CHECK)
-    if constepxr (!DryRun) {
+    if constexpr (!DryRun) {
         einsum_runtime_check(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
     }
 #    endif

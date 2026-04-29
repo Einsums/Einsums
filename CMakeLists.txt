@@ -42,8 +42,8 @@ endif()
 # ##################################################################################################
 set(EINSUMS_VERSION_MAJOR 1)
 set(EINSUMS_VERSION_MINOR 1)
-set(EINSUMS_VERSION_PATCH 2)
-set(EINSUMS_VERSION_DATE "20260204")
+set(EINSUMS_VERSION_PATCH 3)
+set(EINSUMS_VERSION_DATE "20260427")
 set(EINSUMS_VERSION_TAG "")
 
 set(EINSUMS_VERSION "${EINSUMS_VERSION_MAJOR}.${EINSUMS_VERSION_MINOR}.${EINSUMS_VERSION_PATCH}")
@@ -167,6 +167,13 @@ einsums_option(
   EINSUMS_WITH_DOCUMENTATION BOOL "Build the Einsums documentation (default OFF)." OFF
   CATEGORY "Build Targets"
 )
+
+einsums_option(
+	EINSUMS_RUNTIME_INDICES_CHECK BOOL "When performing a tensor contraction, check the dimensions of the tensors to make sure they match." ON CATEGORY "Debugging")
+
+if(EINSUMS_RUNTIME_INDICES_CHECK)
+	einsums_add_config_cond_define(EINSUMS_RUNTIME_INDICES_CHECK 1)
+endif()
 
 if(EINSUMS_WITH_DOCUMENTATION)
   set(valid_output_formats html)
