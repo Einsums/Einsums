@@ -273,8 +273,8 @@ constexpr bool einsum_is_outer_product(std::tuple<CIndices...> const &, std::tup
     constexpr auto C_unique                          = UniqueT<std::tuple<CIndices...>>();
     constexpr auto target_position_in_A              = detail::find_type_with_position(C_unique, A_indices);
     constexpr auto target_position_in_B              = detail::find_type_with_position(C_unique, B_indices);
-    constexpr auto A_target_position_in_C            = detail::find_type_with_position(A_indices, C_indices);
-    constexpr auto B_target_position_in_C            = detail::find_type_with_position(B_indices, C_indices);
+    constexpr auto A_target_position_in_C            = detail::find_type_with_position(A_indices, C_unique);
+    constexpr auto B_target_position_in_C            = detail::find_type_with_position(B_indices, C_unique);
     constexpr auto contiguous_target_position_in_A   = detail::contiguous_positions(target_position_in_A);
     constexpr auto contiguous_target_position_in_B   = detail::contiguous_positions(target_position_in_B);
     constexpr auto contiguous_A_target_position_in_C = detail::contiguous_positions(A_target_position_in_C);
