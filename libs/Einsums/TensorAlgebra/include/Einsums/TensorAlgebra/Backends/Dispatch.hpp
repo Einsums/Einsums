@@ -267,16 +267,21 @@ constexpr bool einsum_is_direct_product(std::tuple<CIndices...> const &, std::tu
  */
 template <typename... CIndices, typename... AIndices, typename... BIndices>
 constexpr bool einsum_is_outer_product(std::tuple<CIndices...> const &, std::tuple<AIndices...> const &, std::tuple<BIndices...> const &) {
-    constexpr auto linksAB                         = IntersectT<std::tuple<AIndices...>, std::tuple<BIndices...>>();
-    constexpr auto A_indices                       = std::tuple<AIndices...>();
-    constexpr auto B_indices                       = std::tuple<BIndices...>();
-    constexpr auto C_unique                        = UniqueT<std::tuple<CIndices...>>();
-    constexpr auto target_position_in_A            = detail::find_type_with_position(C_unique, A_indices);
-    constexpr auto target_position_in_B            = detail::find_type_with_position(C_unique, B_indices);
-    constexpr auto contiguous_target_position_in_A = detail::contiguous_positions(target_position_in_A);
-    constexpr auto contiguous_target_position_in_B = detail::contiguous_positions(target_position_in_B);
+    constexpr auto linksAB                           = IntersectT<std::tuple<AIndices...>, std::tuple<BIndices...>>();
+    constexpr auto A_indices                         = std::tuple<AIndices...>();
+    constexpr auto B_indices                         = std::tuple<BIndices...>();
+    constexpr auto C_unique                          = UniqueT<std::tuple<CIndices...>>();
+    constexpr auto target_position_in_A              = detail::find_type_with_position(C_unique, A_indices);
+    constexpr auto target_position_in_B              = detail::find_type_with_position(C_unique, B_indices);
+    constexpr auto A_target_position_in_C            = detail::find_type_with_position(A_indices, C_indices);
+    constexpr auto B_target_position_in_C            = detail::find_type_with_position(B_indices, C_indices);
+    constexpr auto contiguous_target_position_in_A   = detail::contiguous_positions(target_position_in_A);
+    constexpr auto contiguous_target_position_in_B   = detail::contiguous_positions(target_position_in_B);
+    constexpr auto contiguous_A_target_position_in_C = detail::contiguous_positions(A_target_position_in_C);
+    constexpr auto contiguous_B_target_position_in_C = detail::contiguous_positions(B_target_position_in_C);
 
-    return std::tuple_size_v<decltype(linksAB)> == 0 && contiguous_target_position_in_A && contiguous_target_position_in_B;
+    return std::tuple_size_v<decltype(linksAB)> == 0 && contiguous_target_position_in_A && contiguous_target_position_in_B &&
+           contiguous_A_target_position_in_C && contiguous_B_target_position_in_C;
 }
 
 /**
