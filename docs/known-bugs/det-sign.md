@@ -94,8 +94,10 @@ So either:
 
 ## Status
 
-- **Patched**: `test_det_eager_matches_numpy` compares `np.abs` on both
-  sides (commit `<pending>`).
+- **Patched**: `test_det_eager_matches_numpy` (test_lapack_python.py) and the
+  `det` branch of `test_hyp_lapack_diff` (test_hyp_lapack_diff_python.py) both
+  compare `np.abs` on both sides. Drop the `np.abs` in both when the sign
+  computation is fixed.
 - **Sign computation**: not fixed. This bug is still in
   `einsums.linalg.det` for any caller relying on the sign.
 - **Priority**: medium. Most chemistry workloads use `det` for sanity
