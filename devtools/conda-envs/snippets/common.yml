@@ -13,11 +13,11 @@ dependencies:
   - cpp-argparse
   - catch2
   - fftw
-  - fmt
+  - fmt=11
   - cpptrace
   # HDF5
   # * zlib brings headers; hdf5 package only bring libzlib
-  - hdf5
+  - hdf5=1
   - zlib
   - numpy
   - mimalloc
@@ -27,3 +27,4 @@ dependencies:
   - numpy
   - pytest-cov
   - coverage
+  - python<=3.14
