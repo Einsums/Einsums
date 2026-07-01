@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=047b7709" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
     <script src="../../../../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
@@ -48,26 +48,33 @@
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/Tensor/api/DeviceTensor';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Mar 18, 2026"/>
+    <meta name="docbuild:last-update" content="Jul 01, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -93,7 +100,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
     </div>
     
@@ -276,33 +290,47 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
       </div>
     
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
         <div class="sidebar-primary-item">
+
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="ArithmeticTensor.html">Einsums/Tensor/ArithmeticTensor.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Tensor/DeviceTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tensor.html">Einsums/Tensor/Tensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TensorForward.html">Einsums/Tensor/TensorForward.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="InitModule.html">Einsums/Tensor/InitModule.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BlockTensor.html">Einsums/Tensor/BlockTensor.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RuntimeTensor.html">Einsums/Tensor/RuntimeTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DiskTensor.html">Einsums/Tensor/DiskTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FunctionTensor.html">Einsums/Tensor/FunctionTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tensor.html">Einsums/Tensor/Tensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RuntimeTensor.html">Einsums/Tensor/RuntimeTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ModuleVars.html">Einsums/Tensor/ModuleVars.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArithmeticTensor.html">Einsums/Tensor/ArithmeticTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TensorForward.html">Einsums/Tensor/TensorForward.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BlockTensor.html">Einsums/Tensor/BlockTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="TiledTensor.html">Einsums/Tensor/TiledTensor.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="InitModule.html">Einsums/Tensor/InitModule.hpp</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/Tensor/DeviceTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Backends_DeviceTensor.html">Einsums/Tensor/Backends/DeviceTensor.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeviceTensorView.html">Einsums/Tensor/Backends/DeviceTensorView.hpp</a></li>
 </ul>
@@ -372,7 +400,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000005"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000002"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -1643,38 +1671,6 @@
 </p>
 </dd></dl>
 
-<dl class="cpp type">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a7379f206c90ceaa712a6176b5d2abbb5"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dev_datatype</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="BlockTensor.html#_CPPv4N7einsums11tensor_baseE" title="einsums::tensor_base"><span class="n"><span class="pre">tensor_base</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">DeviceTypedTensor</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">dev_datatype</span></span><br /></dt>
-<dd><p>The type of data used by the GPU. </p>
-<p>For real data types, this is the same as on the host. For complex data types, the appropriate HIP data type needs to be used.</p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1ad632512781ca78560836001b1376534e"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">host_datatype</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="BlockTensor.html#_CPPv4N7einsums11tensor_baseE" title="einsums::tensor_base"><span class="n"><span class="pre">tensor_base</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">DeviceTypedTensor</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">host_datatype</span></span><br /></dt>
-<dd><p>The type of data used by the CPU. </p>
-<p>This is the same as the <a class="reference internal" href="../../Concepts/api/TensorConcepts.html#structeinsums_1_1_value_type"><span class="std std-ref">ValueType</span></a>.</p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1ac579b90c673181b9ca7e88ebb78b44e3"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><br /></dt>
-<dd><p>The type of data stored by the tensor. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -2023,192 +2019,8 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a1c87e0fe58ffd85a7067ed4ef15c00db"></span><span class="sig-name descname"><span class="n"><span class="pre">DeviceTensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
-<dd><p>Construct a new tensor on the GPU. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK12DeviceTensorI1T4rankEN6detail16HostToDeviceModeE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK12DeviceTensorI1T4rankEN6detail16HostToDeviceModeE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE12DeviceTensorERK12DeviceTensorI1T4rankEN6detail16HostToDeviceModeE"></span><span id="einsums::DeviceTensor:T.0:::DeviceTensor__DeviceTensor:T.rank:CR.detail::HostToDeviceMode"></span><span class="target" id="structeinsums_1_1_device_tensor_1ae0506608b620b3a5163279adf47f312d"></span><span class="sig-name descname"><span class="n"><span class="pre">DeviceTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK12DeviceTensorI1T4rankEN6detail16HostToDeviceModeE" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span>, <span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">HostToDeviceMode</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">UNKNOWN</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK12DeviceTensorI1T4rankEN6detail16HostToDeviceModeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Copy construct a new GPU tensor. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorENSt6stringEN6detail16HostToDeviceModeEDp4Dims">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorENSt6stringEN6detail16HostToDeviceModeEDp4Dims"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE12DeviceTensorENSt6stringEN6detail16HostToDeviceModeEDp4Dims"></span><span id="einsums::DeviceTensor:T.0:::DeviceTensor__ss.detail::HostToDeviceMode.DimsDp"></span><span class="target" id="structeinsums_1_1_device_tensor_1aae47fd2b586430a470ac05d1834ce15c"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">HostToDeviceMode</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span>, <span class="n"><span class="pre">Dims</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorENSt6stringEN6detail16HostToDeviceModeEDp4Dims" title="Link to this definition">#</a><br /></dt>
-<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_device_tensor"><span class="std std-ref">DeviceTensor</span></a> object with the given name and dimensions. </p>
-<p>Constructs a new <a class="reference internal" href="#structeinsums_1_1_device_tensor"><span class="std std-ref">DeviceTensor</span></a> object using the information provided in <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">dims</span></code> .</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceTensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">detail</span><span class="o">::</span><span class="n">DEV_ONLY</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>The newly constructed <a class="reference internal" href="#structeinsums_1_1_device_tensor"><span class="std std-ref">DeviceTensor</span></a> is NOT zeroed out for you. If you start having NaN issues in your code try calling DeviceTensor.zero() or zero(DeviceTensor) to see if that resolves it.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>Dims</strong> – Variadic template arguments for the dimensions. Must be castable to size_t. </p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>name</strong> – Name of the new tensor. </p></li>
-<li><p><strong>mode</strong> – The storage mode of the tensor. </p></li>
-<li><p><strong>dims</strong> – The dimensions of each rank of the tensor.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorENSt6stringEDp4Dims">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorENSt6stringEDp4Dims"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE12DeviceTensorENSt6stringEDp4Dims"></span><span id="einsums::DeviceTensor:T.0:::DeviceTensor__ss.DimsDp"></span><span class="target" id="structeinsums_1_1_device_tensor_1adf7b9a33970c8c2f5ab4cf71411c79c8"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">Dims</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorENSt6stringEDp4Dims" title="Link to this definition">#</a><br /></dt>
-<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_device_tensor"><span class="std std-ref">DeviceTensor</span></a> object with the given name and dimensions. </p>
-<p>Constructs a new <a class="reference internal" href="#structeinsums_1_1_device_tensor"><span class="std std-ref">DeviceTensor</span></a> object using the information provided in <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">dims</span></code> .</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceTensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>The newly constructed <a class="reference internal" href="#structeinsums_1_1_device_tensor"><span class="std std-ref">DeviceTensor</span></a> is NOT zeroed out for you. If you start having NaN issues in your code try calling DeviceTensor.zero() or zero(DeviceTensor) to see if that resolves it.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>Dims</strong> – Variadic template arguments for the dimensions. Must be castable to size_t. </p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>name</strong> – Name of the new tensor. </p></li>
-<li><p><strong>dims</strong> – The dimensions of each rank of the tensor.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERR12DeviceTensorI1T9OtherRankENSt6stringEDp4Dims">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERR12DeviceTensorI1T9OtherRankENSt6stringEDp4Dims"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE12DeviceTensorERR12DeviceTensorI1T9OtherRankENSt6stringEDp4Dims"></span><span id="einsums::DeviceTensor:T.0:::DeviceTensor__DeviceTensor:T.OtherRank:RR.ss.DimsDp"></span><span class="target" id="structeinsums_1_1_device_tensor_1a12251eccd02029488618343f7b91973d"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERR12DeviceTensorI1T9OtherRankENSt6stringEDp4Dims" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">OtherRank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">existingTensor</span></span>, <a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">Dims</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERR12DeviceTensorI1T9OtherRankENSt6stringEDp4Dims" title="Link to this definition">#</a><br /></dt>
-<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_device_tensor"><span class="std std-ref">DeviceTensor</span></a> object. Moving <code class="docutils literal notranslate"><span class="pre">existingTensor</span></code> data to the new tensor. </p>
-<p>This constructor is useful for reshaping a tensor. It does not modify the underlying tensor data. It only creates new mapping arrays for how the data is viewed.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceTensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">27</span><span class="p">);</span><span class="w"> </span><span class="c1">// Creates a rank-1 tensor of 27 elements</span>
-<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceTensor</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// Creates a rank-3 tensor of 27 elements</span>
-<span class="c1">// At this point A is no longer valid.</span>
-</pre></div>
-</div>
-<p>Supports using -1 for one of the ranks to automatically compute the dimensional of it.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceTensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">27</span><span class="p">);</span>
-<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceTensor</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// Automatically determines that -1 should be 3.</span>
-</pre></div>
-</div>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>OtherRank</strong> – The rank of <code class="docutils literal notranslate"><span class="pre">existingTensor</span></code> can be different than the rank of the new tensor </p></li>
-<li><p><strong>Dims</strong> – Variadic template arguments for the dimensions. Must be castable to size_t. </p></li>
-</ul>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>existingTensor</strong> – The existing tensor that holds the tensor data. </p></li>
-<li><p><strong>name</strong> – The name of the new tensor </p></li>
-<li><p><strong>dims</strong> – The dimensionality of each rank of the new tensor.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorE3DimI4rankEN6detail16HostToDeviceModeE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorE3DimI4rankEN6detail16HostToDeviceModeE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE12DeviceTensorE3DimI4rankEN6detail16HostToDeviceModeE"></span><span id="einsums::DeviceTensor:T.0:::DeviceTensor__Dim:rank:.detail::HostToDeviceMode"></span><span class="target" id="structeinsums_1_1_device_tensor_1a82ea2792bc83b9b40ffbde672ee06935"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="einsums::Dim"><span class="n"><span class="pre">Dim</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span>, <span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">HostToDeviceMode</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">DEV_ONLY</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorE3DimI4rankEN6detail16HostToDeviceModeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Construct a new <a class="reference internal" href="#structeinsums_1_1_device_tensor"><span class="std std-ref">DeviceTensor</span></a> object using the dimensions given by <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_dim"><span class="std std-ref">Dim</span></a> object. </p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dims</strong> – The dimensions of the new tensor in <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_dim"><span class="std std-ref">Dim</span></a> form. </p></li>
-<li><p><strong>mode</strong> – The storage mode of the tensor.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK16DeviceTensorViewI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK16DeviceTensorViewI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE12DeviceTensorERK16DeviceTensorViewI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::DeviceTensor__DeviceTensorView:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1af9bdefddd14b65df84088952fc8669a9"></span><span class="sig-name descname"><span class="n"><span class="pre">DeviceTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16DeviceTensorViewE" title="einsums::DeviceTensorView"><span class="n"><span class="pre">DeviceTensorView</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK16DeviceTensorViewI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Construct a new Tensor object from a <a class="reference internal" href="Tensor.html#structeinsums_1_1_tensor_view"><span class="std std-ref">TensorView</span></a>. </p>
-<p>Data is explicitly copied from the view to the new tensor.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> – The tensor view to copy.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK6TensorI1T4rankEN6detail16HostToDeviceModeE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK6TensorI1T4rankEN6detail16HostToDeviceModeE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE12DeviceTensorERK6TensorI1T4rankEN6detail16HostToDeviceModeE"></span><span id="einsums::DeviceTensor:T.0:::DeviceTensor__Tensor:T.rank:CR.detail::HostToDeviceMode"></span><span class="target" id="structeinsums_1_1_device_tensor_1ae785b3e5833df758f9fd3e74bf74b127"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span>, <span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">HostToDeviceMode</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">MAPPED</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK6TensorI1T4rankEN6detail16HostToDeviceModeE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Copy a host tensor to the device. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a146994ecd2a14116043368955a7b7d75"></span><span class="sig-name descname"><span class="n"><span class="pre">~DeviceTensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Destructor. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE6resizeE3DimI4rankE">
 <span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE6resizeE3DimI4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE6resizeE3DimI4rankE"></span><span id="einsums::DeviceTensor:T.0:::resize__Dim:rank:"></span><span class="target" id="structeinsums_1_1_device_tensor_1a66861c55022aadf6e94386d7961cb79d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resize</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="einsums::Dim"><span class="n"><span class="pre">Dim</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6resizeE3DimI4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Resize a tensor. </p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dims</strong> – The new dimensions of a tensor.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE6resizeEDp4Dims">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE6resizeEDp4Dims"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE6resizeEDp4Dims"></span><span id="einsums::DeviceTensor:T.0:::resize__DimsDp"></span><span class="target" id="structeinsums_1_1_device_tensor_1ad088ab10fb94aeb2275eeb44fc88565b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">enable_if_t</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_integral_v</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Dims</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="o"><span class="pre">&amp;&amp;</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="o"><span class="pre">&amp;&amp;</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">Dims</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">==</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Dims</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6resizeEDp4Dims" title="Link to this definition">#</a><br /></dt>
 <dd><p>Resize a tensor. </p>
 <p><p><div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
@@ -2250,199 +2062,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a3c225f6b7324009b090df3c51d00029d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12dev_datatypeE" title="einsums::DeviceTensor&lt;T, 0&gt;::dev_datatype"><span class="n"><span class="pre">dev_datatype</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Returns a pointer to the data. </p>
-<p>Try very hard to not use this function. Current data may or may not exist on the host device at the time of the call if using GPU backend.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A pointer to the data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a2133597a20a1498074658abf9358bc71"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12dev_datatypeE" title="einsums::DeviceTensor&lt;T, 0&gt;::dev_datatype"><span class="n"><span class="pre">dev_datatype</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Returns a constant pointer to the data. </p>
-<p>Try very hard to not use this function. Current data may or may not exist on the host device at the time of the call if using GPU backend.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An immutable pointer to the data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE8gpu_dataEDp10MultiIndex">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE8gpu_dataEDp10MultiIndex"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE8gpu_dataEDp10MultiIndex"></span><span id="einsums::DeviceTensor:T.0:::gpu_data__MultiIndexDp"></span><span class="target" id="structeinsums_1_1_device_tensor_1ae856ee9230ae7d96f4b5ec4161b17a68"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12dev_datatypeE" title="einsums::DeviceTensor&lt;T, 0&gt;::dev_datatype"><span class="n"><span class="pre">dev_datatype</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_data</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE8gpu_dataEDp10MultiIndex" title="Link to this definition">#</a><br /></dt>
-<dd><p>Returns a pointer into the tensor at the given location.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceTensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// Creates a rank-3 tensor of 27 elements</span>
-
-<span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">A_pointer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="n">data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// Returns the pointer to element (1, 2, 3) in A.</span>
-</pre></div>
-</div>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>MultiIndex</strong> – The datatypes of the passed parameters. Must be castable to </p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>index</strong> – The explicit desired index into the tensor. Must be castable to std::int64_t. </p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A pointer into the tensor at the requested location.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK7einsums12DeviceTensorI1TXL0EEE8gpu_dataEDp10MultiIndex">
-<span id="_CPPv3NK7einsums12DeviceTensorI1TXL0EEE8gpu_dataEDp10MultiIndex"></span><span id="_CPPv2NK7einsums12DeviceTensorI1TX0EE8gpu_dataEDp10MultiIndex"></span><span id="einsums::DeviceTensor:T.0:::gpu_data__MultiIndexDpC"></span><span class="target" id="structeinsums_1_1_device_tensor_1abe7f12a6fa23a443c519a9923ae948ef"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12dev_datatypeE" title="einsums::DeviceTensor&lt;T, 0&gt;::dev_datatype"><span class="n"><span class="pre">dev_datatype</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_data</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE8gpu_dataEDp10MultiIndex" title="Link to this definition">#</a><br /></dt>
-<dd><p>Returns a pointer into the tensor at the given location.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceTensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// Creates a rank-3 tensor of 27 elements</span>
-
-<span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">A_pointer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="n">data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// Returns the pointer to element (1, 2, 3) in A.</span>
-</pre></div>
-</div>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>MultiIndex</strong> – The datatypes of the passed parameters. Must be castable to </p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>index</strong> – The explicit desired index into the tensor. Must be castable to std::int64_t. </p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A pointer into the tensor at the requested location.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a321b5dce49512ffcb9d3115fdbd23f2b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE13host_datatypeE" title="einsums::DeviceTensor&lt;T, 0&gt;::host_datatype"><span class="n"><span class="pre">host_datatype</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Returns a pointer to the host-readable data. </p>
-<p>Returns a pointer to the data as available to the host. If the tensor is in DEV_ONLY mode, then this will return a null pointer. Otherwise, the pointer should be useable, but the data may be outdated.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>T* A pointer to the data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1aaea64cbb5b0616e016800efcff2e6f29"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE13host_datatypeE" title="einsums::DeviceTensor&lt;T, 0&gt;::host_datatype"><span class="n"><span class="pre">host_datatype</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Returns a pointer to the host-readable data. </p>
-<p>Returns a pointer to the data as available to the host. If the tensor is in DEV_ONLY mode, then this will return a null pointer. Otherwise, the pointer should be useable, but the data may be outdated.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>const T* An immutable pointer to the data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE4dataEDp10MultiIndex">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE4dataEDp10MultiIndex"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE4dataEDp10MultiIndex"></span><span id="einsums::DeviceTensor:T.0:::data__MultiIndexDp"></span><span class="target" id="structeinsums_1_1_device_tensor_1aba6238aa866da8439c4978062ea92ac6"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE13host_datatypeE" title="einsums::DeviceTensor&lt;T, 0&gt;::host_datatype"><span class="n"><span class="pre">host_datatype</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE4dataEDp10MultiIndex" title="Link to this definition">#</a><br /></dt>
-<dd><p>Returns a pointer into the tensor at the given location.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceTensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// Creates a rank-3 tensor of 27 elements</span>
-
-<span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">A_pointer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="n">data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// Returns the pointer to element (1, 2, 3) in A.</span>
-</pre></div>
-</div>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>MultiIndex</strong> – The datatypes of the passed parameters. Must be castable to </p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>index</strong> – The explicit desired index into the tensor. Must be castable to std::int64_t. </p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A pointer into the tensor at the requested location.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK7einsums12DeviceTensorI1TXL0EEE4dataEDp10MultiIndex">
-<span id="_CPPv3NK7einsums12DeviceTensorI1TXL0EEE4dataEDp10MultiIndex"></span><span id="_CPPv2NK7einsums12DeviceTensorI1TX0EE4dataEDp10MultiIndex"></span><span id="einsums::DeviceTensor:T.0:::data__MultiIndexDpC"></span><span class="target" id="structeinsums_1_1_device_tensor_1a6186539ca2afb67b30ec90ed90f045e4"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE13host_datatypeE" title="einsums::DeviceTensor&lt;T, 0&gt;::host_datatype"><span class="n"><span class="pre">host_datatype</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE4dataEDp10MultiIndex" title="Link to this definition">#</a><br /></dt>
-<dd><p>Returns a pointer into the tensor at the given location.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceTensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// Creates a rank-3 tensor of 27 elements</span>
-
-<span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">A_pointer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="n">data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// Returns the pointer to element (1, 2, 3) in A.</span>
-</pre></div>
-</div>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>MultiIndex</strong> – The datatypes of the passed parameters. Must be castable to </p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>index</strong> – The explicit desired index into the tensor. Must be castable to std::int64_t. </p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A pointer into the tensor at the requested location.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
 <span class="target" id="structeinsums_1_1_device_tensor_1a0c4ed3a5e8d25cce1fa4fbce9076187a"></span><span class="sig-name descname"><span class="pre">__host__</span> <span class="pre">void</span> <span class="pre">read</span> <span class="pre">(std::vector&lt;</span> <span class="pre">T</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;data)</span></span></dt>
-<dd><p>Sends data from the host to the device.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> – The vector data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1acc70d0200deb818c287dce0387963fb2"></span><span class="sig-name descname"><span class="pre">__host__</span> <span class="pre">void</span> <span class="pre">read</span> <span class="pre">(T</span> <span class="pre">const</span> <span class="pre">*data)</span></span></dt>
 <dd><p>Sends data from the host to the device.</p>
 <p><p><div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
@@ -2473,22 +2093,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE5writeEP1T">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE5writeEP1T"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE5writeEP1T"></span><span id="einsums::DeviceTensor:T.0:::write__TP"></span><span class="target" id="structeinsums_1_1_device_tensor_1ae17e2aaa3587298e8a37b297ecf4f78f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE5writeEP1T" title="Link to this definition">#</a><br /></dt>
-<dd><p>Sends data from the device to the host.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> – The vector that will be filled.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK12DeviceTensorI1T4rankE">
 <span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE6assignERK12DeviceTensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE6assignERK12DeviceTensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::assign__DeviceTensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1a75916792f944ea5bb4399198f6742c5c"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK12DeviceTensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Copy the data from one tensor to this one. </p>
@@ -2497,60 +2101,6 @@
 </div>
 </p>
  </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> – The tensor with the data to copy.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A reference to the calling tensor.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK6TensorI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE6assignERK6TensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE6assignERK6TensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::assign__Tensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1ace1ae9a1ab62f81c4d7d024be8274581"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK6TensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Copy the data from one tensor to this one.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> – The tensor with the data to copy.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A reference to the calling tensor.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK12DeviceTensorI6TOther4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE6assignERK12DeviceTensorI6TOther4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE6assignERK12DeviceTensorI6TOther4rankE"></span><span id="einsums::DeviceTensor:T.0:::assign__DeviceTensor:TOther.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1a5e75fd76c5b636891a5f36f246eae244"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TOther</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK12DeviceTensorI6TOther4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Copy the data from one tensor to this one.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> – The tensor with the data to copy.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A reference to the calling tensor.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK16DeviceTensorViewI6TOther4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE6assignERK16DeviceTensorViewI6TOther4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE6assignERK16DeviceTensorViewI6TOther4rankE"></span><span id="einsums::DeviceTensor:T.0:::assign__DeviceTensorView:TOther.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1ae23bfc459500c8dea6c52f112313ceb4"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16DeviceTensorViewE" title="einsums::DeviceTensorView"><span class="n"><span class="pre">DeviceTensorView</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TOther</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK16DeviceTensorViewI6TOther4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Copy the data from one tensor to this one.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>other</strong> – The tensor with the data to copy.</p>
@@ -2607,158 +2157,9 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEEclEDpRR10MultiIndex">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEEclEDpRR10MultiIndex"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EEclEDpRR10MultiIndex"></span><span id="einsums::DeviceTensor:T.0:::call-operator__MultiIndexRRDp"></span><span class="target" id="structeinsums_1_1_device_tensor_1aa5d61c86ee3a957039aff44077581d2d"></span><a class="reference internal" href="#_CPPv4I0EN7einsums16HostDevReferenceE" title="einsums::HostDevReference"><span class="n"><span class="pre">HostDevReference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEclEDpRR10MultiIndex" title="Link to this definition">#</a><br /></dt>
-<dd><p>Subscripts into the tensor. </p>
-<p>This version works when all elements are explicit values into the tensor. It does not work with the All or <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_range"><span class="std std-ref">Range</span></a> tags.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>MultiIndex</strong> – Datatype of the indices. Must be castable to std::int64_t. </p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>index</strong> – The explicit desired index into the tensor. Elements must be castable to std::int64_t. </p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A wrapper around the value at that index that manages data transfer to the GPU.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK7einsums12DeviceTensorI1TXL0EEEclERKNSt5arrayI8int_type4RankEE">
-<span id="_CPPv3NK7einsums12DeviceTensorI1TXL0EEEclERKNSt5arrayI8int_type4RankEE"></span><span id="_CPPv2NK7einsums12DeviceTensorI1TX0EEclERKNSt5arrayI8int_type4RankEE"></span><span id="einsums::DeviceTensor:T.0:::call-operator__std::array:int_type.Rank:CRC"></span><span class="target" id="structeinsums_1_1_device_tensor_1a95d77184c2e9ca9859e5f14c0c238c85"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int_type</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE4RankE" title="einsums::DeviceTensor&lt;T, 0&gt;::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEEclERKNSt5arrayI8int_type4RankEE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Subscripts into the tensor. </p>
-<p>This version works when all elements are explicit values into the tensor. It does not work with the All or <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_range"><span class="std std-ref">Range</span></a> tags.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>int_type</strong> – Datatype of the indices. Must be castable to std::int64_t. </p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>index</strong> – The explicit desired index into the tensor. Elements must be castable to std::int64_t. </p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The value at that index.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEEclERKNSt5arrayI8int_type4RankEE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEEclERKNSt5arrayI8int_type4RankEE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EEclERKNSt5arrayI8int_type4RankEE"></span><span id="einsums::DeviceTensor:T.0:::call-operator__std::array:int_type.Rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1a00b0437ca37df0547a39219153495de8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums16HostDevReferenceE" title="einsums::HostDevReference"><span class="n"><span class="pre">HostDevReference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int_type</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE4RankE" title="einsums::DeviceTensor&lt;T, 0&gt;::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEclERKNSt5arrayI8int_type4RankEE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Subscripts into the tensor. </p>
-<p>This version works when all elements are explicit values into the tensor. It does not work with the All or <a class="reference internal" href="../../TensorBase/api/Common.html#structeinsums_1_1_range"><span class="std std-ref">Range</span></a> tags.</p>
-<p><p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
- </p>
-<dl class="field-list simple">
-<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>MultiIndex</strong> – Datatype of the indices. Must be castable to std::int64_t. </p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>index</strong> – The explicit desired index into the tensor. Elements must be castable to std::int64_t. </p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A wrapper around the value at that index that manages data transfer to the GPU.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEEclEDp10MultiIndex">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEEclEDp10MultiIndex"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EEclEDp10MultiIndex"></span><span id="einsums::DeviceTensor:T.0:::call-operator__MultiIndexDp"></span><span class="target" id="structeinsums_1_1_device_tensor_1a7e607358c321db64520419581c2d9f38"></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16DeviceTensorViewE" title="einsums::DeviceTensorView"><span class="n"><span class="pre">DeviceTensorView</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../TypeSupport/api/CountOfType.html#_CPPv4I0DpEN7einsums13count_of_typeEDav" title="einsums::count_of_type"><span class="n"><span class="pre">count_of_type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4N7einsums4AllTE" title="einsums::AllT"><span class="n"><span class="pre">AllT</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><a class="reference internal" href="../../TypeSupport/api/CountOfType.html#_CPPv4I0DpEN7einsums13count_of_typeEDav" title="einsums::count_of_type"><span class="n"><span class="pre">count_of_type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4N7einsums5RangeE" title="einsums::Range"><span class="n"><span class="pre">Range</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEclEDp10MultiIndex" title="Link to this definition">#</a><br /></dt>
-<dd><p>Subscripts into the tensor and creates a view. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK7einsums12DeviceTensorI1TXL0EEEclEDp10MultiIndex">
-<span id="_CPPv3NK7einsums12DeviceTensorI1TXL0EEEclEDp10MultiIndex"></span><span id="_CPPv2NK7einsums12DeviceTensorI1TX0EEclEDp10MultiIndex"></span><span id="einsums::DeviceTensor:T.0:::call-operator__MultiIndexDpC"></span><span class="target" id="structeinsums_1_1_device_tensor_1a5994d7fa8f33c5b4b9fd2ea9b070f066"></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16DeviceTensorViewE" title="einsums::DeviceTensorView"><span class="n"><span class="pre">DeviceTensorView</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEEclEDp10MultiIndex" title="Link to this definition">#</a><br /></dt>
-<dd><p>Subscripts into the tensor and creates a view. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK12DeviceTensorI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEEaSERK12DeviceTensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EEaSERK12DeviceTensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::assign-operator__DeviceTensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1abb583267acb2209094945e45f4e9d6cf"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK12DeviceTensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Copy data from one tensor to another. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK12DeviceTensorI6TOther4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEEaSERK12DeviceTensorI6TOther4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EEaSERK12DeviceTensorI6TOther4rankE"></span><span id="einsums::DeviceTensor:T.0:::assign-operator__DeviceTensor:TOther.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1ab68508e8587ae69fd9615e82aff994e2"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TOther</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK12DeviceTensorI6TOther4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Copy data from one tensor to another, and convert types. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK16DeviceTensorViewI6TOther4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEEaSERK16DeviceTensorViewI6TOther4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EEaSERK16DeviceTensorViewI6TOther4rankE"></span><span id="einsums::DeviceTensor:T.0:::assign-operator__DeviceTensorView:TOther.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1a72d4fb606df7bb3c6e8c24d3bbe9f776"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16DeviceTensorViewE" title="einsums::DeviceTensorView"><span class="n"><span class="pre">DeviceTensorView</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TOther</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK16DeviceTensorViewI6TOther4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Copy data from a tensor view into a tensor. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK6TensorI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEEaSERK6TensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EEaSERK6TensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::assign-operator__Tensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1adb48e25d1920427ee22cc0651843bb3a"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../docs/index.html#_CPPv4I0_6size_tE6Tensor" title="Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK6TensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Copy data from one tensor to another. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1aee2f716896f54e4746cadc2bb05d2ce9"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fill_value</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Fill a tensor with a value.</p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE10add_assignERK1T">
 <span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE10add_assignERK1T"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE10add_assignERK1T"></span><span id="einsums::DeviceTensor:T.0:::add_assign__TCR"></span><span class="target" id="structeinsums_1_1_device_tensor_1acf918dc121b06bb1aab7aa8480f932cb"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">add_assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10add_assignERK1T" title="Link to this definition">#</a><br /></dt>
 <dd><p>Operate and assign every element with a scalar. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE10add_assignERK12DeviceTensorI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE10add_assignERK12DeviceTensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE10add_assignERK12DeviceTensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::add_assign__DeviceTensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1ab2457079e18a2ae23846f278a511d943"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">add_assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10add_assignERK12DeviceTensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Operate and assign two tensors element-wise. </p>
 <p><div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
 </div>
@@ -2776,16 +2177,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE11mult_assignERK12DeviceTensorI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE11mult_assignERK12DeviceTensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE11mult_assignERK12DeviceTensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::mult_assign__DeviceTensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1a727af91705bb02a8a0b4c1f5de02f7e1"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">mult_assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE11mult_assignERK12DeviceTensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Operate and assign two tensors element-wise.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE10sub_assignERK1T">
 <span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE10sub_assignERK1T"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE10sub_assignERK1T"></span><span id="einsums::DeviceTensor:T.0:::sub_assign__TCR"></span><span class="target" id="structeinsums_1_1_device_tensor_1a4d51bed6783a4716d1997c4f2c372223"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">sub_assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10sub_assignERK1T" title="Link to this definition">#</a><br /></dt>
 <dd><p>Operate and assign every element with a scalar.    </p>
@@ -2796,109 +2187,9 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE10sub_assignERK12DeviceTensorI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE10sub_assignERK12DeviceTensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE10sub_assignERK12DeviceTensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::sub_assign__DeviceTensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1aca22ea2bde814a5f9e5baa669f2e39f4"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">sub_assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10sub_assignERK12DeviceTensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Operate and assign two tensors element-wise.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE10div_assignERK1T">
 <span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE10div_assignERK1T"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE10div_assignERK1T"></span><span id="einsums::DeviceTensor:T.0:::div_assign__TCR"></span><span class="target" id="structeinsums_1_1_device_tensor_1aca91d4ea14ebd87dc358d8f3a8fb9fb4"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">div_assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10div_assignERK1T" title="Link to this definition">#</a><br /></dt>
 <dd><p>Operate and assign every element with a scalar.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE10div_assignERK12DeviceTensorI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE10div_assignERK12DeviceTensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE10div_assignERK12DeviceTensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::div_assign__DeviceTensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1a55534a2e4a79a271b9ecf15573aefcba"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">div_assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10div_assignERK12DeviceTensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Operate and assign two tensors element-wise.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1ae0b30726a420b0ab58c0f8a34508f9f9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Operate and assign every element with a scalar.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEEmLERK12DeviceTensorI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEEmLERK12DeviceTensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EEmLERK12DeviceTensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::mul-assign-operator__DeviceTensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1aa4aae4ad2c8b06037fe4e2c73295b891"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEmLERK12DeviceTensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Operate and assign two tensors element-wise.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1aba3ea0acd42622759780d7e1a55941e5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Operate and assign every element with a scalar.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEEpLERK12DeviceTensorI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEEpLERK12DeviceTensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EEpLERK12DeviceTensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::add-assign-operator__DeviceTensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1afd6948baff9c0495213a0bf568dd79c1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEpLERK12DeviceTensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Operate and assign two tensors element-wise.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1aa6caffbe3a89fed28b46ccd2fcc3c1f2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Operate and assign every element with a scalar.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEEmIERK12DeviceTensorI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEEmIERK12DeviceTensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EEmIERK12DeviceTensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::sub-assign-operator__DeviceTensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1a63d8b4d3785a303c5f4cfc4924948d6b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEmIERK12DeviceTensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Operate and assign two tensors element-wise.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1af7ae6a5671e87acfdea7e86bb9507555"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">/=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Operate and assign every element with a scalar.    </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEEdVERK12DeviceTensorI1T4rankE">
-<span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEEdVERK12DeviceTensorI1T4rankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EEdVERK12DeviceTensorI1T4rankE"></span><span id="einsums::DeviceTensor:T.0:::div-assign-operator__DeviceTensor:T.rank:CR"></span><span class="target" id="structeinsums_1_1_device_tensor_1a2a19f54464beb4cdd0cf34a0c465cfe3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">/=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorEv" title="einsums::DeviceTensor&lt;T, 0&gt;::DeviceTensor"><span class="n"><span class="pre">DeviceTensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums12DeviceTensorI1TXL0EEEE" title="einsums::DeviceTensor&lt;T, 0&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEdVERK12DeviceTensorI1T4rankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>Operate and assign two tensors element-wise.    </p>
 <p><div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
 </div>
@@ -2926,26 +2217,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a91e0e637c6992550f2263966976d0c37"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dim</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Get the dimension for the given rank. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a5a168f5fb114aebfaf706d0c04dbfc51"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="einsums::Dim"><span class="n"><span class="pre">Dim</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dims</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Get all the dimensions. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE8gpu_dimsEv">
 <span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE8gpu_dimsEv"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE8gpu_dimsEv"></span><span id="einsums::DeviceTensor:T.0:::gpu_dims"></span><span class="target" id="structeinsums_1_1_device_tensor_1a572d7b6b847d915a2db716ee39839751"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_dims</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE8gpu_dimsEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Get the dimension list that is visible to the GPU. </p>
@@ -2956,68 +2227,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK7einsums12DeviceTensorI1TXL0EEE8gpu_dimsEv">
-<span id="_CPPv3NK7einsums12DeviceTensorI1TXL0EEE8gpu_dimsEv"></span><span id="_CPPv2NK7einsums12DeviceTensorI1TX0EE8gpu_dimsEv"></span><span id="einsums::DeviceTensor:T.0:::gpu_dimsC"></span><span class="target" id="structeinsums_1_1_device_tensor_1a95dec2209863552542218ff70def2a0a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_dims</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE8gpu_dimsEv" title="Link to this definition">#</a><br /></dt>
-<dd><p>Get the dimension list that is visible to the GPU. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a64ba718b2819fe3033b582c2b86f3bc4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Get the name of the tensor. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a90e4b61fa43847ebc3f3f150ecb4b3d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_name</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Set the name of the tensor. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1ab0d97d31305a178d30bbe1d2dad4673c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><br /></dt>
-<dd><p>Get the stride of the given rank. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a609662b088064d81bd921df2defcbe73"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4I_NSt6size_tEEN7einsums6StrideE" title="einsums::Stride"><span class="n"><span class="pre">Stride</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">strides</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><br /></dt>
-<dd><p>Get all the strides. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE11gpu_stridesEv">
 <span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE11gpu_stridesEv"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE11gpu_stridesEv"></span><span id="einsums::DeviceTensor:T.0:::gpu_strides"></span><span class="target" id="structeinsums_1_1_device_tensor_1abeea6cf9daca587fae65c1c2c204a3ea"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_strides</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE11gpu_stridesEv" title="Link to this definition">#</a><br /></dt>
-<dd><p>Get the stride list that is visible to the GPU. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK7einsums12DeviceTensorI1TXL0EEE11gpu_stridesEv">
-<span id="_CPPv3NK7einsums12DeviceTensorI1TXL0EEE11gpu_stridesEv"></span><span id="_CPPv2NK7einsums12DeviceTensorI1TX0EE11gpu_stridesEv"></span><span id="einsums::DeviceTensor:T.0:::gpu_stridesC"></span><span class="target" id="structeinsums_1_1_device_tensor_1a662dba7f2aaab67e9f7ceddc8b342556"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">gpu_strides</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE11gpu_stridesEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Get the stride list that is visible to the GPU. </p>
 <p><div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
@@ -3046,16 +2257,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1afc31f6a4fcaeeb41a70de1f3d44c5375"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">full_view_of_underlying</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><br /></dt>
-<dd><p>Whether this object is the full view. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums12DeviceTensorI1TXL0EEE4modeEv">
 <span id="_CPPv3NK7einsums12DeviceTensorI1TXL0EEE4modeEv"></span><span id="_CPPv2NK7einsums12DeviceTensorI1TX0EE4modeEv"></span><span id="einsums::DeviceTensor:T.0:::modeC"></span><span class="target" id="structeinsums_1_1_device_tensor_1aeae2f512816a063452ed8997bb97d24b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">HostToDeviceMode</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE4modeEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Return the mode of the tensor.</p>
@@ -3076,16 +2277,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1ad52e1a502710e7a70fb44ca28a0b60ef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_row_major</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1ab459d9c2332b09c3d89a16ccf23914ac"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_column_major</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK7einsums12DeviceTensorI1TXL0EEE21is_totally_vectorableEP6size_t">
 <span id="_CPPv3NK7einsums12DeviceTensorI1TXL0EEE21is_totally_vectorableEP6size_t"></span><span id="_CPPv2NK7einsums12DeviceTensorI1TX0EE21is_totally_vectorableEP6size_t"></span><span id="einsums::DeviceTensor:T.0:::is_totally_vectorable__sPC"></span><span class="target" id="structeinsums_1_1_device_tensor_1a35e0ca2a37454b6c8dfc8680c9a23260"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_totally_vectorable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">incx</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE21is_totally_vectorableEP6size_t" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
@@ -3096,16 +2287,6 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE4RankE">
 <span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE4RankE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE4RankE"></span><span id="einsums::DeviceTensor:T.0:::Rank__s"></span><span class="target" id="structeinsums_1_1_device_tensor_3_01_t_00_010_01_4_1aa1bb96d90c2f153ae6573bc714ec5e7a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE4RankE" title="Link to this definition">#</a><br /></dt>
-<dd><p>The rank of the tensor. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1abc095175dd45c65b85230d20a6b76914"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><br /></dt>
 <dd><p>The rank of the tensor. </p>
 <p><div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
@@ -3157,16 +2338,6 @@
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a2d03febddf09c022b785a414b45d1e68"></span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_name</span></span></span><br /></dt>
-<dd><p>The name of the tensor. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE5_dimsE">
 <span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE5_dimsE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE5_dimsE"></span><span id="einsums::DeviceTensor:T.0:::_dims__einsums::Dim:rank:"></span><span class="target" id="structeinsums_1_1_device_tensor_1ab920ebe79010d838c531b0a39cc9384b"></span><a class="reference internal" href="../../Assertion/api/Assert.html#_CPPv47einsums" title="einsums"><span class="n"><span class="pre">einsums</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../TensorBase/api/Common.html#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="einsums::Dim"><span class="n"><span class="pre">Dim</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_dims</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE5_dimsE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The dimensions of the tensor. </p>
@@ -3200,36 +2371,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums12DeviceTensorI1TXL0EEE12_gpu_stridesE">
 <span id="_CPPv3N7einsums12DeviceTensorI1TXL0EEE12_gpu_stridesE"></span><span id="_CPPv2N7einsums12DeviceTensorI1TX0EE12_gpu_stridesE"></span><span id="einsums::DeviceTensor:T.0:::_gpu_strides__sP"></span><span class="target" id="structeinsums_1_1_device_tensor_1a88554df74ba41fe4105293a5941231f1"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">_gpu_strides</span></span></span><a class="headerlink" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12_gpu_stridesE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The strides of the tensor made available to the GPU. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a4a11dec10cc4002b6120580c57f40c0d"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12dev_datatypeE" title="einsums::DeviceTensor&lt;T, 0&gt;::dev_datatype"><span class="n"><span class="pre">dev_datatype</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">_data</span></span></span><br /></dt>
-<dd><p>A device pointer to the data on the device. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a1b79d5eeabc8967c7a877ee7ea09fe17"></span><a class="reference internal" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE13host_datatypeE" title="einsums::DeviceTensor&lt;T, 0&gt;::host_datatype"><span class="n"><span class="pre">host_datatype</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">_host_data</span></span></span><br /></dt>
-<dd><p>If the tensor is mapped or pinned, this is the data on the host. </p>
-<p><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
-</div>
-</p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp">
-<span class="target" id="structeinsums_1_1_device_tensor_1a08d52b6184ff56c6bff8cc96788f4d0f"></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">HostToDeviceMode</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_mode</span></span></span><br /></dt>
-<dd><p>The storage mode of the tensor. </p>
 <p><div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.0.</span></p>
 </div>
@@ -4252,8 +3393,8 @@
     class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv47einsums"><code class="docutils literal notranslate"><span class="pre">einsums</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0_6size_tEN7einsums12DeviceTensorE"><code class="docutils literal notranslate"><span class="pre">einsums::DeviceTensor</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensor12dev_datatypeE"><code class="docutils literal notranslate"><span class="pre">dev_datatype</span></code></a></li>
@@ -4376,56 +3517,21 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEcvN7einsums6TensorI1TXL0EEEEEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">einsums::Tensor&lt;</span> <span class="pre">T,</span> <span class="pre">0</span> <span class="pre">&gt;()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE12is_row_majorEv"><code class="docutils literal notranslate"><span class="pre">is_row_major()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE15is_column_majorEv"><code class="docutils literal notranslate"><span class="pre">is_column_major()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK12DeviceTensorI1T4rankEN6detail16HostToDeviceModeE"><code class="docutils literal notranslate"><span class="pre">DeviceTensor()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorENSt6stringEN6detail16HostToDeviceModeEDp4Dims"><code class="docutils literal notranslate"><span class="pre">DeviceTensor()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorENSt6stringEDp4Dims"><code class="docutils literal notranslate"><span class="pre">DeviceTensor()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERR12DeviceTensorI1T9OtherRankENSt6stringEDp4Dims"><code class="docutils literal notranslate"><span class="pre">DeviceTensor()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorE3DimI4rankEN6detail16HostToDeviceModeE"><code class="docutils literal notranslate"><span class="pre">DeviceTensor()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK16DeviceTensorViewI1T4rankE"><code class="docutils literal notranslate"><span class="pre">DeviceTensor()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE12DeviceTensorERK6TensorI1T4rankEN6detail16HostToDeviceModeE"><code class="docutils literal notranslate"><span class="pre">DeviceTensor()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6resizeE3DimI4rankE"><code class="docutils literal notranslate"><span class="pre">resize()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6resizeEDp4Dims"><code class="docutils literal notranslate"><span class="pre">resize()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE4zeroEv"><code class="docutils literal notranslate"><span class="pre">zero()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE7set_allE1T"><code class="docutils literal notranslate"><span class="pre">set_all()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE8gpu_dataEDp10MultiIndex"><code class="docutils literal notranslate"><span class="pre">gpu_data()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE8gpu_dataEDp10MultiIndex"><code class="docutils literal notranslate"><span class="pre">gpu_data()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE4dataEDp10MultiIndex"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE4dataEDp10MultiIndex"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE5writeERNSt6vectorI1TEE"><code class="docutils literal notranslate"><span class="pre">write()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE5writeEP1T"><code class="docutils literal notranslate"><span class="pre">write()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK12DeviceTensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">assign()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK6TensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">assign()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK12DeviceTensorI6TOther4rankE"><code class="docutils literal notranslate"><span class="pre">assign()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE6assignERK16DeviceTensorViewI6TOther4rankE"><code class="docutils literal notranslate"><span class="pre">assign()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE4initERK12DeviceTensorI1T4rankEN7einsums6detail16HostToDeviceModeE"><code class="docutils literal notranslate"><span class="pre">init()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEEclEDpRR10MultiIndex"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEclEDpRR10MultiIndex"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEEclERKNSt5arrayI8int_type4RankEE"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEclERKNSt5arrayI8int_type4RankEE"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEclEDp10MultiIndex"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEEclEDp10MultiIndex"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK12DeviceTensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK12DeviceTensorI6TOther4rankE"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK16DeviceTensorViewI6TOther4rankE"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEaSERK6TensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10add_assignERK1T"><code class="docutils literal notranslate"><span class="pre">add_assign()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10add_assignERK12DeviceTensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">add_assign()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE11mult_assignERK1T"><code class="docutils literal notranslate"><span class="pre">mult_assign()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE11mult_assignERK12DeviceTensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">mult_assign()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10sub_assignERK1T"><code class="docutils literal notranslate"><span class="pre">sub_assign()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10sub_assignERK12DeviceTensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">sub_assign()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10div_assignERK1T"><code class="docutils literal notranslate"><span class="pre">div_assign()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE10div_assignERK12DeviceTensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">div_assign()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEmLERK12DeviceTensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">operator*=()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEpLERK12DeviceTensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">operator+=()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEmIERK12DeviceTensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">operator-=()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEdVERK12DeviceTensorI1T4rankE"><code class="docutils literal notranslate"><span class="pre">operator/=()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEEcv16DeviceTensorViewI1T4rankEEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">DeviceTensorView&lt;</span> <span class="pre">T,</span> <span class="pre">rank</span> <span class="pre">&gt;()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEEcvK16DeviceTensorViewI1T4rankEEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">DeviceTensorView&lt;</span> <span class="pre">T,</span> <span class="pre">rank</span> <span class="pre">&gt;</span> <span class="pre">const()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE8gpu_dimsEv"><code class="docutils literal notranslate"><span class="pre">gpu_dims()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE8gpu_dimsEv"><code class="docutils literal notranslate"><span class="pre">gpu_dims()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums12DeviceTensorI1TXL0EEE11gpu_stridesEv"><code class="docutils literal notranslate"><span class="pre">gpu_strides()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE11gpu_stridesEv"><code class="docutils literal notranslate"><span class="pre">gpu_strides()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE14to_rank_1_viewEv"><code class="docutils literal notranslate"><span class="pre">to_rank_1_view()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE4sizeEv"><code class="docutils literal notranslate"><span class="pre">size()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums12DeviceTensorI1TXL0EEE4modeEv"><code class="docutils literal notranslate"><span class="pre">mode()</span></code></a></li>
@@ -4551,8 +3657,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -4586,7 +3692,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

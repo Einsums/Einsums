@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=047b7709" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
     <script src="../../../../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
@@ -48,26 +48,33 @@
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/TypeSupport/api/InsertionOrderedMap';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Mar 18, 2026"/>
+    <meta name="docbuild:last-update" content="Jul 01, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -93,7 +100,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
     </div>
     
@@ -276,35 +290,49 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
       </div>
     
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
         <div class="sidebar-primary-item">
+
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="GPUComplex.html">Einsums/TypeSupport/GPUComplex.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Singleton.html">Einsums/TypeSupport/Singleton.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TypeName.html">Einsums/TypeSupport/TypeName.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TypeSwitch.html">Einsums/TypeSupport/TypeSwitch.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="StringLiteral.html">Einsums/TypeSupport/StringLiteral.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AreAllConvertible.html">Einsums/TypeSupport/AreAllConvertible.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GPUCast.html">Einsums/TypeSupport/GPUCast.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GPUTypes.html">Einsums/TypeSupport/GPUTypes.hpp</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TypeSupport/InsertionOrderedMap.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Arguments.html">Einsums/TypeSupport/Arguments.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Lockable.html">Einsums/TypeSupport/Lockable.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CountOfType.html">Einsums/TypeSupport/CountOfType.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPUTypes.html">Einsums/TypeSupport/GPUTypes.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AreAllConvertible.html">Einsums/TypeSupport/AreAllConvertible.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TypeSwitch.html">Einsums/TypeSupport/TypeSwitch.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPUCast.html">Einsums/TypeSupport/GPUCast.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Observable.html">Einsums/TypeSupport/Observable.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Singleton.html">Einsums/TypeSupport/Singleton.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GPUComplex.html">Einsums/TypeSupport/GPUComplex.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CountOfType.html">Einsums/TypeSupport/CountOfType.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TypeName.html">Einsums/TypeSupport/TypeName.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StringLiteral.html">Einsums/TypeSupport/StringLiteral.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/TypeSupport/InsertionOrderedMap.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Lockable.html">Einsums/TypeSupport/Lockable.hpp</a></li>
 </ul>
 </div>
 </nav></div>
@@ -372,7 +400,7 @@
 <span id="_CPPv37einsums"></span><span id="_CPPv27einsums"></span><span class="target" id="namespaceeinsums"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">einsums</span></span></span><br /></dt>
 <dd><p><dl>
 <dt class="sig sig-object cpp">
-<a class="reference internal" href="../../todo.html#todo_1_todo000005"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<a class="reference internal" href="../../todo.html#todo_1_todo000002"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
 <dd></dd></dl>
 
 </p>
@@ -509,108 +537,6 @@
 
 </div>
 <dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratorE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratorE"></span><span id="einsums::InsertionOrderedMap::const_iterator"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_iterator</span></span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="Link to this definition">#</a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator8vec_iterE">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator8vec_iterE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator8vec_iterE"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a0884ea22d3cfb82b993c59f11ff89f51"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vec_iter</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap12map_iteratorE" title="einsums::InsertionOrderedMap::map_iterator"><span class="n"><span class="pre">map_iterator</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">const_iterator</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator8vec_iterE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator15difference_typeE">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator15difference_typeE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator15difference_typeE"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a6e28c6a8ee25af391b071b469eab5dca"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">difference_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator15difference_typeE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator17iterator_categoryE">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator17iterator_categoryE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator17iterator_categoryE"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a132111bee2ba78ffe9dbd5c117e5b2c5"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iterator_category</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">bidirectional_iterator_tag</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator17iterator_categoryE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator9referenceE">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator9referenceE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator9referenceE"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a21956b88f4a4d0c79e990d75ebf5aabb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reference</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap10value_typeE" title="einsums::InsertionOrderedMap::value_type"><span class="n"><span class="pre">value_type</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator9referenceE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator7pointerE">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator7pointerE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator7pointerE"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a758844cf5563acd744e38ede539a907d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap10value_typeE" title="einsums::InsertionOrderedMap::value_type"><span class="n"><span class="pre">value_type</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator7pointerE" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorEv">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator14const_iteratorEv"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator14const_iteratorEv"></span><span id="einsums::InsertionOrderedMap::const_iterator::const_iterator"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a6bb10e3d43417bffe89ac43f33f51c27"></span><span class="sig-name descname"><span class="n"><span class="pre">const_iterator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorEv" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorE8vec_iter">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator14const_iteratorE8vec_iter"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator14const_iteratorE8vec_iter"></span><span id="einsums::InsertionOrderedMap::const_iterator::const_iterator__vec_iter"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a3b1f9f7cc80e2db9d37d6d18ac58bd13"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_iterator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator8vec_iterE" title="einsums::InsertionOrderedMap::const_iterator::vec_iter"><span class="n"><span class="pre">vec_iter</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">it</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorE8vec_iter" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorERK8iterator">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator14const_iteratorERK8iterator"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator14const_iteratorERK8iterator"></span><span id="einsums::InsertionOrderedMap::const_iterator::const_iterator__iteratorCR"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a935b513e7d554784e2291867b9828823"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_iterator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap8iteratorE" title="einsums::InsertionOrderedMap::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">it</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorERK8iterator" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK7einsums19InsertionOrderedMap14const_iteratormlEv">
-<span id="_CPPv3NK7einsums19InsertionOrderedMap14const_iteratormlEv"></span><span id="_CPPv2NK7einsums19InsertionOrderedMap14const_iteratormlEv"></span><span id="einsums::InsertionOrderedMap::const_iterator::mul-operatorC"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1ad9bee495cd42128983137aaeb9fffa3f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator9referenceE" title="einsums::InsertionOrderedMap::const_iterator::reference"><span class="n"><span class="pre">reference</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums19InsertionOrderedMap14const_iteratormlEv" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK7einsums19InsertionOrderedMap14const_iteratorptEv">
-<span id="_CPPv3NK7einsums19InsertionOrderedMap14const_iteratorptEv"></span><span id="_CPPv2NK7einsums19InsertionOrderedMap14const_iteratorptEv"></span><span id="einsums::InsertionOrderedMap::const_iterator::pointer-operatorC"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1aa7a3e557d55be0d939a34a06de01effd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator7pointerE" title="einsums::InsertionOrderedMap::const_iterator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-&gt;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums19InsertionOrderedMap14const_iteratorptEv" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEv">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratorppEv"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratorppEv"></span><span id="einsums::InsertionOrderedMap::const_iterator::inc-operator"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a34e328e2b8d8a52459560efe9677005d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEv" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEi">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratorppEi"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratorppEi"></span><span id="einsums::InsertionOrderedMap::const_iterator::inc-operator__i"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1abb2f752d3f5291d0f30d6c4639414adb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEi" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEv">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratormmEv"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratormmEv"></span><span id="einsums::InsertionOrderedMap::const_iterator::dec-operator"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a29a4869d6b9576d66eaffaac9a5f8050"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">--</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEv" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEi">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratormmEi"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratormmEi"></span><span id="einsums::InsertionOrderedMap::const_iterator::dec-operator__i"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1ac90f27d179f8f6276ec56c207b310ea3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">--</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEi" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator3it_E">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator3it_E"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator3it_E"></span><span id="einsums::InsertionOrderedMap::const_iterator::it___vec_iter"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1aa5ee3f8f72e1a661f45e4c416add3f50"></span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator8vec_iterE" title="einsums::InsertionOrderedMap::const_iterator::vec_iter"><span class="n"><span class="pre">vec_iter</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">it_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator3it_E" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratoreqERK14const_iteratorRK14const_iterator">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratoreqERK14const_iteratorRK14const_iterator"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratoreqERK14const_iteratorRK14const_iterator"></span><span id="einsums::InsertionOrderedMap::const_iterator::eq-operator__const_iteratorCR.const_iteratorCR"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1ac2f9d194658be2eec66541ddb1a0f14a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratoreqERK14const_iteratorRK14const_iterator" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratorneERK14const_iteratorRK14const_iterator">
-<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratorneERK14const_iteratorRK14const_iterator"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratorneERK14const_iteratorRK14const_iterator"></span><span id="einsums::InsertionOrderedMap::const_iterator::neq-operator__const_iteratorCR.const_iteratorCR"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1af97a03003e6e54f2e50f43a6176e7c26"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorneERK14const_iteratorRK14const_iterator" title="Link to this definition">#</a><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap8iteratorE">
 <span id="_CPPv3N7einsums19InsertionOrderedMap8iteratorE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap8iteratorE"></span><span id="einsums::InsertionOrderedMap::iterator"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1iterator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iterator</span></span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap8iteratorE" title="Link to this definition">#</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
@@ -712,6 +638,108 @@
 </div>
 </dd></dl>
 
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratorE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratorE"></span><span id="einsums::InsertionOrderedMap::const_iterator"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_iterator</span></span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator8vec_iterE">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator8vec_iterE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator8vec_iterE"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a0884ea22d3cfb82b993c59f11ff89f51"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vec_iter</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap12map_iteratorE" title="einsums::InsertionOrderedMap::map_iterator"><span class="n"><span class="pre">map_iterator</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">const_iterator</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator8vec_iterE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator15difference_typeE">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator15difference_typeE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator15difference_typeE"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a6e28c6a8ee25af391b071b469eab5dca"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">difference_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator15difference_typeE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator17iterator_categoryE">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator17iterator_categoryE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator17iterator_categoryE"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a132111bee2ba78ffe9dbd5c117e5b2c5"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iterator_category</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../GPUMemory/api/GPUPointer.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">bidirectional_iterator_tag</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator17iterator_categoryE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator9referenceE">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator9referenceE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator9referenceE"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a21956b88f4a4d0c79e990d75ebf5aabb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reference</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap10value_typeE" title="einsums::InsertionOrderedMap::value_type"><span class="n"><span class="pre">value_type</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator9referenceE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator7pointerE">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator7pointerE"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator7pointerE"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a758844cf5563acd744e38ede539a907d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap10value_typeE" title="einsums::InsertionOrderedMap::value_type"><span class="n"><span class="pre">value_type</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator7pointerE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorEv">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator14const_iteratorEv"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator14const_iteratorEv"></span><span id="einsums::InsertionOrderedMap::const_iterator::const_iterator"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a6bb10e3d43417bffe89ac43f33f51c27"></span><span class="sig-name descname"><span class="n"><span class="pre">const_iterator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorE8vec_iter">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator14const_iteratorE8vec_iter"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator14const_iteratorE8vec_iter"></span><span id="einsums::InsertionOrderedMap::const_iterator::const_iterator__vec_iter"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a3b1f9f7cc80e2db9d37d6d18ac58bd13"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_iterator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator8vec_iterE" title="einsums::InsertionOrderedMap::const_iterator::vec_iter"><span class="n"><span class="pre">vec_iter</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">it</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorE8vec_iter" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorERK8iterator">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator14const_iteratorERK8iterator"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator14const_iteratorERK8iterator"></span><span id="einsums::InsertionOrderedMap::const_iterator::const_iterator__iteratorCR"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a935b513e7d554784e2291867b9828823"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_iterator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap8iteratorE" title="einsums::InsertionOrderedMap::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">it</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorERK8iterator" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums19InsertionOrderedMap14const_iteratormlEv">
+<span id="_CPPv3NK7einsums19InsertionOrderedMap14const_iteratormlEv"></span><span id="_CPPv2NK7einsums19InsertionOrderedMap14const_iteratormlEv"></span><span id="einsums::InsertionOrderedMap::const_iterator::mul-operatorC"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1ad9bee495cd42128983137aaeb9fffa3f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator9referenceE" title="einsums::InsertionOrderedMap::const_iterator::reference"><span class="n"><span class="pre">reference</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums19InsertionOrderedMap14const_iteratormlEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums19InsertionOrderedMap14const_iteratorptEv">
+<span id="_CPPv3NK7einsums19InsertionOrderedMap14const_iteratorptEv"></span><span id="_CPPv2NK7einsums19InsertionOrderedMap14const_iteratorptEv"></span><span id="einsums::InsertionOrderedMap::const_iterator::pointer-operatorC"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1aa7a3e557d55be0d939a34a06de01effd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator7pointerE" title="einsums::InsertionOrderedMap::const_iterator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-&gt;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7einsums19InsertionOrderedMap14const_iteratorptEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEv">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratorppEv"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratorppEv"></span><span id="einsums::InsertionOrderedMap::const_iterator::inc-operator"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a34e328e2b8d8a52459560efe9677005d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEi">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratorppEi"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratorppEi"></span><span id="einsums::InsertionOrderedMap::const_iterator::inc-operator__i"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1abb2f752d3f5291d0f30d6c4639414adb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEi" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEv">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratormmEv"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratormmEv"></span><span id="einsums::InsertionOrderedMap::const_iterator::dec-operator"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1a29a4869d6b9576d66eaffaac9a5f8050"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">--</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEi">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratormmEi"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratormmEi"></span><span id="einsums::InsertionOrderedMap::const_iterator::dec-operator__i"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1ac90f27d179f8f6276ec56c207b310ea3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">--</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEi" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iterator3it_E">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iterator3it_E"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iterator3it_E"></span><span id="einsums::InsertionOrderedMap::const_iterator::it___vec_iter"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1aa5ee3f8f72e1a661f45e4c416add3f50"></span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator8vec_iterE" title="einsums::InsertionOrderedMap::const_iterator::vec_iter"><span class="n"><span class="pre">vec_iter</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">it_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator3it_E" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratoreqERK14const_iteratorRK14const_iterator">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratoreqERK14const_iteratorRK14const_iterator"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratoreqERK14const_iteratorRK14const_iterator"></span><span id="einsums::InsertionOrderedMap::const_iterator::eq-operator__const_iteratorCR.const_iteratorCR"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1ac2f9d194658be2eec66541ddb1a0f14a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratoreqERK14const_iteratorRK14const_iterator" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums19InsertionOrderedMap14const_iteratorneERK14const_iteratorRK14const_iterator">
+<span id="_CPPv3N7einsums19InsertionOrderedMap14const_iteratorneERK14const_iteratorRK14const_iterator"></span><span id="_CPPv2N7einsums19InsertionOrderedMap14const_iteratorneERK14const_iteratorRK14const_iterator"></span><span id="einsums::InsertionOrderedMap::const_iterator::neq-operator__const_iteratorCR.const_iteratorCR"></span><span class="target" id="classeinsums_1_1_insertion_ordered_map_1_1const__iterator_1af97a03003e6e54f2e50f43a6176e7c26"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE" title="einsums::InsertionOrderedMap::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorneERK14const_iteratorRK14const_iterator" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </dd></dl>
@@ -745,8 +773,8 @@
     class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv47einsums"><code class="docutils literal notranslate"><span class="pre">einsums</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0000EN7einsums19InsertionOrderedMapE"><code class="docutils literal notranslate"><span class="pre">einsums::InsertionOrderedMap</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap8map_typeE"><code class="docutils literal notranslate"><span class="pre">map_type</span></code></a></li>
@@ -773,26 +801,6 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap5eraseERK1K"><code class="docutils literal notranslate"><span class="pre">erase()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap6order_E"><code class="docutils literal notranslate"><span class="pre">order_</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap4map_E"><code class="docutils literal notranslate"><span class="pre">map_</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE"><code class="docutils literal notranslate"><span class="pre">einsums::InsertionOrderedMap::const_iterator</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator8vec_iterE"><code class="docutils literal notranslate"><span class="pre">vec_iter</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator15difference_typeE"><code class="docutils literal notranslate"><span class="pre">difference_type</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator17iterator_categoryE"><code class="docutils literal notranslate"><span class="pre">iterator_category</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator9referenceE"><code class="docutils literal notranslate"><span class="pre">reference</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator7pointerE"><code class="docutils literal notranslate"><span class="pre">pointer</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorEv"><code class="docutils literal notranslate"><span class="pre">const_iterator()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorE8vec_iter"><code class="docutils literal notranslate"><span class="pre">const_iterator()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorERK8iterator"><code class="docutils literal notranslate"><span class="pre">const_iterator()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums19InsertionOrderedMap14const_iteratormlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums19InsertionOrderedMap14const_iteratorptEv"><code class="docutils literal notranslate"><span class="pre">operator-&gt;()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEv"><code class="docutils literal notranslate"><span class="pre">operator++()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEi"><code class="docutils literal notranslate"><span class="pre">operator++()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEv"><code class="docutils literal notranslate"><span class="pre">operator--()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEi"><code class="docutils literal notranslate"><span class="pre">operator--()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator3it_E"><code class="docutils literal notranslate"><span class="pre">it_</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratoreqERK14const_iteratorRK14const_iterator"><code class="docutils literal notranslate"><span class="pre">operator==</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorneERK14const_iteratorRK14const_iterator"><code class="docutils literal notranslate"><span class="pre">operator!=</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap8iteratorE"><code class="docutils literal notranslate"><span class="pre">einsums::InsertionOrderedMap::iterator</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap8iterator8vec_iterE"><code class="docutils literal notranslate"><span class="pre">vec_iter</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap8iterator15difference_typeE"><code class="docutils literal notranslate"><span class="pre">difference_type</span></code></a></li>
@@ -811,6 +819,26 @@
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap8iterator3it_E"><code class="docutils literal notranslate"><span class="pre">it_</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap8iteratoreqERK8iteratorRK8iterator"><code class="docutils literal notranslate"><span class="pre">operator==</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap8iteratorneERK8iteratorRK8iterator"><code class="docutils literal notranslate"><span class="pre">operator!=</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorE"><code class="docutils literal notranslate"><span class="pre">einsums::InsertionOrderedMap::const_iterator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator8vec_iterE"><code class="docutils literal notranslate"><span class="pre">vec_iter</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator15difference_typeE"><code class="docutils literal notranslate"><span class="pre">difference_type</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator17iterator_categoryE"><code class="docutils literal notranslate"><span class="pre">iterator_category</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator9referenceE"><code class="docutils literal notranslate"><span class="pre">reference</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator7pointerE"><code class="docutils literal notranslate"><span class="pre">pointer</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorEv"><code class="docutils literal notranslate"><span class="pre">const_iterator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorE8vec_iter"><code class="docutils literal notranslate"><span class="pre">const_iterator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator14const_iteratorERK8iterator"><code class="docutils literal notranslate"><span class="pre">const_iterator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums19InsertionOrderedMap14const_iteratormlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7einsums19InsertionOrderedMap14const_iteratorptEv"><code class="docutils literal notranslate"><span class="pre">operator-&gt;()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEv"><code class="docutils literal notranslate"><span class="pre">operator++()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorppEi"><code class="docutils literal notranslate"><span class="pre">operator++()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEv"><code class="docutils literal notranslate"><span class="pre">operator--()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratormmEi"><code class="docutils literal notranslate"><span class="pre">operator--()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iterator3it_E"><code class="docutils literal notranslate"><span class="pre">it_</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratoreqERK14const_iteratorRK14const_iterator"><code class="docutils literal notranslate"><span class="pre">operator==</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7einsums19InsertionOrderedMap14const_iteratorneERK14const_iteratorRK14const_iterator"><code class="docutils literal notranslate"><span class="pre">operator!=</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -833,8 +861,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -868,7 +896,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

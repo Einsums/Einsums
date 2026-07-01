@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=047b7709" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
     <script src="../../../../_static/documentation_options.js?v=ecbcfc14"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
@@ -49,26 +49,33 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/HPTT/api/HPTT';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.0.0" />
-    <meta name="docbuild:last-update" content="Mar 18, 2026"/>
+    <meta name="docbuild:last-update" content="Jul 01, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -94,7 +101,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -186,11 +193,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
     </div>
     
@@ -277,30 +291,44 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
       </div>
     
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
         <div class="sidebar-primary-item">
+
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="Plan.html">Einsums/HPTT/Plan.hpp</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/HPTT/HPTT.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Files.html">Einsums/HPTT/Files.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ComputeNode.html">Einsums/HPTT/ComputeNode.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Transpose.html">Einsums/HPTT/Transpose.hpp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Utils.html">Einsums/HPTT/Utils.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Macros.html">Einsums/HPTT/Macros.hpp</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Einsums/HPTT/HPTT.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plan.html">Einsums/HPTT/Plan.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Transpose.html">Einsums/HPTT/Transpose.hpp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HPTTTypes.html">Einsums/HPTT/HPTTTypes.hpp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Utils.html">Einsums/HPTT/Utils.hpp</a></li>
 </ul>
 </div>
 </nav></div>
@@ -408,42 +436,7 @@ B_{\pi(i_0,i_1,...)}. \]</div>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv416dTensorTransposePKiKiKdPKdPK6size_tPK6size_tKdPdPK6size_tKiKi">
 <span id="_CPPv316dTensorTransposePKiKiKdPKdPK6size_tPK6size_tKdPdPK6size_tKiKi"></span><span id="_CPPv216dTensorTransposePKiKiKdPKdPK6size_tPK6size_tKdPdPK6size_tKiKi"></span><span id="dTensorTranspose__iCP.iC.doubleC.doubleCP.sCP.sCP.doubleC.doubleP.sCP.iC.iC"></span><span class="target" id="_h_p_t_t_8hpp_1abac20d5f1cfdf58c54af66d98ca1b881"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dTensorTranspose</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sizeA</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeA</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">outerSizeB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numThreads</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">useRowMajor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416dTensorTransposePKiKiKdPKdPK6size_tPK6size_tKdPdPK6size_tKiKi" title="Link to this definition">#</a><br /></dt>
-<dd><p>Computes the out-of-place tensor transposition of A into B.    </p>
-<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:  <div class="math notranslate nohighlight">
-\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
-B_{\pi(i_0,i_1,...)}. \]</div>
- The plan can be reused over several transpositions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
-<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
-</ul>
-</p></li>
-<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
-<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
-<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
-<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
-<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
-<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
-<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
-<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
-</ul>
-</p></li>
-<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
-<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
-<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.<ul>
-<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
-<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
-<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
-</ul>
-</p></li>
-<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition.</p></li>
-<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).    </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv416cTensorTransposePKiKiKCfbPKCfPK6size_tPK6size_tKCfPCfPK6size_tKiKi">
@@ -639,31 +632,6 @@ B_{\pi(i_0,i_1,...)}. \]</div>
 <li><p>sizeA[i] &gt;= 0 for all 0 &lt;= i &lt; dim must hold.<ul>
 <li><p>This option enables HPTT to operate on intermediate sub-tensors. </p></li>
 <li><p>This parameter may be NULL, indicating that the innerStrideB is equal to 1.</p></li>
-<li><p><p>If innerStrideB is not NULL, the raw-data size must exceed \product_{i} (dim_{i}) * innerStrideB.</p>
-<p>A tensor transposition plan is a data structure that encodes the execution of the tensor transposition. HPTT supports tensor transpositions of the form:</p>
-<div class="math notranslate nohighlight">
-\[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
-B_{\pi(i_0,i_1,...)}. \]</div>
- The plan can be reused over several transpositions.</p></li>
-</ul>
-</p></li>
-</ul>
-</p>
-<p><ul class="simple">
-<li><p>sizeA[i] &gt;= 0 for all 0 &lt;= i &lt; dim must hold.<ul>
-<li><p>This option enables HPTT to operate on intermediate sub-tensors. </p></li>
-<li><p>This parameter may be NULL, indicating that the innerStrideA is equal to 1.</p></li>
-<li><p>If innerStrideA is not NULL, the raw-data size must exceed \product_{i} (dim_{i}) * innerStrideA. </p></li>
-<li><p>This parameter may be NULL, indicating that the outer-size is equal to the perm(sizeA).</p></li>
-<li><p>If outerSizeA is not NULL, outerSizeB[i] &gt;= perm(sizeA)[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
-<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
-<li><p>This parameter may be NULL, indicating that the offset is zero.</p></li>
-<li><p>If offsetB is not NULL, outerSizeB[i] &gt;= offsetB[i]</p></li>
-</ul>
-</p></li>
-<li><p>sizeA[i] &gt;= 0 for all 0 &lt;= i &lt; dim must hold.<ul>
-<li><p>This option enables HPTT to operate on intermediate sub-tensors. </p></li>
-<li><p>This parameter may be NULL, indicating that the innerStrideB is equal to 1.</p></li>
 <li><p>If innerStrideB is not NULL, the raw-data size must exceed \product_{i} (dim_{i}) * innerStrideB. </p></li>
 </ul>
 </p></li>
@@ -672,33 +640,6 @@ B_{\pi(i_0,i_1,...)}. \]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>innerStrideA</strong> – <strong>[in]</strong> integer storing a non-unitary stride for the innermost dimension of A.</p></li>
-<li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
-<li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
-<li><p><strong>outerSizeB</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of B.</p></li>
-<li><p><strong>offsetB</strong> – <strong>[in]</strong> dim-dimensional array that stores the offsets in each dimension of B</p></li>
-<li><p><strong>innerStrideB</strong> – <strong>[in]</strong> integer storing a non-unitary stride for the innermost dimension of B.</p></li>
-<li><p><strong>numThreads</strong> – <strong>[in]</strong> number of threads that participate in this tensor transposition.</p></li>
-<li><p><strong>useRowMajor</strong> – <strong>[in]</strong> This flag indicates whether a row-major memory layout should be used (default: off = column-major).   Computes the out-of-place tensor transposition of A into B.   </p></li>
-<li><p><strong>perm</strong> – <strong>[in]</strong> dim-dimensional array representing the permutation of the indices.<ul>
-<li><p>For instance, perm[] = {1,0,2} denotes the following transposition: <span class="math notranslate nohighlight">\(B_{i1,i0,i2} \gets A_{i0,i1,i2}\)</span>.</p></li>
-</ul>
-</p></li>
-<li><p><strong>dim</strong> – <strong>[in]</strong> Dimensionality of the tensors</p></li>
-<li><p><strong>alpha</strong> – <strong>[in]</strong> scaling factor for A </p></li>
-<li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the raw-data of the input tensor A </p></li>
-<li><p><strong>sizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the sizes of each dimension of A</p></li>
-<li><p><strong>outerSizeA</strong> – <strong>[in]</strong> dim-dimensional array that stores the outer-sizes of each dimension of A.<ul>
-<li><p>This parameter may be NULL, indicating that the outer-size is equal to sizeA.</p></li>
-<li><p>If outerSizeA is not NULL, outerSizeA[i] &gt;= sizeA[i] for all 0 &lt;= i &lt; dim must hold.</p></li>
-<li><p>This option enables HPTT to operate on sub-tensors. </p></li>
-</ul>
-</p></li>
-<li><p><strong>offsetA</strong> – <strong>[in]</strong> dim-dimensional array that stores the offsets in each dimension of A<ul>
-<li><p>This parameter may be NULL, indicating that the offset is zero.</p></li>
-<li><p>If offsetA is not NULL, outerSizeA[i] &gt;= offsetA[i]</p></li>
-</ul>
-</p></li>
 <li><p><strong>innerStrideA</strong> – <strong>[in]</strong> integer storing a non-unitary stride for the innermost dimension of A.</p></li>
 <li><p><strong>beta</strong> – <strong>[in]</strong> scaling factor for B </p></li>
 <li><p><strong>B</strong> – <strong>[inout]</strong> Pointer to the raw-data of the output tensor B </p></li>
@@ -1850,8 +1791,8 @@ B_{\pi(i_0,i_1,...)}. \]</div>
     class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416sTensorTransposePKiKiKfPKfPK6size_tPK6size_tKfPfPK6size_tKiKi"><code class="docutils literal notranslate"><span class="pre">sTensorTranspose()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416dTensorTransposePKiKiKdPKdPK6size_tPK6size_tKdPdPK6size_tKiKi"><code class="docutils literal notranslate"><span class="pre">dTensorTranspose()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416cTensorTransposePKiKiKCfbPKCfPK6size_tPK6size_tKCfPCfPK6size_tKiKi"><code class="docutils literal notranslate"><span class="pre">cTensorTranspose()</span></code></a></li>
@@ -1915,8 +1856,8 @@ B_{\pi(i_0,i_1,...)}. \]</div>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1950,7 +1891,7 @@ B_{\pi(i_0,i_1,...)}. \]</div>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>
