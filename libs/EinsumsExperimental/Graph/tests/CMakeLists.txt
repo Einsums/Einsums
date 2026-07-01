@@ -32,6 +32,7 @@ if(EINSUMS_WITH_TESTS)
     einsums_add_header_tests(
       Modules.EinsumsExperimental.Graph
       HEADERS ${GraphHeaders}
+      HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       DEPENDENCIES EinsumsExperimental_Graph
     )
   endif()
