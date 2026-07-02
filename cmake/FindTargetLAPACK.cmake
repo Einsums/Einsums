@@ -56,7 +56,6 @@ if(LAPACK_LIBRARIES)
   set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES ${LAPACK_LIBRARIES})
   set_property(TARGET tgt::lapack PROPERTY VENDOR ${_VENDOR})
   set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64) # TODO assumption!
-  target_link_libraries(tgt::lapack INTERFACE atomic)
 else()
   # 2nd precedence - target already prepared and findable in TargetLAPACKConfig.cmake
   if(NOT "${CMAKE_DISABLE_FIND_PACKAGE_${PN}}")
@@ -76,7 +75,6 @@ else()
       set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES MKL::MKL)
       set_property(TARGET tgt::lapack PROPERTY VENDOR "MKL")
       set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE ${MKL_INTERFACE})
-      target_link_libraries(tgt::lapack INTERFACE atomic)
 
     else()
       set(BLA_VENDOR OpenBLAS)
@@ -175,7 +173,7 @@ if((TARGET tgt::blas) AND (TARGET tgt::lapk))
   set(${PN}_MESSAGE "Found LAPACK ${_ven}w/${_int}: ${_illl};${_illb}")
 endif()
 
-einsums_check_for_dot_subroutine(DEFINITIONS EINSUMS_DOT_SUBROUTINE LIBRARIES tgt::lapack m atomic)
+einsums_check_for_dot_subroutine(DEFINITIONS EINSUMS_DOT_SUBROUTINE LIBRARIES tgt::lapack m)
 
 if(EINSUMS_DOT_SUBROUTINE)
 message("-- Complex dot products are subroutines. Choosing appropriate code path.")
