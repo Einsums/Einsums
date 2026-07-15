@@ -90,6 +90,17 @@ set(ComputeGraphTests
     test_gemv_views_python.py
     test_ger_views_python.py
     test_graph_python.py
+    test_hyp_controlflow_diff_python.py
+    test_hyp_einsum_diff_python.py
+    test_hyp_elementwise_diff_python.py
+    test_hyp_lapack_diff_python.py
+    test_hyp_largedim_diff_python.py
+    test_hyp_largerank_diff_python.py
+    test_hyp_linalg_diff_python.py
+    test_hyp_metamorphic_python.py
+    test_hyp_program_diff_python.py
+    test_hyp_symmgemm_diff_python.py
+    test_hyp_tiled_diff_python.py
     test_lapack_python.py
     test_linalg_new_python.py
     test_loop_python.py
@@ -111,8 +122,10 @@ set(ComputeGraphTests
     test_scalar_writers_python.py
     test_scf_python.py
     test_scale_python.py
+    test_special_values_python.py
     test_symm_gemm_views_python.py
     test_tiled_ops_python.py
+    test_view_lifetime_python.py
     test_view_python.py
 )
 

@@ -111,6 +111,17 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
     // The flat-to-offset conversion handles the rest.
     bool const C_col_major = (!multi_m && C_m_stride == 1);
 
+    // BLAS requires the output leading dimension to be at least the number of
+    // rows of the stored result: M for a column-major result (ldc = C_n_stride),
+    // N for the swapped form (ldc = C_m_stride). For a transposed or degenerate
+    // (size-1) output axis the natural stride can collapse below that minimum
+    // (e.g. "nm <- mkq ; kqn" with n=1 gives C_n_stride=1 < M), so clamp up. This
+    // is a no-op for non-degenerate outputs (the real stride already meets the
+    // bound) and safe for a size-1 axis whose stride spans one element BLAS never
+    // indexes. Use these as the ldc argument to every gemm call below.
+    int64_t const ldc_col = std::max<int64_t>(C_n_stride, M);
+    int64_t const ldc_row = std::max<int64_t>(C_m_stride, N);
+
     constexpr bool is_complex =
         (get_scalar_type<ValueType>() == ScalarType::Complex64 || get_scalar_type<ValueType>() == ScalarType::Complex128);
 
@@ -194,6 +205,18 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
                 c_ptrs[static_cast<size_t>(batch)] = C.data() + c_off;
             }
 
+            // BLAS validates the leading dimensions against the stored-operand
+            // row counts (lda >= rows of op-form: M for transA='N', K for 'T';
+            // ldb >= K for transB='N', N for 'T'; ldc >= M). When any of M/N/K
+            // is 1 the corresponding axis stride is meaningless and can collapse
+            // below that minimum (e.g. K=1 makes both m_stride and k_stride_a == 1,
+            // so lda_val=k_stride_a=1 < M). Clamp up to the BLAS minimum: a no-op
+            // for non-degenerate operands (the real stride already meets it), and
+            // safe for a size-1 axis since that stride is never used to index.
+            lda_val = std::max<blas_int>(lda_val, (transA == 'N') ? static_cast<blas_int>(M) : static_cast<blas_int>(K));
+            ldb_val = std::max<blas_int>(ldb_val, (transB == 'N') ? static_cast<blas_int>(K) : static_cast<blas_int>(N));
+            ldc_val = std::max<blas_int>(ldc_val, static_cast<blas_int>(M));
+
             einsums::blas::gemm_batch<ValueType>(transA, transB, static_cast<blas_int>(M), static_cast<blas_int>(N),
                                                  static_cast<blas_int>(K), alpha, a_ptrs.data(), lda_val, b_ptrs.data(), ldb_val, beta,
                                                  c_ptrs.data(), ldc_val, static_cast<blas_int>(bt));
@@ -265,11 +288,11 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
                 if (C_col_major) {
                     einsums::blas::gemm<ValueType>('N', 'T', static_cast<blas_int>(M), static_cast<blas_int>(N), static_cast<blas_int>(K),
                                                    alpha, A_data, static_cast<blas_int>(M), B_data, static_cast<blas_int>(N), beta, C_data,
-                                                   static_cast<blas_int>(C_n_stride));
+                                                   static_cast<blas_int>(ldc_col));
                 } else {
                     einsums::blas::gemm<ValueType>('N', 'T', static_cast<blas_int>(N), static_cast<blas_int>(M), static_cast<blas_int>(K),
                                                    alpha, B_data, static_cast<blas_int>(N), A_data, static_cast<blas_int>(M), beta, C_data,
-                                                   static_cast<blas_int>(C_m_stride));
+                                                   static_cast<blas_int>(ldc_row));
                 }
                 continue; // next batch slice
             }
@@ -316,7 +339,17 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
             int const rank_b_rt = rank_of(B);
 
             // Check contiguity for HPTT (only for sides that need copying).
-            bool use_hptt = true;
+            //
+            // Batched contractions (nb > 0) must not use the HPTT flatten path:
+            // it builds the transpose plan from the operand's full rank and
+            // sizes (including the batch dims) while A_flat/B_flat are sized for a
+            // single batch slice (M*K / K*N) and A_data/B_data are already offset
+            // to the current slice. HPTT then transposes the whole batched tensor
+            // into the inner-sized buffer -> heap-buffer-overflow. Fall through to
+            // the batch-aware scalar gather below, which honors the slice offset
+            // and the inner strides. (TODO: a proper per-slice batched HPTT path
+            // would recover the transpose perf for batched multi-K contractions.)
+            bool use_hptt = (nb == 0);
             if (!a_zero_copy) {
                 int64_t expected = 1;
                 for (int i = 0; i < rank_a_rt; ++i) {
@@ -388,11 +421,11 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
                     if (C_col_major) {
                         einsums::blas::gemm<ValueType>('N', 'T', static_cast<blas_int>(M), static_cast<blas_int>(N),
                                                        static_cast<blas_int>(kc_len), alpha, A_ptr, static_cast<blas_int>(M), B_ptr,
-                                                       static_cast<blas_int>(N), beta_k, C_data, static_cast<blas_int>(C_n_stride));
+                                                       static_cast<blas_int>(N), beta_k, C_data, static_cast<blas_int>(ldc_col));
                     } else {
                         einsums::blas::gemm<ValueType>('N', 'T', static_cast<blas_int>(N), static_cast<blas_int>(M),
                                                        static_cast<blas_int>(kc_len), alpha, B_ptr, static_cast<blas_int>(N), A_ptr,
-                                                       static_cast<blas_int>(M), beta_k, C_data, static_cast<blas_int>(C_m_stride));
+                                                       static_cast<blas_int>(M), beta_k, C_data, static_cast<blas_int>(ldc_row));
                     }
                 }
             } else
@@ -461,11 +494,11 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
                     if (C_col_major) {
                         einsums::blas::gemm<ValueType>('N', 'T', static_cast<blas_int>(M), static_cast<blas_int>(N),
                                                        static_cast<blas_int>(kc_len), alpha, A_ptr, static_cast<blas_int>(M), B_ptr,
-                                                       static_cast<blas_int>(N), beta_k, C_data, static_cast<blas_int>(C_n_stride));
+                                                       static_cast<blas_int>(N), beta_k, C_data, static_cast<blas_int>(ldc_col));
                     } else {
                         einsums::blas::gemm<ValueType>('N', 'T', static_cast<blas_int>(N), static_cast<blas_int>(M),
                                                        static_cast<blas_int>(kc_len), alpha, B_ptr, static_cast<blas_int>(N), A_ptr,
-                                                       static_cast<blas_int>(M), beta_k, C_data, static_cast<blas_int>(C_m_stride));
+                                                       static_cast<blas_int>(M), beta_k, C_data, static_cast<blas_int>(ldc_row));
                     }
                 }
             }
@@ -499,6 +532,15 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
             int64_t const n_stride   = plan.n_dims[0].tensor_stride;
             int64_t const k_stride_a = plan.k_dims_in_a[0].tensor_stride;
             int64_t const k_stride_b = plan.k_dims_in_b[0].tensor_stride;
+
+            // Clamp a stride-derived leading dimension up to the BLAS minimum (the
+            // row count of the stored operand for that call). A degenerate
+            // (size-1) axis can collapse the natural stride below the minimum
+            // (e.g. "snm <- mkn ; ksm"-style specs); the clamp is a no-op
+            // otherwise and is safe because the stride is unused when its axis is
+            // size 1. Each call below passes the BLAS m-dimension the leading dim
+            // must cover.
+            auto ld = [](int64_t stride, int64_t min_rows) { return static_cast<blas_int>(std::max<int64_t>(stride, min_rows)); };
 
             // Try to map the strides to a BLAS gemm call.
             // BLAS gemm(transA, transB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc)
@@ -542,16 +584,15 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
                         if (can_dispatch_n(conj_b)) {
                             einsums::blas::gemm<ValueType>(trans_flag('N', conj_a), trans_flag('N', conj_b), static_cast<blas_int>(M),
                                                            static_cast<blas_int>(N), static_cast<blas_int>(K), alpha, A_data,
-                                                           static_cast<blas_int>(k_stride_a), B_data, static_cast<blas_int>(n_stride), beta,
-                                                           C_data, static_cast<blas_int>(C_n_stride));
+                                                           ld(k_stride_a, M), B_data, ld(n_stride, K), beta, C_data,
+                                                           static_cast<blas_int>(ldc_col));
                             dispatched = true;
                         }
                     } else if (n_stride == 1) {
                         // B col-major in N → transB='T'
                         einsums::blas::gemm<ValueType>(trans_flag('N', conj_a), trans_flag('T', conj_b), static_cast<blas_int>(M),
-                                                       static_cast<blas_int>(N), static_cast<blas_int>(K), alpha, A_data,
-                                                       static_cast<blas_int>(k_stride_a), B_data, static_cast<blas_int>(k_stride_b), beta,
-                                                       C_data, static_cast<blas_int>(C_n_stride));
+                                                       static_cast<blas_int>(N), static_cast<blas_int>(K), alpha, A_data, ld(k_stride_a, M),
+                                                       B_data, ld(k_stride_b, N), beta, C_data, static_cast<blas_int>(ldc_col));
                         dispatched = true;
                     }
                 } else if (k_stride_a == 1) {
@@ -561,15 +602,14 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
                         if (can_dispatch_n(conj_b)) {
                             einsums::blas::gemm<ValueType>(trans_flag('T', conj_a), trans_flag('N', conj_b), static_cast<blas_int>(M),
                                                            static_cast<blas_int>(N), static_cast<blas_int>(K), alpha, A_data,
-                                                           static_cast<blas_int>(m_stride), B_data, static_cast<blas_int>(n_stride), beta,
-                                                           C_data, static_cast<blas_int>(C_n_stride));
+                                                           ld(m_stride, K), B_data, ld(n_stride, K), beta, C_data,
+                                                           static_cast<blas_int>(ldc_col));
                             dispatched = true;
                         }
                     } else if (n_stride == 1) {
                         einsums::blas::gemm<ValueType>(trans_flag('T', conj_a), trans_flag('T', conj_b), static_cast<blas_int>(M),
-                                                       static_cast<blas_int>(N), static_cast<blas_int>(K), alpha, A_data,
-                                                       static_cast<blas_int>(m_stride), B_data, static_cast<blas_int>(k_stride_b), beta,
-                                                       C_data, static_cast<blas_int>(C_n_stride));
+                                                       static_cast<blas_int>(N), static_cast<blas_int>(K), alpha, A_data, ld(m_stride, K),
+                                                       B_data, ld(k_stride_b, N), beta, C_data, static_cast<blas_int>(ldc_col));
                         dispatched = true;
                     }
                 }
@@ -584,17 +624,16 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
                     } else if (m_stride == 1) {
                         // A is the BLAS "B" arg → transB_blas='T', conj_a applies
                         einsums::blas::gemm<ValueType>(trans_flag('N', conj_b), trans_flag('T', conj_a), static_cast<blas_int>(N),
-                                                       static_cast<blas_int>(M), static_cast<blas_int>(K), alpha, B_data,
-                                                       static_cast<blas_int>(k_stride_b), A_data, static_cast<blas_int>(k_stride_a), beta,
-                                                       C_data, static_cast<blas_int>(C_m_stride));
+                                                       static_cast<blas_int>(M), static_cast<blas_int>(K), alpha, B_data, ld(k_stride_b, N),
+                                                       A_data, ld(k_stride_a, M), beta, C_data, static_cast<blas_int>(ldc_row));
                         dispatched = true;
                     } else if (k_stride_a == 1) {
                         // A is the BLAS "B" arg → transB_blas='N', conj_a applies
                         if (can_dispatch_n(conj_a)) {
                             einsums::blas::gemm<ValueType>(trans_flag('N', conj_b), trans_flag('N', conj_a), static_cast<blas_int>(N),
                                                            static_cast<blas_int>(M), static_cast<blas_int>(K), alpha, B_data,
-                                                           static_cast<blas_int>(k_stride_b), A_data, static_cast<blas_int>(m_stride), beta,
-                                                           C_data, static_cast<blas_int>(C_m_stride));
+                                                           ld(k_stride_b, N), A_data, ld(m_stride, K), beta, C_data,
+                                                           static_cast<blas_int>(ldc_row));
                             dispatched = true;
                         }
                     }
@@ -603,17 +642,16 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
                     if (m_stride == 1) {
                         // A is the BLAS "B" arg → transB_blas='T', conj_a applies
                         einsums::blas::gemm<ValueType>(trans_flag('T', conj_b), trans_flag('T', conj_a), static_cast<blas_int>(N),
-                                                       static_cast<blas_int>(M), static_cast<blas_int>(K), alpha, B_data,
-                                                       static_cast<blas_int>(n_stride), A_data, static_cast<blas_int>(k_stride_a), beta,
-                                                       C_data, static_cast<blas_int>(C_m_stride));
+                                                       static_cast<blas_int>(M), static_cast<blas_int>(K), alpha, B_data, ld(n_stride, K),
+                                                       A_data, ld(k_stride_a, M), beta, C_data, static_cast<blas_int>(ldc_row));
                         dispatched = true;
                     } else if (k_stride_a == 1) {
                         // A is the BLAS "B" arg → transB_blas='N', conj_a applies
                         if (can_dispatch_n(conj_a)) {
                             einsums::blas::gemm<ValueType>(trans_flag('T', conj_b), trans_flag('N', conj_a), static_cast<blas_int>(N),
                                                            static_cast<blas_int>(M), static_cast<blas_int>(K), alpha, B_data,
-                                                           static_cast<blas_int>(n_stride), A_data, static_cast<blas_int>(m_stride), beta,
-                                                           C_data, static_cast<blas_int>(C_m_stride));
+                                                           ld(n_stride, K), A_data, ld(m_stride, K), beta, C_data,
+                                                           static_cast<blas_int>(ldc_row));
                             dispatched = true;
                         }
                     }
@@ -749,12 +787,12 @@ void blis_contraction(PackingPlan const &plan, CType &C, AType const &A, BType c
                                         einsums::blas::gemm<ValueType>(
                                             'N', 'T', static_cast<blas_int>(mr_actual), static_cast<blas_int>(nr_actual),
                                             static_cast<blas_int>(kc_len), alpha, Ap_panel, static_cast<blas_int>(MR), Bp_panel,
-                                            static_cast<blas_int>(NR), ValueType{1}, C_tile, static_cast<blas_int>(C_n_stride));
+                                            static_cast<blas_int>(NR), ValueType{1}, C_tile, static_cast<blas_int>(ldc_col));
                                     } else {
                                         einsums::blas::gemm<ValueType>(
                                             'N', 'T', static_cast<blas_int>(nr_actual), static_cast<blas_int>(mr_actual),
                                             static_cast<blas_int>(kc_len), alpha, Bp_panel, static_cast<blas_int>(NR), Ap_panel,
-                                            static_cast<blas_int>(MR), ValueType{1}, C_tile, static_cast<blas_int>(C_m_stride));
+                                            static_cast<blas_int>(MR), ValueType{1}, C_tile, static_cast<blas_int>(ldc_row));
                                     }
                                 }
                             }

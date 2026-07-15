@@ -1102,6 +1102,22 @@ APIARY_INSTANTIATE_AS("dot", einsums::GeneralRuntimeTensor<float,               
 APIARY_INSTANTIATE_AS("dot", einsums::GeneralRuntimeTensor<double,               std::allocator<double>>,               einsums::GeneralRuntimeTensor<double,               std::allocator<double>>)
 APIARY_INSTANTIATE_AS("dot", einsums::GeneralRuntimeTensor<std::complex<float>,  std::allocator<std::complex<float>>>,  einsums::GeneralRuntimeTensor<std::complex<float>,  std::allocator<std::complex<float>>>)
 APIARY_INSTANTIATE_AS("dot", einsums::GeneralRuntimeTensor<std::complex<double>, std::allocator<std::complex<double>>>, einsums::GeneralRuntimeTensor<std::complex<double>, std::allocator<std::complex<double>>>)
+// View operands: match the 3-arg dot(result, A, B) form, which already accepts
+// non-contiguous views. Without these the scalar-returning dot(A, B) rejected a
+// view argument (no matching overload) even though its template handles any
+// TensorConcept.
+APIARY_INSTANTIATE_AS("dot", einsums::GeneralRuntimeTensor<float,                std::allocator<float>>,                einsums::RuntimeTensorView<float>)
+APIARY_INSTANTIATE_AS("dot", einsums::RuntimeTensorView<float>,                                                       einsums::GeneralRuntimeTensor<float,                std::allocator<float>>)
+APIARY_INSTANTIATE_AS("dot", einsums::RuntimeTensorView<float>,                                                       einsums::RuntimeTensorView<float>)
+APIARY_INSTANTIATE_AS("dot", einsums::GeneralRuntimeTensor<double,               std::allocator<double>>,               einsums::RuntimeTensorView<double>)
+APIARY_INSTANTIATE_AS("dot", einsums::RuntimeTensorView<double>,                                                      einsums::GeneralRuntimeTensor<double,               std::allocator<double>>)
+APIARY_INSTANTIATE_AS("dot", einsums::RuntimeTensorView<double>,                                                      einsums::RuntimeTensorView<double>)
+APIARY_INSTANTIATE_AS("dot", einsums::GeneralRuntimeTensor<std::complex<float>,  std::allocator<std::complex<float>>>,  einsums::RuntimeTensorView<std::complex<float>>)
+APIARY_INSTANTIATE_AS("dot", einsums::RuntimeTensorView<std::complex<float>>,                                          einsums::GeneralRuntimeTensor<std::complex<float>,  std::allocator<std::complex<float>>>)
+APIARY_INSTANTIATE_AS("dot", einsums::RuntimeTensorView<std::complex<float>>,                                          einsums::RuntimeTensorView<std::complex<float>>)
+APIARY_INSTANTIATE_AS("dot", einsums::GeneralRuntimeTensor<std::complex<double>, std::allocator<std::complex<double>>>, einsums::RuntimeTensorView<std::complex<double>>)
+APIARY_INSTANTIATE_AS("dot", einsums::RuntimeTensorView<std::complex<double>>,                                         einsums::GeneralRuntimeTensor<std::complex<double>, std::allocator<std::complex<double>>>)
+APIARY_INSTANTIATE_AS("dot", einsums::RuntimeTensorView<std::complex<double>>,                                         einsums::RuntimeTensorView<std::complex<double>>)
     // clang-format on
     auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     if (CaptureContext::current().is_capturing()) {
@@ -1346,7 +1362,12 @@ APIARY_INSTANTIATE_AS("max", einsums::GeneralRuntimeTensor<double, std::allocato
         EINSUMS_THROW_EXCEPTION(std::invalid_argument, "cg::max: cannot reduce an empty tensor");
 
     auto compute = [](AType const &a) -> T {
-        return detail::reduce_elements(a, std::numeric_limits<T>::lowest(), [](T acc, T x) { return x > acc ? x : acc; });
+        // Propagate NaN like numpy.max: a plain ``x > acc`` comparison is false for
+        // a NaN x, so NaN would be silently dropped, and an all-NaN reduction would
+        // leak the ``lowest()`` seed. Test ``isnan(x)`` so a NaN poisons the
+        // accumulator (and ``acc`` stays NaN thereafter, since ``x > NaN`` is false).
+        return detail::reduce_elements(a, std::numeric_limits<T>::lowest(),
+                                       [](T acc, T x) { return (std::isnan(x) || x > acc) ? x : acc; });
     };
 
     auto &ctx = CaptureContext::current();
@@ -1433,7 +1454,13 @@ APIARY_INSTANTIATE_AS("direct_product", std::complex<double>, einsums::RuntimeTe
                                        static_cast<CType *>(c_slot->ptr));
     };
 
-    ctx.record(OpKind::DirectProduct, "direct_product", {a_id, b_id}, {c_id}, std::move(executor));
+    // When beta != 0 the op reads its destination (C = alpha*A*B + beta*C), so C
+    // is an input as well as the output. List it -- otherwise dependency-based
+    // passes (LoopInvariantHoisting, Reorder, ...) don't see the read and may
+    // hoist the accumulation out of a loop or reorder it past another writer of C.
+    // (gemm already does this; matches the out-tensor-as-input convention.)
+    std::vector<TensorId> dp_inputs = (beta != T{0}) ? std::vector<TensorId>{a_id, b_id, c_id} : std::vector<TensorId>{a_id, b_id};
+    ctx.record(OpKind::DirectProduct, "direct_product", std::move(dp_inputs), {c_id}, std::move(executor));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1504,7 +1531,10 @@ APIARY_INSTANTIATE_AS("direct_division", std::complex<double>, einsums::RuntimeT
                                         static_cast<CType *>(c_slot->ptr));
     };
 
-    ctx.record(OpKind::DirectDivision, "direct_division", {a_id, b_id}, {c_id}, std::move(executor));
+    // beta != 0 reads the destination (C = alpha*A/B + beta*C) -- list C as an
+    // input so dependency-based passes see the read (see direct_product).
+    std::vector<TensorId> dd_inputs = (beta != T{0}) ? std::vector<TensorId>{a_id, b_id, c_id} : std::vector<TensorId>{a_id, b_id};
+    ctx.record(OpKind::DirectDivision, "direct_division", std::move(dd_inputs), {c_id}, std::move(executor));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3189,109 +3219,128 @@ void einsum(EinsumFormatString spec, typename AType::ValueType c_pf, CType *C, t
                     b_rest = {parsed.b_indices[0], parsed.b_indices[1]};
                 }
 
-                // 2D slice dim lookups: positions of the non-batch axes in the
-                // original tensor. row_mode: positions (Rank-2, Rank-1);
-                // col_mode: positions (0, 1).
-                auto a_slice_dim = [&](int local_pos) -> int {
-                    int orig = row_mode ? static_cast<int>(Rank - 2) + local_pos : local_pos;
-                    return static_cast<int>(A.dim(orig));
-                };
-                auto b_slice_dim = [&](int local_pos) -> int {
-                    int orig = row_mode ? static_cast<int>(Rank - 2) + local_pos : local_pos;
-                    return static_cast<int>(B.dim(orig));
-                };
-                auto c_slice_dim = [&](int local_pos) -> int {
-                    int orig = row_mode ? static_cast<int>(Rank - 2) + local_pos : local_pos;
-                    return static_cast<int>(C->dim(orig));
-                };
+                // The descriptor below requires C's two non-batch slice axes in
+                // canonical (M, N) order -- M (shared with A) first, N (shared with
+                // B) second. Both modes assume this: col_mode maps it to BLAS m/n
+                // directly; row_mode emits the transposed product (so it swaps m/n
+                // and trans_a/trans_b) to honor row-major storage, but still on a
+                // canonical (M, N) output. A transposed output -- e.g.
+                // "kji <- jli ; lki", whose slice is (N, M) -- would mis-map m/n
+                // against the operands and gemm_batch would silently miscompute
+                // (often to zero), so detect it and fall through to the generic
+                // einsum (string_einsum) below.
+                std::vector<std::string> const c_rest =
+                    row_mode ? std::vector<std::string>{parsed.c_indices[Rank - 2], parsed.c_indices[Rank - 1]}
+                             : std::vector<std::string>{parsed.c_indices[0], parsed.c_indices[1]};
+                std::string const m_index      = (a_rest[0] == link) ? a_rest[1] : a_rest[0];
+                std::string const n_index      = (b_rest[0] == link) ? b_rest[1] : b_rest[0];
+                bool const        canonical_mn = (c_rest[0] == m_index && c_rest[1] == n_index);
+                if (canonical_mn) {
 
-                // Flat batch count = product of each batch dim's size. Same
-                // answer whether we read from A, B, or C since the sizes
-                // must agree at construction time (shape compatibility).
-                std::int64_t flat_batch = 1;
-                for (int p : batch_positions)
-                    flat_batch *= static_cast<std::int64_t>(A.dim(p));
+                    // 2D slice dim lookups: positions of the non-batch axes in the
+                    // original tensor. row_mode: positions (Rank-2, Rank-1);
+                    // col_mode: positions (0, 1).
+                    auto a_slice_dim = [&](int local_pos) -> int {
+                        int orig = row_mode ? static_cast<int>(Rank - 2) + local_pos : local_pos;
+                        return static_cast<int>(A.dim(orig));
+                    };
+                    auto b_slice_dim = [&](int local_pos) -> int {
+                        int orig = row_mode ? static_cast<int>(Rank - 2) + local_pos : local_pos;
+                        return static_cast<int>(B.dim(orig));
+                    };
+                    auto c_slice_dim = [&](int local_pos) -> int {
+                        int orig = row_mode ? static_cast<int>(Rank - 2) + local_pos : local_pos;
+                        return static_cast<int>(C->dim(orig));
+                    };
 
-                BatchedGemmDescriptor d;
-                if constexpr (std::is_same_v<T, float>)
-                    d.scalar = BlasScalar::Float;
-                else if constexpr (std::is_same_v<T, double>)
-                    d.scalar = BlasScalar::Double;
-                else if constexpr (std::is_same_v<T, std::complex<float>>)
-                    d.scalar = BlasScalar::ComplexFloat;
-                else if constexpr (std::is_same_v<T, std::complex<double>>)
-                    d.scalar = BlasScalar::ComplexDouble;
+                    // Flat batch count = product of each batch dim's size. Same
+                    // answer whether we read from A, B, or C since the sizes
+                    // must agree at construction time (shape compatibility).
+                    std::int64_t flat_batch = 1;
+                    for (int p : batch_positions)
+                        flat_batch *= static_cast<std::int64_t>(A.dim(p));
 
-                char natural_trans_a = (a_rest[0] == link) ? 'T' : 'N';
-                char natural_trans_b = (b_rest[1] == link) ? 'T' : 'N';
+                    BatchedGemmDescriptor d;
+                    if constexpr (std::is_same_v<T, float>)
+                        d.scalar = BlasScalar::Float;
+                    else if constexpr (std::is_same_v<T, double>)
+                        d.scalar = BlasScalar::Double;
+                    else if constexpr (std::is_same_v<T, std::complex<float>>)
+                        d.scalar = BlasScalar::ComplexFloat;
+                    else if constexpr (std::is_same_v<T, std::complex<double>>)
+                        d.scalar = BlasScalar::ComplexDouble;
 
-                if (col_mode) {
-                    d.trans_a = natural_trans_a;
-                    d.trans_b = natural_trans_b;
-                    d.m       = c_slice_dim(0);
-                    d.n       = c_slice_dim(1);
-                    d.k       = (natural_trans_a == 'N') ? a_slice_dim(1) : a_slice_dim(0);
-                    d.lda     = a_slice_dim(0);
-                    d.ldb     = b_slice_dim(0);
-                    d.ldc     = c_slice_dim(0);
-                } else {
-                    d.trans_a = natural_trans_b;
-                    d.trans_b = natural_trans_a;
-                    d.m       = c_slice_dim(1);
-                    d.n       = c_slice_dim(0);
-                    d.k       = (natural_trans_a == 'N') ? a_slice_dim(1) : a_slice_dim(0);
-                    d.lda     = b_slice_dim(1);
-                    d.ldb     = a_slice_dim(1);
-                    d.ldc     = c_slice_dim(1);
-                }
+                    char natural_trans_a = (a_rest[0] == link) ? 'T' : 'N';
+                    char natural_trans_b = (b_rest[1] == link) ? 'T' : 'N';
 
-                d.alpha          = as<std::complex<double>>(params->ab_pf);
-                d.beta           = as<std::complex<double>>(params->c_pf);
-                d.batch_count    = static_cast<int>(flat_batch);
-                d.strided        = true;
-                d.batch_stride_a = static_cast<std::int64_t>(a_slice_dim(0)) * static_cast<std::int64_t>(a_slice_dim(1));
-                d.batch_stride_b = static_cast<std::int64_t>(b_slice_dim(0)) * static_cast<std::int64_t>(b_slice_dim(1));
-                d.batch_stride_c = static_cast<std::int64_t>(c_slice_dim(0)) * static_cast<std::int64_t>(c_slice_dim(1));
-
-                bool const swap_ab  = row_mode;
-                auto       executor = [d, swap_ab, a_slot, b_slot, c_slot]() {
-                    LabeledSection("einsum batched execute");
-                    ProfileAnnotate("m", static_cast<int64_t>(d.m));
-                    ProfileAnnotate("n", static_cast<int64_t>(d.n));
-                    ProfileAnnotate("k", static_cast<int64_t>(d.k));
-                    ProfileAnnotate("batch", static_cast<int64_t>(d.batch_count));
-                    auto const *base_a = static_cast<T const *>(static_cast<AType const *>(a_slot->ptr)->data());
-                    auto const *base_b = static_cast<T const *>(static_cast<BType const *>(b_slot->ptr)->data());
-                    auto       *base_c = static_cast<T *>(static_cast<CType *>(c_slot->ptr)->data());
-
-                    std::vector<T const *> a_arr(d.batch_count);
-                    std::vector<T const *> b_arr(d.batch_count);
-                    std::vector<T *>       c_arr(d.batch_count);
-                    for (int i = 0; i < d.batch_count; ++i) {
-                        a_arr[i] = base_a + i * d.batch_stride_a;
-                        b_arr[i] = base_b + i * d.batch_stride_b;
-                        c_arr[i] = base_c + i * d.batch_stride_c;
-                    }
-
-                    T const **blas_a = swap_ab ? b_arr.data() : a_arr.data();
-                    T const **blas_b = swap_ab ? a_arr.data() : b_arr.data();
-
-                    if constexpr (std::is_same_v<T, std::complex<float>> || std::is_same_v<T, std::complex<double>>) {
-                        using R = typename T::value_type;
-                        T alpha{static_cast<R>(d.alpha.real()), static_cast<R>(d.alpha.imag())};
-                        T beta{static_cast<R>(d.beta.real()), static_cast<R>(d.beta.imag())};
-                        blas::gemm_batch<T>(d.trans_a, d.trans_b, d.m, d.n, d.k, alpha, blas_a, d.lda, blas_b, d.ldb, beta, c_arr.data(),
-                                            d.ldc, d.batch_count);
+                    if (col_mode) {
+                        d.trans_a = natural_trans_a;
+                        d.trans_b = natural_trans_b;
+                        d.m       = c_slice_dim(0);
+                        d.n       = c_slice_dim(1);
+                        d.k       = (natural_trans_a == 'N') ? a_slice_dim(1) : a_slice_dim(0);
+                        d.lda     = a_slice_dim(0);
+                        d.ldb     = b_slice_dim(0);
+                        d.ldc     = c_slice_dim(0);
                     } else {
-                        blas::gemm_batch<T>(d.trans_a, d.trans_b, d.m, d.n, d.k, static_cast<T>(d.alpha.real()), blas_a, d.lda, blas_b,
-                                            d.ldb, static_cast<T>(d.beta.real()), c_arr.data(), d.ldc, d.batch_count);
+                        d.trans_a = natural_trans_b;
+                        d.trans_b = natural_trans_a;
+                        d.m       = c_slice_dim(1);
+                        d.n       = c_slice_dim(0);
+                        d.k       = (natural_trans_a == 'N') ? a_slice_dim(1) : a_slice_dim(0);
+                        d.lda     = b_slice_dim(1);
+                        d.ldb     = a_slice_dim(1);
+                        d.ldc     = c_slice_dim(1);
                     }
-                };
 
-                auto label = fmt::format("gemm_batch_strided x{} ({}-major, batch={}, M={}, K={}, N={})", d.batch_count,
-                                         col_mode ? "col" : "row", fmt::join(batch_names, ","), d.m, d.k, d.n);
-                ctx.record(OpKind::BatchedGemm, std::move(label), {a_id, b_id}, {c_id}, std::move(executor), std::move(d));
-                return;
+                    d.alpha          = as<std::complex<double>>(params->ab_pf);
+                    d.beta           = as<std::complex<double>>(params->c_pf);
+                    d.batch_count    = static_cast<int>(flat_batch);
+                    d.strided        = true;
+                    d.batch_stride_a = static_cast<std::int64_t>(a_slice_dim(0)) * static_cast<std::int64_t>(a_slice_dim(1));
+                    d.batch_stride_b = static_cast<std::int64_t>(b_slice_dim(0)) * static_cast<std::int64_t>(b_slice_dim(1));
+                    d.batch_stride_c = static_cast<std::int64_t>(c_slice_dim(0)) * static_cast<std::int64_t>(c_slice_dim(1));
+
+                    bool const swap_ab  = row_mode;
+                    auto       executor = [d, swap_ab, a_slot, b_slot, c_slot]() {
+                        LabeledSection("einsum batched execute");
+                        ProfileAnnotate("m", static_cast<int64_t>(d.m));
+                        ProfileAnnotate("n", static_cast<int64_t>(d.n));
+                        ProfileAnnotate("k", static_cast<int64_t>(d.k));
+                        ProfileAnnotate("batch", static_cast<int64_t>(d.batch_count));
+                        auto const *base_a = static_cast<T const *>(static_cast<AType const *>(a_slot->ptr)->data());
+                        auto const *base_b = static_cast<T const *>(static_cast<BType const *>(b_slot->ptr)->data());
+                        auto       *base_c = static_cast<T *>(static_cast<CType *>(c_slot->ptr)->data());
+
+                        std::vector<T const *> a_arr(d.batch_count);
+                        std::vector<T const *> b_arr(d.batch_count);
+                        std::vector<T *>       c_arr(d.batch_count);
+                        for (int i = 0; i < d.batch_count; ++i) {
+                            a_arr[i] = base_a + i * d.batch_stride_a;
+                            b_arr[i] = base_b + i * d.batch_stride_b;
+                            c_arr[i] = base_c + i * d.batch_stride_c;
+                        }
+
+                        T const **blas_a = swap_ab ? b_arr.data() : a_arr.data();
+                        T const **blas_b = swap_ab ? a_arr.data() : b_arr.data();
+
+                        if constexpr (std::is_same_v<T, std::complex<float>> || std::is_same_v<T, std::complex<double>>) {
+                            using R = typename T::value_type;
+                            T alpha{static_cast<R>(d.alpha.real()), static_cast<R>(d.alpha.imag())};
+                            T beta{static_cast<R>(d.beta.real()), static_cast<R>(d.beta.imag())};
+                            blas::gemm_batch<T>(d.trans_a, d.trans_b, d.m, d.n, d.k, alpha, blas_a, d.lda, blas_b, d.ldb, beta,
+                                                c_arr.data(), d.ldc, d.batch_count);
+                        } else {
+                            blas::gemm_batch<T>(d.trans_a, d.trans_b, d.m, d.n, d.k, static_cast<T>(d.alpha.real()), blas_a, d.lda, blas_b,
+                                                d.ldb, static_cast<T>(d.beta.real()), c_arr.data(), d.ldc, d.batch_count);
+                        }
+                    };
+
+                    auto label = fmt::format("gemm_batch_strided x{} ({}-major, batch={}, M={}, K={}, N={})", d.batch_count,
+                                             col_mode ? "col" : "row", fmt::join(batch_names, ","), d.m, d.k, d.n);
+                    ctx.record(OpKind::BatchedGemm, std::move(label), {a_id, b_id}, {c_id}, std::move(executor), std::move(d));
+                    return;
+                } // canonical_mn, otherwise fall through to the generic einsum
             }
         }
     }
