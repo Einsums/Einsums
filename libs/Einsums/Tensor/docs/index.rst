@@ -102,3 +102,22 @@ Public Reference
 
     This is a convenience class for interacting with the Python module. It will never work with many Einsums calls. Instead,
     it should be converted into a :cpp:class:`TensorView` so that the rank can be coerced at compile time.
+
+Symmetry Metadata
+-----------------
+
+Every tensor can optionally carry a ``SymmetryDescriptor`` describing
+invariants such as ``T(i,j) = T(j,i)``. The descriptor is metadata only, so
+storage stays dense. It is consumed by the rank-2 BLAS dispatch, which
+promotes ``gemm`` to ``symm`` or ``hemm``, and by the ComputeGraph
+``SymmetryPropagation`` pass.
+
+Attach a descriptor with ``tensor.set_symmetry(desc)``, read it with
+``tensor.symmetry()``, and clear it with ``tensor.clear_symmetry()``. Enforce
+a descriptor with ``symmetrize(tensor)`` and verify one with
+``check_symmetry(tensor, tolerance)``. Both functions are declared in
+``Einsums/Tensor/SymmetryOps.hpp``.
+
+See the ComputeGraph module's ``symmetry`` page for the full guide, which
+covers named factories for common patterns, propagation rules, and design
+notes.
