@@ -6,10 +6,18 @@ dependencies:
   # Development
   - cmake
   - ccache
-  - cxx-compiler
+  # NOTE: the C++ compiler is intentionally NOT listed here. The unpinned
+  # `cxx-compiler` metapackage lags several major versions behind conda-forge's
+  # latest toolchain, which is too old for the C++23 baseline (see
+  # cmake/Einsums_CheckCXXStandard.cmake). merge_yml.py injects the pinned,
+  # platform-aware toolchain (gcc / clang / intel) instead.
   - ninja
   - lcov
   - pre-commit
+  # pkg-config is used by cmake/FindFFTW.cmake (pkg_check_modules fftw3) to
+  # locate the FFT backend reliably; without it FFTW discovery falls back to
+  # a bare find_library search.
+  - pkg-config
   # Prebuilts to save einsums the work
   - catch2
   - fftw
@@ -23,9 +31,17 @@ dependencies:
   - numpy
   - mimalloc
   # Python stuff
+  #
+  # Pin the interpreter to the regular (GIL) CPython ABI. Without an explicit
+  # python entry the solver picks it transitively, and conda-forge's linux-64
+  # solver started resolving that to the free-threaded cp314t variant
+  # (2026-07). FindPython rejects a t-build for
+  # `COMPONENTS Interpreter Development` and silently falls back to the CI
+  # runner's system python, whose multiarch dev headers are absent.
+  - python 3.14.* *_cp314
   - pybind11
   - pytest
   - numpy
-  - pytest-cov
-  - coverage
   - scipy
+  - textual
+  - rich
