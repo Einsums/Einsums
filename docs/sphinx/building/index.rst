@@ -15,9 +15,9 @@ Building from source
    See :ref:`Installation Instructions <installing>` for details on that.
 
 Building Einsums from source requires setting up system-level dependencies
-(compilers, BLAS/LAPACK libraries, etc.) first, and then invoking a build. The
+such as compilers and BLAS/LAPACK libraries first, and then invoking a build. The
 build may be done in order to install Einsums for local usage, develop Einsums
-itself, or build redistributable binary packages. Any it may be desired to
+itself, or build redistributable binary packages. You may also want to
 customize aspects of how the build is done. This guide will cover all these
 aspects. In addition, it provides background information on how the Einsums build
 works.
@@ -34,22 +34,26 @@ other system-level dependencies to build it on your system.
 
   If you are using Conda, you can skip the steps in this section - with the
   exception of installing the Apple Developer Tools for macOS. All other
-  dependencies will be installed automatically by the following command:
+  dependencies will be installed automatically. Generate an environment file
+  with the merge script and create the environment from it:
 
   .. code:: bash
 
-    conda env create -f devtools/conda-envs/basic_einsums.yml
-    conda activate einsums
+    python3 devtools/conda-envs/merge_yml.py --output=einsums.yml
+    conda env create -f einsums.yml
+    conda activate einsums-dev
 
-  For a more personalized conda environment, we suggest using the merge script. The options for the 
-  compiler are ``default``, ``intel``, and ``windows``. The options for the BLAS library are ``openblas`` and ``mkl``.
-  If you plan on building the docs, then you can add the ``--docs`` flag as shown. If not, then this can be omitted.
+  The merge script picks a sensible toolchain and BLAS for your platform, but
+  both can be overridden. The compiler options are ``default`` (gcc on Linux,
+  clang on macOS/Windows), ``gcc``, ``clang``, and ``intel``. The BLAS options
+  are ``openblas``, ``mkl``, and ``accelerate`` (macOS). If you plan on building
+  the docs, add the ``--docs`` flag. For example:
 
   .. code:: bash
 
     python3 devtools/conda-envs/merge_yml.py --output=einsums.yml [--docs] <compiler> <blas>
     conda env create -f einsums.yml
-    conda activate einsums
+    conda activate einsums-dev
 
   If you don't have a conda installation yet, we recommend using
   Condaforge_; any conda flavor will work though.
@@ -141,9 +145,9 @@ the Einsums repository.::
 
 Then you will want to do the following:
 
-1. Create a dedicated development environment (conda environment),
-2. Install all needed dependencies (*build*, and also *test*, and *doc*
-   dependencies).
+1. Create a dedicated conda development environment.
+2. Install all needed dependencies, meaning the build, test, and doc
+   dependencies.
 3. Build Einsums.
 
 To create an ``einsums-dev`` development environment with every required and
