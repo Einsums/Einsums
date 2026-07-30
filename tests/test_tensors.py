@@ -1,7 +1,10 @@
 # Copyright (c) The Einsums Developers. All rights reserved.
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-import einsums as ein
+try:
+    import einsums as ein
+except ModuleNotFoundError:
+    import pyeinsums as ein
 import pytest
 import numpy as np
 import math
