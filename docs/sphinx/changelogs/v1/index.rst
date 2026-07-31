@@ -4,6 +4,12 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
+.. include:: v1.1.6.rst
+
+.. include:: v1.1.5.rst
+
+.. include:: v1.1.4.rst
+
 .. include:: v1.1.3.rst
 
 .. include:: v1.1.2.rst

@@ -4,12 +4,19 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. include:: v0.6.1.rst
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
 
-.. include:: v0.6.0.rst
+==============
+vX.Y.Z Release
+==============
 
-.. include:: v0.5.0.rst
+What's New
+----------
 
-.. include:: v0.4.1.rst
+What's Removed
+--------------
 
-.. include:: v0.4.0.rst
+Bug Fixes
+---------
+
+* Made the error messages emitted by ``Timer`` a bit more clear about who is actually throwing them. Users thought they were from other projects.

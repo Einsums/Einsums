@@ -4,12 +4,13 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. include:: v0.6.1.rst
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
 
-.. include:: v0.6.0.rst
+==============
+v1.1.5 Release
+==============
 
-.. include:: v0.5.0.rst
+Bug Fixes
+---------
 
-.. include:: v0.4.1.rst
-
-.. include:: v0.4.0.rst
+* Removed unused libatomic references that broke stuff.
