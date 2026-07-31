@@ -172,10 +172,18 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
                               *global_config.get_bool_map()};
 
         argument_parser->add_argument("--einsums:no-install-signal-handlers")
-            .default_value(true)
             .implicit_value(false)
             .help("do not install signal handlers")
             .store_into(global_bools["install-signal-handlers"]);
+        argument_parser->add_argument("--einsums:install-signal-handlers")
+            .implicit_value(true)
+            .help("do not install signal handlers")
+            .store_into(global_bools["install-signal-handlers"]);
+#ifdef EINSUMS_DEBUG
+        global_bools["install-signal-handlers"] = true;
+#else
+		global_bools["install-signal-handlers"] = false;
+#endif
 
         argument_parser->add_argument("--einsums:no-attach-debugger")
             .default_value(true)
@@ -194,7 +202,7 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
 #ifdef EINSUMS_DEBUG
             .default_value<std::int64_t>(SPDLOG_LEVEL_DEBUG)
 #else
-            .default_value<std::int64_t>(SPDLOG_LEVEL_INFO)
+            .default_value<std::int64_t>(SPDLOG_LEVEL_WARN)
 #endif
             .help("set log level")
             .choices(0, 1, 2, 3, 4)

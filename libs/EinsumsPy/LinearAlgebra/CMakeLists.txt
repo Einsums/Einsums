@@ -32,15 +32,14 @@ einsums_add_module(
   SOURCES ${LinearAlgebraSources}
   HEADERS ${LinearAlgebraHeaders}
   DEPENDENCIES Einsums
-        MODULE_DEPENDENCIES
-        Einsums_Runtime
-        Einsums_Logging
-        Einsums_TypeSupport
-        Einsums_Config
-        EinsumsPy_Tensor
-        Einsums_HPTT
-        Einsums_TensorAlgebra
-        Einsums_LinearAlgebra
+  MODULE_DEPENDENCIES
+    Einsums_Runtime
+    Einsums_Logging
+    Einsums_TypeSupport
+    Einsums_Config
+    EinsumsPy_Tensor
+    Einsums_TensorAlgebra
+    Einsums_LinearAlgebra
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME EinsumsPy
 )
@@ -50,6 +49,6 @@ einsums_extend_with_python_headers(${EINSUMS_PYTHON_LIB_NAME}_LinearAlgebra)
 
 if (EINSUMS_WITH_CUDA)
   foreach (f IN LISTS LinearAlgebraSources)
-    set_source_file_properties("src/${f}" PROPERTIES LANGUAGE CUDA)
+    set_source_files_properties("src/${f}" PROPERTIES LANGUAGE CUDA)
   endforeach ()
 endif ()

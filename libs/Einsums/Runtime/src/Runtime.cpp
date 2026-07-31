@@ -25,11 +25,15 @@ EINSUMS_SINGLETON_IMPL(RuntimeVars)
 #if defined(EINSUMS_WINDOWS)
 
 void handle_termination(char const *reason) {
-    if (runtime_config().einsums.attach_debugger) {
+    auto &global_config = GlobalConfigMap::get_singleton();
+    bool attach              = global_config.get_bool("attach-debugger", true);
+	bool diagnostics = global_config.get_bool("diagnostics-on-terminate", true);
+
+    if (attach) {
         util::attach_debugger();
     }
 
-    if (runtime_config().einsums.diagnostics_on_terminate) {
+    if (diagnostics) {
         // Add more information here.
         std::cerr << "{what}: " << (reason ? reason : "Unknown reason") << "\n";
     }
@@ -115,7 +119,9 @@ void set_signal_handlers() {
 }
 
 Runtime::Runtime(RuntimeConfiguration &&rtcfg, bool initialize) : _rtcfg(std::move(rtcfg)) {
-    init_global_data();
+	if(!runtime_ptr()) {
+	    init_global_data();
+	}
 
     if (initialize) {
         init();

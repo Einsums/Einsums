@@ -89,10 +89,18 @@ void print_timer_info(TimerDetail const *timer, std::FILE *fp) { // NOLINT
     }
 }
 
+static bool is_init = false;
+
 } // namespace detail
 
 void initialize() {
     using namespace detail;
+	
+	if(detail::is_init) {
+		return;
+	} else {
+		detail::is_init = true;
+	}
 
     root              = std::make_shared<TimerDetail>();
     root->name        = "Total Run Time";
@@ -109,6 +117,13 @@ void initialize() {
 
 void finalize() {
     using namespace detail;
+	
+	if(!detail::is_init) {
+		return;
+	} else {
+		detail::is_init = false;
+	}
+	
     assert(root.get() == current_timer);
     root.reset();
     current_timer = nullptr;

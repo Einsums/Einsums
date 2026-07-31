@@ -72,7 +72,7 @@ def build_structure(output_base, lib_name, module_name, python=False, **kwargs):
         gpu_foot=f"""
         if(EINSUMS_WITH_CUDA)
           foreach(f IN LISTS {module_name}Sources)
-            set_source_file_properties("src/${{f}}" PROPERTIES LANGUAGE CUDA)
+            set_source_files_properties("src/${{f}}" PROPERTIES LANGUAGE CUDA)
           endforeach()
         endif()
         endif()

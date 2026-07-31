@@ -17,7 +17,7 @@
 #include <source_location>
 
 #if hipblasVersionMajor >= 3
-using hipblasComplex = hipFloatComplex;
+using hipblasComplex       = hipFloatComplex;
 using hipblasDoubleComplex = hipDoubleComplex;
 #endif
 
@@ -31,8 +31,8 @@ namespace gpu {
 #define get_worker_info(thread_id, num_threads)                                                                                            \
     num_threads = gridDim.x * gridDim.y * gridDim.z * blockDim.x * blockDim.y * blockDim.z;                                                \
     thread_id   = threadIdx.x +                                                                                                            \
-                blockDim.x * (threadIdx.y +                                                                                                \
-                              blockDim.y * (threadIdx.z + blockDim.z * (blockIdx.x + gridDim.x * (blockIdx.y + gridDim.y * blockIdx.z))));
+                  blockDim.x * (threadIdx.y +                                                                                              \
+                                blockDim.y * (threadIdx.z + blockDim.z * (blockIdx.x + gridDim.x * (blockIdx.y + gridDim.y * blockIdx.z))));
 
 /**
  * @brief Get the internal hipBLAS handle.
@@ -201,7 +201,11 @@ EINSUMS_DEVICE inline void atomicAdd_wrap(float *address, float value) {
  * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
  */
 EINSUMS_DEVICE inline void atomicAdd_wrap(double *address, double value) {
+#if defined(__HIPCC__) || (defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 600)
     atomicAdd(address, value);
+#else
+    safeAtomicAdd(address, value);
+#endif
 }
 
 /**
@@ -216,8 +220,13 @@ EINSUMS_DEVICE inline void atomicAdd_wrap(hipFloatComplex *address, hipFloatComp
  * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
  */
 EINSUMS_DEVICE inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleComplex value) {
+#if defined(__HIPCC__) || (defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 600)
     atomicAdd(&(address->x), value.x);
     atomicAdd(&(address->y), value.y);
+#else
+    safeAtomicAdd(&(address->x), value.x);
+    safeAtomicAdd(&(address->y), value.y);
+#endif
 }
 
 } // namespace gpu
