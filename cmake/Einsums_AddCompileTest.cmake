@@ -5,7 +5,7 @@
 
 function(einsums_add_compile_test category name)
   set(options FAILURE_EXPECTED NOLIBS OBJECT)
-  set(one_value_args SOURCE_ROOT FOLDER)
+  set(one_value_args SOURCE_ROOT FOLDER SHORT_NAME)
   set(multi_value_args SOURCES DEPENDENCIES)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
@@ -17,7 +17,11 @@ function(einsums_add_compile_test category name)
     set(_additional_flags ${_additional_flags} OBJECT)
   endif()
 
-  string(REGEX REPLACE "\\." "_" test_name "${category}.${name}")
+  if(${name}_SHORT_NAME)
+  	set(test_name ${${name}_SHORT_NAME})
+  else()
+    string(REGEX REPLACE "\\." "_" test_name "${category}.${name}")
+  endif()
 
   if(${name}_OBJECT)
     einsums_add_library(
@@ -114,10 +118,22 @@ function(einsums_add_header_tests category)
       string(REGEX REPLACE "${${category}_HEADER_ROOT}/" "" relpath "${header}")
 
       # .hpp --> .cpp
-      string(REGEX REPLACE ".hpp" ".cpp" full_test_file "${relpath}")
+      cmake_path(GET relpath FILENAME test_file_base)
+      cmake_path(REPLACE_EXTENSION test_file_base "cpp" OUTPUT_VARIABLE full_test_file)
+      # string(REGEX REPLACE ".hpp" ".cpp" full_test_file "${relpath}")
       # remove extension, '/' --> '_'
       string(REGEX REPLACE ".hpp" "_hpp" test_file "${relpath}")
       string(REGEX REPLACE "/" "_" test_name "${test_file}")
+      
+      message("Relative path is ${relpath}")
+      
+      if(NOT relpath MATCHES "Einsums[a-zA-Z0-9_-]*/[a-zA-Z0-9_-]+/")
+      	string(REGEX REPLACE "[/\.]" "_" short_name "${category}.Top.${test_file_base}")
+      else()
+	    string(REGEX REPLACE "[/\.]" "_" short_name "${category}.${test_file_base}")
+	  endif()
+	  
+	  message("Short name is ${short_name}")	
 
       # generate the test
       file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${full_test_file}
@@ -140,6 +156,7 @@ function(einsums_add_header_tests category)
         FOLDER "Tests/Headers/${header_dir}"
         DEPENDENCIES ${${category}_DEPENDENCIES} einsums_private_flags einsums_public_flags
                      ${_additional_flags}
+        SHORT_NAME ${short_name}
       )
 
     endif()
