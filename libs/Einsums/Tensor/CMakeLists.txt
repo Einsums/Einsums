@@ -15,6 +15,8 @@ set(TensorHeaders
     Einsums/Tensor/FunctionTensor.hpp
     Einsums/Tensor/RuntimeTensor.hpp
     Einsums/Tensor/TiledTensor.hpp
+    Einsums/Tensor/Backends/TiledTensorBase.hpp
+    Einsums/Tensor/Backends/TiledTensorPrint.hpp
 )
 
 set(TensorSources TensorDefs.cpp Requirements.cpp)
