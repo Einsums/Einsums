@@ -15,6 +15,7 @@
 #include <Einsums/Runtime/Runtime.hpp>
 #include <Einsums/Version.hpp>
 
+#include <atomic>
 #include <csignal>
 #include <cstdlib>
 #include <functional>
@@ -25,7 +26,7 @@
 
 namespace einsums {
 
-static bool is_init = false;
+static std::atomic_bool is_init = false;
 
 template <typename F, typename... BoundArgs>
 struct bind_back_t {
@@ -95,15 +96,20 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
     RuntimeConfiguration config(argv);
 
     // Before this line logging does not work.
-    init_logging(config);
+    if (!is_init) {
+
+        init_logging(config);
+    }
 
     auto &global_config = GlobalConfigMap::get_singleton();
 
     // Report build settings.
-    EINSUMS_LOG_INFO("Starting Einsums: {}", build_string());
+    {
+        auto version_str = build_string();
+        EINSUMS_LOG_INFO("Starting Einsums: {}", version_str);
+    }
 
-    if (global_config.get_bool("install-signal-handlers")) {
-        EINSUMS_LOG_TRACE("Installing signal handlers...");
+    if (global_config.get_bool("install-signal-handlers", false)) {
         set_signal_handlers();
     }
 
@@ -120,9 +126,11 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
 
     is_init = true;
     if (blocking) {
+        EINSUMS_LOG_DEBUG("Running the main function in blocking mode.");
         return run(f, *rt, params);
     }
 
+    EINSUMS_LOG_DEBUG("Running the main function in non-blocking mode.");
     run(f, *rt, params);
 
     // pointer to runtime is stored in TLS

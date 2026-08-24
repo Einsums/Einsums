@@ -15,6 +15,7 @@
 #include <Einsums/Config/Namespace.hpp>
 #include <Einsums/Config/Types.hpp>
 #include <Einsums/Config/Version.hpp>
+#include <Einsums/Config/StdAlternatives.hpp>
 
 #if !defined(EINSUMS_ZERO)
 #    define EINSUMS_ZERO (1.0e-10)

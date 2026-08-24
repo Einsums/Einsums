@@ -9,6 +9,7 @@
 
 #include <Einsums/Concepts/File.hpp>
 
+#include <fmt/base.h>
 #include <fmt/color.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
@@ -123,12 +124,12 @@ struct ordinal {
 #ifndef DOXYGEN
 #    define OPERATOR(OP)                                                                                                                   \
         template <std::integral OtherType>                                                                                                 \
-        constexpr ordinal<IntType> &operator OP##=(const ordinal<OtherType> &other) {                                                      \
+        constexpr ordinal<IntType> &operator OP## = (const ordinal<OtherType> &other) {                                                    \
             val_ OP## = other.val_;                                                                                                        \
             return *this;                                                                                                                  \
         }                                                                                                                                  \
         template <std::integral OtherType>                                                                                                 \
-        constexpr ordinal<IntType> &operator OP##=(const OtherType &other) {                                                               \
+        constexpr ordinal<IntType> &operator OP## = (const OtherType &other) {                                                             \
             val_ OP## = other;                                                                                                             \
             return *this;                                                                                                                  \
         }
@@ -209,40 +210,23 @@ void fprintln(OutType out, Ts... args) {
 #endif
 
 #ifndef DOXYGEN
-template <typename... Ts>
-void println(std::string_view const &f, Ts const... ts) {
-    std::string const s = fmt::format(fmt::runtime(f), ts...);
-    detail::println(s);
-}
 
 template <typename... Ts>
-void println(fmt::text_style const &style, std::string_view const &format, Ts const... ts) {
-    std::string const s = fmt::format(style, fmt::runtime(format), ts...);
-    detail::println(s);
-}
+void fprintln(std::FILE *fp, std::string_view const &f, Ts &&...ts) {
 
-inline void println(fmt::text_style const &style, std::string_view const &format) {
-    std::string const s = fmt::format(style, fmt::runtime(format));
-    detail::println(s);
-}
+    std::string s = einsums::detail::corrected_format(f, std::forward<Ts>(ts)...);
 
-inline void println() {
-    detail::println("\n");
-}
-
-template <typename... Ts>
-void fprintln(std::FILE *fp, std::string_view const &f, Ts const... ts) {
-    std::string const s = fmt::format(fmt::runtime(f), ts...);
     detail::fprintln(fp, s);
 }
 
 template <typename... Ts>
-void fprintln(std::FILE *fp, fmt::text_style const &style, std::string_view const &format, Ts const... ts) {
+void fprintln(std::FILE *fp, fmt::text_style const &style, std::string_view const &format, Ts &&...ts) {
     std::string s;
+
     if (fp == stdout || fp == stderr) {
-        s = fmt::format(style, format, ts...);
+        s = einsums::detail::corrected_format(style, format, std::forward<Ts>(ts)...);
     } else {
-        s = fmt::format(format, ts...);
+        s = einsums::detail::corrected_format(format, std::forward<Ts>(ts)...);
     }
     detail::fprintln(fp, s);
 }
@@ -252,13 +236,13 @@ inline void fprintln(std::FILE *fp, std::string const &format) {
 }
 
 inline void fprintln(std::FILE *fp, fmt::text_style const &style, std::string_view const &format) {
-    std::string s;
     if (fp == stdout || fp == stderr) {
-        s = fmt::format(style, fmt::runtime(format));
+        std::string s = einsums::detail::corrected_format(style, format);
+        detail::fprintln(fp, s);
     } else {
-        s = format;
+        std::string s(format);
+        detail::fprintln(fp, s);
     }
-    detail::fprintln(fp, s);
 }
 
 inline void fprintln(std::FILE *fp) {
@@ -266,14 +250,32 @@ inline void fprintln(std::FILE *fp) {
 }
 
 template <typename... Ts>
-void fprintln(std::ostream &fp, std::string_view const &f, Ts const... ts) {
-    std::string const s = fmt::format(fmt::runtime(f), ts...);
+void println(std::string_view const &f, Ts &&...ts) {
+    fprintln(stdout, f, std::forward<Ts>(ts)...);
+}
+
+template <typename... Ts>
+void println(fmt::text_style const &style, std::string_view const &format, Ts &&...ts) {
+    fprintln(stdout, style, format, std::forward<Ts>(ts)...);
+}
+
+inline void println(fmt::text_style const &style, std::string_view const &format) {
+    fprintln(stdout, style, format);
+}
+
+inline void println() {
+    fprintln(stdout);
+}
+
+template <typename... Ts>
+void fprintln(std::ostream &fp, std::string_view const &f, Ts &&...ts) {
+    std::string s = einsums::detail::corrected_format(f, std::forward<Ts>(ts)...);
     detail::fprintln(fp, s);
 }
 
 template <typename... Ts>
-void fprintln(std::ostream &fp, fmt::text_style const &style, std::string_view const &format, Ts const... ts) {
-    std::string const s = fmt::format(style, format, ts...);
+void fprintln(std::ostream &fp, fmt::text_style const &style, std::string_view const &format, Ts &&...ts) {
+    std::string s = einsums::detail::corrected_format(style, format, std::forward<Ts>(ts)...);
     detail::fprintln(fp, s);
 }
 
@@ -282,7 +284,7 @@ inline void fprintln(std::ostream &fp, std::string const &format) {
 }
 
 inline void fprintln(std::ostream &fp, fmt::text_style const &style, std::string_view const &format) {
-    std::string const s = fmt::format(style, fmt::runtime(format));
+    std::string s = einsums::detail::corrected_format(style, format);
     detail::fprintln(fp, s);
 }
 
@@ -295,9 +297,9 @@ inline void fprintln(std::ostream &fp) {
  * Calls println to generate an error message, then aborts.
  */
 template <typename... Ts>
-void println_abort(std::string_view const &format, Ts const... ts) {
+void println_abort(std::string_view const &format, Ts &&...ts) {
     std::string message = std::string("ERROR: ") + format.data();
-    println(bg(color::red) | fg(color::white), message, ts...);
+    println(bg(color::red) | fg(color::white), message, std::forward<Ts>(ts)...);
 
 #if defined(EINSUMS_HAVE_CPPTRACE)
     cpptrace::generate_trace().print();
@@ -310,9 +312,9 @@ void println_abort(std::string_view const &format, Ts const... ts) {
  * Calls println to generate a warning message.
  */
 template <typename... Ts>
-void println_warn(std::string_view const &format, Ts const... ts) {
+void println_warn(std::string_view const &format, Ts &&...ts) {
     std::string message = std::string("WARNING: ") + format.data();
-    println(bg(color::yellow) | fg(color::black), message, ts...);
+    println(bg(color::yellow) | fg(color::black), message, std::forward<Ts>(ts)...);
 
 #if defined(EINSUMS_HAVE_CPPTRACE)
     cpptrace::generate_trace(0, 3).print();
@@ -323,10 +325,12 @@ void println_warn(std::string_view const &format, Ts const... ts) {
  * Calls fprintln to generate an error message, then aborts.
  */
 template <typename... Ts>
-void fprintln_abort(std::FILE *fp, std::string_view const &format, Ts const... ts) {
+void fprintln_abort(std::FILE *fp, std::string_view const &format, Ts &&...ts) {
     std::string message = std::string("ERROR: ") + format.data();
-    fprintln(fp, message, ts...);
-
+    fprintln(fp, message, std::forward<Ts>(ts)...);
+#if defined(EINSUMS_HAVE_CPPTRACE)
+    cpptrace::generate_trace().print();
+#endif
     std::abort();
 }
 
@@ -334,24 +338,36 @@ void fprintln_abort(std::FILE *fp, std::string_view const &format, Ts const... t
  * Calls fprintln to generate a warning message.
  */
 template <typename... Ts>
-void fprintln_warn(std::FILE *fp, std::string_view const &format, Ts const... ts) {
+void fprintln_warn(std::FILE *fp, std::string_view const &format, Ts &&...ts) {
     std::string message = std::string("WARNING: ") + format.data();
-    fprintln(fp, message, ts...);
+    fprintln(fp, message, std::forward<Ts>(ts)...);
+
+#if defined(EINSUMS_HAVE_CPPTRACE)
+    cpptrace::generate_trace(0, 3).print();
+#endif
 }
 
 #ifndef DOXYGEN
 template <typename... Ts>
-void fprintln_abort(std::ostream &os, std::string_view const &format, Ts const... ts) {
+void fprintln_abort(std::ostream &os, std::string_view const &format, Ts &&...ts) {
     std::string message = std::string("ERROR: ") + format.data();
-    fprintln(os, bg(color::red) | fg(color::white), message, ts...);
+    fprintln(os, bg(color::red) | fg(color::white), message, std::forward<Ts>(ts)...);
+
+#    if defined(EINSUMS_HAVE_CPPTRACE)
+    cpptrace::generate_trace().print();
+#    endif
 
     std::abort();
 }
 
 template <typename... Ts>
-void fprintln_warn(std::ostream &os, std::string_view const &format, Ts const... ts) {
+void fprintln_warn(std::ostream &os, std::string_view const &format, Ts &&...ts) {
     std::string message = std::string("WARNING: ") + format.data();
-    fprintln(os, bg(color::yellow) | fg(color::black), message, ts...);
+    fprintln(os, bg(color::yellow) | fg(color::black), message, std::forward<Ts>(ts)...);
+
+#    if defined(EINSUMS_HAVE_CPPTRACE)
+    cpptrace::generate_trace(0, 3).print();
+#    endif
 }
 #endif
 
@@ -375,6 +391,9 @@ struct fmt::formatter<einsums::print::ordinal<IntType>> {
 
   protected:
     constexpr inline char const *get_suffix(IntType value) const {
+        // In case a negative number gives a negative mod, this will bring it
+        // in the range of [0, 100). If a mod always gives a positive number, this just does a bit of extra
+        // work.
         IntType const hundreds = (value % 100 + 100) % 100;
 
         if (hundreds > 20 || hundreds < 10) {

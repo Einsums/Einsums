@@ -13,6 +13,12 @@
 
 #include <csignal>
 
+#ifdef EINSUMS_HAVE_BACKTRACES
+#    include <Einsums/Debugging/Backtrace.hpp>
+
+#    include <cpptrace/cpptrace.hpp>
+#endif
+
 #if defined(EINSUMS_WINDOWS)
 #    include <Windows.h>
 #endif
@@ -26,17 +32,16 @@ EINSUMS_SINGLETON_IMPL(RuntimeVars)
 
 void handle_termination(char const *reason) {
     auto &global_config = GlobalConfigMap::get_singleton();
-    bool attach              = global_config.get_bool("attach-debugger", true);
-	bool diagnostics = global_config.get_bool("diagnostics-on-terminate", true);
-
-    if (attach) {
-        util::attach_debugger();
-    }
+    bool  diagnostics   = global_config.get_bool("diagnostics-on-terminate", true);
 
     if (diagnostics) {
         // Add more information here.
         std::cerr << "{what}: " << (reason ? reason : "Unknown reason") << "\n";
     }
+
+#    ifdef EINSUMS_HAVE_BACKTRACES
+    cpptrace::generate_trace(1, EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH).print(std::cerr);
+#    endif
 }
 
 EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type) {
@@ -67,16 +72,35 @@ EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type) {
     return FALSE;
 }
 
+[[noreturn]] EINSUMS_EXPORT void signal_handler(int signum) {
+    //    bool attach = true;
+    //
+    //    auto &global_config = GlobalConfigMap::get_singleton();
+    //    attach              = global_config.get_bool("attach-debugger", false);
+
+    //    if (signum != SIGINT && attach) {
+    //        util::attach_debugger();
+    //    }
+
+#    ifdef EINSUMS_HAVE_BACKTRACE
+    cpptrace::generate_trace(1, EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH).print(std::cerr);
+#    endif
+
+    /// @todo If einsums.diagnostics_on_terminate is true then print out a lot of information.
+
+    std::abort();
+}
 #else
+
 [[noreturn]] EINSUMS_EXPORT void termination_handler(int signum) {
     bool attach = true;
 
-    try {
-        auto &global_config = GlobalConfigMap::get_singleton();
-        attach              = global_config.get_bool("attach-debugger", true);
-    } catch (...) {
-        attach = true;
-    }
+    auto &global_config = GlobalConfigMap::get_singleton();
+    attach              = global_config.get_bool("attach-debugger", false);
+
+#    ifdef EINSUMS_HAVE_BACKTRACE
+    cpptrace::generate_trace(1, EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH).print(std::cerr);
+#    endif
 
     if (signum != SIGINT && attach) {
         util::attach_debugger();
@@ -102,6 +126,11 @@ void on_abort(int) noexcept {
 void set_signal_handlers() {
 #if defined(EINSUMS_WINDOWS)
     SetConsoleCtrlHandler(termination_handler, TRUE);
+//    std::signal(SIGABRT, signal_handler);
+//	std::signal(SIGFPE, signal_handler);
+//	std::signal(SIGILL, signal_handler);
+//	std::signal(SIGINT, signal_handler);
+//	std::signal(SIGSEGV, signal_handler);
 #else
     struct sigaction new_action;
     new_action.sa_handler = termination_handler;
@@ -119,9 +148,9 @@ void set_signal_handlers() {
 }
 
 Runtime::Runtime(RuntimeConfiguration &&rtcfg, bool initialize) : _rtcfg(std::move(rtcfg)) {
-	if(!runtime_ptr()) {
-	    init_global_data();
-	}
+    if (!runtime_ptr()) {
+        init_global_data();
+    }
 
     if (initialize) {
         init();
@@ -211,13 +240,13 @@ void Runtime::add_startup_function(StartupFunctionType f) {
 
 void Runtime::call_startup_functions(bool pre_startup) {
     if (pre_startup) {
-        EINSUMS_LOG_TRACE("Calling pre-startup routines");
+        EINSUMS_LOG_DEBUG("Calling pre-startup routines");
         state(RuntimeState::PreStartup);
         for (StartupFunctionType &f : _pre_startup_functions) {
             f();
         }
     } else {
-        EINSUMS_LOG_TRACE("Calling startup routines");
+        EINSUMS_LOG_DEBUG("Calling startup routines");
         state(RuntimeState::Startup);
         for (StartupFunctionType &f : _startup_functions) {
             f();
@@ -227,13 +256,13 @@ void Runtime::call_startup_functions(bool pre_startup) {
 
 void Runtime::call_shutdown_functions(bool pre_shutdown) {
     if (pre_shutdown) {
-        EINSUMS_LOG_TRACE("Calling pre-shutdown routines");
+        EINSUMS_LOG_DEBUG("Calling pre-shutdown routines");
         state(RuntimeState::PreShutdown);
         for (ShutdownFunctionType &f : _pre_shutdown_functions) {
             f();
         }
     } else {
-        EINSUMS_LOG_TRACE("Calling shutdown routines");
+        EINSUMS_LOG_DEBUG("Calling shutdown routines");
         state(RuntimeState::Shutdown);
         for (ShutdownFunctionType &f : _shutdown_functions) {
             f();

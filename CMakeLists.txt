@@ -25,6 +25,9 @@ if(NOT CMAKE_BUILD_TYPE)
   )
 endif()
 
+cmake_policy(SET CMP0091 NEW)
+cmake_policy(SET CMP0184 NEW)
+
 project(Einsums LANGUAGES C CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -603,6 +606,11 @@ if(EINSUMS_WITH_COMPILER_WARNINGS_AS_ERRORS)
   endif()
 endif()
 
+if(WIN32)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug,RelWithDebInfo>:Debug>DLL")
+  set(CMAKE_MSVC_RUNTIME_CHECKS "$<$<CONFIG:Debug>:PossibleDataLoss;StackFrameErrorCheck;UninitializedVariable>")
+endif()
+
 # Diagnostics
 if(MSVC)
   # Display full paths in diagnostics
@@ -613,6 +621,7 @@ if(MSVC)
     set(__target_arch "x86")
   endif()
   einsums_info("Architecture detected: ${__target_arch}")
+  
 else()
   # Show the flags that toggle each warning
   einsums_add_compile_flag_if_available(-fdiagnostics-show-option)
@@ -808,6 +817,11 @@ endif()
 
 if(EINSUMS_WITH_EXAMPLES)
   einsums_add_pseudo_target(Examples)
+endif()
+
+# For some reason, Windows doesn't always provide all types.
+if(MSVC)
+  einsums_add_config_test(EINSUMS_WINDOWS_HAS_TYPES SOURCE ${CMAKE_PROJECT_DIR}/cmake/tests/windows_needs_types.cpp)
 endif()
 
 # ##################################################################################################

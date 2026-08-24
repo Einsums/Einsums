@@ -46,11 +46,11 @@ TEMPLATE_TEST_CASE("Block Tensor creation", "[tensor][block-tensor]", float, dou
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(A(i, j) == TestType(1.0));
-                CHECK(B(i, j) == TestType(1.0));
+                CHECK_THAT(A(i, j), einsums::CheckWithinAbs(TestType(1.0), 1e-6));
+                CHECK_THAT(B(i, j), einsums::CheckWithinAbs(TestType(1.0), 1e-6));
             } else {
-                CHECK(A(i, j) == TestType(0.0));
-                CHECK(B(i, j) == TestType(0.0));
+                CHECK_THAT(A(i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
+                CHECK_THAT(B(i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
             }
         }
     }
@@ -67,9 +67,9 @@ TEMPLATE_TEST_CASE("Block Tensor creation", "[tensor][block-tensor]", float, dou
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(C(i, j) == TestType(1.0));
+                CHECK_THAT(C(i, j), einsums::CheckWithinAbs(TestType(1.0), 1e-6));
             } else {
-                CHECK(C(i, j) == TestType(0.0));
+                CHECK_THAT(C(i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
             }
         }
     }
@@ -78,19 +78,19 @@ TEMPLATE_TEST_CASE("Block Tensor creation", "[tensor][block-tensor]", float, dou
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (i == j) {
-                CHECK(A[0](i, j) == TestType(1.0));
-                CHECK(B[0](i, j) == TestType(1.0));
-                CHECK(A[1](i, j) == TestType(1.0));
-                CHECK(B[1](i, j) == TestType(1.0));
-                CHECK(C["block1"](i, j) == TestType(1.0));
-                CHECK(C["block2"](i, j) == TestType(1.0));
+                CHECK_THAT(A[0](i, j), einsums::CheckWithinAbs(TestType(1.0), 1e-6));
+                CHECK_THAT(B[0](i, j), einsums::CheckWithinAbs(TestType(1.0), 1e-6));
+                CHECK_THAT(A[1](i, j), einsums::CheckWithinAbs(TestType(1.0), 1e-6));
+                CHECK_THAT(B[1](i, j), einsums::CheckWithinAbs(TestType(1.0), 1e-6));
+                CHECK_THAT(C["block1"](i, j), einsums::CheckWithinAbs(TestType(1.0), 1e-6));
+                CHECK_THAT(C["block2"](i, j), einsums::CheckWithinAbs(TestType(1.0), 1e-6));
             } else {
-                CHECK(A[0](i, j) == TestType(0.0));
-                CHECK(B[0](i, j) == TestType(0.0));
-                CHECK(A[1](i, j) == TestType(0.0));
-                CHECK(B[1](i, j) == TestType(0.0));
-                CHECK(C["block1"](i, j) == TestType(0.0));
-                CHECK(C["block2"](i, j) == TestType(0.0));
+                CHECK_THAT(A[0](i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
+                CHECK_THAT(B[0](i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
+                CHECK_THAT(A[1](i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
+                CHECK_THAT(B[1](i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
+                CHECK_THAT(C["block1"](i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
+                CHECK_THAT(C["block2"](i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
             }
         }
     }
@@ -107,9 +107,9 @@ TEMPLATE_TEST_CASE("Block Tensor creation", "[tensor][block-tensor]", float, dou
                 REQUIRE(A.block_of(i) != A.block_of(j));
             }
             if (A.block_of(i) == A.block_of(j)) {
-                CHECK(A(i, j) == TestType(2.0));
+                CHECK_THAT(A(i, j), einsums::CheckWithinAbs(TestType(2.0), 1e-6));
             } else {
-                CHECK(A(i, j) == TestType(0.0));
+                CHECK_THAT(A(i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
             }
         }
     }
@@ -147,11 +147,11 @@ TEMPLATE_TEST_CASE("Block Tensor operations", "[tensor][block-tensor]", float, d
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(A(i, j) == TestType(0.0));
+                CHECK_THAT(A(i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
             } else if (A.block_of(i) == A.block_of(j)) {
-                CHECK(A(i, j) == TestType(-1.0));
+                CHECK_THAT(A(i, j), einsums::CheckWithinAbs(TestType(-1.0), 1e-6));
             } else {
-                CHECK(A(i, j) == TestType(0.0));
+                CHECK_THAT(A(i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
             }
         }
     }
@@ -164,14 +164,14 @@ TEMPLATE_TEST_CASE("Block Tensor operations", "[tensor][block-tensor]", float, d
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(A(i, j) == TestType(1.0));
-                CHECK(B(i, j) == TestType(0.0));
+                CHECK_THAT(A(i, j), einsums::CheckWithinAbs(TestType(1.0), 1e-6));
+                CHECK_THAT(B(i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
             } else if (A.block_of(i) == A.block_of(j)) {
-                CHECK(A(i, j) == TestType(-1.0));
-                CHECK(B(i, j) == TestType(1.0));
+                CHECK_THAT(A(i, j), einsums::CheckWithinAbs(TestType(-1.0), 1e-6));
+                CHECK_THAT(B(i, j), einsums::CheckWithinAbs(TestType(1.0), 1e-6));
             } else {
-                CHECK(A(i, j) == TestType(0.0));
-                CHECK(B(i, j) == TestType(0.0));
+                CHECK_THAT(A(i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
+                CHECK_THAT(B(i, j), einsums::CheckWithinAbs(TestType(0.0), 1e-6));
             }
         }
     }

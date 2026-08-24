@@ -3,15 +3,14 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include <Einsums/Config/StdAlternatives.hpp>
-#include <Einsums/Print.hpp>
 
-#include <Einsums/Testing.hpp>
+#include <windows.h>
+#include <windef.h>
+#include <basetsd.h>
+#include <winnt.h>
+#include <tlhelp32.h>
 
-TEST_CASE("Formatting ordinals", "[print]") {
-    using namespace einsums;
 
-    std::string formatted = einsums::detail::corrected_format("{}", print::ordinal{1});
-
-    REQUIRE(formatted == "1st");
+int main(void) {
+	return 0;
 }

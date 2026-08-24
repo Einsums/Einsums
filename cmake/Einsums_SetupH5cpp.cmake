@@ -19,8 +19,8 @@ find_package(TargetHDF5 REQUIRED)
 include(FetchContent)
 fetchcontent_declare(
   h5cpp
-  URL https://github.com/Einsums/h5cpp/archive/v1.10.4-6+4.tar.gz
-  URL_HASH SHA256=f9acf8d35ac1584d0c0f36471abc3faaa3e181d2713950b1af21e4f4bc0f9991
+  URL https://github.com/loriab/h5cpp/archive/v1.10.4-6+5.tar.gz
+  URL_HASH SHA256=6e7e8f3227f51f3ad81c68857033290f5c7465b5efe05158a1ffaa2f2438e01f
 )
 
 fetchcontent_getproperties(h5cpp)

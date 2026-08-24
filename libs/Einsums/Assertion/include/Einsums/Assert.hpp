@@ -8,6 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Assertion/EvaluateAssert.hpp>
+#include <Einsums/Config/StdAlternatives.hpp>
 #include <Einsums/Preprocessor/Stringify.hpp>
 
 #include <fmt/format.h>
@@ -59,12 +60,12 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 #    define EINSUMS_ASSERT_(expr, ...)                                                                                                     \
         ((bool)(expr) ? void()                                                                                                             \
                       : ::einsums::detail::handle_assert(std::source_location::current(), EINSUMS_PP_STRINGIFY(expr),                      \
-                                                         fmt::format(__VA_ARGS__))) /**/
+                                                         einsums::detail::corrected_format(__VA_ARGS__))) /**/
 
 #    define EINSUMS_ASSERT_LOCKED_(l, expr, ...)                                                                                           \
         ((bool)(expr) ? void()                                                                                                             \
                       : ((l).unlock(), ::einsums::detail::handle_assert(std::source_location::current(), EINSUMS_PP_STRINGIFY(expr),       \
-                                                                        fmt::format(__VA_ARGS__)))) /**/
+                                                                        einsums::detail::corrected_format(__VA_ARGS__)))) /**/
 
 #    if defined(EINSUMS_DEBUG)
 #        if defined(EINSUMS_COMPUTE_DEVICE_CODE)

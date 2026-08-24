@@ -12,6 +12,7 @@
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Print.hpp>
 
 #include <cstdint>
 
@@ -196,21 +197,9 @@ void direct_product(U alpha, AType const &A, BType const &B, U, CType *C) {
 
     for (int i = 0; i < Rank; i++) {
         if (A.dim(i) != B.dim(i) || A.dim(i) != C->dim(i)) {
-            std::string message;
-            if (i % 10 == 1 && (i % 100 > 20 || i % 100 == 1)) {
-                message = fmt::format("Generic tensors have incompatible dimensions! The {}st dimensions are A: {}, B: {}, C: {}", i,
-                                      A.dim(i), B.dim(i), C->dim(i));
-            } else if (i % 10 == 2 && (i % 100 > 20 || i % 100 == 2)) {
-                message = fmt::format("Generic tensors have incompatible dimensions! The {}nd dimensions are A: {}, B: {}, C: {}", i,
-                                      A.dim(i), B.dim(i), C->dim(i));
-            } else if (i % 10 == 3 && (i % 100 > 20 || i % 100 == 3)) {
-                message = fmt::format("Generic tensors have incompatible dimensions! The {}rd dimensions are A: {}, B: {}, C: {}", i,
-                                      A.dim(i), B.dim(i), C->dim(i));
-            } else {
-                message = fmt::format("Generic tensors have incompatible dimensions! The {}th dimensions are A: {}, B: {}, C: {}", i,
-                                      A.dim(i), B.dim(i), C->dim(i));
-            }
-            EINSUMS_THROW_EXCEPTION(dimension_error, fmt::runtime(message));
+            EINSUMS_THROW_EXCEPTION(dimension_error,
+                                    "Generic tensors have incompatible dimensions! The {} dimensions are A: {}, B: {}, C: {}",
+                                    print::ordinal(i), A.dim(i), B.dim(i), C->dim(i));
         }
         strides[Rank - i - 1] = prod;
 

@@ -28,7 +28,7 @@ namespace detail {} // namespace detail
 
 using namespace einsums::python::detail;
 
-EINSUMS_EXPORT void export_LinearAlgebra(py::module_ &mod) {
+void export_LinearAlgebra(py::module_ &mod) {
     py::enum_<einsums::linear_algebra::Norm>(mod, "Norm")
         .value("MAXABS", einsums::linear_algebra::Norm::MaxAbs)
         .value("ONE", einsums::linear_algebra::Norm::One)

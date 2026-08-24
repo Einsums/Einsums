@@ -31,9 +31,9 @@ int finalize() {
     if (runtime_ptr()) {
         auto &rt = runtime();
         rt.call_shutdown_functions(true);
-        EINSUMS_LOG_INFO("ran pre-shutdown functions");
+        EINSUMS_LOG_DEBUG("ran pre-shutdown functions");
         rt.call_shutdown_functions(false);
-        EINSUMS_LOG_INFO("ran shutdown functions");
+        EINSUMS_LOG_DEBUG("ran shutdown functions");
 
         auto &global_config = GlobalConfigMap::get_singleton();
 
@@ -56,9 +56,7 @@ int finalize() {
     }
 
     detail::__deleters.clear();
-
-    EINSUMS_LOG_INFO("einsums shutdown completed");
-
+    
     return EXIT_SUCCESS;
 }
 

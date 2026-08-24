@@ -285,6 +285,14 @@ class EINSUMS_EXPORT GlobalConfigMap {
      */
     bool get_bool(std::string const &key, bool dephaul = false) const;
 
+    void set_string(std::string const &key, std::string const &value);
+
+    void set_int(std::string const &key, std::int64_t value);
+
+    void set_double(std::string const &key, double value);
+
+    void set_bool(std::string const &key, bool value);
+
     /**
      * @brief Returns the map containing string options.
      */

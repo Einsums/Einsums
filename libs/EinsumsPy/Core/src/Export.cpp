@@ -35,26 +35,14 @@ void export_Core(py::module_ &mod) {
     mod.def("gpu_enabled", gpu_enabled, "Check if Einsums was compiled with GPU capabilities.")
         .def(
             "initialize", [](std::vector<std::string> &argv) { einsums::initialize(argv); }, "Initialize the Einsums module.")
-        .def("finalize", einsums::finalize, "Clean up the Einsums module.")
-        .def(
-            "log", [](int level, std::string const &str) { EINSUMS_LOG(level, str); }, "Log a message at the given log level.")
-        .def(
-            "log_trace", [](std::string const &str) { EINSUMS_LOG_TRACE(str); }, "Log a message at the trace level.")
-        .def(
-            "log_debug", [](std::string const &str) { EINSUMS_LOG_DEBUG(str); }, "Log a message at the debug level.")
-        .def(
-            "log_info", [](std::string const &str) { EINSUMS_LOG_INFO(str); }, "Log a message at the info level.")
-        .def(
-            "log_warn", [](std::string const &str) { EINSUMS_LOG_WARN(str); }, "Log a message at the warning level.")
-        .def(
-            "log_error", [](std::string const &str) { EINSUMS_LOG_ERROR(str); }, "Log a message at the error level.")
-        .def(
-            "log_critical", [](std::string const &str) { EINSUMS_LOG_CRITICAL(str); }, "Log a message at the critical level.");
+        .def("finalize", einsums::finalize, "Clean up the Einsums module.");
 
     auto config_map = py::class_<einsums::GlobalConfigMap, std::shared_ptr<einsums::GlobalConfigMap>>(
         mod, "GlobalConfigMap", "Contains all of the options handled by Einsums.");
 
-    config_map.def_static("get_singleton", einsums::GlobalConfigMap::get_singleton, "Get the single unique instance.")
+    config_map
+        .def_static("get_singleton", einsums::GlobalConfigMap::get_singleton, "Get the single unique instance.",
+                    py::return_value_policy::reference)
         .def(
             "empty", [](GlobalConfigMap &self) { return self.empty(); }, "Check to see if the map is empty.")
         .def(

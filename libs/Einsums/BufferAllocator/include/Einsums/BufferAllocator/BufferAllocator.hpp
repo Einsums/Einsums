@@ -9,14 +9,20 @@
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/StringUtil/MemoryString.hpp>
 
 #include <complex>
+#include <cstdlib>
 #include <deque>
 #include <forward_list>
 #include <source_location>
 #include <type_traits>
 #include <unordered_set>
+
+#ifdef EINSUMS_WINDOWS
+#    include <malloc.h>
+#endif
 
 namespace einsums {
 
@@ -116,6 +122,7 @@ struct BufferAllocator {
      * @throws std::runtime_error When the allocation size is too large or the allocation returns an unexpected null pointer.
      */
     pointer allocate(size_type n) {
+        EINSUMS_LOG_DEBUG("Allocating {} elements ({} bytes).", n, n * type_size);
         if (n == 0) {
             return nullptr;
         }
@@ -129,7 +136,7 @@ struct BufferAllocator {
                                     n, n * type_size, available_size(), max_size());
         }
 
-        out = static_cast<pointer>(malloc(n * type_size));
+        out = static_cast<pointer>(std::malloc(n * type_size));
 
         if (out == nullptr) {
             EINSUMS_THROW_EXCEPTION(
@@ -154,6 +161,7 @@ struct BufferAllocator {
     [[nodiscard("This function tells you when an allocation fails due to being out of memory. Don't ignore its return value. It is bad "
                 "form.")]] bool
     reserve(size_type n) {
+        EINSUMS_LOG_DEBUG("Reserving {} elements ({} bytes).", n, n * type_size);
         if (n == 0) {
             return true;
         }
@@ -172,6 +180,7 @@ struct BufferAllocator {
      * @param n The number of elements to release.
      */
     void release(size_type n) {
+        EINSUMS_LOG_DEBUG("Releasing {} elements ({} bytes).", n, n * type_size);
         if (n == 0) {
             return;
         }
@@ -188,10 +197,11 @@ struct BufferAllocator {
      * @param n The number of elements the pointer points to.
      */
     void deallocate(pointer p, size_type n) {
+        EINSUMS_LOG_DEBUG("Deallocating {} elements ({} bytes) at pointer {}.", static_cast<void const *>(p), n, n * type_size);
         release(n);
 
         if (p != nullptr) {
-            free(static_cast<void *>(p));
+            std::free(static_cast<void *>(p));
         }
     }
 
@@ -234,13 +244,13 @@ struct BufferAllocator {
     constexpr bool operator!=(BufferAllocator<T> const &other) const { return false; }
 };
 
-#ifndef WINDOWS
+#ifndef EINSUMS_WINDOWS
 
-extern template struct BufferAllocator<void>;
-extern template struct BufferAllocator<float>;
-extern template struct BufferAllocator<double>;
-extern template struct BufferAllocator<std::complex<float>>;
-extern template struct BufferAllocator<std::complex<double>>;
+extern template struct EINSUMS_EXPORT BufferAllocator<void>;
+extern template struct EINSUMS_EXPORT BufferAllocator<float>;
+extern template struct EINSUMS_EXPORT BufferAllocator<double>;
+extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<float>>;
+extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<double>>;
 
 #endif
 

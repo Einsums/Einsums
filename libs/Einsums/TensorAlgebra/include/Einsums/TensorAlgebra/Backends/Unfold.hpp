@@ -68,7 +68,7 @@ constexpr auto get_n(std::tuple<List...> const &) {
 template <unsigned int mode, template <typename, size_t> typename CType, size_t CRank, typename T>
     requires(std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>)
 Tensor<T, 2> unfold(CType<T, CRank> const &source) {
-    LabeledSection1(fmt::format("mode-{} unfold", mode));
+    LabeledSection1(einsums::detail::corrected_format("mode-{} unfold", mode));
 
     Dim<2> target_dims;
     target_dims[0] = source.dim(mode);
@@ -79,7 +79,8 @@ Tensor<T, 2> unfold(CType<T, CRank> const &source) {
         target_dims[1] *= source.dim(i);
     }
 
-    auto target         = Tensor<T, 2>{fmt::format("mode-{} unfolding of {}", mode, source.name()), target_dims[0], target_dims[1]};
+    auto target =
+        Tensor<T, 2>{einsums::detail::corrected_format("mode-{} unfolding of {}", mode, source.name()), target_dims[0], target_dims[1]};
     auto target_indices = std::make_tuple(std::get<mode>(index::list), index::Z);
     auto source_indices = get_n<CRank>(index::list);
 

@@ -35,9 +35,15 @@ class ScaleFunctionTensor : public einsums::tensor_base::FunctionTensor<double, 
 
 template <size_t Rank>
 static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
-    std::FILE *input = std::fopen(fname.c_str(), "r");
+    std::FILE *input;
+    auto       error = einsums::fopen_s(&input, fname.c_str(), "r");
+
+    if (error != 0) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read file!");
+    }
 
     char buffer[1024] = {0};
+	einsums::StrtokContext context;
     int  line_num     = 0;
 
     while (!std::feof(input)) {
@@ -46,7 +52,7 @@ static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
         std::fgets(buffer, 1023, input);
         std::array<int, Rank> indices;
 
-        char *next = std::strtok(buffer, " \t");
+        char *next = einsums::strtok_s(buffer, " \t", &context);
 
         if (next == NULL) {
             continue;
@@ -55,7 +61,7 @@ static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
         indices[0] = std::atoi(next) - 1;
 
         for (int i = 1; i < Rank; i++) {
-            next = std::strtok(NULL, " \t");
+            next = einsums::strtok_s(NULL, " \t", &context);
 
             if (next == NULL) {
                 EINSUMS_THROW_EXCEPTION(std::runtime_error, "Line {} in file {} not formatted correctly!", line_num, fname);
@@ -64,7 +70,7 @@ static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
             indices[i] = std::atoi(next) - 1;
         }
 
-        next = std::strtok(NULL, " \t");
+        next = einsums::strtok_s(NULL, " \t", &context);
 
         if (next == NULL) {
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Line {} in file {} not formatted correctly!", line_num, fname);

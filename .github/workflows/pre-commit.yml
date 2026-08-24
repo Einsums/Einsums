@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.build_ref }}
 
@@ -46,7 +46,7 @@ jobs:
         shell: bash
 
       - name: Cache Conda env
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.CONDA }}/envs
           key:

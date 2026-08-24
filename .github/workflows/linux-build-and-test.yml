@@ -67,13 +67,13 @@ jobs:
         shell: bash -el {0}
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.build_ref }}
           path: src
 
       - name: Cache Build Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: build_cache_${{ inputs.build_cache_suffix }}
           key: einsums-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-${{ matrix.variant }}-${{ github.sha }}
@@ -81,7 +81,7 @@ jobs:
 
       # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
       - name: Setup Miniforge
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           miniforge-version: latest
           activate-environment: einsums-env
@@ -103,7 +103,7 @@ jobs:
         shell: bash
 
       - name: Cache Conda env
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.CONDA }}/envs
           key:
@@ -142,7 +142,7 @@ jobs:
 
       - name: Build and Install
         run: |
-          cmake --build "${{ github.workspace }}/build" --config Release --target install
+          cmake --build "${{ github.workspace }}/build" --target install
 
       - name: Test (CTest) - Unit Tests
         working-directory: "${{ github.workspace }}/build"
@@ -177,7 +177,7 @@ jobs:
           working-directory: "${{github.workspace}}/src"
           disable_search: true
           files: ${{github.workspace}}/build/coverage.info
-          flags: cpp,linux
+          flags: linux
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload Python coverage to Codecov
@@ -187,7 +187,7 @@ jobs:
           directory: "${{github.workspace}}/installed"
           working-directory: "${{github.workspace}}/installed"
           disable_search: true
-          flags: python,linux
+          flags: linux
           files: ${{github.workspace}}/installed/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 

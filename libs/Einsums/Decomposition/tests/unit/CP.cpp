@@ -27,7 +27,7 @@ TEMPLATE_TEST_CASE("CP 1", "[decomposition]", float, double) {
 
     TestType diff = rmsd(test1, test1_cp);
 
-    INFO(fmt::format("Diff is {}.\n", diff));
+    INFO(einsums::detail::corrected_format("Diff is {}.\n", diff));
 
     REQUIRE(isgreaterequal(diff, 0.0));
     REQUIRE(islessequal(diff, TestType{0.17392}));
@@ -100,7 +100,7 @@ TEMPLATE_TEST_CASE("CP 4", "[decomposition]", double) {
 
     TestType diff = rmsd(test2, test2_cp);
 
-    INFO(fmt::format("diff {}", diff));
+    INFO(einsums::detail::corrected_format("diff {}", diff));
 
     REQUIRE(isgreaterequal(diff, 0.0));
     REQUIRE(islessequal(diff, 1.0e-4));

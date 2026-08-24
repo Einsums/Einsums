@@ -47,7 +47,7 @@
 #    if defined(EINSUMS_EXPORTS)
 #        define EINSUMS_EXPORT EINSUMS_SYMBOL_EXPORT
 #    else
-#        define EINSUMS_EXPORT EINSUMS_SYMBOL_IMPORT
+#        define EINSUMS_EXPORT EINSUMS_SYMBOL_EXPORT
 #    endif
 
 #    if defined(EINSUMS_EXPERIMENTAL_EXPORTS)

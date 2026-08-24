@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/Timer.hpp>
 
@@ -63,8 +65,9 @@ void print_timer_info(TimerDetail const *timer, std::FILE *fp) { // NOLINT
     if (timer != root.get()) {
         std::string buffer;
         if (timer->total_calls != 0) {
-            buffer = fmt::format("{:>5} : {:>5} calls : {:>5} per call", duration_cast<milliseconds>(timer->total_time), timer->total_calls,
-                                 duration_cast<milliseconds>(timer->total_time) / timer->total_calls);
+            buffer =
+                einsums::detail::corrected_format("{:>5} : {:>5} calls : {:>5} per call", duration_cast<milliseconds>(timer->total_time),
+                                                  timer->total_calls, duration_cast<milliseconds>(timer->total_time) / timer->total_calls);
         } else {
             buffer = "total_calls == 0!!!";
         }
@@ -89,18 +92,18 @@ void print_timer_info(TimerDetail const *timer, std::FILE *fp) { // NOLINT
     }
 }
 
-static bool is_init = false;
+static std::atomic_bool is_init = false;
 
 } // namespace detail
 
 void initialize() {
     using namespace detail;
-	
-	if(detail::is_init) {
-		return;
-	} else {
-		detail::is_init = true;
-	}
+
+    if (detail::is_init) {
+        return;
+    } else {
+        detail::is_init = true;
+    }
 
     root              = std::make_shared<TimerDetail>();
     root->name        = "Total Run Time";
@@ -117,25 +120,47 @@ void initialize() {
 
 void finalize() {
     using namespace detail;
-	
-	if(!detail::is_init) {
-		return;
-	} else {
-		detail::is_init = false;
-	}
-	
+
+    if (!detail::is_init) {
+        return;
+    } else {
+        detail::is_init = false;
+    }
+
     assert(root.get() == current_timer);
     root.reset();
     current_timer = nullptr;
 }
 
 void report(std::string const &fname, bool append) {
-    std::FILE *fp = std::fopen(fname.c_str(), append ? "w+" : "w");
+    std::FILE *fp;
+
+    auto error = einsums::fopen_s(&fp, fname.c_str(), append ? "a+" : "w+");
+
+    if (error != 0) {
+        char buffer[256];
+
+        EINSUMS_LOG_ERROR("Error while opening the profile file.");
+
+        auto error2 = einsums::strerror_s(buffer, sizeof(buffer), error);
+
+        if (error2 != 0) {
+            EINSUMS_LOG_ERROR("Error while creating the error report for opening the profile file.");
+            EINSUMS_THROW_EXCEPTION(
+                std::runtime_error,
+                "Could not open file! When processing fopen error {}, another error occurred! Second error code is error {}.",
+                static_cast<int>(error), static_cast<int>(error2));
+        }
+
+        EINSUMS_LOG_ERROR("Could not open file: {}", buffer);
+
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not open file: {}", buffer);
+    }
 
     detail::print_timer_info(detail::root.get(), fp);
-
     std::fflush(fp);
     std::fclose(fp);
+
 }
 
 void push(std::string name) {
@@ -147,7 +172,7 @@ void push(std::string name) {
 
     if (omp_get_thread_num() == 0) {
         if (omp_in_parallel()) {
-            name = fmt::format("{} (master thread only)", name);
+            name += " (master thread only)";
         }
 
         if (!current_timer) {
